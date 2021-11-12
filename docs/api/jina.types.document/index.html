@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/jina.types.document.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Submodules: jina.types.document.converters module, jina.types.document.generators module, jina.types.document.graph module, jina.types.document.helper module. Module contents:" />
+  <meta property="og:description" content="Subpackages: jina.types.document.mixins package- Submodules- jina.types.document.mixins.attribute module, jina.types.document.mixins.audio module, jina.types.document.mixins.buffer module, jina.types.document.mixins.content module, jina.types.document.mixins.convert module, jina.types.document.mi..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -28,10 +28,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.document.converters module" href="../jina.types.document.converters/" /><link rel="prev" title="jina.types.arrays.types module" href="../jina.types.arrays.types/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.document.mixins package" href="../jina.types.document.mixins/" /><link rel="prev" title="jina.types.arrays.types module" href="../jina.types.arrays.types/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>jina.types.document package - Jina 2.4.3 documentation</title>
+        <title>jina.types.document package - Jina 2.4.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 2.4.3 documentation</div>
+                <div class="brand">Jina 2.4.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -556,28 +556,44 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">jina.types.document package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.converters/">jina.types.document.converters module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.document.mixins/">jina.types.document.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.attribute/">jina.types.document.mixins.attribute module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.audio/">jina.types.document.mixins.audio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.buffer/">jina.types.document.mixins.buffer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.content/">jina.types.document.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.convert/">jina.types.document.mixins.convert module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.helper/">jina.types.document.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -594,7 +610,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -652,11 +668,38 @@
                 </div>
                 <section id="jina-types-document-package">
 <h1>jina.types.document package<a class="headerlink" href="#jina-types-document-package" title="Permalink to this headline">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.document.mixins/">jina.types.document.mixins package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.document.mixins/#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.attribute/">jina.types.document.mixins.attribute module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.audio/">jina.types.document.mixins.audio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.buffer/">jina.types.document.mixins.buffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.content/">jina.types.document.mixins.content module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.convert/">jina.types.document.mixins.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.document.mixins/#module-jina.types.document.mixins">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.types.document.helper/">jina.types.document.helper module</a></li>
@@ -667,8 +710,8 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.document" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.document.Document">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.document.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentContentType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.document.helper.VersionedMixin</span></code>, <a class="reference internal" href="../jina.types.document.converters/#jina.types.document.converters.ContentConversionMixin" title="jina.types.document.converters.ContentConversionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.document.converters.ContentConversionMixin</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.document.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.document.mixins/#jina.types.document.mixins.AllMixins" title="jina.types.document.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.document.mixins.AllMixins</span></code></a>, <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a></p>
 <p><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is one of the <strong>primitive data type</strong> in Jina.</p>
 <p>It offers a Pythonic interface to allow users access and manipulate
 <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.DocumentProto</span></code> object without working with Protobuf itself.</p>
@@ -696,7 +739,7 @@ assigning <code class="docutils literal notranslate"><span class="pre">doc.blob<
 </pre></div>
 </div>
 </div></blockquote>
-<p>MIME type is auto set/guessed when setting <a class="reference internal" href="#jina.types.document.Document.content" title="jina.types.document.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> and <a class="reference internal" href="#jina.types.document.Document.uri" title="jina.types.document.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a></p>
+<p>MIME type is auto set/guessed when setting <code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code> and <a class="reference internal" href="#jina.types.document.Document.uri" title="jina.types.document.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a></p>
 <p><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> also provides multiple way to build from existing Document. You can build <a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>
 from <code class="docutils literal notranslate"><span class="pre">jina_pb2.DocumentProto</span></code>, <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, and <code class="docutils literal notranslate"><span class="pre">Dict</span></code>. You can also use it as view (i.e.
 weak reference when building from an existing <code class="docutils literal notranslate"><span class="pre">jina_pb2.DocumentProto</span></code>). For example,</p>
@@ -712,7 +755,7 @@ weak reference when building from an existing <code class="docutils literal notr
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[~DocumentSourceType, <a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the document to construct from. If <code class="docutils literal notranslate"><span class="pre">bytes</span></code> is given
+<li><p><strong>document</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the document to construct from. If <code class="docutils literal notranslate"><span class="pre">bytes</span></code> is given
 then deserialize a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code>; <code class="docutils literal notranslate"><span class="pre">dict</span></code> is given then
 parse a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code> from it; <code class="docutils literal notranslate"><span class="pre">str</span></code> is given, then consider
 it as a JSON string and parse a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code> from it; finally,
@@ -720,7 +763,7 @@ one can also give <cite>DocumentProto</cite> directly, then depending on the <co
 it builds a view or a copy from it.</p></li>
 <li><p><strong>copy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – when <code class="docutils literal notranslate"><span class="pre">document</span></code> is given as a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code> object, build a
 view (i.e. weak reference) from it or a deep copy from it.</p></li>
-<li><p><strong>field_resolver</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – a map from field names defined in JSON, dict to the field
+<li><p><strong>field_resolver</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a map from field names defined in JSON, dict to the field
 names defined in Document.</p></li>
 <li><p><strong>kwargs</strong> – other parameters to be set _after_ the document is constructed</p></li>
 </ul>
@@ -738,33 +781,6 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 </pre></div>
 </div>
 </div>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.types.document.Document.ON_GETATTR">
-<span class="sig-name descname"><span class="pre">ON_GETATTR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['matches',</span> <span class="pre">'chunks']</span></em><a class="headerlink" href="#jina.types.document.Document.ON_GETATTR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.pop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove the values from the given fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> – field names</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove all values from all fields of this Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.weight">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weight</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#jina.types.document.Document.weight" title="Permalink to this definition">¶</a></dt>
@@ -802,46 +818,6 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 </dd>
 </dl>
 </dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates fields specified in <code class="docutils literal notranslate"><span class="pre">fields</span></code> from the source to current Document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The <a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> we want to update from as source. The current
-<a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is referred as destination.</p></li>
-<li><p><strong>fields</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – a list of field names that we want to update, if not specified,
-use all present fields in source.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><a href="#id1"><span class="problematic" id="id2">*</span></a>. if <code class="docutils literal notranslate"><span class="pre">fields</span></code> are empty, then all present fields in source will be merged into current document.
-* <cite>tags</cite> will be updated like a python <code class="xref py py-attr docutils literal notranslate"><span class="pre">dict</span></code>.
-<a href="#id3"><span class="problematic" id="id4">*</span></a>. the current <a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> will be modified in place, <code class="docutils literal notranslate"><span class="pre">source</span></code> will be unchanged.
-<a href="#id5"><span class="problematic" id="id6">*</span></a>. if current document has more fields than <code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code>, these extra fields wll be preserved.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.document.Document.content_hash">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_hash</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.types.document.Document.content_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the document hash according to its content.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the unique hash code to represent this Document</p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.id">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.types.document.Document.id" title="Permalink to this definition">¶</a></dt>
@@ -874,7 +850,7 @@ use all present fields in source.</p></li>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">blob</span></code>, one of the content form of a Document.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Use <a class="reference internal" href="#jina.types.document.Document.content" title="jina.types.document.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> to return the content of a Document</p>
+<p>Use <code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code> to return the content of a Document</p>
 <p>This property will return the <cite>blob</cite> of the <cite>Document</cite> as a <cite>Dense</cite> or <cite>Sparse</cite> array depending on the actual
 proto instance stored. In the case where the <cite>blob</cite> stored is sparse, it will return them as a <cite>coo</cite> matrix.
 If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`get_sparse_blob</cite>.</p>
@@ -935,58 +911,13 @@ If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`g
 </dd>
 </dl>
 </dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.set_attributes">
-<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.set_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.set_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bulk update Document fields with key-value specified in kwargs</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#jina.types.document.Document.get_attributes" title="jina.types.document.Document.get_attributes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_attributes()</span></code></a> for bulk get attributes</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – the keyword arguments to set the values, where the keys are the fields to set</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.get_attributes">
-<span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.get_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.get_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bulk fetch Document fields and return a list of the values of these fields</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Arguments will be extracted using <cite>dunder_get</cite>
-.. highlight:: python
-.. code-block:: python</p>
-<blockquote>
-<div><p>d = Document({‘id’: ‘123’, ‘hello’: ‘world’, ‘tags’: {‘id’: ‘external_id’, ‘good’: ‘bye’}})</p>
-<p>assert d.id == ‘123’  # true
-assert d.tags[‘hello’] == ‘world’ # true
-assert d.tags[‘good’] == ‘bye’ # true
-assert d.tags[‘id’] == ‘external_id’ # true</p>
-<p>res = d.get_attrs_values(<a href="#id7"><span class="problematic" id="id8">*</span></a>[‘id’, ‘tags__hello’, ‘tags__good’, ‘tags__id’])</p>
-<p>assert res == [‘123’, ‘world’, ‘bye’, ‘external_id’]</p>
-</div></blockquote>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the variable length values to extract from the document</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a list with the attributes of this document ordered as the args</p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.buffer">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">buffer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bytes</span></em><a class="headerlink" href="#jina.types.document.Document.buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, one of the content form of a Document.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Use <a class="reference internal" href="#jina.types.document.Document.content" title="jina.types.document.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> to return the content of a Document</p>
+<p>Use <code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code> to return the content of a Document</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -999,15 +930,18 @@ assert d.tags[‘id’] == ‘external_id’ # true</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.text">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#jina.types.document.Document.text" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.types.document.Document.text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">text</span></code>, one of the content form of a Document.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Use <a class="reference internal" href="#jina.types.document.Document.content" title="jina.types.document.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> to return the content of a Document</p>
+<p>Use <code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code> to return the content of a Document</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the text from this document content</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the text from this document content</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1038,53 +972,28 @@ assert d.tags[‘id’] == ‘external_id’ # true</p>
 </dl>
 </dd></dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="jina.types.document.Document.content_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.types.document.Document.content_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the content type of the document, possible values: text, blob, buffer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the type of content of this Document</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.types.document.Document.content">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina.types.document.DocumentContentType</span></em><a class="headerlink" href="#jina.types.document.Document.content" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the content of the document. It checks whichever field among <a class="reference internal" href="#jina.types.document.Document.blob" title="jina.types.document.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>, <a class="reference internal" href="#jina.types.document.Document.text" title="jina.types.document.Document.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a>,
-<a class="reference internal" href="#jina.types.document.Document.buffer" title="jina.types.document.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a> has value and return it.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#jina.types.document.Document.blob" title="jina.types.document.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>, <a class="reference internal" href="#jina.types.document.Document.buffer" title="jina.types.document.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a>, <a class="reference internal" href="#jina.types.document.Document.text" title="jina.types.document.Document.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a></p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>~DocumentContentType</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the value of the content depending on <cite>:meth:`content_type</cite></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.granularity">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">granularity</span></span><a class="headerlink" href="#jina.types.document.Document.granularity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">granularity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.document.Document.granularity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the granularity of the document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the granularity of this Document</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the granularity of this Document</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.adjacency">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjacency</span></span><a class="headerlink" href="#jina.types.document.Document.adjacency" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjacency</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.document.Document.adjacency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the adjacency of the document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the adjacency of this Document</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the adjacency of this Document</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1100,84 +1009,40 @@ assert d.tags[‘id’] == ‘external_id’ # true</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.document.Document.evaluations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><a class="headerlink" href="#jina.types.document.Document.evaluations" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.score.map/#jina.types.score.map.NamedScoreMapping" title="jina.types.score.map.NamedScoreMapping"><span class="pre">jina.types.score.map.NamedScoreMapping</span></a></em><a class="headerlink" href="#jina.types.document.Document.evaluations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the evaluations of the document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the evaluations attached to this document as <cite>:class:NamedScoreMapping</cite></p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.types.score.map/#jina.types.score.map.NamedScoreMapping" title="jina.types.score.map.NamedScoreMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedScoreMapping</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the evaluations attached to this document as <cite>:class:NamedScoreMapping</cite></p>
 </dd>
 </dl>
 </dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.MergeFrom">
-<span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.MergeFrom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.MergeFrom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merge the content of target</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.document.Document.location">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">location</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.document.Document.location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the location information.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the document to merge from</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>location info in a tuple.</p>
 </dd>
 </dl>
 </dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.CopyFrom">
-<span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.CopyFrom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.CopyFrom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy the content of target</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.document.Document.offset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#jina.types.document.Document.offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the offset information of this Document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – the document to copy from</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inline_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualize the Document recursively.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a filename specifying the name of the image to be created,
-the suffix svg/jpg determines the file type of the output image</p></li>
-<li><p><strong>inline_display</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – show image directly inside the Jupyter Notebook</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.attributes">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_proto_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_proto_fields_camelcase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all attributes supported by the Document, which can be accessed by <code class="docutils literal notranslate"><span class="pre">doc.attribute</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>include_proto_fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, then include all protobuf fields</p></li>
-<li><p><strong>include_proto_fields_camelcase</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, then include all protobuf fields in CamelCase</p></li>
-<li><p><strong>include_properties</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, then include all properties defined for Document class</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a list of attributes in string.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.types.document.Document.get_vocabulary">
-<span class="sig-name descname"><span class="pre">get_vocabulary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('text',)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.get_vocabulary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.get_vocabulary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the text vocabulary in a counter dict that maps from the word to its frequency from all <code class="xref py py-attr docutils literal notranslate"><span class="pre">text_fields</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text_attrs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, …]) – the textual attributes where vocabulary will be derived from</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the offset</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1189,12 +1054,12 @@ the suffix svg/jpg determines the file type of the output image</p></li>
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../jina.types.document.converters/">
+                    <a class="next-page" href="../jina.types.document.mixins/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">jina.types.document.converters module</div>
+                            <div class="title">jina.types.document.mixins package</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -1243,6 +1108,7 @@ the suffix svg/jpg determines the file type of the output image</p></li>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">jina.types.document package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-jina.types.document">Module contents</a></li>
 </ul>

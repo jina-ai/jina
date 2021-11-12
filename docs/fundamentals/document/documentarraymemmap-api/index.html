@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/document/documentarraymemmap-api.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="When your DocumentArray object contains a large number of Document, holding it in memory can be very demanding. You may want to use DocumentArrayMemmap to alleviate this issue. A DocumentArrayMemmap stores all Documents directly on the disk, while keeping a small lookup table in memory and a buff..." />
+  <meta property="og:description" content="DocumentArrayMemmap is a drop-in replacement of DocumentArray in memory-demanding cases. It shares nearly all APIs with DocumentArray. When your DocumentArray object contains a large number of Document, holding it in memory can be very demanding. You may want to use DocumentArrayMemmap to allevia..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -31,7 +31,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executor" href="../../executor/" /><link rel="prev" title="DocumentArray" href="../documentarray-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>DocumentArrayMemmap - Jina 2.4.3 documentation</title>
+        <title>DocumentArrayMemmap - Jina 2.4.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 2.4.3 documentation</div>
+                <div class="brand">Jina 2.4.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -556,28 +556,44 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.document.mixins/">jina.types.document.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.attribute/">jina.types.document.mixins.attribute module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.audio/">jina.types.document.mixins.audio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.buffer/">jina.types.document.mixins.buffer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.content/">jina.types.document.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.convert/">jina.types.document.mixins.convert module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.types.ndarray/">jina.types.ndarray package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -594,7 +610,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -652,6 +668,7 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="documentarraymemmap">
 <span id="documentarraymemmap-api"></span><h1>DocumentArrayMemmap<a class="headerlink" href="#documentarraymemmap" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is a drop-in replacement of <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in memory-demanding cases. It shares <a class="reference internal" href="#api-da-dam"><span class="std std-ref">nearly all APIs</span></a> with <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
 <p>When your <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object contains a large number of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, holding it in memory can be very demanding. You
 may want to use <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to alleviate this issue.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> stores all Documents directly on
@@ -691,16 +708,19 @@ modifying documents.</p>
 </tr>
 </tbody>
 </table></div>
+<section id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 <section id="create">
-<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+<h3>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
 
-<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
+<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">()</span>  <span class="c1"># use a local temporary folder as storage</span>
+<span class="n">dam2</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>  <span class="c1"># use './my-memmap' as storage</span>
 </pre></div>
 </div>
 </section>
 <section id="add-elements">
-<h2>Add elements<a class="headerlink" href="#add-elements" title="Permalink to this headline">¶</a></h2>
+<h3>Add elements<a class="headerlink" href="#add-elements" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
@@ -711,11 +731,40 @@ modifying documents.</p>
 </span></pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">dam</span></code> object stores all Documents into <code class="docutils literal notranslate"><span class="pre">./my-memmap</span></code> folder on the disk, there is no need to manually call save or load.</p>
-<section id="buffer-pool">
-<h3>Buffer pool<a class="headerlink" href="#buffer-pool" title="Permalink to this headline">¶</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can of course use <code class="docutils literal notranslate"><span class="pre">.append()</span></code> to add single Document. But when adding multiple Documents, <code class="docutils literal notranslate"><span class="pre">.extend()</span></code> is much more efficient.</p>
+</div>
+</section>
+<section id="clear-elements">
+<h3>Clear elements<a class="headerlink" href="#clear-elements" title="Permalink to this headline">¶</a></h3>
+<p>To clear all contents in a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object, simply call <code class="docutils literal notranslate"><span class="pre">.clear()</span></code>. It will clean all content on the disk.</p>
+<p>You can also check the disk usage of a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> by <code class="docutils literal notranslate"><span class="pre">.physical_size</span></code>.</p>
+</section>
+<section id="convert-to-from-documentarray">
+<h3>Convert to/from DocumentArray<a class="headerlink" href="#convert-to-from-documentarray" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)])</span>
+
+<span class="c1"># convert DocumentArray to DocumentArrayMemmap</span>
+<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
+<span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+
+<span class="c1"># convert DocumentArrayMemmap to DocumentArray</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced">
+<h2>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h2>
+<p>DocumentArrayMemmap is in general used for one-way access, either read-only or write-only. Interleaving reading and writing on a DocumentArrayMemmap is not safe and not recommended in production.</p>
+<section id="understand-buffer-pool">
+<h3>Understand buffer pool<a class="headerlink" href="#understand-buffer-pool" title="Permalink to this headline">¶</a></h3>
 <p>Recently added, modified or accessed documents are kept in an in-memory buffer pool. This allows all changes to Documents
 applied first in the memory and then be persisted to disk in a lazy way (i.e. when they quit the buffer pool or when
-the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object’s destructor is called). If you want to instantly persist the changed documents, you can call <code class="docutils literal notranslate"><span class="pre">.save()</span></code>.</p>
+the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object’s destructor is called). If you want to instantly persist the changed documents, you can call <code class="docutils literal notranslate"><span class="pre">.flush()</span></code>.</p>
 <p>The number can be configured with the constructor
 argument <code class="docutils literal notranslate"><span class="pre">buffer_pool_size</span></code> (1000 by default). Only the <code class="docutils literal notranslate"><span class="pre">buffer_pool_size</span></code> most recently accessed, modified or added
 documents exist in the pool. Replacement of documents follows the LRU strategy.</p>
@@ -731,9 +780,8 @@ documents manually and modify them if they might be outside of the buffer pool. 
 explains the best practices when modifying documents.</p>
 </div>
 </section>
-</section>
-<section id="modifying-elements">
-<span id="modify-memmap"></span><h2>Modifying elements<a class="headerlink" href="#modifying-elements" title="Permalink to this headline">¶</a></h2>
+<section id="modify-elements">
+<span id="modify-memmap"></span><h3>Modify elements<a class="headerlink" href="#modify-elements" title="Permalink to this headline">¶</a></h3>
 <p>Modifying elements of a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is possible due to the fact that accessed and modified documents are kept
 in the buffer pool:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span><span class="p">,</span> <span class="n">Document</span>
@@ -754,9 +802,8 @@ in the buffer pool:</p>
 </div>
 <p>However, there are practices to <strong>avoid</strong>. Mainly, you should not modify documents that you reference manually and that
 might not be in the buffer pool. Here are some practices to avoid:</p>
-<ol class="simple">
-<li><p>Keep more  references than the buffer pool size and modify them:</p></li>
-</ol>
+<ol>
+<li><p>Keep more  references than the buffer pool size and modify them:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">❌ Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span> 
@@ -807,9 +854,8 @@ might not be in the buffer pool. Here are some practices to avoid:</p>
 </div>
 </div>
 </div>
-<ol class="simple">
-<li><p>Modify a reference that might have left the buffer pool :</p></li>
-</ol>
+</li>
+<li><p>Modify a reference that might have left the buffer pool :</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">❌ Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
@@ -847,19 +893,66 @@ might not be in the buffer pool. Here are some practices to avoid:</p>
 </div>
 </div>
 </div>
+</li>
+</ol>
 <p>To summarize, it’s a best practice to <strong>rely on the <code class="docutils literal notranslate"><span class="pre">dam</span></code> object to reference the docs that you modify</strong>.</p>
 </section>
-<section id="clear-elements">
-<h2>Clear elements<a class="headerlink" href="#clear-elements" title="Permalink to this headline">¶</a></h2>
-<p>To clear all contents in a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object, simply call <code class="docutils literal notranslate"><span class="pre">.clear()</span></code>. It will clean all content on disk.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>One may notice another method <code class="docutils literal notranslate"><span class="pre">.prune()</span></code> that shares similar semantics. <code class="docutils literal notranslate"><span class="pre">.prune()</span></code> method is designed for “
-post-optimizing” the on-disk data structure of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object. It can reduce the on-disk usage.</p>
+<section id="maintain-consistency">
+<h3>Maintain consistency<a class="headerlink" href="#maintain-consistency" title="Permalink to this headline">¶</a></h3>
+<p>Considering two <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> objects that share the same on-disk storage <code class="docutils literal notranslate"><span class="pre">./memmap</span></code> but sit in different
+processes/threads. After some writing ops, the consistency of the lookup table and the buffer pool may be corrupted, as
+each <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object has its own version of lookup table and buffer pool in memory. <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.flush()</span></code> are for solving this issue:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)</span>
+
+<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
+<span class="n">dam2</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
+
+<span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+
+<span class="n">dam</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+
+<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>You don’t need to call <code class="docutils literal notranslate"><span class="pre">.flush()</span></code> if you add new documents. However, if you modified an attribute of a document, you need
+to use it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
+
+<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
+<span class="n">dam2</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
+
+<span class="n">dam</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
+<span class="n">d1</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'goodbye'</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="n">dam2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s1">'hello'</span>
+
+<span class="n">dam</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">dam2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s1">'goodbye'</span>
+</pre></div>
 </div>
 </section>
+</section>
 <section id="api-side-by-side-vs-documentarray">
-<h2>API side-by-side vs. DocumentArray<a class="headerlink" href="#api-side-by-side-vs-documentarray" title="Permalink to this headline">¶</a></h2>
+<span id="api-da-dam"></span><h2>API side-by-side vs. DocumentArray<a class="headerlink" href="#api-side-by-side-vs-documentarray" title="Permalink to this headline">¶</a></h2>
 <p>The API of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> is <em>almost</em> the same as <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, you can use integer/string index to
 access element; you can loop over a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> to get all <code class="docutils literal notranslate"><span class="pre">Document</span></code>; you can use <code class="docutils literal notranslate"><span class="pre">get_attributes</span></code>
 or <code class="docutils literal notranslate"><span class="pre">traverse_flat</span></code> to achieve advanced traversal or getter.</p>
@@ -974,81 +1067,32 @@ or <code class="docutils literal notranslate"><span class="pre">traverse_flat</s
 <td>✅</td>
 </tr>
 <tr>
-<td><code>visualize</code></td>
+<td><code>plot_embeddings</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>plot_image_sprites</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>batch</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>flatten</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>.save</code>, <code>.load</code>, <code>.save_binary</code>, <code>.load_binary</code>, <code>.save_json</code>, <code>.load_json</code>, <code>.save_csv</code>, <code>.load_csv</code></td>
 <td>✅</td>
 <td>✅</td>
 </tr>
 </tbody>
-</table></div>
-</section>
-<section id="convert-to-from-documentarray">
-<h2>Convert to/from DocumentArray<a class="headerlink" href="#convert-to-from-documentarray" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)])</span>
-
-<span class="c1"># convert DocumentArray to DocumentArrayMemmap</span>
-<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
-<span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
-
-<span class="c1"># convert DocumentArrayMemmap to DocumentArray</span>
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="maintaining-consistency-via-reload-and-save">
-<h2>Maintaining consistency via <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and <code class="docutils literal notranslate"><span class="pre">.save()</span></code><a class="headerlink" href="#maintaining-consistency-via-reload-and-save" title="Permalink to this headline">¶</a></h2>
-<p>Considering two <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> objects that share the same on-disk storage <code class="docutils literal notranslate"><span class="pre">./memmap</span></code> but sit in different
-processes/threads. After some writing ops, the consistency of the lookup table and the buffer pool may be corrupted, as
-each <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> object has its own version of lookup table and buffer pool in memory. <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">.save()</span></code> are for solving this issue:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
-
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)</span>
-
-<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
-<span class="n">dam2</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
-
-<span class="n">dam</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-
-<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-
-<span class="n">dam</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-
-<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-</pre></div>
-</div>
-<p>You don’t need to call <code class="docutils literal notranslate"><span class="pre">.save</span></code> if you add new documents. However, if you modified an attribute of a document, you need
-to use it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArrayMemmap</span>
-
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
-
-<span class="n">dam</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
-<span class="n">dam2</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="s1">'./my-memmap'</span><span class="p">)</span>
-
-<span class="n">dam</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
-<span class="n">d1</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'goodbye'</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-
-<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
-<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dam2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-<span class="k">assert</span> <span class="n">dam2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s1">'hello'</span>
-
-<span class="n">dam</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-<span class="n">dam2</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
-<span class="k">assert</span> <span class="n">dam2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s1">'goodbye'</span>
-</pre></div>
-</div>
-</section>
+</table></div></section>
 </section>
 
             </article>
@@ -1109,16 +1153,20 @@ to use it:</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">DocumentArrayMemmap</a><ul>
+<li><a class="reference internal" href="#basics">Basics</a><ul>
 <li><a class="reference internal" href="#create">Create</a></li>
-<li><a class="reference internal" href="#add-elements">Add elements</a><ul>
-<li><a class="reference internal" href="#buffer-pool">Buffer pool</a></li>
+<li><a class="reference internal" href="#add-elements">Add elements</a></li>
+<li><a class="reference internal" href="#clear-elements">Clear elements</a></li>
+<li><a class="reference internal" href="#convert-to-from-documentarray">Convert to/from DocumentArray</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#modifying-elements">Modifying elements</a></li>
-<li><a class="reference internal" href="#clear-elements">Clear elements</a></li>
+<li><a class="reference internal" href="#advanced">Advanced</a><ul>
+<li><a class="reference internal" href="#understand-buffer-pool">Understand buffer pool</a></li>
+<li><a class="reference internal" href="#modify-elements">Modify elements</a></li>
+<li><a class="reference internal" href="#maintain-consistency">Maintain consistency</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#api-side-by-side-vs-documentarray">API side-by-side vs. DocumentArray</a></li>
-<li><a class="reference internal" href="#convert-to-from-documentarray">Convert to/from DocumentArray</a></li>
-<li><a class="reference internal" href="#maintaining-consistency-via-reload-and-save">Maintaining consistency via <code class="docutils literal notranslate"><span class="pre">.reload()</span></code> and <code class="docutils literal notranslate"><span class="pre">.save()</span></code></a></li>
 </ul>
 </li>
 </ul>
