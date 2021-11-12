@@ -263,7 +263,7 @@ class PeaDepends:
         return (
             __docker_host__
             if PeaRoleType.from_string(self.params.pea_role)
-            in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
+            in [PeaRoleType.WORKER, PeaRoleType.HEAD]
             else self.params.host_in
         )
 
@@ -278,7 +278,7 @@ class PeaDepends:
         return (
             __docker_host__
             if PeaRoleType.from_string(self.params.pea_role)
-            in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
+            in [PeaRoleType.WORKER, PeaRoleType.HEAD]
             else self.params.host_in
         )
 
@@ -298,7 +298,7 @@ class PeaDepends:
         if self.params.runtime_cls == 'ContainerRuntime':
             # For `ContainerRuntime`, port mapping gets handled internally
             return {}
-        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
+        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.WORKER:
             return {
                 f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
                 for i in self.params.__fields__
