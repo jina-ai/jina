@@ -32,6 +32,7 @@ def get_runtime(name: str):
     from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .worker import WorkerRuntime
+    from .head import HeadRuntime
 
     s = locals()[name]
     if isinstance(s, type) and issubclass(s, BaseRuntime):
