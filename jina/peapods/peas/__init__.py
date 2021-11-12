@@ -308,8 +308,6 @@ class BasePea(ABC):
     @property
     def role(self) -> 'PeaRoleType':
         """Get the role of this pea in a pod
-
-
         .. #noqa: DAR201"""
         return self.args.pea_role
 

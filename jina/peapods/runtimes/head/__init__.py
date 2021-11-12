@@ -145,7 +145,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         try:
             return await self._handle_messages(messages)
         except RuntimeTerminated:
-            HeadRuntime.cancel(self.is_cancel)
+            self._cancel()
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'

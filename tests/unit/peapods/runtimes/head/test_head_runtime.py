@@ -159,6 +159,6 @@ def _remove_worker(args, ip='fake_ip', shard_id=None):
 
 
 def _destroy_runtime(args, cancel_event, runtime_thread):
-    HeadRuntime.cancel(cancel_event)
+    cancel_event.set()
     runtime_thread.join()
     assert not HeadRuntime.is_ready(f'{args.host}:{args.port_in}')

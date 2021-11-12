@@ -411,6 +411,47 @@ async def test_runtimes_with_executor():
 
 
 @pytest.mark.asyncio
+async def test_runtimes_gateway_worker_direct_connection():
+    worker_port = random_port()
+    port_expose = random_port()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    # create the shards
+    worker_process = multiprocessing.Process(
+        target=_create_worker_runtime, args=(worker_port, f'pod0')
+    )
+    worker_process.start()
+
+    await asyncio.sleep(0.1)
+    # create a single gateway runtime
+    gateway_process = multiprocessing.Process(
+        target=_create_gateway_runtime,
+        args=(graph_description, pod_addresses, port_expose),
+    )
+    gateway_process.start()
+
+    await asyncio.sleep(1.0)
+
+    c = Client(host='localhost', port=port_expose, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    response_list = []
+    async for response in responses:
+        response_list.append(response)
+
+    # clean up runtimes
+    gateway_process.terminate()
+    worker_process.terminate()
+    gateway_process.join()
+    worker_process.join()
+
+    assert len(response_list) == 20
+    assert len(response_list[0].docs) == 1
+    assert gateway_process.exitcode == 0
+    assert worker_process.exitcode == 0
+
+
+@pytest.mark.asyncio
 async def test_runtimes_with_replicas_advance_faster():
     head_port = random_port()
     port_expose = random_port()
