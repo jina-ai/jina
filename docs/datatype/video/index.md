@@ -1,3 +1,4 @@
+(video-type)=
 # {octicon}`device-camera-video` Video
 
 

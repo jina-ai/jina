@@ -1,35 +1,29 @@
-import base64
 import json
 import mimetypes
-from collections import Counter
-from hashlib import blake2b
 from typing import (
-    Any,
     Dict,
     Iterable,
-    List,
     Optional,
-    Tuple,
     TypeVar,
     Union,
     overload,
     TYPE_CHECKING,
+    Tuple,
+    Sequence,
 )
 
 import numpy as np
 from google.protobuf import json_format
-from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import ContentConversionMixin, _text_to_word_sequence
-from .helper import VersionedMixin, versioned
+from .mixins import AllMixins
+from .mixins.version import versioned
 from ..mixin import ProtoTypeMixin
 from ..ndarray import NdArray
 from ..score import NamedScore
 from ..score.map import NamedScoreMapping
 from ..struct import StructView
 from ...excepts import BadDocType
-from ...helper import download_mermaid_url, dunder_get, random_identity, typename
-from ...logging.predefined import default_logger
+from ...helper import random_identity, typename
 from ...proto import jina_pb2
 
 if TYPE_CHECKING:
@@ -37,22 +31,18 @@ if TYPE_CHECKING:
     from ..arrays.match import MatchArray
     from ..ndarray import ArrayType
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
-DocumentSourceType = TypeVar(
-    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
-)
+    DocumentSourceType = TypeVar(
+        'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
+    )
 
 __all__ = ['Document']
-
-DIGEST_SIZE = 8
 
 _all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
 _all_doc_array_keys = ('blob', 'embedding')
-_special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
+class Document(AllMixins, ProtoTypeMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -104,7 +94,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
     """
 
-    ON_GETATTR = ['matches', 'chunks']
+    _ON_GETATTR = ['matches', 'chunks']
 
     # overload_inject_start_document
     @overload
@@ -115,13 +105,14 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         blob: Optional['ArrayType'] = None,
         buffer: Optional[bytes] = None,
         chunks: Optional[Iterable['Document']] = None,
-        content: Optional['DocumentContentType'] = None,
         embedding: Optional['ArrayType'] = None,
         granularity: Optional[int] = None,
         id: Optional[str] = None,
+        location: Optional[Sequence[float]] = None,
         matches: Optional[Iterable['Document']] = None,
         mime_type: Optional[str] = None,
         modality: Optional[str] = None,
+        offset: Optional[float] = None,
         parent_id: Optional[str] = None,
         tags: Optional[Union[Dict, StructView]] = None,
         text: Optional[str] = None,
@@ -134,13 +125,14 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         :param blob: the blob content of thi Document
         :param buffer: the buffer bytes from this document
         :param chunks: the array of chunks of this document
-        :param content: the value of the content depending on `:meth:`content_type`
         :param embedding: the embedding of this Document
         :param granularity: the granularity of this Document
         :param id: the id of this Document
+        :param location: location info in a tuple.
         :param matches: the array of matches attached to this document
         :param mime_type: the mime_type of this Document
         :param modality: the modality of the document.
+        :param offset: the offset
         :param parent_id: the parent id of this Document
         :param tags: a Python dict view of the tags.
         :param text: the text from this document content
@@ -282,29 +274,6 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
             self.set_attributes(**kwargs)
-        self.__mermaid_id = None
-
-    @property
-    def _mermaid_id(self):
-        if self.__mermaid_id is None:
-            self.__mermaid_id = random_identity()
-        return self.__mermaid_id
-
-    @_mermaid_id.setter
-    def _mermaid_id(self, m_id):
-        self.__mermaid_id = m_id
-
-    def pop(self, *fields) -> None:
-        """Remove the values from the given fields of this Document.
-
-        :param fields: field names
-        """
-        for k in fields:
-            self._pb_body.ClearField(k)
-
-    def clear(self) -> None:
-        """Remove all values from all fields of this Document."""
-        self._pb_body.Clear()
 
     @property
     def weight(self) -> float:
@@ -320,6 +289,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the float weight of the document.
         """
+        if value is None:
+            self.pop('weight')
+            return
         self._pb_body.weight = value
 
     @property
@@ -334,6 +306,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: The modality of the document
         """
+        if value is None:
+            self.pop('modality')
+            return
         self._pb_body.modality = value
 
     @property
@@ -350,6 +325,10 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: a Python dict or a StructView
         """
+        if value is None:
+            self.pop('tags')
+            return
+
         if isinstance(value, StructView):
             self._pb_body.tags.Clear()
             self._pb_body.tags.update(value._pb_body)
@@ -358,71 +337,6 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             self._pb_body.tags.update(value)
         else:
             raise TypeError(f'{value!r} is not supported.')
-
-    def update(
-        self,
-        source: 'Document',
-        fields: Optional[List[str]] = None,
-    ) -> None:
-        """Updates fields specified in ``fields`` from the source to current Document.
-
-        :param source: The :class:`Document` we want to update from as source. The current
-            :class:`Document` is referred as destination.
-        :param fields: a list of field names that we want to update, if not specified,
-            use all present fields in source.
-
-        .. note::
-            *. if ``fields`` are empty, then all present fields in source will be merged into current document.
-            * `tags` will be updated like a python :attr:`dict`.
-            *. the current :class:`Document` will be modified in place, ``source`` will be unchanged.
-            *. if current document has more fields than :attr:`source`, these extra fields wll be preserved.
-        """
-        # We do a safe update: only update existent (value being set) fields from source.
-        present_fields = [
-            field_descriptor.name
-            for field_descriptor, _ in source._pb_body.ListFields()
-        ]
-        if not fields:
-            fields = present_fields  # if `fields` empty, update all present fields.
-        for field in fields:
-            if (
-                field == 'tags'
-            ):  # For the tags, stay consistent with the python update method.
-                self.tags.update(source.tags)
-            else:
-                self._pb_body.ClearField(field)
-                try:
-                    setattr(self, field, getattr(source, field))
-                except AttributeError:
-                    setattr(self._pb_body, field, getattr(source, field))
-
-    @property
-    def content_hash(self) -> str:
-        """Get the document hash according to its content.
-
-        :return: the unique hash code to represent this Document
-        """
-        # a tuple of field names that inclusive when computing content hash.
-        fields = (
-            'text',
-            'blob',
-            'buffer',
-            'embedding',
-            'uri',
-            'tags',
-            'mime_type',
-            'granularity',
-            'adjacency',
-        )
-        masked_d = jina_pb2.DocumentProto()
-        present_fields = {
-            field_descriptor.name for field_descriptor, _ in self._pb_body.ListFields()
-        }
-        fields_to_hash = present_fields.intersection(fields)
-        FieldMask(paths=fields_to_hash).MergeMessage(self._pb_body, masked_d)
-        return blake2b(
-            masked_d.SerializePartialToString(), digest_size=DIGEST_SIZE
-        ).hexdigest()
 
     @property
     def id(self) -> str:
@@ -446,6 +360,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: id as string
         """
+        if value is None:
+            self.pop('id')
+            return
         self._pb_body.id = str(value)
 
     @parent_id.setter
@@ -454,6 +371,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: id as string
         """
+        if value is None:
+            self.pop('parent_id')
+            return
         self._pb_body.parent_id = str(value)
 
     @property
@@ -477,6 +397,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the array value to set the blob
         """
+        if value is None:
+            self.pop('blob')
+            return
         NdArray(self._pb_body.blob).value = value
 
     @property
@@ -498,6 +421,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the array value to set the embedding
         """
+        if value is None:
+            self.pop('embedding')
+            return
         NdArray(self._pb_body.embedding).value = value
 
     @property
@@ -518,6 +444,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: value to set
         """
+        if value is None:
+            self.pop('matches')
+            return
         self.pop('matches')
         self.matches.extend(value)
 
@@ -539,86 +468,11 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the array of chunks of this document
         """
+        if value is None:
+            self.pop('chunks')
+            return
         self.pop('chunks')
         self.chunks.extend(value)
-
-    def set_attributes(self, **kwargs):
-        """Bulk update Document fields with key-value specified in kwargs
-
-        .. seealso::
-            :meth:`get_attributes` for bulk get attributes
-
-        :param kwargs: the keyword arguments to set the values, where the keys are the fields to set
-        """
-        for k, v in kwargs.items():
-            if isinstance(v, (list, tuple)):
-                if k == 'chunks':
-                    self.chunks.extend(v)
-                elif k == 'matches':
-                    self.matches.extend(v)
-                else:
-                    self._pb_body.ClearField(k)
-                    getattr(self._pb_body, k).extend(v)
-            elif isinstance(v, dict) and k not in _special_mapped_keys:
-                self._pb_body.ClearField(k)
-                getattr(self._pb_body, k).update(v)
-            else:
-                if (
-                    hasattr(Document, k)
-                    and isinstance(getattr(Document, k), property)
-                    and getattr(Document, k).fset
-                ):
-                    # if class property has a setter
-                    setattr(self, k, v)
-                elif hasattr(self._pb_body, k):
-                    # no property setter, but proto has this attribute so fallback to proto
-                    setattr(self._pb_body, k, v)
-                else:
-                    raise AttributeError(f'{k} is not recognized')
-
-    def get_attributes(self, *fields: str) -> Union[Any, List[Any]]:
-        """Bulk fetch Document fields and return a list of the values of these fields
-
-        .. note::
-            Arguments will be extracted using `dunder_get`
-            .. highlight:: python
-            .. code-block:: python
-
-                d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
-
-                assert d.id == '123'  # true
-                assert d.tags['hello'] == 'world' # true
-                assert d.tags['good'] == 'bye' # true
-                assert d.tags['id'] == 'external_id' # true
-
-                res = d.get_attrs_values(*['id', 'tags__hello', 'tags__good', 'tags__id'])
-
-                assert res == ['123', 'world', 'bye', 'external_id']
-
-        :param fields: the variable length values to extract from the document
-        :return: a list with the attributes of this document ordered as the args
-        """
-
-        ret = []
-        for k in fields:
-            try:
-                value = getattr(self, k)
-
-                if value is None:
-                    raise ValueError
-
-                ret.append(value)
-            except (AttributeError, ValueError):
-                default_logger.warning(
-                    f'Could not get attribute `{typename(self)}.{k}`, returning `None`'
-                )
-                ret.append(None)
-
-        # unboxing if args is single
-        if len(fields) == 1:
-            ret = ret[0]
-
-        return ret
 
     @property
     def buffer(self) -> bytes:
@@ -637,10 +491,13 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the bytes value to set the buffer
         """
+        if value is None:
+            self.pop('buffer')
+            return
         self._pb_body.buffer = value
 
     @property
-    def text(self):
+    def text(self) -> str:
         """Return ``text``, one of the content form of a Document.
 
         .. note::
@@ -656,6 +513,10 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the text value to set as content
         """
+        if value is None:
+            self.pop('text')
+            self.mime_type = None
+            return
         self._pb_body.text = value
         self.mime_type = 'text/plain'
 
@@ -676,6 +537,10 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI
         """
+        if value is None:
+            self.pop('uri')
+            self.mime_type = None
+            return
         self._pb_body.uri = value
         mime_type = mimetypes.guess_type(value)[0]
         if mime_type:
@@ -696,6 +561,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         :param value: the acceptable MIME type, raise ``ValueError`` when MIME type is not
                 recognizable.
         """
+        if value is None:
+            self.pop('mime_type')
+            return
         if value in _all_mime_types:
             self._pb_body.mime_type = value
         elif value:
@@ -706,56 +574,8 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             else:
                 self._pb_body.mime_type = value
 
-    def __eq__(self, other):
-        return self.proto == other.proto
-
     @property
-    def content_type(self) -> str:
-        """Return the content type of the document, possible values: text, blob, buffer
-
-        :return: the type of content of this Document
-        """
-        return self._pb_body.WhichOneof('content')
-
-    @property
-    def content(self) -> 'DocumentContentType':
-        """Return the content of the document. It checks whichever field among :attr:`blob`, :attr:`text`,
-        :attr:`buffer` has value and return it.
-
-        .. seealso::
-            :attr:`blob`, :attr:`buffer`, :attr:`text`
-
-        :return: the value of the content depending on `:meth:`content_type`
-        """
-        attr = self.content_type
-        if attr:
-            return getattr(self, attr)
-
-    @content.setter
-    def content(self, value: 'DocumentContentType'):
-        """Set the content of the document. It assigns the value to field with the right type.
-
-        .. seealso::
-            :attr:`blob`, :attr:`buffer`, :attr:`text`
-
-        :param value: the value from which to set the content of the Document
-        """
-        if isinstance(value, bytes):
-            self.buffer = value
-        elif isinstance(value, str):
-            self.text = value
-        elif isinstance(value, np.ndarray):
-            self.blob = value
-        else:
-            try:
-                # try to set blob to `sparse` without needing to import all the `scipy` sparse requirements
-                self.blob = value
-            except:
-                # ``None`` is also considered as bad type
-                raise TypeError(f'{typename(value)} is not recognizable')
-
-    @property
-    def granularity(self):
+    def granularity(self) -> int:
         """Return the granularity of the document.
 
         :return: the granularity of this Document
@@ -768,10 +588,13 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the value of the granularity to be set
         """
+        if value is None:
+            self.pop('granularity')
+            return
         self._pb_body.granularity = value
 
     @property
-    def adjacency(self):
+    def adjacency(self) -> int:
         """Return the adjacency of the document.
 
         :return: the adjacency of this Document
@@ -784,6 +607,9 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the value of the adjacency to be set
         """
+        if value is None:
+            self.pop('adjacency')
+            return
         self._pb_body.adjacency = value
 
     @property
@@ -812,12 +638,15 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the dictionary to set the scores
         """
+        if value is None:
+            self.pop('scores')
+            return
         scores = NamedScoreMapping(self._pb_body.scores)
         for k, v in value.items():
             scores[k] = v
 
     @property
-    def evaluations(self):
+    def evaluations(self) -> NamedScoreMapping:
         """Return the evaluations of the document.
 
         :return: the evaluations attached to this document as `:class:NamedScoreMapping`
@@ -842,188 +671,51 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
 
         :param value: the dictionary to set the evaluations
         """
+        if value is None:
+            self.pop('evaluations')
+            return
         scores = NamedScoreMapping(self._pb_body.evaluations)
         for k, v in value.items():
             scores[k] = v
 
-    def MergeFrom(self, doc: 'Document'):
-        """Merge the content of target
+    @property
+    def location(self) -> Tuple[float]:
+        """Get the location information.
 
-        :param doc: the document to merge from
+        :return: location info in a tuple.
         """
-        self._pb_body.MergeFrom(doc.proto)
+        return tuple(self._pb_body.location)
 
-    def CopyFrom(self, doc: 'Document'):
-        """Copy the content of target
+    @location.setter
+    def location(self, value: Sequence[float]):
+        """Set the location information of this Document.
 
-        :param doc: the document to copy from
+        Location could mean the start and end index of a string;
+        could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip.
+
+        :param value: the location info to be set.
         """
-        self._pb_body.CopyFrom(doc.proto)
+        if value is None:
+            self.pop('location')
+            return
+        self.pop('location')
+        self._pb_body.location.extend(value)
 
-    def __mermaid_str__(self):
-        results = []
-        from google.protobuf.json_format import MessageToDict
+    @property
+    def offset(self) -> float:
+        """Get the offset information of this Document.
 
-        content = MessageToDict(self._pb_body, preserving_proto_field_name=True)
-
-        _id = f'{self._mermaid_id[:3]}~Document~'
-
-        for idx, c in enumerate(self.chunks):
-            results.append(
-                f'{_id} --> "{idx + 1}/{len(self.chunks)}" {c._mermaid_id[:3]}~Document~: chunks'
-            )
-            results.append(c.__mermaid_str__())
-
-        for idx, c in enumerate(self.matches):
-            results.append(
-                f'{_id} ..> "{idx + 1}/{len(self.matches)}" {c._mermaid_id[:3]}~Document~: matches'
-            )
-            results.append(c.__mermaid_str__())
-        if 'chunks' in content:
-            content.pop('chunks')
-        if 'matches' in content:
-            content.pop('matches')
-        if content:
-            results.append(f'class {_id}{{')
-            for k, v in content.items():
-                if isinstance(v, (str, int, float, bytes)):
-                    results.append(f'+{k} {str(v)[:10]}')
-                else:
-                    results.append(f'+{k}({type(getattr(self, k, v))})')
-            results.append('}')
-
-        return '\n'.join(results)
-
-    def _mermaid_to_url(self, img_type: str) -> str:
+        :return: the offset
         """
-        Rendering the current flow as a url points to a SVG, it needs internet connection
+        return self._pb_body.offset
 
-        :param img_type: the type of image to be generated
-        :return: the url pointing to a SVG
+    @offset.setter
+    def offset(self, value: float):
+        """Set the offset of this Document
+
+        :param value: the offset value to be set.
         """
-        if img_type == 'jpg':
-            img_type = 'img'
+        if value is None:
+            self.pop('offset')
 
-        mermaid_str = (
-            """
-                                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                                                classDiagram
-        
-                                                        """
-            + self.__mermaid_str__()
-        )
-
-        encoded_str = base64.b64encode(bytes(mermaid_str.strip(), 'utf-8')).decode(
-            'utf-8'
-        )
-
-        return f'https://mermaid.ink/{img_type}/{encoded_str}'
-
-    def _ipython_display_(self):
-        """Displays the object in IPython as a side effect"""
-        self.plot(inline_display=True)
-
-    def plot(self, output: Optional[str] = None, inline_display: bool = False) -> None:
-        """
-        Visualize the Document recursively.
-
-        :param output: a filename specifying the name of the image to be created,
-                    the suffix svg/jpg determines the file type of the output image
-        :param inline_display: show image directly inside the Jupyter Notebook
-        """
-        image_type = 'svg'
-        if output and output.endswith('jpg'):
-            image_type = 'jpg'
-
-        url = self._mermaid_to_url(image_type)
-        showed = False
-        if inline_display:
-            try:
-                from IPython.display import Image, display
-
-                display(Image(url=url))
-                showed = True
-            except:
-                # no need to panic users
-                pass
-
-        if output:
-            download_mermaid_url(url, output)
-        elif not showed:
-            from jina.logging.predefined import default_logger
-
-            default_logger.info(f'Document visualization: {url}')
-
-    def _prettify_doc_dict(self, d: Dict):
-        """Changes recursively a dictionary to show nd array fields as lists of values
-
-        :param d: the dictionary to prettify
-        """
-        for key in _all_doc_array_keys:
-            if key in d:
-                value = getattr(self, key)
-                if isinstance(value, np.ndarray):
-                    d[key] = value.tolist()
-            if 'chunks' in d:
-                for chunk_doc, chunk_dict in zip(self.chunks, d['chunks']):
-                    chunk_doc._prettify_doc_dict(chunk_dict)
-            if 'matches' in d:
-                for match_doc, match_dict in zip(self.matches, d['matches']):
-                    match_doc._prettify_doc_dict(match_dict)
-
-    @staticmethod
-    def attributes(
-        include_proto_fields: bool = True,
-        include_proto_fields_camelcase: bool = False,
-        include_properties: bool = False,
-    ) -> List[str]:
-        """Return all attributes supported by the Document, which can be accessed by ``doc.attribute``
-
-        :param include_proto_fields: if set, then include all protobuf fields
-        :param include_proto_fields_camelcase: if set, then include all protobuf fields in CamelCase
-        :param include_properties: if set, then include all properties defined for Document class
-        :return: a list of attributes in string.
-        """
-        import inspect
-
-        support_keys = []
-
-        if include_proto_fields:
-            support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
-        if include_proto_fields_camelcase:
-            support_keys += list(
-                jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
-            )
-
-        if include_properties:
-            support_keys += [
-                name
-                for (name, value) in inspect.getmembers(
-                    Document, lambda x: isinstance(x, property)
-                )
-            ]
-        return list(set(support_keys))
-
-    def __getattr__(self, item):
-        if item in self.ON_GETATTR:
-            self._increaseVersion()
-        if hasattr(self._pb_body, item):
-            value = getattr(self._pb_body, item)
-        elif '__' in item:
-            value = dunder_get(self._pb_body, item)
-        else:
-            raise AttributeError(f'no attribute named `{item}`')
-        return value
-
-    def get_vocabulary(self, text_attrs: Tuple[str, ...] = ('text',)) -> Dict[str, int]:
-        """Get the text vocabulary in a counter dict that maps from the word to its frequency from all :attr:`text_fields`.
-
-        :param text_attrs: the textual attributes where vocabulary will be derived from
-        :return: a vocabulary in dictionary where key is the word, value is the frequency of that word in all text fields.
-        """
-        all_tokens = Counter()
-
-        for f in text_attrs:
-            all_tokens.update(_text_to_word_sequence(getattr(self, f)))
-
-        return all_tokens
+        self._pb_body.offset = value

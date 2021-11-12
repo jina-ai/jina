@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import scipy.sparse
 import tensorflow as tf
 import torch
 from scipy.sparse import csr_matrix
@@ -128,3 +129,32 @@ def test_buffers_getter_setter(da):
     # unfortunately protobuf does not distinguish None and '' on string
     # so non-set str field in Pb is ''
     assert da.buffers == [b''] * 100
+
+
+def test_zero_embeddings():
+    a = np.zeros([10, 6])
+    da = DocumentArray.empty(10)
+
+    # all zero, dense
+    da.embeddings = a
+    np.testing.assert_almost_equal(da.embeddings, a)
+    for d in da:
+        assert d.embedding.shape == (6,)
+
+    # all zero, sparse
+    sp_a = scipy.sparse.coo_matrix(a)
+    da.embeddings = sp_a
+    np.testing.assert_almost_equal(da.embeddings.todense(), sp_a.todense())
+    for d in da:
+        # scipy sparse row-vector can only be a (1, m) not squeezible
+        assert d.embedding.shape == (1, 6)
+
+    # near zero, sparse
+    a = np.random.random([10, 6])
+    a[a > 0.1] = 0
+    sp_a = scipy.sparse.coo_matrix(a)
+    da.embeddings = sp_a
+    np.testing.assert_almost_equal(da.embeddings.todense(), sp_a.todense())
+    for d in da:
+        # scipy sparse row-vector can only be a (1, m) not squeezible
+        assert d.embedding.shape == (1, 6)

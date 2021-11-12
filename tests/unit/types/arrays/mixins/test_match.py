@@ -8,7 +8,6 @@ from scipy.spatial.distance import cdist as scipy_cdist
 from jina import Document, DocumentArray
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from tests import random_docs
 
 
 @pytest.fixture()
@@ -690,8 +689,42 @@ def test_only_id(docarrays_for_embedding_distance_computation, only_id):
             assert m.id
 
 
-def test_da_get_embeddings_slice():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+@pytest.mark.parametrize(
+    'match_kwargs',
+    [
+        dict(limit=5, normalization=(1, 0), batch_size=10),
+        dict(normalization=(1, 0), batch_size=10),
+        dict(normalization=(1, 0)),
+        dict(),
+    ],
+)
+@pytest.mark.parametrize('nnz_ratio', [0.5, 1])
+def test_dense_vs_sparse_match(match_kwargs, nnz_ratio):
+    N = 100
+    D = 256
+    sp_embed = np.random.random([N, D])
+    sp_embed[sp_embed > nnz_ratio] = 0
+
+    da1 = DocumentArray.empty(N)
+    da2 = DocumentArray.empty(N)
+
+    # use sparse embedding
+    da1.embeddings = sp.coo_matrix(sp_embed)
+    da1.texts = [str(j) for j in range(N)]
+    size_sp = sum(d.nbytes for d in da1)
+    da1.match(da1, **match_kwargs)
+
+    sparse_result = [m.text for m in da1[0].matches]
+
+    # use dense embedding
+    da2.embeddings = sp_embed
+    da2.texts = [str(j) for j in range(N)]
+    size_dense = sum(d.nbytes for d in da2)
+    da2.match(da2, **match_kwargs)
+    dense_result = [m.text for m in da2[0].matches]
+
+    assert sparse_result == dense_result
+
+    print(
+        f'sparse DA: {size_sp} bytes is {size_sp / size_dense * 100:.0f}% of dense DA {size_dense} bytes'
     )

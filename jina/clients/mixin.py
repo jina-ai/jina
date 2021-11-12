@@ -1,12 +1,14 @@
 from contextlib import nullcontext
 from functools import partialmethod
-from typing import Optional, Dict, List, AsyncGenerator
+from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING
 
-from .base import CallbackFnType, InputType
 from ..enums import InfrastructureType
 from ..helper import run_async
 from ..peapods.pods.k8slib import kubernetes_tools
 from ..types.request import Response
+
+if TYPE_CHECKING:
+    from .base import CallbackFnType, InputType
 
 
 class PostMixin:
@@ -15,10 +17,10 @@ class PostMixin:
     def post(
         self,
         on: str,
-        inputs: Optional[InputType] = None,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
+        inputs: Optional['InputType'] = None,
+        on_done: 'CallbackFnType' = None,
+        on_error: 'CallbackFnType' = None,
+        on_always: 'CallbackFnType' = None,
         parameters: Optional[Dict] = None,
         target_peapod: Optional[str] = None,
         request_size: int = 100,
@@ -97,10 +99,10 @@ class AsyncPostMixin:
     async def post(
         self,
         on: str,
-        inputs: Optional[InputType] = None,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
+        inputs: Optional['InputType'] = None,
+        on_done: 'CallbackFnType' = None,
+        on_error: 'CallbackFnType' = None,
+        on_always: 'CallbackFnType' = None,
         parameters: Optional[Dict] = None,
         target_peapod: Optional[str] = None,
         request_size: int = 100,

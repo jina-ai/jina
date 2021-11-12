@@ -21,6 +21,8 @@ if TYPE_CHECKING:
         jina_pb2.NdArrayProto,
     )
 
+    from ... import Document
+
 __all__ = ['NdArray']
 
 
@@ -74,6 +76,35 @@ class NdArray(ProtoTypeMixin):
                 return _to_framework_array(x, framework)
 
     @staticmethod
+    def ravel(value: 'ArrayType', docs: Iterator['Document'], field: str) -> None:
+        """Ravel :attr:`value` into ``doc.field`` of each documents
+
+        :param docs: the docs to set
+        :param field: the field of the doc to set
+        :param value: the value to be set on ``doc.field``
+        """
+        emb_shape0 = value.shape[0]
+
+        use_get_row = False
+        if hasattr(value, 'getformat'):
+            # for scipy only
+            sp_format = value.getformat()
+            if sp_format in {'bsr', 'coo'}:
+                # for BSR and COO, they dont implement [j, ...] in scipy
+                # but they offer get_row() API which implicitly translate the
+                # sparse row into CSR format, hence needs to convert back
+                # not very efficient, but this is the best we can do.
+                use_get_row = True
+
+        if use_get_row:
+            for d, j in zip(docs, range(emb_shape0)):
+                row = getattr(value.getrow(j), f'to{sp_format}')()
+                setattr(d, field, row)
+        else:
+            for d, j in zip(docs, range(emb_shape0)):
+                setattr(d, field, value[j, ...])
+
+    @staticmethod
     def unravel(protos: Sequence[jina_pb2.NdArrayProto]) -> 'ArrayType':
         """Unravel many ndarray-like proto in one-shot, by following the shape
         and dtype of the first proto.
@@ -81,24 +112,14 @@ class NdArray(ProtoTypeMixin):
         :param protos: a list of ndarray protos
         :return: a framework ndarray
         """
-        first = NdArray(next(iter(protos)))
+        first = NdArray(protos[0])
         framework, is_sparse = first._pb_body.cls_name, first.is_sparse
 
         if is_sparse:
-            if framework in {'tensorflow', 'scipy'}:
+            if framework in {'tensorflow'}:
                 raise NotImplementedError(
                     f'fast ravel on sparse {framework} is not supported yet.'
                 )
-
-            all_ds = []
-            for j, p in enumerate(protos):
-                _d = _get_dense_array(p.sparse.indices)
-
-                _idx = np.array([j] * _d.shape[-1], dtype=np.int32)
-                if framework == 'torch':
-                    _idx = _idx.reshape([1, -1])
-                    _d = np.vstack([_idx, _d])
-                all_ds.append(_d)
 
             val = _unravel_dense_array(
                 (d.sparse.values.buffer for d in protos),
@@ -106,11 +127,47 @@ class NdArray(ProtoTypeMixin):
                 dtype=first.sparse.values.dtype,
             )
 
-            idx = np.concatenate(all_ds, axis=-1)
             shape = [len(protos)] + list(first.sparse.shape)
-            from torch import sparse_coo_tensor
 
-            return sparse_coo_tensor(idx, val, shape)
+            all_ds = []
+            for j, p in enumerate(protos):
+                _d = _get_dense_array(p.sparse.indices)
+
+                if framework == 'torch':
+                    _idx = np.array([j] * _d.shape[-1], dtype=np.int32).reshape([1, -1])
+                    _d = np.vstack([_idx, _d])
+                if framework == 'scipy':
+                    _idx = np.array([j] * _d.shape[0], dtype=np.int32)
+                    _d = np.stack([_idx, _d[:, 1]], axis=-1)
+                all_ds.append(_d)
+
+            if framework == 'torch':
+                idx = np.concatenate(all_ds, axis=-1)
+                from torch import sparse_coo_tensor
+
+                return sparse_coo_tensor(idx, val, shape)
+            if framework == 'scipy':
+                # scipy sparse is limited to ndim=2
+                idx = np.concatenate(all_ds, axis=0)
+                sp_format = first._pb_body.parameters['sparse_format']
+                shape = [len(protos), first.sparse.shape[-1]]
+                if sp_format == 'csc':
+                    from scipy.sparse import csc_matrix
+
+                    return csc_matrix((val, idx.T), shape=shape)
+                if sp_format == 'csr':
+                    from scipy.sparse import csr_matrix
+
+                    return csr_matrix((val, idx.T), shape=shape)
+                if sp_format == 'coo':
+                    from scipy.sparse import coo_matrix
+
+                    return coo_matrix((val, idx.T), shape=shape)
+                if sp_format == 'bsr':
+                    from scipy.sparse import bsr_matrix
+
+                    return bsr_matrix((val, idx.T), shape=shape)
+
         else:
             if framework in {'numpy', 'torch', 'paddle', 'tensorflow'}:
                 x = _unravel_dense_array(
@@ -126,7 +183,7 @@ class NdArray(ProtoTypeMixin):
 
         :param value: the framework ndarray to be set.
         """
-        framework, is_sparse = _get_array_type(value)
+        framework, is_sparse = get_array_type(value)
 
         if framework == 'jina':
             # it is Jina's NdArray, simply copy it
@@ -213,7 +270,7 @@ def _set_dense_array(value, target):
     target.dtype = value.dtype.str
 
 
-def _get_array_type(array) -> Tuple[str, bool]:
+def get_array_type(array: 'ArrayType') -> Tuple[str, bool]:
     """Get the type of ndarray without importing the framework
 
     :param array: any array, scipy, numpy, tf, torch, etc.
