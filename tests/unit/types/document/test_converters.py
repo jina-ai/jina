@@ -1,28 +1,26 @@
-import inspect
 import os
 
 import numpy as np
 import pytest
 
-from jina import Document, __windows__, DocumentArray
-from jina.types.document import ContentConversionMixin
+from jina import Document, __windows__
 from jina.types.document.generators import from_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_self_as_return():
-    num_fn = 0
-    for f in inspect.getmembers(ContentConversionMixin):
-        if (
-            callable(f[1])
-            and not f[1].__name__.startswith('_')
-            and not f[0].startswith('_')
-        ):
-            print(f[1])
-            assert inspect.getfullargspec(f[1]).annotations['return'] == 'Document'
-            num_fn += 1
-    assert num_fn
+# def test_self_as_return():
+#     num_fn = 0
+#     for f in inspect.getmembers(ContentConversionMixin):
+#         if (
+#             callable(f[1])
+#             and not f[1].__name__.startswith('_')
+#             and not f[0].startswith('_')
+#         ):
+#             print(f[1])
+#             assert inspect.getfullargspec(f[1]).annotations['return'] == 'Document'
+#             num_fn += 1
+#     assert num_fn
 
 
 def test_video_convert_pipe(pytestconfig, tmpdir):
@@ -243,18 +241,6 @@ def test_convert_uri_to_data_uri(uri, mimetype):
     doc.convert_uri_to_datauri()
     assert doc.uri.startswith(f'data:{mimetype}')
     assert doc.mime_type == mimetype
-
-
-def test_deprecate_fn():
-    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
-
-    with pytest.warns(DeprecationWarning):
-        doc.convert_image_uri_to_blob()
-
-    with pytest.warns(None) as record:
-        doc.convert_uri_to_image_blob()
-
-    assert len(record) == 0
 
 
 def test_glb_converters():

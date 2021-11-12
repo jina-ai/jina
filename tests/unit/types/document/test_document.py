@@ -12,7 +12,6 @@ from jina import DocumentArray
 from jina.logging.profile import TimeContext
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
-from jina.types.ndarray import NdArray
 from jina.types.request import Request
 from jina.types.score import NamedScore
 from tests import random_docs
@@ -907,3 +906,29 @@ def test_update_with_tags():
     d2 = Document(id=1)
     d2.update(d1)
     assert d2.tags['lis'] == [1, 2, 3]
+
+
+def test_location():
+    d1 = Document(location=[1, 2, 3])
+    d2 = Document()
+    d2.location = (1, 2, 3)
+    assert d1.location == d2.location == (1, 2, 3)
+
+
+def test_offset():
+    d1 = Document(offset=1.0)
+    d2 = Document()
+    d2.offset = 1.0
+    assert d1.offset == d2.offset == 1.0
+
+
+def test_singleton_match():
+    from jina import DocumentArray, Document
+    import numpy as np
+
+    da = DocumentArray.empty(10)
+    da.embeddings = np.random.random([10, 256])
+
+    q = Document(embedding=np.random.random([256]))
+    q.match(da)
+    assert len(q.matches) == 10
