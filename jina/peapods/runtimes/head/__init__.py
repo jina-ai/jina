@@ -11,7 +11,7 @@ from grpc import RpcError
 
 from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
-from ...networking import GrpcConnectionPool
+from ...networking import GrpcConnectionPool, create_connection_pool
 from .... import DocumentArray
 from ....enums import PollingType
 from ....excepts import RuntimeTerminated
@@ -28,7 +28,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        connection_pool: GrpcConnectionPool,
         cancel_event: Optional[
             Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
         ] = None,
@@ -36,14 +35,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     ):
         """Initialize grpc server for the head runtime.
         :param args: args from CLI
-        :param connection_pool: ConnectionPool to use for sending messages
         :param cancel_event: the cancel event used to wait for canceling
         :param kwargs: keyword args
         """
         super().__init__(args, cancel_event, **kwargs)
 
         self.name = args.name
-        self.connection_pool = connection_pool
+        self.connection_pool = create_connection_pool(
+            k8s_connection_pool=args.k8s_connection_pool,
+            k8s_namespace=args.k8s_namespace,
+        )
         self.uses_before_address = args.uses_before_address
         if self.uses_before_address:
             self.connection_pool.add_connection(
@@ -144,7 +145,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         try:
             return await self._handle_messages(messages)
         except RuntimeTerminated:
-            HeadRuntime.cancel(self.is_cancel)
+            self._cancel()
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
