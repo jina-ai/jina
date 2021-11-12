@@ -169,6 +169,7 @@ def test_scale_fail(flow_with_runtime, pod_params, mocker):
     'pod_params',
     [
         (2, 3, 1),
+        (3, 2, 1),
     ],
     indirect=True,
 )
@@ -196,7 +197,6 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
         for peer_id in range(5):
             t = multiprocessing.Process(
                 target=partial(peer_client, port_expose, protocol, str(peer_id), queue),
-                daemon=True,
             )
             t.start()
             f.scale(pod_name='executor', replicas=scale_to)
