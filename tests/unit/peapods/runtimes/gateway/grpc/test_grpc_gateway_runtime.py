@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 import asyncio
 import time
@@ -111,11 +113,13 @@ def complete_graph_dict():
 
 
 class DummyMockConnectionPool:
-    def send_message(self, msg: Message, pod: str, head: bool) -> asyncio.Task:
+    def send_messages(
+        self, messages: List[Message], pod: str, head: bool
+    ) -> asyncio.Task:
         assert head
-        response_msg = copy.deepcopy(msg)
-        response_msg.request = Request(msg.request.proto, copy=True)
-        request = msg.request
+        response_msg = copy.deepcopy(messages[0])
+        response_msg.request = Request(messages[0].request.proto, copy=True)
+        request = messages[0].request
         new_docs = DocumentArray()
         for doc in request.docs:
             clientid = doc.text[0:7]
@@ -138,8 +142,8 @@ class DummyMockConnectionPool:
 def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages,
     )
     port_in = random_port()
 
@@ -177,8 +181,8 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages,
     )
     port_in = random_port()
 
@@ -217,8 +221,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages,
     )
     port_in = random_port()
 
@@ -261,8 +265,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages,
     )
     port_in = random_port()
 
@@ -305,8 +309,8 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages,
     )
     port_in = random_port()
 
