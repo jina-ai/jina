@@ -234,10 +234,9 @@ class GatewayProtocolType(BetterEnum):
 class PeaRoleType(BetterEnum):
     """The enum of a Pea role."""
 
-    SINGLETON = 0
-    HEAD = 1
-    TAIL = 2
-    PARALLEL = 3
+    HEAD = 0
+    WORKER = 1
+    GATEWAY = 2
 
 
 class PodRoleType(BetterEnum):
