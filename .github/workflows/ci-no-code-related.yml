@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'docs/**'
+      - 'README.md'
 
 jobs:
   commit-lint:
@@ -13,17 +14,3 @@ jobs:
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4
-
-  # Because we enable GitHub status check for these two jobs:
-  # lint-flake-8 and success-all-test
-  # So that, we need to fake these two jobs.
-  # Otherwise the PR will infinitely wait for success of these two nonexistent jobs
-  lint-flake-8:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo 'fake success'
-
-  success-all-test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo 'fake success'
