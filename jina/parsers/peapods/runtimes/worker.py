@@ -78,45 +78,13 @@ which should be structured as a python package. For more details, please see the
         '--port-in',
         type=int,
         default=helper.random_port(),
-        help='The port for input data, default a random port between [49152, 65535]',
-    )
-    gp.add_argument(
-        '--port-out',
-        type=int,
-        default=helper.random_port(),
-        help='The port for output data, default a random port between [49152, 65535]',
-    )
-    gp.add_argument(
-        '--hosts-in-connect',
-        type=str,
-        nargs='*',
-        help=f'The host address for input, by default it is {__default_host__}',
+        help='The port for input data to bind to, default a random port between [49152, 65535]',
     )
     gp.add_argument(
         '--host-in',
         type=str,
         default=__default_host__,
-        help=f'The host address for input, by default it is {__default_host__}',
-    )
-    gp.add_argument(
-        '--host-out',
-        type=str,
-        default=__default_host__,
-        help=f'The host address for output, by default it is {__default_host__}',
-    )
-    gp.add_argument(
-        '--socket-in',
-        type=SocketType.from_string,
-        choices=list(SocketType),
-        default=SocketType.PULL_BIND,
-        help='The socket type for input port',
-    )
-    gp.add_argument(
-        '--socket-out',
-        type=SocketType.from_string,
-        choices=list(SocketType),
-        default=SocketType.PUSH_BIND,
-        help='The socket type for output port',
+        help=f'The host address for binding to, by default it is {__default_host__}',
     )
 
     gp.add_argument(

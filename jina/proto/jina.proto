@@ -306,9 +306,8 @@ message RequestProto {
         enum Command {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
-            SCALE = 2; // scale up/down a Pod
-            ACTIVATE = 3; // used to add Peas to a Pod
-            DEACTIVATE = 4; // used to remove Peas from a Pod
+            ACTIVATE = 2; // used to add Peas to a Pod
+            DEACTIVATE = 3; // used to remove Peas from a Pod
         }
         Command command = 1; // the control command
 
