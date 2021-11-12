@@ -89,6 +89,12 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
 
+    def _cancel(self):
+        """
+        Signal the runtime to terminate
+        """
+        self.is_cancel.set()
+
     async def async_setup(self):
         """The async method to setup."""
         pass
@@ -108,17 +114,6 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         ...
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
-
-    @staticmethod
-    def cancel(
-        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
-    ):
-        """
-        Signal the runtime to terminate
-        :param cancel_event: the cancel event to set
-        :param kwargs: extra keyword arguments
-        """
-        cancel_event.set()
 
     @staticmethod
     def activate(**kwargs):

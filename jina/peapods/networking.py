@@ -695,7 +695,7 @@ def create_connection_pool(
     :param k8s_connection_pool: flag to indicate if K8sGrpcConnectionPool should be used, defaults to true in K8s
     :return: A connection pool object
     """
-    if k8s_connection_pool:
+    if k8s_connection_pool and k8s_namespace:
         from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
         k8s_clients = K8sClients()
