@@ -1,6 +1,6 @@
 import os
 import time
-import threading
+import multiprocessing
 from functools import partial
 
 import pytest
@@ -172,14 +172,21 @@ def test_scale_fail(flow_with_runtime, pod_params, mocker):
     ],
     indirect=True,
 )
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol, reraise):
-    num_replicas, scale_to, _ = pod_params
-
-    def peer_client(port, protocol, peer_hash):
+@pytest.mark.parametrize('protocol', ['grpc', 'websocket', 'http'])
+def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
+    def peer_client(port, protocol, peer_hash, queue):
         c = Client(protocol=protocol, port=port)
-        for _ in range(5):
-            c.index(Document(text=peer_hash), return_results=True)
+        ret = queue.get()
+        rv = c.index(Document(text=peer_hash), return_results=True)
+        for r in rv:
+            for replica_id in r.docs.get_attributes('tags__replica_id'):
+                ret.append(replica_id)
+        queue.put(ret)
+
+    num_replicas, scale_to, _ = pod_params
+    ret = []
+    queue = multiprocessing.Queue()
+    queue.put(ret)
 
     with flow_with_runtime as f:
         f.protocol = protocol
@@ -187,8 +194,8 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol, r
 
         thread_pool = []
         for peer_id in range(5):
-            t = threading.Thread(
-                target=partial(peer_client, port_expose, protocol, str(peer_id)),
+            t = multiprocessing.Process(
+                target=partial(peer_client, port_expose, protocol, str(peer_id), queue),
                 daemon=True,
             )
             t.start()
@@ -197,3 +204,6 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol, r
 
         for t in thread_pool:
             t.join()
+
+    replicas = queue.get()
+    assert len(set(replicas)) == scale_to
