@@ -173,37 +173,58 @@ def test_scale_fail(flow_with_runtime, pod_params, mocker):
     ],
     indirect=True,
 )
-@pytest.mark.parametrize('protocol', ['grpc', 'websocket', 'http'])
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
+    NUM_CONCURRENT_CLIENTS = 20
+    NUM_DOCS_SENT_BY_CLIENTS = 50
+
     def peer_client(port, protocol, peer_hash, queue):
-        c = Client(protocol=protocol, port=port)
-        ret = queue.get()
-        rv = c.index(Document(text=peer_hash), return_results=True)
+        rv = Client(protocol=protocol, port=port).index(
+            [Document(text=peer_hash) for _ in range(NUM_DOCS_SENT_BY_CLIENTS)],
+            request_size=5,
+            return_results=True,
+        )
         for r in rv:
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
-                ret.append(replica_id)
-        queue.put(ret)
+            for doc in r.docs:
+                # our proto objects are not fit to be sent by queues
+                queue.put(doc.text)
 
     num_replicas, scale_to, _ = pod_params
-    ret = []
     queue = multiprocessing.Queue()
-    queue.put(ret)
 
     with flow_with_runtime as f:
         f.protocol = protocol
         port_expose = f.port_expose
 
         thread_pool = []
-        for peer_id in range(5):
+        for peer_id in range(NUM_CONCURRENT_CLIENTS):
+            # test
             t = multiprocessing.Process(
-                target=partial(peer_client, port_expose, protocol, str(peer_id), queue),
+                target=partial(peer_client, port_expose, protocol, str(peer_id), queue)
             )
             t.start()
-            f.scale(pod_name='executor', replicas=scale_to)
             thread_pool.append(t)
+
+        f.scale(pod_name='executor', replicas=scale_to)
 
         for t in thread_pool:
             t.join()
 
-    replicas = queue.get()
-    assert len(set(replicas)) == scale_to
+        c = Client(protocol=protocol, port=port_expose)
+        rv = c.index(
+            [Document() for _ in range(5)], request_size=1, return_results=True
+        )
+
+    assert queue.qsize() == NUM_CONCURRENT_CLIENTS * NUM_DOCS_SENT_BY_CLIENTS
+    all_docs = []
+    while not queue.empty():
+        all_docs.append(queue.get())
+
+    assert len(all_docs) == NUM_CONCURRENT_CLIENTS * NUM_DOCS_SENT_BY_CLIENTS
+
+    assert len(rv) == 5
+
+    replicas = []
+    for r in rv:
+        assert len(r.docs) == 1
+        replicas.append(r.docs[0].tags['replica_id'])
