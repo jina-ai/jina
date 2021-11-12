@@ -21,19 +21,6 @@ async def test_scale_given_replicas_greater_than_num_peas_success(pod_args):
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(2)
-async def test_scale_given_replicas_greater_than_num_peas_fail(mocker, pod_args):
-    # trigger scale up and fail
-    mocker.patch(
-        'jina.peapods.peas.BasePea.async_wait_start_success',
-        side_effect=RuntimeFailToStart,
-    )
-    with Pod(pod_args) as p:
-        with pytest.raises(ScalingFails):
-            await p.scale(replicas=5)
-
-
-@pytest.mark.asyncio
 async def test_scale_given_replicas_equal_to_num_peas(pod_args):
     # trigger scale number equal to current num_peas
     with Pod(pod_args) as p:
