@@ -360,11 +360,3 @@ class BasePea:
 
         .. #noqa: DAR201"""
         return self.args.pea_role
-
-    @property
-    def _is_inner_pea(self) -> bool:
-        """Determine whether this is a inner pea or a head
-
-
-        .. #noqa: DAR201"""
-        return self.role is PeaRoleType.WORKER
