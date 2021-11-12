@@ -19,12 +19,14 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
         self._topology_graph = TopologyGraph(graph_description)
 
     def _set_connection_pool(self):
-        # check if it should be in K8s
         import json
 
         pods_addresses = json.loads(self.args.pods_addresses)
         # add the connections needed
-        self._connection_pool = create_connection_pool()
+        self._connection_pool = create_connection_pool(
+            k8s_connection_pool=self.args.k8s_connection_pool,
+            k8s_namespace=self.args.k8s_namespace,
+        )
         for pod_name, addresses in pods_addresses.items():
             for address in addresses:
                 self._connection_pool.add_connection(

@@ -43,7 +43,7 @@ def test_worker_runtime():
         f'{args.host}:{args.port_in}',
     )
 
-    WorkerRuntime.cancel(cancel_event)
+    cancel_event.set()
     runtime_thread.join()
 
     assert response
@@ -78,7 +78,7 @@ def test_worker_runtime_docs_merging():
         f'{args.host}:{args.port_in}',
     )
 
-    WorkerRuntime.cancel(cancel_event)
+    cancel_event.set()
     runtime_thread.join()
 
     assert response
@@ -149,7 +149,7 @@ async def test_worker_runtime_graceful_shutdown(close_method):
     if close_method == 'TERMINATE':
         runtime_thread.terminate()
     else:
-        WorkerRuntime.cancel(cancel_event)
+        cancel_event.set()
 
     assert not handler_closed_event.is_set()
     runtime_thread.join()
@@ -169,5 +169,5 @@ async def test_worker_runtime_graceful_shutdown(close_method):
 
 def _create_test_data_message(counter=0):
     req = list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     return msg
