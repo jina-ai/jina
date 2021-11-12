@@ -26,7 +26,7 @@ class ScalableExecutor(Executor):
             doc.tags['shard_id'] = self.shard_id
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def docker_image_built():
     import docker
 

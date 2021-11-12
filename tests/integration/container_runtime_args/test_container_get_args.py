@@ -10,7 +10,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 img_name = 'jina/replica-exec'
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def docker_image_built():
     import docker
 
@@ -27,7 +27,7 @@ def docker_image_built():
 @pytest.mark.parametrize('replicas', [1, 3, 4])
 def test_containerruntime_args(docker_image_built, shards, replicas):
     f = Flow().add(
-        name='executor',
+        name='executor_container',
         uses=f'docker://{img_name}',
         replicas=replicas,
         shards=shards,
