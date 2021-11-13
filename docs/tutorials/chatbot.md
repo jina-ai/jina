@@ -81,10 +81,9 @@ This simply means that no endpoint will be triggered by `flow.index`. Besides, o
 have logic to index data. Later, we will modify Executors so that calling `flow.index` does indeed store the dataset.
 ````
 
-## Create Flow
+## Flow 생성
 
-Let's put the Executors and the Flow together and re-organize our code a little bit. First, we should import everything
-we need:
+Executors와 Flow를 통합하고 코드를 약간 재구성 해보겠습니다. 먼저, 우리는 우리가 필요한 모든 것을 임포트 합니다:
 
 ``` python
 import os
@@ -95,9 +94,9 @@ from jina.logging.predefined import default_logger
 from jina.types.document.generators import from_csv
 ```
 
-Then we should have our `main` and a `tutorial` function that contains all the code that we've done so far.
-`tutorial` accepts one parameter that we'll need later:
-`port_expose` (the port used to expose our Flow)
+그러려면 지금까지 해왔던 모든 코드를 담은 `메인` 과 `튜토리얼` 기능이 있어야 합니다.
+`튜토리얼`은 후에 필요한 한가지 파라미터를 사용합니다:
+`port_expose` (Flow를 노출 시키는데 사용되는 포트)
 
 ``` python
 def tutorial(port_expose):
@@ -192,13 +191,13 @@ and there you will have a text box ready for you to input some text. However, if
 any results. This is because we are using dummy Executors. Our `MyTransformer` and `MyIndexer` aren't actually doing
 anything. So far they only print a line when they are called. So we need real Executors.
 
-## Create Executors
+## Executors 만들기
 
-We will be creating our Executors in a separate file: `my_executors.py`.
+별개의 파일에 Executors를 생성합니다:`my_executors.py`.
 
-### Sentence Transformer
+### 문장 변환기
 
-First, let's import the following:
+먼저, 밑의 것들을 임포트 합니다:
 
 ```python
 from typing import Dict
@@ -208,7 +207,7 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 from sentence_transformers import SentenceTransformer
 ```
 
-Now, let's implement `MyTransformer`:
+자 이제 Now,`MyTransformer`를 구현 해봅시다:
 
 ```python
 class MyTransformer(Executor):
@@ -248,9 +247,9 @@ Encoding is a fundamental concept in neural search. It means representing the da
 Encoding is performed through a sentence-transformers model (`paraphrase-mpnet-base-v2` by default). We get the text
 attributes of docs in batch and then compute embeddings. Later, we set the embedding attribute of each Document.
 
-### Simple Indexer
+### 간단한 Indexer
 
-Now, let's implement our indexer (`MyIndexer`):
+자, 이제 indexer (`MyIndexer`)를 구현 해봅시다:
 
 ```python
 class MyIndexer(Executor):
@@ -284,23 +283,22 @@ which is a Jina data type. Indexing is a simple as adding the Documents to the `
 Learn more about {ref}`DocumentArrayMemmap<documentarraymemmap-api>`.
 ```
 
-To perform the search operation, we use the method `match` which will return the top match for the query Documents using
-the cosine similarity.
+검색 기능을 수행하기 위해선, 코사인 유사도를 사용하여 query Document에서 가장 높은 매칭을 리턴하는 `match` 메소드를 사용합니다.
 
 ```{admonition} See Also
 :class: seealso
 `.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
 ```
 
-To import the Executors, just add this to the imports:
+Executors를 임포트 하기 위해선, 이것들을 추가 하세요:
 
 ``` python
 from my_executors import MyTransformer, MyIndexer
 ```
 
-## Put all together
+## 모든 것을 한 곳에 둡니다
 
-Your `app.py` should now look like this:
+당신의 `app.py` 는 이런 모양이 되어야 합니다:
 
 ```python
 import os
@@ -345,7 +343,7 @@ if __name__ == '__main__':
     tutorial(8080)
 ```
 
-And your directory should be:
+그러면 당신의 디렉토리는 다음과 같은 모양이 됩니다:
 
     .
     └── tutorial                    
@@ -355,7 +353,7 @@ And your directory should be:
         ├── our_flow.svg #This will be here if you used the .plot() function       
         └── dataset.csv
 
-And we are done! If you followed all the steps, now you should have something like this in your browser:
+이제 끝났습니다. 모든 과정을 잘 따라 왔다면, 당신의 브라우저에는 다음과 같은 것이 있을 것입니다:browser:
 
 ```{figure} ../_static/results.png
 :align: center
