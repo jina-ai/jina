@@ -131,10 +131,9 @@ d.embedding.shape= (1, 256)
 
 ## Find nearest neighbours
 
-`DocumentArray` provides a `.match` function that finds the closest Documents between two `DocumentArray` objects based on their `.embeddings`. This
-function requires that all Documents being compared have an `embedding` of the same length.
+Once `embedding` is set, one can use `.match()` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
 
-The following image shows how `DocumentArrayA` finds `limit=5` matches from the Documents in `DocumentArrayB`. By
+The following image visualizes how `DocumentArrayA` finds `limit=5` matches from the Documents in `DocumentArrayB`. By
 default, the cosine similarity is used to evaluate the score between Documents.
 
 ```{figure} match_illustration_5.svg
@@ -144,37 +143,44 @@ default, the cosine similarity is used to evaluate the score between Documents.
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the
 function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each Document in `da_1` the `N` Documents from `da_2` with the lowest metric values according to `some_metric`.
 
-- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes two `ndarray` parameters and
-  returns an `ndarray`
-- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the
-  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
+Note that, 
 
-The following example finds for each element in `da_1` the three closest Documents from the elements in `da_2` (according to Euclidean distance).
+- `da_1.embeddings` and `da_2.embeddings` can be Numpy `ndarray`, Scipy sparse matrix, Tensorflow tensor, PyTorch tensor or Paddle tensor.
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes two `ndarray` parameters and
+  returns an `ndarray`.
+- by default `.match` returns distance not similarity. One can use `normalization` to do min-max normalization. The min distance will be rescaled to `a`, the
+  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`. For example, to convert the distance into [0, 1] score, one can use `.match(normalization=(1,0))`.
+- `limit` represents the number of nearest neighbours.
+
+The following example finds for each element in `da1` the three closest Documents from the elements in `da2` according to Euclidean distance.
 
 ````{tab} Dense embedding 
 ```{code-block} python
 ---
-emphasize-lines: 18
+emphasize-lines: 20
 ---
-from jina import Document, DocumentArray
 import numpy as np
+from jina import DocumentArray
 
-d1 = Document(embedding=np.array([0, 0, 0, 0, 1]))
-d2 = Document(embedding=np.array([1, 0, 0, 0, 0]))
-d3 = Document(embedding=np.array([1, 1, 1, 1, 0]))
-d4 = Document(embedding=np.array([1, 2, 2, 1, 0]))
+da1 = DocumentArray.empty(4)
+da1.embeddings = np.array(
+    [[0, 0, 0, 0, 1], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 2, 2, 1, 0]]
+)
 
-d1_m = Document(embedding=np.array([0, 0.1, 0, 0, 0]))
-d2_m = Document(embedding=np.array([1, 0.1, 0, 0, 0]))
-d3_m = Document(embedding=np.array([1, 1.2, 1, 1, 0]))
-d4_m = Document(embedding=np.array([1, 2.2, 2, 1, 0]))
-d5_m = Document(embedding=np.array([4, 5.2, 2, 1, 0]))
+da2 = DocumentArray.empty(5)
+da2.embeddings = np.array(
+    [
+        [0.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 1.2, 1.0, 1.0, 0.0],
+        [1.0, 2.2, 2.0, 1.0, 0.0],
+        [4.0, 5.2, 2.0, 1.0, 0.0],
+    ]
+)
 
-da_1 = DocumentArray([d1, d2, d3, d4])
-da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+da1.match(da2, metric='euclidean', limit=3)
 
-da_1.match(da_2, metric='euclidean', limit=3)
-query = da_1[2]
+query = da1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
     print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
@@ -193,37 +199,78 @@ match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 
 ```{code-block} python
 ---
-emphasize-lines: 18
+emphasize-lines: 21
 ---
-from jina import Document, DocumentArray
+import numpy as np
 import scipy.sparse as sp
+from jina import DocumentArray
 
-d1 = Document(embedding=sp.csr_matrix([0, 0, 0, 0, 1]))
-d2 = Document(embedding=sp.csr_matrix([1, 0, 0, 0, 0]))
-d3 = Document(embedding=sp.csr_matrix([1, 1, 1, 1, 0]))
-d4 = Document(embedding=sp.csr_matrix([1, 2, 2, 1, 0]))
+da1 = DocumentArray.empty(4)
+da1.embeddings = sp.csr_matrix(np.array(
+    [[0, 0, 0, 0, 1], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 2, 2, 1, 0]]
+))
 
-d1_m = Document(embedding=sp.csr_matrix([0, 0.1, 0, 0, 0]))
-d2_m = Document(embedding=sp.csr_matrix([1, 0.1, 0, 0, 0]))
-d3_m = Document(embedding=sp.csr_matrix([1, 1.2, 1, 1, 0]))
-d4_m = Document(embedding=sp.csr_matrix([1, 2.2, 2, 1, 0]))
-d5_m = Document(embedding=sp.csr_matrix([4, 5.2, 2, 1, 0]))
+da2 = DocumentArray.empty(5)
+da2.embeddings = sp.csr_matrix(np.array(
+    [
+        [0.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 1.2, 1.0, 1.0, 0.0],
+        [1.0, 2.2, 2.0, 1.0, 0.0],
+        [4.0, 5.2, 2.0, 1.0, 0.0],
+    ]
+))
 
-da_1 = DocumentArray([d1, d2, d3, d4])
-da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+da1.match(da2, metric='euclidean', limit=3)
 
-da_1.match(da_2, metric='euclidean', limit=4)
-query = da_1[2]
-print(f'query emb = {query.embedding.todense()}')
+query = da1[2]
+print(f'query emb = {query.embedding}')
 for m in query.matches:
-    print('match emb =', m.embedding.todense(), 'score =', m.scores['euclidean'].value)
+    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
 ```
 
 ```text
-query emb = [[1 1 1 1 0]]
-match emb = [[1.  1.2 1.  1.  0. ]] score = 0.20000000298023224
-match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
-match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
+query emb =   (0, 0)	1
+  (0, 1)	1
+  (0, 2)	1
+  (0, 3)	1
+match emb =   (0, 0)	1.0
+  (0, 1)	1.2
+  (0, 2)	1.0
+  (0, 3)	1.0 score = 0.20000000298023224
+match emb =   (0, 0)	1.0
+  (0, 1)	2.2
+  (0, 2)	2.0
+  (0, 3)	1.0 score = 1.5620499849319458
+match emb =   (0, 0)	1.0
+  (0, 1)	0.1 score = 1.6763054132461548
+```
+
+````
+
+### GPU support
+
+If `.embeddings` is a Tensorflow tensor, PyTorch tensor or Paddle tensor, `.match()` function can work directly on GPU. To do that, simply set `device=cuda`. For example,
+
+```python
+from jina import DocumentArray
+import numpy as np
+import torch
+
+da1 = DocumentArray.empty(10)
+da1.embeddings = torch.tensor(np.random.random([10, 256]))
+da2 = DocumentArray.empty(10)
+da2.embeddings = torch.tensor(np.random.random([10, 256]))
+
+da1.match(da2, device='cuda')
+```
+
+````{tip}
+
+When `DocumentArray`/`DocumentArrayMemmap` contain too many documents to fit into GPU memory, one can set `batch_size` to allievate the problem of OOM on GPU.
+
+```python
+da1.match(da2, device='cuda', batch_size=256)
 ```
 
 ````
