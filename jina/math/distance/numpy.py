@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray', eps: float = 1e-7) -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
+
     :param x_mat: np.ndarray with ndim=2
     :param y_mat: np.ndarray with ndim=2
     :param eps: a small jitter to avoid divde by zero
@@ -56,6 +57,7 @@ def sparse_cosine(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
 
 def sparse_sqeuclidean(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
+
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
     :return: np.ndarray  with ndim=2
@@ -70,6 +72,7 @@ def sparse_sqeuclidean(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
 
 def sparse_euclidean(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
     """Sparse euclidean distance between each row in x_mat and each row in y_mat.
+
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
     :return: np.ndarray  with ndim=2
@@ -79,6 +82,7 @@ def sparse_euclidean(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
 
 def euclidean(x_mat: 'ArrayType', y_mat: 'ArrayType') -> 'np.ndarray':
     """Euclidean distance between each row in x_mat and each row in y_mat.
+
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
     :return: np.ndarray  with ndim=2

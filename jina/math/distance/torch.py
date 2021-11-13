@@ -11,6 +11,7 @@ def cosine(
     x_mat: 'tensor', y_mat: 'tensor', eps: float = 1e-7, device: str = 'cpu'
 ) -> 'numpy.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
+
     :param x_mat: torch with ndim=2
     :param y_mat: torch with ndim=2
     :param eps: a small jitter to avoid divde by zero
@@ -30,6 +31,7 @@ def cosine(
 
 def euclidean(x_mat: 'tensor', y_mat: 'tensor', device: str = 'cpu') -> 'numpy.ndarray':
     """Euclidean distance between each row in x_mat and each row in y_mat.
+
     :param x_mat:  torch array with ndim=2
     :param y_mat:  torch array with ndim=2
     :param device: the computational device for `embed_model`, can be either `cpu` or `cuda`.
@@ -46,6 +48,7 @@ def sqeuclidean(
     x_mat: 'tensor', y_mat: 'tensor', device: str = 'cpu'
 ) -> 'numpy.ndarray':
     """Squared euclidean distance between each row in x_mat and each row in y_mat.
+
     :param x_mat:  torch array with ndim=2
     :param y_mat:  torch array with ndim=2
     :param device: the computational device for `embed_model`, can be either `cpu` or `cuda`.
