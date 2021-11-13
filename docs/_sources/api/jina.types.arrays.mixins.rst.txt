@@ -17,6 +17,7 @@ Submodules
 
    jina.types.arrays.mixins.content
    jina.types.arrays.mixins.empty
+   jina.types.arrays.mixins.evaluation
    jina.types.arrays.mixins.getattr
    jina.types.arrays.mixins.group
    jina.types.arrays.mixins.magic

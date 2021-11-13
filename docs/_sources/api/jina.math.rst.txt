@@ -9,6 +9,7 @@ Submodules
 
    jina.math.dimensionality_reduction
    jina.math.distance
+   jina.math.evaluation
    jina.math.helper
 
 Module contents
