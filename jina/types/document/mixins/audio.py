@@ -3,7 +3,8 @@ from typing import Union, BinaryIO
 
 import numpy as np
 
-from .helper import T, _deprecate_by
+from .helper import _deprecate_by
+from ....helper import T
 
 
 class AudioDataMixin:

@@ -2,7 +2,11 @@
 # DocumentArray
 
 A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
-a `DocumentArray` like a Python `list`. It implements all Python List interface, including `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`. 
+a `DocumentArray` like a Python `list`. It implements all Python List interface. 
+
+```{hint}
+Jina provides a memory-efficient version of `DocumentArray`, you {ref}`can find its API here<documentarraymemmap-api>`.  
+```
 
 ## Minimum working example
 
@@ -125,7 +129,7 @@ d.embedding.shape= (1, 256)
 
 (match-documentarray)=
 
-## Finding nearest neighbours
+## Find nearest neighbours
 
 `DocumentArray` provides a `.match` function that finds the closest Documents between two `DocumentArray` objects based on their `.embeddings`. This
 function requires that all Documents being compared have an `embedding` of the same length.
@@ -133,7 +137,7 @@ function requires that all Documents being compared have an `embedding` of the s
 The following image shows how `DocumentArrayA` finds `limit=5` matches from the Documents in `DocumentArrayB`. By
 default, the cosine similarity is used to evaluate the score between Documents.
 
-```{figure} ../../../.github/images/match_illustration_5.svg
+```{figure} match_illustration_5.svg
 :align: center
 ```
 
@@ -224,10 +228,10 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 
 ````
 
-## Traverse nested Documents
+## Traverse nested structure
 
-`DocumentArray.traverse` can be used for iterating over nested and recursive Documents. You get a generator as the return value, which
-generates `DocumentArray`s matching the provided traversal paths. Let's assume you have the following `Document`
+`DocumentArray.traverse_flat` can be used for iterating over nested and recursive Documents. You get a generator as the return value, which
+generates `Document`s on the provided traversal paths. Let's assume you have the following `Document`
 structure:
 
 ```python
@@ -250,27 +254,20 @@ chunk3 = Document(id='r1c3')
 root.chunks.append(chunk3)
 
 da = DocumentArray([root])
-```
-
-````{dropdown} Visualization of Root Document
-
-```python
 root.plot()
 ```
 
-```{figure} ../../../.github/images/traverse-example-docs.svg
+```{figure} traverse-example-docs.svg
 :align: center
 ```
 
-````
-
-`DocumentArray.traverse` can be used via `da.traverse(['c'])` to get all the `Chunks` of the root `Document`. You can also use `m` to present `Matches`, for example, `da.traverse['m']` can get all the `Matches` of the root `Document`.
+Now one can use `da.traverse_flat(['c'])` To get all the `Chunks` of the root `Document`; `da.traverse_flat(['m'])` to can get all the `Matches` of the root `Document`.
 
 This allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in a deeper level:
 
-- `da.traverse['cm']` will find all `Matches` of the `Chunks` of root `Document`.
-- `da.traverse['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
-- `da.traverse['c', 'm']` will find all `Chunks` and `Matches` of root `Document`.
+- `da.traverse_flat(['cm'])` will find all `Matches` of the `Chunks` of root `Document`.
+- `da.traverse_flat['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
+- `da.traverse_flat(['c', 'm'])` will find all `Chunks` and `Matches` of root `Document`.
 
 ````{dropdown} Examples
 
@@ -332,29 +329,29 @@ for ma in da.traverse(['cm', 'ccm']):
 ```
 ````
 
-`DocumentArray.traverse_flat` does the same but flattens all `DocumentArrays` in the generator. When
-calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be:
+When calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be:
 
 ```python
-from jina import Document, DocumentArray
+da.traverse_flat(['cm', 'ccm'])
+```
 
-assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
+```text
+DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
     Document(id='r1c2c1m1', adjacency=1, granularity=2),
     Document(id='r1c2c1m2', adjacency=1, granularity=2)
 ])
 ```
 
-`DocumentArray.traverse_flat_per_path` is a another method for `Document` traversal. It works
+`DocumentArray.traverse_flat_per_path` is another method for `Document` traversal. It works
 like `DocumentArray.traverse_flat` but groups `Documents` into `DocumentArrays` based on traversal path. When
-calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator yields the following `DocumentArrays`:
+calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator yields the following `DocumentArray`:
 
-```python
-from jina import Document, DocumentArray
-
+```text
 DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
 ])
+
 DocumentArray([
     Document(id='r1c2c1m1', adjacency=1, granularity=2),
     Document(id='r1c2c1m2', adjacency=1, granularity=2)
@@ -388,7 +385,7 @@ da.plot_embeddings()
 
 ```
 
-```{figure} ../../../.github/2.0/document-array-visualize.png
+```{figure} document-array-visualize.png
 :align: center
 ```
 
@@ -416,85 +413,6 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
-
-
-
-## Sort
-
-`DocumentArray` is a subclass of `MutableSequence`, therefore you can use Python's built-in `sort` to sort elements in
-a `DocumentArray` object:
-
-```{code-block} python
----
-emphasize-lines: 11
----
-from jina import DocumentArray, Document
-
-da = DocumentArray(
-    [
-        Document(tags={'id': 1}),
-        Document(tags={'id': 2}),
-        Document(tags={'id': 3})
-    ]
-)
-
-da.sort(key=lambda d: d.tags['id'], reverse=True)
-print(da)
-```
-
-To sort elements in `da` in-place, using `tags[id]` value in a descending manner:
-
-```text
-<jina.types.arrays.document.DocumentArray length=3 at 5701440528>
-
-{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
-{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
-{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
-```
-
-## Filter
-
-You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
-in a `DocumentArray` object:
-
-```{code-block} python
----
-emphasize-lines: 8
----
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document() for _ in range(6)])
-
-for j in range(6):
-    da[j].scores['metric'] = j
-
-for d in filter(lambda d: d.scores['metric'].value > 2, da):
-    print(d)
-```
-
-```text
-{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
-{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
-{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
-```
-
-You can build a `DocumentArray` object from the filtered results:
-
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(weight=j) for j in range(6)])
-da2 = DocumentArray(d for d in da if d.weight > 2)
-
-print(da2)
-```
-
-```text
-DocumentArray has 3 items:
-{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
-{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
-{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
-```
 
 
 ## Sampling
@@ -591,6 +509,83 @@ for key, group in groups:
 ('1', 3)
 ```
 
+
+## Sort
+
+`DocumentArray` is a subclass of `MutableSequence`, therefore you can use Python's built-in `sort` to sort elements in
+a `DocumentArray` object:
+
+```{code-block} python
+---
+emphasize-lines: 11
+---
+from jina import DocumentArray, Document
+
+da = DocumentArray(
+    [
+        Document(tags={'id': 1}),
+        Document(tags={'id': 2}),
+        Document(tags={'id': 3})
+    ]
+)
+
+da.sort(key=lambda d: d.tags['id'], reverse=True)
+print(da)
+```
+
+To sort elements in `da` in-place, using `tags[id]` value in a descending manner:
+
+```text
+<jina.types.arrays.document.DocumentArray length=3 at 5701440528>
+
+{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
+{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
+{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
+```
+
+## Filter
+
+You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements
+in a `DocumentArray` object:
+
+```{code-block} python
+---
+emphasize-lines: 8
+---
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document() for _ in range(6)])
+
+for j in range(6):
+    da[j].scores['metric'] = j
+
+for d in filter(lambda d: d.scores['metric'].value > 2, da):
+    print(d)
+```
+
+```text
+{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
+{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
+{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
+```
+
+You can build a `DocumentArray` object from the filtered results:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(weight=j) for j in range(6)])
+da2 = DocumentArray(d for d in da if d.weight > 2)
+
+print(da2)
+```
+
+```text
+DocumentArray has 3 items:
+{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
+{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
+{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
+```
 
 
 

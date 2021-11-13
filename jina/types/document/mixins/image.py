@@ -5,7 +5,8 @@ from typing import Optional, Tuple, Union, BinaryIO
 
 import numpy as np
 
-from .helper import T, _get_file_context, _uri_to_buffer, _deprecate_by
+from .helper import _get_file_context, _uri_to_buffer, _deprecate_by
+from ....helper import T
 
 
 class ImageDataMixin:

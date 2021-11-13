@@ -10,7 +10,6 @@ import threading
 import time
 import uuid
 import warnings
-
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from itertools import islice
@@ -26,7 +25,9 @@ from typing import (
     Set,
     Sequence,
     Iterable,
+    TypeVar,
 )
+
 from . import __windows__
 
 __all__ = [
@@ -51,7 +52,10 @@ __all__ = [
     'download_mermaid_url',
     'get_readable_size',
     'get_or_reuse_loop',
+    'T',
 ]
+
+T = TypeVar('T')
 
 
 def deprecated_alias(**aliases):
