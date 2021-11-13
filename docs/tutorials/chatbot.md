@@ -1,4 +1,4 @@
-# Question-Answering Chatbot via Transformer
+# Transformer를 통한 챗봇 질의 응답
 
 ```{article-info}
 :avatar: avatars/susana.jpg
@@ -7,39 +7,32 @@
 :author: Susana @ Jina AI
 :date: June 15, 2021
 ```
+저희는 이 튜토리얼을 위해 {ref}`hello world chatbot <chatbot-helloworld>` 를 사용할 것 입니다.
+전체 코드를 [여기](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot) 에서 찾을 수 있고, 차근차근 진행 해 볼 것입니다.
 
-We will use the {ref}`hello world chatbot <chatbot-helloworld>` for this tutorial. You can find the complete
-code [here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot) and we will go step by step.
+이 튜토리얼이 끝나는 지점에서, 당신은 당신만의 chatbot을 소유하게 될 것입니다. 당신은 텍스트를 입력으로서 사용하고 텍스트를 결과값으로 받게 됩니다. 예를 들어, 우리는 [covid dataset](https://www.kaggle.com/xhlulu/covidqa)를 이용할 것 입니다. 당신은 이 예제의 모든 부분이 어떻게 작동하는지와 다른 데이터셋으로 새 앱을 직접 만드는 방법을 이해 하게 될 것 입니다.
 
-At the end of this tutorial, you will have your own chatbot. You will use text as an input and get a text result as
-output. For this example, we will use a [covid dataset](https://www.kaggle.com/xhlulu/covidqa). You will understand how
-every part of this example works and how you can create new apps with different datasets on your own.
+## 데이터 및 작업 디렉토리 정의
 
-## Define data and work directories
+빈 폴더를 만드는 것으로 시작할 수 있습니다. 저는 이걸 `튜토리얼`이라고 부를 것이고, 당신이 튜토리얼을 통해 볼 수 있는 이름입니다. 원하는 것 어떤 것이든 자유롭게 사용하세요.
 
-We can start by creating an empty folder, I'll call mine `tutorial` and that's the name you'll see through the tutorial
-but feel free to use whatever you wish.
+우리는 브라우저에 결과값을 표기할 것이기 때문에 [여기](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static)에서 정적 폴더를 다운로드 해주시고, 당신의 튜토리얼 폴더로 붙여넣기 하세요. 이것은 결과를 옮기기 위한 CSS , HTML 파일입니다. This is only the CSS and HTML files to render our results.우리는 `.csv` 포멧으로 된 데이터셋을 이용할 것 입니다. kaggle에 있는 [COVID](https://www.kaggle.com/xhlulu/covidqa) 데이터 셋을 사용하겠습니다.
 
-We will display our results in our browser, so download the static folder from
-[here](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static), and paste it into your tutorial
-folder. This is only the CSS and HTML files to render our results. We will use a dataset in a `.csv` format. We'll use
-the [COVID](https://www.kaggle.com/xhlulu/covidqa) dataset from Kaggle.
-
-Download it under your `tutorial` directory:
+당신의 `튜토리얼` 디렉토리 아래에 다운로드 하세요:
 
 ```shell
 wget https://static.jina.ai/chatbot/dataset.csv
 ```
 
-## Create Documents from a csv file
+## csv 파일에서 문서 생성
 
-To create a Document in Jina, we do it like this:
+Jina에서 문서 생성을 하기 위해서는, 이렇게 합니다:
 
 ``` python
 doc = Document(content='hello, world!')
 ```
 
-In our case, the content of our Document needs to be the dataset we want to use:
+이 경우, 문서 내용은 사용하고자 하는 데이터셋이어야 합니다:
 
 ``` python
 from jina.types.document.generators import from_csv
@@ -47,12 +40,10 @@ with open('dataset.csv') as fp:
     docs = from_csv(fp, field_resolver={'question': 'text'})
 ```
 
-So what happened there? We created a generator of Documents `docs`, and we
+그래서 무슨 일이 일어났나요? 우리는 문서 생성기 `docs`를 만들었고, [from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv)를 사용하여 데이터셋을 불러왔습니다. 우리는 `field_resolver`를 사용하여 데이터셋의 텍스트를 document 속성에 매핑합니다.
 used [from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv) to
-load our dataset. We use `field_resolver` to map the text from our dataset to the Document attributes.
 
-Finally, we can combine the 2 previous steps (loading the dataset into Documents and starting the context) and index
-like this:
+마지막으로, 이와 같이 이전 두 단계 ( 데이터 셋을 문서에 로드하고 컨텍스트를 시작 )와 인덱스를 결합할 수 있습니다 : 
 
 ``` python
 from jina.types.document.generators import from_csv
