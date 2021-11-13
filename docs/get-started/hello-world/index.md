@@ -1,6 +1,6 @@
-# Run Hello World Demos
+# Run Quick Demos
 
-Just starting out? Try our three well-designed Jina's "Hello, World"
+Just starting out? Try our three well-designed "Hello, World" demos.
 
 
 :::::{grid} 3
@@ -64,6 +64,7 @@ You can always do `jina hello --help` to get more details about each demo. For e
 ```bash
 jina hello chatbot --help
 jina hello fashion --help
+jina hello multimodal --help
 ```
 
 If you prefer to learn by watching the video, watch [this video explanation](https://www.youtube.com/watch?v=zQqbXFY0Nco) by Jina community member Aleksa Gordic
