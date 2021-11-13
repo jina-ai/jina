@@ -1,4 +1,4 @@
-# Fuzzy String Matching in 30 Lines
+# 30줄 안의 Fuzzy 문자열 매칭
 
 
 ````{admonition} Different behavior on Jupyter Notebook
@@ -7,10 +7,10 @@ Be aware of the following when running this tutorial in jupyter notebook. Some p
 ````
 
 
-Now that you understand all fundamental concepts, let's practice the learnings and build a simple end-to-end demo.
+이제 모든 개념을 이해 했으므로 학습 내용을 연습하고 간단한 end-to-end 데모를 만들어 보겠습니다.
 
-We will use Jina to implement a fuzzy search solution on source code: given a snippet source code and a query, find all lines that are
-similar to the query. It is like `grep` but in fuzzy mode.
+우리는 소스 코드에 fuzzy 검색 솔루션을 구현하기 위해 Jina를 사용할 것입니다.
+즉, 소스 코드 조각과 query가 주어지면 query와 유사한 모든 줄을 찾습니다. 이것은 `grep`과 같지만 fuzzy 모드 입니다.
 
 ````{admonition} Preliminaries
 :class: hint
@@ -30,7 +30,7 @@ similar to the query. It is like `grep` but in fuzzy mode.
 
 ### 문자 임베딩
 
-Let's first build a simple Executor for character embedding:
+먼저 문자 임베딩을 위한 간단한 Executor를 구현해봅시다:
 
 ```python
 import numpy as np
@@ -109,9 +109,7 @@ and Google Colab, `__file__` is not defined. In this case, you may want to repla
 }
 ```
 
-That means, **we want to find lines from the above code snippet that are most similar to `@request(on=something)`.**Now
-click <kbd>Execute</kbd> button!
-
+즉, **우리는 가장 `@request(on=something)`와 비슷한 부류의 라인을 위의 코드에서 찾기를 바랍니다. **이제 <kbd>Execute</kbd>버튼을 누르세요!
 
 ```{figure} ../../.github/swagger-ui-prettyprint1.gif
 :align: center
