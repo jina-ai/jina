@@ -114,6 +114,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11444,4 +11445,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```920dfe0e```](https://github.com/jina-ai/jina/commit/920dfe0ecb417d6fcf464d1637cc417434d77721)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```3c80a9aa```](https://github.com/jina-ai/jina/commit/3c80a9aacfca11cac2814f09ca7daf6e36c49ffc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1112756d```](https://github.com/jina-ai/jina/commit/1112756df0c59a2542a5083f09036ce5302fb7ef)] __-__ __version__: the next version will be 2.4.3 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-4></a>
+## Release Note (`2.4.4`)
+
+> Release time: 2021-11-13 19:35:26
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Aziz Belaweid,  Joan Fontanals,  Alex Cureton-Griffiths,  Jina Dev Bot,  Roshan Jossy,  Zhaofeng Miao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```5915342b```](https://github.com/jina-ai/jina/commit/5915342bebcb853b0b311ee160829c0891976aea)] __-__ __types__: add ranking evaluation mixin (#3698) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```b6ba8bf7```](https://github.com/jina-ai/jina/commit/b6ba8bf732da03c905bd4d19e9be512118f38bb8)] __-__ __types__: traversal_paths is now a comma-sep string (#3925) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```6ed6f0b1```](https://github.com/jina-ai/jina/commit/6ed6f0b11a57fc3ec36b13be4a831049ba1038c8)] __-__ draft image search via text (#3832) (*Aziz Belaweid*)
+ - [[```62f244f5```](https://github.com/jina-ai/jina/commit/62f244f59b641d525a63a2ccdddcc13dadb4980b)] __-__ __fundamentals__: more polishing (#3924) (*Alex Cureton-Griffiths*)
+ - [[```702e0e20```](https://github.com/jina-ai/jina/commit/702e0e202a237b258bd1cb243e04742b524602c9)] __-__ add configurations to hide sidebar and nav when loaded in iframe (#3895) (*Roshan Jossy*)
+
+### 🍹 Other Improvements
+
+ - [[```9a57d775```](https://github.com/jina-ai/jina/commit/9a57d7751c5a41c21cef1da06eda2c10c2f7e365)] __-__ minor fix on readme (*Han Xiao*)
+ - [[```1457c7b5```](https://github.com/jina-ai/jina/commit/1457c7b544173a50b0a9a0da8e4fd17e2dc85564)] __-__ __docs__: update flow docs and its figures (*Han Xiao*)
+ - [[```70643b7b```](https://github.com/jina-ai/jina/commit/70643b7b91fc174d70df9ed8d3f1333aaa94c89d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2a793cdd```](https://github.com/jina-ai/jina/commit/2a793cddae7da2babd441ff85b7d2ab9a8297dc1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```250998e0```](https://github.com/jina-ai/jina/commit/250998e0a2069c6c543f285b7aa18bda9d35a384)] __-__ __ci__: remove hack to ci-no-code-related workflow (#3914) (#3920) (*Zhaofeng Miao*)
+ - [[```92c613ab```](https://github.com/jina-ai/jina/commit/92c613ab69f29f234d9a87603ca0773fe8bfc38c)] __-__ __version__: the next version will be 2.4.4 (*Jina Dev Bot*)
 
