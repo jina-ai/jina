@@ -221,7 +221,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/hello-world/">Run Hello World Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/hello-world/">Run Quick Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/hello-world/fashion/">Fashion image search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/hello-world/covid-19-chatbot/">Covid-19 chatbot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/hello-world/multimodal/">Multimodal search</a></li>
@@ -767,6 +767,10 @@ Therefore, you can add an executor via:</p>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">Dict</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="o">...</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="p">{</span>
@@ -844,90 +848,6 @@ relative to the Flow config file. The Flow will infer its config file location a
     <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-</section>
-</section>
-<section id="add-remote-executor">
-<h2>Add remote Executor<a class="headerlink" href="#add-remote-executor" title="Permalink to this headline">¶</a></h2>
-<section id="add-an-already-spawned-executor">
-<h3>Add an already spawned Executor<a class="headerlink" href="#add-an-already-spawned-executor" title="Permalink to this headline">¶</a></h3>
-<p>A Flow does not have to be local-only. You can use any Executor on remote(s).</p>
-<p>The external Executor in the following two use-cases could have been spawned</p>
-<ul class="simple">
-<li><p>either by another Flow</p></li>
-<li><p>or by the <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span></code> CLI command</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="n">port_in</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'123.45.67.89'</span><span class="p">,</span> <span class="n">port_in</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="spawn-remote-executors-using-jinad">
-<h3><a class="reference internal" href="../../../advanced/daemon/remote-executors/"><span class="doc std std-doc">Spawn remote Executors using <code class="docutils literal notranslate"><span class="pre">JinaD</span></code></span></a><a class="headerlink" href="#spawn-remote-executors-using-jinad" title="Permalink to this headline">¶</a></h3>
-<div class="tip admonition">
-<p class="admonition-title">Commonly used arguments for deployment in </p>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Name</th>
-<th>default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>host</code></td>
-<td><code>0.0.0.0</code></td>
-<td>The host of the machine. Can be an ip address or DNS name (e.g. <code>0.0.0.0</code>, <code>my_encoder.jina.ai</code>)</td>
-</tr>
-<tr>
-<td><code>port_expose</code></td>
-<td>randomly initialized</td>
-<td>Port of JinaD on the remote machine.</td>
-</tr>
-<tr>
-<td><code>port_in</code></td>
-<td>randomly initialized</td>
-<td>Port for incoming traffic for the Executor.</td>
-</tr>
-<tr>
-<td><code>port_out</code></td>
-<td>randomly initialized</td>
-<td>Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below.</td>
-</tr>
-<tr>
-<td><code>connect_to_predecessor</code></td>
-<td><code>False</code></td>
-<td>Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below.</td>
-</tr>
-<tr>
-<td><code>external</code></td>
-<td><code>False</code></td>
-<td>Stops <code>Flow</code> from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows.</td>
-</tr>
-<tr>
-<td><code>uses</code>, <code>uses_before</code> and <code>uses_after</code> prefix</td>
-<td>No prefix</td>
-<td>When prefixing one of the <code>uses</code> arguments with <code>docker</code> or <code>jinahub+docker</code>, the Executor does not run natively, but is spawned inside a container.</td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="seealso admonition">
-<p class="admonition-title">See Also</p>
-<p><a class="reference internal" href="../../../advanced/daemon/#daemon-cookbook"><span class="std std-ref">JinaD</span></a></p>
-<p><a class="reference internal" href="../../../advanced/hub/#hub-cookbook"><span class="std std-ref">JinaHub</span></a></p>
-</div>
-</section>
-<section id="forcing-an-executor-in-the-remote-local-config">
-<h3>Forcing an Executor in the remote-local config<a class="headerlink" href="#forcing-an-executor-in-the-remote-local-config" title="Permalink to this headline">¶</a></h3>
-<p>Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
-the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
-client before the client has opened a connection. The Flow inside Jina has an auto-detection mechanism for such cases.
-Anyhow, in some networking setups this mechanism fails. Then you can force this by hand by setting
-the <code class="docutils literal notranslate"><span class="pre">connect_to_predecessor</span></code> argument and <code class="docutils literal notranslate"><span class="pre">port_out</span></code> to the Executor in front.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'remote'</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">'123.45.67.89'</span><span class="p">,</span> <span class="n">port_out</span><span class="o">=</span><span class="mi">23456</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'local'</span><span class="p">,</span> <span class="n">connect_to_predecessor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
 </div>
 </section>
 </section>
@@ -1031,6 +951,90 @@ param3: 30
 	🌐 Public address:	197.28.82.165:36507
 bar
 foo
+</pre></div>
+</div>
+</section>
+</section>
+<section id="add-remote-executor">
+<h2>Add remote Executor<a class="headerlink" href="#add-remote-executor" title="Permalink to this headline">¶</a></h2>
+<section id="add-an-already-spawned-executor">
+<h3>Add an already spawned Executor<a class="headerlink" href="#add-an-already-spawned-executor" title="Permalink to this headline">¶</a></h3>
+<p>A Flow does not have to be local-only. You can use any Executor on remote(s).</p>
+<p>The external Executor in the following two use-cases could have been spawned</p>
+<ul class="simple">
+<li><p>either by another Flow</p></li>
+<li><p>or by the <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span></code> CLI command</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="n">port_in</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'123.45.67.89'</span><span class="p">,</span> <span class="n">port_in</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spawn-remote-executors-using-jinad">
+<h3><a class="reference internal" href="../../../advanced/daemon/remote-executors/"><span class="doc std std-doc">Spawn remote Executors using <code class="docutils literal notranslate"><span class="pre">JinaD</span></code></span></a><a class="headerlink" href="#spawn-remote-executors-using-jinad" title="Permalink to this headline">¶</a></h3>
+<div class="tip admonition">
+<p class="admonition-title">Commonly used arguments for deployment in </p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Name</th>
+<th>default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>host</code></td>
+<td><code>0.0.0.0</code></td>
+<td>The host of the machine. Can be an ip address or DNS name (e.g. <code>0.0.0.0</code>, <code>my_encoder.jina.ai</code>)</td>
+</tr>
+<tr>
+<td><code>port_expose</code></td>
+<td>randomly initialized</td>
+<td>Port of JinaD on the remote machine.</td>
+</tr>
+<tr>
+<td><code>port_in</code></td>
+<td>randomly initialized</td>
+<td>Port for incoming traffic for the Executor.</td>
+</tr>
+<tr>
+<td><code>port_out</code></td>
+<td>randomly initialized</td>
+<td>Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below.</td>
+</tr>
+<tr>
+<td><code>connect_to_predecessor</code></td>
+<td><code>False</code></td>
+<td>Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below.</td>
+</tr>
+<tr>
+<td><code>external</code></td>
+<td><code>False</code></td>
+<td>Stops <code>Flow</code> from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows.</td>
+</tr>
+<tr>
+<td><code>uses</code>, <code>uses_before</code> and <code>uses_after</code> prefix</td>
+<td>No prefix</td>
+<td>When prefixing one of the <code>uses</code> arguments with <code>docker</code> or <code>jinahub+docker</code>, the Executor does not run natively, but is spawned inside a container.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p><a class="reference internal" href="../../../advanced/daemon/#daemon-cookbook"><span class="std std-ref">JinaD</span></a></p>
+<p><a class="reference internal" href="../../../advanced/hub/#hub-cookbook"><span class="std std-ref">JinaHub</span></a></p>
+</div>
+</section>
+<section id="forcing-an-executor-in-the-remote-local-config">
+<h3>Forcing an Executor in the remote-local config<a class="headerlink" href="#forcing-an-executor-in-the-remote-local-config" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
+the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
+client before the client has opened a connection. The Flow inside Jina has an auto-detection mechanism for such cases.
+Anyhow, in some networking setups this mechanism fails. Then you can force this by hand by setting
+the <code class="docutils literal notranslate"><span class="pre">connect_to_predecessor</span></code> argument and <code class="docutils literal notranslate"><span class="pre">port_out</span></code> to the Executor in front.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'remote'</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">'123.45.67.89'</span><span class="p">,</span> <span class="n">port_out</span><span class="o">=</span><span class="mi">23456</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'local'</span><span class="p">,</span> <span class="n">connect_to_predecessor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1142,16 +1146,16 @@ foo
 <li><a class="reference internal" href="#executor-discovery">Executor discovery</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#add-remote-executor">Add remote Executor</a><ul>
-<li><a class="reference internal" href="#add-an-already-spawned-executor">Add an already spawned Executor</a></li>
-<li><a class="reference internal" href="#spawn-remote-executors-using-jinad"><span class="xref myst">Spawn remote Executors using <code class="docutils literal notranslate"><span class="pre">JinaD</span></code></span></a></li>
-<li><a class="reference internal" href="#forcing-an-executor-in-the-remote-local-config">Forcing an Executor in the remote-local config</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#override-executor-config">Override Executor config</a><ul>
 <li><a class="reference internal" href="#override-metas-configuration">Override <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration</a></li>
 <li><a class="reference internal" href="#override-with-configuration">Override <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration</a></li>
 <li><a class="reference internal" href="#override-requests-configuration">Override <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#add-remote-executor">Add remote Executor</a><ul>
+<li><a class="reference internal" href="#add-an-already-spawned-executor">Add an already spawned Executor</a></li>
+<li><a class="reference internal" href="#spawn-remote-executors-using-jinad"><span class="xref myst">Spawn remote Executors using <code class="docutils literal notranslate"><span class="pre">JinaD</span></code></span></a></li>
+<li><a class="reference internal" href="#forcing-an-executor-in-the-remote-local-config">Forcing an Executor in the remote-local config</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#summary-common-patterns">Summary: common patterns</a></li>
