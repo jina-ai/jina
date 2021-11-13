@@ -1,4 +1,4 @@
-# Master Executor: from Zero to Hub
+# Master Executor: Zero에서 Hub까지
 
 ```{article-info}
 :avatar: avatars/cristian.jpg
@@ -8,44 +8,44 @@
 :date: Sept. 10, 2021
 ```
 
-This is a step-by-step walkthrough on how to create your Executors or use existing ones.
+이것은 당신의 Executor를 생성하거나 기존 Executor를 사용하는 방법에 대한 단계별 설명입니다.
 
 [comment]: <> (TODO add link to the chatbot tutorial when it's moved here )
 
 [comment]: <> (Last time we talked about how to create the [hello world chatbot]&#40;https://jina.ai/tutorial.html&#41;, but we didn't go much into Executors' details. Let's take a look at them now.)
 
-We will create a simple logging Executor. It will log the Documents' information as they reach it, and save these to a file. We will also see how to push our Executor to Jina Hub to use it later.
+우리는 간단한 기록 Executor를 만들 것입니다. 이것이 문서에 도달하면 문서 정보를 기록하고 파일에 저장합니다. 또한 우리는 Executor를 나중에 사용하기 위해 Jina Hub로 푸시하는 방법도 살펴볼 것입니다.
 
-## Set-up & overview
+## 설정과 개요
 
-We recommend creating a [new python virtual environment](https://docs.python.org/3/tutorial/venv.html) to have a clean installation of Jina and prevent dependency clashing.
+Jina를 새로 설치하고 종속성 충돌을 방지하기 위해 [새로운 Python 가상 환경](https://docs.python.org/3/tutorial/venv.html)을 만드는 것이 좋습니다.
 
-We can start by installing Jina:
+먼저 Jina를 설치하여 시작할 수 있습니다:
 
  ```bash
 pip install jina
  ```
 
-For more information on installing Jina, refer to {ref}`this page <install>`.
+Jina 설치에 대한 자세한 내용은 [ref](https://github.com/jina-ai/jina/blob/master/docs/get-started/install.md#install) `페이지의 <install>`을 참조하세요.
 
-## Create your Executor
+## 나의 Executor 만들기
 
-To create your Executor, you just need to run this command in your terminal:
+당신의 Executor를 만들려면 터미널에서 다음 명령어를 실행하기만 하면 됩니다: 
 
 ```shell
 jina hub new
 ```
 
-A wizard will ask you some questions about the Executor. For the basic configuration, you will be asked two things: 
+Wizard가 당신에게 Executor에 대해 몇 가지 질문을 할 것입니다. 기본 설정의 경우, 두 가지 질문이 표시됩니다:  
 
-- the Executor's name 
-- where it should be saved
+- Executor의 이름 
+- 저장되어야 할 곳
  
-For this tutorial, we will call ours **RequestLogger**. And you can save it wherever you want to have your project. The wizard will ask if you want to have a more advanced configuration, but it is unnecessary for this tutorial.
+이 튜토리얼의 경우, 우리는 **RequestLogger**라고 부르겠습니다. 그리고 당신은 이 프로젝트를 당신이 원하는 곳에 저장할 수 있습니다. Wizard는 고급 설정을 원하는지 물어볼 것이지만, 이 튜토리얼에서는 필요하지 않습니다.
 
 ### Logger Executor
 
-Once we followed the wizard, we have our folder structure ready. We can start working with the `executor.py`. Open that file, and let's import the following
+Wizard를 따라 가면 폴더 구조가 준비됩니다. 우리는 `executor.py`파일을 가지고 시작할 수 있습니다. 해당 파일을 열고, 다음을 import합니다.
 
 ```python
 import os
