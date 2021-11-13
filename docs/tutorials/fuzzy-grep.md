@@ -20,15 +20,15 @@ similar to the query. It is like `grep` but in fuzzy mode.
 - [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
 ````
 
-## Client-Server architecture
+## 클라이언트-서버 구조
 
 ```{figure} ../../.github/2.0/simple-arch.svg
 :align: center
 ```
 
-## Server
+## 서버
 
-### Character embedding
+### 문자 임베딩
 
 Let's first build a simple Executor for character embedding:
 
@@ -49,7 +49,7 @@ class CharEmbed(Executor):  # a simple character embedding with mean-pooling
             d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # average pooling
 ```
 
-### Indexer with Euclidean distance
+### 유클리드 거리가 있는 인덱서
 
 ```python
 from jina import DocumentArray, Executor, requests
@@ -68,7 +68,7 @@ class Indexer(Executor):
 
 ```
 
-### Put it together in a Flow
+### Flow안에 함께 넣는다
 
 ```python
 from jina import Flow
@@ -79,7 +79,7 @@ f = (Flow(port_expose=12345, protocol='http', cors=True)
 
 ```
 
-### Start the Flow and index data
+### Flow와 인덱스 데이터를 시작한다
 
 ```python
 from jina import Document
@@ -95,9 +95,9 @@ with f:
 and Google Colab, `__file__` is not defined. In this case, you may want to replace it to `open('my-source-code.py')`. 
 ```
 
-## Query via SwaggerUI
+## SwaggerUI를 통한 Query
 
-Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input:
+`http://localhost:12345/docs` (an extended Swagger UI) 를 당신의 브라우저에서 여세요. <kbd>/search</kbd> 탭과 입력값을 클릭하세요:
 
 ```json
 {
@@ -118,9 +118,9 @@ click <kbd>Execute</kbd> button!
 ```
 
 
-## Query from Python
+## Python에서 나온 Query 
 
-Let's do it in Python then! Keep the above server running and start a simple client:
+이제 파이썬으로 해봅시다. 위의 서버를 계속 실행하고, 간단한 클라이언트를 시작합니다:
 
 ```python
 from jina import Client, Document
@@ -136,7 +136,7 @@ c = Client(protocol='http', port=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-, which prints the following results:
+,이러한 결과를 출력한다:
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
