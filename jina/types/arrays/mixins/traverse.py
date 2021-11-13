@@ -1,3 +1,4 @@
+import warnings
 from abc import abstractmethod
 from typing import (
     Iterable,
@@ -15,6 +16,11 @@ if TYPE_CHECKING:
 
 
 def _check_traversal_path_type(tp):
+    is_deprecate_scheme = True
+    if isinstance(tp, str):
+        tp = tp.split(',')
+        is_deprecate_scheme = False
+
     if not (
         tp
         and not isinstance(tp, str)
@@ -22,6 +28,16 @@ def _check_traversal_path_type(tp):
         and all(isinstance(p, str) for p in tp)
     ):
         raise TypeError('`traversal_paths` needs to be `Sequence[str]`')
+
+    if is_deprecate_scheme:
+        warnings.warn(
+            f'The syntax of traversal_path is changed to comma-separated string, '
+            f'that means your need to change {tp} into `{",".join(tp)}`. '
+            f'The old list of string syntax will be deprecated soon',
+            DeprecationWarning,
+        )
+
+    return tp
 
 
 class TraverseMixin:
@@ -31,36 +47,36 @@ class TraverseMixin:
 
     def traverse(
         self: 'T',
-        traversal_paths: Sequence[str],
+        traversal_paths: str,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ) -> Iterable['T']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
         Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.
 
-        :param traversal_paths: a list of string that represents the traversal path
+        :param traversal_paths: a comma-separated string that represents the traversal path
         :param filter_fn: function to filter docs during traversal
         :yield: :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
 
         Example on ``traversal_paths``:
 
-            - [`r`]: docs in this TraversableSequence
-            - [`m`]: all match-documents at adjacency 1
-            - [`c`]: all child-documents at granularity 1
-            - [`cc`]: all child-documents at granularity 2
-            - [`mm`]: all match-documents at adjacency 2
-            - [`cm`]: all match-document at adjacency 1 and granularity 1
-            - [`r`, `c`]: docs in this TraversableSequence and all child-documents at granularity 1
+            - `r`: docs in this TraversableSequence
+            - `m`: all match-documents at adjacency 1
+            - `c`: all child-documents at granularity 1
+            - `cc`: all child-documents at granularity 2
+            - `mm`: all match-documents at adjacency 2
+            - `cm`: all match-document at adjacency 1 and granularity 1
+            - `r,c`: docs in this TraversableSequence and all child-documents at granularity 1
 
         """
-        _check_traversal_path_type(traversal_paths)
+        traversal_paths = _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
             yield from self._traverse(self, p, filter_fn=filter_fn)
 
     @staticmethod
     def _traverse(
-        docs: 'TraverseMixin',
+        docs: 'T',
         path: str,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
@@ -91,25 +107,25 @@ class TraverseMixin:
 
     def traverse_flat_per_path(
         self,
-        traversal_paths: Sequence[str],
+        traversal_paths: str,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
         with all Documents, that are reached by the path.
 
-        :param traversal_paths: a list of string that represents the traversal path
+        :param traversal_paths: a comma-separated string that represents the traversal path
         :param filter_fn: function to filter docs during traversal
         :yield: :class:``TraversableSequence`` containing the document of all leaves per path.
         """
-        _check_traversal_path_type(traversal_paths)
+        traversal_paths = _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p, filter_fn=filter_fn))
 
     def traverse_flat(
         self,
-        traversal_paths: Sequence[str],
+        traversal_paths: str,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ) -> Union['DocumentArray', Iterable['Document']]:
         """
@@ -125,7 +141,7 @@ class TraverseMixin:
         :param filter_fn: function to filter docs during traversal
         :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
         """
-        _check_traversal_path_type(traversal_paths)
+        traversal_paths = _check_traversal_path_type(traversal_paths)
         if (
             len(traversal_paths) == 1
             and traversal_paths[0] == 'r'
