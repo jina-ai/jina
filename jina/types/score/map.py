@@ -63,12 +63,12 @@ class NamedScoreMapping(MutableMapping):
         elif isinstance(value, np.generic):
             self._pb_body[key].value = value.item()
         else:
-            raise TypeError(f'score is in unsupported type {typename(value)}')
+            raise TypeError(f'value is in unsupported type {typename(value)}')
 
     def __getitem__(
         self,
         key: str,
-    ):
+    ) -> 'NamedScore':
         return NamedScore(self._pb_body[key])
 
     def __delitem__(

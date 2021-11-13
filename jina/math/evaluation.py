@@ -107,7 +107,10 @@ def f1_score_at_k(
     _check_k(k)
     p = precision_at_k(binary_relevance, k)
     r = recall_at_k(binary_relevance, max_rel, k)
-    return 2 * p * r / (p + r)
+    if (p + r) > 0:
+        return 2 * p * r / (p + r)
+    else:
+        return 0.0
 
 
 def dcg_at_k(relevance: List[float], method: int = 0, k: Optional[int] = None):

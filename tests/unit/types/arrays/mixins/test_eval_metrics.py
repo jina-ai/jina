@@ -1,6 +1,7 @@
 # some of the tested are adopted from https://github.com/ncoop57/cute_ranking/blob/main/nbs/00_core.ipynb
 # the original code is licensed under Apache-2.0
 
+
 from jina.math.evaluation import (
     hit_at_k,
     r_precision,
