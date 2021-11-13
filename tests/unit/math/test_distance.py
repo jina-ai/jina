@@ -5,7 +5,12 @@ from scipy.spatial.distance import cdist
 
 from jina.math.distance import cdist as jina_cdist
 from jina.math.distance import pdist as jina_pdist
-from jina.math.distance import sqeuclidean, cosine, sparse_cosine, sparse_sqeuclidean
+from jina.math.distance.numpy import (
+    cosine,
+    sqeuclidean,
+    sparse_cosine,
+    sparse_sqeuclidean,
+)
 
 
 @pytest.fixture
@@ -102,7 +107,7 @@ def test_cdist(metric, sparse_type, embeddings, other_embeddings):
 
 
 def test_cdist_unkown_metric(embeddings):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotImplementedError):
         jina_cdist(embeddings, embeddings, metric="Cosinatrus")
 
 

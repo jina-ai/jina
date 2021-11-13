@@ -31,6 +31,7 @@ class MatchMixin:
         filter_fn: Optional[Callable[['Document'], bool]] = None,
         only_id: bool = False,
         use_scipy: bool = False,
+        device: str = 'cpu',
         **kwargs,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
@@ -65,6 +66,7 @@ class MatchMixin:
         :param only_id: if set, then returning matches will only contain ``id``
         :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance
             on sparse matrix.
+        :param device: the computational device for ``.match()``, can be either `cpu` or `cuda`.
         :param kwargs: other kwargs.
         """
         if limit is not None:
@@ -120,7 +122,9 @@ class MatchMixin:
             if use_scipy:
                 from scipy.spatial.distance import cdist as cdist
             else:
-                from ....math.distance import cdist as cdist
+                from ....math.distance import cdist as _cdist
+
+                cdist = lambda *x: _cdist(*x, device=device)
         else:
             raise TypeError(
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
