@@ -1,10 +1,11 @@
 (documentarraymemmap-api)=
 # DocumentArrayMemmap
 
-`DocumentArrayMemmap` is a drop-in replacement of `DocumentArray` in memory-demanding cases. It shares {ref}`nearly all APIs<api-da-dam>` with `DocumentArray`. 
+When a `DocumentArray` object contains a large number of `Document`s, holding it in memory can be very demanding, 
+`DocumentArrayMemmap` is a drop-in replacement of `DocumentArray` in this scenario. 
+It shares {ref}`nearly all APIs<api-da-dam>` with `DocumentArray`. 
 
-When your `DocumentArray` object contains a large number of `Document`s, holding it in memory can be very demanding. You
-may want to use `DocumentArrayMemmap` to alleviate this issue. 
+## How it works?
 
 A `DocumentArrayMemmap` stores all `Documents` directly on
 disk, while keeping a small lookup table in memory and a buffer pool of Documents with a fixed size. The lookup 
@@ -58,7 +59,7 @@ You can of course use `.append()` to add a single `Document`. But when adding mu
 
 To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on the disk.
 
-You can also check the disk usage of a `DocumentArrayMemmap` by `.physical_size`. 
+You can also check the disk usage of a `DocumentArrayMemmap` by `.physical_size` property. 
 
 ### Convert to/from `DocumentArray`
 
@@ -77,7 +78,10 @@ da = DocumentArray(dam)
 
 ## Advanced
 
-`DocumentArrayMemmap` is in general used for one-way access, either read-only or write-only. Interleaving reading and writing on a `DocumentArrayMemmap` is not safe and not recommended in production.  
+```{warning}
+`DocumentArrayMemmap` is in general used for one-way access, either read-only or write-only. Interleaving reading and writing on a `DocumentArrayMemmap` is not safe and not recommended in production.
+```
+  
 
 ### Understand buffer pool
 
