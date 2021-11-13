@@ -199,7 +199,6 @@ your active involvement.
 - [Release cycles and development stages](RELEASE.md)
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
-- [Get swag](https://jina.ai/blog/swag)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-199-orange.svg?style=flat-square)](#contributors-)
