@@ -2,7 +2,8 @@ from typing import Optional
 
 import numpy as np
 
-from .helper import T, _uri_to_buffer, _to_datauri, _is_datauri
+from .helper import _uri_to_buffer, _to_datauri, _is_datauri
+from ....helper import T
 
 
 class ConvertMixin:

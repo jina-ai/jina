@@ -1,17 +1,14 @@
-from typing import Union, TYPE_CHECKING
+from typing import Type
 
 from ...document import Document
-
-if TYPE_CHECKING:
-    from ..document import DocumentArray
-    from ..memmap import DocumentArrayMemmap
+from ....helper import T
 
 
 class EmptyMixin:
     """Helper functions for building arrays with empty Document."""
 
     @classmethod
-    def empty(cls, size: int = 0) -> Union['DocumentArray', 'DocumentArrayMemmap']:
+    def empty(cls: Type[T], size: int = 0) -> T:
         """Create a :class:`DocumentArray` or :class:`DocumentArrayMemmap` object with :attr:`size` empty
         :class:`Document` objects.
 

@@ -3,11 +3,8 @@ import urllib.parse
 import urllib.request
 import warnings
 from contextlib import nullcontext
-from typing import TypeVar
 
 from .... import __windows__
-
-T = TypeVar('T')
 
 
 def _deprecate_by(new_fn):

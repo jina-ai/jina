@@ -14,7 +14,7 @@ from .plot import PlotMixin
 from .sample import SampleMixin
 from .text import TextToolsMixin
 from .traverse import TraverseMixin
-from .ranking_evaluation import RankingEvaluationMixin
+from .evaluation import EvaluationMixin
 
 
 class AllMixins(
@@ -32,7 +32,7 @@ class AllMixins(
     PlotMixin,
     SampleMixin,
     TextToolsMixin,
-    RankingEvaluationMixin,
+    EvaluationMixin,
     ABC,
 ):
     """All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """

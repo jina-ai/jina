@@ -1,4 +1,3 @@
-import itertools
 from abc import abstractmethod
 from typing import (
     Iterable,
@@ -12,6 +11,7 @@ from typing import (
 if TYPE_CHECKING:
     from ..document import DocumentArray
     from ...document import Document
+    from ....helper import T
 
 
 def _check_traversal_path_type(tp):
@@ -30,10 +30,10 @@ class TraverseMixin:
     """
 
     def traverse(
-        self,
+        self: 'T',
         traversal_paths: Sequence[str],
         filter_fn: Optional[Callable[['Document'], bool]] = None,
-    ) -> Iterable['TraverseMixin']:
+    ) -> Iterable['T']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
         Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.
