@@ -30,14 +30,14 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="DocumentArrayMemmap" href="../documentarraymemmap-api/" /><link rel="prev" title="Document" href="../document-api/" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.11.12.1"/>
         <title>DocumentArray - Jina 2.4.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=cb850144ff767e23c5b2a31c47cdfe5847ae013d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.59c74d8c95b765a7fd995ac71d459ebe.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=0af69da206d614734f649b27d4cdc2dd6c31f41d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -689,7 +689,7 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">From list of Document</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">From list of Documents</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="o">...</span><span class="p">)])</span>
@@ -731,10 +731,10 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 </pre></div>
 </div>
 </section>
-<section id="bulk-access-on-content">
-<span id="bulk-access"></span><h2>Bulk access on content<a class="headerlink" href="#bulk-access-on-content" title="Permalink to this headline">¶</a></h2>
+<section id="bulk-access-content">
+<span id="bulk-access"></span><h2>Bulk access content<a class="headerlink" href="#bulk-access-content" title="Permalink to this headline">¶</a></h2>
 <p>You can quickly access <code class="docutils literal notranslate"><span class="pre">.text</span></code>, <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> of all Documents in the DocumentArray without writing a for-loop.</p>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the plural counterparts, i.e. <code class="docutils literal notranslate"><span class="pre">.texts</span></code>, <code class="docutils literal notranslate"><span class="pre">.blobs</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffers</span></code>, <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code> that allows one to <strong>get</strong> &amp; <strong>set</strong> these properties in one shot. It is much more efficient than looping.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the plural counterparts, i.e. <code class="docutils literal notranslate"><span class="pre">.texts</span></code>, <code class="docutils literal notranslate"><span class="pre">.blobs</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffers</span></code>, <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code> that allows you to <strong>get</strong> and <strong>set</strong> these properties in one shot. It is much more efficient than looping.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -747,7 +747,7 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 &lt;jina.types.document.Document ('id', 'text') at 5763350672&gt;
 </pre></div>
 </div>
-<p>When accessing <code class="docutils literal notranslate"><span class="pre">.blobs</span></code> or <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>, it automatically ravels/unravels the NdArray (can be Numpy/Tensorflow/Pytorch/Scipy/PaddlePaddle) for you.</p>
+<p>When accessing <code class="docutils literal notranslate"><span class="pre">.blobs</span></code> or <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>, it automatically ravels/unravels the ndarray (can be Numpy/TensorFlow/PyTorch/SciPy/PaddlePaddle) for you.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -782,21 +782,21 @@ d.embedding.shape= (1, 256)
 </section>
 <section id="finding-nearest-neighbours">
 <span id="match-documentarray"></span><h2>Finding nearest neighbours<a class="headerlink" href="#finding-nearest-neighbours" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a<code class="docutils literal notranslate"><span class="pre">.match</span></code> function that finds the closest documents between two <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> objects based on their <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>. This
-function requires all documents to be compared have an <code class="docutils literal notranslate"><span class="pre">embedding</span></code> and all embeddings to have the same length.</p>
-<p>The following image shows how <code class="docutils literal notranslate"><span class="pre">DocumentArrayA</span></code> finds <code class="docutils literal notranslate"><span class="pre">limit=5</span></code> matches from the documents in <code class="docutils literal notranslate"><span class="pre">DocumentArrayB</span></code>. By
-default, the cosine similarity is used to evaluate the score between documents.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a <code class="docutils literal notranslate"><span class="pre">.match</span></code> function that finds the closest Documents between two <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> objects based on their <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>. This
+function requires that all Documents being compared have an <code class="docutils literal notranslate"><span class="pre">embedding</span></code> of the same length.</p>
+<p>The following image shows how <code class="docutils literal notranslate"><span class="pre">DocumentArrayA</span></code> finds <code class="docutils literal notranslate"><span class="pre">limit=5</span></code> matches from the Documents in <code class="docutils literal notranslate"><span class="pre">DocumentArrayB</span></code>. By
+default, the cosine similarity is used to evaluate the score between Documents.</p>
 <figure class="align-center">
 <img alt="../../../_images/match_illustration_5.svg" src="../../../_images/match_illustration_5.svg"/></figure>
 <p>More generally, given two <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> objects <code class="docutils literal notranslate"><span class="pre">da_1</span></code> and <code class="docutils literal notranslate"><span class="pre">da_2</span></code> the
-function <code class="docutils literal notranslate"><span class="pre">da_1.match(da_2,</span> <span class="pre">metric=some_metric,</span> <span class="pre">normalization=(0,</span> <span class="pre">1),</span> <span class="pre">limit=N)</span></code> finds for each document in <code class="docutils literal notranslate"><span class="pre">da_1</span></code> the <code class="docutils literal notranslate"><span class="pre">N</span></code> documents from <code class="docutils literal notranslate"><span class="pre">da_2</span></code> with the lowest metric values according to <code class="docutils literal notranslate"><span class="pre">some_metric</span></code>.</p>
+function <code class="docutils literal notranslate"><span class="pre">da_1.match(da_2,</span> <span class="pre">metric=some_metric,</span> <span class="pre">normalization=(0,</span> <span class="pre">1),</span> <span class="pre">limit=N)</span></code> finds for each Document in <code class="docutils literal notranslate"><span class="pre">da_1</span></code> the <code class="docutils literal notranslate"><span class="pre">N</span></code> Documents from <code class="docutils literal notranslate"><span class="pre">da_2</span></code> with the lowest metric values according to <code class="docutils literal notranslate"><span class="pre">some_metric</span></code>.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">metric</span></code> can be <code class="docutils literal notranslate"><span class="pre">'cosine'</span></code>, <code class="docutils literal notranslate"><span class="pre">'euclidean'</span></code>,  <code class="docutils literal notranslate"><span class="pre">'sqeuclidean'</span></code> or a callable that takes 2 <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> parameters and
+<li><p><code class="docutils literal notranslate"><span class="pre">metric</span></code> can be <code class="docutils literal notranslate"><span class="pre">'cosine'</span></code>, <code class="docutils literal notranslate"><span class="pre">'euclidean'</span></code>,  <code class="docutils literal notranslate"><span class="pre">'sqeuclidean'</span></code> or a callable that takes two <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> parameters and
 returns an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">normalization</span></code> is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to <code class="docutils literal notranslate"><span class="pre">a</span></code>, the
 max distance will be rescaled to <code class="docutils literal notranslate"><span class="pre">b</span></code>; all other values will be rescaled into range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>.</p></li>
 </ul>
-<p>The following example finds for each element in <code class="docutils literal notranslate"><span class="pre">da_1</span></code> the 3 closest documents from the elements in <code class="docutils literal notranslate"><span class="pre">da_2</span></code> )according to the euclidean distance).</p>
+<p>The following example finds for each element in <code class="docutils literal notranslate"><span class="pre">da_1</span></code> the three closest Documents from the elements in <code class="docutils literal notranslate"><span class="pre">da_2</span></code> (according to Euclidean distance).</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Dense embedding </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -866,8 +866,8 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 </section>
 <section id="traverse-nested-documents">
 <h2>Traverse nested Documents<a class="headerlink" href="#traverse-nested-documents" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse</span></code> can be used for iterating over nested &amp; recursive Documents. As return value you get a generator which
-generates <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> matching the provided traversal paths. Let’s assume you have the following <code class="docutils literal notranslate"><span class="pre">Document</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse</span></code> can be used for iterating over nested and recursive Documents. You get a generator as the return value, which
+generates <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s matching the provided traversal paths. Let’s assume you have the following <code class="docutils literal notranslate"><span class="pre">Document</span></code>
 structure:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -903,8 +903,8 @@ Visualization of Root Document<div class="sd-summary-down docutils">
 <figure class="align-center">
 <img alt="../../../_images/traverse-example-docs.svg" src="../../../_images/traverse-example-docs.svg"/></figure>
 </div>
-</details><p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse</span></code> can be used in this way <code class="docutils literal notranslate"><span class="pre">da.traverse(['c'])</span></code> to get all the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>. You can also use <code class="docutils literal notranslate"><span class="pre">m</span></code> to present the <code class="docutils literal notranslate"><span class="pre">Matches</span></code>, for example, <code class="docutils literal notranslate"><span class="pre">da.traverse['m']</span></code> can get all the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
-<p>It allows us to composite the <code class="docutils literal notranslate"><span class="pre">c</span></code> and <code class="docutils literal notranslate"><span class="pre">m</span></code> to find <code class="docutils literal notranslate"><span class="pre">Chunks</span></code>/<code class="docutils literal notranslate"><span class="pre">Matches</span></code> which are in deeper level, for example:</p>
+</details><p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse</span></code> can be used via <code class="docutils literal notranslate"><span class="pre">da.traverse(['c'])</span></code> to get all the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>. You can also use <code class="docutils literal notranslate"><span class="pre">m</span></code> to present <code class="docutils literal notranslate"><span class="pre">Matches</span></code>, for example, <code class="docutils literal notranslate"><span class="pre">da.traverse['m']</span></code> can get all the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p>This allows us to composite the <code class="docutils literal notranslate"><span class="pre">c</span></code> and <code class="docutils literal notranslate"><span class="pre">m</span></code> to find <code class="docutils literal notranslate"><span class="pre">Chunks</span></code>/<code class="docutils literal notranslate"><span class="pre">Matches</span></code> which are in a deeper level:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">da.traverse['cm']</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">da.traverse['cmc']</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
@@ -969,8 +969,8 @@ Examples<div class="sd-summary-down docutils">
 </pre></div>
 </div>
 </div>
-</details><p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> is doing the same but flattens all <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> in the generator. When
-calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['cm',</span> <span class="pre">'ccm'])</span></code> the result in our example will be the following:</p>
+</details><p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> does the same but flattens all <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> in the generator. When
+calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['cm',</span> <span class="pre">'ccm'])</span></code> the result in our example will be:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">assert</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">([</span><span class="s1">'cm'</span><span class="p">,</span> <span class="s1">'ccm'</span><span class="p">])</span> <span class="o">==</span> <span class="n">DocumentArray</span><span class="p">([</span>
@@ -980,9 +980,9 @@ calling <code class="docutils literal notranslate"><span class="pre">da.traverse
 <span class="p">])</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat_per_path</span></code> is a further method for <code class="docutils literal notranslate"><span class="pre">Document</span></code> traversal. It works
-like <code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> but groups the <code class="docutils literal notranslate"><span class="pre">Documents</span></code> into <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> based on the traversal path. When
-calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat_per_path(['cm',</span> <span class="pre">'ccm'])</span></code>, the resulting generator emits the following <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat_per_path</span></code> is a another method for <code class="docutils literal notranslate"><span class="pre">Document</span></code> traversal. It works
+like <code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> but groups <code class="docutils literal notranslate"><span class="pre">Documents</span></code> into <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> based on traversal path. When
+calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat_per_path(['cm',</span> <span class="pre">'ccm'])</span></code>, the resulting generator yields the following <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">DocumentArray</span><span class="p">([</span>
@@ -997,9 +997,9 @@ calling <code class="docutils literal notranslate"><span class="pre">da.traverse
 </section>
 <section id="visualization">
 <h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides function <code class="docutils literal notranslate"><span class="pre">.plot_embeddings</span></code> to plot document embeddings in a 2D graph. <code class="docutils literal notranslate"><span class="pre">visualize</span></code> supports 2 methods
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the <code class="docutils literal notranslate"><span class="pre">.plot_embeddings</span></code> function to plot Document embeddings in a 2D graph. <code class="docutils literal notranslate"><span class="pre">visualize</span></code> supports two methods
 to project in 2D space: <code class="docutils literal notranslate"><span class="pre">pca</span></code> and <code class="docutils literal notranslate"><span class="pre">tsne</span></code>.</p>
-<p>In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.</p>
+<p>In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -1030,7 +1030,7 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
 <span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> can be also stored in binary format, which is much faster and yields smaller file:</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> can be also stored in binary format, which is much faster and yields a smaller file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
@@ -1042,8 +1042,8 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
 </section>
 <section id="sort">
 <h2>Sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code>, therefore you can use built-in Python <code class="docutils literal notranslate"><span class="pre">sort</span></code> to sort elements in
-a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, e.g.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code>, therefore you can use Python’s built-in <code class="docutils literal notranslate"><span class="pre">sort</span></code> to sort elements in
+a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
@@ -1105,31 +1105,31 @@ in a <code class="docutils literal notranslate"><span class="pre">DocumentArray<
 </section>
 <section id="sampling">
 <h2>Sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides function <code class="docutils literal notranslate"><span class="pre">.sample</span></code> that sample <code class="docutils literal notranslate"><span class="pre">k</span></code> elements without replacement. It accepts 2 parameters, <code class="docutils literal notranslate"><span class="pre">k</span></code>
-and <code class="docutils literal notranslate"><span class="pre">seed</span></code>. <code class="docutils literal notranslate"><span class="pre">k</span></code> is used to define the number of elements to sample, and <code class="docutils literal notranslate"><span class="pre">seed</span></code>
-helps you generate pseudo random results. It should be noted that <code class="docutils literal notranslate"><span class="pre">k</span></code> should always less or equal than the length of the
-document array.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a <code class="docutils literal notranslate"><span class="pre">.sample</span></code> function that samples <code class="docutils literal notranslate"><span class="pre">k</span></code> elements without replacement. It accepts two parameters, <code class="docutils literal notranslate"><span class="pre">k</span></code>
+and <code class="docutils literal notranslate"><span class="pre">seed</span></code>. <code class="docutils literal notranslate"><span class="pre">k</span></code> defines the number of elements to sample, and <code class="docutils literal notranslate"><span class="pre">seed</span></code>
+helps you generate pseudo-random results. Note that <code class="docutils literal notranslate"><span class="pre">k</span></code> should always be less than or equal to the length of the
+<code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
 <p>To make use of the function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>  <span class="c1"># initialize a random document array</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>  <span class="c1"># initialize a random DocumentArray</span>
 <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">idx</span><span class="p">))</span>  <span class="c1"># append 100 documents into `da`</span>
-<span class="hll"><span class="n">sampled_da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># sample 10 documents</span>
-</span><span class="hll"><span class="n">sampled_da_with_seed</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># sample 10 documents with seed.</span>
+    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">idx</span><span class="p">))</span>  <span class="c1"># append 100 Documents into `da`</span>
+<span class="hll"><span class="n">sampled_da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># sample 10 Documents</span>
+</span><span class="hll"><span class="n">sampled_da_with_seed</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># sample 10 Documents with seed.</span>
 </span></pre></div>
 </div>
 </section>
 <section id="shuffle">
 <h2>Shuffle<a class="headerlink" href="#shuffle" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides function <code class="docutils literal notranslate"><span class="pre">.shuffle</span></code> that shuffle the entire <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. It accepts the parameter <code class="docutils literal notranslate"><span class="pre">seed</span></code>
-.  <code class="docutils literal notranslate"><span class="pre">seed</span></code> helps you generate pseudo random results. By default, <code class="docutils literal notranslate"><span class="pre">seed</span></code> is None.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a <code class="docutils literal notranslate"><span class="pre">.shuffle</span></code> function that shuffles the entire <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. It accepts the parameter <code class="docutils literal notranslate"><span class="pre">seed</span></code>
+.  <code class="docutils literal notranslate"><span class="pre">seed</span></code> helps you generate pseudo-random results. By default, <code class="docutils literal notranslate"><span class="pre">seed</span></code> is None.</p>
 <p>To make use of the function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>  <span class="c1"># initialize a random document array</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>  <span class="c1"># initialize a random DocumentArray</span>
 <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">idx</span><span class="p">))</span>  <span class="c1"># append 100 documents into `da`</span>
+    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">idx</span><span class="p">))</span>  <span class="c1"># append 100 Documents into `da`</span>
 <span class="hll"><span class="n">shuffled_da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>  <span class="c1"># shuffle the DocumentArray</span>
 </span><span class="hll"><span class="n">shuffled_da_with_seed</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># shuffle the DocumentArray with seed.</span>
 </span></pre></div>
@@ -1137,8 +1137,8 @@ document array.</p>
 </section>
 <section id="split-by-tags">
 <h2>Split by <code class="docutils literal notranslate"><span class="pre">.tags</span></code><a class="headerlink" href="#split-by-tags" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides function <code class="docutils literal notranslate"><span class="pre">.split</span></code> that split the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> into multiple <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> according to the tag value (stored in <code class="docutils literal notranslate"><span class="pre">tags</span></code>) of each <code class="docutils literal notranslate"><span class="pre">Document</span></code>.
-It returns a python <code class="docutils literal notranslate"><span class="pre">dict</span></code> where <code class="docutils literal notranslate"><span class="pre">Documents</span></code> with the same value on <code class="docutils literal notranslate"><span class="pre">tag</span></code> are grouped together, their orders are preserved from the original <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a <code class="docutils literal notranslate"><span class="pre">.split</span></code> function that splits the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> into multiple <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s according to the tag value (stored in <code class="docutils literal notranslate"><span class="pre">tags</span></code>) of each <code class="docutils literal notranslate"><span class="pre">Document</span></code>.
+It returns a Python <code class="docutils literal notranslate"><span class="pre">dict</span></code> where <code class="docutils literal notranslate"><span class="pre">Documents</span></code> with the same <code class="docutils literal notranslate"><span class="pre">tag</span></code> value are grouped together, with their orders preserved from the original <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
 <p>To make use of the function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -1176,8 +1176,8 @@ advanced “iterator algebra” on the <code class="docutils literal notranslate
 </section>
 <section id="get-bulk-attributes">
 <h2>Get bulk attributes<a class="headerlink" href="#get-bulk-attributes" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
-one-shot:</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> implements powerful getters that let you fetch multiple attributes from the <code class="docutils literal notranslate"><span class="pre">Document</span></code>s it contains in
+one shot:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -1237,7 +1237,7 @@ one-shot:</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 12, 2021.
+                    Last updated on Nov 13, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1266,7 +1266,7 @@ one-shot:</p>
 <li><a class="reference internal" href="#minimum-working-example">Minimum working example</a></li>
 <li><a class="reference internal" href="#construct">Construct</a></li>
 <li><a class="reference internal" href="#access-documents">Access Documents</a></li>
-<li><a class="reference internal" href="#bulk-access-on-content">Bulk access on content</a></li>
+<li><a class="reference internal" href="#bulk-access-content">Bulk access content</a></li>
 <li><a class="reference internal" href="#finding-nearest-neighbours">Finding nearest neighbours</a></li>
 <li><a class="reference internal" href="#traverse-nested-documents">Traverse nested Documents</a></li>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
@@ -1396,7 +1396,7 @@ one-shot:</p>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/scripts/main.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/tabs.js"></script>

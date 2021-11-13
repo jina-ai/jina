@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/document/document-api.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Document is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: they are all Document s in Jina. Minimum working example: from jina import Document d1 = Document(text='hello') d2 = Document(buffer=b'\f1') import numpy d3 = Document(blob=numpy.array([1, 2, 3]..." />
+  <meta property="og:description" content="Document is Jina’s basic data type. Whether you’re working with text, image, video, audio, or 3D meshes, they are all Document s in Jina. Minimum working example: from jina import Document d1 = Document(text='hello') d2 = Document(buffer=b'\f1') import numpy d3 = Document(blob=numpy.array([1, 2, ..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -30,14 +30,14 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="DocumentArray" href="../documentarray-api/" /><link rel="prev" title="Document" href="../" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.11.12.1"/>
         <title>Document - Jina 2.4.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=cb850144ff767e23c5b2a31c47cdfe5847ae013d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.59c74d8c95b765a7fd995ac71d459ebe.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=0af69da206d614734f649b27d4cdc2dd6c31f41d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -668,7 +668,7 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="document">
 <h1>Document<a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: they are
+<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> is Jina’s basic data type. Whether you’re working with text, image, video, audio, or 3D meshes, they are
 all <code class="docutils literal notranslate"><span class="pre">Document</span></code>s in Jina.</p>
 <section id="minimum-working-example">
 <h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
@@ -691,7 +691,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 <section id="content">
 <h3>Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">blob</span></code>, and <code class="docutils literal notranslate"><span class="pre">buffer</span></code> are three content attributes of a Document. They correspond to string-like data (e.g. for natural language), <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.</p>
+<p><code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">blob</span></code>, and <code class="docutils literal notranslate"><span class="pre">buffer</span></code> are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
@@ -704,23 +704,23 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <tr>
 <td><code>doc.text</code></td>
 <td>Python string</td>
-<td>To contain text</td>
+<td>Contain text</td>
 </tr>
 <tr>
 <td><code>doc.blob</code></td>
-<td>Numpy <code>ndarray</code>, Scipy sparse matrix (<code>spmatrix</code>), Tensorflow dense &amp; sparse tensor, PyTorch dense &amp; sparse tensor, PaddlePaddle dense tensor</td>
-<td>To contain image/video/audio</td>
+<td>Numpy <code>ndarray</code>, SciPy sparse matrix (<code>spmatrix</code>), TensorFlow dense &amp; sparse tensor, PyTorch dense &amp; sparse tensor, PaddlePaddle dense tensor</td>
+<td>Contain image/video/audio</td>
 </tr>
 <tr>
 <td><code>doc.buffer</code></td>
 <td>Binary string</td>
-<td>To contain intermediate IO buffer</td>
+<td>Contain intermediate IO buffer</td>
 </tr>
 </tbody>
 </table></div>
 <div class="important admonition">
 <p class="admonition-title">Exclusivity of the content</p>
-<p>Note that one <code class="docutils literal notranslate"><span class="pre">Document</span></code> can only contain one type of <code class="docutils literal notranslate"><span class="pre">content</span></code>: it is either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code>. If you set one, the other will be cleared.</p>
+<p>Note that one <code class="docutils literal notranslate"><span class="pre">Document</span></code> can only contain one type of <code class="docutils literal notranslate"><span class="pre">content</span></code>: either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code>. If you set one, the others will be cleared.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
@@ -731,12 +731,12 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 </div>
 <div class="question admonition">
-<p class="admonition-title">Why Document contains only data type</p>
-<p>What if you want to represent more than one kind of information? Say, to fully represent a PDF slide you need to store both image and text. In this case, you can use <a class="reference internal" href="#recursive-nested-document"><span class="std std-ref">nested Document</span></a> by putting image into one sub Document, and putting text into another sub Document.</p>
+<p class="admonition-title">Why a Document contains only data type</p>
+<p>What if you want to represent more than one kind of information? Say, to fully represent a PDF page you need to store both image and text. In this case, you can use <a class="reference internal" href="#recursive-nested-document"><span class="std std-ref">nested Document</span></a>s by putting image into one sub-Document, and text into another.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">blob</span><span class="o">=...</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=...</span><span class="p">)])</span>
 </pre></div>
 </div>
-<p>The principle is each Document contains only one modality. This makes the whole logic more clear.</p>
+<p>The principle is each Document contains only one modality. This makes the whole logic clearer.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -744,9 +744,9 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <section id="loading-content-from-uri">
 <h4>Loading content from URI<a class="headerlink" href="#loading-content-from-uri" title="Permalink to this headline">¶</a></h4>
-<p>Often, you need to load data from a URI instead of assign them directly in your code, <code class="docutils literal notranslate"><span class="pre">.uri</span></code> is the attribute you must learn.</p>
-<p>After set <code class="docutils literal notranslate"><span class="pre">.uri</span></code>, you can load the data into <code class="docutils literal notranslate"><span class="pre">.text</span></code>/<code class="docutils literal notranslate"><span class="pre">.buffer</span></code>/<code class="docutils literal notranslate"><span class="pre">.blob</span></code> as below.</p>
-<p>The value of <code class="docutils literal notranslate"><span class="pre">.uri</span></code> can point to either local or remote or <a class="reference external" href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URI</a>.</p>
+<p>Often, you need to load data from a URI instead of assigning them directly in your code, <code class="docutils literal notranslate"><span class="pre">.uri</span></code> is the attribute you must learn.</p>
+<p>After setting <code class="docutils literal notranslate"><span class="pre">.uri</span></code>, you can load data into <code class="docutils literal notranslate"><span class="pre">.text</span></code>/<code class="docutils literal notranslate"><span class="pre">.buffer</span></code>/<code class="docutils literal notranslate"><span class="pre">.blob</span></code> as follows.</p>
+<p>The value of <code class="docutils literal notranslate"><span class="pre">.uri</span></code> can point to either local URI, remote URI or <a class="reference external" href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URI</a>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Local image URI</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -798,10 +798,10 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 </div>
 </div>
-<p>There are more <code class="docutils literal notranslate"><span class="pre">.convert_uri_to_*</span></code> functions allow you to read <a class="reference internal" href="../../../datatype/text/#text-type"><span class="std std-ref">text</span></a>, <a class="reference internal" href="../../../datatype/image/#image-type"><span class="std std-ref">image</span></a>, <a class="reference internal" href="../../../datatype/video/#video-type"><span class="std std-ref">video</span></a>, <a class="reference internal" href="../../../datatype/mesh/#mesh-type"><span class="std std-ref">3D mesh</span></a>, <a class="reference internal" href="../../../datatype/audio/#audio-type"><span class="std std-ref">audio</span></a> and <a class="reference internal" href="../../../datatype/tabular/#table-type"><span class="std std-ref">tabular</span></a> data into Jina.</p>
+<p>There are more <code class="docutils literal notranslate"><span class="pre">.convert_uri_to_*</span></code> functions that allow you to read <a class="reference internal" href="../../../datatype/text/#text-type"><span class="std std-ref">text</span></a>, <a class="reference internal" href="../../../datatype/image/#image-type"><span class="std std-ref">image</span></a>, <a class="reference internal" href="../../../datatype/video/#video-type"><span class="std std-ref">video</span></a>, <a class="reference internal" href="../../../datatype/mesh/#mesh-type"><span class="std std-ref">3D mesh</span></a>, <a class="reference internal" href="../../../datatype/audio/#audio-type"><span class="std std-ref">audio</span></a> and <a class="reference internal" href="../../../datatype/tabular/#table-type"><span class="std std-ref">tabular</span></a> data into Jina.</p>
 <div class="tip admonition">
 <p class="admonition-title">Write to data URI</p>
-<p>Inline data URI is helpful when you need a quick visualization in a HTML, as it embeds all resources directly into that HTML.</p>
+<p>Inline data URI is helpful when you need a quick visualization in HTML, as it embeds all resources directly into that HTML.</p>
 <p>You can convert a URI to a data URI using <code class="docutils literal notranslate"><span class="pre">doc.convert_uri_to_datauri()</span></code>. This will fetch the resource and make it inline.</p>
 </div>
 </section>
@@ -809,8 +809,8 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <section id="embedding">
 <h3>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h3>
 <p>Embedding is a multi-dimensional representation of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> (often a <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">D]</span></code> vector). It serves as a very important piece in the neural search.</p>
-<p>Document has an attribute <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> to contain the embedding infromation.</p>
-<p>Like <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, you can assign it with Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, Scipy sparse matrix (<code class="docutils literal notranslate"><span class="pre">spmatrix</span></code>), Tensorflow dense &amp; sparse tensor, PyTorch dense &amp; sparse tensor, PaddlePaddle dense tensor.</p>
+<p>Document has an attribute <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> to contain the embedding information.</p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, you can assign it with Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, SciPy sparse matrix (<code class="docutils literal notranslate"><span class="pre">spmatrix</span></code>), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">torch</span>
@@ -826,7 +826,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <section id="finding-nearest-neighbours">
 <h4>Finding nearest-neighbours<a class="headerlink" href="#finding-nearest-neighbours" title="Permalink to this headline">¶</a></h4>
-<p>Once a document has <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> filled, it can be “matched”. In this example, we build 10 Documents and put them into a <span class="xref std std-ref">DocumentArray</span>, and then use another Document to search against with.</p>
+<p>Once a Document has <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> filled, it can be “matched”. In this example, we build ten Documents and put them into a <span class="xref std std-ref">DocumentArray</span>, and then use another Document to search against them.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -844,14 +844,14 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <div class="tip admonition">
 <p class="admonition-title">Working on multiple queries</p>
-<p>When you want to match a set Documents (let’s call it set <code class="docutils literal notranslate"><span class="pre">A</span></code>) against another set of Documents (set <code class="docutils literal notranslate"><span class="pre">B</span></code>), where you want to find for each element in <code class="docutils literal notranslate"><span class="pre">A</span></code> what are its nearest neighbours in <code class="docutils literal notranslate"><span class="pre">B</span></code>. Then you need <code class="docutils literal notranslate"><span class="pre">DocumentArray.match()</span></code>. It is far more efficient than looping over each Document. You can <a class="reference internal" href="../documentarray-api/#match-documentarray"><span class="std std-ref">read more about it here</span></a>.</p>
+<p>When you want to match a set of Documents (let’s call it set <code class="docutils literal notranslate"><span class="pre">A</span></code>) against another set of Documents (set <code class="docutils literal notranslate"><span class="pre">B</span></code>), where you want to find for each element in <code class="docutils literal notranslate"><span class="pre">A</span></code> its nearest neighbours in <code class="docutils literal notranslate"><span class="pre">B</span></code>, then you need <code class="docutils literal notranslate"><span class="pre">DocumentArray.match()</span></code>. It is far more efficient than looping over each Document. You can <a class="reference internal" href="../documentarray-api/#match-documentarray"><span class="std std-ref">read more about it here</span></a>.</p>
 </div>
 </section>
 </section>
-<section id="recursive-document">
-<span id="recursive-nested-document"></span><h3>Recursive Document<a class="headerlink" href="#recursive-document" title="Permalink to this headline">¶</a></h3>
+<section id="recursive-documents">
+<span id="recursive-nested-document"></span><h3>Recursive Documents<a class="headerlink" href="#recursive-documents" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Document</span></code> can be recursive both horizontally and vertically. The following graphic illustrates the recursive <code class="docutils literal notranslate"><span class="pre">Document</span></code> structure. Each <code class="docutils literal notranslate"><span class="pre">Document</span></code> can have multiple “Chunks”
-and “matches”. Chunks and matches are <code class="docutils literal notranslate"><span class="pre">Document</span></code> object as well.</p>
+and “matches”. Chunks and matches are <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects as well.</p>
 <img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg"/>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -908,7 +908,7 @@ of <a class="reference internal" href="../documentarray-api/#documentarray"><spa
 </div>
 <section id="caveat-order-matters">
 <h4>Caveat: order matters<a class="headerlink" href="#caveat-order-matters" title="Permalink to this headline">¶</a></h4>
-<p>When adding sub-Documents to <code class="docutils literal notranslate"><span class="pre">Document.chunks</span></code>, do not create them in one line to keep recursive document structure correct. This is because <code class="docutils literal notranslate"><span class="pre">chunks</span></code> use <code class="docutils literal notranslate"><span class="pre">ref_doc</span></code> to control its <code class="docutils literal notranslate"><span class="pre">granularity</span></code>, at <code class="docutils literal notranslate"><span class="pre">chunk</span></code> creation time, it didn’t know anything about its parent, and will get a wrong <code class="docutils literal notranslate"><span class="pre">granularity</span></code> value.</p>
+<p>When adding sub-Documents to <code class="docutils literal notranslate"><span class="pre">Document.chunks</span></code>, avoid creating them in one line, otherwise the recursive Document structure will not be correct. This is because <code class="docutils literal notranslate"><span class="pre">chunks</span></code> use <code class="docutils literal notranslate"><span class="pre">ref_doc</span></code> to control their <code class="docutils literal notranslate"><span class="pre">granularity</span></code>. At <code class="docutils literal notranslate"><span class="pre">chunk</span></code> creation time the <code class="docutils literal notranslate"><span class="pre">chunk</span></code> doesn’t know anything about its parent, and will get a wrong <code class="docutils literal notranslate"><span class="pre">granularity</span></code> value.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -942,7 +942,7 @@ of <a class="reference internal" href="../documentarray-api/#documentarray"><spa
 <section id="tags">
 <h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Document</span></code> contains the <code class="docutils literal notranslate"><span class="pre">tags</span></code> field that can hold a map-like structure that can map arbitrary values.
-In practice, one can store meta information in <code class="docutils literal notranslate"><span class="pre">tags</span></code>.</p>
+In practice, you can store meta information in <code class="docutils literal notranslate"><span class="pre">tags</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'dimensions'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'height'</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s1">'weight'</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">'last_modified'</span><span class="p">:</span> <span class="s1">'Monday'</span><span class="p">}})</span>
@@ -953,7 +953,7 @@ In practice, one can store meta information in <code class="docutils literal not
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{'weight': 10.0, 'height': 5.0, 'last_modified': 'Monday'}
 </pre></div>
 </div>
-<p>In order to provide easy access to nested fields, the <code class="docutils literal notranslate"><span class="pre">Document</span></code> allows to access attributes by composing the attribute
+<p>To provide easy access to nested fields, the <code class="docutils literal notranslate"><span class="pre">Document</span></code> allows you to access attributes by composing the attribute
 qualified name with interlaced <code class="docutils literal notranslate"><span class="pre">__</span></code> symbols:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -980,9 +980,9 @@ qualified name with interlaced <code class="docutils literal notranslate"><span 
 <p class="admonition-title">Note</p>
 <p>As <code class="docutils literal notranslate"><span class="pre">tags</span></code> does not have a fixed schema, it is declared with type <code class="docutils literal notranslate"><span class="pre">google.protobuf.Struct</span></code> in the <code class="docutils literal notranslate"><span class="pre">DocumentProto</span></code>
 protobuf declaration. However, <code class="docutils literal notranslate"><span class="pre">google.protobuf.Struct</span></code> follows the JSON specification and does not
-differentiate <code class="docutils literal notranslate"><span class="pre">int</span></code> from <code class="docutils literal notranslate"><span class="pre">float</span></code>. So, data of type <code class="docutils literal notranslate"><span class="pre">int</span></code> in <code class="docutils literal notranslate"><span class="pre">tags</span></code> will be <strong>always</strong> casted to <code class="docutils literal notranslate"><span class="pre">float</span></code> when request is
-sent to executor.</p>
-<p>As a result, users need be explicit and cast the data to the expected type as follows.</p>
+differentiate <code class="docutils literal notranslate"><span class="pre">int</span></code> from <code class="docutils literal notranslate"><span class="pre">float</span></code>. So, data of type <code class="docutils literal notranslate"><span class="pre">int</span></code> in <code class="docutils literal notranslate"><span class="pre">tags</span></code> will be <strong>always</strong> casted to <code class="docutils literal notranslate"><span class="pre">float</span></code> when a request is
+sent to an Executor.</p>
+<p>As a result, users need be explicit and cast the data to the expected type as follows:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -1086,7 +1086,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </section>
 <section id="set-unset-attributes">
 <h3>Set/unset attributes<a class="headerlink" href="#set-unset-attributes" title="Permalink to this headline">¶</a></h3>
-<p>Set an attribute as how you would set an attribute to any Python object:</p>
+<p>Set an attribute as you would with any Python object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
@@ -1139,7 +1139,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <h3>Add relevancy<a class="headerlink" href="#add-relevancy" title="Permalink to this headline">¶</a></h3>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>You normaly don’t need to add those values by yourself. For example, <code class="docutils literal notranslate"><span class="pre">.match()</span></code> function automatically fills in
+<p>You normally don’t need to add those values by yourself. For example, the <code class="docutils literal notranslate"><span class="pre">.match()</span></code> function automatically fills in
 <code class="docutils literal notranslate"><span class="pre">.scores</span></code> of each matched Document.</p>
 </div>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1228,7 +1228,7 @@ follows:</p>
 </tr>
 <tr>
 <td><code>doc.parent_id</code></td>
-<td>A hexdigest that represents the document's parent id</td>
+<td>A hexdigest that represents the Document's parent id</td>
 </tr>
 <tr>
 <td><code>doc.weight</code></td>
@@ -1340,8 +1340,8 @@ follows:</p>
 </section>
 <section id="construct-from-json-csv-files">
 <h4>Construct from JSON, CSV, files<a class="headerlink" href="#construct-from-json-csv-files" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">jina.types.document.generators</span></code> module let you construct <code class="docutils literal notranslate"><span class="pre">Document</span></code> from common file types such as JSON,
-CSV, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and text files. The following functions will give a generator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>, where each <code class="docutils literal notranslate"><span class="pre">Document</span></code> object
+<p>The <code class="docutils literal notranslate"><span class="pre">jina.types.document.generators</span></code> module let you construct <code class="docutils literal notranslate"><span class="pre">Document</span></code>s from common file types such as JSON,
+CSV, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and text files. The following functions will give a generator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>s, where each <code class="docutils literal notranslate"><span class="pre">Document</span></code> object
 corresponds to a line/row in the original format:</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -1361,15 +1361,15 @@ corresponds to a line/row in the original format:</p>
 </tr>
 <tr>
 <td><code>from_files()</code></td>
-<td>Yield <code>Document</code> from a glob files. Each file is a <code>Document</code> object</td>
+<td>Yield <code>Document</code> from a glob of files. Each file is a <code>Document</code> object</td>
 </tr>
 <tr>
 <td><code>from_ndarray()</code></td>
-<td>Yield <code>Document</code> from a <code>ndarray</code>. Each row (depending on <code>axis</code>) is a <code>Document</code> object</td>
+<td>Yield <code>Document</code> from an <code>ndarray</code>. Each row (depending on <code>axis</code>) is a <code>Document</code> object</td>
 </tr>
 <tr>
 <td><code>from_lines()</code></td>
-<td>Yield <code>Document</code> from lines, json and csv</td>
+<td>Yield <code>Document</code> from lines, JSON and CSV</td>
 </tr>
 </tbody>
 </table></div>
@@ -1418,7 +1418,7 @@ corresponds to a line/row in the original format:</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 12, 2021.
+                    Last updated on Nov 13, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1454,7 +1454,7 @@ corresponds to a line/row in the original format:</p>
 <li><a class="reference internal" href="#finding-nearest-neighbours">Finding nearest-neighbours</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#recursive-document">Recursive Document</a><ul>
+<li><a class="reference internal" href="#recursive-documents">Recursive Documents</a><ul>
 <li><a class="reference internal" href="#caveat-order-matters">Caveat: order matters</a></li>
 </ul>
 </li>
@@ -1594,7 +1594,7 @@ corresponds to a line/row in the original format:</p>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/scripts/main.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/tabs.js"></script>
