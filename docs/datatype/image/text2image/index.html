@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/datatype/image/text2image.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="TBA" />
+  <meta property="og:description" content="In this tutorial, we will create an image search system that retrieves images based on short text descriptions as query. The interest behind this is that in regular search, image description or meta data describing the content of the image needs to be indexed first before retrieving the images vi..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -672,7 +672,452 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="search-image-from-text-via-clip-model">
 <h1>Search Image from Text via CLIP model<a class="headerlink" href="#search-image-from-text-via-clip-model" title="Permalink to this headline">¶</a></h1>
-<p>TBA</p>
+<p>In this tutorial, we will create an image search system that retrieves images based on short text descriptions as query.</p>
+<p>The interest behind this is that in regular search, image description or meta data describing the content of the image needs to be indexed first before retrieving the images via text query. This can be expensive because you need a person to write that description and also information about image content is not always available.</p>
+<p>We need to look for another solution! What if we can directly compare text with images?</p>
+<p>To do so, we need to figure out a way to match images and text. One way is finding related images with similar semantics to the query text. This requires us to represent both images and query text in the same embedding space to be able to do the matching. In this case, pre-trained cross-modal models can help us out.</p>
+<p>For example when we write the word “dog” in query we want to be able to retrieve pictures with a dog solely by using the embeddings similarity.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The full source code of this tutorial is available in this <a class="reference external" href="https://colab.research.google.com/github/jina-ai/workshops/blob/docs-add-text-to-image-notebook/text2image/Image_Search_via_Text.ipynb">Google Colab notebook</a></p>
+</div>
+<p>Now that we understand the problem and we have an idea on how to fix it, let’s try to imagine what the solution would look like:</p>
+<ol class="simple">
+<li><p>We have a bunch of images with no text description about the content.</p></li>
+<li><p>We use a model to create an embedding that represents those images.</p></li>
+<li><p>Now we will index and save our embeddings which we will call Documents inside a workspace folder.</p></li>
+</ol>
+<p>This is what we call the index Flow.</p>
+<figure class="align-center">
+<img alt="../../../_images/index_flow_text2image.svg" src="../../../_images/index_flow_text2image.svg"/></figure>
+<p>Now to search for an image using text we do the following</p>
+<ol class="simple">
+<li><p>We embed the query text into the same embedding space as the image.</p></li>
+<li><p>We compute similarity between the query embedding and previously saved embeddings.</p></li>
+<li><p>We return the best results.</p></li>
+</ol>
+<p>This is our query Flow.</p>
+<figure class="align-center">
+<img alt="../../../_images/query_flow_text2image.svg" src="../../../_images/query_flow_text2image.svg"/></figure>
+<p>If we had to build this from scratch, it would take a long time to build these Flows. Luckily we can leverage Jina’s tools such as Executors, Documents and Flows
+and build such a system easily.</p>
+<section id="pre-requisites">
+<h2>Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h2>
+<p>Before we begin building our Flow we need to do a few things.</p>
+<ul class="simple">
+<li><p>Install the following dependencies.</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install Pillow jina <span class="nv">torch</span><span class="o">==</span><span class="m">1</span>.9.0 <span class="nv">torchvision</span><span class="o">==</span><span class="m">0</span>.10.0 <span class="nv">transformers</span><span class="o">==</span><span class="m">4</span>.9.1 matplotlib jina-commons@git+https://github.com/jina-ai/jina-commons.git#egg<span class="o">=</span>jina-commons
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Download <a class="reference external" href="https://open-images.s3.eu-central-1.amazonaws.com/data.zip">the dataset</a> and unzip it.</p></li>
+</ul>
+<p>You can use the link or the following commands:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget https://open-images.s3.eu-central-1.amazonaws.com/data.zip
+unzip data.zip
+</pre></div>
+</div>
+<p>You should find two folders after unzipping:</p>
+<ul class="simple">
+<li><p>images: this folder contains the images that we will index.</p></li>
+<li><p>query: this folder contains small images that we will use as search queries.</p></li>
+</ul>
+</section>
+<section id="building-executors">
+<h2>Building Executors<a class="headerlink" href="#building-executors" title="Permalink to this headline">¶</a></h2>
+<p>In this section, we will start developing the necessary Executors, for both query and index Flows.</p>
+<p>To encode images and query text into the same space, we choose the pre-trained <a class="reference external" href="https://github.com/openai/CLIP">CLIP model</a> from OpenAI.</p>
+<div class="info admonition">
+<p class="admonition-title">What is CLIP?</p>
+<p>The CLIP model is trained to learn visual concepts from natural languages. This is done using text snippets and image pairs across the internet. In the original CLIP paper, the model performs Zero Shot Learning by encoding text labels and images with separate models. Later the similarities between the encoded vectors are calculated.</p>
+</div>
+<p>In this tutorial, we use the image and the text encoding parts from CLIP to calculate the embeddings.</p>
+<div class="info admonition">
+<p class="admonition-title">How does CLIP help?</p>
+<p>Given a short text <code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">dog</span></code>, the CLIP text model can encode it into a vector. Meanwhile, the CLIP image model can encode one image of a dog and one image of a cat into the same vector space.
+We can further find the distance between the text vector and the vectors of the dog image is smaller than that between the same text and an image of a cat.</p>
+</div>
+<section id="clipimageencoder">
+<h3><strong>CLIPImageEncoder</strong><a class="headerlink" href="#clipimageencoder" title="Permalink to this headline">¶</a></h3>
+<p>This encoder encodes an image into embeddings using the CLIP model.
+We want an Executor that loads the CLIP model and encodes images during the index Flow.</p>
+<p>Our Executor should:</p>
+<ul class="simple">
+<li><p>Support both <strong>GPU</strong> and <strong>CPU</strong>: That’s why we will provision the <code class="docutils literal notranslate"><span class="pre">device</span></code> parameter and use it when encoding.</p></li>
+<li><p>Be able to process Documents in batches in order to use our resources effectively: To do so, we will use the
+parameter <code class="docutils literal notranslate"><span class="pre">batch_size</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">CLIPFeatureExtractor</span><span class="p">,</span> <span class="n">CLIPModel</span>
+
+<span class="k">class</span> <span class="nc">CLIPImageEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""Encode image into embeddings using the CLIP model."""</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pretrained_model_name_or_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"openai/clip-vit-base-patch32"</span><span class="p">,</span>
+        <span class="n">base_feature_extractor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_default_preprocessing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"cpu"</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"r"</span><span class="p">,),</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">traversal_paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pretrained_model_name_or_path</span> <span class="o">=</span> <span class="n">pretrained_model_name_or_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_default_preprocessing</span> <span class="o">=</span> <span class="n">use_default_preprocessing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_feature_extractor</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">base_feature_extractor</span> <span class="ow">or</span> <span class="n">pretrained_model_name_or_path</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span> <span class="o">=</span> <span class="n">CLIPFeatureExtractor</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_feature_extractor</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">CLIPModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretrained_model_name_or_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+      
+        <span class="k">if</span> <span class="n">docs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"traversal_paths"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traversal_paths</span><span class="p">)</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"batch_size"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">document_batches_generator</span> <span class="o">=</span>  <span class="n">docs</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'traversal_paths'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traversal_paths</span><span class="p">))</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">batch_docs</span> <span class="ow">in</span> <span class="n">document_batches_generator</span><span class="p">:</span>
+                <span class="n">blob_batch</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">batch_docs</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_default_preprocessing</span><span class="p">:</span>
+                    <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_input_features</span><span class="p">(</span><span class="n">blob_batch</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tensor</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">"pixel_values"</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                            <span class="n">blob_batch</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+                        <span class="p">)</span>
+                    <span class="p">}</span>
+
+                <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_image_features</span><span class="p">(</span><span class="o">**</span><span class="n">tensor</span><span class="p">)</span>
+                <span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embed</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batch_docs</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
+                    <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span>
+
+    <span class="k">def</span> <span class="nf">_generate_input_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
+        <span class="n">input_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="p">(</span>
+            <span class="n">images</span><span class="o">=</span><span class="n">images</span><span class="p">,</span>
+            <span class="n">return_tensors</span><span class="o">=</span><span class="s2">"pt"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">input_tokens</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_tokens</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">input_tokens</span>
+</pre></div>
+</div>
+</section>
+<section id="cliptextencoder">
+<h3><strong>CLIPTextEncoder</strong><a class="headerlink" href="#cliptextencoder" title="Permalink to this headline">¶</a></h3>
+<p>This encoder encodes a text into embeddings using the CLIP model.
+We want an Executor that loads the CLIP model and encodes it during the query Flow.</p>
+<p>Our Executor should:</p>
+<ul class="simple">
+<li><p>Support both <strong>GPU</strong> and <strong>CPU</strong>: That’s why we will provision the <code class="docutils literal notranslate"><span class="pre">device</span></code> parameter and use it when encoding.</p></li>
+<li><p>Be able to process Documents in batches in order to use our resources effectively: To do so, we will use the
+parameter <code class="docutils literal notranslate"><span class="pre">batch_size</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span>  <span class="n">CLIPTokenizer</span>
+
+<span class="k">class</span> <span class="nc">CLIPTextEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""Encode text into embeddings using the CLIP model."""</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pretrained_model_name_or_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'openai/clip-vit-base-patch32'</span><span class="p">,</span>
+        <span class="n">base_tokenizer_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">77</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span><span class="p">,</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'r'</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">traversal_paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pretrained_model_name_or_path</span> <span class="o">=</span> <span class="n">pretrained_model_name_or_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_tokenizer_model</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">base_tokenizer_model</span> <span class="ow">or</span> <span class="n">pretrained_model_name_or_path</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">CLIPTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_tokenizer_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">CLIPModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretrained_model_name_or_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">docs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'traversal_paths'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">traversal_paths</span><span class="p">))</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'batch_size'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">text_batch</span> <span class="o">=</span> <span class="n">docs_batch</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'text'</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
+                <span class="n">input_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_input_tokens</span><span class="p">(</span><span class="n">text_batch</span><span class="p">)</span>
+                <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_text_features</span><span class="p">(</span><span class="o">**</span><span class="n">input_tokens</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs_batch</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
+                    <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embedding</span>
+
+    <span class="k">def</span> <span class="nf">_generate_input_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+
+        <span class="n">input_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s1">'longest'</span><span class="p">,</span>
+            <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_tensors</span><span class="o">=</span><span class="s1">'pt'</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">input_tokens</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_tokens</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">input_tokens</span>
+</pre></div>
+</div>
+</section>
+<section id="simpleindexer">
+<h3><strong>SimpleIndexer</strong><a class="headerlink" href="#simpleindexer" title="Permalink to this headline">¶</a></h3>
+<p>To implement SimpleIndexer, we can leverage Jina’s <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>. You can read about this data type
+<a class="reference external" href="https://docs.jina.ai/fundamentals/document/documentarraymemmap-api/">here</a>.</p>
+<p>Our indexer will create an instance of <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> when it’s initialized. We want to store indexed Documents
+inside the workspace folder that’s why we pass the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> attribute of the Executor to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>.</p>
+<p>To index, we implement the method <code class="docutils literal notranslate"><span class="pre">index</span></code> which has <code class="docutils literal notranslate"><span class="pre">/index</span></code> as the endpoint invoked during the index Flow. It’s as simple as extending the received
+docs to <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> instance.</p>
+<p>On the other hand, for search, we implement the method <code class="docutils literal notranslate"><span class="pre">search</span></code>. We bind it to the query Flow using the <a class="reference external" href="https://book.pythontips.com/en/latest/decorators.html">decorator</a>
+<code class="docutils literal notranslate"><span class="pre">@requests(on='/search')</span></code>.
+In Jina, searching for query Documents can be done by adding the results to the <code class="docutils literal notranslate"><span class="pre">matches</span></code> attribute of each query
+document. Since docs is a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> we can use method <code class="docutils literal notranslate"><span class="pre">match</span></code> to match query against the indexed Documents.
+Read more about <code class="docutils literal notranslate"><span class="pre">match</span></code> <a class="reference external" href="https://docs.jina.ai/fundamentals/document/documentarray-api/#matching-documentarray-to-another">here</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina.types.arrays.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
+
+<span class="k">class</span> <span class="nc">SimpleIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    A simple indexer that stores all the Document data together,</span>
+<span class="sd">    in a DocumentArrayMemmap object</span>
+<span class="sd">    To be used as a unified indexer, combining both indexing and searching</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">match_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Initializer function for the simple indexer</span>
+<span class="sd">        :param match_args: the arguments to `DocumentArray`'s match function</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_match_args</span> <span class="o">=</span> <span class="n">match_args</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">,</span> <span class="n">key_length</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'key_length'</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""All Documents to the DocumentArray</span>
+<span class="sd">        :param docs: the docs to add</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Perform a vector similarity search and retrieve the full Document match</span>
+<span class="sd">        :param docs: the Documents to search with</span>
+<span class="sd">        :param parameters: the runtime arguments to `DocumentArray`'s match</span>
+<span class="sd">        function. They overwrite the original match_args arguments.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">match_args</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">match_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="n">match_args</span> <span class="o">=</span> <span class="n">SimpleIndexer</span><span class="o">.</span><span class="n">_filter_parameters</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">match_args</span><span class="p">)</span>
+
+        <span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">,</span> <span class="o">**</span><span class="n">match_args</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_filter_parameters</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">match_args</span><span class="p">):</span>
+        <span class="c1"># get only those arguments that exist in .match</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="s1">'self'</span><span class="p">)</span>
+        <span class="n">match_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">match_args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">args</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">match_args</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="building-flows">
+<h2>Building Flows<a class="headerlink" href="#building-flows" title="Permalink to this headline">¶</a></h2>
+<section id="indexing">
+<h3>Indexing<a class="headerlink" href="#indexing" title="Permalink to this headline">¶</a></h3>
+<p>Now, after creating Executors, it’s time to use them in order to build an index Flow and index our data.</p>
+<section id="building-the-index-flow">
+<h4>Building the index Flow<a class="headerlink" href="#building-the-index-flow" title="Permalink to this headline">¶</a></h4>
+<p>We create a Flow object and add Executors one after the other with the right parameters:</p>
+<ol class="simple">
+<li><p>CLIPImageEncoder: We specify the device.</p></li>
+<li><p>SimpleIndexer: We need to specify the workspace parameter.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="n">flow_index</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span> \
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">CLIPImageEncoder</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"encoder"</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s2">"device"</span><span class="p">:</span><span class="n">device</span><span class="p">})</span> \
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">SimpleIndexer</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"indexer"</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="s1">'workspace'</span><span class="p">)</span>
+<span class="n">flow_index</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/index_flow_text2image.svg" src="../../../_images/index_flow_text2image.svg"/></figure>
+<p>Now it’s time to index the dataset that we have downloaded. Actually, we will index images inside the <code class="docutils literal notranslate"><span class="pre">images</span></code> folder.
+This helper function will convert the image files into Documents, create a generator and yields Documents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="k">def</span> <span class="nf">input_docs</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">'*'</span><span class="p">)):</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'filename'</span><span class="p">:</span> <span class="n">fn</span><span class="p">})</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">doc</span> 
+</pre></div>
+</div>
+<p>The final step in this section is to send the input Documents to the index Flow. Note that indexing can take a while:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">flow_index</span><span class="p">:</span>
+    <span class="n">flow_index</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">,</span><span class="n">inputs</span><span class="o">=</span><span class="n">input_docs</span><span class="p">(</span><span class="s2">"/content/images"</span><span class="p">),</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Flow@3084[I]:🎉 Flow is ready to use!
+🔗 Protocol: 		GRPC
+🏠 Local access:	0.0.0.0:33367
+🔒 Private network:	172.28.0.2:33367
+🌐 Public address:	34.125.186.176:33367
+</pre></div>
+</div>
+</section>
+</section>
+<section id="searching">
+<h3>Searching<a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h3>
+<p>Now, let’s build the search Flow and use it to search with sample query images.</p>
+<p>Our Flow contains the following Executors:</p>
+<ol class="simple">
+<li><p>CLIPTextEncoder: We specify the device.</p></li>
+<li><p>SimpleIndexer: We need to specify the workspace parameter.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flow_search</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span> \
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">CLIPTextEncoder</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"encoder"</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s2">"device"</span><span class="p">:</span><span class="n">device</span><span class="p">})</span> \
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">SimpleIndexer</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">"indexer"</span><span class="p">,</span><span class="n">workspace</span><span class="o">=</span><span class="s2">"workspace"</span><span class="p">)</span>
+<span class="n">flow_search</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Query Flow:</p>
+<figure class="align-center">
+<img alt="../../../_images/query_flow_text2image.svg" src="../../../_images/query_flow_text2image.svg"/></figure>
+<p>We create a helper function to plot our images:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">show_docs</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+  <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+      <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span>
+      <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and one last function to show us the top three matches to our text query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_search_results</span><span class="p">(</span><span class="n">resp</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Query text: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Matches:'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">show_docs</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Now we input some text queries which we transform into Documents and here are the results:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">flow_search</span><span class="p">:</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">flow_search</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span><span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span>
+                    <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'dog'</span><span class="p">),</span>
+                    <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'cat'</span><span class="p">),</span>
+                    <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'kids on their bikes'</span><span class="p">),</span>
+                <span class="p">]),</span><span class="n">on_done</span><span class="o">=</span><span class="n">plot_search_results</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sample results:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Query: Dog
+Results:
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/dog1.png" src="../../../_images/dog1.png"/>
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/dog2.png" src="../../../_images/dog2.png"/>
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/dog3.png" src="../../../_images/dog3.png"/>
+</figure>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Query: Cat
+Results:
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/cat1.png" src="../../../_images/cat1.png"/>
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/cat2.png" src="../../../_images/cat2.png"/>
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/cat3.png" src="../../../_images/cat3.png"/>
+</figure>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Query: Kids riding bikes
+Results:
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/bike1.png" src="../../../_images/bike1.png"/>
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/bike2.png" src="../../../_images/bike2.png"/>
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/bike3.png" src="../../../_images/bike3.png"/>
+</figure>
+<p>Congratulations! You have built a text-to-image search engine. You can check the full source code <a class="reference external" href="https://colab.research.google.com/github/jina-ai/workshops/blob/docs-add-text-to-image-notebook/text2image/Image_Search_via_Text.ipynb">here</a> and experiment with your own text queries.</p>
+</section>
+</section>
 </section>
 
             </article>
@@ -723,6 +1168,37 @@
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Search Image from Text via CLIP model</a><ul>
+<li><a class="reference internal" href="#pre-requisites">Pre-requisites</a></li>
+<li><a class="reference internal" href="#building-executors">Building Executors</a><ul>
+<li><a class="reference internal" href="#clipimageencoder"><strong>CLIPImageEncoder</strong></a></li>
+<li><a class="reference internal" href="#cliptextencoder"><strong>CLIPTextEncoder</strong></a></li>
+<li><a class="reference internal" href="#simpleindexer"><strong>SimpleIndexer</strong></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-flows">Building Flows</a><ul>
+<li><a class="reference internal" href="#indexing">Indexing</a><ul>
+<li><a class="reference internal" href="#building-the-index-flow">Building the index Flow</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#searching">Searching</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
     <summary class="sd-summary-title sd-card-header">

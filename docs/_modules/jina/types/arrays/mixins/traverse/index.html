@@ -645,7 +645,8 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.mixins.traverse</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Sequence</span><span class="p">,</span>
@@ -662,6 +663,11 @@
 
 
 <span class="k">def</span> <span class="nf">_check_traversal_path_type</span><span class="p">(</span><span class="n">tp</span><span class="p">):</span>
+    <span class="n">is_deprecate_scheme</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
+        <span class="n">is_deprecate_scheme</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
         <span class="n">tp</span>
         <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -669,6 +675,16 @@
         <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tp</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'`traversal_paths` needs to be `Sequence[str]`'</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_deprecate_scheme</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'The syntax of traversal_path is changed to comma-separated string, '</span>
+            <span class="sa">f</span><span class="s1">'that means your need to change </span><span class="si">{</span><span class="n">tp</span><span class="si">}</span><span class="s1"> into `</span><span class="si">{</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span><span class="si">}</span><span class="s1">`. '</span>
+            <span class="sa">f</span><span class="s1">'The old list of string syntax will be deprecated soon'</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tp</span>
 
 
 <div class="viewcode-block" id="TraverseMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin">[docs]</a><span class="k">class</span> <span class="nc">TraverseMixin</span><span class="p">:</span>
@@ -678,36 +694,36 @@
 
 <div class="viewcode-block" id="TraverseMixin.traverse"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.traverse">[docs]</a>    <span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
-        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'T'</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.</span>
 <span class="sd">        Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.</span>
 
-<span class="sd">        :param traversal_paths: a list of string that represents the traversal path</span>
+<span class="sd">        :param traversal_paths: a comma-separated string that represents the traversal path</span>
 <span class="sd">        :param filter_fn: function to filter docs during traversal</span>
 <span class="sd">        :yield: :class:``TraversableSequence`` of the leaves when applying the traversal_paths.</span>
 
 <span class="sd">        Example on ``traversal_paths``:</span>
 
-<span class="sd">            - [`r`]: docs in this TraversableSequence</span>
-<span class="sd">            - [`m`]: all match-documents at adjacency 1</span>
-<span class="sd">            - [`c`]: all child-documents at granularity 1</span>
-<span class="sd">            - [`cc`]: all child-documents at granularity 2</span>
-<span class="sd">            - [`mm`]: all match-documents at adjacency 2</span>
-<span class="sd">            - [`cm`]: all match-document at adjacency 1 and granularity 1</span>
-<span class="sd">            - [`r`, `c`]: docs in this TraversableSequence and all child-documents at granularity 1</span>
+<span class="sd">            - `r`: docs in this TraversableSequence</span>
+<span class="sd">            - `m`: all match-documents at adjacency 1</span>
+<span class="sd">            - `c`: all child-documents at granularity 1</span>
+<span class="sd">            - `cc`: all child-documents at granularity 2</span>
+<span class="sd">            - `mm`: all match-documents at adjacency 2</span>
+<span class="sd">            - `cm`: all match-document at adjacency 1 and granularity 1</span>
+<span class="sd">            - `r,c`: docs in this TraversableSequence and all child-documents at granularity 1</span>
 
 <span class="sd">        """</span>
-        <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
+        <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="p">:</span>
             <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_traverse</span><span class="p">(</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="s1">'TraverseMixin'</span><span class="p">,</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -738,25 +754,25 @@
 
 <div class="viewcode-block" id="TraverseMixin.traverse_flat_per_path"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat_per_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``</span>
 <span class="sd">        with all Documents, that are reached by the path.</span>
 
-<span class="sd">        :param traversal_paths: a list of string that represents the traversal path</span>
+<span class="sd">        :param traversal_paths: a comma-separated string that represents the traversal path</span>
 <span class="sd">        :param filter_fn: function to filter docs during traversal</span>
 <span class="sd">        :yield: :class:``TraversableSequence`` containing the document of all leaves per path.</span>
 <span class="sd">        """</span>
-        <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
+        <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TraverseMixin.traverse_flat"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">traversal_paths</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]:</span>
         <span class="sd">"""</span>
@@ -772,7 +788,7 @@
 <span class="sd">        :param filter_fn: function to filter docs during traversal</span>
 <span class="sd">        :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.</span>
 <span class="sd">        """</span>
-        <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
+        <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
             <span class="ow">and</span> <span class="n">traversal_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'r'</span>

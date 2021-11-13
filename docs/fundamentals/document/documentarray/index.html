@@ -874,9 +874,36 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 </section>
 <section id="traverse-nested-structure">
 <h2>Traverse nested structure<a class="headerlink" href="#traverse-nested-structure" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> can be used for iterating over nested and recursive Documents. You get a generator as the return value, which
-generates <code class="docutils literal notranslate"><span class="pre">Document</span></code>s on the provided traversal paths. Let’s assume you have the following <code class="docutils literal notranslate"><span class="pre">Document</span></code>
-structure:</p>
+<p><code class="docutils literal notranslate"><span class="pre">.traverse_flat()</span></code> function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates <code class="docutils literal notranslate"><span class="pre">Document</span></code>s on the provided traversal paths. You can use or modify <code class="docutils literal notranslate"><span class="pre">Document</span></code>s and the change will be applied in-place.</p>
+<section id="syntax-of-traversal-path">
+<h3>Syntax of traversal path<a class="headerlink" href="#syntax-of-traversal-path" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">.traverse_flat()</span></code> function accepts a <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> string which can be defined as follow:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>path1,path2,path3,...
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Its syntax is similar to <code class="docutils literal notranslate"><span class="pre">subscripts</span></code> in <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html"><code class="docutils literal notranslate"><span class="pre">numpy.einsum()</span></code></a>, but without <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> operator.</p>
+</div>
+<p>Note that,</p>
+<ul class="simple">
+<li><p>paths are separated by comma <code class="docutils literal notranslate"><span class="pre">,</span></code>;</p></li>
+<li><p>each path is a string represents a path from the top-level <code class="docutils literal notranslate"><span class="pre">Document</span></code>s to the destination. You can use <code class="docutils literal notranslate"><span class="pre">c</span></code> to select chunks, <code class="docutils literal notranslate"><span class="pre">m</span></code> to select matches;</p></li>
+<li><p>a path can be a single letter, e.g. <code class="docutils literal notranslate"><span class="pre">c</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code> or multi-letters, e.g. <code class="docutils literal notranslate"><span class="pre">ccc</span></code>, <code class="docutils literal notranslate"><span class="pre">cmc</span></code>, depending on how deep you want to go;</p></li>
+<li><p>to select top-level <code class="docutils literal notranslate"><span class="pre">Document</span></code>s, you can use <code class="docutils literal notranslate"><span class="pre">r</span></code>;</p></li>
+<li><p>a path can only go deep, not go back. You can use comma <code class="docutils literal notranslate"><span class="pre">,</span></code> to “reset” the path back to the very top-level;</p></li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>Let’s look at an example. Assume you have the following <code class="docutils literal notranslate"><span class="pre">Document</span></code> structure:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to see the construction of the nested Document<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">root</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'r1'</span><span class="p">)</span>
@@ -899,14 +926,15 @@ structure:</p>
 <span class="n">root</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-center">
+</div>
+</details><figure class="align-center">
 <img alt="../../../_images/traverse-example-docs.svg" src="../../../_images/traverse-example-docs.svg"/></figure>
-<p>Now one can use <code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['c'])</span></code> To get all the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>; <code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['m'])</span></code> to can get all the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p>Now one can use <code class="docutils literal notranslate"><span class="pre">da.traverse_flat('c')</span></code> To get all the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>; <code class="docutils literal notranslate"><span class="pre">da.traverse_flat('m')</span></code> to can get all the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <p>This allows us to composite the <code class="docutils literal notranslate"><span class="pre">c</span></code> and <code class="docutils literal notranslate"><span class="pre">m</span></code> to find <code class="docutils literal notranslate"><span class="pre">Chunks</span></code>/<code class="docutils literal notranslate"><span class="pre">Matches</span></code> which are in a deeper level:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['cm'])</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">da.traverse_flat['cmc']</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['c',</span> <span class="pre">'m'])</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> and <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da.traverse_flat('cm')</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da.traverse_flat('cmc')</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">da.traverse_flat('c,m')</span></code> will find all <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> and <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p></li>
 </ul>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
@@ -915,7 +943,7 @@ Examples<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ma</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse</span><span class="p">([</span><span class="s1">'cm'</span><span class="p">]):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ma</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="s1">'cm'</span><span class="p">):</span>
   <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ma</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
 </pre></div>
@@ -927,7 +955,7 @@ Examples<div class="sd-summary-down docutils">
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ma</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse</span><span class="p">([</span><span class="s1">'ccm'</span><span class="p">]):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ma</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="s1">'ccm'</span><span class="p">):</span>
   <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ma</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
 </pre></div>
@@ -944,7 +972,7 @@ Examples<div class="sd-summary-down docutils">
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ma</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse</span><span class="p">([</span><span class="s1">'cm'</span><span class="p">,</span> <span class="s1">'ccm'</span><span class="p">]):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ma</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">traverse</span><span class="p">(</span><span class="s1">'cm'</span><span class="p">,</span> <span class="s1">'ccm'</span><span class="p">):</span>
   <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ma</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
 </pre></div>
@@ -967,10 +995,7 @@ Examples<div class="sd-summary-down docutils">
 </pre></div>
 </div>
 </div>
-</details><p>When calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat(['cm',</span> <span class="pre">'ccm'])</span></code> the result in our example will be:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">([</span><span class="s1">'cm'</span><span class="p">,</span> <span class="s1">'ccm'</span><span class="p">])</span>
-</pre></div>
-</div>
+</details><p>When calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat('cm,ccm')</span></code> the result in our example will be:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
     Document(id='r1c2c1m1', adjacency=1, granularity=2),
@@ -980,7 +1005,7 @@ Examples<div class="sd-summary-down docutils">
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat_per_path</span></code> is another method for <code class="docutils literal notranslate"><span class="pre">Document</span></code> traversal. It works
 like <code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> but groups <code class="docutils literal notranslate"><span class="pre">Documents</span></code> into <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> based on traversal path. When
-calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat_per_path(['cm',</span> <span class="pre">'ccm'])</span></code>, the resulting generator yields the following <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>:</p>
+calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat_per_path('cm,ccm')</span></code>, the resulting generator yields the following <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
 ])
@@ -991,6 +1016,11 @@ DocumentArray([
 ])
 </pre></div>
 </div>
+</section>
+<section id="flatten-document">
+<h3>Flatten Document<a class="headerlink" href="#flatten-document" title="Permalink to this headline">¶</a></h3>
+<p>If you simply want to traverse <strong>all</strong> chunks and matches regardless their levels. You can simply use <code class="docutils literal notranslate"><span class="pre">.flatten</span></code>. It will return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> with all chunks and matches flattened into the top-level, no more nested structure.</p>
+</section>
 </section>
 <section id="visualization">
 <h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
@@ -1267,7 +1297,12 @@ one shot:</p>
 <li><a class="reference internal" href="#access-documents">Access Documents</a></li>
 <li><a class="reference internal" href="#bulk-access-content">Bulk access content</a></li>
 <li><a class="reference internal" href="#find-nearest-neighbours">Find nearest neighbours</a></li>
-<li><a class="reference internal" href="#traverse-nested-structure">Traverse nested structure</a></li>
+<li><a class="reference internal" href="#traverse-nested-structure">Traverse nested structure</a><ul>
+<li><a class="reference internal" href="#syntax-of-traversal-path">Syntax of traversal path</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#flatten-document">Flatten Document</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
 <li><a class="reference internal" href="#persistence">Persistence</a></li>
 <li><a class="reference internal" href="#sampling">Sampling</a></li>

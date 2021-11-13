@@ -230,10 +230,33 @@ match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
 
 ## Traverse nested structure
 
-`DocumentArray.traverse_flat` can be used for iterating over nested and recursive Documents. You get a generator as the return value, which
-generates `Document`s on the provided traversal paths. Let's assume you have the following `Document`
-structure:
+`.traverse_flat()` function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates `Document`s on the provided traversal paths. You can use or modify `Document`s and the change will be applied in-place. 
 
+
+### Syntax of traversal path
+
+`.traverse_flat()` function accepts a `traversal_paths` string which can be defined as follow:
+
+```text
+path1,path2,path3,...
+```
+
+```{tip}
+Its syntax is similar to `subscripts` in [`numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html), but without `->` operator.
+```
+
+Note that,
+- paths are separated by comma `,`;
+- each path is a string represents a path from the top-level `Document`s to the destination. You can use `c` to select chunks, `m` to select matches;
+- a path can be a single letter, e.g. `c`, `m` or multi-letters, e.g. `ccc`, `cmc`, depending on how deep you want to go;
+- to select top-level `Document`s, you can use `r`;
+- a path can only go deep, not go back. You can use comma `,` to "reset" the path back to the very top-level;
+
+### Example
+
+Let's look at an example. Assume you have the following `Document` structure:
+
+````{dropdown} Click to see the construction of the nested Document
 ```python
 from jina import DocumentArray, Document
 
@@ -256,23 +279,24 @@ root.chunks.append(chunk3)
 da = DocumentArray([root])
 root.plot()
 ```
+````
 
 ```{figure} traverse-example-docs.svg
 :align: center
 ```
 
-Now one can use `da.traverse_flat(['c'])` To get all the `Chunks` of the root `Document`; `da.traverse_flat(['m'])` to can get all the `Matches` of the root `Document`.
+Now one can use `da.traverse_flat('c')` To get all the `Chunks` of the root `Document`; `da.traverse_flat('m')` to can get all the `Matches` of the root `Document`.
 
 This allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in a deeper level:
 
-- `da.traverse_flat(['cm'])` will find all `Matches` of the `Chunks` of root `Document`.
-- `da.traverse_flat['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
-- `da.traverse_flat(['c', 'm'])` will find all `Chunks` and `Matches` of root `Document`.
+- `da.traverse_flat('cm')` will find all `Matches` of the `Chunks` of root `Document`.
+- `da.traverse_flat('cmc')` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
+- `da.traverse_flat('c,m')` will find all `Chunks` and `Matches` of root `Document`.
 
 ````{dropdown} Examples
 
 ```python
-for ma in da.traverse(['cm']):
+for ma in da.traverse_flat('cm'):
   for m in ma:
     print(m.json())
 ```
@@ -286,7 +310,7 @@ for ma in da.traverse(['cm']):
 ```
 
 ```python
-for ma in da.traverse(['ccm']):
+for ma in da.traverse_flat('ccm'):
   for m in ma:
     print(m.json())
 ```
@@ -305,7 +329,7 @@ for ma in da.traverse(['ccm']):
 ```
 
 ```python
-for ma in da.traverse(['cm', 'ccm']):
+for ma in da.traverse('cm', 'ccm'):
   for m in ma:
     print(m.json())
 ```
@@ -329,11 +353,7 @@ for ma in da.traverse(['cm', 'ccm']):
 ```
 ````
 
-When calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be:
-
-```python
-da.traverse_flat(['cm', 'ccm'])
-```
+When calling `da.traverse_flat('cm,ccm')` the result in our example will be:
 
 ```text
 DocumentArray([
@@ -345,7 +365,7 @@ DocumentArray([
 
 `DocumentArray.traverse_flat_per_path` is another method for `Document` traversal. It works
 like `DocumentArray.traverse_flat` but groups `Documents` into `DocumentArrays` based on traversal path. When
-calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator yields the following `DocumentArray`:
+calling `da.traverse_flat_per_path('cm,ccm')`, the resulting generator yields the following `DocumentArray`:
 
 ```text
 DocumentArray([
@@ -357,6 +377,11 @@ DocumentArray([
     Document(id='r1c2c1m2', adjacency=1, granularity=2)
 ])
 ```
+
+### Flatten Document
+
+If you simply want to traverse **all** chunks and matches regardless their levels. You can simply use `.flatten`. It will return a `DocumentArray` with all chunks and matches flattened into the top-level, no more nested structure.
+
 
 ## Visualization
 

@@ -684,7 +684,7 @@ Each :class:<code class="docutils literal notranslate"><span class="pre">Travers
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p></li>
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a comma-separated string that represents the traversal path</p></li>
 <li><p><strong>filter_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]) – function to filter docs during traversal</p></li>
 </ul>
 </dd>
@@ -695,13 +695,13 @@ Each :class:<code class="docutils literal notranslate"><span class="pre">Travers
 <p>Example on <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>[<cite>r</cite>]: docs in this TraversableSequence</p></li>
-<li><p>[<cite>m</cite>]: all match-documents at adjacency 1</p></li>
-<li><p>[<cite>c</cite>]: all child-documents at granularity 1</p></li>
-<li><p>[<cite>cc</cite>]: all child-documents at granularity 2</p></li>
-<li><p>[<cite>mm</cite>]: all match-documents at adjacency 2</p></li>
-<li><p>[<cite>cm</cite>]: all match-document at adjacency 1 and granularity 1</p></li>
-<li><p>[<cite>r</cite>, <cite>c</cite>]: docs in this TraversableSequence and all child-documents at granularity 1</p></li>
+<li><p><cite>r</cite>: docs in this TraversableSequence</p></li>
+<li><p><cite>m</cite>: all match-documents at adjacency 1</p></li>
+<li><p><cite>c</cite>: all child-documents at granularity 1</p></li>
+<li><p><cite>cc</cite>: all child-documents at granularity 2</p></li>
+<li><p><cite>mm</cite>: all match-documents at adjacency 2</p></li>
+<li><p><cite>cm</cite>: all match-document at adjacency 1 and granularity 1</p></li>
+<li><p><cite>r,c</cite>: docs in this TraversableSequence and all child-documents at granularity 1</p></li>
 </ul>
 </div></blockquote>
 <dl class="field-list simple">
@@ -718,7 +718,7 @@ with all Documents, that are reached by the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p></li>
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a comma-separated string that represents the traversal path</p></li>
 <li><p><strong>filter_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]) – function to filter docs during traversal</p></li>
 </ul>
 </dd>
@@ -741,7 +741,7 @@ behavior then in :method:<code class="docutils literal notranslate"><span class=
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a list of string that represents the traversal path</p></li>
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of string that represents the traversal path</p></li>
 <li><p><strong>filter_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]) – function to filter docs during traversal</p></li>
 </ul>
 </dd>
