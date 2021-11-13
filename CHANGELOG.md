@@ -115,6 +115,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11479,4 +11480,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```2a793cdd```](https://github.com/jina-ai/jina/commit/2a793cddae7da2babd441ff85b7d2ab9a8297dc1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```250998e0```](https://github.com/jina-ai/jina/commit/250998e0a2069c6c543f285b7aa18bda9d35a384)] __-__ __ci__: remove hack to ci-no-code-related workflow (#3914) (#3920) (*Zhaofeng Miao*)
  - [[```92c613ab```](https://github.com/jina-ai/jina/commit/92c613ab69f29f234d9a87603ca0773fe8bfc38c)] __-__ __version__: the next version will be 2.4.4 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-5></a>
+## Release Note (`2.4.5`)
+
+> Release time: 2021-11-13 22:41:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```940785f8```](https://github.com/jina-ai/jina/commit/940785f892c9864c679c09acf670e55ce061115a)] __-__ __types__: add framework &amp; gpu support to match function (#3926) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```7375926d```](https://github.com/jina-ai/jina/commit/7375926d403c43434d59e518a34acdfcd9f327b9)] __-__ remove get swag (*Han Xiao*)
+ - [[```e9a61164```](https://github.com/jina-ai/jina/commit/e9a61164674f870c501f67459654f9e52e180bb6)] __-__ __version__: the next version will be 2.4.5 (*Jina Dev Bot*)
 
