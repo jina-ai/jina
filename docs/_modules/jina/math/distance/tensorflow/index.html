@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>jina.math.distance.tensorflow - Jina 2.4.5 documentation</title>
+        <title>jina.math.distance.tensorflow - Jina 2.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 2.4.5 documentation</div>
+                <div class="brand">Jina 2.4.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -668,6 +668,7 @@
     <span class="n">x_mat</span><span class="p">:</span> <span class="s1">'Tensor'</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">:</span> <span class="s1">'Tensor'</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'numpy.ndarray'</span><span class="p">:</span>
     <span class="sd">"""Cosine distance between each row in x_mat and each row in y_mat.</span>
+
 <span class="sd">    :param x_mat: np.ndarray with ndim=2</span>
 <span class="sd">    :param y_mat: np.ndarray with ndim=2</span>
 <span class="sd">    :param eps: a small jitter to avoid divde by zero</span>
@@ -685,6 +686,7 @@
     <span class="n">x_mat</span><span class="p">:</span> <span class="s1">'Tensor'</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">:</span> <span class="s1">'Tensor'</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'numpy.ndarray'</span><span class="p">:</span>
     <span class="sd">"""Squared euclidean distance between each row in x_mat and each row in y_mat.</span>
+
 <span class="sd">    :param x_mat:  tensorflow array with ndim=2</span>
 <span class="sd">    :param y_mat:  tensorflow array with ndim=2</span>
 <span class="sd">    :param device: the computational device for `embed_model`, can be either `cpu` or `cuda`.</span>
@@ -700,6 +702,7 @@
 
 <div class="viewcode-block" id="euclidean"><a class="viewcode-back" href="../../../../../api/jina.math.distance.tensorflow/#jina.math.distance.tensorflow.euclidean">[docs]</a><span class="k">def</span> <span class="nf">euclidean</span><span class="p">(</span><span class="n">x_mat</span><span class="p">:</span> <span class="s1">'Tensor'</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">:</span> <span class="s1">'Tensor'</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'numpy.ndarray'</span><span class="p">:</span>
     <span class="sd">"""Euclidean distance between each row in x_mat and each row in y_mat.</span>
+
 <span class="sd">    :param x_mat:  tensorflow array with ndim=2</span>
 <span class="sd">    :param y_mat:  tensorflow array with ndim=2</span>
 <span class="sd">    :param device: the computational device for `embed_model`, can be either `cpu` or `cuda`.</span>
@@ -722,7 +725,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 13, 2021.
+                    Last updated on Nov 14, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

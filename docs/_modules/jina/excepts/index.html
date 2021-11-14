@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>jina.excepts - Jina 2.4.5 documentation</title>
+        <title>jina.excepts - Jina 2.4.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 2.4.5 documentation</div>
+                <div class="brand">Jina 2.4.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -654,142 +654,123 @@
 <span></span><span class="sd">"""This modules defines all kinds of exceptions raised in Jina."""</span>
 
 
-<div class="viewcode-block" id="NoExplicitMessage"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoExplicitMessage">[docs]</a><span class="k">class</span> <span class="nc">NoExplicitMessage</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseJinaExeception"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BaseJinaExeception">[docs]</a><span class="k">class</span> <span class="nc">BaseJinaExeception</span><span class="p">:</span>
+    <span class="sd">"""A base class for all exceptions raised by Jina"""</span></div>
+
+
+<div class="viewcode-block" id="NoExplicitMessage"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoExplicitMessage">[docs]</a><span class="k">class</span> <span class="nc">NoExplicitMessage</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Waiting until all partial messages are received."""</span></div>
 
 
-<div class="viewcode-block" id="ChainedPodException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ChainedPodException">[docs]</a><span class="k">class</span> <span class="nc">ChainedPodException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="ChainedPodException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ChainedPodException">[docs]</a><span class="k">class</span> <span class="nc">ChainedPodException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Chained exception from the last Pod."""</span></div>
 
 
-<div class="viewcode-block" id="MismatchedVersion"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MismatchedVersion">[docs]</a><span class="k">class</span> <span class="nc">MismatchedVersion</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">):</span>
+<div class="viewcode-block" id="MismatchedVersion"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MismatchedVersion">[docs]</a><span class="k">class</span> <span class="nc">MismatchedVersion</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""When the jina version info of the incoming message does not match the local Jina version."""</span></div>
 
 
-<div class="viewcode-block" id="ExecutorFailToLoad"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ExecutorFailToLoad">[docs]</a><span class="k">class</span> <span class="nc">ExecutorFailToLoad</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">):</span>
+<div class="viewcode-block" id="ExecutorFailToLoad"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ExecutorFailToLoad">[docs]</a><span class="k">class</span> <span class="nc">ExecutorFailToLoad</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""When the executor can not be loaded in pea/pod."""</span></div>
 
 
-<div class="viewcode-block" id="RuntimeFailToStart"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeFailToStart">[docs]</a><span class="k">class</span> <span class="nc">RuntimeFailToStart</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">):</span>
+<div class="viewcode-block" id="RuntimeFailToStart"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeFailToStart">[docs]</a><span class="k">class</span> <span class="nc">RuntimeFailToStart</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""When pea/pod is failed to started."""</span></div>
 
 
-<div class="viewcode-block" id="MemoryOverHighWatermark"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MemoryOverHighWatermark">[docs]</a><span class="k">class</span> <span class="nc">MemoryOverHighWatermark</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="MemoryOverHighWatermark"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MemoryOverHighWatermark">[docs]</a><span class="k">class</span> <span class="nc">MemoryOverHighWatermark</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""When the memory usage is over the defined high water mark."""</span></div>
 
 
-<div class="viewcode-block" id="NoAvailablePortError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoAvailablePortError">[docs]</a><span class="k">class</span> <span class="nc">NoAvailablePortError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="NoAvailablePortError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoAvailablePortError">[docs]</a><span class="k">class</span> <span class="nc">NoAvailablePortError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""When no available random port could be found"""</span></div>
 
 
-<div class="viewcode-block" id="RuntimeTerminated"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeTerminated">[docs]</a><span class="k">class</span> <span class="nc">RuntimeTerminated</span><span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">):</span>
+<div class="viewcode-block" id="RuntimeTerminated"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeTerminated">[docs]</a><span class="k">class</span> <span class="nc">RuntimeTerminated</span><span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""The event loop of BasePea ends."""</span></div>
 
 
-<div class="viewcode-block" id="UnknownControlCommand"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.UnknownControlCommand">[docs]</a><span class="k">class</span> <span class="nc">UnknownControlCommand</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="UnknownControlCommand"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.UnknownControlCommand">[docs]</a><span class="k">class</span> <span class="nc">UnknownControlCommand</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""The control command received can not be recognized."""</span></div>
 
 
-<div class="viewcode-block" id="FlowTopologyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowTopologyError">[docs]</a><span class="k">class</span> <span class="nc">FlowTopologyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowTopologyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowTopologyError">[docs]</a><span class="k">class</span> <span class="nc">FlowTopologyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Flow exception when the topology is ambiguous."""</span></div>
 
 
-<div class="viewcode-block" id="FlowMissingPodError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowMissingPodError">[docs]</a><span class="k">class</span> <span class="nc">FlowMissingPodError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowMissingPodError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowMissingPodError">[docs]</a><span class="k">class</span> <span class="nc">FlowMissingPodError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Flow exception when a pod can not be found in the flow."""</span></div>
 
 
-<div class="viewcode-block" id="FlowBuildLevelError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowBuildLevelError">[docs]</a><span class="k">class</span> <span class="nc">FlowBuildLevelError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowBuildLevelError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowBuildLevelError">[docs]</a><span class="k">class</span> <span class="nc">FlowBuildLevelError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Flow exception when required build level is higher than the current build level."""</span></div>
 
 
-<div class="viewcode-block" id="BadConfigSource"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadConfigSource">[docs]</a><span class="k">class</span> <span class="nc">BadConfigSource</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+<div class="viewcode-block" id="BadConfigSource"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadConfigSource">[docs]</a><span class="k">class</span> <span class="nc">BadConfigSource</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""The yaml config file is bad, not loadable or not exist."""</span></div>
 
 
-<div class="viewcode-block" id="BadClient"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClient">[docs]</a><span class="k">class</span> <span class="nc">BadClient</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="BadClient"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClient">[docs]</a><span class="k">class</span> <span class="nc">BadClient</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""A wrongly defined client, can not communicate with jina server correctly."""</span></div>
 
 
-<div class="viewcode-block" id="BadClientCallback"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClientCallback">[docs]</a><span class="k">class</span> <span class="nc">BadClientCallback</span><span class="p">(</span><span class="n">BadClient</span><span class="p">):</span>
+<div class="viewcode-block" id="BadClientCallback"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClientCallback">[docs]</a><span class="k">class</span> <span class="nc">BadClientCallback</span><span class="p">(</span><span class="n">BadClient</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Error in the callback function on the client side."""</span></div>
 
 
-<div class="viewcode-block" id="BadClientInput"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClientInput">[docs]</a><span class="k">class</span> <span class="nc">BadClientInput</span><span class="p">(</span><span class="n">BadClient</span><span class="p">):</span>
+<div class="viewcode-block" id="BadClientInput"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClientInput">[docs]</a><span class="k">class</span> <span class="nc">BadClientInput</span><span class="p">(</span><span class="n">BadClient</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Error in the request generator function on the client side."""</span></div>
 
 
-<div class="viewcode-block" id="ModelCheckpointNotExist"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ModelCheckpointNotExist">[docs]</a><span class="k">class</span> <span class="nc">ModelCheckpointNotExist</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
-    <span class="sd">"""Exception to raise for executors depending on pretrained model files when they do not exist."""</span></div>
-
-
-<div class="viewcode-block" id="PretrainedModelFileDoesNotExist"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.PretrainedModelFileDoesNotExist">[docs]</a><span class="k">class</span> <span class="nc">PretrainedModelFileDoesNotExist</span><span class="p">(</span><span class="n">ModelCheckpointNotExist</span><span class="p">):</span>
-    <span class="sd">"""Depreciated, used in the hub executors.</span>
-
-<span class="sd">    TODO: to be removed after hub executors uses ModelCheckpointNotExist</span>
-<span class="sd">    """</span></div>
-
-
-<div class="viewcode-block" id="HubDownloadError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.HubDownloadError">[docs]</a><span class="k">class</span> <span class="nc">HubDownloadError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception to raise when :command:`jina hub pull` fails to download package."""</span></div>
-
-
-<div class="viewcode-block" id="BadDocType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadDocType">[docs]</a><span class="k">class</span> <span class="nc">BadDocType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+<div class="viewcode-block" id="BadDocType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadDocType">[docs]</a><span class="k">class</span> <span class="nc">BadDocType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception when can not construct a document from the given data."""</span></div>
 
 
-<div class="viewcode-block" id="BadRequestType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadRequestType">[docs]</a><span class="k">class</span> <span class="nc">BadRequestType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+<div class="viewcode-block" id="BadRequestType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadRequestType">[docs]</a><span class="k">class</span> <span class="nc">BadRequestType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception when can not construct a request object from given data."""</span></div>
 
 
-<div class="viewcode-block" id="BadNamedScoreType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadNamedScoreType">[docs]</a><span class="k">class</span> <span class="nc">BadNamedScoreType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+<div class="viewcode-block" id="BadNamedScoreType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadNamedScoreType">[docs]</a><span class="k">class</span> <span class="nc">BadNamedScoreType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception when can not construct a named score from the given data."""</span></div>
 
 
-<div class="viewcode-block" id="BadImageNameError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadImageNameError">[docs]</a><span class="k">class</span> <span class="nc">BadImageNameError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="BadImageNameError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadImageNameError">[docs]</a><span class="k">class</span> <span class="nc">BadImageNameError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception when an image name can not be found either local &amp; remote"""</span></div>
 
 
-<div class="viewcode-block" id="BadYAMLVersion"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadYAMLVersion">[docs]</a><span class="k">class</span> <span class="nc">BadYAMLVersion</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="BadYAMLVersion"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadYAMLVersion">[docs]</a><span class="k">class</span> <span class="nc">BadYAMLVersion</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception when YAML config specifies a wrong version number."""</span></div>
 
 
-<div class="viewcode-block" id="DaemonConnectivityError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonConnectivityError">[docs]</a><span class="k">class</span> <span class="nc">DaemonConnectivityError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="DaemonConnectivityError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonConnectivityError">[docs]</a><span class="k">class</span> <span class="nc">DaemonConnectivityError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception to raise when jina daemon is not reachable."""</span></div>
 
 
-<div class="viewcode-block" id="DaemonWorkspaceCreationFailed"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonWorkspaceCreationFailed">[docs]</a><span class="k">class</span> <span class="nc">DaemonWorkspaceCreationFailed</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="DaemonWorkspaceCreationFailed"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonWorkspaceCreationFailed">[docs]</a><span class="k">class</span> <span class="nc">DaemonWorkspaceCreationFailed</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception to raise when jina daemon is not connectable."""</span></div>
 
 
-<div class="viewcode-block" id="DaemonPeaCreationFailed"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonPeaCreationFailed">[docs]</a><span class="k">class</span> <span class="nc">DaemonPeaCreationFailed</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="DaemonPeaCreationFailed"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonPeaCreationFailed">[docs]</a><span class="k">class</span> <span class="nc">DaemonPeaCreationFailed</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Exception to raise when jina daemon is not connectable."""</span></div>
 
 
-<div class="viewcode-block" id="NotSupportedError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NotSupportedError">[docs]</a><span class="k">class</span> <span class="nc">NotSupportedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exeception when user accidentally using a retired argument."""</span></div>
+<div class="viewcode-block" id="NotSupportedError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NotSupportedError">[docs]</a><span class="k">class</span> <span class="nc">NotSupportedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
+    <span class="sd">"""Exception when user accidentally using a retired argument."""</span></div>
 
 
-<div class="viewcode-block" id="ValidationError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ValidationError">[docs]</a><span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Raised when a certain validation cannot be completed."""</span></div>
-
-
-<div class="viewcode-block" id="SocketTypeError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.SocketTypeError">[docs]</a><span class="k">class</span> <span class="nc">SocketTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Raised when such socket type is not supported or does not exist."""</span></div>
-
-
-<div class="viewcode-block" id="RoutingTableCyclicError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RoutingTableCyclicError">[docs]</a><span class="k">class</span> <span class="nc">RoutingTableCyclicError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="RoutingTableCyclicError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RoutingTableCyclicError">[docs]</a><span class="k">class</span> <span class="nc">RoutingTableCyclicError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Raised when the routing graph has cycles."""</span></div>
 
 
-<div class="viewcode-block" id="RuntimeRunForeverEarlyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeRunForeverEarlyError">[docs]</a><span class="k">class</span> <span class="nc">RuntimeRunForeverEarlyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="RuntimeRunForeverEarlyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeRunForeverEarlyError">[docs]</a><span class="k">class</span> <span class="nc">RuntimeRunForeverEarlyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Raised when an error occurs when starting the run_forever of Runtime"""</span></div>
 
 
-<div class="viewcode-block" id="DockerVersionError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DockerVersionError">[docs]</a><span class="k">class</span> <span class="nc">DockerVersionError</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">):</span>
+<div class="viewcode-block" id="DockerVersionError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DockerVersionError">[docs]</a><span class="k">class</span> <span class="nc">DockerVersionError</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Raised when the docker version is incompatible"""</span></div>
 
 
-<div class="viewcode-block" id="DaemonInvalidDockerfile"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonInvalidDockerfile">[docs]</a><span class="k">class</span> <span class="nc">DaemonInvalidDockerfile</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+<div class="viewcode-block" id="DaemonInvalidDockerfile"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonInvalidDockerfile">[docs]</a><span class="k">class</span> <span class="nc">DaemonInvalidDockerfile</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""Raised when invalid dockerfile is passed to JinaD"""</span></div>
 </pre></div>
             </article>
@@ -802,7 +783,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 13, 2021.
+                    Last updated on Nov 14, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
