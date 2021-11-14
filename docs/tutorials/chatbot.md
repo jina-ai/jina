@@ -10,13 +10,13 @@
 저희는 이 튜토리얼을 위해 {ref}`hello world chatbot <chatbot-helloworld>` 를 사용할 것 입니다.
 전체 코드를 [여기](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot) 에서 찾을 수 있고, 차근차근 진행 해 볼 것입니다.
 
-이 튜토리얼이 끝나는 지점에서, 당신은 당신만의 chatbot을 소유하게 될 것입니다. 당신은 텍스트를 입력으로서 사용하고 텍스트를 결과값으로 받게 됩니다. 예를 들어, 우리는 [covid dataset](https://www.kaggle.com/xhlulu/covidqa)를 이용할 것 입니다. 당신은 이 예제의 모든 부분이 어떻게 작동하는지와 다른 데이터셋으로 새 앱을 직접 만드는 방법을 이해 하게 될 것 입니다.
+이 튜토리얼이 끝나는 지점에서, 당신은 당신만의 챗봇을 소유하게 될 것입니다. 당신은 텍스트를 입력으로서 사용하고 텍스트를 결과값으로 받게 됩니다. 예를 들어, 우리는 [covid dataset](https://www.kaggle.com/xhlulu/covidqa)를 이용할 것 입니다. 당신은 이 예제의 모든 부분이 어떻게 작동하는지와 다른 데이터셋으로 새 앱을 직접 만드는 방법을 이해 하게 될 것 입니다.
 
 ## 데이터 및 작업 디렉토리 정의
 
 빈 폴더를 만드는 것으로 시작할 수 있습니다. 저는 이걸 `튜토리얼`이라고 부를 것이고, 당신이 튜토리얼을 통해 볼 수 있는 이름입니다. 원하는 것 어떤 것이든 자유롭게 사용하세요.
 
-우리는 브라우저에 결과값을 표기할 것이기 때문에 [여기](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static)에서 정적 폴더를 다운로드 해주시고, 당신의 튜토리얼 폴더로 붙여넣기 하세요. 이것은 결과를 옮기기 위한 CSS , HTML 파일입니다. This is only the CSS and HTML files to render our results.우리는 `.csv` 포멧으로 된 데이터셋을 이용할 것 입니다. kaggle에 있는 [COVID](https://www.kaggle.com/xhlulu/covidqa) 데이터 셋을 사용하겠습니다.
+우리는 브라우저에 결과값을 표기할 것이기 때문에 [여기](https://github.com/jina-ai/jina/tree/master/jina/helloworld/chatbot/static)에서 정적 폴더를 다운로드 해주시고, 당신의 튜토리얼 폴더로 붙여넣기 하세요. 이것은 결과를 옮기기 위한 CSS , HTML 파일입니다. 우리는 `.csv` 포멧으로 된 데이터셋을 이용할 것 입니다. kaggle에 있는 [COVID](https://www.kaggle.com/xhlulu/covidqa) 데이터 셋을 사용하겠습니다.
 
 당신의 `튜토리얼` 디렉토리 아래에 다운로드 하세요:
 
@@ -233,17 +233,15 @@ class MyTransformer(Executor):
                 doc.embedding = embedding
 ```
 
-`MyTransformer` exposes only one endpoint: `encode`. This will be called whenever we make a request to the Flow, either
-on query or index. The endpoint will create embeddings for the indexed or query Documents so that they can be used to
-get the closed matches.
+`MyTransformer`는 하나의 엔드포인트만 묘시합니다: `encode`. 쿼리 또는 인덱스에서 Flow에 요청을 할 때마다 해당 값이 호출됩니다. 엔드포인트는 closed match를 가져오는데 사용할 수 있도록 인덱싱된 문서 또는 쿼리 문서에 대한 임베딩을 만듭니다.
 
 ```{admonition} Note
 :class: note
 Encoding is a fundamental concept in neural search. It means representing the data in a vectorial form (embeddings).
 ```
 
-Encoding is performed through a sentence-transformers model (`paraphrase-mpnet-base-v2` by default). We get the text
-attributes of docs in batch and then compute embeddings. Later, we set the embedding attribute of each Document.
+인코딩은 문장 변환기 모델 ( 기본적으로 `paraphrase-mpnet-base-v2`)을 통해 수행 됩니다. 우리는 batch로 문서의 텍스트 속성을 얻은 다음 임베딩을 계산합니다. 후에 문서의 속성을 설정합니다.
+
 
 ### 간단한 Indexer
 
@@ -280,14 +278,14 @@ class MyIndexer(Executor):
 Learn more about {ref}`DocumentArrayMemmap<documentarraymemmap-api>`.
 ```
 
-검색 기능을 수행하기 위해선, 코사인 유사도를 사용하여 query Document에서 가장 높은 매칭을 리턴하는 `match` 메소드를 사용합니다.
+검색 기능을 수행하기 위해선, 코사인 유사도를 사용하여 쿼리 문서에서 가장 높은 매칭을 리턴하는 `match` 메소드를 사용합니다.
 
 ```{admonition} See Also
 :class: seealso
 `.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
 ```
 
-Executors를 임포트 하기 위해선, 이것들을 추가 하세요:
+Executors를 임포트 하기 위해선, 이것들을 추가 :
 
 ``` python
 from my_executors import MyTransformer, MyIndexer
