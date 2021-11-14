@@ -83,7 +83,7 @@ have logic to index data. Later, we will modify Executors so that calling `flow.
 
 ## Flow 생성
 
-Executors와 Flow를 통합하고 코드를 약간 재구성 해보겠습니다. 먼저, 우리는 우리가 필요한 모든 것을 임포트 합니다:
+실행기와 Flow를 통합하고 코드를 약간 재구성 해보겠습니다. 먼저, 우리는 우리가 필요한 모든 것을 임포트 합니다:
 
 ``` python
 import os
@@ -187,7 +187,7 @@ Since we want to call our Flow from the browser, it's important to enable
 지금까지 많은 일을 끝냈습니다. 이걸 실행하면 브라우저에 열려 있는 새 탭이 표시 되고 텍스트를 입력할 수 있는 텍스트 상자가 준비됩니다. 
 그러나 입력하려고 하면 어떠한 결과도 얻을 수 없습니다. 이것은 우리가 더미 Executor을 사용하고 있기 때문입니다.
 `MyTransformer` 와 `MyIndexer` 는 실제로 아무런 동작도 하지 않고 있습니다.
-지금까지 그들은 호명될 때만 한 줄을 프린트 합니다. 그래서 우리는 진짜 Executor가 필요합니다.
+지금까지 그들은 호명될 때만 한 줄을 프린트 합니다. 그래서 우리는 진짜 실행기가 필요합니다.
 
 ## Executors 만들기
 
