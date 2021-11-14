@@ -222,21 +222,21 @@ In our case we are using the default `jinaai/jina:latest` base image. However, p
 If you need to have CUDA installed in the image, you usually have two options: either you take the `nvidia/cuda` for the base image, or you take the official GPU-enabled image of the framework you are using, for example, `tensorflow/tensorflow:2.6.0-gpu`.
 ```
 
-The other file we care about in this case is `config.yml`, and here the default version works as well. So let's build the Docker image
+우리가 신경 쓰는 다른 파일은 `config.yml`이며, 여기서는 기본 버젼도 작동합니다. 그러니 도커 이미지를 만들어봅시다.
 
 ```bash
 docker build -t sentence-encoder .
 ```
 
-You can run the container to quickly check that everything is working well
+모든 것이 잘 작동하는지 신속하게 확인하기 위해 컨테이너를 실행할 수 있습니다.
 
 ```bash
 docker run sentence-encoder
 ```
 
-Now, let's use the Docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU insite the container you need to pass `--gpus all` option to the `docker run` command. And Jina enables you to do just that.
+이제 GPU와 함께 도커 버젼의 인코더를 사용해 보겠습니다. 이전에 컨테이너에 있는 GPU를 다뤄본 적이 있다면, 컨테이너 안에 GPU를 사용하려면 `--gpus all` 옵션을 `docker run` 커멘드에서 사용해야합니다. 그리고 Jina는 바로 그 일을 할 수 있게 합니다.
 
-Here's how we need to modify our `main.py` script to use a GPU-base containerized Executor
+GPU 기반 컨테이너 Executor를 사용하기 위해 `main.py` 스크립트를 수정해야하는 방법은 다음과 같습니다.
 
 ```{code-block} python
 ---
@@ -259,11 +259,11 @@ with f:
     f.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
 ```
 
-If we run this with `python main.py`, we'll get the same output as before, except that now we'll also get the output from the Docker container.
+`python main.py`에서 실행하면, 이전과 동일한 결과 값을 얻을 수 있습니다. 도커 컨테이너에서도 해당하는 결과 값을 얻을 수 있습니다.
 
-You may notice that every time we start the Executor, the transformer model gets downloaded again. To speed this up, we would want the encoder to load the model from a file which we have pre-downloaded to our disk.
+Executor를 시작할 때마다 트렌스포머 모델이 다시 다운로드 됩니다. 이 속도를 높이기 위해 인코더가 미리 다운로드한 파일에서 모델을 디스크에 로드 하길 원합니다.
 
-We can do this with Docker volumes - Jina will simply pass the argument to the Docker container. Here's how we modify the `main.py` to allow that
+우리는 도커 볼륨으로 이것을 할 수 있습니다 - Jina는 간단히 그 argument를 도커 컨테이너에 전달 할 것입니다.`main.py` 를 수정하여 이를 허용 하는 방법은 다음과 같습니다.
 
 ```python
 f = Flow().add(
@@ -275,9 +275,9 @@ f = Flow().add(
 )
 ```
 
-Here we mounted the `~/.cache` directory, because this is where pre-built transformer models are saved in our case. But this could also be any custom directory - depends on the Python package you are using, and how you specify the model loading path.
+여기서는 `~/.cache` 디렉토리를 마운트 했습니다. 이 디렉토리는 사전 구축된 트랜스포머 모델이 저장되기 때문입니다. 그러나 이 디렉토리는 사용중인 파이썬 패키지와 모델 로드 경로 지정 방법에 따라 다른 디렉토리도 사용 가능합니다.
 
-Now, if we run `python main.py` again you can see that no downloading happens inside the container, and that the encoding starts faster.
+이제 `python main.py` 를 다시 실행하면 컨테이너 안에서 다운로드가 일어나지 않고 인코딩이 더 빨리 시작 되는 것을 볼 수 있습니다.
 
 ## 허브 Executors와 GPU 사용하기
 
