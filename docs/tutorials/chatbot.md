@@ -123,13 +123,11 @@ if __name__ == '__main__':
     tutorial(8080)
 ```
 
-If you run this, it should finish without errors. You won't see much yet because we are not showing anything after we
-index.
+이 프로그램을 실행하면 오류 없이 끝날 수 있습니다. 인덱싱 후에는 아무것도 볼 수 없기 때문에 아직은 뭔가 많이 보이지는 않습니다.
 
-To actually see something we need to specify how we will display it. For our tutorial we will do so in our browser.
-After indexing, we will open a web browser to serve the static html files. We also need to configure and serve our Flow
-on a specific port with the HTTP protocol so that the web browser can make requests to the Flow. So, we'll use the
-parameter `port_expose` to configure the Flow and set the protocol to HTTP. Modify the function `tutorial` like so:
+실제로 보기 위해서는 어떻게 표시할것인지 방법을 지정해야합니다. 튜토리얼의 경우 브라우저에서 해당 작업을 수행합니다.
+인덱싱 후, 웹 브라우저를 열어 정적 html 파일을 제공합니다. 또한 웹 브라우저가 Flow에 요청할 수 있도록 HTTP 프로토콜을 사용하여 특정 포트에 Flow를 구성하고 서비스 해야합니다. 따라서 파라미터  `port_expose`를 사용하여 Flow를 구성하고 프로토콜을 HTTP로 설정합니다. 
+다음과 같이 기능 `튜토리얼`을 수정합니다 : 
 
 ```{code-block} python
 ---
@@ -186,10 +184,10 @@ Since we want to call our Flow from the browser, it's important to enable
 [Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) with `Flow(cors=True)`
 ```
 
-Ok, so it seems that we have plenty of work done already. If you run this you will see a new tab open in your browser,
-and there you will have a text box ready for you to input some text. However, if you try to enter anything you won't get
-any results. This is because we are using dummy Executors. Our `MyTransformer` and `MyIndexer` aren't actually doing
-anything. So far they only print a line when they are called. So we need real Executors.
+지금까지 많은 일을 끝냈습니다. 이걸 실행하면 브라우저에 열려 있는 새 탭이 표시 되고 텍스트를 입력할 수 있는 텍스트 상자가 준비됩니다. 
+그러나 입력하려고 하면 어떠한 결과도 얻을 수 없습니다. 이것은 우리가 더미 Executor을 사용하고 있기 때문입니다.
+`MyTransformer` 와 `MyIndexer` 는 실제로 아무런 동작도 하지 않고 있습니다.
+지금까지 그들은 호명될 때만 한 줄을 프린트 합니다. 그래서 우리는 진짜 Executor가 필요합니다.
 
 ## Executors 만들기
 
@@ -273,10 +271,9 @@ class MyIndexer(Executor):
         docs.match(self._docs, metric='cosine', normalization=(1, 0), limit=1)
 ```
 
-
-`MyIndexer` exposes 2 endpoints: `index` and `search`. To perform indexing, we use 
-[`DocumentArrayMemmap`](https://docs.jina.ai/api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap) 
-which is a Jina data type. Indexing is a simple as adding the Documents to the `DocumentArrayMemmap`.
+`MyIndexer`에는 2가지 엔드포인트가 표시 됩니다 : `인덱스` 와 `검색`. 인덱싱을 수행하기 위해서 우리는 Jina 데이터 타입인 [`DocumentArrayMemmap`](https://docs.jina.ai/api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap)
+을 사용합니다.
+인덱싱은 Document를 `DocumentArrayMemmap`에 추가하는 간단한 방법입니다.
 
 ```{admonition} See Also
 :class: seealso
@@ -353,7 +350,7 @@ if __name__ == '__main__':
         ├── our_flow.svg #This will be here if you used the .plot() function       
         └── dataset.csv
 
-이제 끝났습니다. 모든 과정을 잘 따라 왔다면, 당신의 브라우저에는 다음과 같은 것이 있을 것입니다:browser:
+이제 끝났습니다. 모든 과정을 잘 따라 왔다면, 당신의 브라우저에는 다음과 같은 것이 있을 것입니다:
 
 ```{figure} ../_static/results.png
 :align: center
