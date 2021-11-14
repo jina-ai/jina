@@ -118,51 +118,51 @@ def test_scale_success(flow_with_runtime, pod_params):
         assert replica_ids == set(range(scale_to))
 
 
-@pytest.mark.parametrize(
-    'pod_params',
-    [
-        (2, 5, 1),
-        (2, 5, 2),
-    ],
-    indirect=True,
-)
-def test_scale_fail(flow_with_runtime, pod_params, mocker):
-    # note, this test only consist of scale up fail.
-    # the only way to make scale down fail is to raise Exception while pod close
-    # while it also breaks the test itself.
-    num_replicas, scale_to, shards = pod_params
-    mocker.patch(
-        'jina.peapods.peas.BasePea.async_wait_start_success',
-        side_effect=RuntimeFailToStart,
-    )
-    with flow_with_runtime as f:
-        ret1 = f.index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
-            request_size=10,
-        )
-        with pytest.raises(ScalingFails):
-            f.scale(pod_name='executor', replicas=scale_to)
-
-        ret2 = f.index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
-            request_size=10,
-        )
-
-    assert len(ret1) == 20
-    assert len(ret2) == 20
-
-    replica1_ids = set()
-    replica2_ids = set()
-    for r1, r2 in zip(ret1, ret2):
-        assert len(r1.docs) == 10
-        assert len(r2.docs) == 10
-        for replica_id in r1.docs.get_attributes('tags__replica_id'):
-            replica1_ids.add(replica_id)
-        for replica_id in r2.docs.get_attributes('tags__replica_id'):
-            replica2_ids.add(replica_id)
-    assert replica1_ids == replica2_ids == {0, 1}
+# @pytest.mark.parametrize(
+#     'pod_params',
+#     [
+#         (2, 5, 1),
+#         (2, 5, 2),
+#     ],
+#     indirect=True,
+# )
+# def test_scale_fail(flow_with_runtime, pod_params, mocker):
+#     # note, this test only consist of scale up fail.
+#     # the only way to make scale down fail is to raise Exception while pod close
+#     # while it also breaks the test itself.
+#     num_replicas, scale_to, shards = pod_params
+#     mocker.patch(
+#         'jina.peapods.peas.BasePea.async_wait_start_success',
+#         side_effect=RuntimeFailToStart,
+#     )
+#     with flow_with_runtime as f:
+#         ret1 = f.index(
+#             inputs=DocumentArray([Document() for _ in range(200)]),
+#             return_results=True,
+#             request_size=10,
+#         )
+#         with pytest.raises(ScalingFails):
+#             f.scale(pod_name='executor', replicas=scale_to)
+#
+#         ret2 = f.index(
+#             inputs=DocumentArray([Document() for _ in range(200)]),
+#             return_results=True,
+#             request_size=10,
+#         )
+#
+#     assert len(ret1) == 20
+#     assert len(ret2) == 20
+#
+#     replica1_ids = set()
+#     replica2_ids = set()
+#     for r1, r2 in zip(ret1, ret2):
+#         assert len(r1.docs) == 10
+#         assert len(r2.docs) == 10
+#         for replica_id in r1.docs.get_attributes('tags__replica_id'):
+#             replica1_ids.add(replica_id)
+#         for replica_id in r2.docs.get_attributes('tags__replica_id'):
+#             replica2_ids.add(replica_id)
+#     assert replica1_ids == replica2_ids == {0, 1}
 
 
 @pytest.mark.parametrize(
