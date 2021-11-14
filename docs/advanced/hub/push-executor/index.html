@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/push-executor.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="If you want to share your Executors to other persons or colleges, you can push your local Executor to the Hub. There are two types of sharing: Public(default): anyone can use the public executors without any restriction., Private: only people that has the secret can use the private executors.. Fi..." />
+  <meta property="og:description" content="If you want to share your Executor, you can push it to Jina Hub. There are two types of sharing: Public(default): anyone can use public Executors without any restriction., Private: only people that have the secret can use private Executors.. First publish: jina hub push [--public/--private] <path..." />
   <meta property="og:image" content="../../../_images/hub-push.gif" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -678,11 +678,11 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="publish-executor">
 <span id="push-executor"></span><h1>Publish Executor<a class="headerlink" href="#publish-executor" title="Permalink to this headline">¶</a></h1>
-<p>If you want to share your Executors to other persons or colleges, you can push your local Executor to the Hub.</p>
+<p>If you want to share your Executor, you can push it to Jina Hub.</p>
 <p>There are two types of sharing:</p>
 <ul class="simple">
-<li><p><strong>Public</strong> (default): anyone can use the public executors without any restriction.</p></li>
-<li><p><strong>Private</strong>: only people that has the <code class="docutils literal notranslate"><span class="pre">secret</span></code> can use the private executors.</p></li>
+<li><p><strong>Public</strong> (default): anyone can use public Executors without any restriction.</p></li>
+<li><p><strong>Private</strong>: only people that have the <code class="docutils literal notranslate"><span class="pre">secret</span></code> can use private Executors.</p></li>
 </ul>
 <section id="first-publish">
 <span id="jina-hub-usage"></span><h2>First publish<a class="headerlink" href="#first-publish" title="Permalink to this headline">¶</a></h2>
@@ -692,15 +692,15 @@
 <figure class="align-center">
 <img alt="../../../_images/hub-push.gif" src="../../../_images/hub-push.gif"/>
 </figure>
-<p>It will return <code class="docutils literal notranslate"><span class="pre">NAME</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>, which you will need when using (if private) or update the Executor later. <strong>Please keep them carefully.</strong></p>
+<p>It will return <code class="docutils literal notranslate"><span class="pre">NAME</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>, which you will need to use (if the Executor is private) or update the Executor. <strong>Please keep them carefully.</strong></p>
 <p>You can then visit <a class="reference external" href="https://hub.jina.ai">the Hub portal</a>, click on the “Recent” tab and see your published Executor.</p>
 <div class="note admonition">
 <p class="admonition-title">Note</p>
-<p>If no <code class="docutils literal notranslate"><span class="pre">--public</span></code> or <code class="docutils literal notranslate"><span class="pre">--private</span></code> visibility option is provided, then it is <strong>public</strong> by default.</p>
+<p>If no <code class="docutils literal notranslate"><span class="pre">--public</span></code> or <code class="docutils literal notranslate"><span class="pre">--private</span></code> argument is provided, then it is <strong>public</strong> by default.</p>
 </div>
 <div class="important admonition">
 <p class="admonition-title">Important</p>
-<p>Anyone can use any public Executor, but to use a private Executor one must know <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>.</p>
+<p>Anyone can use public Executors, but to use a private Executor you must know its <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>.</p>
 </div>
 </section>
 <section id="update-published-executors">
@@ -710,14 +710,14 @@
 </pre></div>
 </div>
 </section>
-<section id="tagging-executor">
-<span id="hub-tags"></span><h2>Tagging Executor<a class="headerlink" href="#tagging-executor" title="Permalink to this headline">¶</a></h2>
-<p>Tagging can be useful for versioning Executors; or differing Executors by their architectures (e.g. <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">cpu</span></code>).</p>
+<section id="tagging-an-executor">
+<span id="hub-tags"></span><h2>Tagging an Executor<a class="headerlink" href="#tagging-an-executor" title="Permalink to this headline">¶</a></h2>
+<p>Tagging can be useful for versioning Executors or differentiating them by their architecture (e.g. <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">cpu</span></code>).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push &lt;path_to_executor_folder&gt; -t TAG1 -t TAG2
 </pre></div>
 </div>
-<p>You can specify <code class="docutils literal notranslate"><span class="pre">-t</span></code> or <code class="docutils literal notranslate"><span class="pre">--tags</span></code> parameters to tag one Executor.</p>
-<p>If there is no <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter provided, the default tag is <code class="docutils literal notranslate"><span class="pre">latest</span></code>. And if you provide <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameters, and you still want to have <code class="docutils literal notranslate"><span class="pre">latest</span></code> tag, you must write it as one <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter.</p>
+<p>You can specify <code class="docutils literal notranslate"><span class="pre">-t</span></code> or <code class="docutils literal notranslate"><span class="pre">--tags</span></code> parameter to tag an Executor.</p>
+<p>If there is no <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter provided, the default tag is <code class="docutils literal notranslate"><span class="pre">latest</span></code>. And if you provide <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameters, and you still want to have <code class="docutils literal notranslate"><span class="pre">latest</span></code> tag, you must write it as a <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push .                     <span class="c1"># Result in one tag: latest</span>
 jina hub push . -t v1.0.0           <span class="c1"># Result in one tag: v1.0.0</span>
 jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.0, latest</span>
@@ -790,7 +790,7 @@ jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.
 <li><a class="reference internal" href="#">Publish Executor</a><ul>
 <li><a class="reference internal" href="#first-publish">First publish</a></li>
 <li><a class="reference internal" href="#update-published-executors">Update published Executors</a></li>
-<li><a class="reference internal" href="#tagging-executor">Tagging Executor</a></li>
+<li><a class="reference internal" href="#tagging-an-executor">Tagging an Executor</a></li>
 </ul>
 </li>
 </ul>

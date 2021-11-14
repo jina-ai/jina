@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/experimental/windows.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="You can install and use Jina on Windows. However, as Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. If you face additional issues, please let us know...." />
+  <meta property="og:description" content="You can install and use Jina on Windows. However, Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. If you face additional issues, please let us know. Kn..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -679,14 +679,14 @@
                 <section class="tex2jax_ignore mathjax_ignore" id="jina-on-windows">
 <span id="id1"></span><h1>Jina on Windows<a class="headerlink" href="#jina-on-windows" title="Permalink to this headline">¶</a></h1>
 <p>You can install and use Jina on Windows.</p>
-<p>However, as Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. <a class="reference external" href="https://github.com/jina-ai/jina/issues/">If you face additional issues, please let us know.</a></p>
+<p>However, Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. <a class="reference external" href="https://github.com/jina-ai/jina/issues/">If you face additional issues, please let us know.</a></p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>There can be a significant performance impact while running Jina on Windows. You may not want to use it in production.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Alternatively, you can use the Windows Subsystem for Linux, for better compatibility. Check the official guide <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install">here</a>.
+<p>Alternatively, you can use the Windows Subsystem for Linux for better compatibility. Check the official guide <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install">here</a>.
 Make sure you install WSL<strong>2</strong>.
 Once done, you can install Jina as on a native *nix platform.</p>
 </div>
@@ -696,9 +696,9 @@ Once done, you can install Jina as on a native *nix platform.</p>
 <h3><code class="docutils literal notranslate"><span class="pre">multiprocessing</span> <span class="pre">spawn</span></code><a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this headline">¶</a></h3>
 <p>Jina relies heavily on <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> to enable scaling &amp; distribution. Windows only supports <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods">spawn start method for multiprocessing</a>, which has a few caveats. <a class="reference external" href="../../../fundamentals/flow/remarks#multiprocessing-spawn">Please follow the guidelines here.</a></p>
 </section>
-<section id="compatability-of-executors-in-the-hub">
-<h3>Compatability of Executors in the Hub<a class="headerlink" href="#compatability-of-executors-in-the-hub" title="Permalink to this headline">¶</a></h3>
-<p>We’ve added preliminary support to using Executors listed in the Hub portal. Note that, these Executors are based on *nix OS and might not be compatible to run natively on Windows. Containers that are built on Windows OS are not supported yet.</p>
+<section id="compatibility-of-executors-in-the-hub">
+<h3>Compatibility of Executors in the Hub<a class="headerlink" href="#compatibility-of-executors-in-the-hub" title="Permalink to this headline">¶</a></h3>
+<p>We’ve added preliminary support for using Executors listed in the Hub portal. Note that, these Executors are based on *nix OS and might not be compatible to run natively on Windows. Containers that are built on Windows are not yet supported.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://docs.docker.com/desktop/windows/install/">Install Docker Desktop on Windows</a></p>
@@ -706,11 +706,11 @@ Once done, you can install Jina as on a native *nix platform.</p>
 </section>
 <section id="jinad-is-not-supported">
 <h3>JinaD is not supported<a class="headerlink" href="#jinad-is-not-supported" title="Permalink to this headline">¶</a></h3>
-<p>We haven’t added suppoort to JinaD on Windows. If you can make it work, feel free to create a PR.</p>
+<p>We haven’t added suppoort for JinaD on Windows. If you can make it work, feel free to create a PR.</p>
 </section>
 <section id="limited-support-for-documentarraymemmap">
 <h3>Limited support for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code><a class="headerlink" href="#limited-support-for-documentarraymemmap" title="Permalink to this headline">¶</a></h3>
-<p>Even though support for <a class="reference internal" href="../../../fundamentals/document/documentarraymemmap-api/"><span class="doc std std-doc">DocumentArrayMemmap</span></a> is added, it is error prone. Please proceed with caution.</p>
+<p>Even though support for <a class="reference internal" href="../../../fundamentals/document/documentarraymemmap-api/"><span class="doc std std-doc">DocumentArrayMemmap</span></a> has been added, it is still error-prone. Please proceed with caution.</p>
 </section>
 <section id="memory-watermark-is-unavailable">
 <h3>Memory watermark is unavailable<a class="headerlink" href="#memory-watermark-is-unavailable" title="Permalink to this headline">¶</a></h3>
@@ -721,7 +721,7 @@ Once done, you can install Jina as on a native *nix platform.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>UnicodeEncodeError: 'charmap' codec can't encode character '\u25ae' in position : character maps to &lt;undefined&gt;
 </pre></div>
 </div>
-<p>Set environment variable <code class="docutils literal notranslate"><span class="pre">PYTHONIOENCODING='utf-8'</span></code> before starting your python script.</p>
+<p>Set environment variable <code class="docutils literal notranslate"><span class="pre">PYTHONIOENCODING='utf-8'</span></code> before starting your Python script.</p>
 </section>
 </section>
 </section>
@@ -786,7 +786,7 @@ Once done, you can install Jina as on a native *nix platform.</p>
 <li><a class="reference internal" href="#">Jina on Windows</a><ul>
 <li><a class="reference internal" href="#known-issues">Known issues</a><ul>
 <li><a class="reference internal" href="#multiprocessing-spawn"><code class="docutils literal notranslate"><span class="pre">multiprocessing</span> <span class="pre">spawn</span></code></a></li>
-<li><a class="reference internal" href="#compatability-of-executors-in-the-hub">Compatability of Executors in the Hub</a></li>
+<li><a class="reference internal" href="#compatibility-of-executors-in-the-hub">Compatibility of Executors in the Hub</a></li>
 <li><a class="reference internal" href="#jinad-is-not-supported">JinaD is not supported</a></li>
 <li><a class="reference internal" href="#limited-support-for-documentarraymemmap">Limited support for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a></li>
 <li><a class="reference internal" href="#memory-watermark-is-unavailable">Memory watermark is unavailable</a></li>

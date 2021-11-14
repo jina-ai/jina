@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/index.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Now you understand that Executor is a building block in Jina. The following questions arise naturally: Can I reuse my Executor in another project?, Can I share my Executor to my colleague?, Can I simply use others’ Executor without implementing it?. Basically, something like the following: Yes! T..." />
+  <meta property="og:description" content="Now you understand that Executor is a building block in Jina. The following questions arise naturally: Can I reuse my Executor in another project?, Can I share my Executor with my colleagues?, Can I just use someone else’s Executor instead of building it myself?. Basically, something like the fol..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -681,16 +681,16 @@
 <p>Now you understand that <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is a building block in Jina. The following questions arise naturally:</p>
 <ul class="simple">
 <li><p>Can I reuse my Executor in another project?</p></li>
-<li><p>Can I share my Executor to my colleague?</p></li>
-<li><p>Can I simply use others’ Executor without implementing it?</p></li>
+<li><p>Can I share my Executor with my colleagues?</p></li>
+<li><p>Can I just use someone else’s Executor instead of building it myself?</p></li>
 </ul>
 <p>Basically, something like the following:</p>
 <figure class="align-center">
 <img alt="../../_images/hub-user-journey.svg" src="../../_images/hub-user-journey.svg"/></figure>
-<p><strong>Yes!</strong> This is exactly the purpose of Jina Hub - a marketplace for Executors. By using Hub you can pull prebuilt
+<p><strong>Yes!</strong> This is exactly the purpose of Jina Hub - a marketplace for Executors. With Hub you can pull prebuilt
 Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom
 Executors to share privately or publicly.</p>
-<p>A Hub Executor is an executor that is published in Jina Hub. Such an executor can be easily used in a Flow like this:</p>
+<p>A Hub Executor is an Executor that is published in Jina Hub. Such an Executor can be easily used in a Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://MyExecutor'</span><span class="p">)</span>

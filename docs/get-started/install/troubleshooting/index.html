@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/get-started/install/troubleshooting.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="This article helps you to solve the installation problems of Jina. On Linux/Mac, building wheels takes long time: The normal installation of Jina takes 10 seconds. If yours takes longer than this, then it is likely you unnecessarily built wheels from scratch. Every upstream dependencies of Jina h..." />
+  <meta property="og:description" content="This article helps you to solve the installation problems of Jina. On Linux/Mac, building wheels takes long time: The normal installation of Jina takes 10 seconds. If yours takes longer than this, then it is likely you unnecessarily built wheels from scratch. Every upstream dependency of Jina has..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -682,8 +682,8 @@
 <section id="on-linux-mac-building-wheels-takes-long-time">
 <h2>On Linux/Mac, building wheels takes long time<a class="headerlink" href="#on-linux-mac-building-wheels-takes-long-time" title="Permalink to this headline">¶</a></h2>
 <p>The normal installation of Jina takes 10 seconds. If yours takes longer than this, then it is likely you unnecessarily built wheels from scratch.</p>
-<p>Every upstream dependencies of Jina have pre-built wheels exhaustively on x86 &amp; arm64 and on MacOS &amp; Linux and on Python 3.7, 3.8, 3.9, including <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyzmq</span></code>, <code class="docutils literal notranslate"><span class="pre">grpcio</span></code> etc. This means, when you install Jina, your <code class="docutils literal notranslate"><span class="pre">pip</span></code> should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain <code class="docutils literal notranslate"><span class="pre">-cp38-cp38-macosx_10_15_x86_64.whl</span></code> when installing Jina on MacOS with Python 3.8.</p>
-<p>Hence, if you found you are building wheels during installation (see an example below), then it is a sign that you are installing Jina <strong>wrongly</strong>.</p>
+<p>Every upstream dependency of Jina has pre-built wheels exhaustively for x86/arm64, macos/Linux and Python 3.7/3.8/3.9, including <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyzmq</span></code>, <code class="docutils literal notranslate"><span class="pre">grpcio</span></code> etc. This means when you install Jina, your <code class="docutils literal notranslate"><span class="pre">pip</span></code> should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain <code class="docutils literal notranslate"><span class="pre">-cp38-cp38-macosx_10_15_x86_64.whl</span></code> when installing Jina on MacOS with Python 3.8.</p>
+<p>If you find you are building wheels during installation (see an example below), then it is a sign that you are installing Jina <strong>wrongly</strong>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Collecting numpy==2.0.*
   Downloading numpy-2.0.18.tar.gz (801 kB)
      |████████████████████████████████| 801 kB 1.1 MB/s
@@ -694,22 +694,22 @@ Building wheels for collected packages: numpy
 </div>
 <section id="solution-update-your-pip">
 <h3>Solution: update your <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#solution-update-your-pip" title="Permalink to this headline">¶</a></h3>
-<p>It could be simply that your local <code class="docutils literal notranslate"><span class="pre">pip</span></code> is too old. Updating it should solve the problem.</p>
+<p>It could simply be that your local <code class="docutils literal notranslate"><span class="pre">pip</span></code> is too old. Updating it should solve the problem:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pip</span>
 </pre></div>
 </div>
 </section>
 <section id="if-not-then">
 <h3>If not, then…<a class="headerlink" href="#if-not-then" title="Permalink to this headline">¶</a></h3>
-<p>Then you are likely installing Jina on a less-supported system/architecture. For example, on native Mac M1, or on Alpine Linux, or on Raspberry Pi 2/3 (armv6/7).</p>
+<p>Then you are likely installing Jina on a less-supported system/architecture. For example, on native Mac M1, Alpine Linux, or Raspberry Pi 2/3 (armv6/7).</p>
 </section>
 </section>
 <section id="on-mac-m1">
 <h2>On Mac M1<a class="headerlink" href="#on-mac-m1" title="Permalink to this headline">¶</a></h2>
-<p>Some upstream dependencies do not have pre-built wheels on M1 chip, hence you are likely to encounter some issues during the install. In this case, you need to config the dev environment using Rosetta2, including your terminal, <code class="docutils literal notranslate"><span class="pre">brew</span></code> and <code class="docutils literal notranslate"><span class="pre">python</span></code>, they must be running under Rosetta2 instead of natively on M1.</p>
+<p>Some upstream dependencies do not yet have pre-built wheels for the M1 chip, so you are likely to encounter some issues during the install. In this case, you need to configure the development environment using <a class="reference external" href="https://support.apple.com/en-us/HT211861">Rosetta2</a>, including your terminal, <code class="docutils literal notranslate"><span class="pre">brew</span></code> and <code class="docutils literal notranslate"><span class="pre">python</span></code>. They must all be running under Rosetta2 instead of natively on M1.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>You can run the following shell scrit in the terminal to check if you are running under Rosetta2 or natively on M1.</p>
+<p>You can run the following command in the terminal to check if you are running under Rosetta2 or natively on M1.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sysctl -n -i sysctl.proc_translated
 </pre></div>
 </div>
@@ -717,7 +717,7 @@ Building wheels for collected packages: numpy
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: for Apple silicon native process</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>: for Rosetta2 translated process</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">""</span></code>: in case the OID was not found, you are using an older mac running Catalina or something. You don’t have the M1 problem in the first place.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">""</span></code>: in case the OID was not found, you are using an older Mac running Catalina or an earlier version. You don’t have the M1 problem in the first place.</p></li>
 </ul>
 </div>
 </section>
