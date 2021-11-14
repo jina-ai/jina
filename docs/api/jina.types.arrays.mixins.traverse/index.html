@@ -719,7 +719,7 @@ Each :class:<code class="docutils literal notranslate"><span class="pre">Travers
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path">
 <span class="sig-name descname"><span class="pre">traverse_flat_per_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/traverse/#TraverseMixin.traverse_flat_per_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> per path in :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>
+<dd><p>Returns a flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> per path in <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>
 with all Documents, that are reached by the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -737,10 +737,10 @@ with all Documents, that are reached by the path.</p>
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat">
 <span class="sig-name descname"><span class="pre">traverse_flat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/traverse/#TraverseMixin.traverse_flat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a single flattened :class:<code class="docutils literal notranslate"><span class="pre">TraversableSequence</span></code> with all Documents, that are reached
-via the :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>.</p>
+via the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>When defining the :param:<code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> with multiple paths, the returned
+<p>When defining the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> with multiple paths, the returned
 :class:<code class="docutils literal notranslate"><span class="pre">Documents</span></code> are determined at once and not on the fly. This is a different
 behavior then in :method:<code class="docutils literal notranslate"><span class="pre">traverse</span></code> and :method:<code class="docutils literal notranslate"><span class="pre">traverse_flattened_per_path</span></code>!</p>
 </div>

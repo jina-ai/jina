@@ -678,7 +678,7 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="create-executor">
 <span id="executor"></span><h1>Create Executor<a class="headerlink" href="#create-executor" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Executor</span></code> process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in-place via functions decorated with <code class="docutils literal notranslate"><span class="pre">@requests</span></code>. To create an Executor, you only need to follow three principles:</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in-place via functions decorated with <code class="docutils literal notranslate"><span class="pre">@requests</span></code>. To create an Executor, you only need to follow three principles:</p>
 <ul class="simple">
 <li><p>An <code class="docutils literal notranslate"><span class="pre">Executor</span></code> should subclass directly from <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class.</p></li>
 <li><p>An <code class="docutils literal notranslate"><span class="pre">Executor</span></code> class is a bag of functions with shared state (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of

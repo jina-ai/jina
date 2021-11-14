@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/document/document-api.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Document is Jina’s basic data type. Whether you’re working with text, image, video, audio, or 3D meshes, they are all Document s in Jina. Minimum working example: from jina import Document d1 = Document(text='hello') d2 = Document(buffer=b'\f1') import numpy d3 = Document(blob=numpy.array([1, 2, ..." />
+  <meta property="og:description" content="Document is the basic data type in Jina. Whether you’re working with text, image, video, audio, or 3D meshes, they are all Document s in Jina. Minimum working example: from jina import Document d1 = Document(text='hello') d2 = Document(buffer=b'\f1') import numpy d3 = Document(blob=numpy.array([1..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -678,7 +678,7 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="document">
 <h1>Document<a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> is Jina’s basic data type. Whether you’re working with text, image, video, audio, or 3D meshes, they are
+<p><a class="reference internal" href="../../../api/jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is the basic data type in Jina. Whether you’re working with text, image, video, audio, or 3D meshes, they are
 all <code class="docutils literal notranslate"><span class="pre">Document</span></code>s in Jina.</p>
 <section id="minimum-working-example">
 <h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
@@ -701,7 +701,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 <section id="content">
 <h3>Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">blob</span></code>, and <code class="docutils literal notranslate"><span class="pre">buffer</span></code> are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Document.text" title="jina.Document.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a>, <a class="reference internal" href="../../../api/jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>, and <a class="reference internal" href="../../../api/jina/#jina.Document.buffer" title="jina.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a> are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
@@ -754,7 +754,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <section id="loading-content-from-uri">
 <h4>Loading content from URI<a class="headerlink" href="#loading-content-from-uri" title="Permalink to this headline">¶</a></h4>
-<p>Often, you need to load data from a URI instead of assigning them directly in your code, <code class="docutils literal notranslate"><span class="pre">.uri</span></code> is the attribute you must learn.</p>
+<p>Often, you need to load data from a URI instead of assigning them directly in your code, <a class="reference internal" href="../../../api/jina/#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> is the attribute you must learn.</p>
 <p>After setting <code class="docutils literal notranslate"><span class="pre">.uri</span></code>, you can load data into <code class="docutils literal notranslate"><span class="pre">.text</span></code>/<code class="docutils literal notranslate"><span class="pre">.buffer</span></code>/<code class="docutils literal notranslate"><span class="pre">.blob</span></code> as follows.</p>
 <p>The value of <code class="docutils literal notranslate"><span class="pre">.uri</span></code> can point to either local URI, remote URI or <a class="reference external" href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URI</a>.</p>
 <div class="tab-set docutils">
@@ -819,7 +819,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <section id="embedding">
 <h3>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h3>
 <p>Embedding is a multi-dimensional representation of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> (often a <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">D]</span></code> vector). It serves as a very important piece in the neural search.</p>
-<p>Document has an attribute <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> to contain the embedding information.</p>
+<p>Document has an attribute <a class="reference internal" href="../../../api/jina/#jina.Document.embedding" title="jina.Document.embedding"><code class="xref py py-attr docutils literal notranslate"><span class="pre">embedding</span></code></a> to contain the embedding information.</p>
 <p>Like <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, you can assign it with Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, SciPy sparse matrix (<code class="docutils literal notranslate"><span class="pre">spmatrix</span></code>), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
@@ -951,7 +951,7 @@ of <a class="reference internal" href="../documentarray/#documentarray"><span cl
 </section>
 <section id="tags">
 <h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> contains the <code class="docutils literal notranslate"><span class="pre">tags</span></code> field that can hold a map-like structure that can map arbitrary values.
+<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> contains the <a class="reference internal" href="../../../api/jina/#jina.Document.tags" title="jina.Document.tags"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tags</span></code></a> attribute that can hold a map-like structure that can map arbitrary values.
 In practice, you can store meta information in <code class="docutils literal notranslate"><span class="pre">tags</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -1031,7 +1031,7 @@ sent to an Executor.</p>
 </section>
 <section id="visualization">
 <h3>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h3>
-<p>To better see the Document’s recursive structure, you can use <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> function. If you are using JupyterLab/Notebook,
+<p>To better see the Document’s recursive structure, you can use <a class="reference internal" href="../../../api/jina.types.document.mixins.plot/#jina.types.document.mixins.plot.PlotMixin.plot" title="jina.types.document.mixins.plot.PlotMixin.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a> function. If you are using JupyterLab/Notebook,
 all <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects will be auto-rendered:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -1110,6 +1110,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
+<p>or</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'text'</span><span class="p">)</span>
 </pre></div>
 </div>

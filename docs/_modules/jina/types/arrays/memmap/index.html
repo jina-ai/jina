@@ -749,7 +749,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_pool</span> <span class="o">=</span> <span class="n">BufferPoolManager</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="n">buffer_pool_size</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.insert"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.DocumentArrayMemmap.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Insert :param:`doc.proto` at :param:`index`.</span>
+        <span class="sd">"""Insert `doc` at `index`.</span>
 
 <span class="sd">        :param index: the offset index of the insertion.</span>
 <span class="sd">        :param doc: the doc needs to be inserted.</span>
@@ -887,7 +887,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_buffer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Append :param:`doc` in :class:`DocumentArrayMemmap`.</span>
+<span class="sd">        Append `doc` in :class:`DocumentArrayMemmap`.</span>
 
 <span class="sd">        :param doc: The doc needs to be appended.</span>
 <span class="sd">        :param update_buffer: If set, update the buffer.</span>
@@ -899,7 +899,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">flush</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_buffer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Update :param:`doc` in :class:`DocumentArrayMemmap`.</span>
+<span class="sd">        Update `doc` in :class:`DocumentArrayMemmap`.</span>
 
 <span class="sd">        :param doc: The doc needed to be updated.</span>
 <span class="sd">        :param idx: The position of the document.</span>

@@ -678,7 +678,7 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="documentarray">
 <span id="id1"></span><h1>DocumentArray<a class="headerlink" href="#documentarray" title="Permalink to this headline">¶</a></h1>
-<p>A <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is a list of <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects. You can construct, delete, insert, sort and traverse
+<p>A <a class="reference internal" href="../../../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> is a list of <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects. You can construct, delete, insert, sort and traverse
 a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> like a Python <code class="docutils literal notranslate"><span class="pre">list</span></code>. It implements all Python List interface.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
@@ -748,7 +748,7 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 <section id="bulk-access-content">
 <span id="bulk-access"></span><h2>Bulk access content<a class="headerlink" href="#bulk-access-content" title="Permalink to this headline">¶</a></h2>
 <p>You can quickly access <code class="docutils literal notranslate"><span class="pre">.text</span></code>, <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> of all Documents in the DocumentArray without writing a for-loop.</p>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the plural counterparts, i.e. <code class="docutils literal notranslate"><span class="pre">.texts</span></code>, <code class="docutils literal notranslate"><span class="pre">.blobs</span></code>, <code class="docutils literal notranslate"><span class="pre">.buffers</span></code>, <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code> that allows you to <strong>get</strong> and <strong>set</strong> these properties in one shot. It is much more efficient than looping.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the plural counterparts, i.e. <a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/#jina.types.arrays.mixins.content.ContentPropertyMixin.texts" title="jina.types.arrays.mixins.content.ContentPropertyMixin.texts"><code class="xref py py-attr docutils literal notranslate"><span class="pre">texts</span></code></a>, <a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/#jina.types.arrays.mixins.content.ContentPropertyMixin.buffers" title="jina.types.arrays.mixins.content.ContentPropertyMixin.buffers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffers</span></code></a>, <a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/#jina.types.arrays.mixins.content.ContentPropertyMixin.blobs" title="jina.types.arrays.mixins.content.ContentPropertyMixin.blobs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blobs</span></code></a>, <a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/#jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings" title="jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings"><code class="xref py py-attr docutils literal notranslate"><span class="pre">embeddings</span></code></a> that allows you to <strong>get</strong> and <strong>set</strong> these properties in one shot. It is much more efficient than looping.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -796,7 +796,7 @@ d.embedding.shape= (1, 256)
 </section>
 <section id="find-nearest-neighbours">
 <span id="match-documentarray"></span><h2>Find nearest neighbours<a class="headerlink" href="#find-nearest-neighbours" title="Permalink to this headline">¶</a></h2>
-<p>Once <code class="docutils literal notranslate"><span class="pre">embedding</span></code> is set, one can use <code class="docutils literal notranslate"><span class="pre">.match()</span></code> function to find the nearest neighbour Documents from another <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> based on their <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>.</p>
+<p>Once <code class="docutils literal notranslate"><span class="pre">embeddings</span></code> is set, one can use <a class="reference internal" href="../../../api/jina.types.arrays.mixins.match/#jina.types.arrays.mixins.match.MatchMixin.match" title="jina.types.arrays.mixins.match.MatchMixin.match"><code class="xref py py-func docutils literal notranslate"><span class="pre">match()</span></code></a> function to find the nearest neighbour Documents from another <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> based on their <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>.</p>
 <p>The following image visualizes how <code class="docutils literal notranslate"><span class="pre">DocumentArrayA</span></code> finds <code class="docutils literal notranslate"><span class="pre">limit=5</span></code> matches from the Documents in <code class="docutils literal notranslate"><span class="pre">DocumentArrayB</span></code>. By
 default, the cosine similarity is used to evaluate the score between Documents.</p>
 <figure class="align-center">
@@ -918,11 +918,57 @@ match emb =   (0, 0)	1.0
 </pre></div>
 </div>
 </div>
+<p>Let’s do a simple benchmark on CPU vs. GPU <code class="docutils literal notranslate"><span class="pre">.match()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">Q</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">M</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+<span class="n">D</span> <span class="o">=</span> <span class="mi">768</span>
+
+<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+<span class="n">da2</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">on CPU via Numpy</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">da1</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">Q</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">da2</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">M</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">timeit</span> <span class="n">da1</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">da2</span><span class="p">,</span> <span class="n">only_id</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>6.18 s ± 7.18 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">on GPU via PyTorch</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">da1</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">Q</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="n">da2</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">M</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">timeit</span> <span class="n">da1</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">da2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">'cuda'</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">only_id</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>3.97 s ± 6.35 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that in the above GPU example we did a conversion. In practice, there is no need to do this conversion, <code class="docutils literal notranslate"><span class="pre">.embedding</span></code>/<code class="docutils literal notranslate"><span class="pre">.blob</span></code> as well as their bulk versions <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>/<code class="docutils literal notranslate"><span class="pre">.blobs</span></code> can store PyTorch/Tensorflow/Paddle/Scipy tensor <strong>natively</strong>. That is, in practice, you just need to assign the result directly into <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code> in your Encoder via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">torch_model</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">blobs</span><span class="p">)</span>  <span class="c1"># &lt;- no .numpy() is necessary</span>
+</pre></div>
+</div>
+<p>And then in just use <code class="docutils literal notranslate"><span class="pre">.match(da)</span></code></p>
 </section>
 </section>
 <section id="traverse-nested-structure">
 <h2>Traverse nested structure<a class="headerlink" href="#traverse-nested-structure" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">.traverse_flat()</span></code> function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates <code class="docutils literal notranslate"><span class="pre">Document</span></code>s on the provided traversal paths. You can use or modify <code class="docutils literal notranslate"><span class="pre">Document</span></code>s and the change will be applied in-place.</p>
+<p><a class="reference internal" href="../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat" title="jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat()</span></code></a> function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates <code class="docutils literal notranslate"><span class="pre">Document</span></code>s on the provided traversal paths. You can use or modify <code class="docutils literal notranslate"><span class="pre">Document</span></code>s and the change will be applied in-place.</p>
 <section id="syntax-of-traversal-path">
 <h3>Syntax of traversal path<a class="headerlink" href="#syntax-of-traversal-path" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">.traverse_flat()</span></code> function accepts a <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code> string which can be defined as follow:</p>
@@ -1051,8 +1097,8 @@ Examples<div class="sd-summary-down docutils">
 ])
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat_per_path</span></code> is another method for <code class="docutils literal notranslate"><span class="pre">Document</span></code> traversal. It works
-like <code class="docutils literal notranslate"><span class="pre">DocumentArray.traverse_flat</span></code> but groups <code class="docutils literal notranslate"><span class="pre">Documents</span></code> into <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> based on traversal path. When
+<p><a class="reference internal" href="../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path" title="jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path()</span></code></a> is another method for <code class="docutils literal notranslate"><span class="pre">Document</span></code> traversal. It works
+like <code class="docutils literal notranslate"><span class="pre">traverse_flat</span></code> but groups <code class="docutils literal notranslate"><span class="pre">Documents</span></code> into <code class="docutils literal notranslate"><span class="pre">DocumentArrays</span></code> based on traversal path. When
 calling <code class="docutils literal notranslate"><span class="pre">da.traverse_flat_per_path('cm,ccm')</span></code>, the resulting generator yields the following <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
@@ -1067,7 +1113,7 @@ DocumentArray([
 </section>
 <section id="flatten-document">
 <h3>Flatten Document<a class="headerlink" href="#flatten-document" title="Permalink to this headline">¶</a></h3>
-<p>If you simply want to traverse <strong>all</strong> chunks and matches regardless their levels. You can simply use <code class="docutils literal notranslate"><span class="pre">.flatten</span></code>. It will return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> with all chunks and matches flattened into the top-level, no more nested structure.</p>
+<p>If you simply want to traverse <strong>all</strong> chunks and matches regardless their levels. You can simply use <a class="reference internal" href="../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.flatten" title="jina.types.arrays.mixins.traverse.TraverseMixin.flatten"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.traverse.TraverseMixin.flatten()</span></code></a>. It will return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> with all chunks and matches flattened into the top-level, no more nested structure.</p>
 </section>
 </section>
 <section id="visualization">

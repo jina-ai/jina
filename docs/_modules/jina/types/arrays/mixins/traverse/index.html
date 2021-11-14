@@ -764,7 +764,7 @@
         <span class="n">filter_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``</span>
+<span class="sd">        Returns a flattened :class:``TraversableSequence`` per path in ``traversal_paths``</span>
 <span class="sd">        with all Documents, that are reached by the path.</span>
 
 <span class="sd">        :param traversal_paths: a comma-separated string that represents the traversal path</span>
@@ -783,10 +783,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached</span>
-<span class="sd">        via the :param:``traversal_paths``.</span>
+<span class="sd">        via the ``traversal_paths``.</span>
 
 <span class="sd">        .. warning::</span>
-<span class="sd">            When defining the :param:``traversal_paths`` with multiple paths, the returned</span>
+<span class="sd">            When defining the ``traversal_paths`` with multiple paths, the returned</span>
 <span class="sd">            :class:``Documents`` are determined at once and not on the fly. This is a different</span>
 <span class="sd">            behavior then in :method:``traverse`` and :method:``traverse_flattened_per_path``!</span>
 
