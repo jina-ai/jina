@@ -852,11 +852,11 @@
             <span class="p">)</span>  <span class="c1"># unbound method, self is required</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">"""</span>
-<span class="sd">        Get the path of the current shard.</span>
+<span class="sd">        Get the workspace directory of the Executor.</span>
 
-<span class="sd">        :return: returns the workspace of the shard of this Executor.</span>
+<span class="sd">        :return: returns the workspace of the current shard of this Executor.</span>
 <span class="sd">        """</span>
         <span class="n">workspace</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="p">,</span> <span class="s1">'workspace'</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">'workspace'</span><span class="p">,</span> <span class="kc">None</span>
@@ -876,11 +876,6 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">'Neither `metas.workspace` nor `runtime_args.workspace` is set, '</span>
-                <span class="s1">'are you using this Executor in a Flow?'</span>
-            <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
