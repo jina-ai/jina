@@ -135,15 +135,10 @@ class SentenceEncoder(Executor):
             doc.embedding = embedding
 ```
 
-Here all the device-specific magic happens on the two highlighted lines - when we create the
-`SentenceEncoder` class instance we pass it the device, and then we move the PyTorch
-model to our device. These are the exact same steps that you would use in a standalone Python
-script as well.
+여기서 모든 장치별 마법은 두개의 강조 표시된 라인에서 발생합니다 - `SentenceEncoder` 클래스 인스턴스를 만들 때 장치를 전달한 다음, PyTorch 모델을 장치로 이동합니다. 이러한 단계는 독립 실행형 파이썬 스크립트에서도 사용할 수 있는 것과 동일합니다.
 
-To see how we would pass the device we want the Executor to use,
-let's create another file - `main.py`, which will demonstrate the usage of this
-encoder by encoding 10 thousand text documents.
-
+Executor가 사용하길 원하는 장치를 어떻게 전달할지 보기 위해 , 10000개의 텍스트 문서를 인코딩 하여 이 인코더의 사용법을 보여줄 다른 파일인 `main.py`를 만들어 봅시다.
+ 
 ```python
 from jina import Document, Flow
 
@@ -178,17 +173,17 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
 
 ## GPU 로컬로 사용하기
 
-By now you can already see how easy it is to use the encoder on a GPU - simply set the device on initialization to `'cuda'`
+이제 GPU에서 인코더를 사용하는 것이 얼마나 쉬운지 알 수 있습니다 - 간단한 장치를 초기화 할 때 `'cuda'` 로 설정합니다.
 
 ```diff
 + f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})
 - f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})
 ```
 
-Let's see how much faster the GPU is, compared to CPU. The following
-comparison was made on `g4dn.xlarge` AWS instance, which has a single NVIDIA T4 GPU attached.
+CPU에 비해 GPU가 얼마나 빠른지 살펴보겠습니다. 다음 비교는 단일 NVIDIA T4 GPU가 연결된 `g4dn.xlarge` AWS 인스턴스에서 수행되었습니다.
 
-First, we need to make sure that the encoder is using the GPU - change the `'device'` parameter in `main.py`, as shown in the snippet above. With that done, let's run the benchmark again
+첫째, 인코더가 GPU를 사용하고 있는지 확인해야 합니다 - 위와 같이 `main.py`에서 `'device'` 파라미터를 변경합니다. 이 작업을 완료하고 벤치마크를 다시 실행해보겠습니다.
+
 ```python
 python main.py
 ```
@@ -203,7 +198,7 @@ python main.py
 Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:02 104.9 step/s 314 steps done in 2 seconds
 ```
 
-We can see that we got over 7x speedup! And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
+7배 이상 빨라진 것을 알 수 있습니다! 그러나 이는 우리가 할 수 있는 최선의 방법이 아닙니다. batch 크기를 늘려 GPU의 메모리를 최대화 하면 훨씬 더 빠른 속도를 얻을 수 있습니다. 그러나 이러한 최적화는 이 튜토리얼의 범위를 벗어납니다.
 
 ```{admonition} Note
 :class: note
@@ -216,9 +211,9 @@ so for most use cases this is not something we would worry about.
 
 ## 컨테이너 내부의 GPU 사용하기
 
-When you'll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.
+프로덕션에서 Executor를 사용할 경우 적절한 환경 격리를 제공하고 모든 장치에서 쉽게 사용할 수 있도록 도커 컨테이너에 Executor를 넣는 것이 좋습니다.
 
-Using GPU-enabled Executors in this case is no harder than using them locally. In this case we don't even need to modify the default `Dockerfile`.
+이 경우 GPU-사용 Executor를 사용하는 것이 로컬에서 사용하는 것보다 어렵지 않습니다. 이 경우 기본 도커 파일을 수정할 필요가 없습니다.
 
 ```{admonition} Choosing the right base image
 
