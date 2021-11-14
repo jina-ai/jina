@@ -199,11 +199,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )  # unbound method, self is required
 
     @property
-    def workspace(self) -> str:
+    def workspace(self) -> Optional[str]:
         """
-        Get the path of the current shard.
+        Get the workspace directory of the Executor.
 
-        :return: returns the workspace of the shard of this Executor.
+        :return: returns the workspace of the current shard of this Executor.
         """
         workspace = getattr(self.metas, 'workspace') or getattr(
             self.runtime_args, 'workspace', None
@@ -223,11 +223,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if not os.path.exists(complete_workspace):
                 os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
-        else:
-            raise ValueError(
-                'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
-                'are you using this Executor in a Flow?'
-            )
 
     def __enter__(self):
         return self
