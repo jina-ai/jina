@@ -10,7 +10,7 @@ Be aware of the following when running this tutorial in jupyter notebook. Some p
 이제 모든 개념을 이해 했으므로 학습 내용을 연습하고 간단한 end-to-end 데모를 만들어 보겠습니다.
 
 우리는 소스 코드에 fuzzy 검색 솔루션을 구현하기 위해 Jina를 사용할 것입니다.
-즉, 소스 코드 조각과 query가 주어지면 query와 유사한 모든 줄을 찾습니다. 이것은 `grep`과 같지만 fuzzy 모드 입니다.
+즉, 소스 코드 조각과 쿼리가 주어지면 쿼리와 유사한 모든 줄을 찾습니다. 이것은 `grep`과 같지만 fuzzy 모드 입니다.
 
 ````{admonition} Preliminaries
 :class: hint
@@ -30,7 +30,7 @@ Be aware of the following when running this tutorial in jupyter notebook. Some p
 
 ### 문자 임베딩
 
-먼저 문자 임베딩을 위한 간단한 Executor를 구현해봅시다:
+먼저 문자 임베딩을 위한 간단한 실행기를 구현해봅시다:
 
 ```python
 import numpy as np
@@ -116,7 +116,7 @@ and Google Colab, `__file__` is not defined. In this case, you may want to repla
 ```
 
 
-## Python에서 나온 Query 
+## Python에서 나온 쿼리 
 
 이제 파이썬으로 해봅시다. 위의 서버를 계속 실행하고, 간단한 클라이언트를 시작합니다:
 
