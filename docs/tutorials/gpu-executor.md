@@ -1,4 +1,4 @@
-# Run Executors on GPU
+# GPU에서 Executors 구동하기
 
 ```{article-info}
 :avatar: avatars/tadej.jpg
@@ -23,26 +23,22 @@ This tutorial assumes you are already familiar with basic Jina concepts, such as
 If you're not yet familiar with these concepts, first read the [Basic Concepts](../fundamentals/concepts) and related documentation, and return to this tutorial once you feel comfortable performing baisc operations in Jina.
 ```
 
-## Prerequisites
+## 전제조건
 
-For this tutorial, you will need to work on a machine with an NVIDIA graphics card. You
-can use various free cloud platforms (like Google Colab or Kaggle kernels), if you do
-not have such a machine at home.
+이 튜토리얼은 NVIDIA 그래픽 카드가 있는 컴퓨터에서 작업해야합니다. 집에 이러한 기기가 없는 경우 다양한 무료 클라우드 플랫폼 (예: Google Colab 또는 Kaggle 커널)을 사용 할 수 있습니다.
 
-You will also need to make sure to have a recent version of [NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
-installed. You don't need to install CUDA for this tutorial, but note that depending on
-the deep learning framework that you use, that might be required (for local execution).
+또한 최신 버젼의 [NVIDIA 드라이버](https://www.nvidia.com/Download/index.aspx)를 설치 해야합니다. 이 튜토리얼에는 CUDA를 설치할 필요가 없지만, 사용하는 딥러닝 프레임워크에 따라 로컬 실행에 필요할 수 있습니다.
 
-For the Docker part of the tutorial you will also need to have [Docker](https://docs.docker.com/get-docker/) and 
-[nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed.
+튜토리얼의 도커 부분에서는 [도커](https://docs.docker.com/get-docker/) 와 
+[nvidia-도커](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) 를 설치해야합니다.
 
-To run Python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install Jina inside it using
+파이썬 스크립트를 실행하려면 가상환경 (예: [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) 또는 [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments))이 필요하며 당므을 사용하여 Jina를 설치해야합니다.
 
 ```bash
 pip install jina
 ```
 
-## Setting up the executor
+## executor 세팅하기
 
 We will create a simple sentence encoder, and we'll start by creating the Executor 
 "skeleton" using Jina's command line utility:
@@ -186,7 +182,7 @@ python main.py
 Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:22 13.8 step/s 314 steps done in 22 seconds
 ```
 
-## Using GPU locally
+## GPU 로컬로 사용하기
 
 By now you can already see how easy it is to use the encoder on a GPU - simply set the device on initialization to `'cuda'`
 
@@ -224,7 +220,7 @@ initialized the Executor. However, this action only occurs once in the lifetime 
 so for most use cases this is not something we would worry about.
 ```
 
-## Using GPU in a container
+## 컨테이너 내부의 GPU 사용하기
 
 When you'll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.
 
@@ -294,11 +290,11 @@ Here we mounted the `~/.cache` directory, because this is where pre-built transf
 
 Now, if we run `python main.py` again you can see that no downloading happens inside the container, and that the encoding starts faster.
 
-## Using GPU with Hub Executors
+## 허브 Executors와 GPU 사용하기
 
-We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?
+이제 로컬에서 Executor와 도커 컨테이너에서 GPU를 사용하는 방법에 대해 알아보았습니다.Jina 허브에서 Executor를 사용할 때 차이가 있었나요?
 
-Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag (see [Jina Hub tags](hub_tags)). Let's modify our example to use the pre-built `TransformerTorchEncoder` from Jina Hub
+아니요! Jina 허브의 Executor 중 많은 수가 GPU 사용 버전이 미리 내장 되어 있으며, 대개 `gpu` 태그 ( [Jina Hub tags] (hub_tags)참고 ) 아래에 있습니다. 예제를 수정하여 Jina 허브의 사전 제작된 `TransformerTorchEncoder` 을 사용하겠습니다.
 
 ```diff
 f = Flow().add(
@@ -311,7 +307,7 @@ f = Flow().add(
 )
 ```
 
-You'll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.
+스크립트를 처음 실행할 때 도커 이미지 다운로드에 시간이 소요 됩니다 - GPU 이미지가 큽니다! 하지만 그 이후에는 모든 것이 여러분의 로컬 도커 이미지에서처럼 작동합니다.
 
 ```{admonition} Important
 :class: important
