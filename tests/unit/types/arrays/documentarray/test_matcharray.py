@@ -48,7 +48,9 @@ def test_append_from_documents(matcharray, document_factory, reference_doc):
     assert rv.text == match.text
     assert rv.granularity == reference_doc.granularity
     assert rv.adjacency == reference_doc.adjacency + 1
-    assert rv.mime_type == 'text/plain'
+
+    # match array is not neccessaily the same MIME type, think about multimodal
+    assert rv.mime_type == ''
 
 
 def test_mime_type_not_reassigned():

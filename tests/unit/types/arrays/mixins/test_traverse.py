@@ -32,28 +32,28 @@ def doc_req():
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_type(doc_req, filter_fn):
-    ds = doc_req.docs.traverse(['r'], filter_fn=filter_fn)
+    ds = doc_req.docs.traverse('r', filter_fn=filter_fn)
     assert isinstance(ds, types.GeneratorType)
     assert isinstance(list(ds)[0], DocumentArray)
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_root(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['r'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('r', filter_fn=filter_fn))
     assert len(ds) == 1
     assert len(ds[0]) == num_docs
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['c'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('c', filter_fn=filter_fn))
     assert len(ds) == num_docs
     assert len(ds[0]) == num_chunks_per_doc
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_root_plus_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['c', 'r'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('c,r', filter_fn=filter_fn))
     assert len(ds) == num_docs + 1
     assert len(ds[0]) == num_chunks_per_doc
     assert len(ds[-1]) == num_docs
@@ -61,7 +61,7 @@ def test_traverse_root_plus_chunk(doc_req, filter_fn):
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_chunk_plus_root(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['r', 'c'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('r,c', filter_fn=filter_fn))
     assert len(ds) == 1 + num_docs
     assert len(ds[-1]) == num_chunks_per_doc
     assert len(ds[0]) == num_docs
@@ -69,40 +69,40 @@ def test_traverse_chunk_plus_root(doc_req, filter_fn):
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_match(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['m'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('m', filter_fn=filter_fn))
     assert len(ds) == num_docs
     assert len(ds[0]) == num_matches_per_doc
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_match_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['cm'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('cm', filter_fn=filter_fn))
     assert len(ds) == num_docs * num_chunks_per_doc
     assert len(ds[0]) == num_matches_per_chunk
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_root_match_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse(['r', 'c', 'm', 'cm'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse('r,c,m,cm', filter_fn=filter_fn))
     assert len(ds) == 1 + num_docs + num_docs + num_docs * num_chunks_per_doc
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flatten_embedding(doc_req, filter_fn):
-    flattened_results = doc_req.docs.traverse_flat(['r', 'c'], filter_fn=filter_fn)
+    flattened_results = doc_req.docs.traverse_flat('r,c', filter_fn=filter_fn)
     ds = np.stack(flattened_results.get_attributes('embedding'))
     assert ds.shape == (num_docs + num_chunks_per_doc * num_docs, 10)
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flatten_root(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat(['r'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat('r', filter_fn=filter_fn))
     assert len(ds) == num_docs
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flatten_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat(['c'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat('c', filter_fn=filter_fn))
     assert len(ds) == num_docs * num_chunks_per_doc
 
 
@@ -150,40 +150,38 @@ def test_traverse_flattened_per_path_embedding(doc_req, filter_fn):
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flattened_per_path_root(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat_per_path(['r'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat_per_path('r', filter_fn=filter_fn))
     assert len(ds[0]) == num_docs
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flattened_per_path_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat_per_path(['c'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat_per_path('c', filter_fn=filter_fn))
     assert len(ds[0]) == num_docs * num_chunks_per_doc
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flattened_per_path_root_plus_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat_per_path(['c', 'r'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat_per_path('c,r', filter_fn=filter_fn))
     assert len(ds[0]) == num_docs * num_chunks_per_doc
     assert len(ds[1]) == num_docs
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flattened_per_path_match(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat_per_path(['m'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat_per_path('m', filter_fn=filter_fn))
     assert len(ds[0]) == num_docs * num_matches_per_doc
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flattened_per_path_match_chunk(doc_req, filter_fn):
-    ds = list(doc_req.docs.traverse_flat_per_path(['cm'], filter_fn=filter_fn))
+    ds = list(doc_req.docs.traverse_flat_per_path('cm', filter_fn=filter_fn))
     assert len(ds[0]) == num_docs * num_chunks_per_doc * num_matches_per_chunk
 
 
 @pytest.mark.parametrize('filter_fn', [(lambda d: True), None])
 def test_traverse_flattened_per_path_root_match_chunk(doc_req, filter_fn):
-    ds = list(
-        doc_req.docs.traverse_flat_per_path(['r', 'c', 'm', 'cm'], filter_fn=filter_fn)
-    )
+    ds = list(doc_req.docs.traverse_flat_per_path('r,c,m,cm', filter_fn=filter_fn))
     assert len(ds[0]) == num_docs
     assert len(ds[1]) == num_chunks_per_doc * num_docs
     assert len(ds[2]) == num_matches_per_doc * num_docs
@@ -194,12 +192,12 @@ def test_traverse_flattened_per_path_root_match_chunk(doc_req, filter_fn):
 def test_docuset_traverse_over_iterator_HACKY(filter_fn):
     # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-documentarray
     ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(
-        ['r'], filter_fn=filter_fn
+        'r', filter_fn=filter_fn
     )
     assert len(list(list(ds)[0])) == num_docs
 
     ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(
-        ['c'], filter_fn=filter_fn
+        'c', filter_fn=filter_fn
     )
     ds = list(ds)
     assert len(ds) == num_docs
@@ -210,14 +208,14 @@ def test_docuset_traverse_over_iterator_HACKY(filter_fn):
 def test_docuset_traverse_over_iterator_CAVEAT(filter_fn):
     # HACKY USAGE's CAVEAT: but it can not iterate over an iterator twice
     ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(
-        ['r', 'c'], filter_fn=filter_fn
+        'r,c', filter_fn=filter_fn
     )
     # note that random_docs is a generator and can be only used once,
     # therefore whoever comes first wil get iterated, and then it becomes empty
     assert len(list(ds)) == 1 + num_docs
 
     ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(
-        ['c', 'r'], filter_fn=filter_fn
+        'c,r', filter_fn=filter_fn
     )
     assert len(list(ds)) == num_docs + 1
 
@@ -229,7 +227,7 @@ def test_doc_iter_method(filter_fn):
     for d in DocumentArray(ds):
         assert d.text == 'hello world'
 
-    for d in DocumentArray(ds).traverse_flat(['c', 'r'], filter_fn=filter_fn):
+    for d in DocumentArray(ds).traverse_flat('c,r', filter_fn=filter_fn):
         d.text = 'modified'
 
     for d in DocumentArray(ds):
@@ -244,7 +242,7 @@ def test_traverse_matcharray(filter_fn):
             for i in range(3)
         ]
     )
-    flat_docs = doc.matches.traverse_flat(['r', 'c'], filter_fn=filter_fn)
+    flat_docs = doc.matches.traverse_flat('r,c', filter_fn=filter_fn)
     assert isinstance(flat_docs, DocumentArray)
     assert len(flat_docs) == 12
 
@@ -257,7 +255,7 @@ def test_traverse_chunkarray(filter_fn):
             for i in range(3)
         ]
     )
-    flat_docs = doc.chunks.traverse_flat(['r', 'm'], filter_fn=filter_fn)
+    flat_docs = doc.chunks.traverse_flat('r,m', filter_fn=filter_fn)
     assert isinstance(flat_docs, DocumentArray)
     assert len(flat_docs) == 12
 
@@ -294,7 +292,7 @@ def test_filter_fn_traverse_flat(filter_fn, docs_len, doc_req, use_dam, tmp_path
         docs.extend(doc_req.docs)
     else:
         docs = doc_req.docs
-    ds = list(docs.traverse_flat(['r', 'c', 'm', 'cm'], filter_fn=filter_fn))
+    ds = list(docs.traverse_flat('r,c,m,cm', filter_fn=filter_fn))
     assert len(ds) == docs_len
     assert all(isinstance(d, Document) for d in ds)
 
@@ -337,7 +335,7 @@ def test_filter_fn_traverse_flat_per_path(
         docs.extend(doc_req.docs)
     else:
         docs = doc_req.docs
-    ds = list(docs.traverse_flat_per_path(['r', 'c', 'm', 'cm'], filter_fn=filter_fn))
+    ds = list(docs.traverse_flat_per_path('r,c,m,cm', filter_fn=filter_fn))
     assert len(ds) == 4
     for seq, length in zip(ds, docs_len):
         assert isinstance(seq, DocumentArray if not use_dam else itertools.chain)
@@ -348,25 +346,25 @@ def test_traversal_path():
     da = DocumentArray([Document() for _ in range(6)])
     assert len(da) == 6
 
-    da.traverse_flat(['r'])
+    da.traverse_flat('r')
 
-    with pytest.raises(TypeError):
-        da.traverse_flat('r')
+    with pytest.warns(DeprecationWarning):
+        da.traverse_flat(['r'])
 
-    da.traverse(['r'])
-    with pytest.raises(TypeError):
-        for _ in da.traverse('r'):
+    da.traverse('r')
+    with pytest.warns(DeprecationWarning):
+        for _ in da.traverse(['r']):
             pass
 
-    da.traverse(['r'])
-    with pytest.raises(TypeError):
-        for _ in da.traverse('r'):
+    da.traverse('r')
+    with pytest.warns(DeprecationWarning):
+        for _ in da.traverse(['r']):
             pass
 
 
 def test_traverse_flat_root_itself():
     da = DocumentArray([Document() for _ in range(100)])
-    res = da.traverse_flat(['r'])
+    res = da.traverse_flat('r')
     assert id(res) == id(da)
 
 

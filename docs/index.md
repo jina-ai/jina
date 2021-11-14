@@ -141,10 +141,8 @@ datatype/tabular/index
 :hidden:
 
 advanced/hub/index
-advanced/master-executor
 advanced/daemon/index
 advanced/experimental/index
-advanced/gpu-executor
 ```
 
 

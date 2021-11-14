@@ -118,10 +118,10 @@ message DocumentProto {
     google.protobuf.Struct tags = 11;
 
     // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
-    repeated uint32 location = 17;
+    repeated float location = 17;
 
     // the offset of this doc in the previous granularity document
-    uint32 offset = 18;
+    float offset = 18;
 
     // the embedding `ndarray` of this document
     NdArrayProto embedding = 19;

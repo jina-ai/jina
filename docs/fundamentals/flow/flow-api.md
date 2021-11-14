@@ -70,7 +70,7 @@ from jina import Flow
 f = Flow().add().plot('f.svg')
 ```
 
-```{figure} ../../../.github/2.0/empty-flow.svg
+```{figure} empty-flow.svg
 :align: center
 ```
 

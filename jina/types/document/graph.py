@@ -11,19 +11,20 @@ from typing import (
 
 import numpy as np
 
-from . import Document, DocumentSourceType
+from . import Document
 from ..arrays import ChunkArray
 from ..ndarray import NdArray
 from ..struct import StructView
+from ...helper import deprecated_method
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
-from ...helper import deprecated_method
 
 __all__ = ['GraphDocument']
 
 if TYPE_CHECKING:
     from scipy.sparse import coo_matrix
     from dgl import DGLGraph
+    from . import DocumentSourceType
 
     from ..ndarray import ArrayType
 
@@ -57,7 +58,7 @@ class GraphDocument(Document):
 
     def __init__(
         self,
-        document: Optional[DocumentSourceType] = None,
+        document: Optional['DocumentSourceType'] = None,
         copy: bool = False,
         force_undirected: bool = False,
         **kwargs,

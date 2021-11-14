@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from ....helper import typename
