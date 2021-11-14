@@ -59,18 +59,18 @@ look like in the end
 ![jina hub new](../_static/hub_new_gpu.png)
 
 
-Once this is done, let's move to the newly created Executor directory:
+다 끝나면 새로 만들어진 Executor 디렉토리로 이동합니다:
 ```bash
 cd SentenceEncoder
 ```
 
-Let's continue by specifying our requirements in `requirements.txt` file
+`requirements.txt` 파일의 요구사항들을 따.
 
 ```text
 sentence-transformers==2.0.0
 ```
 
-and installing them using
+하단을 참고하여 설치합니다.
 
 ```bash
 pip install -r requirements.txt
@@ -106,7 +106,7 @@ torch==1.9.0+cpu
 :::
 ```
 
-Now let's fill the `executor.py` file with the actual code of our Executor
+이제 `executor.py` 파일을 Executor의 실 코드로 채워 넣읍시다.
 
 ```{code-block} python
 ---
@@ -166,7 +166,7 @@ with f:
     f.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
 ```
 
-Let's try it out by running
+이제 실행해봅시다.
 
 ```bash
 python main.py
