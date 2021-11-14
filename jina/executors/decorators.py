@@ -3,18 +3,13 @@
 import functools
 import inspect
 from functools import wraps
-from typing import (
-    Callable,
-    Union,
-    List,
-    Optional,
-    Dict,
-    Sequence,
-)
+from typing import Callable, Union, List, Optional, Dict, Sequence, TYPE_CHECKING
 
 from .metas import get_default_metas
 from ..helper import convert_tuple_to_list
-from ..types.arrays import DocumentArray
+
+if TYPE_CHECKING:
+    from ..types.arrays import DocumentArray
 
 
 def wrap_func(cls, func_lst, wrapper):
@@ -70,8 +65,14 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 def requests(
     func: Callable[
-        [DocumentArray, Dict, DocumentArray, List[DocumentArray], List[DocumentArray]],
-        Optional[Union[DocumentArray, Dict]],
+        [
+            'DocumentArray',
+            Dict,
+            'DocumentArray',
+            List['DocumentArray'],
+            List['DocumentArray'],
+        ],
+        Optional[Union['DocumentArray', Dict]],
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,

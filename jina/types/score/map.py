@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
 import numpy as np
 
@@ -9,7 +9,7 @@ from ...proto import jina_pb2
 
 __all__ = ['NamedScoreMapping']
 
-if False:
+if TYPE_CHECKING:
     from google.protobuf.pyext._message import MessageMapContainer
 
 

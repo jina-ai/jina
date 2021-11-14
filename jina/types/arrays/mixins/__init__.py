@@ -2,6 +2,7 @@ from abc import ABC
 
 from .content import ContentPropertyMixin
 from .empty import EmptyMixin
+from .evaluation import EvaluationMixin
 from .getattr import GetAttributeMixin
 from .group import GroupMixin
 from .io.binary import BinaryIOMixin
@@ -14,7 +15,6 @@ from .plot import PlotMixin
 from .sample import SampleMixin
 from .text import TextToolsMixin
 from .traverse import TraverseMixin
-from .evaluation import EvaluationMixin
 
 
 class AllMixins(

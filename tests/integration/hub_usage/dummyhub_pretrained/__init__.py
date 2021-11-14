@@ -1,7 +1,10 @@
 from typing import Dict
 
 from jina import Executor
-from jina.excepts import ModelCheckpointNotExist
+
+
+class ModelCheckpointNotExist(FileNotFoundError):
+    """Exception to raise for executors depending on pretrained model files when they do not exist."""
 
 
 class DummyPretrainedExecutor(Executor):

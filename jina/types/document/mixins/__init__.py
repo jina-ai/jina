@@ -1,16 +1,16 @@
+from .attribute import GetSetAttributeMixin
 from .audio import AudioDataMixin
+from .buffer import BufferDataMixin
 from .content import ContentPropertyMixin
 from .convert import ConvertMixin
 from .dump import DumpFileMixin
-from .attribute import GetSetAttributeMixin
-from .match import MatchMixin
 from .image import ImageDataMixin
+from .match import MatchMixin
 from .mesh import MeshDataMixin
 from .plot import PlotMixin
 from .text import TextDataMixin
-from .video import VideoDataMixin
 from .version import VersionedMixin
-from .buffer import BufferDataMixin
+from .video import VideoDataMixin
 
 
 class AllMixins(
