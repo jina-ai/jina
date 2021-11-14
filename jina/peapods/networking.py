@@ -5,7 +5,7 @@ import socket
 from abc import abstractmethod
 from argparse import Namespace
 from threading import Thread
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import grpc
 
@@ -15,7 +15,7 @@ from jina.types.message import Message
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
 
-if False:
+if TYPE_CHECKING:
     import kubernetes
 
 

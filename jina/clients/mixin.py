@@ -4,11 +4,10 @@ from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING
 
 from ..enums import InfrastructureType
 from ..helper import run_async
-from ..peapods.pods.k8slib import kubernetes_tools
-from ..types.request import Response
 
 if TYPE_CHECKING:
     from .base import CallbackFnType, InputType
+    from ..types.request import Response
 
 
 class PostMixin:
@@ -18,9 +17,9 @@ class PostMixin:
         self,
         on: str,
         inputs: Optional['InputType'] = None,
-        on_done: 'CallbackFnType' = None,
-        on_error: 'CallbackFnType' = None,
-        on_always: 'CallbackFnType' = None,
+        on_done: Optional['CallbackFnType'] = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         parameters: Optional[Dict] = None,
         target_peapod: Optional[str] = None,
         request_size: int = 100,
@@ -28,7 +27,7 @@ class PostMixin:
         continue_on_error: bool = False,
         return_results: bool = False,
         **kwargs,
-    ) -> Optional[List[Response]]:
+    ) -> Optional[List['Response']]:
         """Post a general data request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
@@ -67,6 +66,8 @@ class PostMixin:
             and hasattr(self.args, 'infrastructure')
             and self.args.infrastructure == InfrastructureType.K8S
         ):
+            from ..peapods.pods.k8slib import kubernetes_tools
+
             context_mgr = kubernetes_tools.get_port_forward_contextmanager(
                 self.args.k8s_namespace or self.args.name, self.port_expose
             )
@@ -100,16 +101,16 @@ class AsyncPostMixin:
         self,
         on: str,
         inputs: Optional['InputType'] = None,
-        on_done: 'CallbackFnType' = None,
-        on_error: 'CallbackFnType' = None,
-        on_always: 'CallbackFnType' = None,
+        on_done: Optional['CallbackFnType'] = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         parameters: Optional[Dict] = None,
         target_peapod: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
         continue_on_error: bool = False,
         **kwargs,
-    ) -> AsyncGenerator[None, Response]:
+    ) -> AsyncGenerator[None, 'Response']:
         """Post a general data request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.

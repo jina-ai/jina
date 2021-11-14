@@ -1,7 +1,7 @@
 import os
 import sys
 import warnings
-from types import SimpleNamespace, ModuleType
+from types import SimpleNamespace
 from typing import Optional
 
 from . import __resources_path__

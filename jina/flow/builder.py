@@ -1,12 +1,13 @@
 from functools import wraps
-from typing import List
+from typing import List, TYPE_CHECKING
 
-from ..enums import FlowBuildLevel
+
 from ..excepts import FlowBuildLevelError
 
 # noinspection PyUnreachableCode
-if False:
-    from . import Flow
+if TYPE_CHECKING:
+    from .base import Flow
+    from ..enums import FlowBuildLevel
 
 
 def allowed_levels(levels: List['FlowBuildLevel']):

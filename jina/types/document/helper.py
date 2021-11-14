@@ -1,8 +1,8 @@
-from typing import Iterable
+from typing import Iterable, TYPE_CHECKING
 
 __all__ = ['DocGroundtruthPair']
 
-if False:
+if TYPE_CHECKING:
     from . import Document
 
 

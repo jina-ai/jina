@@ -15,8 +15,8 @@ from .bpm import BufferPoolManager
 from ..mixins import AllMixins, ContentPropertyMixin
 from .... import __windows__
 
-HEADER_NONE_ENTRY = (-1, -1, -1)
-PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
+_HEADER_NONE_ENTRY = (-1, -1, -1)
+_PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 if TYPE_CHECKING:
     from ...document import Document
@@ -142,7 +142,7 @@ class DocumentArrayMemmap(
 
         self._header_map = OrderedDict()
         for idx, r in enumerate(tmp):
-            if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY):
+            if not np.array_equal((r[1], r[2], r[3]), _HEADER_NONE_ENTRY):
                 self._header_map[r[0]] = (idx, r[1], r[2], r[3])
 
         self._header_keys = list(self._header_map.keys())
@@ -185,9 +185,9 @@ class DocumentArrayMemmap(
     ) -> None:
         value = doc.binary_str()
         l = len(value)  #: the length
-        p = int(self._start / PAGE_SIZE) * PAGE_SIZE  #: offset of the page
+        p = int(self._start / _PAGE_SIZE) * _PAGE_SIZE  #: offset of the page
         r = (
-            self._start % PAGE_SIZE
+            self._start % _PAGE_SIZE
         )  #: the remainder, i.e. the start position given the offset
 
         if idx is not None:
