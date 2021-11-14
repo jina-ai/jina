@@ -6,16 +6,15 @@ import os
 from abc import ABC
 from typing import Callable, Union, Optional, Iterator, AsyncIterator, TYPE_CHECKING
 
-
-from ...excepts import BadClientInput, ValidationError
-from ...helper import typename, ArgNamespace
+from ...excepts import BadClientInput
+from ...helper import typename, ArgNamespace, T
 from ...logging.logger import JinaLogger
 from ...logging.predefined import default_logger
 from ...parsers import set_client_cli_parser
-from ...types.request import Request, Response
 
 if TYPE_CHECKING:
     from ..request import GeneratorSourceType
+    from ...types.request import Request, Response
 
     InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
     CallbackFnType = Optional[Callable[[Response], None]]
@@ -66,7 +65,7 @@ class BaseClient(ABC):
         kwargs['exec_endpoint'] = '/'
 
         if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
-            raise ValidationError(
+            raise BadClientInput(
                 'checking the validity of an async generator is not implemented yet'
             )
 
@@ -74,6 +73,8 @@ class BaseClient(ABC):
             from ..request import request_generator
 
             r = next(request_generator(**kwargs))
+            from ...types.request import Request
+
             if not isinstance(r, Request):
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:
@@ -136,14 +137,14 @@ class BaseClient(ABC):
         self,
         inputs: 'InputType',
         on_done: 'CallbackFnType',
-        on_error: 'CallbackFnType' = None,
-        on_always: 'CallbackFnType' = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         **kwargs,
     ):
         ...
 
     @property
-    def client(self) -> 'BaseClient':
+    def client(self: T) -> T:
         """Return the client object itself
 
         :return: the Client object

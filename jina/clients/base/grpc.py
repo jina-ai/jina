@@ -1,6 +1,6 @@
 import asyncio
 from contextlib import nullcontext
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import grpc
 
@@ -24,8 +24,8 @@ class GRPCBaseClient(BaseClient):
         self,
         inputs: 'InputType',
         on_done: 'CallbackFnType',
-        on_error: 'CallbackFnType' = None,
-        on_always: 'CallbackFnType' = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         **kwargs,
     ):
         try:

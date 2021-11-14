@@ -12,7 +12,17 @@ import time
 import uuid
 from collections import OrderedDict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
+from typing import (
+    Optional,
+    Union,
+    Tuple,
+    List,
+    Set,
+    Dict,
+    overload,
+    Type,
+    TYPE_CHECKING,
+)
 
 from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
@@ -42,15 +52,14 @@ from ..helper import (
     CatchAllCleanupContextManager,
 )
 from ..jaml import JAMLCompatible
-
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
 from ..peapods import CompoundPod, Pod
-from ..peapods.pods.k8s import K8sPod
-from ..peapods.pods.factory import PodFactory
-from ..types.routing.table import RoutingTable
 from ..peapods.networking import is_remote_local_connection
+from ..peapods.pods.factory import PodFactory
+from ..peapods.pods.k8s import K8sPod
+from ..types.routing.table import RoutingTable
 
 __all__ = ['Flow']
 
@@ -63,7 +72,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
-if False:
+if TYPE_CHECKING:
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
     from .asyncio import AsyncFlow

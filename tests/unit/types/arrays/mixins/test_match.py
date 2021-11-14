@@ -1,8 +1,12 @@
 import copy
 
 import numpy as np
+import paddle
 import pytest
 import scipy.sparse as sp
+import tensorflow as tf
+import torch
+from scipy.sparse import csr_matrix, bsr_matrix, coo_matrix, csc_matrix
 from scipy.spatial.distance import cdist as scipy_cdist
 
 from jina import Document, DocumentArray
@@ -728,3 +732,25 @@ def test_dense_vs_sparse_match(match_kwargs, nnz_ratio):
     print(
         f'sparse DA: {size_sp} bytes is {size_sp / size_dense * 100:.0f}% of dense DA {size_dense} bytes'
     )
+
+
+def get_ndarrays():
+    a = np.random.random([10, 3])
+    a[a > 0.5] = 0
+    return [
+        a,
+        torch.tensor(a),
+        tf.constant(a),
+        paddle.to_tensor(a),
+        csr_matrix(a),
+        bsr_matrix(a),
+        coo_matrix(a),
+        csc_matrix(a),
+    ]
+
+
+@pytest.mark.parametrize('ndarray_val', get_ndarrays())
+def test_diff_framework_match(ndarray_val):
+    da = DocumentArray.empty(10)
+    da.embeddings = ndarray_val
+    da.match(da)

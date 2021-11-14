@@ -1,16 +1,14 @@
 import inspect
 import os
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Optional, Callable
+from typing import Dict, Optional, Type
 
 from .decorators import store_init_kwargs, wrap_func
 from .. import __default_endpoint__, __args_executor_init__
-from ..helper import typename, ArgNamespace
+from ..helper import typename, ArgNamespace, T
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
-
-AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
+__all__ = ['BaseExecutor']
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -238,7 +236,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self.close()
 
     @classmethod
-    def from_hub(cls, uri: str, **kwargs) -> 'BaseExecutor':
+    def from_hub(cls: Type[T], uri: str, **kwargs) -> T:
         """Construct an Executor from Hub.
 
         :param uri: a hub Executor scheme starts with `jinahub://`

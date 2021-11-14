@@ -1,9 +1,9 @@
 import warnings
 from typing import List, Union, Any, Optional
 
+from ....helper import T
 from ....helper import dunder_get, typename
 from ....proto import jina_pb2
-from .helper import T
 
 
 class GetSetAttributeMixin:

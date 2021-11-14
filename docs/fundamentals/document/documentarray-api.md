@@ -1,8 +1,12 @@
 (documentarray)=
 # DocumentArray
 
-A `DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
-a `DocumentArray` like a Python `list`. It implements all Python List interface, including `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`. 
+A {class}`~jina.types.arrays.document.DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
+a `DocumentArray` like a Python `list`. It implements all Python List interface. 
+
+```{hint}
+Jina provides a memory-efficient version of `DocumentArray`, you {ref}`can find its API here<documentarraymemmap-api>`.  
+```
 
 ## Minimum working example
 
@@ -23,7 +27,7 @@ from jina import DocumentArray
 da = DocumentArray.empty(10)
 ```
 ````
-````{tab} From list of Document
+````{tab} From list of Documents
 ```python
 from jina import DocumentArray, Document
 
@@ -68,11 +72,11 @@ da[1:2]
 ```
 
 (bulk-access)=
-## Bulk access on content
+## Bulk access content
 
 You can quickly access `.text`, `.blob`, `.buffer`, `.embedding` of all Documents in the DocumentArray without writing a for-loop.
 
-`DocumentArray` provides the plural counterparts, i.e. `.texts`, `.blobs`, `.buffers`, `.embeddings` that allows one to **get** & **set** these properties in one shot. It is much more efficient than looping.
+`DocumentArray` provides the plural counterparts, i.e. {attr}`~jina.types.arrays.mixins.content.ContentPropertyMixin.texts`, {attr}`~jina.types.arrays.mixins.content.ContentPropertyMixin.buffers`, {attr}`~jina.types.arrays.mixins.content.ContentPropertyMixin.blobs`, {attr}`~jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings` that allows you to **get** and **set** these properties in one shot. It is much more efficient than looping.
 
 ```python
 from jina import DocumentArray
@@ -88,7 +92,7 @@ print(da[0], da[1])
 <jina.types.document.Document ('id', 'text') at 5763350672>
 ```
 
-When accessing `.blobs` or `.embeddings`, it automatically ravels/unravels the NdArray (can be Numpy/Tensorflow/Pytorch/Scipy/PaddlePaddle) for you.
+When accessing `.blobs` or `.embeddings`, it automatically ravels/unravels the ndarray (can be Numpy/TensorFlow/PyTorch/SciPy/PaddlePaddle) for you.
 
 ```python
 import numpy as np
@@ -124,52 +128,59 @@ d.embedding.shape= (1, 256)
 ```
 
 (match-documentarray)=
-## Finding nearest neighbours
 
-`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects based on their `.embeddings`. This
-function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
+## Find nearest neighbours
 
-The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By
-default, the cosine similarity is used to evaluate the score between documents.
+Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.MatchMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
 
-```{figure} ../../../.github/images/match_illustration_5.svg
+The following image visualizes how `DocumentArrayA` finds `limit=5` matches from the Documents in `DocumentArrayB`. By
+default, the cosine similarity is used to evaluate the score between Documents.
+
+```{figure} match_illustration_5.svg
 :align: center
 ```
 
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the
-function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` the `N` documents from `da_2` with the lowest metric values according to `some_metric`.
+function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each Document in `da_1` the `N` Documents from `da_2` with the lowest metric values according to `some_metric`.
 
-- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and
-  returns an `ndarray`
-- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the
-  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
+Note that, 
 
-The following example finds for each element in `da_1` the 3 closest documents from the elements in `da_2` )according to the euclidean distance).
+- `da_1.embeddings` and `da_2.embeddings` can be Numpy `ndarray`, Scipy sparse matrix, Tensorflow tensor, PyTorch tensor or Paddle tensor.
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes two `ndarray` parameters and
+  returns an `ndarray`.
+- by default `.match` returns distance not similarity. One can use `normalization` to do min-max normalization. The min distance will be rescaled to `a`, the
+  max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`. For example, to convert the distance into [0, 1] score, one can use `.match(normalization=(1,0))`.
+- `limit` represents the number of nearest neighbours.
+
+The following example finds for each element in `da1` the three closest Documents from the elements in `da2` according to Euclidean distance.
 
 ````{tab} Dense embedding 
 ```{code-block} python
 ---
-emphasize-lines: 18
+emphasize-lines: 20
 ---
-from jina import Document, DocumentArray
 import numpy as np
+from jina import DocumentArray
 
-d1 = Document(embedding=np.array([0, 0, 0, 0, 1]))
-d2 = Document(embedding=np.array([1, 0, 0, 0, 0]))
-d3 = Document(embedding=np.array([1, 1, 1, 1, 0]))
-d4 = Document(embedding=np.array([1, 2, 2, 1, 0]))
+da1 = DocumentArray.empty(4)
+da1.embeddings = np.array(
+    [[0, 0, 0, 0, 1], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 2, 2, 1, 0]]
+)
 
-d1_m = Document(embedding=np.array([0, 0.1, 0, 0, 0]))
-d2_m = Document(embedding=np.array([1, 0.1, 0, 0, 0]))
-d3_m = Document(embedding=np.array([1, 1.2, 1, 1, 0]))
-d4_m = Document(embedding=np.array([1, 2.2, 2, 1, 0]))
-d5_m = Document(embedding=np.array([4, 5.2, 2, 1, 0]))
+da2 = DocumentArray.empty(5)
+da2.embeddings = np.array(
+    [
+        [0.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 1.2, 1.0, 1.0, 0.0],
+        [1.0, 2.2, 2.0, 1.0, 0.0],
+        [4.0, 5.2, 2.0, 1.0, 0.0],
+    ]
+)
 
-da_1 = DocumentArray([d1, d2, d3, d4])
-da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+da1.match(da2, metric='euclidean', limit=3)
 
-da_1.match(da_2, metric='euclidean', limit=3)
-query = da_1[2]
+query = da1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
     print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
@@ -188,47 +199,170 @@ match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 
 ```{code-block} python
 ---
-emphasize-lines: 18
+emphasize-lines: 21
 ---
-from jina import Document, DocumentArray
+import numpy as np
 import scipy.sparse as sp
+from jina import DocumentArray
 
-d1 = Document(embedding=sp.csr_matrix([0, 0, 0, 0, 1]))
-d2 = Document(embedding=sp.csr_matrix([1, 0, 0, 0, 0]))
-d3 = Document(embedding=sp.csr_matrix([1, 1, 1, 1, 0]))
-d4 = Document(embedding=sp.csr_matrix([1, 2, 2, 1, 0]))
+da1 = DocumentArray.empty(4)
+da1.embeddings = sp.csr_matrix(np.array(
+    [[0, 0, 0, 0, 1], [1, 0, 0, 0, 0], [1, 1, 1, 1, 0], [1, 2, 2, 1, 0]]
+))
 
-d1_m = Document(embedding=sp.csr_matrix([0, 0.1, 0, 0, 0]))
-d2_m = Document(embedding=sp.csr_matrix([1, 0.1, 0, 0, 0]))
-d3_m = Document(embedding=sp.csr_matrix([1, 1.2, 1, 1, 0]))
-d4_m = Document(embedding=sp.csr_matrix([1, 2.2, 2, 1, 0]))
-d5_m = Document(embedding=sp.csr_matrix([4, 5.2, 2, 1, 0]))
+da2 = DocumentArray.empty(5)
+da2.embeddings = sp.csr_matrix(np.array(
+    [
+        [0.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 0.1, 0.0, 0.0, 0.0],
+        [1.0, 1.2, 1.0, 1.0, 0.0],
+        [1.0, 2.2, 2.0, 1.0, 0.0],
+        [4.0, 5.2, 2.0, 1.0, 0.0],
+    ]
+))
 
-da_1 = DocumentArray([d1, d2, d3, d4])
-da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+da1.match(da2, metric='euclidean', limit=3)
 
-da_1.match(da_2, metric='euclidean', limit=4)
-query = da_1[2]
-print(f'query emb = {query.embedding.todense()}')
+query = da1[2]
+print(f'query emb = {query.embedding}')
 for m in query.matches:
-    print('match emb =', m.embedding.todense(), 'score =', m.scores['euclidean'].value)
+    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
 ```
 
 ```text
-query emb = [[1 1 1 1 0]]
-match emb = [[1.  1.2 1.  1.  0. ]] score = 0.20000000298023224
-match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
-match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
+query emb =   (0, 0)	1
+  (0, 1)	1
+  (0, 2)	1
+  (0, 3)	1
+match emb =   (0, 0)	1.0
+  (0, 1)	1.2
+  (0, 2)	1.0
+  (0, 3)	1.0 score = 0.20000000298023224
+match emb =   (0, 0)	1.0
+  (0, 1)	2.2
+  (0, 2)	2.0
+  (0, 3)	1.0 score = 1.5620499849319458
+match emb =   (0, 0)	1.0
+  (0, 1)	0.1 score = 1.6763054132461548
 ```
 
 ````
 
-## Traverse nested Documents
+### GPU support
 
-`DocumentArray.traverse` can be used for iterating over nested & recursive Documents. As return value you get a generator which
-generates `DocumentArrays` matching the provided traversal paths. Let's assume you have the following `Document`
-structure:
+If `.embeddings` is a Tensorflow tensor, PyTorch tensor or Paddle tensor, `.match()` function can work directly on GPU. To do that, simply set `device=cuda`. For example,
 
+```python
+from jina import DocumentArray
+import numpy as np
+import torch
+
+da1 = DocumentArray.empty(10)
+da1.embeddings = torch.tensor(np.random.random([10, 256]))
+da2 = DocumentArray.empty(10)
+da2.embeddings = torch.tensor(np.random.random([10, 256]))
+
+da1.match(da2, device='cuda')
+```
+
+````{tip}
+
+When `DocumentArray`/`DocumentArrayMemmap` contain too many documents to fit into GPU memory, one can set `batch_size` to allievate the problem of OOM on GPU.
+
+```python
+da1.match(da2, device='cuda', batch_size=256)
+```
+
+````
+
+Let's do a simple benchmark on CPU vs. GPU `.match()`:
+
+```python
+from jina import DocumentArray
+
+Q = 10
+M = 1_000_000
+D = 768
+
+da1 = DocumentArray.empty(Q)
+da2 = DocumentArray.empty(M)
+```
+
+````{tab} on CPU via Numpy
+
+```python
+import numpy as np
+
+da1.embeddings = np.random.random([Q, D]).astype(np.float32)
+da2.embeddings = np.random.random([M, D]).astype(np.float32)
+```
+
+```python
+%timeit da1.match(da2, only_id=True)
+```
+
+```text
+6.18 s ± 7.18 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+````
+
+````{tab} on GPU via PyTorch
+
+```python
+import torch
+
+da1.embeddings = torch.tensor(np.random.random([Q, D]).astype(np.float32))
+da2.embeddings = torch.tensor(np.random.random([M, D]).astype(np.float32))
+```
+
+```python
+%timeit da1.match(da2, device='cuda', batch_size=1_000, only_id=True)
+```
+
+```text
+3.97 s ± 6.35 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+````
+
+Note that in the above GPU example we did a conversion. In practice, there is no need to do this conversion, `.embedding`/`.blob` as well as their bulk versions `.embeddings`/`.blobs` can store PyTorch/Tensorflow/Paddle/Scipy tensor **natively**. That is, in practice, you just need to assign the result directly into `.embeddings` in your Encoder via:
+
+```python
+da.embeddings = torch_model(da.blobs)  # <- no .numpy() is necessary
+```
+
+And then in just use `.match(da)`
+
+## Traverse nested structure
+
+{meth}`jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat` function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates `Document`s on the provided traversal paths. You can use or modify `Document`s and the change will be applied in-place. 
+
+
+### Syntax of traversal path
+
+`.traverse_flat()` function accepts a `traversal_paths` string which can be defined as follow:
+
+```text
+path1,path2,path3,...
+```
+
+```{tip}
+Its syntax is similar to `subscripts` in [`numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html), but without `->` operator.
+```
+
+Note that,
+- paths are separated by comma `,`;
+- each path is a string represents a path from the top-level `Document`s to the destination. You can use `c` to select chunks, `m` to select matches;
+- a path can be a single letter, e.g. `c`, `m` or multi-letters, e.g. `ccc`, `cmc`, depending on how deep you want to go;
+- to select top-level `Document`s, you can use `r`;
+- a path can only go deep, not go back. You can use comma `,` to "reset" the path back to the very top-level;
+
+### Example
+
+Let's look at an example. Assume you have the following `Document` structure:
+
+````{dropdown} Click to see the construction of the nested Document
 ```python
 from jina import DocumentArray, Document
 
@@ -249,32 +383,26 @@ chunk3 = Document(id='r1c3')
 root.chunks.append(chunk3)
 
 da = DocumentArray([root])
-```
-
-````{dropdown} Visualization of Root Document
-
-```python
 root.plot()
 ```
+````
 
-```{figure} ../../../.github/images/traverse-example-docs.svg
+```{figure} traverse-example-docs.svg
 :align: center
 ```
 
-````
+Now one can use `da.traverse_flat('c')` To get all the `Chunks` of the root `Document`; `da.traverse_flat('m')` to can get all the `Matches` of the root `Document`.
 
-`DocumentArray.traverse` can be used in this way `da.traverse(['c'])` to get all the `Chunks` of the root `Document`. You can also use `m` to present the `Matches`, for example, `da.traverse['m']` can get all the `Matches` of the root `Document`.
+This allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in a deeper level:
 
-It allows us to composite the `c` and `m` to find `Chunks`/`Matches` which are in deeper level, for example:
-
-- `da.traverse['cm']` will find all `Matches` of the `Chunks` of root `Document`.
-- `da.traverse['cmc']` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
-- `da.traverse['c', 'm']` will find all `Chunks` and `Matches` of root `Document`.
+- `da.traverse_flat('cm')` will find all `Matches` of the `Chunks` of root `Document`.
+- `da.traverse_flat('cmc')` will find all `Chunks` of the `Matches` of `Chunks` of root `Document`.
+- `da.traverse_flat('c,m')` will find all `Chunks` and `Matches` of root `Document`.
 
 ````{dropdown} Examples
 
 ```python
-for ma in da.traverse(['cm']):
+for ma in da.traverse_flat('cm'):
   for m in ma:
     print(m.json())
 ```
@@ -288,7 +416,7 @@ for ma in da.traverse(['cm']):
 ```
 
 ```python
-for ma in da.traverse(['ccm']):
+for ma in da.traverse_flat('ccm'):
   for m in ma:
     print(m.json())
 ```
@@ -307,7 +435,7 @@ for ma in da.traverse(['ccm']):
 ```
 
 ```python
-for ma in da.traverse(['cm', 'ccm']):
+for ma in da.traverse('cm', 'ccm'):
   for m in ma:
     print(m.json())
 ```
@@ -331,41 +459,42 @@ for ma in da.traverse(['cm', 'ccm']):
 ```
 ````
 
-`DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. When
-calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
+When calling `da.traverse_flat('cm,ccm')` the result in our example will be:
 
-```python
-from jina import Document, DocumentArray
-
-assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
+```text
+DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
     Document(id='r1c2c1m1', adjacency=1, granularity=2),
     Document(id='r1c2c1m2', adjacency=1, granularity=2)
 ])
 ```
 
-`DocumentArray.traverse_flat_per_path` is a further method for `Document` traversal. It works
-like `DocumentArray.traverse_flat` but groups the `Documents` into `DocumentArrays` based on the traversal path. When
-calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emits the following `DocumentArrays`:
+{meth}`jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat_per_path` is another method for `Document` traversal. It works
+like `traverse_flat` but groups `Documents` into `DocumentArrays` based on traversal path. When
+calling `da.traverse_flat_per_path('cm,ccm')`, the resulting generator yields the following `DocumentArray`:
 
-```python
-from jina import Document, DocumentArray
-
+```text
 DocumentArray([
     Document(id='r1c1m1', adjacency=1, granularity=1),
 ])
+
 DocumentArray([
     Document(id='r1c2c1m1', adjacency=1, granularity=2),
     Document(id='r1c2c1m2', adjacency=1, granularity=2)
 ])
 ```
+
+### Flatten Document
+
+If you simply want to traverse **all** chunks and matches regardless their levels. You can simply use {meth}`jina.types.arrays.mixins.traverse.TraverseMixin.flatten`. It will return a `DocumentArray` with all chunks and matches flattened into the top-level, no more nested structure.
+
 
 ## Visualization
 
-`DocumentArray` provides function `.plot_embeddings` to plot document embeddings in a 2D graph. `visualize` supports 2 methods
+`DocumentArray` provides the `.plot_embeddings` function to plot Document embeddings in a 2D graph. `visualize` supports two methods
 to project in 2D space: `pca` and `tsne`.
 
-In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
+In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.
 
 ```{code-block} python
 ---
@@ -387,7 +516,7 @@ da.plot_embeddings()
 
 ```
 
-```{figure} ../../../.github/2.0/document-array-visualize.png
+```{figure} document-array-visualize.png
 :align: center
 ```
 
@@ -404,7 +533,7 @@ da.save('data.json')
 da1 = DocumentArray.load('data.json')
 ```
 
-`DocumentArray` can be also stored in binary format, which is much faster and yields smaller file:
+`DocumentArray` can be also stored in binary format, which is much faster and yields a smaller file:
 
 ```python
 from jina import DocumentArray, Document
@@ -417,11 +546,105 @@ da1 = DocumentArray.load('data.bin', file_format='binary')
 
 
 
+## Sampling
+
+`DocumentArray` provides a `.sample` function that samples `k` elements without replacement. It accepts two parameters, `k`
+and `seed`. `k` defines the number of elements to sample, and `seed`
+helps you generate pseudo-random results. Note that `k` should always be less than or equal to the length of the
+`DocumentArray`.
+
+To make use of the function:
+
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random DocumentArray
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 Documents into `da`
+sampled_da = da.sample(k=10)  # sample 10 Documents
+sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 Documents with seed.
+```
+
+## Shuffle
+
+`DocumentArray` provides a `.shuffle` function that shuffles the entire `DocumentArray`. It accepts the parameter `seed`
+.  `seed` helps you generate pseudo-random results. By default, `seed` is None.
+
+To make use of the function:
+
+```{code-block} python
+---
+emphasize-lines: 6, 7
+---
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random DocumentArray
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 Documents into `da`
+shuffled_da = da.shuffle()  # shuffle the DocumentArray
+shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
+```
+
+## Split by `.tags`
+
+`DocumentArray` provides a `.split` function that splits the `DocumentArray` into multiple `DocumentArray`s according to the tag value (stored in `tags`) of each `Document`.
+It returns a Python `dict` where `Documents` with the same `tag` value are grouped together, with their orders preserved from the original `DocumentArray`.
+
+To make use of the function:
+
+```{code-block} python
+---
+emphasize-lines: 10
+---
+from jina import Document, DocumentArray
+
+da = DocumentArray()
+da.append(Document(tags={'category': 'c'}))
+da.append(Document(tags={'category': 'c'}))
+da.append(Document(tags={'category': 'b'}))
+da.append(Document(tags={'category': 'a'}))
+da.append(Document(tags={'category': 'a'}))
+
+rv = da.split(tag='category')
+assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
+```
+
+
+
+## Iterate via `itertools`
+
+As `DocumentArray` is an `Iterable`, you can also
+use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
+advanced "iterator algebra" on the `DocumentArray`.
+
+For instance, you can group a `DocumentArray` by `parent_id`:
+
+```{code-block} python
+---
+emphasize-lines: 5
+---
+from jina import DocumentArray, Document
+from itertools import groupby
+
+da = DocumentArray([Document(parent_id=f'{i % 2}') for i in range(6)])
+groups = groupby(sorted(da, key=lambda d: d.parent_id), lambda d: d.parent_id)
+for key, group in groups:
+    key, len(list(group))
+```
+
+```text
+('0', 3)
+('1', 3)
+```
+
 
 ## Sort
 
-`DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
-a `DocumentArray` object, e.g.
+`DocumentArray` is a subclass of `MutableSequence`, therefore you can use Python's built-in `sort` to sort elements in
+a `DocumentArray` object:
 
 ```{code-block} python
 ---
@@ -496,107 +719,11 @@ DocumentArray has 3 items:
 ```
 
 
-## Sampling
-
-`DocumentArray` provides function `.sample` that sample `k` elements without replacement. It accepts 2 parameters, `k`
-and `seed`. `k` is used to define the number of elements to sample, and `seed`
-helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the
-document array.
-
-To make use of the function:
-
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-from jina import Document, DocumentArray
-
-da = DocumentArray()  # initialize a random document array
-for idx in range(100):
-    da.append(Document(id=idx))  # append 100 documents into `da`
-sampled_da = da.sample(k=10)  # sample 10 documents
-sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
-```
-
-## Shuffle
-
-`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`. It accepts the parameter `seed`
-.  `seed` helps you generate pseudo random results. By default, `seed` is None.
-
-To make use of the function:
-
-```{code-block} python
----
-emphasize-lines: 6, 7
----
-from jina import Document, DocumentArray
-
-da = DocumentArray()  # initialize a random document array
-for idx in range(100):
-    da.append(Document(id=idx))  # append 100 documents into `da`
-shuffled_da = da.shuffle()  # shuffle the DocumentArray
-shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
-```
-
-## Split by `.tags`
-
-`DocumentArray` provides function `.split` that split the `DocumentArray` into multiple `DocumentArray` according to the tag value (stored in `tags`) of each `Document`.
-It returns a python `dict` where `Documents` with the same value on `tag` are grouped together, their orders are preserved from the original `DocumentArray`.
-
-To make use of the function:
-
-```{code-block} python
----
-emphasize-lines: 10
----
-from jina import Document, DocumentArray
-
-da = DocumentArray()
-da.append(Document(tags={'category': 'c'}))
-da.append(Document(tags={'category': 'c'}))
-da.append(Document(tags={'category': 'b'}))
-da.append(Document(tags={'category': 'a'}))
-da.append(Document(tags={'category': 'a'}))
-
-rv = da.split(tag='category')
-assert len(rv['c']) == 2  # category `c` is a DocumentArray has 2 Documents
-```
-
-
-
-## Iterate via `itertools`
-
-As `DocumentArray` is an `Iterable`, you can also
-use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
-advanced "iterator algebra" on the `DocumentArray`.
-
-For instance, you can group a `DocumentArray` by `parent_id`:
-
-```{code-block} python
----
-emphasize-lines: 5
----
-from jina import DocumentArray, Document
-from itertools import groupby
-
-da = DocumentArray([Document(parent_id=f'{i % 2}') for i in range(6)])
-groups = groupby(sorted(da, key=lambda d: d.parent_id), lambda d: d.parent_id)
-for key, group in groups:
-    key, len(list(group))
-```
-
-```text
-('0', 3)
-('1', 3)
-```
-
-
-
 
 ## Get bulk attributes
 
-`DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains in
-one-shot:
+`DocumentArray` implements powerful getters that let you fetch multiple attributes from the `Document`s it contains in
+one shot:
 
 ```{code-block} python
 ---
