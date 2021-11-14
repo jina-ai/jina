@@ -8,15 +8,12 @@
 :date: Sept. 1, 2021
 ```
 
-This tutorial will show you how to use an Executor on a GPU, both locally and in a
-Docker container. You will also learn how to use GPU with pre-built Hub executors.
+이 튜토리얼은 로컬 및 도커 컨테이너 모두에서, GPU의 Executor을 사용하는 방법을 보여줍니다.
+또한 미리 구축된 허브 executor에서 GPU를 사용하는 방법에 대해서도 배울 예정입니다.
 
-Using a GPU allows you to significantly speed up encoding for most deep learning models,
-reducing response latency by anything from 5 to 100 times, depending on the model used and 
-inputs. 
+GPU를 사용하면 대부분의 딥러닝 모델에 대해 인코딩 속도를 크게 높일 수 있으며, 사용되는 모델과 입력 값에 따라 응답 대기시간을 5배에서 100배까지 줄일 수 있습니다.  
 
-Jina enables you to use GPUs like you normally would in a Python script, or in a Docker 
-container - it does not impose any additional requirements or configuration.
+Jina는 당신이 파이썬 스크립트에서나 도커 컨테이너에서 그랬듯이 GPU를 사용하도록 돕습니다 - 추가 요구사항이나 구성을 부과하지 않습니다.
 
 ```{admonition} Important
 :class: important
@@ -323,13 +320,13 @@ When using GPU encoders from Jina Hub, always use `jinahub+docker://`, and not `
 ```
 
 
-## Conclusion
+## 결론
 
-Let's recap what we saw in this tutorial:
+이 튜토리얼에서 본 내용을 다시 살펴보겠습니다.
 
-1. Using Executors on a GPU locally is no different than using GPU in a standalone script. You can pass the device you want your Executor to use in the initialization.
-2. To use an Executor on a GPU inside a Docker container, make sure to pass `gpus='all'`
-3. Use volumes (bind mounts), so you don't have to download large files each time you start the Executor
-4. You can use GPU with Executors from Jina Hub, just make sure to use the Executor with the `gpu` tag
+1. GPU에서 로컬로 Executor을 사용하는 것은 독립 실행형 스크립트에서 GPU를 사용하는 것과 다르지 않습니다. Executor가 초기화에 사용할 장치를 전달할 수 있습니다.
+2. 도커 컨테이너 내의 GPU에서 Executor를 사용하려면 `gpus='all'` 을 통과 해야합니다.
+3. 볼륨 사용 ( 바인드 마운트 )로 Executor를 시작할 때마다 대용량 파일을 다운로드 하지 않아도 됩니다.
+4. Jina 허브의 Executor와 GPU를 함께 사용할 수 있습니다. `gpu` 태그와 함께 Executor를 사용해야합니다.
 
-And when you start building your own Executor, always remember to check what system requirements (CUDA and similar) are needed, and install them locally (and in the `Dockerfile`) accordingly
+또한 사용자 고유의 Executor 구축을 시작할 때는 항상 필요한 시스템 요구사항(CUDA 등)을 확인하고 그에 따라 로컬 (및 도커 파일)에 설치 해야합니다.
