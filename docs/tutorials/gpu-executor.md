@@ -32,7 +32,7 @@ If you're not yet familiar with these concepts, first read the [Basic Concepts](
 튜토리얼의 도커 부분에서는 [도커](https://docs.docker.com/get-docker/) 와 
 [nvidia-도커](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) 를 설치해야합니다.
 
-파이썬 스크립트를 실행하려면 가상환경 (예: [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) 또는 [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments))이 필요하며 당므을 사용하여 Jina를 설치해야합니다.
+파이썬 스크립트를 실행하려면 가상환경 (예: [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) 또는 [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments))이 필요하며 다음을 사용하여 Jina를 설치해야합니다.
 
 ```bash
 pip install jina
@@ -40,21 +40,15 @@ pip install jina
 
 ## executor 세팅하기
 
-We will create a simple sentence encoder, and we'll start by creating the Executor 
-"skeleton" using Jina's command line utility:
+간단한 문장 인코더를 만들고 Jina의 명령행 유틸리티를 사용하여 "skeleton"을 만드는 것으로 시작하겠습니다:
 
 ```bash
 jina hub new
 ```
 
-When prompted for inputs, name your encoder `SentenceEncoder`, and accept the default
-folder for it - this will create a `SentenceEncoder/` folder inside your current
-directory, this will be our working directory for this tutorial. 
+입력을 요청하면, 인코더 이름을 `SentenceEncoder`로 지정하고 기본 폴더를 사용합니다 - 현재 디렉토리 내에 `SentenceEncoder/` 폴더가 생성되며, 이 디렉토리는 튜토리얼의 작업 디렉토리가 됩니다.
 
-Next, select `y` when prompted for advanced configuration, and leave all other questions
-empty, except when you are asked if you want to create a `Dockerfile` - answer `y` to 
-this one (we will need it in the next section). Here's how this prompt dialogue should
-look like in the end
+그런 다음, 고급 설정을 묻는 메시지가 나타나면 `y` 를 선택하고 도커 파일을 만들 것인지 묻는 메시지가 표시될 때를 제외하고 다른 모든 질문은 비워 둡니다 - 이 질문에 `y`로 답하세요(다음 섹션에서 필요함). 이것이 이 대화가 마지막에 어떻게 보여져야 하는지를 알려줍니다.
 
 ![jina hub new](../_static/hub_new_gpu.png)
 
