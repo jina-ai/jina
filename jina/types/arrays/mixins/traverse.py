@@ -111,7 +111,7 @@ class TraverseMixin:
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
         """
-        Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
+        Returns a flattened :class:``TraversableSequence`` per path in ``traversal_paths``
         with all Documents, that are reached by the path.
 
         :param traversal_paths: a comma-separated string that represents the traversal path
@@ -130,10 +130,10 @@ class TraverseMixin:
     ) -> Union['DocumentArray', Iterable['Document']]:
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
-        via the :param:``traversal_paths``.
+        via the ``traversal_paths``.
 
         .. warning::
-            When defining the :param:``traversal_paths`` with multiple paths, the returned
+            When defining the ``traversal_paths`` with multiple paths, the returned
             :class:``Documents`` are determined at once and not on the fly. This is a different
             behavior then in :method:``traverse`` and :method:``traverse_flattened_per_path``!
 

@@ -1088,7 +1088,7 @@ def get_public_ip(timeout: float = 0.3):
     :return: Public IP address.
 
     .. warn::
-        Set :param:`timeout` to a large number will block the Flow.
+        Set `timeout` to a large number will block the Flow.
 
     """
     import urllib.request

@@ -96,7 +96,7 @@ class DocumentArrayMemmap(
         self._buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
 
     def insert(self, index: int, doc: 'Document') -> None:
-        """Insert :param:`doc.proto` at :param:`index`.
+        """Insert `doc` at `index`.
 
         :param index: the offset index of the insertion.
         :param doc: the doc needs to be inserted.
@@ -234,7 +234,7 @@ class DocumentArrayMemmap(
         self, doc: 'Document', flush: bool = True, update_buffer: bool = True
     ) -> None:
         """
-        Append :param:`doc` in :class:`DocumentArrayMemmap`.
+        Append `doc` in :class:`DocumentArrayMemmap`.
 
         :param doc: The doc needs to be appended.
         :param update_buffer: If set, update the buffer.
@@ -246,7 +246,7 @@ class DocumentArrayMemmap(
         self, doc: 'Document', idx: int, flush: bool = True, update_buffer: bool = True
     ) -> None:
         """
-        Update :param:`doc` in :class:`DocumentArrayMemmap`.
+        Update `doc` in :class:`DocumentArrayMemmap`.
 
         :param doc: The doc needed to be updated.
         :param idx: The position of the document.

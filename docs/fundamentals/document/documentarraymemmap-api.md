@@ -2,7 +2,7 @@
 # DocumentArrayMemmap
 
 When a `DocumentArray` object contains a large number of `Document`s, holding it in memory can be very demanding, 
-`DocumentArrayMemmap` is a drop-in replacement of `DocumentArray` in this scenario. 
+{class}`~jina.types.arrays.memmap.DocumentArrayMemmap` is a drop-in replacement of `DocumentArray` in this scenario. 
 It shares {ref}`nearly all APIs<api-da-dam>` with `DocumentArray`. 
 
 ## How it works?

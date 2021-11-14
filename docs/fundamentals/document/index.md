@@ -1,13 +1,13 @@
 (document-cookbook)=
 # Document
 
-`Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
+{class}`~jina.types.document.Document` is the basic data type that Jina operates with text, picture, video, audio, image or 3D mesh: They are
 all `Document`s in Jina.
 
-`DocumentArray` is a sequence container of `Document`s. It is the first-class citizen of `Executor`, serving as the
+{class}`~jina.types.arrays.document.DocumentArray` is a sequence container of `Document`s. It is the first-class citizen of `Executor`, serving as the
 Executor's input and output.
 
-`DocumentArrayMemmap` is an on-disk sequence container of `Document`s. It shares almost the same interface as `DocumentArray` but with much smaller memory footprint. 
+{class}`~jina.types.arrays.memmap.DocumentArrayMemmap` is an on-disk sequence container of `Document`s. It shares almost the same interface as `DocumentArray` but with much smaller memory footprint. 
 
 
 ```{hint}
