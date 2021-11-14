@@ -26,7 +26,7 @@ Jina를 새로 설치하고 종속성 충돌을 방지하기 위해 [새로운 P
 pip install jina
  ```
 
-Jina 설치에 대한 자세한 내용은 [ref](https://github.com/jina-ai/jina/blob/master/docs/get-started/install.md#install) `페이지의 <install>`을 참조하세요.
+Jina 설치에 대한 자세한 내용은 [ref](https://github.com/jina-ai/jina/blob/master/docs/get-started) `페이지의 <install>` 을 참조하세요.
 
 ## 나의 Executor 만들기
 
@@ -41,11 +41,11 @@ Wizard가 당신에게 Executor에 대해 몇 가지 질문을 할 것입니다.
 - Executor의 이름 
 - 저장되어야 할 곳
  
-이 튜토리얼의 경우, 우리는 **RequestLogger**라고 부르겠습니다. 그리고 당신은 이 프로젝트를 당신이 원하는 곳에 저장할 수 있습니다. Wizard는 고급 설정을 원하는지 물어볼 것이지만, 이 튜토리얼에서는 필요하지 않습니다.
+이 튜토리얼의 경우, 우리는 **RequestLogger** 라고 부르겠습니다. 그리고 당신은 이 프로젝트를 당신이 원하는 곳에 저장할 수 있습니다. Wizard는 고급 설정을 원하는지 물어볼 것이지만, 이 튜토리얼에서는 필요하지 않습니다.
 
 ### Logger Executor
 
-Wizard를 따라 가면 폴더 구조가 준비됩니다. 우리는 `executor.py`파일을 가지고 시작할 수 있습니다. 해당 파일을 열고, 다음을 import합니다.
+Wizard를 따라 가면 폴더 구조가 준비됩니다. 우리는 `executor.py` 파일을 가지고 시작할 수 있습니다. 해당 파일을 열고, 다음을 import합니다.
 
 ```python
 import os
@@ -56,7 +56,7 @@ from jina import Executor, DocumentArray, requests
 from jina.logging.logger import JinaLogger
 ```
 
-Then we create our class that inherits from the `Executor` base class. We will call ours `RequestLogger`
+그런 다음 우리는 `Executor` 의 기본 클래스를 상속하는 클래스를 만들 것입니다. 우리는 이것을 `RequestLogger` 라고 부르겠습니다.
 
 ```{admonition} Important
 :class: important
@@ -68,7 +68,7 @@ You always need to inherit from the `Executor` class, in order for the class to 
 class RequestLogger(Executor):
 ```
 
-Our Executor will have two methods: one for the constructor and one for the actual logging:
+우리의 Executor는 두 가지 메서드를 가집니다: 하나는 생성자를 위한 것이고, 다른 하나는 실제 logging을 위한 것입니다.
 
 ```python
 class RequestLogger(Executor):    
@@ -79,7 +79,7 @@ class RequestLogger(Executor):
         # Whatever we need for our logging
 ```
 
-It could be helpful to specify the number of Documents we want to work with, so we pass this directly in the arguments of our constructor
+작업할 문서의 수를 지정하는 것이 도움이 될 수 있으므로 이를 생성자의 인자로 직접 전달합니다.
 
 ``` python
 de __init__(self,
@@ -99,13 +99,13 @@ You need to do this before writing any custom logic. It's required in order to r
 super().__init__(*args, **kwargs)
 ```
 
-Now we start creating our constructor method. We set the `default_log_docs` we got from the arguments:
+이제 생성자 메서드를 만들기 시작합니다. `default_log_docs` 는 인자로 받은 값으로 설정합니다:
 
 ```python
 self.default_log_docs = default_log_docs
 ```
 
-For logging, we need to create an instance of `JinaLogger`. We also need to specify the path where we save our log file. 
+logging을 위해 우리는 `JinaLogger` 의 인스턴스를 생성해야 합니다. 또한 log 파일을 저장할 경로를 지정해야 합니다.
 
 ```python
 self.logger = JinaLogger('req_logger')
@@ -118,14 +118,14 @@ self.log_path = os.path.join(self.workspace, 'log.txt')
 `self.workspace` will be provided by the `Executor` parent class.
 ```
 
-And finally, we need to create the file, in case it doesn't exist.
+그리고 마지막으로 우리는 파일이 존재하지 않는 경우에 대비하여 파일을 만들어야 합니다.
 
 ```python
 if not os.path.exists(self.log_path):
     with open(self.log_path, 'w'): pass
 ```
 
-Ok, that's it for our constructor, by now we should have something like this:
+자, 그것이 우리의 생성자에 대한 것입니다. 지금쯤이면 우리는 다음과 같은 것이 있어야 합니다:
 
 ```python
 class RequestLogger(Executor):                                                                      # needs to inherit from Executor
@@ -140,7 +140,7 @@ class RequestLogger(Executor):                                                  
             with open(self.log_path, 'w'): pass
 ```
 
-We can start creating our `log` method now. First of all, we need the `@requests` decorator. This is to communicate to the `Flow` when the function will be called and on which endpoint. We use `@requests` without any endpoint, so we will call our function on every request:
+이제 우리는 우리의 `log` 메서드를 생성할 수 있습니다. 가장 먼저 `@requests` 데코레이터가 필요합니다. 이것은 함수가 호출될 때 엔드포인트에서 `Flow` 와 통신하기 위한 것입니다. `@requests` 를 엔드포인트 없이 사용하므로 모든 요청에서 함수를 호출합니다:
 
 ```python
 @requests
@@ -150,7 +150,7 @@ def log(self,
         **kwargs):
 ```
 
-It's important to note the arguments here. 
+여기 있는 내용에 주목하는 것이 중요합니다. 
 
 ```{admonition} Important
 :class: important
@@ -158,7 +158,7 @@ It's important to note the arguments here.
 It's not possible to redefine the interface of the public methods decorated by `@requests`. You can't change the name of these arguments. To see exactly which parameters you can use, check {ref}`here <executor-method-signature>`.
 ```
 
-If you would like to call your `log` function only on `/index` time, you specify the endpoint with `on=`, like this:
+만약 `/index` 시간에만 당신의 `log` 함수를 호출하려면, 다음과 같이 `on=` 를 이용하여 엔드포인트를 지정하세요:
 
 ```{code-block} python
 ---
@@ -171,9 +171,9 @@ def log(self,
         **kwargs):
 ```
 
-If you want more information on how to use this decorator, refer to {ref}`the documentation <executor-request-parameters>`. In this example, we want to call our `log` function on every request, so we don't specify any endpoint. 
+데코레이터를 사용하는 방법에 대한 자세한 내용은 {ref}`the documentation <executor-request-parameters>` 를 참조하세요. 이 예시에서는 모든 요청에 대해 `log` 함수를 호출할 것이므로 엔드포인트를 지정하지 않습니다.
 
-Now we can add the logic for our function. First, we will print a line that displays some information. And then, we will save the details from our Documents:
+이제 우리는 함수에 로직을 추가할 수 있습니다. 먼저 일부 정보를 표시하는 행을 출력합니다. 그런 다음 문서에서 세부 정보를 저장합니다:
 
 ```python
 self.logger.info('Request being processed...')
@@ -186,7 +186,7 @@ with open(self.log_path, 'a') as f:
             break
 ```
 
-Here you can set whatever logic you need for your Executor. By now, your code should look like this:
+여기에서 당신의 Executor에 필요한 로직을 설정할 수 있습니다. 이제 코드는 다음과 같아야 합니다:
 
 ```python
 import os
@@ -224,23 +224,23 @@ class RequestLogger(Executor):                                                  
                     break
 ```
 
-And that's it. We have an `Executor` that takes whatever Documents we pass to it and logs them. 
+이것이 끝입니다. 우리는 우리가 전달한 모든 문서를 가져오고 기록하는 `Executor` 가 있습니다. 
 
-Ok, and what now? How can you use this in your app?
+자, 이제 이것을 어떻게 앱에서 사용할 수 있을까요?
 
-### Push your Executor to Hub
+### Executor를 Hub로 푸시하기
 
-We could use our Executor directly in our app, but here we will see how to push it to Jina Hub so we can share it with more people, or use it later. 
+우리는 Executor를 앱에서 직접 사용할 수도 있지만, 여기서는 더 많은 사람들과 공유하거나 나중에 사용할 수 있도록 Jina Hub에 푸시하는 방법을 살펴보겠습니다. 
 
-First step is to actually make sure the `manifest.yml` and `config.yml` files are still relevant. Check that the data in there still represent you Executor's purpose.
+첫 번째 단계는 `manifest.yml` 과 `config.yml` 파일이 여전히 관련성이 있는지 확인하는 것입니다. 이 파일에 들어있는 데이터가 당신의 Executor의 목적에 맞는지 확인하세요.
 
-For this, you need to open a terminal in the folder of your `executor.py`, so in this case, open a terminal inside the `RequestLogger` folder. And there you just need to type:
+확인을 위해, 터미널에서 `executor.py` 파일이 들어있는 폴더를 열어야 합니다. 따라서 튜토리얼의 경우 `RequestLogger` 폴더 내에서 터미널을 열고, 다음을 입력하기만 하면 됩니다:
 
 ```bash
 jina hub push --public .
 ```
 
-This means you will push your Executor publicly to Jina Hub. The last dot means you will use your current path. Once you run that command, you should see something like this:
+이것은 당신이 당신의 Executor를 Jina Hub에 공개적으로 푸시한다는 의미입니다. 마지막 점은 현재 당신의 경로를 사용한다는 뜻입니다. 해당 명령어를 실행하고 나면 다음과 같이 나타나야 합니다:
 
 ```{figure} ../../.github/images/push-executor.png
 :align: center
@@ -252,10 +252,9 @@ This means you will push your Executor publicly to Jina Hub. The last dot means 
 Since we pushed our Executor using the `--public` flag, the only thing we will use is the ID. In this case, it's `zsor7fe6`. Refer to {ref}`Jina Hub usage <jina-hub-usage>`.
 ```
 
-### Use your Executor
+### 당신의 Executor를 사용하세요
 
-Let's create a Jina Flow that can use the Executor we just wrote.
-Create an `app.py` in the same folder as `RequestLogger`. Now open it and import `Flow`, `DocumentArray`, `Document` before we create our `main function:
+방금 작성한 Executor를 사용하기 위한 Jina Flow를 만들어 봅시다. `RequestLogger` 와 동일한 폴더에 `app.py` 를 만듭니다. `main` 함수를 만들기 전에 `Flow`, `DocumentArray`, `Document` 를 import합니다:
 
 ```python
 from jina import Flow, DocumentArray, Document
@@ -267,7 +266,7 @@ if __name__ == '__main__':
     main()
 ```
 
-The Executor we just created logs whatever Documents we pass to it. So we need to create some Documents first. We'll do that in `main()`
+방금 생성한 Executor는 우리가 전달하는 모든 문서를 기록할 것입니다. 따라서 먼저 몇 가지 문서를 만들어야 합니다. 우리는 이것을 `main()` 에서 하겠습니다.
 
 ```python
 def main():
@@ -277,7 +276,7 @@ def main():
     docs.append(Document(content='I guess dogs are ok'))
 ```
 
-We have three Documents in one `DocumentArray`. Now let's create a `Flow` and add the Executor we created. We will reference it by the ID we got when we pushed it (in my case, it was `zsor7fe6`):
+하나의 `DocumentArray` 에 3개의 문서가 있습니다. 이제 `Flow` 를 생성하고 우리가 만든 Executor를 추가해 봅시다. 우리는 이것을 푸시할 때 얻은 ID로 참조할 것입니다(제 경우에는 `zsor7fe6` 이었습니다):
 
 ```python
 flow = Flow().add(                                              
@@ -292,13 +291,13 @@ flow = Flow().add(
     )
 ```
 
-This seems like plenty of details, so let's explain them:
+자세한 내용은 다음과 같습니다:
 
 ```python
 uses='jinahub+docker://zsor7fe6',
 ```
 
-Here you use `uses=` to specify the image of your Executor. This will start a Docker container with the image of the Executor we built and deployed in the previous step. So don't forget to change the ID to the correct one.
+여기서 당신은 Executor의 이미지를 지정하기 위해 `uses=` 를 사용합니다. 그러면 이전 단계에서 빌드하고 배포한 Executor의 이미지로 Docker 컨테이너가 시작됩니다. 따라서 올바른 ID로 변경하는 것을 잊지 마세요. 
 
 ```python
 uses_with={                                         # RequestLogger arguments
@@ -306,16 +305,16 @@ uses_with={                                         # RequestLogger arguments
         },
 ```
 
-We need `uses_with=` to pass the arguments we need. In our case, we have only one argument: `default_log_docs`. In the constructor of our `RequestLogger` Executor, we defined the `default_log_docs` as `1`, but we override it here with `3`, so `3` will be the new value. 
+필요한 인자를 전달하려면 `uses_with=` 가 필요합니다. 우리의 경우, 한 가지 인자만 있습니다: `default_log_docs`. `RequestLogger` Executor의 생성자에서 우리는 `default_log_docs` 를 `1` 로 정의했지만, 여기서는 `3` 으로 재정의하므로 `3` 이 새로운 값이 될 것입니다. 
 
-The next line refers to our workspace:
+다음 줄은 작업 공간을 나타냅니다:
 
 ```python
 volumes='workspace:/internal_workspace',
 ```
-Here we are mapping the `workspace` folder that will be created when we run our app to a folder called `internal_workspace` in Docker. We do this because our Executor logs the Documents into a file, and we want to save that file on our local disk. If we don't do that, the information would be saved in the Docker container, and you would need to access that container to see files.  To do this, we use `volumes=` and set it to our internal workspace. 
+앱을 실행할 때 생성되는 `workspace` 폴더를 Docker에 있는 `internal_workspace` 폴더와 맵핑합니다. 우리는 Executor가 문서를 파일에 기록하고, 해당 파일을 로컬 디스크에 저장하길 원하므로 이 작업을 수행합니다. 만약 이 작업을 하지 않는다면, 정보는 Docker 컨테이너에 저장될 것이고 파일을 보려면 해당 컨테이너에 엑세스해야 합니다. 이를 위해 `volumes=` 를 우리의 내부 작업 공간으로 설정합니다.
 
-The last part overrides arguments too, but this time for the `Executor` parent class:
+마지막 부분에서도 인자를 재정의하지만, 이번에는 `Executor` 의 부모 클래스에 대해 다음을 수행합니다:
 
 ```python
 uses_metas={                                                # Executor (parent class) arguments
@@ -323,9 +322,9 @@ uses_metas={                                                # Executor (parent c
         },
 ```
 
-In our case, the only argument we want to override is the name of the `workspace`. If you don't do this, a folder with the same name of your Executor class (`RequestLogger`) would be created, and your information would have been saved there. But since we just mounted our workspace with the name `internal_workspace` in Docker, we need to make a folder with that same name.
+우리의 경우, 재정의하려는 인자는 `workspace` 의 이름입니다. 이렇게 하지 않으면 당신의 Executor 클래스(`RequestLogger`)와 동일한 이름의 폴더가 생성될 것이고, 그곳에 정보가 저장될 것입니다. 하지만 우리는 Docker에 `internal_workspace` 라는 이름을 가진 워크스페이스를 조직했기 때문에 같은 이름을 가진 폴더를 만들면 됩니다.
 
-Ok, we have our `Flow` ready with the Executor we deployed previously. We can use it now. Let's start by indexing the Documents:
+좋습니다. 우리는 이전에 배포한 Executor와 함께 `Flow` 가 준비되었습니다. 이제 이것을 사용할 수 있습니다. 문서를 인덱싱하여 시작해봅시다:
 
 ```python
 with flow as f:                                                 # Flow is a context manager
@@ -335,9 +334,9 @@ with flow as f:                                                 # Flow is a cont
         )
 ```
 
-The Executor we created doesn't care about what endpoint is used, so it will perform the same operation no matter what endpoint you specify here. In this example, we set it to `on='/index'` anyway. Here you could use one for `index` and another one for `query` if you need it and your Executor has the proper endpoints. 
+우리가 생성한 Executor는 엔드포인트에 무엇이 쓰였는지 신경쓰지 않으므로, 여기서 어떤 엔드포인트로 설정하든 동일한 작업을 수행할 것입니다. 이 예시에서는 `on='/index'` 로 설정했습니다. 필요한 경우 `index` 용 하나와 `query` 용 하나를 사용할 수 있고, 당신의 Executor는 적절한 엔드포인트를 가집니다. 
 
-So far, your code should look like this:
+지금까지의 코드는 다음과 같아야 합니다:
 
 ```python
 from jina import Flow, DocumentArray, Document
@@ -371,14 +370,14 @@ if __name__ == '__main__':
     main()
 ```
 
-When you run this, you will see a new `workspace` folder created with two other folders inside. One called `RequestLogger` or whatever name you used in your class. And another folder for the sharding, but we won't talk about that in this tutorial because it's out of scope. Inside the sharding folder called `0`, you will see a `log.txt` file. And there you will have the 3 Documents with their information.
+이것을 실행하면 내부에 두 개의 다른 폴더를 포함한 새로운 `workspace` 가  생성될 것입니다. 하나는 `RequestLogger` 나 당신이 클래스에서 이용한 이름일 것입니다. 그리고 sharding(분산 저장 관리)을 위한 또 다른 폴더가 있지만, 범위를 벗어나기 때문에 튜토리얼에서는 이야기하지 않겠습니다. `0` 이라는 sharding 폴더 안에 `log.txt` 이라는 파일이 있습니다. 그리고 그들의 정보가 포함된 3개의 문서가 있을 것입니다.
 
 ```{figure} ../../.github/images/log.png
 :align: center
 ```
 
-And that's it! You created an Executor, pushed it to Jina Hub, and used it in your app.
+이게 끝입니다! 당신은 Executor를 만들었고, Jina Hub에 푸시했으며, 앱에서 사용했습니다.
 
-There are still a lot of concepts to learn. So stay tuned for our following tutorials.
+아직 배워야할 개념이 많습니다. 우리의 튜토리얼을 계속 따라와주세요.
 
-If you have any issues following this tutorial, you can always get support from our [Slack community](https://slack.jina.ai/)
+만약 이 튜토리얼을 수행하는 과정에서 문제가 생긴다면, 당신은 언제나 우리의 [Slack community](https://slack.jina.ai/)에서 도움을 받을 수 있습니다.
