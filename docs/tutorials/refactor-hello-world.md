@@ -9,15 +9,17 @@
 ```
 
 
-Now that you understand how to use public Executor from Hub, let's practice our learning with three hello-world demos in Jina.
+이제 허브에서 퍼블릭 Executor를 사용하는 방법을 이해하셨으니 지나에서 세 가지 헬로월드 데모를 통해 학습 방법을 연습해 보겠습니다.
 
-## Modify `jina hello fashion` to use Hub executor
 
-1) Clone the repository with  `jina hello fork fashion <your_project_folder>`. In `your_project_folder` you will
-   have a file `app.py`  that you can change to leverage other embedding methods.
 
-2) Change lines 74 to 79 from `app.py` to define a different `Flow`. For example, you can
-   use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder):
+## Hub 실행기를 사용하기위해 '지나 헬로 패션' 을 수정하세요
+
+
+
+1) 저장소를 복제하  `jina hello fork fashion <your_project_folder>`.  `your_project_folder`에서 다른 임베딩 방식을 활용하기 위해 변경할 수 있는 파일 app.py을 갖게 됩니다.
+
+2) 74~79줄을 바꿔주세요. 예를들어 당신은  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder):을 사용할 수있습니다
 
    ```python
    f = (
@@ -83,12 +85,12 @@ use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-to
     
 
 
-## Modify `jina hello mutlimodal` to use Hub Executor
+## Hub 실행기를 사용하기위해 '지나 헬로 패션' 을 수정하세요
 
-1) Clone the repository with  `jina hello fork multimodal <your_project_folder>`. In the repository you will
-   have `flow-index.yml` and `flow-search.yml`  which you can change to leverage other embedding methods.
+1) '지나 헬로 포크 멀티모달 <your_project_folder>를 사용하여 저장소 복제 리포지토리에서 다음 작업을 수행합니다.
+'flow-index.yml' 및 'flow-search.yml'을 가지고 있으며, 이 경우 다른 임베디를 활용하도록 변경할 수 있습니다.
     
-2) Change index flow and search flow accordingly
+2) 그에 따라 인덱스 흐름 및 검색 정보를 
    ````{tab} flow-index.yml
    ```yaml
    jtype: Flow
@@ -216,4 +218,4 @@ use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-to
        needs: weightedRanker
    ```
    ````
-3) Run `python <your_project_folder>/app.py` to execute.
+3) 실행할 'deloping <your_project_folder>/app.py'을 실행합니다.
