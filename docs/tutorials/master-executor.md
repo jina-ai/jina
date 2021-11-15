@@ -125,7 +125,7 @@ if not os.path.exists(self.log_path):
     with open(self.log_path, 'w'): pass
 ```
 
-자, 그것이 우리의 생성자에 대한 것입니다. 지금쯤이면 우리는 다음과 같은 것이 있어야 합니다:
+자, 이것이 우리의 생성자에 대한 것입니다. 지금쯤이면 우리는 다음과 같은 것이 있어야 합니다:
 
 ```python
 class RequestLogger(Executor):                                                                      # needs to inherit from Executor
@@ -171,7 +171,7 @@ def log(self,
         **kwargs):
 ```
 
-데코레이터를 사용하는 방법에 대한 자세한 내용은 {ref}`the documentation <executor-request-parameters>` 를 참조하세요. 이 예시에서는 모든 요청에 대해 `log` 함수를 호출할 것이므로 엔드포인트를 지정하지 않습니다.
+데코레이터를 사용하는 방법에 대한 자세한 내용은 [ref](https://docs.jina.ai/fundamentals/executor/executor-api) `the documentation <executor-request-parameters>` 를 참조하세요. 이 예시에서는 모든 요청에 대해 `log` 함수를 호출할 것이므로 엔드포인트를 지정하지 않습니다.
 
 이제 우리는 함수에 로직을 추가할 수 있습니다. 먼저 일부 정보를 표시하는 행을 출력합니다. 그런 다음 문서에서 세부 정보를 저장합니다:
 
@@ -240,7 +240,7 @@ class RequestLogger(Executor):                                                  
 jina hub push --public .
 ```
 
-이것은 당신이 당신의 Executor를 Jina Hub에 공개적으로 푸시한다는 의미입니다. 마지막 점은 현재 당신의 경로를 사용한다는 뜻입니다. 해당 명령어를 실행하고 나면 다음과 같이 나타나야 합니다:
+이것은 당신이 당신의 Executor를 Jina Hub에 공개적으로 푸시한다는 의미입니다. 마지막에 있는 점은 현재 당신의 경로를 사용한다는 뜻입니다. 해당 명령어를 실행하고 나면 다음과 같이 나타나야 합니다:
 
 ```{figure} ../../.github/images/push-executor.png
 :align: center
@@ -276,7 +276,7 @@ def main():
     docs.append(Document(content='I guess dogs are ok'))
 ```
 
-하나의 `DocumentArray` 에 3개의 문서가 있습니다. 이제 `Flow` 를 생성하고 우리가 만든 Executor를 추가해 봅시다. 우리는 이것을 푸시할 때 얻은 ID로 참조할 것입니다(제 경우에는 `zsor7fe6` 이었습니다):
+하나의 `DocumentArray` 에 3개의 문서가 있습니다. 이제 `Flow` 를 생성하고 우리가 만든 Executor를 추가해 봅시다. 우리는 이것을 푸시할 때 얻은 ID로 참조할 것입니다(제 경우에는 `zsor7fe6` 입니다):
 
 ```python
 flow = Flow().add(                                              
@@ -312,6 +312,7 @@ uses_with={                                         # RequestLogger arguments
 ```python
 volumes='workspace:/internal_workspace',
 ```
+
 앱을 실행할 때 생성되는 `workspace` 폴더를 Docker에 있는 `internal_workspace` 폴더와 맵핑합니다. 우리는 Executor가 문서를 파일에 기록하고, 해당 파일을 로컬 디스크에 저장하길 원하므로 이 작업을 수행합니다. 만약 이 작업을 하지 않는다면, 정보는 Docker 컨테이너에 저장될 것이고 파일을 보려면 해당 컨테이너에 엑세스해야 합니다. 이를 위해 `volumes=` 를 우리의 내부 작업 공간으로 설정합니다.
 
 마지막 부분에서도 인자를 재정의하지만, 이번에는 `Executor` 의 부모 클래스에 대해 다음을 수행합니다:
@@ -324,7 +325,7 @@ uses_metas={                                                # Executor (parent c
 
 우리의 경우, 재정의하려는 인자는 `workspace` 의 이름입니다. 이렇게 하지 않으면 당신의 Executor 클래스(`RequestLogger`)와 동일한 이름의 폴더가 생성될 것이고, 그곳에 정보가 저장될 것입니다. 하지만 우리는 Docker에 `internal_workspace` 라는 이름을 가진 워크스페이스를 조직했기 때문에 같은 이름을 가진 폴더를 만들면 됩니다.
 
-좋습니다. 우리는 이전에 배포한 Executor와 함께 `Flow` 가 준비되었습니다. 이제 이것을 사용할 수 있습니다. 문서를 인덱싱하여 시작해봅시다:
+좋습니다. 이전에 배포한 Executor와 함께 `Flow` 가 준비되었습니다. 우리는 이제 이것을 사용할 수 있습니다. 문서를 인덱싱하여 시작해봅시다:
 
 ```python
 with flow as f:                                                 # Flow is a context manager
