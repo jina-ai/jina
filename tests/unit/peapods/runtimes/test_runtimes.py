@@ -1,5 +1,5 @@
-import multiprocessing
 import os
+import multiprocessing
 import threading
 
 import pytest
@@ -40,7 +40,7 @@ def test_worker_runtime(runtime, ctrl_ipc):
 @pytest.mark.parametrize('cls', [GRPCGatewayRuntime, WebSocketGatewayRuntime])
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_gateway_runtime(cls, runtime):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = cls
 
     arg = set_gateway_parser().parse_args(['--runtime-backend', runtime])
@@ -51,7 +51,7 @@ def test_gateway_runtime(cls, runtime):
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_container_runtime_bad_entrypoint(runtime):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = ContainerRuntime
 
     # without correct entrypoint this will fail
@@ -66,7 +66,7 @@ def test_container_runtime_bad_entrypoint(runtime):
 @pytest.mark.skipif(__windows__, reason='Windows containers are not supported yet')
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_container_runtime_good_entrypoint(runtime):
-    class Pea1(BasePea):
+    class Pea1(Pea):
         runtime_cls = ContainerRuntime
 
     arg = set_pea_parser().parse_args(
@@ -85,7 +85,8 @@ def test_container_runtime_good_entrypoint(runtime):
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_address_in_use(runtime):
-    # test does not work with same control port, because right now the `READYNESS` signal is done by sending to that port
+    # test does not work with same control port, because right now the `READYNESS` signal is done by sending to that
+    # port
     p = ['--port-in', '55555', '--runtime-backend', runtime]
     args1 = set_pea_parser().parse_args(p)
     args2 = set_pea_parser().parse_args(p)
@@ -113,5 +114,5 @@ def test_address_in_use(runtime):
 def test_runtime_thread_process(runtime, parser, args):
     args.extend(['--runtime-backend', runtime])
     arg = parser().parse_args(args)
-    with BasePea(arg):
+    with Pea(arg):
         pass

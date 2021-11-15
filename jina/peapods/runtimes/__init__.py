@@ -1,5 +1,5 @@
 def list_all_runtimes():
-    """List all public runtimes that can be used directly with :class:`jina.peapods.peas.BasePea`
+    """List all public runtimes that can be used directly with :class:`jina.peapods.peas.Pea`
 
     # noqa: DAR101
     # noqa: DAR201
@@ -29,7 +29,6 @@ def get_runtime(name: str):
     from .gateway.grpc import GRPCGatewayRuntime
     from .gateway.http import HTTPGatewayRuntime
     from .gateway.websocket import WebSocketGatewayRuntime
-    from .container import ContainerRuntime
     from .jinad import JinadRuntime
     from .worker import WorkerRuntime
     from .head import HeadRuntime
