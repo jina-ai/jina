@@ -46,13 +46,22 @@ async def test_websocket_clientlet():
 def test_client_behaviour(flow_with_exception_request, mocker):
     on_done_mock = mocker.Mock()
     on_always_mock = mocker.Mock()
-    on_error_mock = mocker.Mock()
+    on_error_mock = None
 
     with flow_with_exception_request as f:
         f.post(
             '', on_done=on_done_mock, on_error=on_error_mock, on_always=on_always_mock
         )
-    #
-    on_always_mock.assert_called_once()
-    on_done_mock.assert_not_called()
-    on_error_mock.assert_called_once()
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_not_called()
+
+    on_error_mock = mocker.Mock()
+    on_done_mock = mocker.Mock()
+    on_always_mock = mocker.Mock()
+    with flow_with_exception_request as f:
+        f.post(
+            '', on_done=on_done_mock, on_error=on_error_mock, on_always=on_always_mock
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_not_called()
+        on_error_mock.assert_called_once()
