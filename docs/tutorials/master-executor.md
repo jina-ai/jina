@@ -26,7 +26,7 @@ Jina를 새로 설치하고 종속성 충돌을 방지하기 위해 [새로운 P
 pip install jina
  ```
 
-Jina 설치에 대한 자세한 내용은 [ref](https://github.com/jina-ai/jina/blob/master/docs/get-started) `페이지의 <install>` 을 참조하세요.
+Jina 설치에 대한 자세한 내용은 [이 페이지](https://github.com/jina-ai/jina/blob/master/docs/get-started)의 `<install>` 을 참조하세요.
 
 ## 나의 Executor 만들기
 
@@ -171,7 +171,7 @@ def log(self,
         **kwargs):
 ```
 
-데코레이터를 사용하는 방법에 대한 자세한 내용은 [ref](https://docs.jina.ai/fundamentals/executor/executor-api) `the documentation <executor-request-parameters>` 를 참조하세요. 이 예시에서는 모든 요청에 대해 `log` 함수를 호출할 것이므로 엔드포인트를 지정하지 않습니다.
+데코레이터를 사용하는 방법에 대한 자세한 내용은 [이곳](https://docs.jina.ai/fundamentals/executor/executor-api) `the documentation <executor-request-parameters>` 를 참조하세요. 이 예시에서는 모든 요청에 대해 `log` 함수를 호출할 것이므로 엔드포인트를 지정하지 않습니다.
 
 이제 우리는 함수에 로직을 추가할 수 있습니다. 먼저 일부 정보를 표시하는 행을 출력합니다. 그런 다음 문서에서 세부 정보를 저장합니다:
 
