@@ -1,7 +1,7 @@
 import os
 import sys
 import traceback
-from typing import Union, List, Optional
+from typing import Union, List, Optional, TYPE_CHECKING
 
 from ..request import Request
 from ..request.control import ControlRequest
@@ -13,7 +13,7 @@ from ...helper import colored
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
-if False:
+if TYPE_CHECKING:
     from ...executors import BaseExecutor
 
 __all__ = ['Message']

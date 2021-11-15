@@ -11,8 +11,6 @@ from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.peas import Pea
-from jina.peapods.runtimes.head import HeadRuntime
-from jina.peapods.runtimes.worker import WorkerRuntime
 from jina.types.message.common import ControlMessage
 
 
@@ -47,6 +45,7 @@ async def test_peas_trivial_topology():
         responses = c.post(
             '/', inputs=async_inputs, request_size=1, return_results=True
         )
+
         response_list = []
         async for response in responses:
             response_list.append(response)

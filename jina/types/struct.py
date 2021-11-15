@@ -66,11 +66,3 @@ class StructView(ProtoTypeMixin, MutableMapping):
             self._pb_body.update(d._pb_body)
         else:
             self._pb_body.update(d)
-
-    def clear(self) -> None:
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR103
-        """
-        self._pb_body.Clear()

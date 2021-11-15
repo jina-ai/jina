@@ -39,8 +39,6 @@ class ChunkArray(DocumentArray):
         """
         super().append(document)
         chunk = self[-1]
-        if not chunk.mime_type:
-            chunk.mime_type = self._ref_doc.mime_type
         chunk.set_attributes(
             parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
         )

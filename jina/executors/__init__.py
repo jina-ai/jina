@@ -1,16 +1,14 @@
 import inspect
 import os
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Optional, Callable
+from typing import Dict, Optional, Type
 
 from .decorators import store_init_kwargs, wrap_func
 from .. import __default_endpoint__, __args_executor_init__
-from ..helper import typename, ArgNamespace
+from ..helper import typename, ArgNamespace, T
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
-
-AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
+__all__ = ['BaseExecutor']
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -201,11 +199,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )  # unbound method, self is required
 
     @property
-    def workspace(self) -> str:
+    def workspace(self) -> Optional[str]:
         """
-        Get the path of the current shard.
+        Get the workspace directory of the Executor.
 
-        :return: returns the workspace of the shard of this Executor.
+        :return: returns the workspace of the current shard of this Executor.
         """
         workspace = getattr(self.metas, 'workspace') or getattr(
             self.runtime_args, 'workspace', None
@@ -225,11 +223,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if not os.path.exists(complete_workspace):
                 os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
-        else:
-            raise ValueError(
-                'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
-                'are you using this Executor in a Flow?'
-            )
 
     def __enter__(self):
         return self
@@ -238,7 +231,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self.close()
 
     @classmethod
-    def from_hub(cls, uri: str, **kwargs) -> 'BaseExecutor':
+    def from_hub(cls: Type[T], uri: str, **kwargs) -> T:
         """Construct an Executor from Hub.
 
         :param uri: a hub Executor scheme starts with `jinahub://`

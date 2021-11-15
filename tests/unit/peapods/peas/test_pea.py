@@ -178,7 +178,6 @@ def test_failing_executor():
             pass
 
 
-# test pea where runtime fails to start
 @pytest.mark.parametrize(
     'protocol, expected',
     [

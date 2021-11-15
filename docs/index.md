@@ -66,14 +66,14 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 :link-type: doc
 :class-card: color-gradient-card
 
-Learn how to use Jina to build neural search solution for different types of data.
+Learn to use Jina to build neural search solution for different types of data.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
 :link: advanced/hub/index
 :link-type: doc
 
-Learn how to share and reuse Executors from community.
+Learn to share and reuse Executors from the Jina community.
 
 ::::
 
@@ -82,7 +82,7 @@ Learn how to share and reuse Executors from community.
 :link: advanced/daemon/index
 :link-type: doc
 
-Learn how to deploy and manage Jina on remote via a RESTful interface.
+Learn to deploy and manage Jina on remote via a RESTful interface.
 ::::
 
 
@@ -92,7 +92,7 @@ Learn how to deploy and manage Jina on remote via a RESTful interface.
 :link: advanced/experimental/index
 :link-type: doc
 
-Preview the next big thing we are building. Careful, zapping!
+Preview the next big things we are building. Careful not to get zapped!
 ::::
 
 
@@ -141,10 +141,8 @@ datatype/tabular/index
 :hidden:
 
 advanced/hub/index
-advanced/master-executor
 advanced/daemon/index
 advanced/experimental/index
-advanced/gpu-executor
 ```
 
 

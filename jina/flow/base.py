@@ -12,7 +12,17 @@ import time
 import uuid
 from collections import OrderedDict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
+from typing import (
+    Optional,
+    Union,
+    Tuple,
+    List,
+    Set,
+    Dict,
+    overload,
+    Type,
+    TYPE_CHECKING,
+)
 
 from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
@@ -41,7 +51,6 @@ from ..helper import (
     CatchAllCleanupContextManager,
 )
 from ..jaml import JAMLCompatible
-
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
@@ -59,7 +68,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
-if False:
+if TYPE_CHECKING:
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
     from .asyncio import AsyncFlow
@@ -1645,6 +1654,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes[pod_name].rolling_update,
             dump_path=dump_path,
             uses_with=uses_with,
+            any_event_loop=True,
+        )
+
+    def scale(
+        self,
+        pod_name: str,
+        replicas: int,
+    ):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param pod_name: pod to update
+        :param replicas: The number of replicas to scale to
+        """
+
+        # TODO when replicas-host is ready, needs to be passed here
+
+        from ..helper import run_async
+
+        run_async(
+            self._pod_nodes[pod_name].scale,
+            replicas=replicas,
             any_event_loop=True,
         )
 

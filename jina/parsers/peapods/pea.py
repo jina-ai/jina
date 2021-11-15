@@ -76,7 +76,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--replica-id',
         type=int,
-        default=0,  # not sure how to mantain backwards compatibility with the workspace of Executor
+        default=0,
         help='the id of the replica of an executor'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,

@@ -10,6 +10,7 @@ from ..networking import get_connect_host
 from ..peas.factory import PeaFactory
 from ... import __default_executor__
 from ... import helper
+from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...enums import (
     SchedulerType,
     PodRoleType,
@@ -102,6 +103,16 @@ class BasePod(ExitFIFO):
     async def rolling_update(self, *args, **kwargs):
         """
         Roll update the Executors managed by the Pod
+
+            .. # noqa: DAR201
+            .. # noqa: DAR101
+        """
+        ...
+
+    @abstractmethod
+    async def scale(self, *args, **kwargs):
+        """
+        Scale the amount of replicas of a given Executor.
 
             .. # noqa: DAR201
             .. # noqa: DAR101
@@ -323,7 +334,7 @@ class Pod(BasePod):
 
     class _ReplicaSet:
         def __init__(self, pod_args: Namespace, args: List[Namespace]):
-            self.pod_args = pod_args
+            self.pod_args = copy.copy(pod_args)
             self.args = args
             self._peas = []
 
@@ -353,6 +364,7 @@ class Pod(BasePod):
         async def rolling_update(
             self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
         ):
+            # TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?
             for i in range(len(self._peas)):
                 old_pea = self._peas[i]
                 old_pea.close()
@@ -366,7 +378,76 @@ class Pod(BasePod):
                 new_pea.__enter__()
                 await new_pea.async_wait_start_success()
                 new_pea.activate_runtime()
+                self.args[i] = _args
                 self._peas[i] = new_pea
+
+        async def _scale_up(self, replicas: int):
+            new_peas = []
+            new_args_list = []
+            for i in range(len(self._peas), replicas):
+                new_args = copy.copy(self.args[0])
+                new_args.noblock_on_start = True
+                new_args.name = new_args.name[:-1] + f'{i}'
+                new_args.port_ctrl = helper.random_port()
+                new_args.replica_id = i
+                # no exception should happen at create and enter time
+                new_peas.append(BasePea(new_args).start())
+                new_args_list.append(new_args)
+            exception = None
+            for new_pea, new_args in zip(new_peas, new_args_list):
+                try:
+                    await new_pea.async_wait_start_success()
+                except (
+                    RuntimeFailToStart,
+                    TimeoutError,
+                    RuntimeRunForeverEarlyError,
+                ) as ex:
+                    exception = ex
+                    break
+
+            if exception is not None:
+                # close peas and remove them from exitfifo
+                if self.pod_args.shards > 1:
+                    msg = f' Scaling fails for shard {self.pod_args.shard_id}'
+                else:
+                    msg = ' Scaling fails'
+
+                msg += f'due to executor failing to start with exception: {exception!r}'
+                raise ScalingFails(msg)
+            else:
+                for new_pea, new_args in zip(new_peas, new_args_list):
+                    new_pea.activate_runtime()
+                    self.args.append(new_args)
+                    self._peas.append(new_pea)
+
+        async def _scale_down(self, replicas: int):
+            for i in reversed(range(replicas, len(self._peas))):
+                # Close returns exception, but in theory `termination` should handle close properly
+                try:
+                    self._peas[i].close()
+                finally:
+                    # If there is an exception at close time. Most likely the pea's terminated abruptly and therefore these
+                    # peas are useless
+                    del self._peas[i]
+                    del self.args[i]
+
+        async def scale(self, replicas: int):
+            """
+            Scale the amount of replicas of a given Executor.
+
+            :param replicas: The number of replicas to scale to
+
+                .. note: Scale is either successful or not. If one replica fails to start, the ReplicaSet remains in the same state
+            """
+            # TODO make scale robust, in what state this ReplicaSet ends when this fails?
+            assert replicas > 0
+            if replicas > len(self._peas):
+                await self._scale_up(replicas)
+            elif replicas < len(self._peas):
+                await self._scale_down(
+                    replicas
+                )  # scale down has some challenges with the exit fifo
+            self.pod_args.replicas = replicas
 
         def __enter__(self):
             for _args in self.args:
@@ -682,6 +763,16 @@ class Pod(BasePod):
             )
         except:
             raise
+
+    async def scale(self, replicas: int):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param replicas: The number of replicas to scale to
+        """
+        # potential exception will be raised to CompoundPod or Flow
+        await self.replica_set.scale(replicas)
+        self.args.replicas = replicas
 
     @staticmethod
     def _set_peas_args(

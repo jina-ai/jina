@@ -19,6 +19,8 @@ from ...types.message.common import ControlMessage
 
 __all__ = ['BasePea', 'Pea']
 
+from ...types.message.common import ControlMessage
+
 
 def run(
     args: 'argparse.Namespace',
@@ -139,8 +141,6 @@ class BasePea(ABC):
 
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
         # or thread.f
-        self._timeout_ctrl = self.args.timeout_ctrl
-        self.runtime_ctrl_address = self._get_control_address()
         test_worker = {
             RuntimeBackendType.THREAD: threading.Thread,
             RuntimeBackendType.PROCESS: multiprocessing.Process,
@@ -154,6 +154,8 @@ class BasePea(ABC):
             events_list=[self.is_ready, self.is_shutdown],
         )
         self.daemon = self.args.daemon
+        self.runtime_ctrl_address = self._get_control_address()
+        self._timeout_ctrl = self.args.timeout_ctrl
 
     def _get_control_address(self):
         return f'{self.args.host}:{self.args.port_in}'
