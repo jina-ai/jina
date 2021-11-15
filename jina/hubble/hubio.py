@@ -27,7 +27,7 @@ from .hubapi import (
     install_package_dependencies,
 )
 from .. import __resources_path__
-from ..helper import get_full_version, ArgNamespace
+from ..helper import get_full_version, ArgNamespace, colored
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..parsers.hubble import set_hub_parser
@@ -426,7 +426,18 @@ metas:
                 if result is None:
                     raise Exception('Unknown Error')
                 elif not result.get('data', None):
-                    raise Exception(result.get('message', 'Unknown Error'))
+                    msg = result.get('message', 'Unknown Error')
+                    if 'Process(docker) exited on non-zero code' in msg:
+                        self.logger.error(
+                            '''
+                        Failed on building Docker image. Potential solutions:
+                        - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one, 
+                          as the auto-generated one on the cloud did not work.   
+                        - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
+                        '''
+                        )
+
+                    raise Exception(msg)
                 elif 200 <= result['statusCode'] < 300:
                     new_uuid8, new_secret = self._prettyprint_result(console, result)
                     if new_uuid8 != uuid8 or new_secret != secret:
@@ -444,8 +455,8 @@ metas:
 
             except Exception as e:  # IO related errors
                 self.logger.error(
-                    f'Error while pushing session_id={req_header["jinameta-session-id"]}: '
-                    f'\n{e!r}'
+                    f'''Please report this session_id: {colored(req_header["jinameta-session-id"], color="yellow", attrs="bold")} to https://github.com/jina-ai/jina/issues'
+                {e!r}'''
                 )
                 raise e
 
@@ -484,7 +495,6 @@ metas:
             width=80,
             expand=False,
         )
-
         console.print(p1)
 
         presented_id = image.get('name', uuid8)
