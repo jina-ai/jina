@@ -17,7 +17,7 @@
 
 
 
-1) 저장소를 복제하  `jina hello fork fashion <your_project_folder>`.  `your_project_folder`에서 다른 임베딩 방식을 활용하기 위해 변경할 수 있는 파일 app.py을 갖게 됩니다.
+1) 저장소를 복제하세요  `jina hello fork fashion <your_project_folder>`.  `your_project_folder`에서 다른 임베딩 방식을 활용하기 위해 변경할 수 있는 파일 app.py을 갖게 됩니다.
 
 2) 74~79줄을 바꿔주세요. 예를들어 당신은  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder):을 사용할 수있습니다
 
@@ -44,9 +44,9 @@
    class `ImageTorchEncoder`. In this case attribute `'model_name'` takes value `'alexnet'`.
    ````
    
-3) Run `python <your_project_folder>/app.py` to execute.
+3)  `python <your_project_folder>/app.py` 를  .
 
-## Modify `jina hello chatbot` to use Hub Executor
+## Hub 실행기를 사용하기위해 '지나 헬로 패션' 을 수정하세요
 
 
 As an example, you can
@@ -90,7 +90,7 @@ use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-to
 1) '지나 헬로 포크 멀티모달 <your_project_folder>를 사용하여 저장소 복제 리포지토리에서 다음 작업을 수행합니다.
 'flow-index.yml' 및 'flow-search.yml'을 가지고 있으며, 이 경우 다른 임베디를 활용하도록 변경할 수 있습니다.
     
-2) 그에 따라 인덱스 흐름 및 검색 정보를 
+2) 그에 따라 인덱스 흐름 및 검색 정보를 수정하세요.
    ````{tab} flow-index.yml
    ```yaml
    jtype: Flow
