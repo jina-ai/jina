@@ -79,7 +79,7 @@ def callback_exec(
     """
     if on_error and response.status.code >= jina_pb2.StatusProto.ERROR:
         _safe_callback(on_error, continue_on_error, logger)(response)
-    elif on_done:
+    elif on_done and response.status.code < jina_pb2.StatusProto.ERROR:
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
         _safe_callback(on_always, continue_on_error, logger)(response)
