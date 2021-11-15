@@ -68,7 +68,7 @@ class Indexer(Executor):
 
 ```
 
-### Flow안에 함께 넣는다
+### Flow안에 함께 넣습니다
 
 ```python
 from jina import Flow
@@ -79,7 +79,7 @@ f = (Flow(port_expose=12345, protocol='http', cors=True)
 
 ```
 
-### Flow와 인덱스 데이터를 시작한다
+### Flow와 인덱스 데이터를 시작다
 
 ```python
 from jina import Document
@@ -134,7 +134,7 @@ c = Client(protocol='http', port=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-,이러한 결과를 출력한다:
+,이러한 결과를 출력합니다:
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
