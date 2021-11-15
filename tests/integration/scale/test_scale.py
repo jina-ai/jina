@@ -12,6 +12,9 @@ from jina.clients import Client
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 IMG_NAME = 'jina/scale-executor'
 
+NUM_CONCURRENT_CLIENTS = 20
+NUM_DOCS_SENT_BY_CLIENTS = 50
+
 
 class ScalableExecutor(Executor):
     def __init__(self, *args, **kwargs):
@@ -121,47 +124,6 @@ def test_scale_success(flow_with_runtime, pod_params):
 @pytest.mark.parametrize(
     'pod_params',
     [
-        (2, 5, 1),
-        (2, 5, 2),
-        (5, 2, 1),
-    ],
-    indirect=True,
-)
-def test_scale_fail(flow_with_runtime, pod_params):
-    num_replicas, scale_to, shards = pod_params
-    with flow_with_runtime as f:
-        ret1 = f.index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
-            request_size=10,
-        )
-        with pytest.raises(KeyError):
-            f.scale(pod_name='random-executor', replicas=scale_to)
-
-        ret2 = f.index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
-            request_size=10,
-        )
-
-    assert len(ret1) == 20
-    assert len(ret2) == 20
-
-    replica1_ids = set()
-    replica2_ids = set()
-    for r1, r2 in zip(ret1, ret2):
-        assert len(r1.docs) == 10
-        assert len(r2.docs) == 10
-        for replica_id in r1.docs.get_attributes('tags__replica_id'):
-            replica1_ids.add(replica_id)
-        for replica_id in r2.docs.get_attributes('tags__replica_id'):
-            replica2_ids.add(replica_id)
-    assert replica1_ids == replica2_ids == set(range(num_replicas))
-
-
-@pytest.mark.parametrize(
-    'pod_params',
-    [
         (2, 3, 1),
         (3, 2, 1),
     ],
@@ -169,9 +131,6 @@ def test_scale_fail(flow_with_runtime, pod_params):
 )
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
-    NUM_CONCURRENT_CLIENTS = 20
-    NUM_DOCS_SENT_BY_CLIENTS = 50
-
     def peer_client(port, protocol, peer_hash, queue):
         rv = Client(protocol=protocol, port=port).index(
             [Document(text=peer_hash) for _ in range(NUM_DOCS_SENT_BY_CLIENTS)],
