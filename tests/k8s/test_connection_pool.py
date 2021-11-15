@@ -14,7 +14,7 @@ cur_dir = os.path.dirname(__file__)
 
 @pytest.mark.asyncio
 async def test_wait_for_ready(
-    slow_init_executor_image, k8s_cluster, load_images_in_kind, set_test_pip_version
+    slow_init_executor_image, k8s_cluster, load_images_in_kind
 ):
     flow = Flow(
         name='test-flow-slow-executor',

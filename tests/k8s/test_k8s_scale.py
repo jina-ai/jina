@@ -7,7 +7,7 @@ DEFAULT_REPLICAS = 2
 
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('shards', [1, 2])
-def test_k8s_scale(k8s_cluster, load_images_in_kind, set_test_pip_version, shards):
+def test_k8s_scale(k8s_cluster, load_images_in_kind, shards):
     flow = Flow(
         name='test-flow-scale',
         port_expose=9090,
@@ -58,7 +58,6 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, set_test_pip_version, shard
 def test_k8s_scale_fail(
     k8s_cluster,
     load_images_in_kind,
-    set_test_pip_version,
 ):
     flow = Flow(
         name='test-flow-scale',
