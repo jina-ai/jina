@@ -17,7 +17,7 @@ class PeaFactory:
     def build_pea(
         args: 'Namespace',
     ) -> BasePea:
-        """Build an implementation of a `BasePod` interface
+        """Build an implementation of a `BasePea` interface
 
         :param args: pod arguments parsed from the CLI.
 
