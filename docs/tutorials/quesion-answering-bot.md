@@ -1,4 +1,4 @@
-# Question-Answering Chatbot for Documentation 
+# 문서화를 위한 질의응답 챗봇 
 
 ```{article-info}
 :avatar: avatars/gregor.jpg
@@ -8,24 +8,24 @@
 :date: November 3, 2021
 ```
 
-This tutorial will take you through the process of creating a question-answering chatbot. 
-This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask.
+이 튜토리얼은 질의응답 챗봇을 생성하는 과정을 안내합니다. 이것은 인간 언어의 모호함과 한 사람이 할 수 있는 무한한 질문으로 인해 본질적으로 어려운 작업입니다.
 
-One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?
+이 문제를 해결하는 한 가지 방법은 한 쌍의 질문과 답변에 대해 훈련된 신경망을 사용하여 답변을 예측하는 것입니다. 대부분의 소프트웨어 문서와 같이 데이터 세트를 사용할 수 없는 경우가 많습니다. Jina 문서에 대한 질문에 답하기 위해 챗봇을 구축하고 싶다고 가정해 보겠습니다. 제가 만약 이 작업을 검색 문제로 재구성할 수 있는 방법이 있고, 이렇게 하면 서로 일치하는 질문과 답변으로 구성된 대규모 데이터 세트의 필요성을 줄일 수 있다고 말하면 어떻게 될까요?
 
-How, you ask? *Let me explain!*
+어떻게? 라고 물으신다면 *제가 설명해 드리겠습니다!*
 
-## Overview 
-Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is Jina?` or `Is Jina open source?`.
+## 개요 
+문제에 대한 접근 방법으로는 [Doc2query 방법](https://arxiv.org/pdf/1904.08375.pdf)를 활용합니다. 이 방법은 텍스트를 형성하고, 텍스트가 잠재적으로 대답할 수 있는 다양한 질문을 예측합니다. 예를 들어 `Jina is an open source framework for neural search.` 와 같은 문장이 있다면, 모델은 `What is Jina?` 나 `Is Jina open source?` 와 같은 질문을 예측합니다.
 
-The idea here is to predict several questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
+여기서 아이디어는 원본 텍스트 문서의 모든 부분에 대한 몇 가지 질문을 예측하는 것입니다(우리의 경우는 Jina 문서). 그런 다음 인코더를 사용하여 예측된 각 질문에 대한 벡터 표현을 만듭니다. 이러한 표현은 저장되어 텍스트의 본문에 대한 인덱스를 제공합니다. 사용자가 봇에 질문을 던지면, 생성된 질문을 인코딩한 것과 같은 방식으로 인코딩합니다. 이제 인코딩에 대해 유사성 검색을 실행할 수 있습니다. 사용자 쿼리의 인코딩을 색인의 인코딩과 비교하여 일치하는 항목을 찾습니다.
 
-Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user.
+사용자의 쿼리와 가장 유사한 질문을 생성하는 데 사용된 원본 텍스트의 부분을 알고 있으므로 사용자에게 원본 텍스트를 답변으로 반환할 수 있습니다.
 
-Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in Jina. Then we will take a look at how to implement the necessary `Executor`s for our search-based question-answering system.  
+이제 당신은 우리가 무엇을 할 것인지에 대한 일반적인 아이디어를 얻었으므로 다음 섹션에서는 Jina에서 `Flow` 를 정의하는 방법을 볼 것입니다.
+그런 다음 검색 기반 질의응답 시스템에 필요한 `Executor` 의 구현 방법을 살펴보겠습니다.
 
-## Indexing the text document 
-Let's imagine we extracted a bunch of sentences from Jina's documentation and stored them in a `DocumentArray`, as shown below. 
+## 텍스트 문서 인덱싱하기 
+아래에 보이는 것과 같이 우리는 Jina의 문서에서 한 무더기의 문장을 추출하고, `DocumentArray` 에 저장했다고 가정해 봅시다.
 
 ```python
 example_sentences = [
@@ -38,11 +38,11 @@ example_sentences = [
 docs = DocumentArray([Document(content=sentence) for sentence in example_sentences])
 ```
 
-As described in the last section, we first need to predict potential questions for each of the elements in the `DocumentArray`. Then we have to use another model to create vector encodings from the predicted questions. Finally, we store them as the index. 
+지난 섹션에서 설명했듯이, 우리는 먼저 `DocumentArray` 의 각 요소에 대한 잠재적인 질문을 예측해야 합니다. 그런 다음 예측된 질문에서 벡터 인코딩을 생성하기 위해 다른 모델을 사용해야 합니다. 마지막으로 이것을 인덱스로 저장합니다. 
 
-At this point we have enough information to start defining our `Flows`.
+이제 우리는 `Flows` 정의를 시작하기에 충분한 정보를 가졌습니다. 
 
-*Without further ado, let's build!*
+*거두절미하고, 이제 만들어봅시다!*
 
 ``` python
 indexing_flow = Flow(
@@ -64,11 +64,11 @@ with indexing_flow:
     indexing_flow.post(on="/index", inputs=docs, on_done=print)
 ```
 
-## Searching of the user's query against the index
+## 인덱스에 대한 사용자 쿼리 검색
 
-After having defined the `Flow` for indexing our document, we are now ready to work on answering user queries. Incoming queries also need to be encoded. For that, we use the same encoder that we used for encoding our generated questions. Then we need `SimpleIndexer` to perform similarity search, in order to retrieve generated questions and eventually answers the query. 
+문서 인덱싱을 위한 `Flow` 를 정의했으면 이제 사용자 질의에 대답할 준비가 되었습니다. 수신 쿼리도 인코딩해야 합니다. 이를 위해 생성된 질문을 인코딩하는 데 사용했던 것과 동일한 인코더를 사용합니다. 그런 다음 유사성 검색을 수행하고, 생성된 질문을 검색하여 최종적으로 질문에 답하기 위해 `SimpleIndexer` 가 필요합니다.
 
-The flow for searching is much simpler than the one for indexing and looks like this: 
+검색 flow는 인덱싱 flow보다 훨씬 간단하며 다음과 같습니다: 
 
 ``` python
 query_flow = Flow(
@@ -81,13 +81,13 @@ with query_flow:
     indexing_flow.post(on="/query", inputs=user_queries, on_done=print)
 ```
 
-Now that we have seen the overall structure of the approach and have defined our `Flows`, we can code up the `Executor`s.
+이제 우리는 접근 방식의 전체적인 구조를 보았고, 우리의 `Flows` 를 정의했으며, `Executor` 를 코딩할 수 있습니다.
 
-## Building the Executor to Generate Potential Questions 
+## 잠재적인 질문을 생성하기 위한 Executor 구축
 
-The first `Executor`, thatÏ we implement, is the `QuestionGenerator`. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.
+우리가 구현한 첫 번째 `Executor` 는 `QuestionGenerator` 이다. 이것은 주어진 텍스트가 대답할 수 있는 잠재적인 질문을 예측하는 모델 주변의 wrapper입니다.
 
-Apart from that, it just loops over all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
+그 외에도 입력 텍스트의 제공된 모든 부분을 반복합니다. 각 입력에 대해 잠재적인 질문이 예측된 후에 원본 텍스트와 함께 `chunks` 로 저장됩니다. 
 
 ``` python 
 class QuestionGenerator(Executor): 
@@ -119,10 +119,10 @@ class QuestionGenerator(Executor):
                 d.chunks.append(Document(text=question))
 ```
 
-We try to give credit where credit is due and want to mention the paper, that introduced the doc2query approach [here](https://arxiv.org/pdf/1904.08375.pdf).
+우리는 합당한 곳에 크레딧을 제공하기 위해 doc2query 접근 방식을 도입한 논문을 [here](https://arxiv.org/pdf/1904.08375.pdf)에서 언급하고자 합니다.
 
-## Building the Encoder
-The next step is to build the `Executor`, which we will use to create vector representations from human-readable text. 
+## 인코더 구축
+다음 단계는 사람이 읽을 수 있는 텍스트에서 벡터 표현을 만드는 데 사용할 `Executor` 의 구축을 위한 것입니다. 
 
 ```python 
 class TextEncoder(Executor):
@@ -141,18 +141,17 @@ class TextEncoder(Executor):
             embeddings = self.model.encode(target.texts)
             target.embeddings = embeddings
 ```
-Similar to the `QuestionGenerator` the `TextEncoder` is simply a wrapper around the SentenceTransformer from the sentence_transformer package. When provided with a `DocumentArray` containing text, it will encode the text of each element and store the result in the `embedding` attribute it creates.
+`QuestionGenerator` 와 유사하게 `TextEncoder` 는 단순히 sentence_transformer 패키지의 SentenceTransformer를 감싸는 wrapper입니다.텍스트가 포함된 `DocumentArray` 가 제공되면, 이것은 각 요소의 텍스트를 인코딩하고 `embedding` 속성에 결과를 저장합니다. 
 
-Now let's move on to the last part and create the indexer. 
+이제 마지막 부분으로 이동하여 인덱서를 생성해 보겠습니다.
 
-## Putting it Together with the Indexer
-The indexer is the only one of our `Executor`s that can handle more than one task. 
-Namely, the indexing and the search.
+## 인덱서와 함께 사용하기
 
-When it is used to perform indexing, `index()` is called. This stores all provided documents, together with their embeddings, as a `DocumentArrayMemmap`. 
+인덱서는 우리의 `Executor` 중 하나 이상의 작업을 처리할 수 있는 유일한 것입니다. 즉, 인덱싱 및 검색입니다.
 
-However, when the `SimpleIndexer` is used to handle an incoming query, the `search()` function is called, it performs similarity search and ranks the results. 
+인덱싱을 수행할 때 `index()` 가 호출됩니다. 이것은 제공된 모든 문서와 그것의 임베딩을 `DocumentArrayMemmap`으로 저장합니다.
 
+그러나 `SimpleIndexer` 가 들어오는 쿼리를 처리하기 위해 사용될 때 `search()` 함수가 호출되고, SimpleIndexer는 유사성을 검색하고 결과의 순위를 지정합니다.
 
 ```python 
 class SimpleIndexer(Executor):
@@ -200,7 +199,7 @@ class SimpleIndexer(Executor):
             d.pop('embedding')
 ```
 
-The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to provide the answer to the user, we could use a little helper function that gets the `id` of the best-fitting match and searches the index for the sentence with this `id`. 
+결과의 순위는 `matches` 객체 안의 일치 순서로 표시됩니다. 따라서 사용자에게 답변을 제공하기 위해, 가장 적합한 일치의 `id` 를 가져오고 이 `id` 를 가진 문장의 인덱스를 검색하는 작은 도우미 함수를 사용할 수 있습니다.
 
 ```python 
 best_matching_id = user_queries[0].matches[0].id
@@ -220,4 +219,4 @@ def get_answer(docs, best_matching_id):
 print(get_answer(docs, best_matching_id))
 ```
 
-We have now seen how to implement a question-answering bot using Jina without the need for a large dataset of matching questions and answers. In practice, we would need to experiment with several parameters, such as the initial extraction of answers from the original text. In this tutorial, we made the assumption that every sentence will be one potential answer. However, in reality, it is likely that some user queries will require multiple sentences or complete paragraphs to answer.
+이제 우리는 Jina를 사용하여 서로 일치하는 질문과 답변으로 구성된 대규모 데이터 세트 없이 질의응답 봇을 구현하는 방법을 보았습니다. 실제로 우리는 원본 텍스트에서 답변을 초기 추출하는 것과 같이 여러 매개변수를 실험해 보아야 합니다. 이 튜토리얼에서는 모든 문장이 하나의 잠재적인 답변이 될 것이라고 가정했습니다. 그러나 실제로는 일부 사용자 쿼리는 응답하기 위해 여러 문장이나 완전한 단락이 필요할 수 있습니다.
