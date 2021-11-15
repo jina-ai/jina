@@ -45,13 +45,11 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
 
 
 @router.put(
-    path='/{id}',
-    summary='Trigger a rolling update on this Pod',
-    description='Types supported: "rolling_update"',
+    path='/rolling_update/{id}',
+    summary='Trigger a rolling_update operation on the Pod object',
 )
-async def _update(
+async def rolling_update(
     id: DaemonID,
-    kind: UpdateOperation,
     dump_path: Optional[str] = None,
     uses_with: Optional[Dict[str, Any]] = None,
 ):
@@ -61,7 +59,19 @@ async def _update(
                 uses_with['dump_path'] = dump_path
             else:
                 uses_with = {'dump_path': dump_path}
-        return await store.update(id, kind, uses_with=uses_with)
+
+        return await store.rolling_update(id=id, uses_with=uses_with)
+    except Exception as ex:
+        raise Runtime400Exception from ex
+
+
+@router.put(
+    path='/scale/{id}',
+    summary='Trigger a scale operation on the Pod object',
+)
+async def scale(id: DaemonID, replicas: int):
+    try:
+        return await store.scale(id=id, replicas=replicas)
     except Exception as ex:
         raise Runtime400Exception from ex
 
