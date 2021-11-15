@@ -744,6 +744,13 @@ are properly closed.</p>
 <blockquote>
 <div></div></blockquote>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.pods.BasePod.scale">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale the amount of replicas of a given Executor.</p>
+<blockquote>
+<div></div></blockquote>
+</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.peapods.pods.BasePod.role">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.PodRoleType" title="jina.enums.PodRoleType"><span class="pre">jina.enums.PodRoleType</span></a></em><a class="headerlink" href="#jina.peapods.pods.BasePod.role" title="Permalink to this definition">¶</a></dt>
@@ -991,6 +998,16 @@ are properly closed.</p>
 <li><p><strong>dump_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the dump from which to read the data</p></li>
 <li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a Dictionary of arguments to restart the executor with</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.peapods.pods.Pod.scale">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replicas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#Pod.scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.Pod.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale the amount of replicas of a given Executor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>replicas</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The number of replicas to scale to</p>
 </dd>
 </dl>
 </dd></dl>

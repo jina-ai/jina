@@ -2480,6 +2480,28 @@
             <span class="n">any_event_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="Flow.scale"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.scale">[docs]</a>    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Scale the amount of replicas of a given Executor.</span>
+
+<span class="sd">        :param pod_name: pod to update</span>
+<span class="sd">        :param replicas: The number of replicas to scale to</span>
+<span class="sd">        """</span>
+
+        <span class="c1"># TODO when replicas-host is ready, needs to be passed here</span>
+
+        <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">run_async</span>
+
+        <span class="n">run_async</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">replicas</span><span class="o">=</span><span class="n">replicas</span><span class="p">,</span>
+            <span class="n">any_event_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""Get Client settings.</span>

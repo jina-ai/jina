@@ -663,6 +663,7 @@
 <span class="kn">from</span> <span class="nn">..peas</span> <span class="kn">import</span> <span class="n">BasePea</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span> <span class="n">ScalingFails</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SchedulerType</span><span class="p">,</span>
     <span class="n">PodRoleType</span><span class="p">,</span>
@@ -755,6 +756,16 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Roll update the Executors managed by the Pod</span>
+
+<span class="sd">            .. # noqa: DAR201</span>
+<span class="sd">            .. # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="BasePod.scale"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.scale">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Scale the amount of replicas of a given Executor.</span>
 
 <span class="sd">            .. # noqa: DAR201</span>
 <span class="sd">            .. # noqa: DAR101</span>
@@ -984,7 +995,7 @@
 
     <span class="k">class</span> <span class="nc">_ReplicaSet</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod_args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="n">pod_args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pod_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1014,6 +1025,7 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">):</span>
+            <span class="c1"># TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">)):</span>
                 <span class="n">old_pea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="n">old_pea</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -1027,7 +1039,76 @@
                 <span class="n">new_pea</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
                 <span class="k">await</span> <span class="n">new_pea</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
                 <span class="n">new_pea</span><span class="o">.</span><span class="n">activate_runtime</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_args</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_pea</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_scale_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">new_peas</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">new_args_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">),</span> <span class="n">replicas</span><span class="p">):</span>
+                <span class="n">new_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">new_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">new_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_args</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
+                <span class="n">new_args</span><span class="o">.</span><span class="n">port_ctrl</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                <span class="n">new_args</span><span class="o">.</span><span class="n">replica_id</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="c1"># no exception should happen at create and enter time</span>
+                <span class="n">new_peas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BasePea</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
+                <span class="n">new_args_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span>
+            <span class="n">exception</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">new_pea</span><span class="p">,</span> <span class="n">new_args</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_peas</span><span class="p">,</span> <span class="n">new_args_list</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">new_pea</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
+                <span class="k">except</span> <span class="p">(</span>
+                    <span class="n">RuntimeFailToStart</span><span class="p">,</span>
+                    <span class="ne">TimeoutError</span><span class="p">,</span>
+                    <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">exception</span> <span class="o">=</span> <span class="n">ex</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># close peas and remove them from exitfifo</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="o">.</span><span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">' Scaling fails for shard </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="o">.</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">' Scaling fails'</span>
+
+                <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'due to executor failing to start with exception: </span><span class="si">{</span><span class="n">exception</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="k">raise</span> <span class="n">ScalingFails</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">new_pea</span><span class="p">,</span> <span class="n">new_args</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_peas</span><span class="p">,</span> <span class="n">new_args_list</span><span class="p">):</span>
+                    <span class="n">new_pea</span><span class="o">.</span><span class="n">activate_runtime</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_pea</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_scale_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">replicas</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">))):</span>
+                <span class="c1"># Close returns exception, but in theory `termination` should handle close properly</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="c1"># If there is an exception at close time. Most likely the pea's terminated abruptly and therefore these</span>
+                    <span class="c1"># peas are useless</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="sd">"""</span>
+<span class="sd">            Scale the amount of replicas of a given Executor.</span>
+
+<span class="sd">            :param replicas: The number of replicas to scale to</span>
+
+<span class="sd">                .. note: Scale is either successful or not. If one replica fails to start, the ReplicaSet remains in the same state</span>
+<span class="sd">            """</span>
+            <span class="c1"># TODO make scale robust, in what state this ReplicaSet ends when this fails?</span>
+            <span class="k">assert</span> <span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">replicas</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">):</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_up</span><span class="p">(</span><span class="n">replicas</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">replicas</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peas</span><span class="p">):</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_down</span><span class="p">(</span>
+                    <span class="n">replicas</span>
+                <span class="p">)</span>  <span class="c1"># scale down has some challenges with the exit fifo</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="n">replicas</span>
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -1343,6 +1424,16 @@
             <span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Pod.scale"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.scale">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Scale the amount of replicas of a given Executor.</span>
+
+<span class="sd">        :param replicas: The number of replicas to scale to</span>
+<span class="sd">        """</span>
+        <span class="c1"># potential exception will be raised to CompoundPod or Flow</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">replica_set</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">replicas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="n">replicas</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_peas_args</span><span class="p">(</span>

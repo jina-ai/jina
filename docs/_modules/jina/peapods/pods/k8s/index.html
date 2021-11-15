@@ -909,6 +909,63 @@
                 <span class="n">fail_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">': </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exception_to_raise</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">raise</span> <span class="n">RuntimeFailToStart</span><span class="p">(</span><span class="n">fail_msg</span><span class="p">)</span>
 
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_scale_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">scale_to</span> <span class="o">=</span> <span class="n">replicas</span>
+            <span class="n">_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">timeout_ready</span>
+            <span class="k">if</span> <span class="n">_timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_timeout</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_timeout</span> <span class="o">/=</span> <span class="mf">1e3</span>
+
+            <span class="kn">import</span> <span class="nn">asyncio</span>
+            <span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
+
+            <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'waiting_scale_for_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'🏝️</span><span class="se">\n\t\t</span><span class="s1">Waiting for "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" to be scaled, with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span><span class="si">}</span><span class="s1"> replicas,'</span>
+                    <span class="sa">f</span><span class="s1">'scale to </span><span class="si">{</span><span class="n">scale_to</span><span class="si">}</span><span class="s1">.'</span>
+                <span class="p">)</span>
+                <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mi">1000000000</span> <span class="o">*</span> <span class="n">_timeout</span> <span class="k">if</span> <span class="n">_timeout</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span>
+                <span class="n">exception_to_raise</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">while</span> <span class="n">timeout_ns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">api_response</span> <span class="o">=</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">read_namespaced_deployment</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
+                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">'</span><span class="se">\n\t\t</span><span class="s1"> Scaled replicas: </span><span class="si">{</span><span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span><span class="si">}</span><span class="s1">.'</span>
+                            <span class="sa">f</span><span class="s1">' Replicas: </span><span class="si">{</span><span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">replicas</span><span class="si">}</span><span class="s1">.'</span>
+                            <span class="sa">f</span><span class="s1">' Expected Replicas </span><span class="si">{</span><span class="n">scale_to</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="ow">and</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="o">==</span> <span class="n">scale_to</span>
+                        <span class="p">):</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> has all its replicas updated!!'</span>
+                            <span class="p">)</span>
+                            <span class="k">return</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">scaled_replicas</span> <span class="o">=</span> <span class="n">api_response</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">ready_replicas</span> <span class="ow">or</span> <span class="mi">0</span>
+                            <span class="k">if</span> <span class="n">scaled_replicas</span> <span class="o">&lt;</span> <span class="n">scale_to</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Number of replicas </span><span class="si">{</span><span class="n">scaled_replicas</span><span class="si">}</span><span class="s1">, waiting for </span><span class="si">{</span><span class="n">scale_to</span> <span class="o">-</span> <span class="n">scaled_replicas</span><span class="si">}</span><span class="s1"> replicas to be scaled up.'</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Number of replicas </span><span class="si">{</span><span class="n">scaled_replicas</span><span class="si">}</span><span class="s1">, waiting for </span><span class="si">{</span><span class="n">scaled_replicas</span> <span class="o">-</span> <span class="n">scale_to</span><span class="si">}</span><span class="s1"> replicas to be scaled down.'</span>
+                                <span class="p">)</span>
+
+                            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                        <span class="n">exception_to_raise</span> <span class="o">=</span> <span class="n">ex</span>
+                        <span class="k">break</span>
+            <span class="n">fail_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">' Deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> did not restart with a timeout of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">timeout_ready</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">if</span> <span class="n">exception_to_raise</span><span class="p">:</span>
+                <span class="n">fail_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">': </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exception_to_raise</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">raise</span> <span class="n">RuntimeFailToStart</span><span class="p">(</span><span class="n">fail_msg</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">dump_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">):</span>
@@ -923,6 +980,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="n">uses_with</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">dump_path</span> <span class="o">=</span> <span class="n">dump_path</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_restart_runtime</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="sd">"""</span>
+<span class="sd">            Scale the amount of replicas of a given Executor.</span>
+
+<span class="sd">            :param replicas: The number of replicas to scale to</span>
+<span class="sd">            """</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_patch_namespaced_deployment_scale</span><span class="p">(</span><span class="n">replicas</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">logger</span><span class="p">:</span>
@@ -962,6 +1027,13 @@
         <span class="k">def</span> <span class="nf">_read_namespaced_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">read_namespaced_deployment</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_patch_namespaced_deployment_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">kubernetes_client</span><span class="o">.</span><span class="n">K8sClients</span><span class="p">()</span><span class="o">.</span><span class="n">apps_v1</span><span class="o">.</span><span class="n">patch_namespaced_deployment_scale</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="p">{</span><span class="s1">'spec'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">}},</span>
             <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">get_pod_uids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1125,6 +1197,18 @@
 
         <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">deployment</span><span class="o">.</span><span class="n">wait_restart_success</span><span class="p">(</span><span class="n">old_uids</span><span class="p">[</span><span class="n">deployment</span><span class="o">.</span><span class="n">dns_name</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="K8sPod.scale"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.scale">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Scale the amount of replicas of a given Executor.</span>
+
+<span class="sd">        :param replicas: The number of replicas to scale to</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
+            <span class="n">deployment</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">replicas</span><span class="o">=</span><span class="n">replicas</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">deployment</span><span class="o">.</span><span class="n">wait_scale_success</span><span class="p">(</span><span class="n">replicas</span><span class="o">=</span><span class="n">replicas</span><span class="p">)</span>
+            <span class="n">deployment</span><span class="o">.</span><span class="n">num_replicas</span> <span class="o">=</span> <span class="n">replicas</span></div>
 
 <div class="viewcode-block" id="K8sPod.start"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'K8sPod'</span><span class="p">:</span>
         <span class="sd">"""Deploy the kubernetes pods via k8s Deployment and k8s Service.</span>
