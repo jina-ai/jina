@@ -1,7 +1,7 @@
 import pytest
 
 from jina.peapods.pods.factory import PodFactory
-from jina.peapods import Pea
+from jina.peapods.peas.factory import PeaFactory
 from jina.parsers import set_pod_parser, set_pea_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
@@ -108,7 +108,7 @@ def external_executor_args():
 
 @pytest.fixture
 def external_executor(external_executor_args):
-    return Pea(external_executor_args)
+    return PeaFactory.build_pea(external_executor_args)
 
 
 def test_flow_with_external_executor(
