@@ -14,7 +14,6 @@ class KindClusterWrapper:
     def __init__(self, kind_cluster: KindCluster, logger: JinaLogger):
         self._cluster = kind_cluster
         self._cluster.ensure_kubectl()
-        self._cluster.load_docker_image('jinaai/jina:test-pip')
         self._kube_config_path = os.path.join(
             os.getcwd(), '.pytest-kind/pytest-kind/kubeconfig'
         )
@@ -26,6 +25,7 @@ class KindClusterWrapper:
         os.environ['KUBECONFIG'] = self._kube_config_path
 
     def load_docker_images(self, images):
+        images.append('jinaai/jina:test-pip')
         for image in images:
             self._cluster.load_docker_image(image)
 
