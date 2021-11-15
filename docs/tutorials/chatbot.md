@@ -41,7 +41,6 @@ with open('dataset.csv') as fp:
 ```
 
 그래서 무슨 일이 일어났나요? 우리는 문서 생성기 `docs`를 만들었고, [from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv)를 사용하여 데이터셋을 불러왔습니다. 우리는 `field_resolver`를 사용하여 데이터셋의 텍스트를 document 속성에 매핑합니다.
-used [from_csv](https://docs.jina.ai/api/jina.types.document.generators/#jina.types.document.generators.from_csv) to
 
 마지막으로, 이와 같이 이전 두 단계 ( 데이터 셋을 문서에 로드하고 컨텍스트를 시작 )와 인덱스를 결합할 수 있습니다 : 
 
@@ -285,7 +284,7 @@ Learn more about {ref}`DocumentArrayMemmap<documentarraymemmap-api>`.
 `.match` is a method of both `DocumentArray` and `DocumentArrayMemmap`. Learn more about it {ref}`in this section<match-documentarray>`.
 ```
 
-Executors를 임포트 하기 위해선, 이것들을 추가 :
+Executors를 임포트 하기 위해선, 이것들을 추가해야 합니다:
 
 ``` python
 from my_executors import MyTransformer, MyIndexer
