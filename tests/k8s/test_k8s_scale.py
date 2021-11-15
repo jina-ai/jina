@@ -32,7 +32,7 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, set_test_pip_version, shard
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
             name=k8s_deployment_name, namespace='test-flow-scale-ns'
         )
-        replica = deployment.status.replicas
+        replica = deployment.status.ready_replicas
 
         assert replica == DEFAULT_REPLICAS
 
@@ -41,7 +41,7 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, set_test_pip_version, shard
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
             name=k8s_deployment_name, namespace='test-flow-scale-ns'
         )
-        replica = deployment.status.replicas
+        replica = deployment.status.ready_replicas
 
         assert replica == 3
 
@@ -50,7 +50,7 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, set_test_pip_version, shard
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
             name=k8s_deployment_name, namespace='test-flow-scale-ns'
         )
-        replica = deployment.status.replicas
+        replica = deployment.status.ready_replicas
 
         assert replica == 1
 
@@ -79,7 +79,7 @@ def test_k8s_scale_fail(
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
             name='test-executor', namespace='test-flow-scale-ns'
         )
-        replica = deployment.status.replicas
+        replica = deployment.status.ready_replicas
         assert replica == DEFAULT_REPLICAS
         # scale a non-exist pod
         with pytest.raises(KeyError):
@@ -87,5 +87,5 @@ def test_k8s_scale_fail(
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
             name='test-executor', namespace='test-flow-scale-ns'
         )
-        replica = deployment.status.replicas
+        replica = deployment.status.ready_replicas
         assert replica == DEFAULT_REPLICAS

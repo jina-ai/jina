@@ -277,24 +277,24 @@ class K8sPod(BasePod):
                 exception_to_raise = None
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
-                        api_response = kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment_scale(
+                        api_response = kubernetes_client.K8sClients().apps_v1.read_namespaced_deployment(
                             name=self.dns_name, namespace=self.k8s_namespace
                         )
                         logger.debug(
-                            f'\n\t\t Scaled replicas: {api_response.status.replicas}.'
+                            f'\n\t\t Scaled replicas: {api_response.status.ready_replicas}.'
                             f' Replicas: {api_response.status.replicas}.'
                             f' Expected Replicas {scale_to}'
                         )
                         if (
-                            api_response.status.replicas is not None
-                            and api_response.status.replicas == scale_to
+                            api_response.status.ready_replicas is not None
+                            and api_response.status.ready_replicas == scale_to
                         ):
                             logger.success(
                                 f' {self.name} has all its replicas updated!!'
                             )
                             return
                         else:
-                            scaled_replicas = api_response.status.replicas or 0
+                            scaled_replicas = api_response.status.ready_replicas or 0
                             if scaled_replicas < scale_to:
                                 logger.debug(
                                     f'\nNumber of replicas {scaled_replicas}, waiting for {scale_to - scaled_replicas} replicas to be scaled up.'
