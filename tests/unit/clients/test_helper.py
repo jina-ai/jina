@@ -52,8 +52,8 @@ def test_client_behaviour(flow_with_exception_request, mocker):
         f.post(
             '', on_done=on_done_mock, on_error=on_error_mock, on_always=on_always_mock
         )
-        on_always_mock.assert_called_once()
-        on_done_mock.assert_not_called()
+    on_always_mock.assert_called_once()
+    on_done_mock.assert_not_called()
 
     on_error_mock = mocker.Mock()
     on_done_mock = mocker.Mock()
@@ -62,6 +62,6 @@ def test_client_behaviour(flow_with_exception_request, mocker):
         f.post(
             '', on_done=on_done_mock, on_error=on_error_mock, on_always=on_always_mock
         )
-        on_always_mock.assert_called_once()
-        on_done_mock.assert_not_called()
-        on_error_mock.assert_called_once()
+    on_always_mock.assert_called_once()
+    on_done_mock.assert_not_called()
+    on_error_mock.assert_called_once()
