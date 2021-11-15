@@ -670,18 +670,14 @@
 <span class="sd">    :param resp: the :class:`Response` object</span>
 <span class="sd">    :param stack_limit: traceback limit</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">fill</span>
-
     <span class="n">routes</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">routes</span>
 
-    <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">colored</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'bold'</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'Pod'</span><span class="p">,</span> <span class="s1">'Time'</span><span class="p">,</span> <span class="s1">'Exception'</span><span class="p">)]</span>
+    <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+    <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
 
-    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">prettytable</span> <span class="kn">import</span> <span class="n">PrettyTable</span><span class="p">,</span> <span class="n">ALL</span>
-
-        <span class="n">table</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">field_names</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span> <span class="n">hrules</span><span class="o">=</span><span class="n">ALL</span><span class="p">)</span>
-        <span class="n">add_row</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">add_row</span>
-        <span class="n">visualize</span> <span class="o">=</span> <span class="nb">print</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'Pod'</span><span class="p">,</span> <span class="s1">'Time'</span><span class="p">,</span> <span class="s1">'Exception'</span><span class="p">):</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
         <span class="n">status_icon</span> <span class="o">=</span> <span class="s1">'🟢'</span>
@@ -690,20 +686,16 @@
         <span class="k">elif</span> <span class="n">route</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR_CHAINED</span><span class="p">:</span>
             <span class="n">status_icon</span> <span class="o">=</span> <span class="s1">'⚪'</span>
 
-        <span class="n">add_row</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">status_icon</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">pod</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">routes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span><span class="si">}</span><span class="s1">ms'</span><span class="p">,</span>
-                <span class="n">fill</span><span class="p">(</span>
-                    <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">stacks</span><span class="p">[</span><span class="o">-</span><span class="n">stack_limit</span><span class="p">:]),</span>
-                    <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-                    <span class="n">break_long_words</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">replace_whitespace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">),</span>
-            <span class="p">]</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">status_icon</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">pod</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">routes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span><span class="si">}</span><span class="s1">ms'</span><span class="p">,</span>
+            <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">stacks</span><span class="p">[</span><span class="o">-</span><span class="n">stack_limit</span><span class="p">:]),</span>
         <span class="p">)</span>
 
-    <span class="n">visualize</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
+    <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+
+    <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_safe_callback</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
@@ -755,7 +747,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 14, 2021.
+                    Last updated on Nov 15, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
