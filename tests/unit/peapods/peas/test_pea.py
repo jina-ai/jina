@@ -174,7 +174,7 @@ def test_failing_executor():
     )
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args) as p:
+        with Pea(args):
             pass
 
 

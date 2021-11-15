@@ -1,0 +1,5 @@
+!FailStart
+metas:
+  name: env-checker
+  py_modules: executor.py
+  workspace: ./

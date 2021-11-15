@@ -4,7 +4,8 @@ from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
 
 from .. import BasePod
-from .. import Pea
+from .. import BasePea
+from ..peas.factory import PeaFactory
 from .. import Pod
 from ..networking import get_connect_host
 from ... import helper, __default_reducer_executor__
@@ -102,7 +103,7 @@ class CompoundPod(BasePod):
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def _enter_pea(self, pea: 'Pea') -> None:
+    def _enter_pea(self, pea: 'BasePea') -> None:
         self.enter_context(pea)
 
     def start(self) -> 'CompoundPod':
@@ -118,24 +119,24 @@ class CompoundPod(BasePod):
         if getattr(self.args, 'noblock_on_start', False):
             head_args = self.head_args
             head_args.noblock_on_start = True
-            self.head_pea = Pea(head_args)
+            self.head_pea = PeaFactory.build_pea(head_args)
             self._enter_pea(self.head_pea)
             for shard in self.shards:
                 self._enter_shard(shard)
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
-            self.tail_pea = Pea(tail_args)
+            self.tail_pea = PeaFactory.build_pea(tail_args)
             self._enter_pea(self.tail_pea)
         else:
             try:
                 head_args = self.head_args
-                self.head_pea = Pea(head_args)
+                self.head_pea = PeaFactory.build_pea(head_args)
                 self._enter_pea(self.head_pea)
                 for shard in self.shards:
                     self._enter_shard(shard)
                     shard.activate()
                 tail_args = self.tail_args
-                self.tail_pea = Pea(tail_args)
+                self.tail_pea = PeaFactory.build_pea(tail_args)
                 self._enter_pea(self.tail_pea)
             except:
                 self.close()
