@@ -8,11 +8,11 @@ class BaseRuntime:
     """A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),
     therefore should be put into a separated thread/process, or inside the main process of a docker container.
      Any program/library/package/module that blocks the main process, can be formulated into a :class:`BaseRuntime` class
-     and then be started from a :class:`BasePea`.
+     and then be started from a :class:`Pea`.
 
      In the sequel, we call the main process/thread as ``M``, the process/thread blocked :class:`Runtime` as ``S``.
 
-     In Jina, a :class:`BasePea` object is used to manage a :class:`Runtime` object's lifecycle. A :class:`BasePea`
+     In Jina, a :class:`Pea` object is used to manage a :class:`Runtime` object's lifecycle. A :class:`Pea`
      acts as a :class:`multiprocessing.Process` or :class:`threading.Thread`, it starts from ``M`` and once the
      ``S`` is spawned, it uses :class:`Runtime` as a context manager:
 
@@ -40,12 +40,12 @@ class BaseRuntime:
      .. note::
         Rule of thumb on exception handling: if you are not sure if you should handle exception inside
         :meth:`run_forever`, :meth:`cancel`, :meth:`teardown`, then DO NOT catch exception in them.
-        Exception is MUCH better handled by :class:`BasePea`.
+        Exception is MUCH better handled by :class:`Pea`.
 
 
      .. seealso::
 
-        :class:`BasePea` for managing a :class:`Runtime` object's lifecycle.
+        :class:`Pea` for managing a :class:`Runtime` object's lifecycle.
     """
 
     def __init__(
