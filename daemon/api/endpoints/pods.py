@@ -4,7 +4,6 @@ from fastapi import Depends, APIRouter, HTTPException
 
 from ... import Runtime400Exception
 from ..dependencies import PodDepends
-from ...models.enums import UpdateOperation
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PodModel
 from ...stores import pod_store as store
 

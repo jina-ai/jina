@@ -77,13 +77,3 @@ class PartialDaemonModes(DaemonEnum):
     PEA = 'pea'
     POD = 'pod'
     FLOW = 'flow'
-
-
-class UpdateOperation(DaemonEnum):
-    """
-    Represents the type of operation to perform in the update
-    We consider these an `update` operation since they **change** the underlying state
-    """
-
-    SCALE = 'scale'
-    ROLLING_UPDATE = 'rolling_update'

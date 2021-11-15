@@ -5,7 +5,6 @@ from fastapi.exceptions import HTTPException
 
 from ... import Runtime400Exception
 from ..dependencies import FlowDepends
-from ...models.enums import UpdateOperation
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
 from ...stores import flow_store as store
 

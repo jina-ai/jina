@@ -44,7 +44,7 @@ async def _create(flow: 'FlowModel', ports: Optional[PortMappings] = None):
 
 @router.put(
     path='/rolling_update',
-    summary='Run a rolling_update operation on the Flow object',
+    summary='Peform rolling_update on the Flow object',
     response_model=PartialFlowItem,
 )
 async def rolling_update(
@@ -64,7 +64,7 @@ async def rolling_update(
 
 @router.put(
     path='/scale',
-    summary='Run a rolling_update operation on the Flow object',
+    summary='Scale a Pod in the running Flow',
     response_model=PartialFlowItem,
 )
 async def scale(pod_name: str, replicas: int):

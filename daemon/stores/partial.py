@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from argparse import Namespace
 from typing import Dict, Optional, Union
 
-from jina.helper import colored, random_port, T
+from jina.helper import colored, random_port
 from jina.peapods import Pea, Pod, CompoundPod
 from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
@@ -11,7 +11,6 @@ from jina.logging.logger import JinaLogger
 
 from .. import jinad_args, __partial_workspace__
 from ..models import GATEWAY_RUNTIME_DICT
-from ..models.enums import UpdateOperation
 from ..models.ports import Ports, PortMappings
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
