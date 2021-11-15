@@ -2,19 +2,18 @@ import os
 import argparse
 import time
 
-from typing import Union, TYPE_CHECKING
+import multiprocessing
+import threading
+
+from typing import Union
+import asyncio
 
 from . import BasePea
-from ..networking import GrpcConnectionPool
 from .container_helper import get_gpu_device_requests, get_docker_network
 from ...enums import RuntimeBackendType
 from ... import __docker_host__
-from ...types.message.common import ControlMessage
 from ...logging.logger import JinaLogger
-
-if TYPE_CHECKING:
-    import multiprocessing
-    import threading
+from ..runtimes.asyncio import AsyncNewLoopRuntime
 
 
 def run(
@@ -50,12 +49,10 @@ def run(
     import docker
 
     logger = JinaLogger(name, **vars(args))
+    _fail_to_start = asyncio.Event()
 
     def _is_ready():
-        status = GrpcConnectionPool.send_message_sync(
-            ControlMessage('STATUS'), runtime_ctrl_address, timeout=args.timeout_ctrl
-        )
-        return status and status.is_ready
+        return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
 
     def _is_container_alive(container) -> bool:
         import docker.errors
@@ -66,22 +63,35 @@ def run(
             return False
         return True
 
+    async def _check_readiness(container):
+        while _is_container_alive(container) and not _is_ready():
+            await asyncio.sleep(0.1)
+        if _is_container_alive(container):
+            is_started.set()
+            is_ready.set()
+        else:
+            _fail_to_start.set()
+
+    async def _stream_starting_logs(container):
+        for line in container.logs(stream=True):
+            if not is_started.is_set() and not _fail_to_start.is_set():
+                await asyncio.sleep(0.01)
+            logger.info(line.strip().decode())
+
+    async def _run_async(container):
+        await asyncio.gather(
+            *[_check_readiness(container), _stream_starting_logs(container)]
+        )
+
     try:
         client = docker.from_env()
         container = client.containers.get(container_id)
-        while _is_container_alive(container) and not _is_ready():
-            time.sleep(1)
-        # two cases to reach here: 1. is_ready, 2. container is dead
-        if not _is_container_alive(container):
+        asyncio.run(_run_async(container))
+    finally:
+        if not is_started.is_set():
             logger.error(
                 f' Process terminated, the container fails to start, check the arguments or entrypoint'
             )
-        else:
-            is_started.set()
-            is_ready.set()
-            for line in container.logs(stream=True):
-                logger.info(line.strip().decode())
-    finally:
         is_shutdown.set()
         logger.debug(f' Process terminated')
 
@@ -105,23 +115,7 @@ class ContainerPea(BasePea):
         ):
             self.args.docker_kwargs.pop('extra_hosts')
         self._net_mode = None
-        self._docker_run()
-
-        self.worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
-            target=run,
-            kwargs={
-                'args': self.args,
-                'name': self.name,
-                'container_id': self._container.id,
-                'runtime_ctrl_address': self.runtime_ctrl_address,
-                'is_started': self.is_started,
-                'is_shutdown': self.is_shutdown,
-                'is_ready': self.is_ready,
-            },
-        )
+        self.worker = None
         self.daemon = self.args.daemon  #: required here to set process/thread daemon
 
     def _set_network_for_dind_linux(self, client):
@@ -243,14 +237,12 @@ class ContainerPea(BasePea):
             device_requests = get_gpu_device_requests(self.args.gpus)
             del self.args.gpus
 
-        _expose_port = [self.args.port_ctrl]
-        if self.args.socket_in.is_bind:
-            _expose_port.append(self.args.port_in)
-        if self.args.socket_out.is_bind:
-            _expose_port.append(self.args.port_out)
-
         _args = ArgNamespace.kwargs2list(non_defaults)
-        ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
+        ports = (
+            {f'{self.args.port_in}/tcp': self.args.port_in}
+            if not self._net_mode
+            else None
+        )
 
         # WORKAROUND: we cant automatically find these true/false flags, this needs to be fixed
         if 'dynamic_routing' in non_defaults and not non_defaults['dynamic_routing']:
@@ -269,9 +261,9 @@ class ContainerPea(BasePea):
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
             device_requests=device_requests,
+            environment=self._envs,
             **docker_kwargs,
         )
-
         client.close()
 
     def _get_control_address(self):
@@ -310,6 +302,23 @@ class ContainerPea(BasePea):
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
+        self._docker_run()
+
+        self.worker = {
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(self.args, 'runtime_backend', RuntimeBackendType.THREAD))(
+            target=run,
+            kwargs={
+                'args': self.args,
+                'name': self.name,
+                'container_id': self._container.id,
+                'runtime_ctrl_address': self.runtime_ctrl_address,
+                'is_started': self.is_started,
+                'is_shutdown': self.is_shutdown,
+                'is_ready': self.is_ready,
+            },
+        )
         self.worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
@@ -321,6 +330,7 @@ class ContainerPea(BasePea):
         """
         # terminate the docker
         self._container.kill(signal='SIGTERM')
+        self.is_shutdown.wait(self.args.timeout_ctrl)
         if hasattr(self.worker, 'terminate'):
             self.logger.debug(f'terminating the runtime process')
             self.worker.terminate()

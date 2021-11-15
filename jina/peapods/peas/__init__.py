@@ -163,9 +163,8 @@ class BasePea(ABC):
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if not self.is_shutdown.is_set():
             try:
-                self.logger.debug(f' Wait to shutdown')
+                self.logger.debug(f'terminate')
                 self._terminate()
-                time.sleep(0.1)
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     raise Exception(
                         f'Shutdown signal was not received for {self._timeout_ctrl}'
@@ -197,21 +196,6 @@ class BasePea(ABC):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def _retry_control_message(self, command: str, num_retry: int = 3):
-        for retry in range(1, num_retry + 1):
-            self.logger.debug(f'Sending {command} command for the {retry}th time')
-            try:
-                GrpcConnectionPool.send_message_sync(
-                    ControlMessage(command),
-                    self.runtime_ctrl_address,
-                    timeout=self._timeout_ctrl,
-                )
-                break
-            except Exception as ex:
-                self.logger.warning(f'{ex!r}')
-                if retry == num_retry:
-                    raise ex
-
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
         """
         Waits for the process to be ready or to know it has failed.
@@ -219,12 +203,11 @@ class BasePea(ABC):
         :param timeout: The time to wait before readiness or failure is determined
             .. # noqa: DAR201
         """
-        return self.runtime_cls.wait_for_ready_or_shutdown(
+        return AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
             ctrl_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
-            shutdown_event=self.is_shutdown,
         )
 
     def _fail_start_timeout(self, timeout):
@@ -236,7 +219,7 @@ class BasePea(ABC):
         """
         _timeout = timeout or -1
         self.logger.warning(
-            f'{self.runtime_cls!r} timeout after waiting for {self.args.timeout_ready}ms, '
+            f'{self} timeout after waiting for {self.args.timeout_ready}ms, '
             f'if your executor takes time to load, you may increase --timeout-ready'
         )
         self.close()
@@ -265,7 +248,6 @@ class BasePea(ABC):
             _timeout = None
         else:
             _timeout /= 1e3
-
         if self._wait_for_ready_or_shutdown(_timeout):
             self._check_failed_to_start()
             self.logger.debug(__ready_msg__)

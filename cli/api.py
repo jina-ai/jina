@@ -83,10 +83,6 @@ def worker_runtime(args: 'Namespace'):
         runtime.run_forever()
 
 
-# alias
-grpc_executor = grpc_data_runtime
-
-
 def gateway(args: 'Namespace'):
     """
     Start a Gateway Pod
