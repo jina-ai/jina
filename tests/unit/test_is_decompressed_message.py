@@ -4,7 +4,7 @@ from jina.helper import random_identity
 from jina.logging.predefined import default_logger
 from jina.parsers import set_pea_parser
 from jina.peapods.runtimes.zmq.zed import ZEDRuntime
-from jina.peapods.peas import BasePea
+from jina.peapods.peas import Pea
 from jina.peapods.zmq import Zmqlet
 from jina.types.message import Message
 from jina.types.request import Request
@@ -39,7 +39,7 @@ class MockRuntimeDecompressed(ZEDRuntime):
         return msg
 
 
-class MockPea(BasePea):
+class MockPea(Pea):
     def _get_runtime_cls(self):
         if self.args.runtime_cls == 'MockRuntimeNotDecompressed':
             return MockRuntimeNotDecompressed
