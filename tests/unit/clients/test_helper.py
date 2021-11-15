@@ -16,7 +16,7 @@ class ClientTestExecutor(Executor):
 
 
 @pytest.fixture
-def flow():
+def flow_with_exception_request():
     return Flow().add(uses=ClientTestExecutor).add()
 
 
@@ -43,12 +43,12 @@ async def test_websocket_clientlet():
             pass
 
 
-def test_client_behaviour(flow, mocker):
+def test_client_behaviour(flow_with_exception_request, mocker):
     on_done_mock = mocker.Mock()
     on_always_mock = mocker.Mock()
     on_error_mock = mocker.Mock()
 
-    with flow as f:
+    with flow_with_exception_request as f:
         f.post(
             '', on_done=on_done_mock, on_error=on_error_mock, on_always=on_always_mock
         )
