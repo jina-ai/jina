@@ -10,7 +10,7 @@ from ...hubble.hubio import HubIO
 
 class PeaFactory:
     """
-    A PeaFactory is a factory class, abstracting the PeaFactory creation
+    A PeaFactory is a factory class, abstracting the Pea creation
     """
 
     @staticmethod
