@@ -72,21 +72,6 @@ The polling strategy of the Pod (when `shards>1`)
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
-        '--no-dynamic-routing',
-        action='store_false',
-        dest='dynamic_routing',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.',
-    )
-
-    parser.add_argument(
-        '--connect-to-predecessor',
-        action='store_true',
-        default=False,
-        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
-    )
-
 
 def mixin_k8s_pod_parser(parser):
     """Add mixin arguments required by :class:`K8sPod` into the given parser.

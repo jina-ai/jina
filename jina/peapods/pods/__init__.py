@@ -6,18 +6,15 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
-from ..networking import get_connect_host
 from ..peas.factory import PeaFactory
 from ... import __default_executor__
 from ... import helper
-from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...enums import (
-    SchedulerType,
     PodRoleType,
-    SocketType,
     PeaRoleType,
     PollingType,
 )
+from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
 
@@ -84,7 +81,7 @@ class ExitFIFO(ExitStack):
 
 
 class BasePod(ExitFIFO):
-    """A BasePod is an immutable set of peas. They share the same input and output socket.
+    """A BasePod is an immutable set of peas.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
     """
@@ -169,13 +166,6 @@ class BasePod(ExitFIFO):
         return self.args.name
 
     @property
-    def connect_to_predecessor(self) -> str:
-        """True, if the Pod should open a connect socket in the HeadPea to the predecessor Pod.
-        .. # noqa: DAR201
-        """
-        return self.args.connect_to_predecessor
-
-    @property
     def head_host(self) -> str:
         """Get the host of the HeadPea of this pod
         .. # noqa: DAR201
@@ -189,106 +179,38 @@ class BasePod(ExitFIFO):
         """
         return self.head_args.port_in
 
-    @property
-    def tail_port_out(self):
-        """Get the port_out of the TailPea of this pod
-        .. # noqa: DAR201
-        """
-        return self.tail_args.port_out
-
     def __enter__(self) -> 'BasePod':
         with CatchAllCleanupContextManager(self):
             return self.start()
 
     @staticmethod
-    def _copy_to_head_args(
-        args: Namespace, polling_type: PollingType, as_router: bool = True
-    ) -> Namespace:
+    def _copy_to_head_args(args: Namespace, polling_type: PollingType) -> Namespace:
         """
         Set the outgoing args of the head router
 
         :param args: basic arguments
         :param polling_type: polling_type can be all or any
-        :param as_router: if true, router configuration is applied
         :return: enriched head arguments
         """
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = polling_type
-        _head_args.port_ctrl = helper.random_port()
-        _head_args.port_out = helper.random_port()
+        _head_args.port_in = helper.random_port()
         _head_args.uses = None
-        if polling_type.is_push:
-            if args.scheduling == SchedulerType.ROUND_ROBIN:
-                _head_args.socket_out = SocketType.PUSH_BIND
-            elif args.scheduling == SchedulerType.LOAD_BALANCE:
-                _head_args.socket_out = SocketType.ROUTER_BIND
+        _head_args.pea_role = PeaRoleType.HEAD
+
+        # for now the head is not being scaled, so its always the first head
+        if args.name:
+            _head_args.name = f'{args.name}/head-0'
         else:
-            _head_args.socket_out = SocketType.PUB_BIND
-
-        Pod._set_dynamic_routing_in(_head_args)
-
-        if as_router:
-            _head_args.uses = args.uses_before or __default_executor__
-
-        if as_router:
-            _head_args.pea_role = PeaRoleType.HEAD
-            if args.name:
-                _head_args.name = f'{args.name}/head'
-            else:
-                _head_args.name = f'head'
-
-        # in any case, if header is present, it represent this Pod to consume `num_part`
-        # the following peas inside the pod will have num_part=1
-        args.num_part = 1
+            _head_args.name = f'head-0'
 
         return _head_args
-
-    @staticmethod
-    def _copy_to_tail_args(
-        args: Namespace, polling_type: PollingType, as_router: bool = True
-    ) -> Namespace:
-        """
-        Set the incoming args of the tail router
-
-        :param args: configuration for the connection
-        :param polling_type: polling type can be any or all
-        :param as_router: if true, add router configuration
-        :return: enriched arguments
-        """
-        _tail_args = copy.deepcopy(args)
-        _tail_args.polling_type = polling_type
-        _tail_args.port_in = helper.random_port()
-        _tail_args.port_ctrl = helper.random_port()
-        _tail_args.socket_in = SocketType.PULL_BIND
-        _tail_args.uses = None
-
-        if as_router:
-            _tail_args.uses = args.uses_after or __default_executor__
-            if args.name:
-                _tail_args.name = f'{args.name}/tail'
-            else:
-                _tail_args.name = f'tail'
-            _tail_args.pea_role = PeaRoleType.TAIL
-            _tail_args.num_part = 1 if polling_type.is_push else args.shards
-
-        Pod._set_dynamic_routing_out(_tail_args)
-
-        return _tail_args
 
     @property
     @abstractmethod
     def head_args(self) -> Namespace:
         """Get the arguments for the `head` of this BasePod.
-
-        .. # noqa: DAR201
-        """
-        ...
-
-    @property
-    @abstractmethod
-    def tail_args(self) -> Namespace:
-        """Get the arguments for the `tail` of this BasePod.
 
         .. # noqa: DAR201
         """
@@ -320,7 +242,6 @@ class BasePod(ExitFIFO):
                 'name': self.name,
                 'head_host': self.head_host,
                 'head_port_in': self.head_port_in,
-                'tail_port_out': self.tail_port_out,
             }
         ]
 
@@ -486,14 +407,8 @@ class Pod(BasePod):
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.head_pea = None
-        self.tail_pea = None
         self.replica_set = None
-        self.is_head_router = False
-        self.is_tail_router = False
-        self.deducted_head = None
-        self.deducted_tail = None
         self.update_pea_args()
-        self._activated = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -509,15 +424,11 @@ class Pod(BasePod):
 
     def update_worker_pea_args(self):
         """ Update args of all its worker peas based on Pod args. Does not touch head and tail"""
-        self.peas_args['peas'] = self._set_peas_args(
-            self.args,
-            head_args=self.peas_args['head'],
-            tail_args=self.peas_args['tail'],
-        )
+        self.peas_args['peas'] = self._set_peas_args(self.args)
 
     @property
     def first_pea_args(self) -> Namespace:
-        """Return the first non-head/tail pea's args
+        """Return the first worker pea's args
 
 
         .. # noqa: DAR201
@@ -546,14 +457,7 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        if self.is_head_router and self.peas_args['head']:
-            return self.peas_args['head']
-        elif not self.is_head_router and len(self.peas_args['peas']) == 1:
-            return self.first_pea_args
-        elif self.deducted_head:
-            return self.deducted_head
-        else:
-            raise ValueError('ambiguous head node, maybe it is deducted already?')
+        return self.peas_args['head']
 
     @head_args.setter
     def head_args(self, args):
@@ -562,44 +466,7 @@ class Pod(BasePod):
 
         .. # noqa: DAR101
         """
-        if self.is_head_router and self.peas_args['head']:
-            self.peas_args['head'] = args
-        elif not self.is_head_router and len(self.peas_args['peas']) == 1:
-            self.peas_args['peas'][0] = args  # weak reference
-        elif self.deducted_head:
-            self.deducted_head = args
-        else:
-            raise ValueError('ambiguous head node, maybe it is deducted already?')
-
-    @property
-    def tail_args(self) -> Namespace:
-        """Get the arguments for the `tail` of this BasePod.
-
-        .. # noqa: DAR201
-        """
-        if self.is_tail_router and self.peas_args['tail']:
-            return self.peas_args['tail']
-        elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
-            return self.first_pea_args
-        elif self.deducted_tail:
-            return self.deducted_tail
-        else:
-            raise ValueError('ambiguous tail node, maybe it is deducted already?')
-
-    @tail_args.setter
-    def tail_args(self, args):
-        """Set the arguments for the `tail` of this BasePod.
-
-        .. # noqa: DAR101
-        """
-        if self.is_tail_router and self.peas_args['tail']:
-            self.peas_args['tail'] = args
-        elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
-            self.peas_args['peas'][0] = args  # weak reference
-        elif self.deducted_tail:
-            self.deducted_tail = args
-        else:
-            raise ValueError('ambiguous tail node, maybe it is deducted already?')
+        self.peas_args['head'] = args
 
     @property
     def all_args(self) -> List[Namespace]:
@@ -653,8 +520,6 @@ class Pod(BasePod):
         self.replica_set.activate()
         if self.head_pea is not None:
             self.head_pea.activate_runtime()
-
-        self._activated = True
 
     def start(self) -> 'Pod':
         """
@@ -775,11 +640,7 @@ class Pod(BasePod):
         self.args.replicas = replicas
 
     @staticmethod
-    def _set_peas_args(
-        args: Namespace,
-        head_args: Optional[Namespace] = None,
-        tail_args: Namespace = None,
-    ) -> List[Namespace]:
+    def _set_peas_args(args: Namespace) -> List[Namespace]:
         result = []
         _host_list = (
             args.peas_hosts
@@ -795,51 +656,17 @@ class Pod(BasePod):
             # pea_id used to be shard_id so we keep it this way, even though a pea in a BasePod is a replica
             _args.pea_id = getattr(_args, 'shard_id', 0)
             _args.replica_id = idx
-            if args.replicas > 1:
-                _args.pea_role = PeaRoleType.WORKER
-                _args.identity = random_identity()
+            _args.pea_role = PeaRoleType.WORKER
+            _args.identity = random_identity()
 
-                if _args.peas_hosts:
-                    _args.host = pea_host
-                if _args.name:
-                    _args.name += f'/rep-{idx}'
-                else:
-                    _args.name = f'{idx}'
+            if _args.peas_hosts:
+                _args.host = pea_host
+            if _args.name:
+                _args.name += f'/rep-{idx}'
             else:
-                _args.pea_role = PeaRoleType.SINGLETON
+                _args.name = f'{idx}'
 
-            if head_args:
-                _args.port_in = head_args.port_out
-            if tail_args:
-                _args.port_out = tail_args.port_in
-            _args.port_ctrl = helper.random_port()
-            _args.socket_out = SocketType.PUSH_CONNECT
-
-            if args.scheduling == SchedulerType.ROUND_ROBIN:
-                _args.socket_in = SocketType.PULL_CONNECT
-            elif args.scheduling == SchedulerType.LOAD_BALANCE:
-                _args.socket_in = SocketType.DEALER_CONNECT
-            else:
-                raise ValueError(
-                    f'{args.scheduling} is not supported as a SchedulerType!'
-                )
-
-            if head_args:
-                _args.host_in = get_connect_host(
-                    bind_host=head_args.host,
-                    bind_expose_public=head_args.expose_public,
-                    connect_args=_args,
-                )
-            else:
-                Pod._set_dynamic_routing_in(_args)
-            if tail_args:
-                _args.host_out = get_connect_host(
-                    bind_host=tail_args.host,
-                    bind_expose_public=tail_args.expose_public,
-                    connect_args=_args,
-                )
-            else:
-                Pod._set_dynamic_routing_out(_args)
+            _args.port_in = helper.random_port()
 
             # pea workspace if not set then derive from workspace
             if not _args.workspace:
@@ -847,45 +674,64 @@ class Pod(BasePod):
             result.append(_args)
         return result
 
+    @staticmethod
+    def _set_uses_before_after_args(args: Namespace, type: str) -> Namespace:
+
+        _args = copy.deepcopy(args)
+        _args.pea_role = PeaRoleType.WORKER
+        _args.identity = random_identity()
+        _args.host = 'localhost'
+        _args.port_in = helper.random_port()
+
+        if _args.name:
+            _args.name += f'/{type}-0'
+        else:
+            _args.name = f'{type}-0'
+
+        if 'uses_before' == type:
+            _args.uses = args.uses_before or __default_executor__
+        elif 'uses_after' == type:
+            _args.uses = args.uses_after or __default_executor__
+        else:
+            raise ValueError(f'uses_before/uses_after pea does not support type {type}')
+
+        # pea workspace if not set then derive from workspace
+        if not _args.workspace:
+            _args.workspace = args.workspace
+        return _args
+
     def _parse_base_pod_args(self, args):
-        parsed_args = {'head': None, 'tail': None, 'peas': []}
-        if getattr(args, 'replicas', 1) > 1:
-            # reasons to separate head and tail from peas is that they
-            # can be deducted based on the previous and next pods
-            self.is_head_router = True
-            self.is_tail_router = True
-            parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
-            parsed_args['tail'] = BasePod._copy_to_tail_args(args, PollingType.ANY)
-            parsed_args['peas'] = self._set_peas_args(
-                args,
-                head_args=parsed_args['head'],
-                tail_args=parsed_args['tail'],
-            )
-        elif (
+        parsed_args = {
+            'head': None,
+            'uses_before': None,
+            'uses_after': None,
+            'peas': [],
+        }
+
+        if (
             getattr(args, 'uses_before', None)
             and args.uses_before != __default_executor__
-        ) or (
+        ):
+            uses_before_args = self._set_uses_before_after_args(
+                args, type='uses_before'
+            )
+            parsed_args['uses_before'] = uses_before_args
+            args.uses_before_address = (
+                f'{uses_before_args.host}:{uses_before_args.port_in}'
+            )
+        if (
             getattr(args, 'uses_after', None)
             and args.uses_after != __default_executor__
         ):
-            args.scheduling = SchedulerType.ROUND_ROBIN
-            if getattr(args, 'uses_before', None):
-                self.is_head_router = True
-                parsed_args['head'] = self._copy_to_head_args(args, args.polling)
-            if getattr(args, 'uses_after', None):
-                self.is_tail_router = True
-                parsed_args['tail'] = self._copy_to_tail_args(args, args.polling)
-            parsed_args['peas'] = self._set_peas_args(
-                args,
-                head_args=parsed_args.get('head', None),
-                tail_args=parsed_args.get('tail', None),
+            uses_after_args = self._set_uses_before_after_args(args, type='uses_after')
+            parsed_args['uses_after'] = uses_after_args
+            args.uses_after_address = (
+                f'{uses_after_args.host}:{uses_after_args.port_in}'
             )
-        else:
-            self.is_head_router = False
-            self.is_tail_router = False
-            parsed_args['peas'] = [args]
 
-        # note that peas_args['peas'][0] exist either way and carries the original property
+        parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
+        parsed_args['peas'] = self._set_peas_args(args)
+
         return parsed_args
 
     @property
