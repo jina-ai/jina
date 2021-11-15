@@ -27,7 +27,7 @@ If you're not yet familiar with these concepts, first read the [Basic Concepts](
 
 이 튜토리얼은 NVIDIA 그래픽 카드가 있는 컴퓨터에서 작업해야합니다. 집에 이러한 기기가 없는 경우 다양한 무료 클라우드 플랫폼 (예: Google Colab 또는 Kaggle 커널)을 사용 할 수 있습니다.
 
-또한 최신 버젼의 [NVIDIA 드라이버](https://www.nvidia.com/Download/index.aspx)를 설치 해야합니다. 이 튜토리얼에는 CUDA를 설치할 필요가 없지만, 사용하는 딥러닝 프레임워크에 따라 로컬 실행에 필요할 수 있습니다.
+또한 최신 버젼의 [NVIDIA 드라이버](https://www.nvidia.com/Download/index.aspx)를 설치해야합니다. 이 튜토리얼에는 CUDA를 설치할 필요가 없지만, 사용하는 딥러닝 프레임워크에 따라 로컬 실행에 필요할 수 있습니다.
 
 튜토리얼의 도커 부분에서는 [도커](https://docs.docker.com/get-docker/) 와 
 [nvidia-도커](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) 를 설치해야합니다.
@@ -48,7 +48,7 @@ jina hub new
 
 입력을 요청하면, 인코더 이름을 `SentenceEncoder`로 지정하고 기본 폴더를 사용합니다 - 현재 디렉토리 내에 `SentenceEncoder/` 폴더가 생성되며, 이 디렉토리는 튜토리얼의 작업 디렉토리가 됩니다.
 
-그런 다음, 고급 설정을 묻는 메시지가 나타나면 `y` 를 선택하고 도커 파일을 만들 것인지 묻는 메시지가 표시될 때를 제외하고 다른 모든 질문은 비워 둡니다 - 이 질문에 `y`로 답하세요(다음 섹션에서 필요함). 이것이 이 대화가 마지막에 어떻게 보여져야 하는지를 알려줍니다.
+그런 다음, 고급 설정을 묻는 메시지가 나타나면 `y` 를 선택하고 도커 파일을 만들 것인지 묻는 메시지가 표시될 때를 제외하고 다른 모든 질문은 비워 둡니다 - 이 질문에 `y`로 답하세요(다음 섹션에서 필요합니다). 이것이 이 대화가 마지막에 어떻게 보여져야 하는지를 알려줍니다.
 
 ![jina hub new](../_static/hub_new_gpu.png)
 
@@ -58,7 +58,7 @@ jina hub new
 cd SentenceEncoder
 ```
 
-`requirements.txt` 파일의 요구사항들을 따.
+계속해서 `requirements.txt` 파일의 요구 사항들을 지정해 보겠습니다.
 
 ```text
 sentence-transformers==2.0.0
@@ -222,7 +222,7 @@ In our case we are using the default `jinaai/jina:latest` base image. However, p
 If you need to have CUDA installed in the image, you usually have two options: either you take the `nvidia/cuda` for the base image, or you take the official GPU-enabled image of the framework you are using, for example, `tensorflow/tensorflow:2.6.0-gpu`.
 ```
 
-우리가 신경 쓰는 다른 파일은 `config.yml`이며, 여기서는 기본 버젼도 작동합니다. 그러니 도커 이미지를 만들어봅시다.
+우리가 신경 쓰는 다른 파일은 `config.yml`이며, 여기서는 기본 버전도 작동합니다. 그러니 도커 이미지를 만들어봅시다.
 
 ```bash
 docker build -t sentence-encoder .
@@ -263,7 +263,7 @@ with f:
 
 Executor를 시작할 때마다 트렌스포머 모델이 다시 다운로드 됩니다. 이 속도를 높이기 위해 인코더가 미리 다운로드한 파일에서 모델을 디스크에 로드 하길 원합니다.
 
-우리는 도커 볼륨으로 이것을 할 수 있습니다 - Jina는 간단히 그 argument를 도커 컨테이너에 전달 할 것입니다.`main.py` 를 수정하여 이를 허용 하는 방법은 다음과 같습니다.
+우리는 도커 볼륨으로 이것을 할 수 있습니다 - Jina는 간단히 그 인자를 도커 컨테이너에 전달 할 것입니다.`main.py` 를 수정하여 이를 허용 하는 방법은 다음과 같습니다.
 
 ```python
 f = Flow().add(
