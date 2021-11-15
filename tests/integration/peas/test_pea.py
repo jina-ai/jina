@@ -10,9 +10,7 @@ from jina.enums import PollingType, PeaRoleType
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
-from jina.peapods.peas import BasePea
-from jina.peapods.runtimes.head import HeadRuntime
-from jina.peapods.runtimes.worker import WorkerRuntime
+from jina.peapods.peas import Pea
 from jina.types.message.common import ControlMessage
 
 
@@ -28,48 +26,29 @@ async def test_peas_trivial_topology():
     # create a single worker pea
     worker_pea = _create_worker_pea(worker_port)
 
-    worker_pea.start()
-
     # create a single head pea
     head_pea = _create_head_pea(head_port)
-
-    head_pea.start()
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
 
-    gateway_pea.start()
+    with gateway_pea, head_pea, worker_pea:
+        # this would be done by the Pod, its adding the worker to the head
+        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
+        assert GrpcConnectionPool.send_message_sync(
+            activate_msg, f'127.0.0.1:{head_port}'
+        )
 
-    await asyncio.sleep(1.0)
+        # send requests to the gateway
+        c = Client(host='localhost', port=port_expose, asyncio=True)
+        responses = c.post(
+            '/', inputs=async_inputs, request_size=1, return_results=True
+        )
 
-    assert HeadRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0,
-        ctrl_address=f'0.0.0.0:{head_port}',
-        shutdown_event=multiprocessing.Event(),
-    )
-
-    assert WorkerRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0,
-        ctrl_address=f'0.0.0.0:{worker_port}',
-        shutdown_event=multiprocessing.Event(),
-    )
-
-    # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlMessage(command='ACTIVATE')
-    activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-    assert GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
-
-    # send requests to the gateway
-    c = Client(host='localhost', port=port_expose, asyncio=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
-    response_list = []
-    async for response in responses:
-        response_list.append(response)
-
-    # clean up peas
-    gateway_pea.close()
-    head_pea.close()
-    worker_pea.close()
+        response_list = []
+        async for response in responses:
+            response_list.append(response)
 
     assert len(response_list) == 20
     assert len(response_list[0].docs) == 1
@@ -476,7 +455,7 @@ def _create_worker_pea(port, name='', executor=None):
     args.name = name
     if executor:
         args.uses = executor
-    return BasePea(args)
+    return Pea(args)
 
 
 def _create_head_pea(port, name='', polling='ANY', uses_before=None, uses_after=None):
@@ -491,11 +470,11 @@ def _create_head_pea(port, name='', polling='ANY', uses_before=None, uses_after=
     if uses_after:
         args.uses_after_address = uses_after
 
-    return BasePea(args)
+    return Pea(args)
 
 
 def _create_gateway_pea(graph_description, pod_addresses, port_expose):
-    return BasePea(
+    return Pea(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',

@@ -2,22 +2,19 @@ import argparse
 import asyncio
 import multiprocessing
 import threading
-import time
 from abc import ABC
 from typing import Optional, Union, List
 
 import grpc
-from grpc import RpcError
 
 from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
-from ...networking import GrpcConnectionPool, create_connection_pool
+from ...networking import create_connection_pool
 from .... import DocumentArray
 from ....enums import PollingType
 from ....excepts import RuntimeTerminated
 from ....proto import jina_pb2_grpc
 from ....types.message import Message
-from ....types.message.common import ControlMessage
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -79,49 +76,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('Cancel HeadRuntime')
 
         await self._grpc_server.stop(0)
-
-    @staticmethod
-    def is_ready(ctrl_address: str, **kwargs) -> bool:
-        """
-        Check if status is ready.
-
-        :param ctrl_address: the address where the control message needs to be sent
-        :param kwargs: extra keyword arguments
-
-        :return: True if status is ready else False.
-        """
-
-        try:
-            GrpcConnectionPool.send_message_sync(ControlMessage('STATUS'), ctrl_address)
-        except RpcError:
-            return False
-
-        return True
-
-    @staticmethod
-    def wait_for_ready_or_shutdown(
-        timeout: Optional[float],
-        shutdown_event: Union[multiprocessing.Event, threading.Event],
-        ctrl_address: str,
-        **kwargs,
-    ):
-        """
-        Check if the runtime has successfully started
-
-        :param timeout: The time to wait before readiness or failure is determined
-        :param shutdown_event: the multiprocessing event to detect if the process failed
-        :param ctrl_address: the address where the control message needs to be sent
-        :param kwargs: extra keyword arguments
-        :return: True if is ready or it needs to be shutdown
-        """
-        timeout_ns = 1000000000 * timeout if timeout else None
-        now = time.time_ns()
-        while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if shutdown_event.is_set() or HeadRuntime.is_ready(ctrl_address):
-                return True
-            time.sleep(0.1)
-
-        return False
 
     async def _handle_messages(self, messages: List[Message]) -> Message:
         # we assume that all messages have the same type, so we need to check only the first
