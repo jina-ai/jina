@@ -179,6 +179,7 @@ class ContainerPea(BasePea):
 
         self.args.runs_in_docker = True
         self.args.native = True
+
         non_defaults = ArgNamespace.get_non_defaults_args(
             self.args,
             set_pea_parser(),
@@ -243,10 +244,6 @@ class ContainerPea(BasePea):
             if not self._net_mode
             else None
         )
-
-        # WORKAROUND: we cant automatically find these true/false flags, this needs to be fixed
-        if 'dynamic_routing' in non_defaults and not non_defaults['dynamic_routing']:
-            _args.append('--no-dynamic-routing')
 
         docker_kwargs = self.args.docker_kwargs or {}
         self._container = client.containers.run(

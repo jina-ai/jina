@@ -62,7 +62,6 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
             win32api.SetConsoleCtrlHandler(
                 lambda *args, **kwargs: self.is_cancel.set(), True
             )
-
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
@@ -106,7 +105,8 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         pass
 
     async def async_teardown(self):
-        """The async method to clean up resources during teardown. This method should free all resources allocated during async_setup"""
+        """The async method to clean up resources during teardown. This method should free all resources allocated
+        during async_setup"""
         pass
 
     @abstractmethod

@@ -3,7 +3,7 @@ import time
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.parsers import set_pea_parser
+from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods.peas.container import ContainerPea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -187,3 +187,77 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         pass
 
     mock.assert_called_with(**expected_args)
+
+
+@pytest.fixture(scope='module')
+def head_runtime_docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir, 'head-runtime/'), tag='head-runtime')
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+
+
+def test_container_pea_head_runtime(head_runtime_docker_image_built):
+    import docker
+
+    with ContainerPea(
+        set_pea_parser().parse_args(
+            [
+                '--uses',
+                'docker://head-runtime',
+            ]
+        )
+    ) as pea:
+        status = pea._container.status
+
+    assert status == 'created'
+    client = docker.from_env()
+    containers = client.containers.list()
+    assert pea._container.id not in containers
+
+
+@pytest.fixture(scope='module')
+def gateway_runtime_docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(
+        path=os.path.join(cur_dir, 'gateway-runtime/'), tag='gateway-runtime'
+    )
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+
+
+@pytest.mark.skip('ContainerPea is not ready to handle `Gateway`')
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_container_pea_gateway_runtime(protocol, gateway_runtime_docker_image_built):
+    import docker
+
+    with ContainerPea(
+        set_gateway_parser().parse_args(
+            [
+                '--uses',
+                'docker://gateway-runtime',
+                '--graph-description',
+                '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
+                '--pods-addresses',
+                '{"pod0": ["0.0.0.0:1234"]}',
+                '--protocol',
+                protocol,
+            ]
+        )
+    ) as pea:
+        status = pea._container.status
+
+    assert status == 'created'
+    client = docker.from_env()
+    containers = client.containers.list()
+    assert pea._container.id not in containers

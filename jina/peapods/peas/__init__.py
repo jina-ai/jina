@@ -115,6 +115,9 @@ class BasePea(ABC):
 
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
+
+        if hasattr(self.args, 'port_expose'):
+            self.args.port_in = self.args.port_expose
         # BACKWARDS COMPATIBILITY
         self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
