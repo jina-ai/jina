@@ -1,6 +1,6 @@
 import pytest
 
-from jina.enums import SchedulerType, SocketType, PollingType
+from jina.enums import SchedulerType, SocketType, PollingType, PeaRoleType
 from jina.parsers import set_pod_parser
 from jina import __default_executor__, __default_host__
 from jina.peapods import CompoundPod, Pod
@@ -114,7 +114,7 @@ def test_pod_naming_with_shards(runtime):
 
         assert bp.shards[0].name == 'pod/shard-0'
         assert bp.shards[0].head_pea.name == 'pod/shard-0/head'
-        assert bp.shards[0].head_pea._is_inner_pea is False
+        assert bp.shards[0].head_pea.role is not PeaRoleType.WORKER
         assert bp.shards[0].replica_set._peas[0].name == 'pod/shard-0/rep-0'
         assert bp.shards[0].replica_set._peas[0]._is_inner_pea
         assert bp.shards[0].replica_set._peas[1].name == 'pod/shard-0/rep-1'
@@ -122,11 +122,11 @@ def test_pod_naming_with_shards(runtime):
         assert bp.shards[0].replica_set._peas[2].name == 'pod/shard-0/rep-2'
         assert bp.shards[0].replica_set._peas[2]._is_inner_pea
         assert bp.shards[0].tail_pea.name == 'pod/shard-0/tail'
-        assert bp.shards[0].tail_pea._is_inner_pea is False
+        assert bp.shards[0].tail_pea.role is not PeaRoleType.WORKER
 
         assert bp.shards[1].name == 'pod/shard-1'
         assert bp.shards[1].head_pea.name == 'pod/shard-1/head'
-        assert bp.shards[1].head_pea._is_inner_pea is False
+        assert bp.shards[1].head_pea.role is not PeaRoleType.WORKER
         assert bp.shards[1].replica_set._peas[0].name == 'pod/shard-1/rep-0'
         assert bp.shards[1].replica_set._peas[0]._is_inner_pea
         assert bp.shards[1].replica_set._peas[1].name == 'pod/shard-1/rep-1'
@@ -134,7 +134,7 @@ def test_pod_naming_with_shards(runtime):
         assert bp.shards[1].replica_set._peas[2].name == 'pod/shard-1/rep-2'
         assert bp.shards[1].replica_set._peas[2]._is_inner_pea
         assert bp.shards[1].tail_pea.name == 'pod/shard-1/tail'
-        assert bp.shards[1].tail_pea._is_inner_pea is False
+        assert bp.shards[1].tail_pea.role is not PeaRoleType.WORKER
 
 
 @pytest.mark.parametrize(
