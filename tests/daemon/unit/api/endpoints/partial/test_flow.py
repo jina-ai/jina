@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from daemon.models import FlowModel
-from daemon.models.enums import UpdateOperation
 from jina import Client, Document
 
 cur_dir = Path(__file__).parent
@@ -22,9 +21,8 @@ def test_flow_api(monkeypatch, partial_flow_client):
     )
 
     rolling_update_response = partial_flow_client.put(
-        api,
+        f'{api}/rolling_update',
         params={
-            'kind': UpdateOperation.ROLLING_UPDATE,
             'pod_name': 'dummy_executor',
             'uses_with': {},
         },

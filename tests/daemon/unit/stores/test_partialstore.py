@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 from daemon.models import PeaModel, FlowModel
-from daemon.models.enums import UpdateOperation
 from daemon.stores.partial import PartialStore, PartialPeaStore, PartialFlowStore
 from jina import helper, Flow, __default_host__
 from jina.helper import ArgNamespace
@@ -71,11 +70,5 @@ def test_flowstore_update(partial_flow_store, mocker):
     update_mock = mocker.Mock()
     partial_flow_store.object.rolling_update = update_mock
 
-    partial_flow_store.update(
-        kind=UpdateOperation.ROLLING_UPDATE,
-        dump_path='',
-        uses_with={},
-        pod_name='executor1',
-    )
-
+    partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
     update_mock.assert_called()
