@@ -142,7 +142,6 @@ def test_flow_with_needs(
     test_executor_image: str,
     executor_merger_image: str,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
     k8s_connection_pool: bool,
 ):
@@ -211,7 +210,6 @@ def test_flow_with_init(
     k8s_cluster,
     k8s_flow_with_init_container: Flow,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
 ):
     resp = run_test(
@@ -231,7 +229,6 @@ def test_flow_with_sharding(
     k8s_cluster,
     k8s_flow_with_sharding: Flow,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
 ):
     resp = run_test(
@@ -259,7 +256,6 @@ def test_flow_with_configmap(
     k8s_cluster,
     k8s_flow_configmap,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
 ):
     resp = run_test(
@@ -283,7 +279,6 @@ def test_flow_with_gpu(
     k8s_cluster,
     k8s_flow_gpu,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
 ):
     resp = run_test(
@@ -303,7 +298,6 @@ def test_flow_with_k8s_namespace(
     k8s_cluster,
     k8s_flow_with_namespace,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
 ):
     with k8s_flow_with_namespace as f:
@@ -317,7 +311,6 @@ def test_rolling_update_simple(
     k8s_cluster,
     k8s_flow_with_reload_executor,
     load_images_in_kind,
-    set_test_pip_version,
     logger,
     reraise,
 ):
