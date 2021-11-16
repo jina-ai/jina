@@ -30,7 +30,7 @@ def partial_flow_store():
 @pytest.mark.timeout(5)
 def test_partialstore_delete(monkeypatch, mocker):
     close_mock = mocker.Mock()
-    partial_store = PartialStore()
+    partial_store = PartialPeaStore()
 
     partial_store.object = close_mock
     partial_store.delete()
