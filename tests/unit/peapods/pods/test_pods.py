@@ -3,6 +3,7 @@ import os
 import pytest
 
 from jina.clients.request import request_generator
+from jina.enums import PollingType, PeaRoleType
 from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
@@ -135,6 +136,18 @@ def test_pod_context_replicas(replicas):
     Pod(args).start().close()
 
 
+@pytest.mark.slow
+@pytest.mark.parametrize('shards', [1, 2, 4])
+def test_pod_context_shards_replicas(shards):
+    args_list = ['--replicas', str(3)]
+    args_list.extend(['--shards', str(shards)])
+    args = set_pod_parser().parse_args(args_list)
+    with Pod(args) as bp:
+        assert bp.num_peas == shards * 3 + 1
+
+    Pod(args).start().close()
+
+
 class AppendNameExecutor(Executor):
     def __init__(self, runtime_args, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -161,6 +174,109 @@ def test_pod_activates_replicas():
                 f'{pod.head_args.host}:{pod.head_args.port_in}',
             )
             response_texts.update(response.response.docs.texts)
+        assert 4 == len(response_texts)
+        assert all(text in response_texts for text in ['0', '1', '2', 'client'])
+
+    Pod(args).start().close()
+
+
+class AppendParamExecutor(Executor):
+    def __init__(self, param, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.param = param
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=str(self.param)))
+        return docs
+
+
+@pytest.mark.slow
+@pytest.mark.asyncio
+async def test_pod_rolling_update():
+    args_list = ['--replicas', '3']
+    args = set_pod_parser().parse_args(args_list)
+    args.uses = 'AppendParamExecutor'
+    args.uses_with = {'param': 10}
+    with Pod(args) as pod:
+        response_texts = await _send_requests(pod)
+        assert 2 == len(response_texts)
+        assert all(text in response_texts for text in ['10', 'client'])
+
+        print('do rolling update')
+        await pod.rolling_update(uses_with={'param': 20})
+        response_texts = await _send_requests(pod)
+        print(response_texts)
+        assert 2 == len(response_texts)
+        assert all(text in response_texts for text in ['20', 'client'])
+        assert '10' not in response_texts
+
+    Pod(args).start().close()
+
+
+async def _send_requests(pod):
+    response_texts = set()
+    for _ in range(3):
+        response = GrpcConnectionPool.send_messages_sync(
+            [_create_test_data_message()],
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+        )
+        response_texts.update(response.response.docs.texts)
+    return response_texts
+
+
+class AppendShardExecutor(Executor):
+    def __init__(self, runtime_args, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.shard_id = runtime_args['shard_id']
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=str(self.shard_id)))
+        return docs
+
+
+def test_pod_naming_with_shards():
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod',
+            '--shards',
+            '2',
+            '--replicas',
+            '3',
+        ]
+    )
+    with Pod(args) as pod:
+        assert pod.head_pea.name == 'pod/head-0'
+
+        assert pod.shards[0].args[0].name == 'pod/shard-0/rep-0'
+        assert pod.shards[0].args[1].name == 'pod/shard-0/rep-1'
+        assert pod.shards[0].args[2].name == 'pod/shard-0/rep-2'
+
+        assert pod.shards[1].args[0].name == 'pod/shard-1/rep-0'
+        assert pod.shards[1].args[1].name == 'pod/shard-1/rep-1'
+        assert pod.shards[1].args[2].name == 'pod/shard-1/rep-2'
+
+
+@pytest.mark.slow
+def test_pod_activates_shards():
+    args_list = ['--replicas', '3']
+    args_list.extend(['--shards', '3'])
+    args = set_pod_parser().parse_args(args_list)
+    args.uses = 'AppendShardExecutor'
+    args.polling = PollingType.ALL
+    with Pod(args) as pod:
+        assert pod.num_peas == 3 * 3 + 1
+        response_texts = set()
+        # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
+        response = GrpcConnectionPool.send_messages_sync(
+            [_create_test_data_message()],
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+        )
+        response_texts.update(response.response.docs.texts)
+        assert 6 == len(response.response.docs.texts)
+        assert 4 == len(response_texts)
         assert all(text in response_texts for text in ['0', '1', '2', 'client'])
 
     Pod(args).start().close()
@@ -200,8 +316,8 @@ def test_pod_naming_with_replica():
     args = set_pod_parser().parse_args(['--name', 'pod', '--replicas', '2'])
     with Pod(args) as bp:
         assert bp.head_pea.name == 'pod/head-0'
-        assert bp.replica_set._peas[0].name == 'pod/rep-0'
-        assert bp.replica_set._peas[1].name == 'pod/rep-1'
+        assert bp.shards[0]._peas[0].name == 'pod/rep-0'
+        assert bp.shards[0]._peas[1].name == 'pod/rep-1'
 
 
 def test_pod_args_remove_uses_ba():
@@ -252,11 +368,12 @@ def test_pod_remote_pea_replicas_pea_host_set_partially(
         if k in ['head', 'tail']:
             assert v.host == args.host
         elif v is not None:
-            for pea_arg in v:
-                if pea_arg.pea_id in (0, 1):
-                    assert pea_arg.host == pea1_host
-                else:
-                    assert pea_arg.host == args.host
+            for shard_id in v:
+                for pea_arg in v[shard_id]:
+                    if pea_arg.pea_id in (0, 1):
+                        assert pea_arg.host == pea1_host
+                    else:
+                        assert pea_arg.host == args.host
 
 
 @pytest.mark.parametrize(
@@ -295,8 +412,9 @@ def test_pod_remote_pea_replicas_pea_host_set_completely(
         if k in ['head', 'tail']:
             assert v.host == args.host
         elif v is not None:
-            for pea_arg, pea_host in zip(v, peas_hosts):
-                assert pea_arg.host == pea_host
+            for shard_id in v:
+                for pea_arg, pea_host in zip(v[shard_id], peas_hosts):
+                    assert pea_arg.host == pea_host
 
 
 @pytest.mark.parametrize('replicas', [1])
@@ -378,10 +496,11 @@ def test_pod_upload_files(
                 pass
                 # assert sorted(v.upload_files) == sorted(expected)
         elif v is not None and k == 'peas':
-            for pea in v:
-                print(sorted(pea.upload_files))
-                print(sorted(expected))
-                assert sorted(pea.upload_files) == sorted(expected)
+            for shard_id in v:
+                for pea in v[shard_id]:
+                    print(sorted(pea.upload_files))
+                    print(sorted(expected))
+                    assert sorted(pea.upload_files) == sorted(expected)
 
 
 def _create_test_data_message():

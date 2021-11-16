@@ -382,7 +382,10 @@ class GrpcConnectionPool:
 
     @staticmethod
     def activate_worker_sync(
-        worker_host: str, worker_port: int, target_head: str
+        worker_host: str,
+        worker_port: int,
+        target_head: str,
+        shard_id: Optional[int] = None,
     ) -> Message:
         """
         Register a given worker to a head by sending an activate message
@@ -390,15 +393,19 @@ class GrpcConnectionPool:
         :param worker_host: the host address of the worker
         :param worker_port: the port of the worker
         :param target_head: address of the head to send the activate message to
+        :param shard_id: id of the shard the worker belongs to
         :returns: the response message
         """
         activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', worker_host, worker_port)
+        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
         return GrpcConnectionPool.send_message_sync(activate_msg, target_head)
 
     @staticmethod
     async def activate_worker(
-        worker_host: str, worker_port: int, target_head: str
+        worker_host: str,
+        worker_port: int,
+        target_head: str,
+        shard_id: Optional[int] = None,
     ) -> Message:
         """
         Register a given worker to a head by sending an activate message
@@ -406,10 +413,11 @@ class GrpcConnectionPool:
         :param worker_host: the host address of the worker
         :param worker_port: the port of the worker
         :param target_head: address of the head to send the activate message to
+        :param shard_id: id of the shard the worker belongs to
         :returns: the response message
         """
         activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', worker_host, worker_port)
+        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
         return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
 
     @staticmethod

@@ -186,17 +186,16 @@ class BasePod(ExitFIFO):
             return self.start()
 
     @staticmethod
-    def _copy_to_head_args(args: Namespace, polling_type: PollingType) -> Namespace:
+    def _copy_to_head_args(args: Namespace) -> Namespace:
         """
         Set the outgoing args of the head router
 
         :param args: basic arguments
-        :param polling_type: polling_type can be all or any
         :return: enriched head arguments
         """
 
         _head_args = copy.deepcopy(args)
-        _head_args.polling = polling_type
+        _head_args.polling = args.polling
         _head_args.port_in = helper.random_port()
         _head_args.uses = None
         _head_args.pea_role = PeaRoleType.HEAD
@@ -292,7 +291,7 @@ class Pod(BasePod):
                 old_pea = self._peas[i]
                 await GrpcConnectionPool.deactivate_worker(
                     worker_host=_args.host,
-                    worker_port=_args.port,
+                    worker_port=_args.port_in,
                     target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                 )
                 old_pea.close()
@@ -306,7 +305,7 @@ class Pod(BasePod):
                 await new_pea.async_wait_start_success()
                 await GrpcConnectionPool.activate_worker(
                     worker_host=_args.host,
-                    worker_port=_args.port,
+                    worker_port=_args.port_in,
                     target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                 )
                 self.args[i] = _args
@@ -330,7 +329,7 @@ class Pod(BasePod):
                     await new_pea.async_wait_start_success()
                     await GrpcConnectionPool.activate_worker(
                         worker_host=new_args.host,
-                        worker_port=new_args.port,
+                        worker_port=new_args.port_in,
                         target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                     )
                 except (
@@ -352,7 +351,6 @@ class Pod(BasePod):
                 raise ScalingFails(msg)
             else:
                 for new_pea, new_args in zip(new_peas, new_args_list):
-                    new_pea.activate_runtime()
                     self.args.append(new_args)
                     self._peas.append(new_pea)
 
@@ -362,7 +360,7 @@ class Pod(BasePod):
                 try:
                     await GrpcConnectionPool.deactivate_worker(
                         worker_host=self.args[i].host,
-                        worker_port=self.args[i].port,
+                        worker_port=self.args[i].port_in,
                         target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                     )
                     self._peas[i].close()
@@ -418,8 +416,11 @@ class Pod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
-        # a pod only can have replicas and they can only have polling ANY
-        self.args.polling = PollingType.ANY
+        # BACKWARDS COMPATIBILITY:
+        self.args.parallel = self.args.shards
+        self.args.polling = (
+            args.polling if hasattr(args, 'polling') else PollingType.ANY
+        )
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -427,7 +428,7 @@ class Pod(BasePod):
         self.uses_before_pea = None
         self.uses_after_pea = None
         self.head_pea = None
-        self.replica_set = None
+        self.shards = {}
         self.update_pea_args()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -454,7 +455,7 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         # note this will be never out of boundary
-        return self.peas_args['peas'][0]
+        return self.peas_args['peas'][0][0]
 
     @property
     def host(self) -> str:
@@ -530,12 +531,14 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return (
+        all_args = (
             ([self.peas_args['uses_before']] if self.peas_args['uses_before'] else [])
             + ([self.peas_args['uses_after']] if self.peas_args['uses_after'] else [])
             + ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + self.peas_args['peas']
         )
+        for shard_id in self.peas_args['peas']:
+            all_args += self.peas_args['peas'][shard_id]
+        return all_args
 
     @property
     def num_peas(self) -> int:
@@ -550,8 +553,9 @@ class Pod(BasePod):
             num_peas += 1
         if self.uses_after_pea is not None:
             num_peas += 1
-        if self.replica_set is not None:  # external pods
-            num_peas += self.replica_set.num_peas
+        if self.shards:  # external pods
+            for shard_id in self.shards:
+                num_peas += self.shards[shard_id].num_peas
         return num_peas
 
     def __eq__(self, other: 'BasePod'):
@@ -562,12 +566,14 @@ class Pod(BasePod):
         Activate all worker peas in this pod by registering them with the head
         """
         if self.head_pea is not None:
-            for pea_args in self.peas_args['peas']:
-                GrpcConnectionPool.activate_worker_sync(
-                    pea_args.host,
-                    int(pea_args.port_in),
-                    self.head_pea.runtime_ctrl_address,
-                )
+            for shard_id in self.peas_args['peas']:
+                for pea_args in self.peas_args['peas'][shard_id]:
+                    GrpcConnectionPool.activate_worker_sync(
+                        pea_args.host,
+                        int(pea_args.port_in),
+                        self.head_pea.runtime_ctrl_address,
+                        shard_id,
+                    )
 
     def start(self) -> 'Pod':
         """
@@ -597,10 +603,11 @@ class Pod(BasePod):
                 _args.noblock_on_start = True
             self.head_pea = PeaFactory.build_pea(_args)
             self.enter_context(self.head_pea)
-        self.replica_set = self._ReplicaSet(
-            self.args, self.peas_args['peas'], self.head_args
-        )
-        self.enter_context(self.replica_set)
+        for shard_id in self.peas_args['peas']:
+            self.shards[shard_id] = self._ReplicaSet(
+                self.args, self.peas_args['peas'][shard_id], self.head_args
+            )
+            self.enter_context(self.shards[shard_id])
 
         if not getattr(self.args, 'noblock_on_start', False):
             self.activate()
@@ -622,7 +629,8 @@ class Pod(BasePod):
                 self.uses_after_pea.wait_start_success()
             if self.head_pea is not None:
                 self.head_pea.wait_start_success()
-            self.replica_set.wait_start_success()
+            for shard_id in self.shards:
+                self.shards[shard_id].wait_start_success()
             self.activate()
         except:
             self.close()
@@ -637,14 +645,16 @@ class Pod(BasePod):
                 self.uses_after_pea.join()
             if self.head_pea is not None:
                 self.head_pea.join()
-            if self.replica_set is not None:
-                self.replica_set.join()
+            if self.shards:
+                for shard_id in self.shards:
+                    self.shards[shard_id].join()
         except KeyboardInterrupt:
             pass
         finally:
             self.head_pea = None
-            if self.replica_set is not None:
-                self.replica_set.clear_peas()
+            if self.shards:
+                for shard_id in self.shards:
+                    self.shards[shard_id].clear_peas()
 
     @property
     def is_ready(self) -> bool:
@@ -660,7 +670,8 @@ class Pod(BasePod):
         if self.head_pea is not None:
             is_ready = self.head_pea.is_ready.is_set()
         if is_ready:
-            is_ready = self.replica_set.is_ready
+            for shard_id in self.shards:
+                is_ready = self.shards[shard_id].is_ready
         if is_ready and self.uses_before_pea is not None:
             is_ready = self.uses_before_pea.is_ready.is_set()
         if is_ready and self.uses_after_pea is not None:
@@ -681,12 +692,26 @@ class Pod(BasePod):
                 uses_with['dump_path'] = dump_path
             else:
                 uses_with = {'dump_path': dump_path}
+
+        tasks = []
         try:
-            await self.replica_set.rolling_update(
-                dump_path=dump_path, uses_with=uses_with
-            )
+            import asyncio
+
+            for shard_id in self.shards:
+                tasks.append(
+                    asyncio.create_task(
+                        self.shards[shard_id].rolling_update(
+                            dump_path=dump_path, uses_with=uses_with
+                        )
+                    )
+                )
+
+            for future in asyncio.as_completed(tasks):
+                _ = await future
         except:
-            raise
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
 
     async def scale(self, replicas: int):
         """
@@ -694,13 +719,29 @@ class Pod(BasePod):
 
         :param replicas: The number of replicas to scale to
         """
-        # potential exception will be raised to CompoundPod or Flow
-        await self.replica_set.scale(replicas)
         self.args.replicas = replicas
 
+        tasks = []
+        try:
+            import asyncio
+
+            for shard_id in self.shards:
+                tasks.append(
+                    asyncio.create_task(self.shards[shard_id].scale(replicas=replicas))
+                )
+
+            for future in asyncio.as_completed(tasks):
+                _ = await future
+        except:
+            # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state? Cancelling would potentially be dangerous.
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            raise
+
     @staticmethod
-    def _set_peas_args(args: Namespace) -> List[Namespace]:
-        result = []
+    def _set_peas_args(args: Namespace) -> Dict[int, List[Namespace]]:
+        result = {}
         _host_list = (
             args.peas_hosts
             if hasattr(args, 'peas_hosts') and args.peas_hosts
@@ -709,27 +750,36 @@ class Pod(BasePod):
             ]
         )
 
-        for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
-            _args = copy.deepcopy(args)
-            # BACKWARDS COMPATIBILITY:
-            # pea_id used to be shard_id so we keep it this way, even though a pea in a BasePod is a replica
-            _args.pea_id = getattr(_args, 'shard_id', 0)
-            _args.replica_id = idx
-            _args.pea_role = PeaRoleType.WORKER
-            _args.identity = random_identity()
+        sharding_enabled = args.shards and args.shards > 1
+        for shard_id in range(args.shards):
+            replica_args = []
+            for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
+                _args = copy.deepcopy(args)
+                _args.shard_id = shard_id
+                # BACKWARDS COMPATIBILITY:
+                # pea_id used to be shard_id so we keep it this way, even though a pea in a BasePod is a replica
+                _args.pea_id = getattr(_args, 'shard_id', 0)
+                _args.replica_id = idx
+                _args.pea_role = PeaRoleType.WORKER
+                _args.identity = random_identity()
 
-            _args.host = pea_host
-            if _args.name:
-                _args.name += f'/rep-{idx}'
-            else:
-                _args.name = f'{idx}'
+                _args.host = pea_host
+                if _args.name:
+                    _args.name += (
+                        f'/shard-{shard_id}/rep-{idx}'
+                        if sharding_enabled
+                        else f'/rep-{idx}'
+                    )
+                else:
+                    _args.name = f'{idx}'
 
-            _args.port_in = helper.random_port()
+                _args.port_in = helper.random_port()
 
-            # pea workspace if not set then derive from workspace
-            if not _args.workspace:
-                _args.workspace = args.workspace
-            result.append(_args)
+                # pea workspace if not set then derive from workspace
+                if not _args.workspace:
+                    _args.workspace = args.workspace
+                replica_args.append(_args)
+            result[shard_id] = replica_args
         return result
 
     @staticmethod
@@ -763,7 +813,7 @@ class Pod(BasePod):
             'head': None,
             'uses_before': None,
             'uses_after': None,
-            'peas': [],
+            'peas': {},
         }
 
         # a gateway has no heads and uses
@@ -791,7 +841,7 @@ class Pod(BasePod):
                     f'{uses_after_args.host}:{uses_after_args.port_in}'
                 )
 
-            parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
+            parsed_args['head'] = BasePod._copy_to_head_args(args)
         parsed_args['peas'] = self._set_peas_args(args)
 
         return parsed_args
