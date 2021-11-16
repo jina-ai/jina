@@ -1,4 +1,4 @@
-# 텍스트를 통해 비디오 내 시각적 콘텐츠 검색하라
+# 텍스트를 통해 비디오 내 시각적 콘텐츠 검색하세요
 
 ```{article-info}
 :avatar: avatars/nan.jpg
@@ -8,16 +8,16 @@
 :date: Oct. 19, 2021
 ```
 
-이 튜토리얼에서는 컨텐츠에 대한 짧은 텍스트 설명을 기반으로 비디오를 검색하는 비디오 검색 시스템을 만듭니다. 주요 과제는 사용자가 비디오에 대한 레이블이나 텍스트 정보를 사용하여 *** 없이 비디오를 검색할 수 있도록 하는 것입니다.
+이 튜토리얼에서는 컨텐츠에 대한 짧은 텍스트 설명을 기반으로 비디오를 검색하는 비디오 검색 시스템을 만듭니다. 주요 과제는 사용자가 비디오에 대한 레이블이나 텍스트 정보를 사용하여  없이 비디오를 검색할 수 있도록 하는 것입니다.
 
 <!--demo.gif-->
 ```{figure} ../../.github/images/tutorial-video-search.gif
 :align: center
 ```
 
-## 흐름을 만드세요
+## flow 만드세요
 
-사용할 수 있는 텍스트가 없기 때문에 쿼리 텍스트와 직접 일치시키기 위해 비디오의 텍스트 정보를 사용할 수 없습니다. 대신에, 우리는 비디오와 텍스트를 일치시킬 수 있는 다른 방법을 찾아야 한다.
+사용할 수 있는 텍스트가 없기 때문에 쿼리 텍스트와 직접 일치시키기 위해 비디오의 텍스트 정보를 사용할 수 없습니다. 대신에, 우리는 비디오와 텍스트를 일치시킬 수 있는 다른 방법을 찾아야 합니다.
 이러한 일치 항목을 찾는 한 가지 방법은 비디오 프레임에 있는 정보의 일부가 프레임에 캡처될 수 있기 때문에 비디오 프레임을 사용하는 것입니다. 좀 더 구체적으로 말하면, 쿼리 텍스트와 유사한 의미를 가진 관련 프레임을 찾은 다음 이러한 프레임을 포함하는 비디오를 반환할 수 있습니다. 이를 위해서는 모델이 비디오 프레임과 쿼리 텍스트를 동일한 공간에 인코딩해야 합니다. 이 경우 사전 훈련된 교차 모델들이 도움이 될 수 있습니다.
 
 ```{admonition} Use the other information of videos
@@ -31,7 +31,7 @@
 텍스트를 사용하여 비디오 프레임을 검색해야 합니다.
 
 비디오에 텍스트만 포함하거나 비디오에 정적 이미지가 하나만 있는 경우,
-이 예는 잘 작동하지 않을 것이다. 그런 경우에
+이 예는 잘 작동하지 않을 것입니다. 그런 경우에
 비디오의 주요 정보는 텍스트 또는 오디오로 표현되며, 따라서 그럴 수 없습니다.
 비디오 프레임으로 검색할 수 있습니다.
 
@@ -55,15 +55,15 @@ In this tutorial, we use the image and the text encoding parts from CLIP to calc
 ```{admonition} How does CLIP help?
 :class: info
 
-짧은 텍스트 'this is a dog'가 주어지면 CLIP 텍스트 모델은 이를 벡터로 인코딩할 수 있다. 한편, CLIP 이미지 모델은 개의 이미지 하나와 고양이의 이미지 하나를 동일한 벡터 공간으로 인코딩할 수 있다.
-우리는 또한 텍스트 벡터와 개 이미지의 벡터 사이의 거리가 동일한 텍스트와 고양이의 이미지 사이의 거리보다 더 작다는 것을 발견할 수 있다.
+짧은 텍스트 'this is a dog'가 주어지면 CLIP 텍스트 모델은 이를 벡터로 인코딩할 수 있습니다. 한편, CLIP 이미지 모델은 개의 이미지 하나와 고양이의 이미지 하나를 동일한 벡터 공간으로 인코딩할 수 있습니다다.
+우리는 또한 텍스트 벡터와 개 이미지의 벡터 사이의 거리가 동일한 텍스트와 고양이의 이미지 사이의 거리보다 더 작다는 것을 발견할 수 있습니다.
 ```
 
 인덱서의 경우 시연용이라는 점을 고려해 인덱서로 SimpleIndexer를 선택합니다. 벡터와 메타 정보를 모두 한방에 저장합니다. 검색 파트는 DocumentArrayMemmap의 내장된 'match' 기능을 사용하여 수행됩니다.
 
 
 ### 인덱스
-인덱스 엔드포인트에 대한 요청은 비디오로더, CLIPImageEncoder, SimpleIndexer 등 3개 실행기가 있다. 흐름에 대한 입력은 동영상 URI가 'uri' 속성에 저장된 문서입니다. 클라우드 또는 로컬 파일 시스템의 원격 파일 위치입니다.
+인덱스 엔드포인트에 대한 요청은 Videoloader, CLIPImageEncoder, SimpleIndexer 등 3개 실행기가 있다. Flow에 대한 입력은 동영상 URI가 'uri' 속성에 저장된 문서입니다. 클라우드 또는 로컬 파일 시스템의 원격 파일 위치입니다.
 
 비디오로더는 영상에서 프레임을 추출해 청크의 블럽 속성에 이미지 배열로 저장한다.
 
@@ -80,8 +80,8 @@ Afterwards, `SimpleIndexer` stores all the Documents with a memory map.
 
 ### Query
 
-/검색 엔드포인트에 게시되면 CIPTextEncoder SimpleIndexer SimpleRanker를 통해 요청이 들어온다.
-이러한 요청에는 문서의 '텍스트' 속성에 저장된 텍스트 설명이 있습니다. 이러한 텍스트는 'CIPTextEncoder'에 의해 벡터로 인코딩된다. 벡터는 'embedding' 속성에 저장되며 'SimpleRanker'를 사용하여 비디오 프레임의 관련 벡터를 검색하는 데 사용됩니다. 마지막으로 'SimpleRanker'는 검색된 프레임을 기반으로 해당 동영상을 찾습니다.
+/검색 엔드포인트에 게시되면 CIPTextEncoder SimpleIndexer SimpleRanker를 통해 요청이 들어옵니다.
+이러한 요청에는 문서의 '텍스트' 속성에 저장된 텍스트 설명이 있습니다. 이러한 텍스트는 'CIPTextEncoder'에 의해 벡터로 인코딩됩니다. 벡터는 'embedding' 속성에 저장되며 'SimpleRanker'를 사용하여 비디오 프레임의 관련 벡터를 검색하는 데 사용됩니다. 마지막으로 'SimpleRanker'는 검색된 프레임을 기반으로 해당 동영상을 찾습니다.
 ### Use Executors from Jina Hub
 
 
@@ -107,7 +107,7 @@ executors:
 ```
 
 ### Override requests configuration
-'여행자_경로'를 우선하는 것과 마찬가지로, '/index'와 '/search' 엔드포인트에 대한 요청이 예상대로 처리될 수 있도록 '@requests'를 구성해야 한다. 비디오로더와 CLIPImageEncoder는/인덱스 엔드포인트에 대한 요청만 처리합니다. 반면 CIPTextEncoder는 엔드포인트에 대한 요청만 처리합니다.
+'여행자_경로'를 우선하는 것과 마찬가지로, '/index'와 '/search' 엔드포인트에 대한 요청이 예상대로 처리될 수 있도록 '@requests'를 구성해야 합니다. 비디오로더와 CLIPImageEncoder는/인덱스 엔드포인트에 대한 요청만 처리합니다. 반면 CIPTextEncoder는 엔드포인트에 대한 요청만 처리합니다.
 
 
 ```{code-block} yaml
@@ -131,6 +131,6 @@ executors:
 ...
 ```
 
-## Get the Source Code
+## 소스 코드를 얻으세요
 
-You can find the code at [example-video-search](https://github.com/jina-ai/example-video-search). 
+당신은 [example-video-search](https://github.com/jina-ai/example-video-search)에서 코드를 찾을 수 . 
