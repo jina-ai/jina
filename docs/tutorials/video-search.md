@@ -133,4 +133,4 @@ executors:
 
 ## 소스 코드를 얻으세요
 
-당신은 [example-video-search](https://github.com/jina-ai/example-video-search)에서 코드를 찾을 수 . 
+당신은 [example-video-search](https://github.com/jina-ai/example-video-search)에서 코드를 찾을 수 있습니다. 
