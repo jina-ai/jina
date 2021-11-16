@@ -347,9 +347,7 @@ import numpy as np
 from jina import DocumentArray
 
 da = DocumentArray.empty(10)
-
-original_embedding = np.random.random([10, 3])
-da.embeddings = original_embedding
+da.embeddings = np.random.random([10, 3])
 da.match(da, exclude_self=True)
 ```
 
