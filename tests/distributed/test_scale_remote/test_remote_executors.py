@@ -124,7 +124,7 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
     ],
     indirect=True,
 )
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('protocol', ['grpc', 'websocket', 'http'])
 def test_scale_with_concurrent_client(
     remote_flow_with_runtime: Flow, pod_params, protocol
 ):

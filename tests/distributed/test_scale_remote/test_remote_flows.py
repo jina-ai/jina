@@ -1,4 +1,5 @@
 import os
+import time
 import pytest
 
 from daemon.clients import JinaDClient
@@ -6,6 +7,23 @@ from jina import Client, Document, DocumentArray, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 jinad_client = JinaDClient(host=__default_host__, port=8000)
+IMG_NAME = 'jina/scale-executor'
+
+
+@pytest.fixture(scope='function')
+def docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(
+        path=os.path.join(cur_dir, '../../integration/scale/scale-executor'),
+        tag=IMG_NAME,
+    )
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
 
 
 @pytest.mark.parametrize('filename', ['flow_zed.yml', 'flow_container.yml'])
@@ -13,12 +31,12 @@ jinad_client = JinaDClient(host=__default_host__, port=8000)
     'pod_params',  # (num_replicas, scale_to, shards)
     [
         (2, 3, 1),  # scale up 1 replica with 1 shard
-        (2, 3, 2),  # scale up 1 replica with 2 shards
+        # (2, 3, 2),  # scale up 1 replica with 2 shards
         (3, 1, 1),  # scale down 2 replicas with 1 shard
-        (3, 1, 2),  # scale down 2 replicas with 1 shard
+        # (3, 1, 2),  # scale down 2 replicas with 2 shards
     ],
 )
-def test_scale_remote_flow(filename, pod_params):
+def test_scale_remote_flow(docker_image_built, filename, pod_params):
     num_replicas, scale_to, shards = pod_params
     flow_id = None
     try:
