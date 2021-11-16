@@ -1,4 +1,5 @@
-from .helper import _deprecate_by, _uri_to_buffer, T, _to_datauri
+from .helper import _deprecate_by, _uri_to_buffer, _to_datauri
+from ....helper import T
 
 
 class BufferDataMixin:

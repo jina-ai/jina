@@ -1,6 +1,7 @@
 from typing import Union, BinaryIO
 
-from .helper import _uri_to_buffer, T, _get_file_context
+from .helper import _uri_to_buffer, _get_file_context
+from ....helper import T
 
 
 class DumpFileMixin:

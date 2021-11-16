@@ -1,6 +1,6 @@
-from typing import Dict, Union
+from typing import Dict, Union, TYPE_CHECKING
 
-if False:
+if TYPE_CHECKING:
     from ...flow.base import Flow
     from ...executors import BaseExecutor
 

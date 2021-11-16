@@ -3,7 +3,8 @@ from typing import Tuple, Dict, Union, Optional
 
 import numpy as np
 
-from .helper import T, _uri_to_buffer, _deprecate_by, _to_datauri
+from .helper import _uri_to_buffer, _deprecate_by, _to_datauri
+from ....helper import T
 
 
 class TextDataMixin:

@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Union
 
-from .helper import T, _deprecate_by
+from .helper import _deprecate_by
 from ...ndarray import get_array_type
+from ....helper import T
 from ....helper import typename
 from ....proto import jina_pb2
 

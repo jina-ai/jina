@@ -65,8 +65,7 @@ class MyTransformer(Executor):
             outputs = self.model(**input_tokens)
             hidden_states = outputs.hidden_states
 
-            embeds = self._compute_embedding(hidden_states, input_tokens)
-            docs.embeddings = embeds
+            docs.embeddings = self._compute_embedding(hidden_states, input_tokens)
 
 
 class MyIndexer(Executor):

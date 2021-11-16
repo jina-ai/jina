@@ -2,6 +2,7 @@ from abc import ABC
 
 from .content import ContentPropertyMixin
 from .empty import EmptyMixin
+from .evaluation import EvaluationMixin
 from .getattr import GetAttributeMixin
 from .group import GroupMixin
 from .io.binary import BinaryIOMixin
@@ -31,6 +32,7 @@ class AllMixins(
     PlotMixin,
     SampleMixin,
     TextToolsMixin,
+    EvaluationMixin,
     ABC,
 ):
     """All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """

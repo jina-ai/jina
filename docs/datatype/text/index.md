@@ -162,4 +162,5 @@ That's all you need to know for textual data. Good luck with building text searc
 ../../tutorials/fuzzy-grep
 full-text-search
 ../../tutorials/chatbot
+../../tutorials/question-answering-bot
 ```

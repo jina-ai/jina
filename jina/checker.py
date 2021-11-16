@@ -1,8 +1,5 @@
 from .logging.predefined import default_logger
-
-if False:
-    # fix type-hint complain for sphinx and flake
-    import argparse
+import argparse
 
 
 class NetworkChecker:

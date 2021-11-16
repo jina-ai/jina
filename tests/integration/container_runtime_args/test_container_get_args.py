@@ -1,15 +1,16 @@
-import pytest
 import time
 import os
 
-from jina import Flow, Executor, Document, DocumentArray, requests
+import pytest
+
+from jina import Flow, Document, DocumentArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 img_name = 'jina/replica-exec'
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def docker_image_built():
     import docker
 
@@ -26,7 +27,7 @@ def docker_image_built():
 @pytest.mark.parametrize('replicas', [1, 3, 4])
 def test_containerruntime_args(docker_image_built, shards, replicas):
     f = Flow().add(
-        name='executor',
+        name='executor_container',
         uses=f'docker://{img_name}',
         replicas=replicas,
         shards=shards,
@@ -51,8 +52,9 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
         for doc in r.docs:
             assert doc.tags['shards'] == shards
 
+    assert shard_ids == set(range(shards))
+
     if replicas > 1:
         assert replica_ids == set(range(replicas))
     else:
         assert replica_ids == {-1.0}
-    assert shard_ids == set(range(shards))

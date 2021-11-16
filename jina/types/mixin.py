@@ -1,12 +1,9 @@
-from typing import Dict, Tuple, TypeVar
-
+from typing import Dict, Tuple
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from ..helper import typename
+from ..helper import typename, T
 from ..proto import jina_pb2
-
-T = TypeVar('T')
 
 
 class ProtoTypeMixin:
