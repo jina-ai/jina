@@ -47,7 +47,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
     path='/rolling_update/{id}',
     summary='Trigger a rolling_update operation on the Pod object',
 )
-async def rolling_update(
+async def _rolling_update(
     id: DaemonID,
     dump_path: Optional[str] = None,
     uses_with: Optional[Dict[str, Any]] = None,
@@ -68,7 +68,7 @@ async def rolling_update(
     path='/scale/{id}',
     summary='Trigger a scale operation on the Pod object',
 )
-async def scale(id: DaemonID, replicas: int):
+async def _scale(id: DaemonID, replicas: int):
     try:
         return await store.scale(id=id, replicas=replicas)
     except Exception as ex:

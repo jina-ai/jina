@@ -47,7 +47,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
     path='/rolling_update/{id}',
     summary='Trigger a rolling_update operation on the Flow object',
 )
-async def rolling_update(
+async def _rolling_update(
     id: DaemonID,
     pod_name: str,
     dump_path: Optional[str] = None,
@@ -69,7 +69,7 @@ async def rolling_update(
     path='/scale/{id}',
     summary='Trigger a scale operation on the Flow object',
 )
-async def scale(id: DaemonID, pod_name: str, replicas: int):
+async def _scale(id: DaemonID, pod_name: str, replicas: int):
     try:
         return await store.scale(id=id, pod_name=pod_name, replicas=replicas)
     except Exception as ex:

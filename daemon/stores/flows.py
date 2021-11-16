@@ -35,7 +35,6 @@ class FlowStore(ContainerStore, AiohttpMixin):
 
         :param uri: uri of partial-daemon
         :param kwargs: keyword args
-        :raises PartialDaemon400Exception: if deletion fails
         :return: response from DELETE request
         """
         return await self.DELETE(url=f'{uri}/{self._kind}')

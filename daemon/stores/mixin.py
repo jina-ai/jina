@@ -9,6 +9,8 @@ from ..helper import if_alive, error_msg_from
 
 
 class AiohttpMixin:
+    """Mixin to send POST/PUT/DELETE requests to partial-daemon"""
+
     @if_alive
     async def POST(
         self: T, *, url: str, params: Optional[Dict] = None, json: Optional[Dict] = None

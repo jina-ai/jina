@@ -15,7 +15,6 @@ class PeaStore(ContainerStore, AiohttpMixin):
         :param uri: uri of partial-daemon
         :param params: json payload to be sent
         :param kwargs: keyword args
-        :raises PartialDaemon400Exception: if creation fails
         :return: response from mini-jinad
         """
         return await self.POST(
@@ -29,7 +28,6 @@ class PeaStore(ContainerStore, AiohttpMixin):
 
         :param uri: uri of partial-daemon
         :param kwargs: keyword args
-        :raises PartialDaemon400Exception: if deletion fails
         :return: response from partial-daemon
         """
         return await self.DELETE(url=f'{uri}/{self._kind}')
