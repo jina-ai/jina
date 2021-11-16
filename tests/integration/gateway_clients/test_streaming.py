@@ -11,7 +11,6 @@ from functools import partial
 
 from jina.parsers import set_gateway_parser
 from jina import Document, DocumentArray
-from jina.types.message import Message
 from jina.types.request import Request
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
@@ -50,8 +49,9 @@ def simple_graph_dict_indexer():
 
 
 class DummyMockConnectionPool:
-    def send_message(self, msg: Message, pod: str, head: bool) -> asyncio.Task:
+    def send_messages_once(self, messages, pod: str, head: bool) -> asyncio.Task:
         assert head
+        msg = messages[0]
 
         if not hasattr(self, '_docs'):
             self._docs = DocumentArray()
@@ -93,7 +93,7 @@ class DummyMockConnectionPool:
 
         async def task_wrapper():
             response_msg = await _compute_response()
-            return response_msg
+            return [response_msg]
 
         return asyncio.create_task(task_wrapper())
 
@@ -195,8 +195,8 @@ def test_disable_prefetch_slow_client_fast_executor(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages_once,
     )
     port_in = random_port()
 
@@ -253,8 +253,8 @@ def test_disable_prefetch_fast_client_slow_executor(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages_once,
     )
     port_in = random_port()
     final_da = DocumentArray()
@@ -329,8 +329,8 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_message',
-        DummyMockConnectionPool.send_message,
+        'send_messages_once',
+        DummyMockConnectionPool.send_messages_once,
     )
     port_in = random_port()
 
