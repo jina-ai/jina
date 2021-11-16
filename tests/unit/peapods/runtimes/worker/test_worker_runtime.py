@@ -11,6 +11,7 @@ from jina import DocumentArray
 from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
 from jina.types.document import Document
 from jina.types.message import Message
@@ -34,8 +35,10 @@ def test_worker_runtime():
     )
     runtime_thread.start()
 
-    assert WorkerRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port_in}',
+        ready_or_shutdown_event=Event(),
     )
 
     response = GrpcConnectionPool.send_message_sync(
@@ -69,8 +72,10 @@ def test_worker_runtime_docs_merging():
     )
     runtime_thread.start()
 
-    assert WorkerRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port_in}',
+        ready_or_shutdown_event=Event(),
     )
 
     response = GrpcConnectionPool.send_messages_sync(
@@ -90,14 +95,13 @@ def test_worker_runtime_docs_merging():
 
 @pytest.mark.slow
 @pytest.mark.timeout(10)
-@pytest.mark.parametrize('close_method', ['TERMINATE', 'CANCEL'])
 @pytest.mark.asyncio
 @pytest.mark.skipif(
     'GITHUB_WORKFLOW' in os.environ,
     reason='Graceful shutdown is not working at the moment',
 )
 # TODO: This test should work, it does not
-async def test_worker_runtime_graceful_shutdown(close_method):
+async def test_worker_runtime_graceful_shutdown():
     args = set_pea_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
@@ -122,8 +126,10 @@ async def test_worker_runtime_graceful_shutdown(close_method):
     )
     runtime_thread.start()
 
-    assert WorkerRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0, ctrl_address=f'{args.host}:{args.port_in}', shutdown_event=Event()
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port_in}',
+        ready_or_shutdown_event=Event(),
     )
 
     request_start_time = time.time()
@@ -146,10 +152,7 @@ async def test_worker_runtime_graceful_shutdown(close_method):
 
     await asyncio.sleep(1.0)
 
-    if close_method == 'TERMINATE':
-        runtime_thread.terminate()
-    else:
-        cancel_event.set()
+    runtime_thread.terminate()
 
     assert not handler_closed_event.is_set()
     runtime_thread.join()

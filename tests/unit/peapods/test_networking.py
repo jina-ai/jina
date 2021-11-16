@@ -44,23 +44,28 @@ def test_connection_list(mocker):
     assert connection_list.get_next_connection() == third_connection
 
 
+def mock_send(mock):
+    mock()
+    return None
+
+
 def test_connection_pool(mocker):
     create_mock = mocker.Mock()
     send_mock = mocker.Mock()
     pool = GrpcConnectionPool()
     pool.create_connection = create_mock
-    pool._send_messages = send_mock
+    pool._send_messages = lambda messages, connection: mock_send(send_mock)
 
     pool.add_connection(pod='encoder', head=False, address='1.1.1.1:53')
     pool.add_connection(pod='encoder', head=False, address='1.1.1.2:53')
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='encoder', head=False
     )
     assert len(results) == 1
     assert send_mock.call_count == 1
     assert create_mock.call_count == 2
 
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='encoder', head=False
     )
     assert len(results) == 1
@@ -68,7 +73,7 @@ def test_connection_pool(mocker):
     assert create_mock.call_count == 2
 
     # indexer was not added yet, so there isnt anything being sent
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='indexer', head=False
     )
     assert len(results) == 0
@@ -77,7 +82,7 @@ def test_connection_pool(mocker):
 
     # add indexer now so it can be send
     pool.add_connection(pod='indexer', head=False, address='2.1.1.1:53')
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='indexer', head=False
     )
     assert len(results) == 1
@@ -86,7 +91,7 @@ def test_connection_pool(mocker):
 
     # polling only applies to shards, there are no shards here, so it only sends one message
     pool.add_connection(pod='encoder', head=False, address='1.1.1.3:53')
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'),
         pod='encoder',
         head=False,
@@ -100,7 +105,7 @@ def test_connection_pool(mocker):
     pool.add_connection(pod='encoder', head=False, address='1.1.1.3:53', shard_id=1)
     # adding the same connection again is a noop
     pool.add_connection(pod='encoder', head=False, address='1.1.1.3:53', shard_id=1)
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'),
         pod='encoder',
         head=False,
@@ -111,7 +116,7 @@ def test_connection_pool(mocker):
     assert create_mock.call_count == 5
 
     # sending to one specific shard should only send one message
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'),
         pod='encoder',
         head=False,
@@ -122,7 +127,7 @@ def test_connection_pool(mocker):
     assert send_mock.call_count == 7
 
     # doing the same with polling ALL ignores the shard id
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'),
         pod='encoder',
         head=False,
@@ -136,7 +141,7 @@ def test_connection_pool(mocker):
     assert pool.remove_connection(
         pod='encoder', head=False, address='1.1.1.2:53', shard_id=0
     )
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'),
         pod='encoder',
         head=False,
@@ -147,7 +152,7 @@ def test_connection_pool(mocker):
     assert send_mock.call_count == 10
 
     # encoder pod has no head registered yet so sending to the head will not work
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='encoder', head=True
     )
     assert len(results) == 0
@@ -155,7 +160,7 @@ def test_connection_pool(mocker):
 
     # after registering a head for encoder, sending to head should work
     pool.add_connection(pod='encoder', head=True, address='1.1.1.10:53')
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='encoder', head=True
     )
     assert len(results) == 1
@@ -163,7 +168,7 @@ def test_connection_pool(mocker):
 
     # after remove the head again, sending will not work
     assert pool.remove_connection(pod='encoder', head=True, address='1.1.1.10:53')
-    results = pool.send_messages(
+    results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='encoder', head=True
     )
     assert len(results) == 0
@@ -228,18 +233,16 @@ async def test_grpc_connection_pool_real_sending():
     pool.add_connection(pod='encoder', head=False, address=f'localhost:{port2}')
     sent_msg = ControlMessage(command='STATUS')
 
-    results_call_1 = pool.send_messages(msg=sent_msg, pod='encoder', head=False)
-    results_call_2 = pool.send_messages(msg=sent_msg, pod='encoder', head=False)
+    results_call_1 = pool.send_message(msg=sent_msg, pod='encoder', head=False)
+    results_call_2 = pool.send_message(msg=sent_msg, pod='encoder', head=False)
     assert len(results_call_1) == 1
     assert len(results_call_2) == 1
 
     response1 = await results_call_1[0]
     assert response1.request.command == 'DEACTIVATE'
-    assert response1.envelope.receiver_id == str(port1)
 
     response2 = await results_call_2[0]
     assert response2.request.command == 'DEACTIVATE'
-    assert response2.envelope.receiver_id == str(port2)
 
     server_process1.kill()
     server_process2.kill()
