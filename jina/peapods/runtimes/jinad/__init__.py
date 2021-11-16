@@ -32,6 +32,8 @@ class JinadRuntime(AsyncNewLoopRuntime):
         args: 'argparse.Namespace',
         **kwargs,
     ):
+        self.pea_id = None
+        self.logstream = None
         super().__init__(args, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
@@ -39,8 +41,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_jinad = args.port_jinad
-        self.pea_id = None
-        self.logstream = None
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -101,6 +101,10 @@ class JinadRuntime(AsyncNewLoopRuntime):
             )
 
     async def async_cancel(self):
+        """Skip cancel for JinadRuntime"""
+        pass
+
+    async def async_teardown(self):
         """Cancels the logstream task, removes the remote Pea"""
         if self.logstream is not None:
             self.logstream.cancel()

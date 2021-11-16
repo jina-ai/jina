@@ -5,40 +5,14 @@ from functools import partial
 
 import pytest
 
-from jina import Flow, Executor, Document, DocumentArray, requests, Client
-from jina.excepts import RuntimeFailToStart, ScalingFails
+from jina import Flow, Document, DocumentArray, Client
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 IMG_NAME = 'jina/scale-executor'
 
 NUM_CONCURRENT_CLIENTS = 20
 NUM_DOCS_SENT_BY_CLIENTS = 50
-
-
-class ScalableExecutor(Executor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.replica_id = self.runtime_args.replica_id
-        self.shard_id = self.runtime_args.shard_id
-
-    @requests
-    def foo(self, docs, **kwargs):
-        for doc in docs:
-            doc.tags['replica_id'] = self.replica_id
-            doc.tags['shard_id'] = self.shard_id
-
-
-@pytest.fixture(scope='function')
-def docker_image_built():
-    import docker
-
-    client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, 'scale-executor'), tag=IMG_NAME)
-    client.close()
-    yield
-    time.sleep(2)
-    client = docker.from_env()
-    client.containers.prune()
+CLOUD_HOST = 'localhost:8000'
 
 
 @pytest.fixture
@@ -47,20 +21,39 @@ def pod_params(request):
     return num_replicas, scale_to, shards
 
 
+@pytest.fixture(scope='function')
+def docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(
+        path=os.path.join(cur_dir, '../../integration/scale/scale-executor'),
+        tag=IMG_NAME,
+    )
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+
+
 @pytest.fixture
-def flow_with_zed_runtime(pod_params):
+def remote_flow_with_zed_runtime(pod_params):
     num_replicas, scale_to, shards = pod_params
     return Flow().add(
         name='executor',
-        uses=ScalableExecutor,
+        uses='ScalableExecutor',
         replicas=num_replicas,
         shards=shards,
         polling='ANY',
+        host=CLOUD_HOST,
+        py_modules='executors.py',
+        upload_files=cur_dir,
     )
 
 
 @pytest.fixture
-def flow_with_container_runtime(pod_params, docker_image_built):
+def remote_flow_with_container_runtime(pod_params, docker_image_built):
     num_replicas, scale_to, shards = pod_params
     return Flow().add(
         name='executor',
@@ -68,11 +61,14 @@ def flow_with_container_runtime(pod_params, docker_image_built):
         replicas=num_replicas,
         shards=shards,
         polling='ANY',
+        host=CLOUD_HOST,
     )
 
 
-@pytest.fixture(params=['flow_with_zed_runtime', 'flow_with_container_runtime'])
-def flow_with_runtime(request):
+@pytest.fixture(
+    params=['remote_flow_with_zed_runtime', 'remote_flow_with_container_runtime']
+)
+def remote_flow_with_runtime(request):
     return request.getfixturevalue(request.param)
 
 
@@ -82,13 +78,13 @@ def flow_with_runtime(request):
         (2, 3, 1),  # scale up 1 replica with 1 shard
         (2, 3, 2),  # scale up 1 replica with 2 shards
         (3, 1, 1),  # scale down 2 replicas with 1 shard
-        (3, 1, 2),  # scale down 2 replicas with 1 shard
+        (3, 1, 2),  # scale down 2 replicas with 2 shards
     ],
     indirect=True,
 )
-def test_scale_success(flow_with_runtime, pod_params):
+def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
     num_replicas, scale_to, shards = pod_params
-    with flow_with_runtime as f:
+    with remote_flow_with_runtime as f:
         ret1 = f.index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
@@ -128,8 +124,10 @@ def test_scale_success(flow_with_runtime, pod_params):
     ],
     indirect=True,
 )
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
+@pytest.mark.parametrize('protocol', ['grpc', 'websocket', 'http'])
+def test_scale_with_concurrent_client(
+    remote_flow_with_runtime: Flow, pod_params, protocol
+):
     def peer_client(port, protocol, peer_hash, queue):
         rv = Client(protocol=protocol, port=port).index(
             [Document(text=peer_hash) for _ in range(NUM_DOCS_SENT_BY_CLIENTS)],
@@ -144,7 +142,7 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
     num_replicas, scale_to, _ = pod_params
     queue = multiprocessing.Queue()
 
-    with flow_with_runtime as f:
+    with remote_flow_with_runtime as f:
         f.protocol = protocol
         port_expose = f.port_expose
 

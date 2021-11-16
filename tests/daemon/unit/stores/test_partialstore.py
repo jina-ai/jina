@@ -1,11 +1,9 @@
-import os
 from pathlib import Path
 
 import pytest
 
 from daemon.models import PeaModel, FlowModel
-from daemon.models.enums import UpdateOperation
-from daemon.stores.partial import PartialStore, PartialPeaStore, PartialFlowStore
+from daemon.stores.partial import PartialPeaStore, PartialFlowStore
 from jina import helper, Flow, __default_host__
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
@@ -28,16 +26,6 @@ def partial_flow_store():
     partial_flow_store.delete()
 
 
-@pytest.mark.timeout(5)
-def test_partialstore_delete(monkeypatch, mocker):
-    close_mock = mocker.Mock()
-    partial_store = PartialStore()
-
-    partial_store.object = close_mock
-    partial_store.delete()
-    close_mock.close.assert_called()
-
-
 def test_peastore_add(partial_pea_store):
     partial_store_item = partial_pea_store.add(
         args=ArgNamespace.kwargs2namespace(PeaModel().dict(), set_pea_parser())
@@ -47,6 +35,16 @@ def test_peastore_add(partial_pea_store):
     assert partial_store_item.arguments['runtime_cls'] == 'ZEDRuntime'
     assert partial_store_item.arguments['host_in'] == __default_host__
     assert partial_store_item.arguments['host_out'] == __default_host__
+
+
+@pytest.mark.timeout(5)
+def test_partial_peastore_delete(monkeypatch, mocker):
+    close_mock = mocker.Mock()
+    partial_store = PartialPeaStore()
+
+    partial_store.object = close_mock
+    partial_store.delete()
+    close_mock.close.assert_called()
 
 
 def test_flowstore_add(monkeypatch, partial_flow_store):
@@ -61,21 +59,29 @@ def test_flowstore_add(monkeypatch, partial_flow_store):
     assert partial_flow_store.object.port_expose == 12345
 
 
-def test_flowstore_update(partial_flow_store, mocker):
+def test_flowstore_rolling_update(partial_flow_store, mocker):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
 
     partial_flow_store.add(args)
 
-    update_mock = mocker.Mock()
-    partial_flow_store.object.rolling_update = update_mock
+    rolling_update_mock = mocker.Mock()
+    partial_flow_store.object.rolling_update = rolling_update_mock
 
-    partial_flow_store.update(
-        kind=UpdateOperation.ROLLING_UPDATE,
-        dump_path='',
-        uses_with={},
-        pod_name='executor1',
-    )
+    partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
+    rolling_update_mock.assert_called()
 
-    update_mock.assert_called()
+
+def test_flowstore_scale(partial_flow_store, mocker):
+    flow_model = FlowModel()
+    flow_model.uses = f'{cur_dir}/flow.yml'
+    args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
+
+    partial_flow_store.add(args)
+
+    scale_mock = mocker.Mock()
+    partial_flow_store.object.scale = scale_mock
+
+    partial_flow_store.scale(pod_name='executor1', replicas=2)
+    scale_mock.assert_called()

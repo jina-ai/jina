@@ -87,7 +87,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     # rolling_update on Query Flow
     assert (
         DaemonID(
-            client.flows.update(
+            client.flows.rolling_update(
                 id=query_flow_id,
                 pod_name='indexer_query',
                 uses_with={'dump_path': DUMP_PATH},
