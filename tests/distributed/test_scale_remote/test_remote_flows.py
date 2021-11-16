@@ -18,7 +18,7 @@ jinad_client = JinaDClient(host=__default_host__, port=8000)
         (3, 1, 2),  # scale down 2 replicas with 1 shard
     ],
 )
-def test_remote_flow_with_directory(filename, pod_params):
+def test_scale_remote_flow(filename, pod_params):
     num_replicas, scale_to, shards = pod_params
     flow_id = None
     try:
