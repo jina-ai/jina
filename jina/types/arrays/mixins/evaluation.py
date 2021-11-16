@@ -35,6 +35,8 @@ class EvaluationMixin:
         :return: The average evaluation computed or a list of them if multiple metrics are required
         """
 
+        self._check_length(len(other))
+
         if hash_fn is None:
             hash_fn = lambda d: d.id
 
@@ -48,6 +50,13 @@ class EvaluationMixin:
         metric_name = metric_name or metric_fn.__name__
         results = []
         for d, gd in zip(self, other):
+            if hash_fn(d) != hash_fn(gd):
+                raise ValueError(
+                    f'Document {d} from the left-hand side and '
+                    f'{gd} from the right-hand are not hashed to the same value. '
+                    f'This means your left and right DocumentArray may not be aligned; or it means your '
+                    f'`hash_fn` is badly designed.'
+                )
             if not d.matches or not gd.matches:
                 raise ValueError(
                     f'Document {d!r} or {gd!r} has no matches, please check your Document'
