@@ -680,22 +680,12 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.stores.partial.PartialStore">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.stores.partial.</span></span><span class="sig-name descname"><span class="pre">PartialStore</span></span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialStore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>A store spawned inside partial-daemon container</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.stores.partial.PartialStore.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialStore.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialStore.add" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialStore.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialStore.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new element to the store. This method needs to be overridden by the subclass</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialStoreItem" title="daemon.models.partial.PartialStoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialStoreItem</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.partial.PartialStore.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialStore.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the element to the store. This method needs to be overridden by the subclass</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialStoreItem" title="daemon.models.partial.PartialStoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialStoreItem</span></code></a></p>
@@ -754,18 +744,36 @@
 <dd><p>alias of <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.Pod" title="jina.peapods.pods.Pod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.Pod</span></code></a></p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.partial.PartialPodStore.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialPodStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialPodStore.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs an update operation on the Flow.
-:type kind: <a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.UpdateOperation" title="daemon.models.enums.UpdateOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateOperation</span></code></a>
-:param kind: type of update command to execute (rolling_update)
-:type pod_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param pod_name: pod to target with the dump request
-:type uses_with: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
-:param uses_with: the uses_with for the new executors to be rolled updated
-:param kwargs: keyword args
-:rtype: <a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialStoreItem" title="daemon.models.partial.PartialStoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialStoreItem</span></code></a>
-:return: Item describing the Flow object</p>
+<dt class="sig sig-object py" id="daemon.stores.partial.PartialPodStore.rolling_update">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialPodStore.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialPodStore.rolling_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform rolling_update on current Pod</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a Dictionary of arguments to restart the executor with</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialStoreItem" title="daemon.models.partial.PartialStoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialStoreItem</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Item describing the Flow object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.partial.PartialPodStore.scale">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replicas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialPodStore.scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialPodStore.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale the current Pod</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>replicas</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of replicas for the Pod</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialStoreItem" title="daemon.models.partial.PartialStoreItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialStoreItem</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Item describing the Flow object</p>
+</dd>
+</dl>
 </dd></dl>
 </dd></dl>
 <dl class="py class">
@@ -794,18 +802,42 @@
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.partial.PartialFlowStore.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs an update operation on the Flow.
-:type kind: <a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.UpdateOperation" title="daemon.models.enums.UpdateOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateOperation</span></code></a>
-:param kind: type of update command to execute (rolling_update)
-:type pod_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param pod_name: pod to target with the dump request
-:type uses_with: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
-:param uses_with: the uses_with for the new executors to be rolled updated
-:param kwargs: keyword args
-:rtype: <a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialFlowItem" title="daemon.models.partial.PartialFlowItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialFlowItem</span></code></a>
-:return: Item describing the Flow object</p>
+<dt class="sig sig-object py" id="daemon.stores.partial.PartialFlowStore.rolling_update">
+<span class="sig-name descname"><span class="pre">rolling_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.rolling_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.rolling_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform rolling_update on the Pod in current Flow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Pod in the Flow to be rolling updated</p></li>
+<li><p><strong>uses_with</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a Dictionary of arguments to restart the executor with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialFlowItem" title="daemon.models.partial.PartialFlowItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialFlowItem</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Item describing the Flow object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.partial.PartialFlowStore.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/partial/#PartialFlowStore.scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.partial.PartialFlowStore.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale the Pod in current Flow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Pod to be scaled</p></li>
+<li><p><strong>replicas</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of replicas for the Pod</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../daemon.models.partial/#daemon.models.partial.PartialFlowItem" title="daemon.models.partial.PartialFlowItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PartialFlowItem</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Item describing the Flow object</p>
+</dd>
+</dl>
 </dd></dl>
 </dd></dl>
 </section>

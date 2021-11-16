@@ -10,6 +10,7 @@ Submodules
    daemon.stores.base
    daemon.stores.containers
    daemon.stores.flows
+   daemon.stores.mixin
    daemon.stores.partial
    daemon.stores.peas
    daemon.stores.pods

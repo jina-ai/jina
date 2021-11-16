@@ -680,8 +680,47 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.stores.peas.PeaStore">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.stores.peas.</span></span><span class="sig-name descname"><span class="pre">PeaStore</span></span><a class="reference internal" href="../../_modules/daemon/stores/peas/#PeaStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.peas.PeaStore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.stores.containers/#daemon.stores.containers.ContainerStore" title="daemon.stores.containers.ContainerStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.containers.ContainerStore</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../daemon.stores.containers/#daemon.stores.containers.ContainerStore" title="daemon.stores.containers.ContainerStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.containers.ContainerStore</span></code></a>, <a class="reference internal" href="../daemon.stores.mixin/#daemon.stores.mixin.AiohttpMixin" title="daemon.stores.mixin.AiohttpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.mixin.AiohttpMixin</span></code></a></p>
 <p>A Store of Peas spawned as Containers by Daemon</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.peas.PeaStore.add_in_partial">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/peas/#PeaStore.add_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.peas.PeaStore.add_in_partial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends <cite>POST</cite> request to <cite>partial-daemon</cite> to create a Pea/Pod.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – uri of partial-daemon</p></li>
+<li><p><strong>params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – json payload to be sent</p></li>
+<li><p><strong>kwargs</strong> – keyword args</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>response from mini-jinad</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.peas.PeaStore.delete_in_partial">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/peas/#PeaStore.delete_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.peas.PeaStore.delete_in_partial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a <cite>DELETE</cite> request to <cite>partial-daemon</cite> to terminate a Pea/Pod</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> – uri of partial-daemon</p></li>
+<li><p><strong>kwargs</strong> – keyword args</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>response from partial-daemon</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 

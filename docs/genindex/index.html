@@ -716,6 +716,14 @@
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.add_handlers">add_handlers() (jina.logging.logger.JinaLogger method)</a>
 </li>
+        <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.add_in_partial">add_in_partial() (daemon.stores.containers.ContainerStore method)</a>
+
+        <ul>
+          <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore.add_in_partial">(daemon.stores.flows.FlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.peas/#daemon.stores.peas.PeaStore.add_in_partial">(daemon.stores.peas.PeaStore method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server">add_JinaDataRequestRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
 </li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server">add_JinaRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
@@ -764,6 +772,8 @@
 </li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet">AioHttpClientlet (class in jina.clients.base.helper)</a>
 </li>
+        <li><a href="../api/daemon.stores.mixin/#daemon.stores.mixin.AiohttpMixin">AiohttpMixin (class in daemon.stores.mixin)</a>
+</li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator">alias_generator() (jina.peapods.runtimes.gateway.http.models.JinaRequestModel.Config method)</a>
 
         <ul>
@@ -804,12 +814,12 @@
         </ul></li>
         <li><a href="../api/jina.flow.builder/#jina.flow.builder.allowed_levels">allowed_levels() (in module jina.flow.builder)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ANY">ANY (jina.enums.PollingType attribute)</a>
 </li>
         <li><a href="../api/cli.export/#cli.export.api_to_dict">api_to_dict() (in module cli.export)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.DocumentArray.append">append() (jina.DocumentArray method)</a>
 
         <ul>
@@ -904,6 +914,8 @@
           <li><a href="../api/jina.peapods.runtimes.gateway.websocket/#jina.peapods.runtimes.gateway.websocket.WebSocketRuntime.async_teardown">(jina.peapods.runtimes.gateway.websocket.WebSocketRuntime method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.grpc/#jina.peapods.runtimes.grpc.GRPCDataRuntime.async_teardown">(jina.peapods.runtimes.grpc.GRPCDataRuntime method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_teardown">(jina.peapods.runtimes.jinad.JinadRuntime method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_teardown">(jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime method)</a>
 </li>
@@ -1684,6 +1696,13 @@
 </li>
         </ul></li>
         <li>
+    daemon.stores.mixin
+
+        <ul>
+          <li><a href="../api/daemon.stores.mixin/#module-daemon.stores.mixin">module</a>
+</li>
+        </ul></li>
+        <li>
     daemon.stores.partial
 
         <ul>
@@ -1728,10 +1747,10 @@
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonEnum">DaemonEnum (class in daemon.models.enums)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.files/#daemon.files.DaemonFile">DaemonFile (class in daemon.files)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID">DaemonID (class in daemon.models.id)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.DaemonInvalidDockerfile">DaemonInvalidDockerfile</a>
@@ -1791,8 +1810,12 @@
 </li>
           <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.delete">(daemon.stores.containers.ContainerStore method)</a>
 </li>
-          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.delete">(daemon.stores.partial.PartialStore method)</a>
+        </ul></li>
+        <li><a href="../api/daemon.stores.mixin/#daemon.stores.mixin.AiohttpMixin.DELETE">DELETE() (daemon.stores.mixin.AiohttpMixin method)</a>
 </li>
+        <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.delete">delete() (daemon.stores.partial.PartialStore method)</a>
+
+        <ul>
           <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.delete">(daemon.stores.workspaces.WorkspaceStore method)</a>
 </li>
           <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.delete">(jina.clients.mixin.AsyncPostMixin method)</a>
@@ -1802,6 +1825,14 @@
         </ul></li>
         <li><a href="../api/jina.types.arrays.memmap.bpm/#jina.types.arrays.memmap.bpm.BufferPoolManager.delete_if_exists">delete_if_exists() (jina.types.arrays.memmap.bpm.BufferPoolManager method)</a>
 </li>
+        <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.delete_in_partial">delete_in_partial() (daemon.stores.containers.ContainerStore method)</a>
+
+        <ul>
+          <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore.delete_in_partial">(daemon.stores.flows.FlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.peas/#daemon.stores.peas.PeaStore.delete_in_partial">(daemon.stores.peas.PeaStore method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.DELETING">DELETING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.DENSE">DENSE (jina.enums.EmbeddingClsType attribute)</a>
@@ -1895,8 +1926,6 @@
         <li><a href="../api/jina.helper/#jina.helper.download_mermaid_url">download_mermaid_url() (in module jina.helper)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.download_with_resume">download_with_resume() (in module jina.hubble.helper)</a>
-</li>
-        <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum.dump">dump (daemon.models.UpdateOperationEnum attribute)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.dump">dump() (daemon.stores.base.BaseStore class method)</a>
 
@@ -4544,6 +4573,8 @@
 </li>
           <li><a href="../api/daemon.stores.flows/#module-daemon.stores.flows">daemon.stores.flows</a>
 </li>
+          <li><a href="../api/daemon.stores.mixin/#module-daemon.stores.mixin">daemon.stores.mixin</a>
+</li>
           <li><a href="../api/daemon.stores.partial/#module-daemon.stores.partial">daemon.stores.partial</a>
 </li>
           <li><a href="../api/daemon.stores.peas/#module-daemon.stores.peas">daemon.stores.peas</a>
@@ -5275,10 +5306,10 @@
 </li>
         <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.PodClient">PodClient (class in daemon.clients.pods)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory">PodFactory (class in jina.peapods.pods.factory)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType">PodRoleType (class in jina.enums)</a>
@@ -5343,6 +5374,8 @@
           <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings.ports">(daemon.models.ports.PortMappings property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.stores.mixin/#daemon.stores.mixin.AiohttpMixin.POST">POST() (daemon.stores.mixin.AiohttpMixin method)</a>
+</li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post">post() (jina.clients.mixin.AsyncPostMixin method)</a>
 
         <ul>
@@ -5416,6 +5449,8 @@
         <li><a href="../api/jina.enums/#jina.enums.SocketType.PUSH_BIND">PUSH_BIND (jina.enums.SocketType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.PUSH_CONNECT">PUSH_CONNECT (jina.enums.SocketType attribute)</a>
+</li>
+        <li><a href="../api/daemon.stores.mixin/#daemon.stores.mixin.AiohttpMixin.PUT">PUT() (daemon.stores.mixin.AiohttpMixin method)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion.PY37">PY37 (daemon.models.enums.PythonVersion attribute)</a>
 </li>
@@ -5567,8 +5602,6 @@
           <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.requirements">(daemon.models.workspaces.WorkspaceArguments attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">reset() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
@@ -5577,6 +5610,8 @@
         </ul></li>
         <li><a href="../api/jina.types.request/#jina.types.request.Response">Response (class in jina.types.request)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.response">response (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/jina.peapods.pods.k8slib.kubernetes_deployment/#jina.peapods.pods.k8slib.kubernetes_deployment.restart_deployment">restart_deployment() (in module jina.peapods.pods.k8slib.kubernetes_deployment)</a>
@@ -5617,13 +5652,27 @@
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.role">(jina.peapods.pods.BasePod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.enums/#daemon.models.enums.UpdateOperation.ROLLING_UPDATE">ROLLING_UPDATE (daemon.models.enums.UpdateOperation attribute)</a>
-</li>
-        <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum.rolling_update">rolling_update (daemon.models.UpdateOperationEnum attribute)</a>
-</li>
-        <li><a href="../api/jina/#jina.Flow.rolling_update">rolling_update() (jina.Flow method)</a>
+        <li><a href="../api/daemon.clients.flows/#daemon.clients.flows.AsyncFlowClient.rolling_update">rolling_update() (daemon.clients.flows.AsyncFlowClient method)</a>
 
         <ul>
+          <li><a href="../api/daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin.rolling_update">(daemon.clients.mixin.AsyncToSyncMixin method)</a>
+</li>
+          <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.AsyncPodClient.rolling_update">(daemon.clients.pods.AsyncPodClient method)</a>
+</li>
+          <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore.rolling_update">(daemon.stores.flows.FlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.rolling_update">(daemon.stores.partial.PartialFlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore.rolling_update">(daemon.stores.partial.PartialPodStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.pods/#daemon.stores.pods.PodStore.rolling_update">(daemon.stores.pods.PodStore method)</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.partial.flow/#daemon.api.endpoints.partial.flow.rolling_update">(in module daemon.api.endpoints.partial.flow)</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.partial.pod/#daemon.api.endpoints.partial.pod.rolling_update">(in module daemon.api.endpoints.partial.pod)</a>
+</li>
+          <li><a href="../api/jina/#jina.Flow.rolling_update">(jina.Flow method)</a>
+</li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.rolling_update">(jina.flow.base.Flow method)</a>
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.rolling_update">(jina.peapods.pods.BasePod method)</a>
@@ -5717,9 +5766,27 @@
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.save_parameters">save_parameters() (jina.optimizers.ResultProcessor method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow.scale">scale() (jina.Flow method)</a>
+        <li><a href="../api/daemon.clients.flows/#daemon.clients.flows.AsyncFlowClient.scale">scale() (daemon.clients.flows.AsyncFlowClient method)</a>
 
         <ul>
+          <li><a href="../api/daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin.scale">(daemon.clients.mixin.AsyncToSyncMixin method)</a>
+</li>
+          <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.AsyncPodClient.scale">(daemon.clients.pods.AsyncPodClient method)</a>
+</li>
+          <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore.scale">(daemon.stores.flows.FlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.scale">(daemon.stores.partial.PartialFlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore.scale">(daemon.stores.partial.PartialPodStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.pods/#daemon.stores.pods.PodStore.scale">(daemon.stores.pods.PodStore method)</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.partial.flow/#daemon.api.endpoints.partial.flow.scale">(in module daemon.api.endpoints.partial.flow)</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.partial.pod/#daemon.api.endpoints.partial.pod.scale">(in module daemon.api.endpoints.partial.pod)</a>
+</li>
+          <li><a href="../api/jina/#jina.Flow.scale">(jina.Flow method)</a>
+</li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.scale">(jina.flow.base.Flow method)</a>
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.scale">(jina.peapods.pods.BasePod method)</a>
@@ -5831,6 +5898,8 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_help_parser">set_help_parser() (in module jina.parsers)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_new_parser">set_hub_new_parser() (in module jina.parsers.hubble)</a>
 </li>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser">set_hub_parser() (in module jina.parsers.hubble)</a>
@@ -5839,8 +5908,6 @@
 </li>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_push_parser">set_hub_push_parser() (in module jina.parsers.hubble)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.parsers.helloworld/#jina.parsers.helloworld.set_hw_chatbot_parser">set_hw_chatbot_parser() (in module jina.parsers.helloworld)</a>
 </li>
         <li><a href="../api/jina.parsers.helloworld/#jina.parsers.helloworld.set_hw_fork_parser">set_hw_fork_parser() (in module jina.parsers.helloworld)</a>
@@ -6112,23 +6179,11 @@
         <li><a href="../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient.update">update() (daemon.clients.base.AsyncBaseClient method)</a>
 
         <ul>
-          <li><a href="../api/daemon.clients.flows/#daemon.clients.flows.AsyncFlowClient.update">(daemon.clients.flows.AsyncFlowClient method)</a>
-</li>
           <li><a href="../api/daemon.clients.mixin/#daemon.clients.mixin.AsyncToSyncMixin.update">(daemon.clients.mixin.AsyncToSyncMixin method)</a>
-</li>
-          <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.AsyncPodClient.update">(daemon.clients.pods.AsyncPodClient method)</a>
 </li>
           <li><a href="../api/daemon.clients.workspaces/#daemon.clients.workspaces.AsyncWorkspaceClient.update">(daemon.clients.workspaces.AsyncWorkspaceClient method)</a>
 </li>
           <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.update">(daemon.stores.base.BaseStore method)</a>
-</li>
-          <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.update">(daemon.stores.containers.ContainerStore method)</a>
-</li>
-          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.update">(daemon.stores.partial.PartialFlowStore method)</a>
-</li>
-          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore.update">(daemon.stores.partial.PartialPodStore method)</a>
-</li>
-          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.update">(daemon.stores.partial.PartialStore method)</a>
 </li>
           <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.update">(daemon.stores.workspaces.WorkspaceStore method)</a>
 </li>
@@ -6143,14 +6198,14 @@
           <li><a href="../api/jina.types.struct/#jina.types.struct.StructView.update">(jina.types.struct.StructView method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Flow.update_network_interface">update_network_interface() (jina.Flow method)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.update_network_interface">(jina.flow.base.Flow method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.pods.k8s/#jina.peapods.pods.k8s.K8sPod.update_pea_args">update_pea_args() (jina.peapods.pods.k8s.K8sPod method)</a>
 
         <ul>
@@ -6170,10 +6225,6 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.update_worker_pea_args">update_worker_pea_args() (jina.peapods.pods.Pod method)</a>
-</li>
-        <li><a href="../api/daemon.models.enums/#daemon.models.enums.UpdateOperation">UpdateOperation (class in daemon.models.enums)</a>
-</li>
-        <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum">UpdateOperationEnum (class in daemon.models)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.UPDATING">UPDATING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>

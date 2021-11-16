@@ -680,8 +680,18 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daemon.stores.containers.</span></span><span class="sig-name descname"><span class="pre">ContainerStore</span></span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.stores.base/#daemon.stores.base.BaseStore" title="daemon.stores.base.BaseStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.base.BaseStore</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../daemon.stores.base/#daemon.stores.base.BaseStore" title="daemon.stores.base.BaseStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.base.BaseStore</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>A Store of Containers spawned by daemon</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.add_in_partial">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.add_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.add_in_partial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements jina object creation in <cite>partial-daemon</cite></p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.delete_in_partial">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_in_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.delete_in_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.delete_in_partial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements jina object termination in <cite>partial-daemon</cite></p>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.ready">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.ready" title="Permalink to this definition">¶</a></dt>
@@ -702,11 +712,6 @@
 <dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.containers.ContainerStore.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new element to the store. This method needs to be overridden by the subclass</p>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.containers.ContainerStore.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the element to the store. This method needs to be overridden by the subclass</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="daemon.stores.containers.ContainerStore.delete">

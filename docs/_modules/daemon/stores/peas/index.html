@@ -652,56 +652,38 @@
                 </div>
                 <h1>Source code for daemon.stores.peas</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 
-<span class="kn">import</span> <span class="nn">aiohttp</span>
-
+<span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">AiohttpMixin</span>
 <span class="kn">from</span> <span class="nn">.containers</span> <span class="kn">import</span> <span class="n">ContainerStore</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">PartialDaemon400Exception</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">if_alive</span><span class="p">,</span> <span class="n">error_msg_from</span>
 
 
-<div class="viewcode-block" id="PeaStore"><a class="viewcode-back" href="../../../../api/daemon.stores.peas/#daemon.stores.peas.PeaStore">[docs]</a><span class="k">class</span> <span class="nc">PeaStore</span><span class="p">(</span><span class="n">ContainerStore</span><span class="p">):</span>
+<div class="viewcode-block" id="PeaStore"><a class="viewcode-back" href="../../../../api/daemon.stores.peas/#daemon.stores.peas.PeaStore">[docs]</a><span class="k">class</span> <span class="nc">PeaStore</span><span class="p">(</span><span class="n">ContainerStore</span><span class="p">,</span> <span class="n">AiohttpMixin</span><span class="p">):</span>
     <span class="sd">"""A Store of Peas spawned as Containers by Daemon"""</span>
 
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">'pea'</span>
 
-    <span class="nd">@if_alive</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Sends `POST` request to `mini-jinad` to create a Pea/Pod.</span>
+<div class="viewcode-block" id="PeaStore.add_in_partial"><a class="viewcode-back" href="../../../../api/daemon.stores.peas/#daemon.stores.peas.PeaStore.add_in_partial">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_in_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Sends `POST` request to `partial-daemon` to create a Pea/Pod.</span>
 
-<span class="sd">        :param uri: uri of mini-jinad</span>
+<span class="sd">        :param uri: uri of partial-daemon</span>
 <span class="sd">        :param params: json payload to be sent</span>
 <span class="sd">        :param kwargs: keyword args</span>
-<span class="sd">        :raises PartialDaemon400Exception: if creation fails</span>
 <span class="sd">        :return: response from mini-jinad</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'sending POST request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="n">method</span><span class="o">=</span><span class="s1">'POST'</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
-            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PartialDaemon400Exception</span><span class="p">(</span><span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">response_json</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">POST</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-    <span class="nd">@if_alive</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Sends a `DELETE` request to `mini-jinad` to terminate a Pea/Pod</span>
+<div class="viewcode-block" id="PeaStore.delete_in_partial"><a class="viewcode-back" href="../../../../api/daemon.stores.peas/#daemon.stores.peas.PeaStore.delete_in_partial">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_in_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Sends a `DELETE` request to `partial-daemon` to terminate a Pea/Pod</span>
 
-<span class="sd">        :param uri: uri of mini-jinad</span>
+<span class="sd">        :param uri: uri of partial-daemon</span>
 <span class="sd">        :param kwargs: keyword args</span>
-<span class="sd">        :raises PartialDaemon400Exception: if deletion fails</span>
-<span class="sd">        :return: response from mini-jinad</span>
+<span class="sd">        :return: response from partial-daemon</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'sending DELETE request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span>
-        <span class="p">)</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">'DELETE'</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
-            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PartialDaemon400Exception</span><span class="p">(</span><span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">response_json</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">DELETE</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div></div>
 </pre></div>
             </article>
             <footer>

@@ -651,13 +651,76 @@
                     </label>
                 </div>
                 <h1>Source code for daemon.stores.pods</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.peas</span> <span class="kn">import</span> <span class="n">PeaStore</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseStore</span>
+<span class="kn">from</span> <span class="nn">.peas</span> <span class="kn">import</span> <span class="n">PeaStore</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 
 
 <div class="viewcode-block" id="PodStore"><a class="viewcode-back" href="../../../../api/daemon.stores.pods/#daemon.stores.pods.PodStore">[docs]</a><span class="k">class</span> <span class="nc">PodStore</span><span class="p">(</span><span class="n">PeaStore</span><span class="p">):</span>
     <span class="sd">"""A Store of Pods spawned as Containers by Daemon"""</span>
 
-    <span class="n">_kind</span> <span class="o">=</span> <span class="s1">'pod'</span></div>
+    <span class="n">_kind</span> <span class="o">=</span> <span class="s1">'pod'</span>
+
+    <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">'DaemonID'</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DaemonID'</span><span class="p">:</span>
+        <span class="sd">"""rolling_update the Pod inside the container</span>
+
+<span class="sd">        :param id: id of the Pod</span>
+<span class="sd">        :param uses_with: the uses_with arguments to update the executor in pod_name</span>
+<span class="sd">        :raises KeyError: if id doesn't exist in the store</span>
+<span class="sd">        :return: id of the Flow</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.'</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">object</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUT</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">/rolling_update'</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while sending rolling_update to the Pod: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="nb">object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is updated successfully'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">id</span>
+
+    <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">'DaemonID'</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DaemonID'</span><span class="p">:</span>
+        <span class="sd">"""Scale the Pod inside the container</span>
+
+<span class="sd">        :param id: id of the Pod</span>
+<span class="sd">        :param replicas: The number of replicas to scale to</span>
+<span class="sd">        :raises KeyError: if id doesn't exist in the store</span>
+<span class="sd">        :return: id of the Flow</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.'</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">object</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUT</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">/scale'</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">},</span>
+                <span class="n">json</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while scaling the Pod: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="nb">object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is scaled successfully'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">id</span></div>
 </pre></div>
             </article>
             <footer>

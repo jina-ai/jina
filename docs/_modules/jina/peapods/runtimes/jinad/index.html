@@ -685,6 +685,8 @@
         <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logstream</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`</span>
         <span class="c1"># process.</span>
@@ -692,8 +694,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port_jinad</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_jinad</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logstream</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Create Workspace, Pea on remote JinaD server"""</span>
@@ -754,6 +754,10 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="JinadRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Skip cancel for JinadRuntime"""</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="JinadRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Cancels the logstream task, removes the remote Pea"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logstream</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logstream</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
