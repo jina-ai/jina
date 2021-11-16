@@ -78,7 +78,7 @@ def remote_flow_with_runtime(request):
         (2, 3, 1),  # scale up 1 replica with 1 shard
         (2, 3, 2),  # scale up 1 replica with 2 shards
         (3, 1, 1),  # scale down 2 replicas with 1 shard
-        (3, 1, 2),  # scale down 2 replicas with 1 shard
+        (3, 1, 2),  # scale down 2 replicas with 2 shards
     ],
     indirect=True,
 )

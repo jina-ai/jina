@@ -31,9 +31,19 @@ def docker_image_built():
     'pod_params',  # (num_replicas, scale_to, shards)
     [
         (2, 3, 1),  # scale up 1 replica with 1 shard
-        # (2, 3, 2),  # scale up 1 replica with 2 shards
         (3, 1, 1),  # scale down 2 replicas with 1 shard
-        # (3, 1, 2),  # scale down 2 replicas with 2 shards
+        pytest.param(
+            (2, 3, 2),  # scale up 2 replicas with 2 shards
+            marks=pytest.mark.skip(
+                reason='https://github.com/jina-ai/jina/issues/3941'
+            ),
+        ),
+        pytest.param(
+            (3, 1, 2),  # scale down 2 replicas with 2 shards
+            marks=pytest.mark.skip(
+                reason='https://github.com/jina-ai/jina/issues/3941'
+            ),
+        ),
     ],
 )
 def test_scale_remote_flow(docker_image_built, filename, pod_params):
@@ -41,7 +51,10 @@ def test_scale_remote_flow(docker_image_built, filename, pod_params):
     flow_id = None
     try:
         workspace_id = jinad_client.workspaces.create(
-            paths=[os.path.join(cur_dir, cur_dir)]
+            paths=[
+                cur_dir,
+                os.path.join(cur_dir, '../test_scale_remote_executors/executors.py'),
+            ]
         )
         flow_id = jinad_client.flows.create(
             workspace_id=workspace_id,
