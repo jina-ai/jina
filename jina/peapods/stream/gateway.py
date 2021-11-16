@@ -2,7 +2,7 @@ import copy
 import asyncio
 import argparse
 
-from typing import List, AsyncIterator, TYPE_CHECKING
+from typing import Union, List, AsyncIterator, TYPE_CHECKING
 
 from .base import BaseStreamer
 from ...types.message import Message
@@ -36,8 +36,12 @@ class GatewayStreamer(BaseStreamer):
         """
         return self._connection_pool
 
-    def _handle_result(self, result: 'Message'):
-        return result.request
+    def _handle_result(self, result: Union['Message', List['Message']]):
+        # TODO: Handle better the merging of messages
+        if isinstance(result, List):
+            return result[0].request
+        elif isinstance(result, Message):
+            return result.request
 
     def _handle_request(self, request: 'Request') -> 'asyncio.Future':
         """
