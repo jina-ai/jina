@@ -7,7 +7,6 @@ from .. import BasePod
 from .. import BasePea
 from ..peas.factory import PeaFactory
 from .. import Pod
-from ..networking import get_connect_host
 from ... import helper
 from ...enums import SocketType, SchedulerType
 from ...helper import random_identity

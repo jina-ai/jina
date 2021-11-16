@@ -6,6 +6,7 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
+from ..networking import GrpcConnectionPool
 from ..peas.factory import PeaFactory
 from ... import __default_executor__
 from ... import helper
@@ -17,6 +18,7 @@ from ...enums import (
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
+from ...types.message.common import ControlMessage
 
 
 class ExitFIFO(ExitStack):
@@ -254,14 +256,13 @@ class Pod(BasePod):
     """
 
     class _ReplicaSet:
-        def __init__(self, pod_args: Namespace, args: List[Namespace]):
+        def __init__(
+            self, pod_args: Namespace, args: List[Namespace], head_args: Namespace
+        ):
             self.pod_args = copy.copy(pod_args)
+            self.head_args = head_args
             self.args = args
             self._peas = []
-
-        def activate(self):
-            for pea in self._peas:
-                pea.activate_runtime()
 
         @property
         def is_ready(self):
@@ -287,9 +288,14 @@ class Pod(BasePod):
         ):
             # TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?
             for i in range(len(self._peas)):
-                old_pea = self._peas[i]
-                old_pea.close()
                 _args = self.args[i]
+                old_pea = self._peas[i]
+                await GrpcConnectionPool.deactivate_worker(
+                    worker_host=_args.host,
+                    worker_port=_args.port,
+                    target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                )
+                old_pea.close()
                 _args.noblock_on_start = True
                 ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
                 _args.dump_path = dump_path
@@ -298,7 +304,11 @@ class Pod(BasePod):
                 new_pea = PeaFactory.build_pea(_args)
                 new_pea.__enter__()
                 await new_pea.async_wait_start_success()
-                new_pea.activate_runtime()
+                await GrpcConnectionPool.activate_worker(
+                    worker_host=_args.host,
+                    worker_port=_args.port,
+                    target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                )
                 self.args[i] = _args
                 self._peas[i] = new_pea
 
@@ -312,12 +322,17 @@ class Pod(BasePod):
                 new_args.port_ctrl = helper.random_port()
                 new_args.replica_id = i
                 # no exception should happen at create and enter time
-                new_peas.append(BasePea(new_args).start())
+                new_peas.append(PeaFactory.build_pea(new_args).start())
                 new_args_list.append(new_args)
             exception = None
             for new_pea, new_args in zip(new_peas, new_args_list):
                 try:
                     await new_pea.async_wait_start_success()
+                    await GrpcConnectionPool.activate_worker(
+                        worker_host=new_args.host,
+                        worker_port=new_args.port,
+                        target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    )
                 except (
                     RuntimeFailToStart,
                     TimeoutError,
@@ -345,6 +360,11 @@ class Pod(BasePod):
             for i in reversed(range(replicas, len(self._peas))):
                 # Close returns exception, but in theory `termination` should handle close properly
                 try:
+                    await GrpcConnectionPool.deactivate_worker(
+                        worker_host=self.args[i].host,
+                        worker_port=self.args[i].port,
+                        target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    )
                     self._peas[i].close()
                 finally:
                     # If there is an exception at close time. Most likely the pea's terminated abruptly and therefore these
@@ -393,9 +413,7 @@ class Pod(BasePod):
                 raise closing_exception
 
     def __init__(
-        self,
-        args: Union['Namespace', Dict],
-        needs: Optional[Set[str]] = None,
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
@@ -406,6 +424,8 @@ class Pod(BasePod):
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
+        self.uses_before_pea = None
+        self.uses_after_pea = None
         self.head_pea = None
         self.replica_set = None
         self.update_pea_args()
@@ -469,28 +489,52 @@ class Pod(BasePod):
         self.peas_args['head'] = args
 
     @property
+    def uses_before_args(self) -> Namespace:
+        """Get the arguments for the `uses_before` of this Pod.
+
+
+        .. # noqa: DAR201
+        """
+        return self.peas_args['uses_before']
+
+    @uses_before_args.setter
+    def uses_before_args(self, args):
+        """Set the arguments for the `uses_before` of this Pod.
+
+
+        .. # noqa: DAR101
+        """
+        self.peas_args['uses_before'] = args
+
+    @property
+    def uses_after_args(self) -> Namespace:
+        """Get the arguments for the `uses_after` of this Pod.
+
+
+        .. # noqa: DAR201
+        """
+        return self.peas_args['uses_after']
+
+    @uses_after_args.setter
+    def uses_after_args(self, args):
+        """Set the arguments for the `uses_after` of this Pod.
+
+
+        .. # noqa: DAR101
+        """
+        self.peas_args['uses_after'] = args
+
+    @property
     def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod.
 
         .. # noqa: DAR201
         """
         return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            ([self.peas_args['uses_before']] if self.peas_args['uses_before'] else [])
+            + ([self.peas_args['uses_after']] if self.peas_args['uses_after'] else [])
+            + ([self.peas_args['head']] if self.peas_args['head'] else [])
             + self.peas_args['peas']
-        )
-
-    @property
-    def _fifo_args(self) -> List[Namespace]:
-        """Get all arguments of all Peas in this BasePod.
-        .. # noqa: DAR201
-        """
-        # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
-        # some messages are not received by the inner peas. That's why ExitFIFO is needed
-        return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + self.peas_args['peas']
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
         )
 
     @property
@@ -502,7 +546,9 @@ class Pod(BasePod):
         num_peas = 0
         if self.head_pea is not None:
             num_peas += 1
-        if self.tail_pea is not None:
+        if self.uses_before_pea is not None:
+            num_peas += 1
+        if self.uses_after_pea is not None:
             num_peas += 1
         if self.replica_set is not None:  # external pods
             num_peas += self.replica_set.num_peas
@@ -513,13 +559,15 @@ class Pod(BasePod):
 
     def activate(self):
         """
-        Activate all peas in this pod
+        Activate all worker peas in this pod by registering them with the head
         """
-        if self.tail_pea is not None:
-            self.tail_pea.activate_runtime()
-        self.replica_set.activate()
         if self.head_pea is not None:
-            self.head_pea.activate_runtime()
+            for pea_args in self.peas_args['peas']:
+                GrpcConnectionPool.activate_worker_sync(
+                    pea_args.host,
+                    int(pea_args.port_in),
+                    self.head_pea.runtime_ctrl_address,
+                )
 
     def start(self) -> 'Pod':
         """
@@ -531,20 +579,28 @@ class Pod(BasePod):
             If one of the :class:`Pea` fails to start, make sure that all of them
             are properly closed.
         """
+        if self.peas_args['uses_before'] is not None:
+            _args = self.peas_args['uses_before']
+            if getattr(self.args, 'noblock_on_start', False):
+                _args.noblock_on_start = True
+            self.uses_before_pea = PeaFactory.build_pea(_args)
+            self.enter_context(self.uses_before_pea)
+        if self.peas_args['uses_after'] is not None:
+            _args = self.peas_args['uses_after']
+            if getattr(self.args, 'noblock_on_start', False):
+                _args.noblock_on_start = True
+            self.uses_after_pea = PeaFactory.build_pea(_args)
+            self.enter_context(self.uses_after_pea)
         if self.peas_args['head'] is not None:
             _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
             self.head_pea = PeaFactory.build_pea(_args)
             self.enter_context(self.head_pea)
-        self.replica_set = self._ReplicaSet(self.args, self.peas_args['peas'])
+        self.replica_set = self._ReplicaSet(
+            self.args, self.peas_args['peas'], self.head_args
+        )
         self.enter_context(self.replica_set)
-        if self.peas_args['tail'] is not None:
-            _args = self.peas_args['tail']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
-            self.tail_pea = PeaFactory.build_pea(_args)
-            self.enter_context(self.tail_pea)
 
         if not getattr(self.args, 'noblock_on_start', False):
             self.activate()
@@ -560,11 +616,13 @@ class Pod(BasePod):
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
         try:
+            if self.uses_before_pea is not None:
+                self.uses_before_pea.wait_start_success()
+            if self.uses_after_pea is not None:
+                self.uses_after_pea.wait_start_success()
             if self.head_pea is not None:
                 self.head_pea.wait_start_success()
             self.replica_set.wait_start_success()
-            if self.tail_pea is not None:
-                self.tail_pea.wait_start_success()
             self.activate()
         except:
             self.close()
@@ -573,21 +631,20 @@ class Pod(BasePod):
     def join(self):
         """Wait until all peas exit"""
         try:
+            if self.uses_before_pea is not None:
+                self.uses_before_pea.join()
+            if self.uses_after_pea is not None:
+                self.uses_after_pea.join()
             if self.head_pea is not None:
                 self.head_pea.join()
             if self.replica_set is not None:
                 self.replica_set.join()
-            if self.tail_pea is not None:
-                self.tail_pea.join()
-            self._activated = False
         except KeyboardInterrupt:
             pass
         finally:
             self.head_pea = None
-            self.tail_pea = None
             if self.replica_set is not None:
                 self.replica_set.clear_peas()
-            self._activated = False
 
     @property
     def is_ready(self) -> bool:
@@ -604,9 +661,11 @@ class Pod(BasePod):
             is_ready = self.head_pea.is_ready.is_set()
         if is_ready:
             is_ready = self.replica_set.is_ready
-        if is_ready and self.tail_pea is not None:
-            is_ready = self.tail_pea.is_ready.is_set()
-        return is_ready and self._activated
+        if is_ready and self.uses_before_pea is not None:
+            is_ready = self.uses_before_pea.is_ready.is_set()
+        if is_ready and self.uses_after_pea is not None:
+            is_ready = self.uses_after_pea.is_ready.is_set()
+        return is_ready
 
     async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
@@ -644,7 +703,7 @@ class Pod(BasePod):
         result = []
         _host_list = (
             args.peas_hosts
-            if args.peas_hosts
+            if hasattr(args, 'peas_hosts') and args.peas_hosts
             else [
                 args.host,
             ]
@@ -659,8 +718,7 @@ class Pod(BasePod):
             _args.pea_role = PeaRoleType.WORKER
             _args.identity = random_identity()
 
-            if _args.peas_hosts:
-                _args.host = pea_host
+            _args.host = pea_host
             if _args.name:
                 _args.name += f'/rep-{idx}'
             else:
@@ -680,7 +738,7 @@ class Pod(BasePod):
         _args = copy.deepcopy(args)
         _args.pea_role = PeaRoleType.WORKER
         _args.identity = random_identity()
-        _args.host = 'localhost'
+        _args.host = '127.0.0.1'
         _args.port_in = helper.random_port()
 
         if _args.name:
@@ -708,35 +766,40 @@ class Pod(BasePod):
             'peas': [],
         }
 
-        if (
-            getattr(args, 'uses_before', None)
-            and args.uses_before != __default_executor__
-        ):
-            uses_before_args = self._set_uses_before_after_args(
-                args, type='uses_before'
-            )
-            parsed_args['uses_before'] = uses_before_args
-            args.uses_before_address = (
-                f'{uses_before_args.host}:{uses_before_args.port_in}'
-            )
-        if (
-            getattr(args, 'uses_after', None)
-            and args.uses_after != __default_executor__
-        ):
-            uses_after_args = self._set_uses_before_after_args(args, type='uses_after')
-            parsed_args['uses_after'] = uses_after_args
-            args.uses_after_address = (
-                f'{uses_after_args.host}:{uses_after_args.port_in}'
-            )
+        # a gateway has no heads and uses
+        if self.role != PodRoleType.GATEWAY:
+            if (
+                getattr(args, 'uses_before', None)
+                and args.uses_before != __default_executor__
+            ):
+                uses_before_args = self._set_uses_before_after_args(
+                    args, type='uses_before'
+                )
+                parsed_args['uses_before'] = uses_before_args
+                args.uses_before_address = (
+                    f'{uses_before_args.host}:{uses_before_args.port_in}'
+                )
+            if (
+                getattr(args, 'uses_after', None)
+                and args.uses_after != __default_executor__
+            ):
+                uses_after_args = self._set_uses_before_after_args(
+                    args, type='uses_after'
+                )
+                parsed_args['uses_after'] = uses_after_args
+                args.uses_after_address = (
+                    f'{uses_after_args.host}:{uses_after_args.port_in}'
+                )
 
-        parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
+            parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
         parsed_args['peas'] = self._set_peas_args(args)
 
         return parsed_args
 
     @property
     def _mermaid_str(self) -> List[str]:
-        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked
+        """String that will be used to represent the Pod graphically when `Flow.plot()` is invoked.
+        It does not include used_before/uses_after
 
 
         .. # noqa: DAR201
@@ -747,26 +810,18 @@ class Pod(BasePod):
         ):
             mermaid_graph = [f'subgraph {self.name};']
 
-            names = [args.name for args in self._fifo_args]
+            names = [args.name for args in self.all_args]
             uses = self.args.uses
             if len(names) == 1:
                 mermaid_graph.append(f'{names[0]}/pea-0[{uses}]:::PEA;')
             else:
                 mermaid_graph.append(f'\ndirection LR;\n')
                 head_name = names[0]
-                tail_name = names[-1]
-                head_to_show = self.args.uses_before
-                if head_to_show is None or head_to_show == __default_executor__:
-                    head_to_show = head_name
-                tail_to_show = self.args.uses_after
-                if tail_to_show is None or tail_to_show == __default_executor__:
-                    tail_to_show = tail_name
+                head_to_show = head_name
+
                 for name in names[1:-1]:
                     mermaid_graph.append(
-                        f'{head_name}[{head_to_show}]:::HEADTAIL --> {name}[{uses}]:::PEA;'
-                    )
-                    mermaid_graph.append(
-                        f'{name}[{uses}]:::PEA --> {tail_name}[{tail_to_show}]:::HEADTAIL;'
+                        f'{head_name}[{head_to_show}]:::HEAD --> {name}[{uses}]:::PEA;'
                     )
             mermaid_graph.append('end;')
         return mermaid_graph

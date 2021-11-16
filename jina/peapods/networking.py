@@ -13,6 +13,7 @@ from jina.types.message import Message
 from .. import __default_host__, __docker_host__
 from ..enums import PollingType
 from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
+from ..types.message.common import ControlMessage
 
 if TYPE_CHECKING:
     import kubernetes
@@ -380,6 +381,54 @@ class GrpcConnectionPool:
         return asyncio.create_task(task_wrapper(messages, connection))
 
     @staticmethod
+    def activate_worker_sync(
+        worker_host: str, worker_port: int, target_head: str
+    ) -> Message:
+        """
+        Register a given worker to a head by sending an activate message
+
+        :param worker_host: the host address of the worker
+        :param worker_port: the port of the worker
+        :param target_head: address of the head to send the activate message to
+        :returns: the response message
+        """
+        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg.add_related_entity('worker', worker_host, worker_port)
+        return GrpcConnectionPool.send_message_sync(activate_msg, target_head)
+
+    @staticmethod
+    async def activate_worker(
+        worker_host: str, worker_port: int, target_head: str
+    ) -> Message:
+        """
+        Register a given worker to a head by sending an activate message
+
+        :param worker_host: the host address of the worker
+        :param worker_port: the port of the worker
+        :param target_head: address of the head to send the activate message to
+        :returns: the response message
+        """
+        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg.add_related_entity('worker', worker_host, worker_port)
+        return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
+
+    @staticmethod
+    async def deactivate_worker(
+        worker_host: str, worker_port: int, target_head: str
+    ) -> Message:
+        """
+        Remove a given worker to a head by sending a deactivate message
+
+        :param worker_host: the host address of the worker
+        :param worker_port: the port of the worker
+        :param target_head: address of the head to send the deactivate message to
+        :returns: the response message
+        """
+        activate_msg = ControlMessage(command='DEACTIVATE')
+        activate_msg.add_related_entity('worker', worker_host, worker_port)
+        return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
+
+    @staticmethod
     def send_message_sync(msg: Message, target: str, timeout=1.0) -> Message:
         """
         Sends a message synchronizly to the target via grpc
@@ -390,6 +439,20 @@ class GrpcConnectionPool:
         :returns: the response message
         """
         return GrpcConnectionPool.create_connection(target, is_async=False).Call(
+            [msg], timeout=timeout
+        )
+
+    @staticmethod
+    async def send_message_async(msg: Message, target: str, timeout=1.0) -> Message:
+        """
+        Sends a message synchronizly to the target via grpc
+
+        :param msg: the message to send
+        :param target: where to send the message to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :returns: the response message
+        """
+        return await GrpcConnectionPool.create_connection(target).Call(
             [msg], timeout=timeout
         )
 

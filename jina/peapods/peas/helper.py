@@ -2,6 +2,7 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
+from ipaddress import ip_address
 from typing import Union, TYPE_CHECKING
 
 from ... import __default_host__
@@ -92,6 +93,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _args.runtime_cls not in gateway_runtime_dict.values()
         and _args.host != __default_host__
         and not _args.disable_remote
+        and not ip_address(_args.host).is_loopback
     ):
         _args.runtime_cls = 'JinadRuntime'
         # NOTE: remote pea would also create a remote workspace which might take alot of time.

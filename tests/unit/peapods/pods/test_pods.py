@@ -2,11 +2,22 @@ import os
 
 import pytest
 
+from jina.clients.request import request_generator
 from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
-from jina import __default_executor__, __default_host__
+from jina import (
+    __default_executor__,
+    __default_host__,
+    Executor,
+    requests,
+    Document,
+    DocumentArray,
+)
+from jina.peapods.networking import GrpcConnectionPool
+from jina.types.message import Message
+from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,6 +33,11 @@ def pod_args():
         __default_host__,
     ]
     return set_pod_parser().parse_args(args)
+
+
+@pytest.fixture
+def graph_description():
+    return '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
 
 
 @pytest.fixture(scope='function')
@@ -69,45 +85,83 @@ def test_equal(pod_args, pod_args_singleton):
     pod2.close()
 
 
-def test_head_args_get_set(pod_args, pod_args_singleton):
+class ChildDummyExecutor(MyDummyExecutor):
+    pass
+
+
+class ChildDummyExecutor2(MyDummyExecutor):
+    pass
+
+
+def test_uses_before_after(pod_args):
+    pod_args.replicas = 1
+    pod_args.uses_before = 'MyDummyExecutor'
+    pod_args.uses_after = 'ChildDummyExecutor2'
+    pod_args.uses = 'ChildDummyExecutor'
     with Pod(pod_args) as pod:
-        assert pod.head_args == pod.peas_args['head']
-        pod.head_args = pod_args_singleton
-        assert pod.peas_args['head'] == pod_args_singleton
+        assert (
+            pod.head_args.uses_before_address
+            == f'{pod.uses_before_args.host}:{pod.uses_before_args.port_in}'
+        )
+        assert (
+            pod.head_args.uses_after_address
+            == f'{pod.uses_after_args.host}:{pod.uses_after_args.port_in}'
+        )
+        assert pod.num_peas == 4
 
-    with Pod(pod_args_singleton) as pod:
-        assert pod.head_args == pod.first_pea_args
-        pod.head_args = pod_args
-        assert pod.peas_args['peas'][0] == pod_args
 
-
-def test_tail_args_get_set(pod_args, pod_args_singleton):
-    with Pod(pod_args) as pod:
-        assert pod.tail_args == pod.peas_args['tail']
-        pod.tail_args = pod_args_singleton
-        assert pod.peas_args['tail'] == pod_args_singleton
-
-    with Pod(pod_args_singleton) as pod:
-        assert pod.tail_args == pod.first_pea_args
-        pod.tail_args = pod_args
-        assert pod.peas_args['peas'][0] == pod_args
+def test_mermaid_str_no_error(pod_args):
+    pod_args.replicas = 3
+    pod_args.uses_before = 'MyDummyExecutor'
+    pod_args.uses_after = 'ChildDummyExecutor2'
+    pod_args.uses = 'ChildDummyExecutor'
+    pod = Pod(pod_args)
+    print(pod._mermaid_str)
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize('replicas', [1, 2, 4])
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
-def test_pod_context_replicas(runtime, replicas, grpc_data_requests):
-    args_list = ['--runtime-backend', runtime, '--replicas', str(replicas)]
-    if grpc_data_requests:
-        args_list.append('--grpc-data-requests')
+def test_pod_context_replicas(replicas):
+    args_list = ['--replicas', str(replicas)]
     args = set_pod_parser().parse_args(args_list)
     with Pod(args) as bp:
+
         if replicas == 1:
-            assert bp.num_peas == 1
+            assert bp.num_peas == 2
         else:
-            # count head and tail
-            assert bp.num_peas == replicas + 2
+            # count head
+            assert bp.num_peas == replicas + 1
+
+    Pod(args).start().close()
+
+
+class AppendNameExecutor(Executor):
+    def __init__(self, runtime_args, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = runtime_args['name']
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=str(self.name)))
+        return docs
+
+
+@pytest.mark.slow
+def test_pod_activates_replicas():
+    args_list = ['--replicas', '3']
+    args = set_pod_parser().parse_args(args_list)
+    args.uses = 'AppendNameExecutor'
+    with Pod(args) as pod:
+        assert pod.num_peas == 4
+        response_texts = set()
+        # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
+        for _ in range(3):
+            response = GrpcConnectionPool.send_messages_sync(
+                [_create_test_data_message()],
+                f'{pod.head_args.host}:{pod.head_args.port_in}',
+            )
+            response_texts.update(response.response.docs.texts)
+        assert all(text in response_texts for text in ['0', '1', '2', 'client'])
 
     Pod(args).start().close()
 
@@ -118,16 +172,22 @@ def test_pod_context_replicas(runtime, replicas, grpc_data_requests):
     reason='for unknown reason, this test is flaky on Github action, '
     'but locally it SHOULD work fine',
 )
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
 @pytest.mark.parametrize(
     'protocol, runtime_cls',
     [
         ('grpc', 'GRPCGatewayRuntime'),
     ],
 )
-def test_gateway_pod(runtime, protocol, runtime_cls):
+def test_gateway_pod(protocol, runtime_cls, graph_description):
     args = set_gateway_parser().parse_args(
-        ['--runtime-backend', runtime, '--protocol', protocol]
+        [
+            '--graph-description',
+            graph_description,
+            '--pods-addresses',
+            '{"pod0": ["0.0.0.0:1234"]}',
+            '--protocol',
+            protocol,
+        ]
     )
     with Pod(args) as p:
         assert len(p.all_args) == 1
@@ -136,28 +196,24 @@ def test_gateway_pod(runtime, protocol, runtime_cls):
     Pod(args).start().close()
 
 
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_naming_with_replica(runtime):
-    args = set_pod_parser().parse_args(
-        ['--name', 'pod', '--replicas', '2', '--runtime-backend', runtime]
-    )
+def test_pod_naming_with_replica():
+    args = set_pod_parser().parse_args(['--name', 'pod', '--replicas', '2'])
     with Pod(args) as bp:
-        assert bp.head_pea.name == 'pod/head'
+        assert bp.head_pea.name == 'pod/head-0'
         assert bp.replica_set._peas[0].name == 'pod/rep-0'
         assert bp.replica_set._peas[1].name == 'pod/rep-1'
-        assert bp.tail_pea.name == 'pod/tail'
 
 
 def test_pod_args_remove_uses_ba():
     args = set_pod_parser().parse_args([])
     with Pod(args) as p:
-        assert p.num_peas == 1
+        assert p.num_peas == 2
 
     args = set_pod_parser().parse_args(
         ['--uses-before', __default_executor__, '--uses-after', __default_executor__]
     )
     with Pod(args) as p:
-        assert p.num_peas == 1
+        assert p.num_peas == 2
 
     args = set_pod_parser().parse_args(
         [
@@ -170,16 +226,7 @@ def test_pod_args_remove_uses_ba():
         ]
     )
     with Pod(args) as p:
-        assert p.num_peas == 4
-
-
-def test_pod_remote_pea_without_replicas():
-    args = set_pod_parser().parse_args(
-        ['--peas-hosts', '0.0.0.1', '--replicas', str(1)]
-    )
-    with Pod(args) as pod:
-        pea = pod.replica_set._peas[0]
-        assert pea.args.host == pod.host
+        assert p.num_peas == 3
 
 
 @pytest.mark.parametrize(
@@ -204,16 +251,12 @@ def test_pod_remote_pea_replicas_pea_host_set_partially(
     for k, v in pod.peas_args.items():
         if k in ['head', 'tail']:
             assert v.host == args.host
-        else:
+        elif v is not None:
             for pea_arg in v:
                 if pea_arg.pea_id in (0, 1):
                     assert pea_arg.host == pea1_host
-                    assert pea_arg.host_in == expected_host_in
-                    assert pea_arg.host_out == expected_host_out
                 else:
                     assert pea_arg.host == args.host
-                    assert pea_arg.host_in == __default_host__
-                    assert pea_arg.host_out == __default_host__
 
 
 @pytest.mark.parametrize(
@@ -251,11 +294,9 @@ def test_pod_remote_pea_replicas_pea_host_set_completely(
     for k, v in pod.peas_args.items():
         if k in ['head', 'tail']:
             assert v.host == args.host
-        else:
+        elif v is not None:
             for pea_arg, pea_host in zip(v, peas_hosts):
                 assert pea_arg.host == pea_host
-                assert pea_arg.host_in == expected_host_in
-                assert pea_arg.host_out == expected_host_out
 
 
 @pytest.mark.parametrize('replicas', [1])
@@ -336,8 +377,14 @@ def test_pod_upload_files(
             if v:
                 pass
                 # assert sorted(v.upload_files) == sorted(expected)
-        else:
+        elif v is not None and k == 'peas':
             for pea in v:
                 print(sorted(pea.upload_files))
                 print(sorted(expected))
                 assert sorted(pea.upload_files) == sorted(expected)
+
+
+def _create_test_data_message():
+    req = list(request_generator('/', DocumentArray([Document(text='client')])))[0]
+    msg = Message(None, req)
+    return msg
