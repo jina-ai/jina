@@ -79,7 +79,7 @@ f = (Flow(port_expose=12345, protocol='http', cors=True)
 
 ```
 
-### Flow와 인덱스 데이터를 시작다
+### Flow와 인덱스 데이터를 시작합니다
 
 ```python
 from jina import Document
