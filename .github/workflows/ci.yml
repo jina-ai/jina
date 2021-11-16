@@ -247,7 +247,7 @@ jobs:
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s tests/unit/peapods/runtimes/worker tests/unit/peapods/runtimes/head tests/unit/peapods/runtimes/request_handlers/ tests/unit/peapods/runtimes/gateway/grpc/test_grpc_gateway_runtime.py tests/unit/peapods/runtimes/gateway/graph/test_topology_graph.py tests/unit/peapods/test_networking.py tests/unit/peapods/pods/test_pods.py tests/unit/peapods/pods/test_scale.py tests/unit/peapods/pods/test_pod_factory.py tests/unit/peapods/peas/test_pea.py tests/unit/peapods/peas/container/test_container_pea.py tests/integration/runtimes/test_runtimes.py tests/integration/peas/test_pea.py
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s tests/unit/peapods/runtimes/worker tests/unit/peapods/runtimes/head tests/unit/peapods/runtimes/request_handlers/ tests/unit/peapods/runtimes/gateway/grpc/test_grpc_gateway_runtime.py tests/unit/peapods/runtimes/gateway/graph/test_topology_graph.py tests/unit/peapods/test_networking.py tests/unit/peapods/pods/test_pods.py tests/unit/peapods/pods/test_scale.py tests/unit/peapods/pods/test_pod_factory.py tests/unit/peapods/peas/test_pea.py tests/unit/peapods/peas/container/test_container_pea.py tests/integration/runtimes/test_runtimes.py tests/integration/peas/test_pea.py tests/integration/peas/container/test_pea.py
           echo "flag it as jina for codeoverage"
           echo "::set-output name=codecov_flag::jina"
         timeout-minutes: 30
