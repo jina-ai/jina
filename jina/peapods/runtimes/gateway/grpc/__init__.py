@@ -45,6 +45,9 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def async_teardown(self):
         """Close the connection pool"""
+        # usually async_cancel should already have been called, but then its a noop
+        # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
+        await self.async_cancel()
         self._connection_pool.close()
 
     async def async_cancel(self):

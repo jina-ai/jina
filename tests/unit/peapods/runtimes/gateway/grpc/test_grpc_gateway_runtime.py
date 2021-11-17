@@ -1,21 +1,18 @@
-from typing import List
+import asyncio
+import copy
+import json
+import multiprocessing
+import time
 
 import pytest
-import asyncio
-import time
-import copy
-import multiprocessing
-import json
 
-from jina.clients.request import request_generator
-
-from jina.parsers import set_gateway_parser
-from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.types.message import Message
-from jina.types.request import Request
 from jina import Document, DocumentArray
-from jina.peapods import networking
+from jina.clients.request import request_generator
 from jina.helper import random_port
+from jina.parsers import set_gateway_parser
+from jina.peapods import networking
+from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.types.request import Request
 
 
 def test_grpc_gateway_runtime_init_close():
@@ -136,7 +133,6 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
-@pytest.mark.asyncio
 def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
@@ -145,7 +141,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     )
     port_in = random_port()
 
-    runtime = GRPCGatewayRuntime(
+    with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--port-expose',
@@ -156,16 +152,18 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
                 '{}',
             ]
         )
-    )
+    ) as runtime:
 
-    async def _test():
-        responses = []
-        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
-        async for resp in runtime.streamer.Call(request_iterator=req):
-            responses.append(resp)
-        return responses
+        async def _test():
+            responses = []
+            req = request_generator(
+                '/', DocumentArray([Document(text='client0-Request')])
+            )
+            async for resp in runtime.streamer.Call(request_iterator=req):
+                responses.append(resp)
+            return responses
 
-    responses = asyncio.run(_test())
+        responses = asyncio.run(_test())
     assert len(responses) > 0
     assert len(responses[0].docs) == 1
     assert (
@@ -184,7 +182,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     )
     port_in = random_port()
 
-    runtime = GRPCGatewayRuntime(
+    with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--port-expose',
@@ -195,16 +193,18 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                 '{}',
             ]
         )
-    )
+    ) as runtime:
 
-    async def _test():
-        responses = []
-        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
-        async for resp in runtime.streamer.Call(request_iterator=req):
-            responses.append(resp)
-        return responses
+        async def _test():
+            responses = []
+            req = request_generator(
+                '/', DocumentArray([Document(text='client0-Request')])
+            )
+            async for resp in runtime.streamer.Call(request_iterator=req):
+                responses.append(resp)
+            return responses
 
-    responses = asyncio.run(_test())
+        responses = asyncio.run(_test())
     assert len(responses) > 0
     assert len(responses[0].docs) == 2
     assert (
@@ -224,7 +224,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     )
     port_in = random_port()
 
-    runtime = GRPCGatewayRuntime(
+    with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--port-expose',
@@ -235,16 +235,18 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                 '{}',
             ]
         )
-    )
+    ) as runtime:
 
-    async def _test():
-        responses = []
-        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
-        async for resp in runtime.streamer.Call(request_iterator=req):
-            responses.append(resp)
-        return responses
+        async def _test():
+            responses = []
+            req = request_generator(
+                '/', DocumentArray([Document(text='client0-Request')])
+            )
+            async for resp in runtime.streamer.Call(request_iterator=req):
+                responses.append(resp)
+            return responses
 
-    responses = asyncio.run(_test())
+        responses = asyncio.run(_test())
     assert len(responses) > 0
     assert len(responses[0].docs) == 1
     pod1_path = (
@@ -268,7 +270,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     )
     port_in = random_port()
 
-    runtime = GRPCGatewayRuntime(
+    with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--port-expose',
@@ -279,16 +281,18 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
                 '{}',
             ]
         )
-    )
+    ) as runtime:
 
-    async def _test():
-        responses = []
-        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
-        async for resp in runtime.streamer.Call(request_iterator=req):
-            responses.append(resp)
-        return responses
+        async def _test():
+            responses = []
+            req = request_generator(
+                '/', DocumentArray([Document(text='client0-Request')])
+            )
+            async for resp in runtime.streamer.Call(request_iterator=req):
+                responses.append(resp)
+            return responses
 
-    responses = asyncio.run(_test())
+        responses = asyncio.run(_test())
     assert len(responses) > 0
     assert len(responses[0].docs) == 1
     pod1_path = (
@@ -312,7 +316,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     )
     port_in = random_port()
 
-    runtime = GRPCGatewayRuntime(
+    with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--port-expose',
@@ -323,16 +327,18 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                 '{}',
             ]
         )
-    )
+    ) as runtime:
 
-    async def _test():
-        responses = []
-        req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
-        async for resp in runtime.streamer.Call(request_iterator=req):
-            responses.append(resp)
-        return responses
+        async def _test():
+            responses = []
+            req = request_generator(
+                '/', DocumentArray([Document(text='client0-Request')])
+            )
+            async for resp in runtime.streamer.Call(request_iterator=req):
+                responses.append(resp)
+            return responses
 
-    responses = asyncio.run(_test())
+        responses = asyncio.run(_test())
     assert len(responses) > 0
     assert len(responses[0].docs) == 2
     assert f'client0-Request-client0-pod0-client0-pod1' == responses[0].docs[0].text
