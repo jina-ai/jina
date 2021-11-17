@@ -133,7 +133,7 @@ class GraphDocument(Document):
             )
             return
 
-        offset = self._nodes.id_to_index[node_id]
+        offset = self._nodes._index_map[node_id]
 
         if self.num_edges > 0:
             nodes = self._nodes
@@ -234,8 +234,8 @@ class GraphDocument(Document):
                 source_id = doc2_id
                 target_id = doc1_id
 
-            source_node_offset = np.array([self._nodes.id_to_index[source_id]])
-            target_node_offset = np.array([self._nodes.id_to_index[target_id]])
+            source_node_offset = np.array([self._nodes._index_map[source_id]])
+            target_node_offset = np.array([self._nodes._index_map[target_id]])
 
             if current_adjacency is None:
                 row = source_node_offset
@@ -313,13 +313,13 @@ class GraphDocument(Document):
         current_adjacency = self.adjacency
         source_node_offsets = np.array(
             [
-                self._nodes.id_to_index[source.id if is_documents_source else source]
+                self._nodes._index_map[source.id if is_documents_source else source]
                 for source in source_docs
             ]
         )
         target_node_offsets = np.array(
             [
-                self._nodes.id_to_index[target.id if is_documents_dest else target]
+                self._nodes._index_map[target.id if is_documents_dest else target]
                 for target in dest_docs
             ]
         )
@@ -373,8 +373,8 @@ class GraphDocument(Document):
         """
         doc1_id = doc1.id if isinstance(doc1, Document) else doc1
         doc2_id = doc2.id if isinstance(doc2, Document) else doc2
-        offset1 = self._nodes.id_to_index[doc1_id]
-        offset2 = self._nodes.id_to_index[doc2_id]
+        offset1 = self._nodes._index_map[doc1_id]
+        offset2 = self._nodes._index_map[doc2_id]
         for edge_id, (row, col) in enumerate(
             zip(self.adjacency.row, self.adjacency.col)
         ):
@@ -484,7 +484,7 @@ class GraphDocument(Document):
         :param doc: the document node from which to extract the outgoing nodes.
         """
         if self.adjacency is not None and doc.id in self._nodes:
-            offset = self._nodes.id_to_index[doc.id]
+            offset = self._nodes._index_map[doc.id]
             return ChunkArray(
                 [
                     self._nodes[col.item()]
@@ -502,7 +502,7 @@ class GraphDocument(Document):
         :param doc: the document node from which to extract the incoming nodes.
         """
         if self.adjacency is not None and doc.id in self._nodes:
-            offset = self._nodes.id_to_index[doc.id]
+            offset = self._nodes._index_map[doc.id]
             return ChunkArray(
                 [
                     self._nodes[row.item()]

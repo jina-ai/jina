@@ -86,8 +86,8 @@ class DocumentArray(
         self._id_to_index = None
 
     @property
-    def id_to_index(self) -> Dict:
-        """Return the `id_to_index` map
+    def _index_map(self) -> Dict:
+        """Return the `_id_to_index` map
 
         :return: a Python dict.
         """
@@ -121,7 +121,7 @@ class DocumentArray(
             if self._id_to_index:
                 self._id_to_index[value.id] = key
         elif isinstance(key, str):
-            self[self.id_to_index[key]].CopyFrom(value)
+            self[self._index_map[key]].CopyFrom(value)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -129,8 +129,8 @@ class DocumentArray(
         if isinstance(index, int):
             del self._pb_body[index]
         elif isinstance(index, str):
-            del self[self.id_to_index[index]]
-            self.id_to_index.pop(index)
+            del self[self._index_map[index]]
+            self._index_map.pop(index)
         elif isinstance(index, slice):
             del self._pb_body[index]
         else:
@@ -153,13 +153,13 @@ class DocumentArray(
             yield Document(d)
 
     def __contains__(self, item: str):
-        return item in self.id_to_index
+        return item in self._index_map
 
     def __getitem__(self, item: Union[int, str, slice, List]):
         if isinstance(item, int):
             return Document(self._pb_body[item])
         elif isinstance(item, str):
-            return self[self.id_to_index[item]]
+            return self[self._index_map[item]]
         elif isinstance(item, slice):
             return DocumentArray(self._pb_body[item])
         elif isinstance(item, list):
