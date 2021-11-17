@@ -24,7 +24,6 @@ class AllMixins(
     BufferDataMixin,
     PlotMixin,
     DumpFileMixin,
-    VersionedMixin,
     MatchMixin,
     GetSetAttributeMixin,
 ):

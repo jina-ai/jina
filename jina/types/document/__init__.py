@@ -427,7 +427,6 @@ class Document(AllMixins, ProtoTypeMixin):
         NdArray(self._pb_body.embedding).value = value
 
     @property
-    @versioned
     def matches(self) -> 'MatchArray':
         """Get all matches of the current document.
 
@@ -451,7 +450,6 @@ class Document(AllMixins, ProtoTypeMixin):
         self.matches.extend(value)
 
     @property
-    @versioned
     def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
 
