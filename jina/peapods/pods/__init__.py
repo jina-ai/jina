@@ -261,6 +261,7 @@ class Pod(BasePod):
             self.pod_args = copy.copy(pod_args)
             self.head_args = head_args
             self.args = args
+            self.shard_id = args[0].shard_id
             self._peas = []
 
         @property
@@ -293,6 +294,7 @@ class Pod(BasePod):
                     worker_host=_args.host,
                     worker_port=_args.port_in,
                     target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    shard_id=self.shard_id,
                 )
                 old_pea.close()
                 _args.noblock_on_start = True
@@ -307,6 +309,7 @@ class Pod(BasePod):
                     worker_host=_args.host,
                     worker_port=_args.port_in,
                     target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    shard_id=self.shard_id,
                 )
                 self.args[i] = _args
                 self._peas[i] = new_pea
