@@ -2,7 +2,7 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
-from typing import Union, TYPE_CHECKING
+from typing import Callable, Dict, Union, TYPE_CHECKING
 
 from ... import __default_host__
 from ...enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
@@ -11,6 +11,17 @@ from ...hubble.hubio import HubIO
 
 if TYPE_CHECKING:
     from argparse import Namespace
+
+
+def _get_worker(
+    args, target: Callable, kwargs: Dict
+) -> Union['threading.Thread', 'multiprocessing.Process']:
+    return {
+        RuntimeBackendType.THREAD: threading.Thread,
+        RuntimeBackendType.PROCESS: multiprocessing.Process,
+    }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+        target=target, kwargs=kwargs
+    )
 
 
 def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:

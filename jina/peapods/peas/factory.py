@@ -1,11 +1,17 @@
 from argparse import Namespace
 from copy import deepcopy
+from typing import TYPE_CHECKING, Type
 
-from . import BasePea, Pea
+from ... import __default_host__
+from . import Pea
+from .jinad import JinaDPea
 from .container import ContainerPea
 
 from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
+
+if TYPE_CHECKING:
+    from . import BasePea
 
 
 class PeaFactory:
@@ -16,7 +22,7 @@ class PeaFactory:
     @staticmethod
     def build_pea(
         args: 'Namespace',
-    ) -> BasePea:
+    ) -> Type['BasePea']:
         """Build an implementation of a `BasePea` interface
 
         :param args: pod arguments parsed from the CLI.
@@ -25,6 +31,10 @@ class PeaFactory:
         """
         # copy to update but forward original
         cargs = deepcopy(args)
+        if cargs.host != __default_host__ and not cargs.disable_remote:
+            cargs.timeout_ready = -1
+            return JinaDPea(cargs)
+
         if is_valid_huburi(cargs.uses):
             _hub_args = deepcopy(args)
             _hub_args.uri = args.uses

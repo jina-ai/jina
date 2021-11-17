@@ -5,15 +5,19 @@ import time
 import multiprocessing
 import threading
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
 import asyncio
 
 from . import BasePea
+from .helper import _get_worker
 from .container_helper import get_gpu_device_requests, get_docker_network
 from ...enums import RuntimeBackendType
 from ... import __docker_host__
 from ...logging.logger import JinaLogger
 from ..runtimes.asyncio import AsyncNewLoopRuntime
+
+if TYPE_CHECKING:
+    from docker.models.containers import Container
 
 
 def run(
@@ -54,7 +58,7 @@ def run(
     def _is_ready():
         return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
 
-    def _is_container_alive(container) -> bool:
+    def _is_container_alive(container: 'Container') -> bool:
         import docker.errors
 
         try:
@@ -63,7 +67,7 @@ def run(
             return False
         return True
 
-    async def _check_readiness(container):
+    async def _check_readiness(container: 'Container'):
         while _is_container_alive(container) and not _is_ready():
             await asyncio.sleep(0.1)
         if _is_container_alive(container):
@@ -72,20 +76,20 @@ def run(
         else:
             _fail_to_start.set()
 
-    async def _stream_starting_logs(container):
+    async def _stream_starting_logs(container: 'Container'):
         for line in container.logs(stream=True):
             if not is_started.is_set() and not _fail_to_start.is_set():
                 await asyncio.sleep(0.01)
             logger.info(line.strip().decode())
 
-    async def _run_async(container):
+    async def _run_async(container: 'Container'):
         await asyncio.gather(
-            *[_check_readiness(container), _stream_starting_logs(container)]
+            _check_readiness(container), _stream_starting_logs(container)
         )
 
     try:
         client = docker.from_env()
-        container = client.containers.get(container_id)
+        container: 'Container' = client.containers.get(container_id)
         asyncio.run(_run_async(container))
     finally:
         if not is_started.is_set():
@@ -104,8 +108,6 @@ class ContainerPea(BasePea):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
-
-        self.runtime_ctrl_address = self._get_control_address()
 
         # start the docker
         if (
@@ -301,10 +303,8 @@ class ContainerPea(BasePea):
         """
         self._docker_run()
 
-        self.worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(self.args, 'runtime_backend', RuntimeBackendType.THREAD))(
+        self.worker = _get_worker(
+            args=self.args,
             target=run,
             kwargs={
                 'args': self.args,

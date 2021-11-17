@@ -4,12 +4,12 @@ import multiprocessing
 import os
 import threading
 import time
-from typing import Union, Dict, Optional
+from typing import Type, Union, Dict, Optional
 
 from ..networking import GrpcConnectionPool
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ...jaml import JAML
-from .helper import _get_event, ConditionalEvent
+from .helper import _get_event, _get_worker, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__
 from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
@@ -19,13 +19,11 @@ from ...types.message.common import ControlMessage
 
 __all__ = ['BasePea', 'Pea']
 
-from ...types.message.common import ControlMessage
-
 
 def run(
     args: 'argparse.Namespace',
     name: str,
-    runtime_cls,
+    runtime_cls: Type[AsyncNewLoopRuntime],
     envs: Dict[str, str],
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
@@ -323,11 +321,8 @@ class Pea(BasePea):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
-
-        self.worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+        self.worker = _get_worker(
+            args=args,
             target=run,
             kwargs={
                 'args': args,
@@ -341,7 +336,6 @@ class Pea(BasePea):
                 'jaml_classes': JAML.registered_classes(),
             },
         )
-        self.runtime_ctrl_address = f'{self.args.host}:{self.args.port_in}'
 
     def start(self):
         """Start the Pea.
