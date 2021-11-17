@@ -35,6 +35,9 @@ class BaseStreamer(ABC):
     @property
     @abstractmethod
     def msg_handler(self):
+        """
+        Property to abstract the entity responsible of handling messages, being an iolet or a connection pool
+        """
         ...
 
     @abstractmethod
@@ -119,8 +122,7 @@ class BaseStreamer(ABC):
                 result_queue.task_done()
                 yield self._handle_result(response.result())
             except asyncio.QueueEmpty:
-                await asyncio.sleep(0.2)
-                continue
+                await asyncio.sleep(0.1)
 
     async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
