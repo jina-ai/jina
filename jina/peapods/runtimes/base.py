@@ -119,15 +119,3 @@ class BaseRuntime:
         # from being propagated), it should return a true value. Otherwise, the exception will be processed normally
         # upon exit from this method.
         return True
-
-    @staticmethod
-    def get_control_address(host: str, port: str, **kwargs):
-        """
-        Get the control address for a runtime with a given host and port
-
-        :param host: the host where the runtime works
-        :param port: the control port where the runtime listens
-        :param kwargs: extra keyword arguments
-        :return: The corresponding control address
-        """
-        return f'{host}:{port}'
