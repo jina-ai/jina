@@ -1,4 +1,5 @@
 import os
+from multiprocessing import Process
 
 import pytest
 
@@ -192,24 +193,30 @@ class AppendParamExecutor(Executor):
 
 
 @pytest.mark.slow
-@pytest.mark.asyncio
-async def test_pod_rolling_update():
-    args_list = ['--replicas', '3']
+@pytest.mark.parametrize('shards', [1, 2])
+def test_pod_rolling_update(shards):
+    args_list = ['--replicas', '7']
+    args_list.extend(['--shards', str(shards)])
     args = set_pod_parser().parse_args(args_list)
     args.uses = 'AppendParamExecutor'
     args.uses_with = {'param': 10}
     with Pod(args) as pod:
-        response_texts = await _send_requests(pod)
-        assert 2 == len(response_texts)
-        assert all(text in response_texts for text in ['10', 'client'])
 
-        print('do rolling update')
-        await pod.rolling_update(uses_with={'param': 20})
-        response_texts = await _send_requests(pod)
-        print(response_texts)
-        assert 2 == len(response_texts)
-        assert all(text in response_texts for text in ['20', 'client'])
-        assert '10' not in response_texts
+        async def run_async_test():
+            response_texts = await _send_requests(pod)
+            assert 2 == len(response_texts)
+            assert all(text in response_texts for text in ['10', 'client'])
+
+            await pod.rolling_update(uses_with={'param': 20})
+            response_texts = await _send_requests(pod)
+            assert 2 == len(response_texts)
+            assert all(text in response_texts for text in ['20', 'client'])
+            assert '10' not in response_texts
+
+        p = Process(target=run_async_test)
+        p.start()
+        p.join()
+        assert p.exitcode == 0
 
     Pod(args).start().close()
 
