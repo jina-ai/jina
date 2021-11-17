@@ -37,12 +37,15 @@ def test_container_pea_pass_envs(env_checker_docker_image_built):
             ]
         )
     ) as pea:
-        status = pea._container.status
+        container = pea._container
+        status = container.status
 
-    assert status == 'created'
+    assert status == 'running'
     client = docker.from_env()
     containers = client.containers.list()
-    assert pea._container.id not in containers
+    assert container.id not in containers
+    with pytest.raises(docker.errors.NotFound):
+        pea._container
 
 
 def test_container_pea_set_shard_pea_id():
@@ -84,9 +87,8 @@ def test_failing_executor(fail_start_docker_image_built):
         with pea:
             pass
 
-    client = docker.from_env()
-    containers = client.containers.list()
-    assert pea._container.id not in containers
+    with pytest.raises(docker.errors.NotFound):
+        pea._container
 
 
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
@@ -140,7 +142,6 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             assert 'hello' in kwargs
             assert kwargs['hello'] == 0
             del mock_kwargs['environment']['JINA_LOG_ID']
-            mock(**mock_kwargs)
             return MockContainers.MockContainer()
 
     class MockClient:
@@ -179,14 +180,10 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             'hello: 0',
         ]
     )
-    expected_args = {
-        'hello': 0,
-        'environment': {'JINA_POD_NAME': 'ContainerPea', 'VAR1': 'BAR', 'VAR2': 'FOO'},
-    }
-    with ContainerPea(args):
+    with ContainerPea(args) as pea:
         pass
 
-    mock.assert_called_with(**expected_args)
+    assert pea.worker.exitcode == 0
 
 
 @pytest.fixture(scope='module')
@@ -213,12 +210,15 @@ def test_container_pea_head_runtime(head_runtime_docker_image_built):
             ]
         )
     ) as pea:
+        container = pea._container
         status = pea._container.status
 
-    assert status == 'created'
+    assert status == 'running'
     client = docker.from_env()
     containers = client.containers.list()
-    assert pea._container.id not in containers
+    assert container.id not in containers
+    with pytest.raises(docker.errors.NotFound):
+        pea._container
 
 
 @pytest.fixture(scope='module')
@@ -255,9 +255,12 @@ def test_container_pea_gateway_runtime(protocol, gateway_runtime_docker_image_bu
             ]
         )
     ) as pea:
+        container = pea._container
         status = pea._container.status
 
-    assert status == 'created'
+    assert status == 'running'
     client = docker.from_env()
     containers = client.containers.list()
-    assert pea._container.id not in containers
+    assert container.id not in containers
+    with pytest.raises(docker.errors.NotFound):
+        pea._container
