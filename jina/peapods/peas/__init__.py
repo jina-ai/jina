@@ -336,7 +336,11 @@ class Pea(BasePea):
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
-                'cancel_event': self.cancel_event,
+                # the cancel event is only necessary for threads, otherwise runtimes should create and use the asyncio event
+                'cancel_event': self.cancel_event
+                if getattr(args, 'runtime_backend', RuntimeBackendType.THREAD)
+                == RuntimeBackendType.THREAD
+                else None,
                 'runtime_cls': self.runtime_cls,
                 'jaml_classes': JAML.registered_classes(),
             },
