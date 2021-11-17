@@ -25,4 +25,6 @@ class AsyncToSyncMixin:
     arguments = partialmethod(func, 'arguments')
     create = partialmethod(func, 'create')
     update = partialmethod(func, 'update')
+    rolling_update = partialmethod(func, 'rolling_update')
+    scale = partialmethod(func, 'scale')
     delete = partialmethod(func, 'delete')

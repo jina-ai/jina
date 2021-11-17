@@ -96,7 +96,7 @@ class DocumentArray(
         }  # type: Dict[str, int]
 
     def insert(self, index: int, doc: 'Document') -> None:
-        """Insert :param:`doc` at :param:`index`.
+        """Insert `doc` at `index`.
 
         :param index: Position of the insertion.
         :param doc: The doc needs to be inserted.
@@ -157,7 +157,7 @@ class DocumentArray(
 
     def append(self, doc: 'Document'):
         """
-        Append :param:`doc` in :class:`DocumentArray`.
+        Append `doc` in :class:`DocumentArray`.
 
         :param doc: The doc needs to be appended.
         """
