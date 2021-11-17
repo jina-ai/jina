@@ -671,6 +671,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
         <span class="n">hash_fn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metric_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="sd">"""Compute ranking evaluation metrics for a given `DocumentArray` when compared with a groundtruth.</span>
@@ -684,9 +685,13 @@
 <span class="sd">        :param metric: The name of the metric, or multiple metrics to be computed</span>
 <span class="sd">        :param hash_fn: The function used for identifying the uniqueness of Documents. If not given, then ``Document.id`` is used.</span>
 <span class="sd">        :param metric_name: If provided, the results of the metrics computation will be stored in the `evaluations` field of each Document. If not provided, the name will be computed based on the metrics name.</span>
+<span class="sd">        :param strict: If set, then left and right sides are required to be fully aligned: on the length, and on the semantic of length. These are preventing</span>
+<span class="sd">            you to evaluate on irrelevant matches accidentally.</span>
 <span class="sd">        :param kwargs: Additional keyword arguments to be passed to `metric_fn`</span>
 <span class="sd">        :return: The average evaluation computed or a list of them if multiple metrics are required</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_length</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">hash_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">hash_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span>
@@ -701,6 +706,13 @@
         <span class="n">metric_name</span> <span class="o">=</span> <span class="n">metric_name</span> <span class="ow">or</span> <span class="n">metric_fn</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">gd</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">strict</span> <span class="ow">or</span> <span class="n">hash_fn</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">!=</span> <span class="n">hash_fn</span><span class="p">(</span><span class="n">gd</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Document </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s1"> from the left-hand side and '</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">gd</span><span class="si">}</span><span class="s1"> from the right-hand are not hashed to the same value. '</span>
+                    <span class="sa">f</span><span class="s1">'This means your left and right DocumentArray may not be aligned; or it means your '</span>
+                    <span class="sa">f</span><span class="s1">'`hash_fn` is badly designed.'</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">matches</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">gd</span><span class="o">.</span><span class="n">matches</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Document </span><span class="si">{</span><span class="n">d</span><span class="si">!r}</span><span class="s1"> or </span><span class="si">{</span><span class="n">gd</span><span class="si">!r}</span><span class="s1"> has no matches, please check your Document'</span>
@@ -731,7 +743,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 16, 2021.
+                    Last updated on Nov 17, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

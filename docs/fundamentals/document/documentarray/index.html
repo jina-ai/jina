@@ -963,7 +963,53 @@ match emb =   (0, 0)	1.0
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">torch_model</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">blobs</span><span class="p">)</span>  <span class="c1"># &lt;- no .numpy() is necessary</span>
 </pre></div>
 </div>
-<p>And then in just use <code class="docutils literal notranslate"><span class="pre">.match(da)</span></code></p>
+<p>And then in just use <code class="docutils literal notranslate"><span class="pre">.match(da)</span></code>.</p>
+</section>
+<section id="evaluate-matches">
+<h3>Evaluate matches<a class="headerlink" href="#evaluate-matches" title="Permalink to this headline">¶</a></h3>
+<p>You can easily evaluate the performance of matches via <a class="reference internal" href="../../../api/jina.types.arrays.mixins.evaluation/#jina.types.arrays.mixins.evaluation.EvaluationMixin.evaluate" title="jina.types.arrays.mixins.evaluation.EvaluationMixin.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, provide that you have the groundtruth of the matches.</p>
+<p>Jina provides some common metrics used in the information retrieval community that allows one to evaluate the nearest-neighbour matches. These metrics include: precision, recall, R-precision, hit rate, NDCG, etc. The full list of functions can be found in <a href="#id2"><span class="problematic" id="id3">:module:`jina.math.evaluation`</span></a>.</p>
+<p>For example, let’s create a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> with random embeddings and matching it to itself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">da</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">da</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">exclude_self</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now <code class="docutils literal notranslate"><span class="pre">da.matches</span></code> contains the matches. Let’s use it as the groundtruth. Now let’s create imperfect matches by mixing in ten “noise Documents” to every <code class="docutils literal notranslate"><span class="pre">d.matches</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">da2</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">da2</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">'precision_at_k'</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now we should have the average Precision@10 close to 0.5.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>0.5399999999999999
+</pre></div>
+</div>
+<p>Note that this value is an average number over all Documents of <code class="docutils literal notranslate"><span class="pre">da2</span></code>. If you want to look at the individual evaluation, you can check <a class="reference internal" href="../../../api/jina/#jina.Document.evaluations" title="jina.Document.evaluations"><code class="xref py py-attr docutils literal notranslate"><span class="pre">evaluations</span></code></a> attribute, e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">da2</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'precision_at_k'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>0.4000000059604645
+0.6000000238418579
+0.5
+0.5
+0.5
+0.4000000059604645
+0.5
+0.4000000059604645
+0.5
+0.30000001192092896
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> works only when two <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> have the same length and their Documents are aligned by a hash function. The default hash function simply uses <a class="reference internal" href="../../../api/jina/#jina.Document.id" title="jina.Document.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a>. You can specify your own hash function.</p>
 </section>
 </section>
 <section id="traverse-nested-structure">
@@ -1158,6 +1204,24 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
 
 <span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
 <span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="batching">
+<h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
+<p>One can batch a large <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> into small ones via <a class="reference internal" href="../../../api/jina.types.arrays.mixins.group/#jina.types.arrays.mixins.group.GroupMixin.batch" title="jina.types.arrays.mixins.group.GroupMixin.batch"><code class="xref py py-func docutils literal notranslate"><span class="pre">batch()</span></code></a>. This is useful when a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is too big to process at once. It is particular useful on <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, which ensures the data gets loaded on-demand and in a conservative manner.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">b_da</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b_da</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>256
+256
+256
+232
 </pre></div>
 </div>
 </section>
@@ -1360,7 +1424,7 @@ one shot:</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 16, 2021.
+                    Last updated on Nov 17, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1392,6 +1456,7 @@ one shot:</p>
 <li><a class="reference internal" href="#bulk-access-content">Bulk access content</a></li>
 <li><a class="reference internal" href="#find-nearest-neighbours">Find nearest neighbours</a><ul>
 <li><a class="reference internal" href="#gpu-support">GPU support</a></li>
+<li><a class="reference internal" href="#evaluate-matches">Evaluate matches</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#traverse-nested-structure">Traverse nested structure</a><ul>
@@ -1402,6 +1467,7 @@ one shot:</p>
 </li>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
 <li><a class="reference internal" href="#persistence">Persistence</a></li>
+<li><a class="reference internal" href="#batching">Batching</a></li>
 <li><a class="reference internal" href="#sampling">Sampling</a></li>
 <li><a class="reference internal" href="#shuffle">Shuffle</a></li>
 <li><a class="reference internal" href="#split-by-tags">Split by <code class="docutils literal notranslate"><span class="pre">.tags</span></code></a></li>
