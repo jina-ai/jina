@@ -13,13 +13,13 @@ def test_k8s_scale(k8s_cluster, shards):
         port_expose=9090,
         infrastructure='K8S',
         protocol='http',
-        timeout_ready=12000,
+        timeout_ready=360000,
         k8s_namespace='test-flow-scale-ns',
     ).add(
         name='test_executor',
         shards=shards,
         replicas=DEFAULT_REPLICAS,
-        timeout_ready=12000,
+        timeout_ready=360000,
     )
     with flow as f:
         k8s_deployment_name = 'test-executor'
@@ -63,19 +63,19 @@ def test_k8s_scale_fail(
         port_expose=9090,
         infrastructure='K8S',
         protocol='http',
-        timeout_ready=12000,
-        k8s_namespace='test-flow-scale-ns',
+        timeout_ready=360000,
+        k8s_namespace='test-flow-scale-fail-ns',
     ).add(
         name='test_executor',
         shards=1,
         replicas=DEFAULT_REPLICAS,
-        timeout_ready=12000,
+        timeout_ready=360000,
     )
     with flow as f:
         from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
-            name='test-executor', namespace='test-flow-scale-ns'
+            name='test-executor', namespace='test-flow-scale-fail-ns'
         )
         replica = deployment.status.ready_replicas
         assert replica == DEFAULT_REPLICAS
@@ -83,7 +83,7 @@ def test_k8s_scale_fail(
         with pytest.raises(KeyError):
             f.scale(pod_name='random_executor', replicas=3)
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
-            name='test-executor', namespace='test-flow-scale-ns'
+            name='test-executor', namespace='test-flow-scale-fail-ns'
         )
         replica = deployment.status.ready_replicas
         assert replica == DEFAULT_REPLICAS
