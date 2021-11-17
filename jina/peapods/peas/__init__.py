@@ -1,25 +1,21 @@
-from abc import ABC, abstractmethod
 import argparse
 import multiprocessing
 import os
 import threading
 import time
+from abc import ABC, abstractmethod
 from typing import Union, Dict, Optional
 
-from ..networking import GrpcConnectionPool
-from ..runtimes.asyncio import AsyncNewLoopRuntime
-from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
+from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ... import __stop_msg__, __ready_msg__
 from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
+from ...jaml import JAML
 from ...logging.logger import JinaLogger
-from ...types.message.common import ControlMessage
 
 __all__ = ['BasePea', 'Pea']
-
-from ...types.message.common import ControlMessage
 
 
 def run(
@@ -182,10 +178,6 @@ class BasePea(ABC):
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
-
-            # if it is not daemon, block until the process/thread finish work
-            if not self.args.daemon:
-                self.join()
         else:
             # here shutdown has been set already, therefore `run` will gracefully finish
             self.logger.debug(
