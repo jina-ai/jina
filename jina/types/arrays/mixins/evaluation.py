@@ -18,6 +18,7 @@ class EvaluationMixin:
         metric: Union[str, Callable[..., float]],
         hash_fn: Optional[Callable[['Document'], str]] = None,
         metric_name: Optional[str] = None,
+        strict: bool = True,
         **kwargs,
     ) -> Optional[float]:
         """Compute ranking evaluation metrics for a given `DocumentArray` when compared with a groundtruth.
@@ -31,11 +32,13 @@ class EvaluationMixin:
         :param metric: The name of the metric, or multiple metrics to be computed
         :param hash_fn: The function used for identifying the uniqueness of Documents. If not given, then ``Document.id`` is used.
         :param metric_name: If provided, the results of the metrics computation will be stored in the `evaluations` field of each Document. If not provided, the name will be computed based on the metrics name.
+        :param strict: If set, then left and right sides are required to be fully aligned: on the length, and on the semantic of length. These are preventing
+            you to evaluate on irrelevant matches accidentally.
         :param kwargs: Additional keyword arguments to be passed to `metric_fn`
         :return: The average evaluation computed or a list of them if multiple metrics are required
         """
-
-        self._check_length(len(other))
+        if strict:
+            self._check_length(len(other))
 
         if hash_fn is None:
             hash_fn = lambda d: d.id
@@ -50,7 +53,7 @@ class EvaluationMixin:
         metric_name = metric_name or metric_fn.__name__
         results = []
         for d, gd in zip(self, other):
-            if hash_fn(d) != hash_fn(gd):
+            if not strict or hash_fn(d) != hash_fn(gd):
                 raise ValueError(
                     f'Document {d} from the left-hand side and '
                     f'{gd} from the right-hand are not hashed to the same value. '
