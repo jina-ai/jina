@@ -31,7 +31,7 @@ class PeaFactory:
             _hub_args.no_usage = True
             cargs.uses = HubIO(_hub_args).pull()
 
-        if cargs.uses.startswith('docker://'):
+        if cargs.uses and cargs.uses.startswith('docker://'):
             return ContainerPea(args)
         else:
             return Pea(args)

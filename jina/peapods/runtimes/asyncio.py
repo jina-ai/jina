@@ -81,9 +81,12 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        # handle terminate signals
-        while not self.is_cancel.is_set():
-            await asyncio.sleep(0.1)
+        # threads are not using asyncio.Event, but threading.Event
+        if isinstance(self.is_cancel, asyncio.Event):
+            await self.is_cancel.wait()
+        else:
+            while not self.is_cancel.is_set():
+                await asyncio.sleep(0.1)
 
         await self.async_cancel()
 

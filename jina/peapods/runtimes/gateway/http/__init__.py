@@ -86,6 +86,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
     async def async_teardown(self):
         """Shutdown the server."""
         await self._server.shutdown()
+        await self._connection_pool.close()
 
     async def async_cancel(self):
         """Stop the server."""

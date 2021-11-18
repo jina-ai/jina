@@ -85,6 +85,7 @@ def set_gateway_parser(parser=None):
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
+    mixin_head_parser(parser)
     mixin_k8s_pod_parser(parser)
 
     from ..enums import SocketType, PodRoleType

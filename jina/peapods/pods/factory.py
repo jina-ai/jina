@@ -1,11 +1,10 @@
 from argparse import Namespace
 from typing import Optional, Set
 
-from ...enums import InfrastructureType
-from .compound import CompoundPod
+from .k8s import K8sPod
 from .. import BasePod
 from .. import Pod
-from .k8s import K8sPod
+from ...enums import InfrastructureType
 
 
 class PodFactory:
@@ -29,7 +28,5 @@ class PodFactory:
         """
         if infrastructure == InfrastructureType.K8S:
             return K8sPod(args, needs=needs)
-        elif getattr(args, 'shards', 1) > 1:
-            return CompoundPod(args, needs=needs)
         else:
             return Pod(args, needs=needs)

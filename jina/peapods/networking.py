@@ -1,18 +1,18 @@
 import asyncio
 import ipaddress
 import random
-from argparse import Namespace
 from threading import Thread
-from typing import Optional, List, Dict, Callable, TYPE_CHECKING
+from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
 
 import grpc
+from grpc.aio import AioRpcError
 
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
 from jina.types.message import Message
-from .. import __default_host__, __docker_host__
 from ..enums import PollingType
-from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
+from ..helper import get_or_reuse_loop
+from ..types.message.common import ControlMessage
 
 if TYPE_CHECKING:
     import kubernetes
@@ -26,21 +26,22 @@ class ReplicaList:
     def __init__(self):
         self._connections = []
         self._address_to_connection_idx = {}
+        self._address_to_channel = {}
         self._rr_counter = 0
 
-    def add_connection(
-        self, address: str, connection: jina_pb2_grpc.JinaDataRequestRPCStub
-    ):
+    def add_connection(self, address: str):
         """
         Add connection with address to the connection list
         :param address: Target address of this connection
-        :param connection: The connection to add
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
-            self._connections.append(connection)
+            stub, channel = GrpcConnectionPool.create_async_channel_stub(address)
+            self._address_to_channel[address] = channel
 
-    def remove_connection(self, address: str):
+            self._connections.append(stub)
+
+    async def remove_connection(self, address: str):
         """
         Remove connection with address from the connection list
         :param address: Remove connection for this address
@@ -53,6 +54,8 @@ class ReplicaList:
                 else 0
             )
             idx_to_delete = self._address_to_connection_idx.pop(address)
+            await self._address_to_channel[address].close(None)
+            del self._address_to_channel[address]
 
             popped_connection = self._connections.pop(idx_to_delete)
             # update the address/idx mapping
@@ -100,6 +103,17 @@ class ReplicaList:
         """
         return len(self._address_to_connection_idx) > 0
 
+    async def close(self):
+        """
+        Close all connections and clean up internal state
+        """
+        for address in self._address_to_channel:
+            await self._address_to_channel[address].close(None)
+        self._address_to_channel.clear()
+        self._address_to_connection_idx.clear()
+        self._connections.clear()
+        self._rr_counter = 0
+
 
 class GrpcConnectionPool:
     """
@@ -114,23 +128,13 @@ class GrpcConnectionPool:
             # this maps pods to shards or heads
             self._pods: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
 
-        def add_replica(
-            self,
-            pod: str,
-            shard_id: int,
-            address: str,
-            connection: Callable[[str], jina_pb2_grpc.JinaDataRequestRPCStub],
-        ):
-            self._add_connection(pod, shard_id, address, connection, 'shards')
+        def add_replica(self, pod: str, shard_id: int, address: str):
+            self._add_connection(pod, shard_id, address, 'shards')
 
         def add_head(
-            self,
-            pod: str,
-            address: str,
-            connection: Callable[[str], jina_pb2_grpc.JinaDataRequestRPCStub],
-            head_id: Optional[int] = 0,
+            self, pod: str, address: str, head_id: Optional[int] = 0
         ):  # the head_id is always 0 for now, this will change when scaling the head
-            self._add_connection(pod, head_id, address, connection, 'heads')
+            self._add_connection(pod, head_id, address, 'heads')
 
         def get_replicas(
             self, pod: str, head: bool, entity_id: Optional[int] = None
@@ -150,7 +154,12 @@ class GrpcConnectionPool:
                     replicas.append(self._get_connection_list(pod, 'shards', shard_id))
             return replicas
 
-        def clear(self):
+        async def close(self):
+            # Close all connections to all replicas
+            for pod in self._pods:
+                for entity_type in self._pods[pod]:
+                    for shard_in in self._pods[pod][entity_type]:
+                        await self._pods[pod][entity_type][shard_in].close()
             self._pods.clear()
 
         def _get_connection_list(
@@ -184,7 +193,6 @@ class GrpcConnectionPool:
             pod: str,
             entity_id: int,
             address: str,
-            connection: Callable[[str], jina_pb2_grpc.JinaDataRequestRPCStub],
             type: str,
         ):
             self._add_pod(pod)
@@ -196,22 +204,22 @@ class GrpcConnectionPool:
                 self._logger.debug(
                     f'Adding connection for pod {pod}/{type}/{entity_id} to {address}'
                 )
-                self._pods[pod][type][entity_id].add_connection(
-                    address, connection(address)
-                )
+                self._pods[pod][type][entity_id].add_connection(address)
 
-        def remove_head(self, pod, address, head_id: Optional[int] = 0):
-            return self._remove_connection(pod, head_id, address, 'heads')
+        async def remove_head(self, pod, address, head_id: Optional[int] = 0):
+            return await self._remove_connection(pod, head_id, address, 'heads')
 
-        def remove_replica(self, pod, address, shard_id: Optional[int] = 0):
-            return self._remove_connection(pod, shard_id, address, 'shards')
+        async def remove_replica(self, pod, address, shard_id: Optional[int] = 0):
+            return await self._remove_connection(pod, shard_id, address, 'shards')
 
-        def _remove_connection(self, pod, entity_id, address, type):
+        async def _remove_connection(self, pod, entity_id, address, type):
             if pod in self._pods and entity_id in self._pods[pod][type]:
                 self._logger.debug(
                     f'Removing connection for pod {pod}/{type}/{entity_id} to {address}'
                 )
-                connection = self._pods[pod][type][entity_id].remove_connection(address)
+                connection = await self._pods[pod][type][entity_id].remove_connection(
+                    address
+                )
                 if not self._pods[pod][type][entity_id].has_connections():
                     del self._pods[pod][type][entity_id]
                 return connection
@@ -332,15 +340,13 @@ class GrpcConnectionPool:
         :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
         """
         if head:
-            self._connections.add_head(pod, address, self.create_connection, 0)
+            self._connections.add_head(pod, address, 0)
         else:
             if shard_id is None:
                 shard_id = 0
-            self._connections.add_replica(
-                pod, shard_id, address, self.create_connection
-            )
+            self._connections.add_replica(pod, shard_id, address)
 
-    def remove_connection(
+    async def remove_connection(
         self, pod: str, address: str, head: bool = False, shard_id: Optional[int] = None
     ):
         """
@@ -353,11 +359,11 @@ class GrpcConnectionPool:
         :return: The removed connection, None if it did not exist
         """
         if head:
-            return self._connections.remove_head(pod, address)
+            return await self._connections.remove_head(pod, address)
         else:
             if shard_id is None:
                 shard_id = 0
-            return self._connections.remove_replica(pod, address, shard_id)
+            return await self._connections.remove_replica(pod, address, shard_id)
 
     def start(self):
         """
@@ -365,19 +371,90 @@ class GrpcConnectionPool:
         """
         pass
 
-    def close(self):
+    async def close(self):
         """
         Closes the connection pool
         """
-        self._connections.clear()
+        await self._connections.close()
 
     def _send_messages(self, messages: List[Message], connection) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper(new_messages, stub):
-            return await stub.Call(new_messages)
+
+            for i in range(3):
+                try:
+                    return await stub.Call(new_messages)
+                except AioRpcError as e:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE:
+                        raise
+                    else:
+                        self._logger.debug(
+                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/'
+                        )
+            self._logger.debug(f'GRPC call failed, retries exhausted')
 
         return asyncio.create_task(task_wrapper(messages, connection))
+
+    @staticmethod
+    def activate_worker_sync(
+        worker_host: str,
+        worker_port: int,
+        target_head: str,
+        shard_id: Optional[int] = None,
+    ) -> Message:
+        """
+        Register a given worker to a head by sending an activate message
+
+        :param worker_host: the host address of the worker
+        :param worker_port: the port of the worker
+        :param target_head: address of the head to send the activate message to
+        :param shard_id: id of the shard the worker belongs to
+        :returns: the response message
+        """
+        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
+        return GrpcConnectionPool.send_message_sync(activate_msg, target_head)
+
+    @staticmethod
+    async def activate_worker(
+        worker_host: str,
+        worker_port: int,
+        target_head: str,
+        shard_id: Optional[int] = None,
+    ) -> Message:
+        """
+        Register a given worker to a head by sending an activate message
+
+        :param worker_host: the host address of the worker
+        :param worker_port: the port of the worker
+        :param target_head: address of the head to send the activate message to
+        :param shard_id: id of the shard the worker belongs to
+        :returns: the response message
+        """
+        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
+        return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
+
+    @staticmethod
+    async def deactivate_worker(
+        worker_host: str,
+        worker_port: int,
+        target_head: str,
+        shard_id: Optional[int] = None,
+    ) -> Message:
+        """
+        Remove a given worker to a head by sending a deactivate message
+
+        :param worker_host: the host address of the worker
+        :param worker_port: the port of the worker
+        :param target_head: address of the head to send the deactivate message to
+        :param shard_id: id of the shard the worker belongs to
+        :returns: the response message
+        """
+        activate_msg = ControlMessage(command='DEACTIVATE')
+        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
+        return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
 
     @staticmethod
     def send_message_sync(msg: Message, target: str, timeout=1.0) -> Message:
@@ -389,9 +466,42 @@ class GrpcConnectionPool:
         :param timeout: timeout for the send
         :returns: the response message
         """
-        return GrpcConnectionPool.create_connection(target, is_async=False).Call(
-            [msg], timeout=timeout
-        )
+        with grpc.insecure_channel(
+            target,
+            options=GrpcConnectionPool.get_default_grpc_options(),
+        ) as channel:
+            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+            response = stub.Call([msg], timeout=timeout)
+            return response
+
+    @staticmethod
+    def get_default_grpc_options():
+        """
+        Returns a list of default options used for creating grpc channels.
+        Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h
+        :returns: list of tuples defining grpc parameters
+        """
+        return [
+            ('grpc.max_send_message_length', -1),
+            ('grpc.max_receive_message_length', -1),
+        ]
+
+    @staticmethod
+    async def send_message_async(msg: Message, target: str, timeout=1.0) -> Message:
+        """
+        Sends a message synchronizly to the target via grpc
+
+        :param msg: the message to send
+        :param target: where to send the message to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :returns: the response message
+        """
+
+        async with grpc.aio.insecure_channel(
+            target, options=GrpcConnectionPool.get_default_grpc_options()
+        ) as channel:
+            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+            return await stub.Call([msg], timeout=timeout)
 
     @staticmethod
     def send_messages_sync(
@@ -405,39 +515,28 @@ class GrpcConnectionPool:
         :param timeout: timeout for the send
         :returns: the response message
         """
-        return GrpcConnectionPool.create_connection(target, is_async=False).Call(
-            messages, timeout=timeout
-        )
+        with grpc.insecure_channel(
+            target, options=GrpcConnectionPool.get_default_grpc_options()
+        ) as channel:
+            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+            return stub.Call(messages, timeout=timeout)
 
     @staticmethod
-    def create_connection(
-        target: str, is_async=True
-    ) -> jina_pb2_grpc.JinaDataRequestRPCStub:
+    def create_async_channel_stub(
+        address,
+    ) -> Tuple[jina_pb2_grpc.JinaDataRequestRPCStub, grpc.aio.insecure_channel]:
         """
-        Creates a grpc stub to the given target address
+        Creates an async GRPC Channel. This channel has to be closed eventually!
 
-        :param target: the adress to create the connection to, like 127.0.0.0.1:8080
-        :param is_async: describes if the async version of the connction should be created, true by default
-        :returns: a grpc stub
+        :param address: the adress to create the connection to, like 127.0.0.0.1:8080
+
+        :returns: an async grpc channel
         """
-        if is_async:
-            channel = grpc.aio.insecure_channel(
-                target,
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
-            )
-        else:
-            channel = grpc.insecure_channel(
-                target,
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
-            )
-
-        return jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+        channel = grpc.aio.insecure_channel(
+            address,
+            options=GrpcConnectionPool.get_default_grpc_options(),
+        )
+        return jina_pb2_grpc.JinaDataRequestRPCStub(channel), channel
 
 
 class K8sGrpcConnectionPool(GrpcConnectionPool):
@@ -462,18 +561,16 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
 
-        self._fetch_initial_state()
-
         from kubernetes import watch
 
         self._api_watch = watch.Watch()
 
         self.update_thread = Thread(target=self.run, daemon=True)
 
-    def _fetch_initial_state(self):
+    async def _fetch_initial_state(self):
         namespaced_pods = self._k8s_client.list_namespaced_pod(self._namespace)
         for item in namespaced_pods.items:
-            self._process_item(item)
+            await self._process_item(item)
 
     def start(self):
         """
@@ -484,9 +581,10 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         self.update_thread.start()
 
     async def _process_events(self):
+        await self._fetch_initial_state()
         while self.enabled:
             event = await self._k8s_event_queue.get()
-            self._process_item(event)
+            await self._process_item(event)
 
     def run(self):
         """
@@ -505,14 +603,14 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
                 if not self.enabled:
                     break
 
-    def close(self):
+    async def close(self):
         """
         Closes the connection pool
         """
         self.enabled = False
         self._process_events_task.cancel()
         self._api_watch.stop()
-        super().close()
+        await super().close()
 
     @staticmethod
     def _pod_is_up(item):
@@ -524,7 +622,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
             cs.ready for cs in item.status.container_statuses
         )
 
-    def _process_item(self, item):
+    async def _process_item(self, item):
         jina_pod_name = item.metadata.labels['jina_pod_name']
         is_head = item.metadata.labels['pea_type'] == 'head'
         shard_id = (
@@ -551,7 +649,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
                 shard_id=shard_id,
             )
         elif ip and port and is_deleted and self._pod_is_up(item):
-            super().remove_connection(
+            await super().remove_connection(
                 pod=jina_pod_name,
                 head=is_head,
                 address=f'{ip}:{port}',
@@ -622,67 +720,6 @@ def is_remote_local_connection(first: str, second: str):
             second_local = False
 
     return first_global and second_local
-
-
-def get_connect_host(
-    bind_host: str,
-    bind_expose_public: bool,
-    connect_args: Namespace,
-) -> str:
-    """
-    Compute the host address for ``connect_args``
-
-    :param bind_host: the ip for binding
-    :param bind_expose_public: True, if bind socket should be exposed publicly
-    :param connect_args: configuration for the host ip connection
-    :return: host ip
-    """
-    runs_in_docker = connect_args.runs_in_docker
-    # by default __default_host__ is 0.0.0.0
-
-    # is BIND at local
-    bind_local = bind_host == __default_host__
-
-    # is CONNECT at local
-    conn_local = connect_args.host == __default_host__
-
-    # is CONNECT inside docker?
-    # check if `uses` has 'docker://' or,
-    # it is a remote pea managed by jinad. (all remote peas are inside docker)
-    conn_docker = (
-        (
-            getattr(connect_args, 'uses', None) is not None
-            and (
-                connect_args.uses.startswith('docker://')
-                or connect_args.uses.startswith('jinahub+docker://')
-            )
-        )
-        or not conn_local
-        or runs_in_docker
-    )
-
-    # is BIND & CONNECT all on the same remote?
-    bind_conn_same_remote = (
-        not bind_local and not conn_local and (bind_host == connect_args.host)
-    )
-
-    # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
-    if bind_local and conn_local:
-        return __docker_host__ if conn_docker else __default_host__
-
-    # pod1 and pod2 are remote but they are in the same host (pod2 is local w.r.t pod1)
-    if bind_conn_same_remote:
-        return __docker_host__ if conn_docker else __default_host__
-
-    if bind_local and not conn_local:
-        # in this case we are telling CONN (at remote) our local ip address
-        if connect_args.host.startswith('localhost'):
-            # this is for the "psuedo" remote tests to pass
-            return __docker_host__
-        return get_public_ip() if bind_expose_public else get_internal_ip()
-    else:
-        # in this case we (at local) need to know about remote the BIND address
-        return bind_host
 
 
 def create_connection_pool(
