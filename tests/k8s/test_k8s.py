@@ -1,7 +1,6 @@
 from pytest_kind import cluster
 
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
-# TODO don't use pytest-kind anymore
 cluster.KIND_VERSION = 'v0.11.1'
 import pytest
 
@@ -21,9 +20,8 @@ def run_test(flow, endpoint, port_expose):
 
 
 @pytest.fixture()
-def k8s_flow_with_init_container(
-    test_executor_image: str, dummy_dumper_image: str
-) -> Flow:
+def k8s_flow_with_init_container(k8s_cluster) -> Flow:
+    k8s_cluster.load_docker_images(images=['test_executor_image', 'dummy_dumper_image'])
     flow = Flow(
         name='test-flow-with-init-container',
         port_expose=9090,
@@ -33,9 +31,9 @@ def k8s_flow_with_init_container(
         k8s_namespace='test-flow-with-init-container-ns',
     ).add(
         name='test_executor',
-        uses=test_executor_image,
+        uses='test_executor_image',
         k8s_init_container_command=["python", "dump.py", "/shared/test_file.txt"],
-        k8s_uses_init=dummy_dumper_image,
+        k8s_uses_init='dummy_dumper_image',
         k8s_mount_path='/shared',
         timeout_ready=120000,
     )
@@ -43,9 +41,10 @@ def k8s_flow_with_init_container(
 
 
 @pytest.fixture()
-def k8s_flow_with_sharding(
-    test_executor_image: str, executor_merger_image: str
-) -> Flow:
+def k8s_flow_with_sharding(k8s_cluster) -> Flow:
+    k8s_cluster.load_docker_images(
+        images=['test_executor_image', 'executor_merger_image']
+    )
     flow = Flow(
         name='test-flow-with-sharding',
         port_expose=9090,
@@ -57,15 +56,16 @@ def k8s_flow_with_sharding(
         name='test_executor',
         shards=2,
         replicas=2,
-        uses=test_executor_image,
-        uses_after=executor_merger_image,
+        uses='test_executor_image',
+        uses_after='executor_merger_image',
         timeout_ready=360000,
     )
     return flow
 
 
 @pytest.fixture
-def k8s_flow_configmap(test_executor_image: str) -> Flow:
+def k8s_flow_configmap(k8s_cluster) -> Flow:
+    k8s_cluster.load_docker_images(images=['test_executor_image'])
     flow = Flow(
         name='k8s-flow-configmap',
         port_expose=9090,
@@ -75,7 +75,7 @@ def k8s_flow_configmap(test_executor_image: str) -> Flow:
         k8s_namespace='k8s-flow-configmap-ns',
     ).add(
         name='test_executor',
-        uses=test_executor_image,
+        uses='test_executor_image',
         timeout_ready=12000,
         env={'k1': 'v1', 'k2': 'v2'},
     )
@@ -83,7 +83,8 @@ def k8s_flow_configmap(test_executor_image: str) -> Flow:
 
 
 @pytest.fixture
-def k8s_flow_gpu(test_executor_image: str) -> Flow:
+def k8s_flow_gpu(k8s_cluster) -> Flow:
+    k8s_cluster.load_docker_images(images=['test_executor_image'])
     flow = Flow(
         name='k8s-flow-gpu',
         port_expose=9090,
@@ -93,7 +94,7 @@ def k8s_flow_gpu(test_executor_image: str) -> Flow:
         k8s_namespace='k8s-flow-gpu-ns',
     ).add(
         name='test_executor',
-        uses=test_executor_image,
+        uses='test_executor_image',
         timeout_ready=12000,
         gpus=1,
     )
@@ -102,8 +103,10 @@ def k8s_flow_gpu(test_executor_image: str) -> Flow:
 
 @pytest.fixture
 def k8s_flow_with_reload_executor(
+    k8s_cluster,
     reload_executor_image: str,
-) -> Flow:
+):
+    k8s_cluster.load_docker_images(reload_executor_image)
     flow = Flow(
         name='test-flow-with-reload',
         port_expose=9090,
@@ -121,7 +124,7 @@ def k8s_flow_with_reload_executor(
 
 
 @pytest.fixture
-def k8s_flow_with_namespace() -> Flow:
+def k8s_flow_with_namespace():
     flow = Flow(
         name='test-flow-with-namespace',
         port_expose=9090,
@@ -139,12 +142,12 @@ def k8s_flow_with_namespace() -> Flow:
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
 def test_flow_with_needs(
     k8s_cluster,
-    test_executor_image: str,
-    executor_merger_image: str,
-    load_images_in_kind,
     logger,
-    k8s_connection_pool: bool,
+    k8s_connection_pool,
 ):
+    k8s_cluster.load_docker_images(
+        images=['test_executor_image', 'executor_merger_image']
+    )
     name = 'test-flow-with-needs'
     if k8s_connection_pool:
         name += '-pool'
@@ -160,24 +163,24 @@ def test_flow_with_needs(
         )
         .add(
             name='segmenter',
-            uses=test_executor_image,
+            uses='test_executor_image',
             timeout_ready=120000,
         )
         .add(
             name='textencoder',
-            uses=test_executor_image,
+            uses='test_executor_image',
             needs='segmenter',
             timeout_ready=120000,
         )
         .add(
             name='imageencoder',
-            uses=test_executor_image,
+            uses='test_executor_image',
             needs='segmenter',
             timeout_ready=120000,
         )
         .add(
             name='merger',
-            uses=executor_merger_image,
+            uses='executor_merger_image',
             timeout_ready=120000,
             needs=['imageencoder', 'textencoder'],
         )
@@ -207,10 +210,7 @@ def test_flow_with_needs(
 
 @pytest.mark.timeout(3600)
 def test_flow_with_init(
-    k8s_cluster,
-    k8s_flow_with_init_container: Flow,
-    load_images_in_kind,
-    logger,
+    k8s_flow_with_init_container,
 ):
     resp = run_test(
         k8s_flow_with_init_container,
@@ -226,10 +226,7 @@ def test_flow_with_init(
 
 @pytest.mark.timeout(3600)
 def test_flow_with_sharding(
-    k8s_cluster,
-    k8s_flow_with_sharding: Flow,
-    load_images_in_kind,
-    logger,
+    k8s_flow_with_sharding,
 ):
     resp = run_test(
         k8s_flow_with_sharding,
@@ -253,10 +250,7 @@ def test_flow_with_sharding(
 
 @pytest.mark.timeout(3600)
 def test_flow_with_configmap(
-    k8s_cluster,
     k8s_flow_configmap,
-    load_images_in_kind,
-    logger,
 ):
     resp = run_test(
         k8s_flow_configmap,
@@ -276,10 +270,7 @@ def test_flow_with_configmap(
 @pytest.mark.timeout(3600)
 @pytest.mark.skip('Need to config gpu host.')
 def test_flow_with_gpu(
-    k8s_cluster,
     k8s_flow_gpu,
-    load_images_in_kind,
-    logger,
 ):
     resp = run_test(
         k8s_flow_gpu,
@@ -295,10 +286,7 @@ def test_flow_with_gpu(
 
 @pytest.mark.timeout(3600)
 def test_flow_with_k8s_namespace(
-    k8s_cluster,
     k8s_flow_with_namespace,
-    load_images_in_kind,
-    logger,
 ):
     with k8s_flow_with_namespace as f:
         client = K8sClients().core_v1
@@ -308,9 +296,7 @@ def test_flow_with_k8s_namespace(
 
 
 def test_rolling_update_simple(
-    k8s_cluster,
     k8s_flow_with_reload_executor,
-    load_images_in_kind,
     logger,
     reraise,
 ):
