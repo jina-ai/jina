@@ -11,6 +11,7 @@ from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.head import HeadRuntime
 from jina.types.message import Message
 from jina.types.message.common import ControlMessage
@@ -134,10 +135,10 @@ def _create_runtime(args):
         daemon=True,
     )
     runtime_thread.start()
-    assert HeadRuntime.wait_for_ready_or_shutdown(
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'{args.host}:{args.port_in}',
-        shutdown_event=multiprocessing.Event(),
+        ready_or_shutdown_event=multiprocessing.Event(),
     )
     return cancel_event, handle_queue, runtime_thread
 
