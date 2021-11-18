@@ -147,23 +147,9 @@ jobs:
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s tests/unit/peapods/runtimes/worker tests/unit/peapods/runtimes/head tests/unit/peapods/runtimes/request_handlers/ tests/unit/peapods/runtimes/gateway/grpc/test_grpc_gateway_runtime.py tests/unit/peapods/runtimes/gateway/graph/test_topology_graph.py tests/unit/peapods/test_networking.py tests/unit/peapods/pods/test_pods.py tests/unit/peapods/pods/test_scale.py tests/unit/peapods/pods/test_pod_factory.py  tests/integration/runtimes/test_runtimes.py tests/integration/peas/test_pea.py tests/integration/peas/container/test_pea.py tests/unit/peapods/peas/container/test_container_pea.py tests/unit/peapods/peas/test_pea.py
-          echo "flag it as jina for codeoverage"
-          echo "::set-output name=codecov_flag::jina"
+          alias run_pytest="pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s"
+          run_pytest tests/unit/peapods/runtimes/worker && run_pytest tests/unit/peapods/runtimes/head && run_pytest tests/unit/peapods/runtimes/request_handlers/ && run_pytest tests/unit/peapods/runtimes/gateway/grpc/test_grpc_gateway_runtime.py && run_pytest tests/unit/peapods/runtimes/gateway/graph/test_topology_graph.py && run_pytest tests/unit/peapods/test_networking.py && run_pytest tests/unit/peapods/pods/test_pods.py tests/unit/peapods/pods/test_scale.py && run_pytest tests/unit/peapods/pods/test_pod_factory.py  && run_pytest tests/integration/runtimes/test_runtimes.py && run_pytest tests/integration/peas/test_pea.py tests/integration/peas/container/test_pea.py && run_pytest tests/unit/peapods/peas/container/test_container_pea.py && run_pytest tests/unit/peapods/peas/test_pea.py
         timeout-minutes: 30
-      - name: Check codecov file
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "coverage.xml"
-      - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
-        with:
-          file: coverage.xml
-          name: ${{ matrix.test-path }}-codecov
-          flags: ${{ steps.test.outputs.codecov_flag }}
-          fail_ci_if_error: false
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
