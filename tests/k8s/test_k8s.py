@@ -1,11 +1,10 @@
-from pytest_kind import cluster
-
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
-cluster.KIND_VERSION = 'v0.11.1'
+from pytest_kind import cluster
 import pytest
-
 from jina import Flow, Document
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+
+cluster.KIND_VERSION = 'v0.11.1'
 
 
 def run_test(flow, endpoint, port_expose):
@@ -20,8 +19,12 @@ def run_test(flow, endpoint, port_expose):
 
 
 @pytest.fixture()
-def k8s_flow_with_init_container(k8s_cluster) -> Flow:
-    k8s_cluster.load_docker_images(images=['test_executor_image', 'dummy_dumper_image'])
+def k8s_flow_with_init_container(k8s_cluster):
+    image_names = ['test_executor_image', 'dummy_dumper_image']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
+    k8s_cluster.load_docker_images(images=image_names)
     flow = Flow(
         name='test-flow-with-init-container',
         port_expose=9090,
@@ -31,9 +34,9 @@ def k8s_flow_with_init_container(k8s_cluster) -> Flow:
         k8s_namespace='test-flow-with-init-container-ns',
     ).add(
         name='test_executor',
-        uses='test_executor_image',
+        uses=images[0],
         k8s_init_container_command=["python", "dump.py", "/shared/test_file.txt"],
-        k8s_uses_init='dummy_dumper_image',
+        k8s_uses_init=images[1],
         k8s_mount_path='/shared',
         timeout_ready=120000,
     )
@@ -41,9 +44,13 @@ def k8s_flow_with_init_container(k8s_cluster) -> Flow:
 
 
 @pytest.fixture()
-def k8s_flow_with_sharding(k8s_cluster) -> Flow:
+def k8s_flow_with_sharding(k8s_cluster):
+    image_names = ['test_executor_image', 'executor_merger_image']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
     k8s_cluster.load_docker_images(
-        images=['test_executor_image', 'executor_merger_image']
+        images=image_names,
     )
     flow = Flow(
         name='test-flow-with-sharding',
@@ -56,8 +63,8 @@ def k8s_flow_with_sharding(k8s_cluster) -> Flow:
         name='test_executor',
         shards=2,
         replicas=2,
-        uses='test_executor_image',
-        uses_after='executor_merger_image',
+        uses=images[0],
+        uses_after=images[1],
         timeout_ready=360000,
     )
     return flow
@@ -65,7 +72,11 @@ def k8s_flow_with_sharding(k8s_cluster) -> Flow:
 
 @pytest.fixture
 def k8s_flow_configmap(k8s_cluster) -> Flow:
-    k8s_cluster.load_docker_images(images=['test_executor_image'])
+    image_names = ['test_executor_image']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
+    k8s_cluster.load_docker_images(images=image_names)
     flow = Flow(
         name='k8s-flow-configmap',
         port_expose=9090,
@@ -75,7 +86,7 @@ def k8s_flow_configmap(k8s_cluster) -> Flow:
         k8s_namespace='k8s-flow-configmap-ns',
     ).add(
         name='test_executor',
-        uses='test_executor_image',
+        uses=images[0],
         timeout_ready=12000,
         env={'k1': 'v1', 'k2': 'v2'},
     )
@@ -83,8 +94,12 @@ def k8s_flow_configmap(k8s_cluster) -> Flow:
 
 
 @pytest.fixture
-def k8s_flow_gpu(k8s_cluster) -> Flow:
-    k8s_cluster.load_docker_images(images=['test_executor_image'])
+def k8s_flow_gpu(k8s_cluster):
+    image_names = ['test_executor_image']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
+    k8s_cluster.load_docker_images(images=image_names)
     flow = Flow(
         name='k8s-flow-gpu',
         port_expose=9090,
@@ -94,7 +109,7 @@ def k8s_flow_gpu(k8s_cluster) -> Flow:
         k8s_namespace='k8s-flow-gpu-ns',
     ).add(
         name='test_executor',
-        uses='test_executor_image',
+        uses=images[0],
         timeout_ready=12000,
         gpus=1,
     )
@@ -104,9 +119,12 @@ def k8s_flow_gpu(k8s_cluster) -> Flow:
 @pytest.fixture
 def k8s_flow_with_reload_executor(
     k8s_cluster,
-    reload_executor_image: str,
 ):
-    k8s_cluster.load_docker_images(reload_executor_image)
+    image_names = ['reload_executor_image']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
+    k8s_cluster.load_docker_images(images=image_names)
     flow = Flow(
         name='test-flow-with-reload',
         port_expose=9090,
@@ -117,7 +135,7 @@ def k8s_flow_with_reload_executor(
         name='test_executor',
         replicas=2,
         uses_with={'argument': 'value1'},
-        uses=reload_executor_image,
+        uses=images[0],
         timeout_ready=120000,
     )
     return flow
@@ -145,42 +163,44 @@ def test_flow_with_needs(
     logger,
     k8s_connection_pool,
 ):
-    k8s_cluster.load_docker_images(
-        images=['test_executor_image', 'executor_merger_image']
-    )
-    name = 'test-flow-with-needs'
+    image_names = ['test_executor_image', 'executor_merger_image']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
+    k8s_cluster.load_docker_images(images=image_names)
+    flow_name = 'test-flow-with-needs'
     if k8s_connection_pool:
-        name += '-pool'
+        flow_name += '-pool'
     flow = (
         Flow(
-            name=name,
+            name=flow_name,
             port_expose=9090,
             infrastructure='K8S',
             protocol='http',
             timeout_ready=120000,
             k8s_disable_connection_pool=not k8s_connection_pool,
-            k8s_namespace=name + '-ns',
+            k8s_namespace=flow_name + '-ns',
         )
         .add(
             name='segmenter',
-            uses='test_executor_image',
+            uses=images[0],
             timeout_ready=120000,
         )
         .add(
             name='textencoder',
-            uses='test_executor_image',
+            uses=images[0],
             needs='segmenter',
             timeout_ready=120000,
         )
         .add(
             name='imageencoder',
-            uses='test_executor_image',
+            uses=images[0],
             needs='segmenter',
             timeout_ready=120000,
         )
         .add(
             name='merger',
-            uses='executor_merger_image',
+            uses=images[1],
             timeout_ready=120000,
             needs=['imageencoder', 'textencoder'],
         )
