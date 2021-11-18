@@ -1,4 +1,3 @@
-import asyncio
 import copy
 import sys
 from abc import abstractmethod
@@ -19,71 +18,9 @@ from ...enums import (
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
-from ...types.message.common import ControlMessage
 
 
-class ExitFIFO(ExitStack):
-    """
-    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
-
-    .. note::
-    The `__exit__` method is copied literally from `ExitStack` and changed the call:
-    `is_sync, cb = self._exit_callbacks.pop()` to `is_sync, cb = self._exit_callbacks.popleft()`
-
-    """
-
-    def __exit__(self, *exc_details):
-        received_exc = exc_details[0] is not None
-
-        # We manipulate the exception state so it behaves as though
-        # we were actually nesting multiple with statements
-        frame_exc = sys.exc_info()[1]
-
-        def _fix_exception_context(new_exc, old_exc):
-            # Context may not be correct, so find the end of the chain
-            while 1:
-                exc_context = new_exc.__context__
-                if exc_context is old_exc:
-                    # Context is already set correctly (see issue 20317)
-                    return
-                if exc_context is None or exc_context is frame_exc:
-                    break
-                new_exc = exc_context
-            # Change the end of the chain to point to the exception
-            # we expect it to reference
-            new_exc.__context__ = old_exc
-
-        # Callbacks are invoked in LIFO order to match the behaviour of
-        # nested context managers
-        suppressed_exc = False
-        pending_raise = False
-        while self._exit_callbacks:
-            is_sync, cb = self._exit_callbacks.popleft()
-            assert is_sync
-            try:
-                if cb(*exc_details):
-                    suppressed_exc = True
-                    pending_raise = False
-                    exc_details = (None, None, None)
-            except:
-                new_exc_details = sys.exc_info()
-                # simulate the stack of exceptions by setting the context
-                _fix_exception_context(new_exc_details[1], exc_details[1])
-                pending_raise = True
-                exc_details = new_exc_details
-        if pending_raise:
-            try:
-                # bare "raise exc_details[1]" replaces our carefully
-                # set-up context
-                fixed_ctx = exc_details[1].__context__
-                raise exc_details[1]
-            except BaseException:
-                exc_details[1].__context__ = fixed_ctx
-                raise
-        return received_exc and suppressed_exc
-
-
-class BasePod(ExitFIFO):
+class BasePod(ExitStack):
     """A BasePod is an immutable set of peas.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
@@ -345,7 +282,6 @@ class Pod(BasePod):
                     break
 
             if exception is not None:
-                # close peas and remove them from exitfifo
                 if self.pod_args.shards > 1:
                     msg = f' Scaling fails for shard {self.pod_args.shard_id}'
                 else:
