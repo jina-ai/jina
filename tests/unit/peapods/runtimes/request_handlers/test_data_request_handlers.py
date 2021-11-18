@@ -44,7 +44,7 @@ def test_data_request_handler_new_docs(logger):
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
         )
     )[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     assert len(msg.request.docs) == 10
     msg = handler.handle(messages=[msg])
 
@@ -61,7 +61,7 @@ def test_data_request_handler_change_docs(logger):
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
         )
     )[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     assert len(msg.request.docs) == 10
     msg = handler.handle(messages=[msg])
 
@@ -86,7 +86,7 @@ def test_data_request_handler_change_docs_dam(logger, tmpdir):
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
         )
     )[0]
-    msg = Message(None, req, 'test', '123')
+    msg = Message(None, req)
     assert len(msg.request.docs) == 10
     msg = handler.handle(messages=[msg])
 
@@ -109,7 +109,7 @@ def test_data_request_handler_change_docs_from_partial_requests(logger):
     ] * NUM_PARTIAL_REQUESTS
     messages = []
     for request in partial_reqs:
-        messages.append(Message(None, request, 'test', '123'))
+        messages.append(Message(None, request))
     assert len(messages) == 5
     assert len(messages[0].request.docs) == 10
     msg = handler.handle(messages=messages)
