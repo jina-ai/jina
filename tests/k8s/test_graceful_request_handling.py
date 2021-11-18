@@ -1,7 +1,6 @@
 import asyncio
 import multiprocessing
 import os
-import signal
 import time
 from multiprocessing import Process
 
@@ -70,12 +69,12 @@ def send_requests(
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
 async def test_no_message_lost_during_scaling(
-    slow_process_executor_image,
-    logger,
-    k8s_cluster,
-    load_images_in_kind,
-    set_test_pip_version,
+    slow_process_executor_image, logger, k8s_cluster, image_name_tag_map
 ):
+    image_names = ['slow-process-executor']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -83,7 +82,7 @@ async def test_no_message_lost_during_scaling(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=slow_process_executor_image,
+        uses=images[0],
         timeout_ready=360000,
         replicas=3,
         grpc_data_requests=True,
@@ -165,13 +164,11 @@ async def test_no_message_lost_during_scaling(
     'GITHUB_WORKFLOW' in os.environ,
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
-async def test_no_message_lost_during_kill(
-    slow_process_executor_image,
-    logger,
-    k8s_cluster,
-    load_images_in_kind,
-    set_test_pip_version,
-):
+async def test_no_message_lost_during_kill(logger, k8s_cluster, image_name_tag_map):
+    image_names = ['slow-process-executor']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -179,7 +176,7 @@ async def test_no_message_lost_during_kill(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=slow_process_executor_image,
+        uses=images[0],
         timeout_ready=360000,
         replicas=3,
         grpc_data_requests=True,
@@ -266,12 +263,14 @@ async def test_no_message_lost_during_kill(
 
 
 def test_linear_processing_time_scaling(
-    slow_process_executor_image,
-    logger,
     k8s_cluster,
-    load_images_in_kind,
-    set_test_pip_version,
+    logger,
+    image_name_tag_map,
 ):
+    image_names = ['slow-process-executor']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -279,7 +278,7 @@ def test_linear_processing_time_scaling(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=slow_process_executor_image,
+        uses=images[0],
         timeout_ready=360000,
         replicas=3,
         grpc_data_requests=True,
