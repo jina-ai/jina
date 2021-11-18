@@ -6,12 +6,14 @@ import signal
 import multiprocessing
 import threading
 
+from typing import TYPE_CHECKING, Union
 from typing import Union, Dict, Optional, TYPE_CHECKING
 import asyncio
 
 from ... import __windows__
 from ...importer import ImportExtensions
 from . import BasePea
+from .helper import _get_worker
 from .container_helper import get_gpu_device_requests, get_docker_network
 from ...enums import RuntimeBackendType
 from ... import __docker_host__
@@ -20,6 +22,7 @@ from ...helper import slugify, random_name
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 
 if TYPE_CHECKING:
+    from docker.models.containers import Container
     from docker.client import DockerClient
 
 
@@ -366,10 +369,8 @@ class ContainerPea(BasePea):
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
-        self.worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(self.args, 'runtime_backend', RuntimeBackendType.THREAD))(
+        self.worker = _get_worker(
+            args=self.args,
             target=run,
             kwargs={
                 'args': self.args,
