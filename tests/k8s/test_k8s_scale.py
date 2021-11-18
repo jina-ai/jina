@@ -6,15 +6,15 @@ DEFAULT_REPLICAS = 2
 
 
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize('shards', [1, 2])
-def test_k8s_scale(k8s_cluster, load_images_in_kind, shards):
+@pytest.mark.parametrize('shards, namespace', [(1, 'ns1'), (2, 'ns2')])
+def test_k8s_scale(k8s_cluster, shards, namespace):
     flow = Flow(
         name='test-flow-scale',
         port_expose=9090,
         infrastructure='K8S',
         protocol='http',
         timeout_ready=360000,
-        k8s_namespace='test-flow-scale-ns',
+        k8s_namespace=namespace,
     ).add(
         name='test_executor',
         shards=shards,
@@ -30,7 +30,7 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, shards):
         from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
-            name=k8s_deployment_name, namespace='test-flow-scale-ns'
+            name=k8s_deployment_name, namespace=namespace
         )
         replica = deployment.status.ready_replicas
 
@@ -39,7 +39,7 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, shards):
         f.scale(pod_name=jina_pod_name, replicas=3)  # scale up to 3
 
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
-            name=k8s_deployment_name, namespace='test-flow-scale-ns'
+            name=k8s_deployment_name, namespace=namespace
         )
         replica = deployment.status.ready_replicas
 
@@ -48,7 +48,7 @@ def test_k8s_scale(k8s_cluster, load_images_in_kind, shards):
         f.scale(pod_name=jina_pod_name, replicas=1)  # scale down to 1
 
         deployment = K8sClients().apps_v1.read_namespaced_deployment(
-            name=k8s_deployment_name, namespace='test-flow-scale-ns'
+            name=k8s_deployment_name, namespace=namespace
         )
         replica = deployment.status.ready_replicas
 

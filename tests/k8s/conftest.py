@@ -9,6 +9,27 @@ from jina.logging.logger import JinaLogger
 client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 
+IMAGE_NAME_TAG_MAP = {
+    'reload-executor': '0.13.1',
+    'test-executor': '0.13.1',
+    'executor-merger': '0.1.1',
+    'dummy-dumper': '0.1.1',
+    'slow-process-executor': '0.14.1',
+    'slow-init-executor': '0.13.1',
+}
+
+
+def build_docker_image(image_name):
+    image_tag = image_name + ':' + IMAGE_NAME_TAG_MAP[image_name]
+    image, build_logs = client.images.build(
+        path=os.path.join(cur_dir, image_name), tag=image_tag
+    )
+    for chunk in build_logs:
+        if 'stream' in chunk:
+            for line in chunk['stream'].splitlines():
+                logger.debug(line)
+    return image.tags[-1]
+
 
 class KindClusterWrapper:
     def __init__(self, kind_cluster: KindCluster, logger: JinaLogger):
@@ -27,31 +48,18 @@ class KindClusterWrapper:
     def load_docker_images(self, images):
         images.append('jinaai/jina:test-pip')
         for image in images:
+            build_docker_image(image)
             self._cluster.load_docker_image(image)
 
 
 @pytest.fixture()
 def logger():
-    logger = JinaLogger('kubernetes-testing')
-    return logger
+    return JinaLogger('kubernetes-testing')
 
 
 @pytest.fixture
 def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
     return KindClusterWrapper(kind_cluster, logger)
-
-
-@pytest.fixture
-def docker_image(request):
-    image_name, image_tag = request.param
-    image, build_logs = client.images.build(
-        path=os.path.join(cur_dir, image_name), tag=image_tag
-    )
-    for chunk in build_logs:
-        if 'stream' in chunk:
-            for line in chunk['stream'].splitlines():
-                logger.debug(line)
-    return image.tags[-1]
 
 
 @pytest.fixture(autouse=True)
