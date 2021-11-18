@@ -19,12 +19,12 @@ def run_test(flow, endpoint, port_expose):
 
 
 @pytest.fixture()
-def k8s_flow_with_init_container(k8s_cluster):
-    image_names = ['test_executor_image', 'dummy_dumper_image']
+def k8s_flow_with_init_container(k8s_cluster, image_name_tag_map):
+    image_names = ['test-executor', 'dummy-dumper']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
-    k8s_cluster.load_docker_images(images=image_names)
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow = Flow(
         name='test-flow-with-init-container',
         port_expose=9090,
@@ -44,14 +44,12 @@ def k8s_flow_with_init_container(k8s_cluster):
 
 
 @pytest.fixture()
-def k8s_flow_with_sharding(k8s_cluster):
-    image_names = ['test_executor_image', 'executor_merger_image']
+def k8s_flow_with_sharding(k8s_cluster, image_name_tag_map):
+    image_names = ['test-executor', 'executor-merger']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
-    k8s_cluster.load_docker_images(
-        images=image_names,
-    )
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow = Flow(
         name='test-flow-with-sharding',
         port_expose=9090,
@@ -71,12 +69,12 @@ def k8s_flow_with_sharding(k8s_cluster):
 
 
 @pytest.fixture
-def k8s_flow_configmap(k8s_cluster) -> Flow:
-    image_names = ['test_executor_image']
+def k8s_flow_configmap(k8s_cluster, image_name_tag_map):
+    image_names = ['test-executor']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
-    k8s_cluster.load_docker_images(images=image_names)
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow = Flow(
         name='k8s-flow-configmap',
         port_expose=9090,
@@ -94,12 +92,12 @@ def k8s_flow_configmap(k8s_cluster) -> Flow:
 
 
 @pytest.fixture
-def k8s_flow_gpu(k8s_cluster):
-    image_names = ['test_executor_image']
+def k8s_flow_gpu(k8s_cluster, image_name_tag_map):
+    image_names = ['test-executor']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
-    k8s_cluster.load_docker_images(images=image_names)
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow = Flow(
         name='k8s-flow-gpu',
         port_expose=9090,
@@ -117,14 +115,12 @@ def k8s_flow_gpu(k8s_cluster):
 
 
 @pytest.fixture
-def k8s_flow_with_reload_executor(
-    k8s_cluster,
-):
-    image_names = ['reload_executor_image']
+def k8s_flow_with_reload_executor(k8s_cluster, image_name_tag_map):
+    image_names = ['reload-executor']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
-    k8s_cluster.load_docker_images(images=image_names)
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow = Flow(
         name='test-flow-with-reload',
         port_expose=9090,
@@ -162,12 +158,13 @@ def test_flow_with_needs(
     k8s_cluster,
     logger,
     k8s_connection_pool,
+    image_name_tag_map,
 ):
-    image_names = ['test_executor_image', 'executor_merger_image']
+    image_names = ['test-executor', 'executor-merger']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
-    k8s_cluster.load_docker_images(images=image_names)
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow_name = 'test-flow-with-needs'
     if k8s_connection_pool:
         flow_name += '-pool'
