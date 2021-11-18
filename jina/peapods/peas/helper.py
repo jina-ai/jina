@@ -2,10 +2,8 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
-from ipaddress import ip_address
 from typing import Union, TYPE_CHECKING
 
-from ... import __default_host__
 from ...enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
 from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
@@ -89,16 +87,6 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
         GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }
-    if (
-        _args.runtime_cls not in gateway_runtime_dict.values()
-        and _args.host != __default_host__
-        and not _args.disable_remote
-        and not ip_address(_args.host).is_loopback
-    ):
-        _args.runtime_cls = 'JinadRuntime'
-        # NOTE: remote pea would also create a remote workspace which might take alot of time.
-        # setting it to -1 so that wait_start_success doesn't fail
-        _args.timeout_ready = -1
     if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)
         _hub_args.uri = _args.uses

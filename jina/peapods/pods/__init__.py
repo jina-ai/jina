@@ -8,7 +8,7 @@ from typing import Dict, Union, Set, List, Optional
 
 from ..networking import GrpcConnectionPool
 from ..peas.factory import PeaFactory
-from ... import __default_executor__
+from ... import __default_executor__, __default_host__
 from ... import helper
 from ...enums import (
     PodRoleType,
@@ -646,8 +646,7 @@ class Pod(BasePod):
                     )
                 )
 
-            for future in asyncio.as_completed(tasks):
-                _ = await future
+            await asyncio.gather(*tasks)
         except:
             for task in tasks:
                 if not task.done():
@@ -670,8 +669,7 @@ class Pod(BasePod):
                     asyncio.create_task(self.shards[shard_id].scale(replicas=replicas))
                 )
 
-            for future in asyncio.as_completed(tasks):
-                _ = await future
+            await asyncio.gather(*tasks)
         except:
             # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state? Cancelling would potentially be dangerous.
             for task in tasks:
@@ -723,25 +721,27 @@ class Pod(BasePod):
         return result
 
     @staticmethod
-    def _set_uses_before_after_args(args: Namespace, type: str) -> Namespace:
+    def _set_uses_before_after_args(args: Namespace, entity_type: str) -> Namespace:
 
         _args = copy.deepcopy(args)
         _args.pea_role = PeaRoleType.WORKER
         _args.identity = random_identity()
-        _args.host = '127.0.0.1'
+        _args.host = __default_host__
         _args.port_in = helper.random_port()
 
         if _args.name:
-            _args.name += f'/{type}-0'
+            _args.name += f'/{entity_type}-0'
         else:
-            _args.name = f'{type}-0'
+            _args.name = f'{entity_type}-0'
 
-        if 'uses_before' == type:
+        if 'uses_before' == entity_type:
             _args.uses = args.uses_before or __default_executor__
-        elif 'uses_after' == type:
+        elif 'uses_after' == entity_type:
             _args.uses = args.uses_after or __default_executor__
         else:
-            raise ValueError(f'uses_before/uses_after pea does not support type {type}')
+            raise ValueError(
+                f'uses_before/uses_after pea does not support type {entity_type}'
+            )
 
         # pea workspace if not set then derive from workspace
         if not _args.workspace:
@@ -763,7 +763,7 @@ class Pod(BasePod):
                 and args.uses_before != __default_executor__
             ):
                 uses_before_args = self._set_uses_before_after_args(
-                    args, type='uses_before'
+                    args, entity_type='uses_before'
                 )
                 parsed_args['uses_before'] = uses_before_args
                 args.uses_before_address = (
@@ -774,7 +774,7 @@ class Pod(BasePod):
                 and args.uses_after != __default_executor__
             ):
                 uses_after_args = self._set_uses_before_after_args(
-                    args, type='uses_after'
+                    args, entity_type='uses_after'
                 )
                 parsed_args['uses_after'] = uses_after_args
                 args.uses_after_address = (
