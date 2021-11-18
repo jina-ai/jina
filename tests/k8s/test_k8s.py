@@ -27,7 +27,7 @@ def k8s_flow_with_init_container(k8s_cluster, image_name_tag_map):
     k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     flow = Flow(
         name='test-flow-with-init-container',
-        port_expcose=9090,
+        port_expose=9090,
         infrastructure='K8S',
         protocol='http',
         timeout_ready=120000,
