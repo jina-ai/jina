@@ -15,33 +15,33 @@ from jina.types.message import Message
 from jina.types.message.common import ControlMessage
 
 
-def test_connection_list(mocker):
+@pytest.mark.asyncio
+async def test_connection_list(mocker, monkeypatch):
+    _, _ = await _mock_grpc(mocker, monkeypatch)
     connection_list = ReplicaList()
     assert not connection_list.has_connection(address='1.1.1.1')
-    first_connection = mocker.Mock()
-    connection_list.add_connection(address='1.1.1.1', connection=first_connection)
+    connection_list.add_connection(address='1.1.1.1')
     assert connection_list.has_connection(address='1.1.1.1')
     assert not connection_list.has_connection(address='1.1.1.2')
 
-    second_connection = mocker.Mock()
-    connection_list.add_connection(address='1.1.1.2', connection=second_connection)
+    connection_list.add_connection(address='1.1.1.2')
     assert connection_list.has_connection(address='1.1.1.1')
     assert connection_list.has_connection(address='1.1.1.2')
 
-    connection_list.remove_connection(address='1.1.1.2')
+    assert await connection_list.remove_connection(address='1.1.1.2')
     assert not connection_list.has_connection(address='1.1.1.2')
 
-    third_connection = mocker.Mock()
-    connection_list.add_connection(address='1.1.1.2', connection=second_connection)
-    connection_list.add_connection(address='1.1.1.3', connection=third_connection)
+    connection_list.add_connection(address='1.1.1.2')
+    connection_list.add_connection(address='1.1.1.3')
 
-    assert connection_list.get_next_connection() == first_connection
-    assert connection_list.get_next_connection() == second_connection
-    assert connection_list.get_next_connection() == third_connection
-    assert connection_list.get_next_connection() == first_connection
+    assert connection_list.get_next_connection()
+    assert connection_list.get_next_connection()
+    assert connection_list.get_next_connection()
+    assert connection_list.get_next_connection()
 
-    assert connection_list.remove_connection('1.1.1.2') == second_connection
-    assert connection_list.get_next_connection() == third_connection
+    assert await connection_list.remove_connection('1.1.1.2')
+    assert connection_list.get_next_connection()
+    await connection_list.close()
 
 
 def mock_send(mock):
@@ -49,11 +49,12 @@ def mock_send(mock):
     return None
 
 
-def test_connection_pool(mocker):
-    create_mock = mocker.Mock()
-    send_mock = mocker.Mock()
+@pytest.mark.asyncio
+async def test_connection_pool(mocker, monkeypatch):
+    close_mock_object, create_mock = await _mock_grpc(mocker, monkeypatch)
+
     pool = GrpcConnectionPool()
-    pool.create_connection = create_mock
+    send_mock = mocker.Mock()
     pool._send_messages = lambda messages, connection: mock_send(send_mock)
 
     pool.add_connection(pod='encoder', head=False, address='1.1.1.1:53')
@@ -138,9 +139,10 @@ def test_connection_pool(mocker):
     assert send_mock.call_count == 9
 
     # removing a replica for shard 0 works and does not prevent messages to be sent to the shard
-    assert pool.remove_connection(
+    assert await pool.remove_connection(
         pod='encoder', head=False, address='1.1.1.2:53', shard_id=0
     )
+    assert close_mock_object.call_count == 1
     results = pool.send_message(
         msg=ControlMessage(command='STATUS'),
         pod='encoder',
@@ -167,7 +169,8 @@ def test_connection_pool(mocker):
     assert send_mock.call_count == 11
 
     # after remove the head again, sending will not work
-    assert pool.remove_connection(pod='encoder', head=True, address='1.1.1.10:53')
+    assert await pool.remove_connection(pod='encoder', head=True, address='1.1.1.10:53')
+    assert close_mock_object.call_count == 2
     results = pool.send_message(
         msg=ControlMessage(command='STATUS'), pod='encoder', head=True
     )
@@ -176,11 +179,34 @@ def test_connection_pool(mocker):
 
     # check that remove/add order is handled well
     pool.add_connection(pod='encoder', head=False, address='1.1.1.4:53')
-    assert pool.remove_connection(pod='encoder', head=False, address='1.1.1.1:53')
-    assert pool.remove_connection(pod='encoder', head=False, address='1.1.1.4:53')
-    assert not (pool.remove_connection(pod='encoder', head=False, address='1.1.1.2:53'))
+    assert await pool.remove_connection(pod='encoder', head=False, address='1.1.1.1:53')
+    assert await pool.remove_connection(pod='encoder', head=False, address='1.1.1.4:53')
+    assert close_mock_object.call_count == 4
+    assert not (
+        await pool.remove_connection(pod='encoder', head=False, address='1.1.1.2:53')
+    )
 
-    pool.close()
+    await pool.close()
+
+
+async def _mock_grpc(mocker, monkeypatch):
+    create_mock = mocker.Mock()
+    close_mock_object = mocker.Mock()
+    channel_mock = mocker.Mock()
+    stub_mock = mocker.Mock()
+
+    async def close_mock(*args):
+        close_mock_object()
+
+    def create_async_channel_mock(*args):
+        create_mock()
+        channel_mock.close = close_mock
+        return stub_mock, channel_mock
+
+    monkeypatch.setattr(
+        GrpcConnectionPool, 'create_async_channel_stub', create_async_channel_mock
+    )
+    return close_mock_object, create_mock
 
 
 @pytest.mark.asyncio
@@ -244,6 +270,7 @@ async def test_grpc_connection_pool_real_sending():
     response2 = await results_call_2[0]
     assert response2.request.command == 'DEACTIVATE'
 
+    await pool.close()
     server_process1.kill()
     server_process2.kill()
     server_process1.join()

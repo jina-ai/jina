@@ -79,6 +79,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         await self._grpc_server.stop(0)
 
+    async def async_teardown(self):
+        """Close the connection pool"""
+        await self.async_cancel()
+        await self.connection_pool.close()
+
     async def _handle_messages(self, messages: List[Message]) -> Message:
         # we assume that all messages have the same type, so we need to check only the first
         if messages[0].envelope.request_type != 'DataRequest':
@@ -132,7 +137,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         elif msg.request.command == 'DEACTIVATE':
             for relatedEntity in msg.request.relatedEntities:
                 connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-                self.connection_pool.remove_connection(
+                await self.connection_pool.remove_connection(
                     pod='worker',
                     address=connection_string,
                     shard_id=relatedEntity.shard_id,

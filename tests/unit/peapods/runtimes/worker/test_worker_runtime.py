@@ -136,7 +136,9 @@ async def test_worker_runtime_graceful_shutdown():
 
     async def task_wrapper(adress, messages_received):
         msg = _create_test_data_message(len(messages_received))
-        await GrpcConnectionPool.create_connection(adress).Call(msg)
+        stub, channel = GrpcConnectionPool.create_async_channel_stub(adress)
+        await stub.Call(msg)
+        await channel.close()
         messages_received.append(msg)
 
     sent_requests = 0
