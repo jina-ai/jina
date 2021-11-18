@@ -4,6 +4,7 @@ import asyncio
 from copy import deepcopy
 from platform import uname
 from http import HTTPStatus
+from abc import ABC, abstractmethod
 from typing import Dict, TYPE_CHECKING, List, Optional, Union
 
 import aiohttp
@@ -20,7 +21,6 @@ from ..excepts import (
 from ..helper import if_alive, id_cleaner, error_msg_from
 from ..models import DaemonID
 from ..models.ports import PortMappings
-from ..models.enums import UpdateOperation, IDLiterals
 from ..models.containers import (
     ContainerArguments,
     ContainerItem,
@@ -32,48 +32,25 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
 
-class ContainerStore(BaseStore):
+class ContainerStore(BaseStore, ABC):
     """A Store of Containers spawned by daemon"""
 
     _kind = 'container'
     _status_model = ContainerStoreStatus
 
-    async def _add(self, uri, *args, **kwargs):
+    @abstractmethod
+    async def add_in_partial(self, uri, *args, **kwargs):
         """Implements jina object creation in `partial-daemon`
 
         .. #noqa: DAR101"""
-        raise NotImplementedError
+        ...
 
-    @if_alive
-    async def _update(
-        self, uri: str, params: Dict, json: Optional[Dict] = None, **kwargs
-    ) -> Dict:
-        """Sends `PUT` request to `partial-daemon` to execute a command on a Flow.
-
-        :param uri: uri of partial-daemon
-        :param params: query params to be sent
-        :param json: json payload to be sent as body
-        :param kwargs: keyword args
-        :raises PartialDaemon400Exception: if update fails
-        :return: response from partial-daemon
-        """
-
-        self._logger.debug(
-            f'sending PUT request to partial-daemon on {uri}/{self._kind}'
-        )
-        async with aiohttp.request(
-            method='PUT', url=f'{uri}/{self._kind}', params=params, json=json
-        ) as response:
-            response_json = await response.json()
-            if response.status != HTTPStatus.OK:
-                raise PartialDaemon400Exception(error_msg_from(response_json))
-            return response_json
-
-    async def _delete(self, uri, *args, **kwargs):
+    @abstractmethod
+    async def delete_in_partial(self, uri, *args, **kwargs):
         """Implements jina object termination in `partial-daemon`
 
         .. #noqa: DAR101"""
-        raise NotImplementedError
+        ...
 
     async def ready(self, uri) -> bool:
         """Check if the container with partial-daemon is alive
@@ -208,7 +185,7 @@ class ContainerStore(BaseStore):
             kwargs.update(
                 {'ports': ports.dict()} if isinstance(ports, PortMappings) else {}
             )
-            object = await self._add(uri=uri, params=params, **kwargs)
+            object = await self.add_in_partial(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'{self._kind} creation failed as {e}')
             if container is not None:
@@ -250,47 +227,6 @@ class ContainerStore(BaseStore):
             return id
 
     @BaseStore.dump
-    async def update(
-        self,
-        id: DaemonID,
-        kind: UpdateOperation,
-        pod_name: str,
-        uses_with: Optional[Dict] = None,
-        **kwargs,
-    ) -> DaemonID:
-        """Update the container in the store
-
-        :param id: id of the container
-        :param kind: type of update command to execute (only rolling_update for now)
-        :param pod_name: pod to target with the dump request
-        :param uses_with: the uses_with arguments to update the executor in pod_name
-        :param kwargs: keyword args
-        :raises KeyError: if id doesn't exist in the store
-        :return: id of the container
-        """
-        if id not in self:
-            raise KeyError(f'{colored(id, "red")} not found in store.')
-
-        if id.jtype == IDLiterals.JFLOW:
-            params = {'kind': kind.value, 'pod_name': pod_name}
-        elif id.jtype == IDLiterals.JPOD:
-            params = {'kind': kind.value}
-        else:
-            self._logger.error(f'update not supported for {id.type} {id}')
-            return id
-
-        uri = self[id].metadata.uri
-        try:
-            object = await self._update(uri, params, json=uses_with)
-        except Exception as e:
-            self._logger.error(f'Error while updating the {self._kind.title()}: \n{e}')
-            raise
-        else:
-            self[id].arguments.object = object
-            self._logger.success(f'{colored(id, "green")} is updated successfully')
-            return id
-
-    @BaseStore.dump
     async def delete(self, id: DaemonID, **kwargs) -> None:
         """Delete a container from the store
 
@@ -303,9 +239,9 @@ class ContainerStore(BaseStore):
 
         uri = self[id].metadata.uri
         try:
-            await self._delete(uri=uri)
+            await self.delete_in_partial(uri=uri)
         except Exception as e:
-            self._logger.error(f'Error while updating the {self._kind.title()}: \n{e}')
+            self._logger.error(f'Error while deleting the {self._kind.title()}: \n{e}')
             raise
         else:
             workspace_id = self[id].workspace_id

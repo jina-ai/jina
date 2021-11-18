@@ -344,3 +344,13 @@ def test_none_extend():
     da = DocumentArray([Document() for _ in range(100)])
     da.extend(None)
     assert len(da) == 100
+
+
+def test_lazy_index_map():
+    da = DocumentArray([Document(id=str(i), text=f'document_{i}') for i in range(100)])
+    assert da._id_to_index is None
+
+    # build index map
+    assert da['0'].text == 'document_0'
+    assert da._id_to_index is not None
+    assert len(da._index_map.keys()) == 100

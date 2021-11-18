@@ -5,7 +5,6 @@ from fastapi.exceptions import HTTPException
 
 from ... import Runtime400Exception
 from ..dependencies import FlowDepends
-from ...models.enums import UpdateOperation
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
 from ...stores import flow_store as store
 
@@ -45,13 +44,11 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 
 
 @router.put(
-    path='/{id}',
-    summary='Trigger an update operation on the Flow object',
-    description='Types supported: "rolling_update"',
+    path='/rolling_update/{id}',
+    summary='Trigger a rolling_update operation on the Flow object',
 )
-async def _update(
+async def _rolling_update(
     id: DaemonID,
-    kind: UpdateOperation,
     pod_name: str,
     dump_path: Optional[str] = None,
     uses_with: Optional[Dict[str, Any]] = None,
@@ -63,7 +60,18 @@ async def _update(
             else:
                 uses_with = {'dump_path': dump_path}
 
-        return await store.update(id, kind, pod_name=pod_name, uses_with=uses_with)
+        return await store.rolling_update(id=id, pod_name=pod_name, uses_with=uses_with)
+    except Exception as ex:
+        raise Runtime400Exception from ex
+
+
+@router.put(
+    path='/scale/{id}',
+    summary='Trigger a scale operation on the Flow object',
+)
+async def _scale(id: DaemonID, pod_name: str, replicas: int):
+    try:
+        return await store.scale(id=id, pod_name=pod_name, replicas=replicas)
     except Exception as ex:
         raise Runtime400Exception from ex
 
