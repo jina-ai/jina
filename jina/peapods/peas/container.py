@@ -1,6 +1,7 @@
 import os
 import argparse
 import time
+import signal
 
 import multiprocessing
 import threading
@@ -8,6 +9,8 @@ import threading
 from typing import Union, Dict, Optional, TYPE_CHECKING
 import asyncio
 
+from ... import __windows__
+from ...importer import ImportExtensions
 from . import BasePea
 from .container_helper import get_gpu_device_requests, get_docker_network
 from ...enums import RuntimeBackendType
@@ -181,7 +184,29 @@ def run(
     import docker
 
     logger = JinaLogger(name, **vars(args))
-    _fail_to_start = asyncio.Event()
+
+    cancel = asyncio.Event()
+    fail_to_start = asyncio.Event()
+
+    if not __windows__:
+        try:
+            for signame in {signal.SIGINT, signal.SIGTERM}:
+                signal.signal(signame, lambda *args, **kwargs: cancel.set())
+        except (ValueError, RuntimeError) as exc:
+            logger.warning(
+                f' The process starting the container for {name} will not be able to handle termination signals. '
+                f' {repr(exc)}'
+            )
+    else:
+        with ImportExtensions(
+            required=True,
+            logger=logger,
+            help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+        ):
+            import win32api
+
+        win32api.SetConsoleCtrlHandler(lambda *args, **kwargs: cancel.set(), True)
 
     client = docker.from_env()
 
@@ -194,7 +219,7 @@ def run(
             net_mode=net_mode,
             logger=logger,
         )
-        # client.close()
+        client.close()
 
         def _is_ready():
             return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
@@ -209,17 +234,25 @@ def run(
             return True
 
         async def _check_readiness(container):
-            while _is_container_alive(container) and not _is_ready():
+            while (
+                _is_container_alive(container)
+                and not _is_ready()
+                and not cancel.is_set()
+            ):
                 await asyncio.sleep(0.1)
             if _is_container_alive(container):
                 is_started.set()
                 is_ready.set()
             else:
-                _fail_to_start.set()
+                fail_to_start.set()
 
         async def _stream_starting_logs(container):
             for line in container.logs(stream=True):
-                if not is_started.is_set() and not _fail_to_start.is_set():
+                if (
+                    not is_started.is_set()
+                    and not fail_to_start.is_set()
+                    and not cancel.is_set()
+                ):
                     await asyncio.sleep(0.01)
                 logger.info(line.strip().decode())
 
