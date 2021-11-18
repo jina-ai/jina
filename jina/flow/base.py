@@ -188,6 +188,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_after_address: Optional[str] = None,
+        uses_before_address: Optional[str] = None,
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
@@ -271,6 +273,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
+        :param uses_after_address: The address of the uses-before runtime
+        :param uses_before_address: The address of the uses-before runtime
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
@@ -509,7 +513,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
-        connect_to_predecessor: Optional[bool] = False,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -558,7 +561,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
-        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.

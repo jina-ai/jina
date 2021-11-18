@@ -49,13 +49,13 @@ async def test_runtimes_trivial_topology():
     assert HeadRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{head_port}',
-        shutdown_event=multiprocessing.Event(),
+        ready_or_shutdown_event=multiprocessing.Event(),
     )
 
     assert WorkerRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
-        shutdown_event=multiprocessing.Event(),
+        ready_or_shutdown_event=multiprocessing.Event(),
     )
 
     # this would be done by the Pod, its adding the worker to the head
