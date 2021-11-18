@@ -92,7 +92,7 @@ async def test_process_up_down_events(
                 break
         else:
             await asyncio.sleep(1.0)
-    pool.close()
+    await pool.close()
 
 
 @pytest.mark.asyncio
@@ -151,4 +151,4 @@ async def test_wait_for_ready(
                 ]
                 assert len(slow_executor_connections._connections) == 1
             await asyncio.sleep(1.0)
-        pool.close()
+        await pool.close()

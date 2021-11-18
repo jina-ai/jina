@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
 import argparse
 import multiprocessing
 import os
 import threading
 import time
+from abc import ABC, abstractmethod
 from typing import Type, Union, Dict, Optional
 
 from ..networking import GrpcConnectionPool
@@ -15,7 +15,6 @@ from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
 from ...logging.logger import JinaLogger
-from ...types.message.common import ControlMessage
 
 __all__ = ['BasePea', 'Pea']
 
@@ -180,10 +179,6 @@ class BasePea(ABC):
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
-
-            # if it is not daemon, block until the process/thread finish work
-            if not self.args.daemon:
-                self.join()
         else:
             # here shutdown has been set already, therefore `run` will gracefully finish
             self.logger.debug(
@@ -331,7 +326,11 @@ class Pea(BasePea):
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
-                'cancel_event': self.cancel_event,
+                # the cancel event is only necessary for threads, otherwise runtimes should create and use the asyncio event
+                'cancel_event': self.cancel_event
+                if getattr(args, 'runtime_backend', RuntimeBackendType.THREAD)
+                == RuntimeBackendType.THREAD
+                else None,
                 'runtime_cls': self.runtime_cls,
                 'jaml_classes': JAML.registered_classes(),
             },
