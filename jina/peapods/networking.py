@@ -5,6 +5,7 @@ from threading import Thread
 from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
 
 import grpc
+from grpc.aio import AioRpcError
 
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
@@ -380,7 +381,18 @@ class GrpcConnectionPool:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper(new_messages, stub):
-            return await stub.Call(new_messages)
+
+            for i in range(3):
+                try:
+                    return await stub.Call(new_messages)
+                except AioRpcError as e:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE:
+                        raise
+                    else:
+                        self._logger.debug(
+                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/'
+                        )
+            self._logger.debug(f'GRPC call failed, retries exhausted')
 
         return asyncio.create_task(task_wrapper(messages, connection))
 
