@@ -28,7 +28,7 @@ class KindClusterWrapper:
     def load_docker_images(self, images, image_tag_map):
         for image in images:
             build_docker_image(image, image_tag_map)
-            self._cluster.load_docker_image(image)
+            self._cluster.load_docker_image(image + ':' + image_tag_map[image])
 
 
 @pytest.fixture
@@ -54,6 +54,7 @@ def image_name_tag_map():
 
 
 def build_docker_image(image_name, image_name_tag_map):
+    logger = JinaLogger('kubernetes-testing')
     image_tag = image_name + ':' + image_name_tag_map[image_name]
     image, build_logs = client.images.build(
         path=os.path.join(cur_dir, image_name), tag=image_tag
