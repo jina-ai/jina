@@ -1,3 +1,4 @@
+import asyncio
 import threading
 import multiprocessing
 
@@ -5,12 +6,20 @@ import pytest
 
 from daemon.clients import JinaDClient, AsyncJinaDClient
 from daemon.models.id import DaemonID
+
+from jina.helper import random_port
+from jina import Document, Client
+from jina.enums import PollingType, PeaRoleType
+from jina.peapods.peas.factory import PeaFactory
 from jina.peapods.peas.helper import is_ready
 from jina.peapods.peas.jinad import JinaDPea, JinaDProcessTarget
 from jina.enums import replace_enum_to_str
-from jina.parsers import set_pea_parser
+from jina.types.message.common import ControlMessage
+from jina.parsers import set_pea_parser, set_gateway_parser
+from jina.peapods.networking import GrpcConnectionPool
 
 HOST = '127.0.0.1'
+PORT_JINAD = 8000
 
 
 def is_pea_ready(args):
@@ -21,7 +30,7 @@ def is_pea_ready(args):
 async def test_async_jinad_client():
     args = set_pea_parser().parse_args([])
 
-    client = AsyncJinaDClient(host=HOST, port=8000)
+    client = AsyncJinaDClient(host=HOST, port=PORT_JINAD)
     workspace_id = await client.workspaces.create(
         paths=[], id=args.workspace_id, complete=True
     )
@@ -99,3 +108,101 @@ def test_jinad_pea(runtime_backend):
     with JinaDPea(args):
         assert is_pea_ready(args)
     assert not is_pea_ready(args)
+
+
+def _create_worker_pea(l_or_r, port):
+    args = set_pea_parser().parse_args([])
+    if l_or_r == 'remote':
+        args.host = HOST
+        args.port_jinad = PORT_JINAD
+    args.name = f'worker-{l_or_r}'
+    args.port_in = port
+    args.runtime_cls = 'WorkerRuntime'
+    return PeaFactory.build_pea(args)
+
+
+def _create_head_pea(l_or_r, port):
+    args = set_pea_parser().parse_args([])
+    if l_or_r == 'remote':
+        args.host = HOST
+        args.port_jinad = PORT_JINAD
+    args.name = f'head-{l_or_r}'
+    args.port_in = port
+    args.pea_role = PeaRoleType.HEAD
+    args.polling = PollingType.ANY
+    args.runtime_cls = 'HeadRuntime'
+    return PeaFactory.build_pea(args)
+
+
+def _create_gateway_pea(l_or_r, graph_description, pods_addresses, port_expose):
+    args = set_gateway_parser().parse_args([])
+    if l_or_r == 'remote':
+        args.host = HOST
+        args.port_jinad = PORT_JINAD
+    args.graph_description = graph_description
+    args.pods_addresses = pods_addresses
+    args.port_expose = port_expose
+    args.runtime_cls = 'GRPCGatewayRuntime'
+    return PeaFactory.build_pea(args)
+
+
+async def async_inputs():
+    for i in range(20):
+        yield Document(text=f'client{i}-Request')
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('gateway', ['local'])
+@pytest.mark.parametrize('head', ['local'])
+@pytest.mark.parametrize('worker', ['local', 'remote'])
+async def test_remote_peas_topologies(gateway, head, worker):
+    """
+    TODO: current status
+    g(l)-h(l)-w(l) - works
+    g(l)-h(l)-w(r) - works
+    g(l)-h(r)-w(r) - gateway cannot connect to head address
+    g(l)-h(r)-w(l) - gateway cannot connect to head address
+    g(r)-... - doesn't work, as distributed parser not enabled for gateway
+    After any 1 failure, segfault
+    """
+    worker_port = random_port()
+    head_port = random_port()
+    port_expose = random_port()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pods_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+
+    # create a single head pea
+    head_pea = _create_head_pea(head, head_port)
+
+    # create a single worker pea
+    worker_pea = _create_worker_pea(worker, worker_port)
+
+    # create a single gateway pea
+    gateway_pea = _create_gateway_pea(
+        gateway, graph_description, pods_addresses, port_expose
+    )
+
+    with gateway_pea, worker_pea, head_pea:
+        await asyncio.sleep(1.0)
+        # this would be done by the Pod, its adding the worker to the head
+        activate_msg = ControlMessage(command='ACTIVATE')
+        worker_host, worker_port = worker_pea.runtime_ctrl_address.split(':')
+        activate_msg.add_related_entity('worker', worker_host, int(worker_port))
+        assert GrpcConnectionPool.send_message_sync(
+            activate_msg, head_pea.runtime_ctrl_address
+        )
+
+        print(
+            f'worker_port: {worker_port}, head_port: {head_port}, port_expose: {port_expose}'
+        )
+        # send requests to the gateway
+        c = Client(host='localhost', port=port_expose, asyncio=True)
+        responses = c.post(
+            '/', inputs=async_inputs, request_size=1, return_results=True
+        )
+        response_list = []
+        async for response in responses:
+            response_list.append(response)
+
+    assert len(response_list) == 20
+    assert len(response_list[0].docs) == 1

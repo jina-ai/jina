@@ -78,6 +78,7 @@ class JinaDProcessTarget:
             self.is_started.set()
             self.is_ready.set()
             self.logstream: asyncio.Task = asyncio.create_task(self._stream_logs())
+            await self._wait_until_cancelled()
         finally:
             if not self.logstream.done() or not self.logstream.cancelled():
                 self.logstream.cancel()
