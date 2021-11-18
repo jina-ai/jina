@@ -27,7 +27,7 @@ parameter `force_undirected`. It's a boolean flag that, when set to `True`, forc
 
 `GraphDocument` adds the following methods to `Document`:
 
-* `add_node`: adds a document to the graoh:
+* `add_node`: adds a document to the graph:
 
 ```{code-block} python
 ---

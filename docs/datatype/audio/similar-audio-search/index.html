@@ -687,7 +687,7 @@
 <h3>Segment the Audio Clips<a class="headerlink" href="#segment-the-audio-clips" title="Permalink to this headline">¶</a></h3>
 <p>In this example, we use the <a class="reference external" href="https://research.google.com/audioset/">AudioSet</a> dataset.
 The dataset contains millions of annotated audios events extracted from YouTube videos. Each audio event is 10-second long and labeled to 632 audio event classes.
-One major challenges is that some audio events contains other events. This makes it difficult and nosiy to express the whole clip with a single vector. For example, the audio clip below is labled as <code class="docutils literal notranslate"><span class="pre">Applause</span></code> but contains a long part of music. To overcome this issue, we use the <a class="reference external" href="https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document">recursive structure</a> of Jina Document and split the events into smaller chunks. Each chunk contains an audio clip of 4-second.</p>
+One major challenges is that some audio events contains other events. This makes it difficult and noisy to express the whole clip with a single vector. For example, the audio clip below is labeled as <code class="docutils literal notranslate"><span class="pre">Applause</span></code> but contains a long part of music. To overcome this issue, we use the <a class="reference external" href="https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document">recursive structure</a> of Jina Document and split the events into smaller chunks. Each chunk contains an audio clip of 4-second.</p>
 <audio controls="">
 <source src="../../../_static/similar-audio-search-UE3XnVFodMI_230000_applause.mp3" type="audio/mp3"/>
 Your browser does not support the audio element.
@@ -748,7 +748,7 @@ Your browser does not support the audio element.
 </section>
 <section id="encode-the-audios">
 <h3>Encode the Audios<a class="headerlink" href="#encode-the-audios" title="Permalink to this headline">¶</a></h3>
-<p>To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">x</span> <span class="pre">128</span></code>, where <code class="docutils literal notranslate"><span class="pre">K</span></code> is the number of examples in log mel spectrogram and roughly correpsond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by four 128-dimensional vectors.</p>
+<p>To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">x</span> <span class="pre">128</span></code>, where <code class="docutils literal notranslate"><span class="pre">K</span></code> is the number of examples in log mel spectrogram and roughly correspond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by four 128-dimensional vectors.</p>
 <p>Since the sequence of the sounds matters, we further concatenate these four vectors and consider the resulted 512-dimensional vector as the final representation for each audio clip. After encoding indexing and querying audios into 512-dimensional vectors, we can find the similar audios to the querying ones by looking for nearest neighbors in the vector space.</p>
 <p><a class="reference external" href="https://hub.jina.ai/executor/jypyr28o">VGGishAudioEncoder</a> is available at Jina Hub. It accepts three types of inputs</p>
 <ul class="simple">
@@ -849,8 +849,8 @@ Open the browser at <code class="docutils literal notranslate"><span class="pre"
 </div>
 </section>
 </section>
-<section id="show-resutls">
-<h2>Show Resutls<a class="headerlink" href="#show-resutls" title="Permalink to this headline">¶</a></h2>
+<section id="show-results">
+<h2>Show Results<a class="headerlink" href="#show-results" title="Permalink to this headline">¶</a></h2>
 <div class="table-wrapper"><table>
 <tr>
 <th>Query</th>
@@ -954,7 +954,7 @@ Open the browser at <code class="docutils literal notranslate"><span class="pre"
 <li><a class="reference internal" href="#query-from-python">Query from Python</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#show-resutls">Show Resutls</a></li>
+<li><a class="reference internal" href="#show-results">Show Results</a></li>
 <li><a class="reference internal" href="#get-the-source-code">Get the Source Code</a></li>
 </ul>
 </li>

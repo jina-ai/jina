@@ -901,7 +901,7 @@ achieved with <code class="docutils literal notranslate"><span class="pre">trave
 <section id="yolov5segmenter">
 <h3><strong>YoloV5Segmenter</strong><a class="headerlink" href="#yolov5segmenter" title="Permalink to this headline">¶</a></h3>
 <p>Since we want to retrieve small images in bigger images, the technique that we will heavily rely on is segmenting.
-Basicly, we want to do object detection on the indexed images. This will generate bounding boxes around objects
+Basically, we want to do object detection on the indexed images. This will generate bounding boxes around objects
 detected inside the images. The detected objects will be extracted and added as chunks to the original documents.
 By the way, guess what is the state-of-the-art object detection model ?</p>
 <p>Right, we will use YoloV5.</p>
@@ -910,7 +910,7 @@ model. To achieve this, the executor accepts parameter <code class="docutils lit
 implement the method <code class="docutils literal notranslate"><span class="pre">load</span></code> which checks if the model exists in the the Torch Hub, otherwise, loads it as a custom model.</p>
 <p>For our use case, we will just rely on <code class="docutils literal notranslate"><span class="pre">yolov5s</span></code> (small version of <code class="docutils literal notranslate"><span class="pre">yolov5</span></code>). Of course, for better quality, you can
 choose a more complicated model or your custom model.</p>
-<p>Furtheremore, we want <strong>YoloV5Segmenter</strong> to support both <strong>GPU</strong> and <strong>CPU</strong> and it should be able to process in
+<p>Furthermore, we want <strong>YoloV5Segmenter</strong> to support both <strong>GPU</strong> and <strong>CPU</strong> and it should be able to process in
 batches. Again, this is as simple as adding parameters <code class="docutils literal notranslate"><span class="pre">device</span></code> and <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> and using them during segmenting.</p>
 <p>To perform segmenting, we will implement method <code class="docutils literal notranslate"><span class="pre">_segment_docs</span></code> which performs the following steps:</p>
 <ol class="simple">

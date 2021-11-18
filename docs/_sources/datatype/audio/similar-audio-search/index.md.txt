@@ -11,7 +11,7 @@ Do you want to find similar songs from your music library? Do you want to search
 ### Segment the Audio Clips
 In this example, we use the [AudioSet](https://research.google.com/audioset/) dataset.
 The dataset contains millions of annotated audios events extracted from YouTube videos. Each audio event is 10-second long and labeled to 632 audio event classes. 
-One major challenges is that some audio events contains other events. This makes it difficult and nosiy to express the whole clip with a single vector. For example, the audio clip below is labled as `Applause` but contains a long part of music. To overcome this issue, we use the [recursive structure](https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document) of Jina Document and split the events into smaller chunks. Each chunk contains an audio clip of 4-second. 
+One major challenges is that some audio events contains other events. This makes it difficult and noisy to express the whole clip with a single vector. For example, the audio clip below is labeled as `Applause` but contains a long part of music. To overcome this issue, we use the [recursive structure](https://docs.jina.ai/fundamentals/document/document-api/#recursive-nested-document) of Jina Document and split the events into smaller chunks. Each chunk contains an audio clip of 4-second. 
 
 <audio controls>
   <source src="../../../_static/similar-audio-search-UE3XnVFodMI_230000_applause.mp3" type="audio/mp3">
@@ -87,7 +87,7 @@ The length of audios might not be exactly 10 seconds and therefore the number of
 
 ### Encode the Audios
 
-To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size `K x 128`, where `K` is the number of examples in log mel spectrogram and roughly correpsond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by four 128-dimensional vectors.
+To encode the sound clips into vectors, we choose VGGish model from Google Research. By default, the VGGish model needs the audios to be sampled at 16kHz and converted to examples of log mel spectrogram. The returning embeddings for each sound clip is a matrix of the size `K x 128`, where `K` is the number of examples in log mel spectrogram and roughly correspond to the length of audio in seconds. Therefore, each 4-second audio clip in the chunks is represented by four 128-dimensional vectors.
 
 Since the sequence of the sounds matters, we further concatenate these four vectors and consider the resulted 512-dimensional vector as the final representation for each audio clip. After encoding indexing and querying audios into 512-dimensional vectors, we can find the similar audios to the querying ones by looking for nearest neighbors in the vector space.
 
@@ -196,7 +196,7 @@ Open the browser at `localhost:45678/docs`, send query via the Swagger UI,
 }
 ```
 
-## Show Resutls
+## Show Results
 
 
 <table>
