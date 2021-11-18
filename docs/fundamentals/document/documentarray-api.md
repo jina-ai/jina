@@ -332,11 +332,67 @@ Note that in the above GPU example we did a conversion. In practice, there is no
 da.embeddings = torch_model(da.blobs)  # <- no .numpy() is necessary
 ```
 
-And then in just use `.match(da)`
+And then in just use `.match(da)`.
+
+### Evaluate matches
+
+You can easily evaluate the performance of matches via {func}`~jina.types.arrays.mixins.evaluation.EvaluationMixin.evaluate`, provide that you have the groundtruth of the matches.
+
+Jina provides some common metrics used in the information retrieval community that allows one to evaluate the nearest-neighbour matches. These metrics include: precision, recall, R-precision, hit rate, NDCG, etc. The full list of functions can be found in {class}`~jina.math.evaluation`.
+
+For example, let's create a `DocumentArray` with random embeddings and matching it to itself:
+
+```python
+import numpy as np
+from jina import DocumentArray
+
+da = DocumentArray.empty(10)
+da.embeddings = np.random.random([10, 3])
+da.match(da, exclude_self=True)
+```
+
+Now `da.matches` contains the matches. Let's use it as the groundtruth. Now let's create imperfect matches by mixing in ten "noise Documents" to every `d.matches`.
+
+```python
+da2 = copy.deepcopy(da)
+
+for d in da2:
+    d.matches.extend(DocumentArray.empty(10))
+    d.matches = d.matches.shuffle()
+
+print(da2.evaluate(da, metric='precision_at_k', k=5))
+```
+
+Now we should have the average Precision@10 close to 0.5.
+```text
+0.5399999999999999
+```
+
+Note that this value is an average number over all Documents of `da2`. If you want to look at the individual evaluation, you can check {attr}`~jina.Document.evaluations` attribute, e.g.
+
+```python
+for d in da2:
+    print(d.evaluations['precision_at_k'].value)
+```
+
+```text
+0.4000000059604645
+0.6000000238418579
+0.5
+0.5
+0.5
+0.4000000059604645
+0.5
+0.4000000059604645
+0.5
+0.30000001192092896
+```
+
+Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~jina.Document.id`. You can specify your own hash function.
 
 ## Traverse nested structure
 
-{meth}`jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat` function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates `Document`s on the provided traversal paths. You can use or modify `Document`s and the change will be applied in-place. 
+{meth}`~jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat` function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates `Document`s on the provided traversal paths. You can use or modify `Document`s and the change will be applied in-place. 
 
 
 ### Syntax of traversal path
@@ -486,8 +542,7 @@ DocumentArray([
 
 ### Flatten Document
 
-If you simply want to traverse **all** chunks and matches regardless their levels. You can simply use {meth}`jina.types.arrays.mixins.traverse.TraverseMixin.flatten`. It will return a `DocumentArray` with all chunks and matches flattened into the top-level, no more nested structure.
-
+If you simply want to traverse **all** chunks and matches regardless their levels. You can simply use {meth}`~jina.types.arrays.mixins.traverse.TraverseMixin.flatten`. It will return a `DocumentArray` with all chunks and matches flattened into the top-level, no more nested structure.
 
 ## Visualization
 
@@ -544,6 +599,25 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
+## Batching
+
+One can batch a large `DocumentArray` into small ones via {func}`~jina.types.arrays.mixins.group.GroupMixin.batch`. This is useful when a `DocumentArray` is too big to process at once. It is particular useful on `DocumentArrayMemmap`, which ensures the data gets loaded on-demand and in a conservative manner.
+
+```python
+from jina import DocumentArray
+
+da = DocumentArray.empty(1000)
+
+for b_da in da.batch(batch_size=256):
+    print(len(b_da))
+```
+
+```text
+256
+256
+256
+232
+```
 
 
 ## Sampling

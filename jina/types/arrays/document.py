@@ -83,7 +83,17 @@ class DocumentArray(
                     raise ValueError(
                         f'DocumentArray got an unexpected input {type(docs)}'
                     )
-        self._update_id_to_index_map()
+        self._id_to_index = None
+
+    @property
+    def _index_map(self) -> Dict:
+        """Return the `_id_to_index` map
+
+        :return: a Python dict.
+        """
+        if not self._id_to_index:
+            self._update_id_to_index_map()
+        return self._id_to_index
 
     def _update_id_to_index_map(self):
         """Update the id_to_index map by enumerating all Documents in self._pb_body.
@@ -102,14 +112,16 @@ class DocumentArray(
         :param doc: The doc needs to be inserted.
         """
         self._pb_body.insert(index, doc.proto)
-        self._id_to_index[doc.id] = index
+        if self._id_to_index:
+            self._id_to_index[doc.id] = index
 
     def __setitem__(self, key, value: 'Document'):
         if isinstance(key, int):
             self[key].CopyFrom(value)
-            self._id_to_index[value.id] = key
+            if self._id_to_index:
+                self._id_to_index[value.id] = key
         elif isinstance(key, str):
-            self[self._id_to_index[key]].CopyFrom(value)
+            self[self._index_map[key]].CopyFrom(value)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -117,8 +129,8 @@ class DocumentArray(
         if isinstance(index, int):
             del self._pb_body[index]
         elif isinstance(index, str):
-            del self[self._id_to_index[index]]
-            self._id_to_index.pop(index)
+            del self[self._index_map[index]]
+            self._index_map.pop(index)
         elif isinstance(index, slice):
             del self._pb_body[index]
         else:
@@ -141,13 +153,13 @@ class DocumentArray(
             yield Document(d)
 
     def __contains__(self, item: str):
-        return item in self._id_to_index
+        return item in self._index_map
 
     def __getitem__(self, item: Union[int, str, slice, List]):
         if isinstance(item, int):
             return Document(self._pb_body[item])
         elif isinstance(item, str):
-            return self[self._id_to_index[item]]
+            return self[self._index_map[item]]
         elif isinstance(item, slice):
             return DocumentArray(self._pb_body[item])
         elif isinstance(item, list):
@@ -161,7 +173,8 @@ class DocumentArray(
 
         :param doc: The doc needs to be appended.
         """
-        self._id_to_index[doc.id] = len(self._pb_body)
+        if self._id_to_index:
+            self._id_to_index[doc.id] = len(self._pb_body)
         self._pb_body.append(doc.proto)
 
     def extend(self, docs: Iterable['Document']) -> None:
@@ -179,7 +192,8 @@ class DocumentArray(
     def clear(self):
         """Clear the data of :class:`DocumentArray`"""
         del self._pb_body[:]
-        self._id_to_index.clear()
+        if self._id_to_index:
+            self._id_to_index.clear()
 
     def reverse(self):
         """In-place reverse the sequence."""

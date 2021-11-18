@@ -1,4 +1,5 @@
 from pathlib import Path
+from abc import ABC, abstractmethod
 from argparse import Namespace
 from typing import Dict, Optional, Union
 
@@ -12,36 +13,30 @@ from jina.logging.logger import JinaLogger
 
 from .. import jinad_args, __partial_workspace__
 from ..models import GATEWAY_RUNTIME_DICT
-from ..models.enums import UpdateOperation
 from ..models.ports import Ports, PortMappings
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
 
-class PartialStore:
+class PartialStore(ABC):
     """A store spawned inside partial-daemon container"""
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         self.item = PartialStoreItem()
+        self.object: Union['Pea', 'Pod', 'Flow'] = None
 
+    @abstractmethod
     def add(self, *args, **kwargs) -> PartialStoreItem:
         """Add a new element to the store. This method needs to be overridden by the subclass
 
 
         .. #noqa: DAR101"""
-        raise NotImplementedError
-
-    def update(self, *args, **kwargs) -> PartialStoreItem:
-        """Updates the element to the store. This method needs to be overridden by the subclass
-
-
-        .. #noqa: DAR101"""
-        raise NotImplementedError
+        ...
 
     def delete(self) -> None:
         """Terminates the object in the store & stops the server"""
         try:
-            if hasattr(self, 'object'):
+            if hasattr(self.object, 'close'):
                 self.object.close()
             else:
                 self._logger.warning(f'nothing to close. exiting')
@@ -87,31 +82,38 @@ class PartialPodStore(PartialPeaStore):
 
     peapod_constructor = PodFactory.build_pod
 
-    def update(
-        self,
-        kind: UpdateOperation,
-        pod_name: str,
-        uses_with: Optional[Dict] = None,
-        **kwargs,
+    async def rolling_update(
+        self, uses_with: Optional[Dict] = None
     ) -> PartialStoreItem:
-        """Runs an update operation on the Flow.
-        :param kind: type of update command to execute (rolling_update)
-        :param pod_name: pod to target with the dump request
-        :param uses_with: the uses_with for the new executors to be rolled updated
-        :param kwargs: keyword args
+        """Perform rolling_update on current Pod
+
+        :param uses_with: a Dictionary of arguments to restart the executor with
         :return: Item describing the Flow object
         """
         try:
-            if kind == UpdateOperation.ROLLING_UPDATE:
-                self.object.rolling_update(uses_with=uses_with)
-            else:
-                self._logger.error(f'unsupported kind: {kind}, no changes done')
-                return self.item
+            await self.object.rolling_update(uses_with=uses_with)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
             self.item.arguments = vars(self.object.args)
+            self._logger.success(f'Pod is successfully rolling_updated!')
+            return self.item
+
+    async def scale(self, replicas: int) -> PartialStoreItem:
+        """Scale the current Pod
+
+        :param replicas: number of replicas for the Pod
+        :return: Item describing the Flow object
+        """
+        try:
+            await self.object.scale(replicas=replicas)
+        except Exception as e:
+            self._logger.error(f'{e!r}')
+            raise
+        else:
+            self.item.arguments = vars(self.object.args)
+            self._logger.success(f'Pod is successfully scaled!')
             return self.item
 
 
@@ -225,30 +227,38 @@ class PartialFlowStore(PartialStore):
                 ),
             )
 
-    def update(
-        self,
-        kind: UpdateOperation,
-        pod_name: str,
-        uses_with: Optional[Dict] = None,
-        **kwargs,
+    def rolling_update(
+        self, pod_name: str, uses_with: Optional[Dict] = None
     ) -> PartialFlowItem:
-        """Runs an update operation on the Flow.
-        :param kind: type of update command to execute (rolling_update)
-        :param pod_name: pod to target with the dump request
-        :param uses_with: the uses_with for the new executors to be rolled updated
-        :param kwargs: keyword args
+        """Perform rolling_update on the Pod in current Flow
+
+        :param pod_name: Pod in the Flow to be rolling updated
+        :param uses_with: a Dictionary of arguments to restart the executor with
         :return: Item describing the Flow object
         """
         try:
-            if kind == UpdateOperation.ROLLING_UPDATE:
-                self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
-            else:
-                self._logger.error(f'unsupported kind: {kind}, no changes done')
-                return self.item
+            self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
             self.item.arguments = vars(self.object.args)
-            self._logger.success(f'Flow is updated successfully!')
+            self._logger.success(f'Flow is successfully rolling_updated!')
+            return self.item
+
+    def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
+        """Scale the Pod in current Flow
+
+        :param pod_name: Pod to be scaled
+        :param replicas: number of replicas for the Pod
+        :return: Item describing the Flow object
+        """
+        try:
+            self.object.scale(pod_name=pod_name, replicas=replicas)
+        except Exception as e:
+            self._logger.error(f'{e!r}')
+            raise
+        else:
+            self.item.arguments = vars(self.object.args)
+            self._logger.success(f'Flow is successfully scaled!')
             return self.item
