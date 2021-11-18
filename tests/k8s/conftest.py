@@ -25,9 +25,9 @@ class KindClusterWrapper:
         self._log.debug(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
 
-    def load_docker_images(self, images):
+    def load_docker_images(self, images, image_tag_map):
         for image in images:
-            build_docker_image(image)
+            build_docker_image(image, image_tag_map)
             self._cluster.load_docker_image(image)
 
 
