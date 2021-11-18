@@ -55,7 +55,7 @@ def get_fastapi_app(
 
     @app.on_event('shutdown')
     async def _shutdown():
-        connection_pool.close()
+        await connection_pool.close()
 
     @app.websocket('/')
     async def websocket_endpoint(websocket: WebSocket):
