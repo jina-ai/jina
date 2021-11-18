@@ -672,19 +672,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span> <span class="o">=</span> <span class="n">reference_doc</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">doc_views</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MatchArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+<div class="viewcode-block" id="MatchArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
         <span class="sd">"""Add a matched document to the current Document.</span>
 
 <span class="sd">        :param document: Sub-document to be added</span>
-<span class="sd">        :param kwargs: Extra key value arguments</span>
 <span class="sd">        :return: the newly added sub-document in :class:`Document` view</span>
 <span class="sd">        :rtype: :class:`Document` view</span>
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
         <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">match</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span>
-            <span class="n">granularity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">granularity</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
+        <span class="n">match</span><span class="o">.</span><span class="n">granularity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">granularity</span>
+        <span class="n">match</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span>
 
         <span class="k">return</span> <span class="n">match</span></div>
 
