@@ -10,7 +10,6 @@ from fastapi import HTTPException, UploadFile, File, Query, Depends
 
 from jina import Flow, __docker_host__
 from jina.helper import cached_property
-from jina.peapods import CompoundPod
 from jina.peapods.peas.helper import update_runtime_cls
 from jina.peapods.peas.container_helper import get_gpu_device_requests
 from jina.enums import (
@@ -156,46 +155,28 @@ class FlowDepends:
             )
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
-                if isinstance(pod, CompoundPod):
-                    if (
-                        runtime_cls
-                        in [
-                            'WorkerRuntime',
-                            'ContainerRuntime',
-                        ]
-                        + list(GATEWAY_RUNTIME_DICT.values())
-                    ):
-                        # For a `CompoundPod`, publish ports for head Pea & tail Pea
-                        # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
-                        # to handle `CompoundPod` inside partial-daemon.
-                        for pea_args in [pod.head_args, pod.tail_args]:
-                            pea_args.runs_in_docker = False
-                            self._update_port_mapping(pea_args, pod_name, port_mapping)
-                else:
-                    if runtime_cls in ['WorkerRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
-                    ):
-                        pod.args.runs_in_docker = True
-                        current_ports = Ports()
-                        for port_name in Ports.__fields__:
-                            setattr(
-                                current_ports,
-                                port_name,
-                                getattr(pod.args, port_name, None),
-                            )
-
-                        port_mapping.append(
-                            PortMapping(
-                                pod_name=pod_name, pea_name='', ports=current_ports
-                            )
+                if runtime_cls in ['WorkerRuntime'] + list(
+                    GATEWAY_RUNTIME_DICT.values()
+                ):
+                    pod.args.runs_in_docker = True
+                    current_ports = Ports()
+                    for port_name in Ports.__fields__:
+                        setattr(
+                            current_ports,
+                            port_name,
+                            getattr(pod.args, port_name, None),
                         )
-                    elif (
-                        runtime_cls in ['ContainerRuntime']
-                        and hasattr(pod.args, 'replicas')
-                        and pod.args.replicas > 1
-                    ):
-                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
-                            self._update_port_mapping(pea_args, pod_name, port_mapping)
+
+                    port_mapping.append(
+                        PortMapping(pod_name=pod_name, pea_name='', ports=current_ports)
+                    )
+                elif (
+                    runtime_cls in ['ContainerRuntime']
+                    and hasattr(pod.args, 'replicas')
+                    and pod.args.replicas > 1
+                ):
+                    for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                        self._update_port_mapping(pea_args, pod_name, port_mapping)
 
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon

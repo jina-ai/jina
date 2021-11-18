@@ -6,7 +6,7 @@ from typing import Dict, Optional, Type, Union
 from jina.helper import colored, random_port
 from jina.peapods.pods.factory import PodFactory
 from jina.peapods.peas.factory import PeaFactory
-from jina.peapods import BasePod, BasePea, CompoundPod
+from jina.peapods import BasePod, BasePea
 from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
@@ -23,7 +23,7 @@ class PartialStore(ABC):
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         self.item = PartialStoreItem()
-        self.object: Union['Pea', 'Pod', 'Flow'] = None
+        self.object: Union[Type['BasePea'], Type['BasePod'], 'Flow'] = None
 
     @abstractmethod
     def add(self, *args, **kwargs) -> PartialStoreItem:
@@ -146,54 +146,22 @@ class PartialFlowStore(PartialStore):
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
-                if isinstance(pod, CompoundPod):
-                    # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need
-                    # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
-                    # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
-                    # We do it only for runtimes that starts on local (not container or remote)
-                    if (
-                        runtime_cls
-                        in [
-                            'WorkerRuntime',
-                            'ContainerRuntime',
-                        ]
-                        + list(GATEWAY_RUNTIME_DICT.values())
-                    ):
-                        pod.args.runs_in_docker = False
-                        for shards_args in pod.shards_args:
-                            shards_args.runs_in_docker = False
-                        if port_mapping:
-                            # Ports for Head & Tail Peas in a CompoundPod set here.
-                            # This is specifically needed as `save_config` doesn't save `port_out` for a HeadPea
-                            # and `port_in` for a TailPea, which might be useful if replicas and head/tail Peas
-                            # are in different containers.
-                            for pea_args in [pod.head_args, pod.tail_args]:
-                                if pea_args.name in port_mapping.pea_names:
-                                    for port_name in Ports.__fields__:
-                                        self._set_pea_ports(
-                                            pea_args, port_mapping, port_name
-                                        )
-                            # Update shard_args according to updated head & tail args
-                            pod.assign_shards()
-                else:
-                    if port_mapping and (
-                        hasattr(pod.args, 'replicas') and pod.args.replicas > 1
-                    ):
-                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
-                            if pea_args.name in port_mapping.pea_names:
-                                for port_name in Ports.__fields__:
-                                    self._set_pea_ports(
-                                        pea_args, port_mapping, port_name
-                                    )
-                        pod.update_worker_pea_args()
+                if port_mapping and (
+                    hasattr(pod.args, 'replicas') and pod.args.replicas > 1
+                ):
+                    for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                        if pea_args.name in port_mapping.pea_names:
+                            for port_name in Ports.__fields__:
+                                self._set_pea_ports(pea_args, port_mapping, port_name)
+                    pod.update_worker_pea_args()
 
-                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `WorkerRuntime`
-                    # else, replica-peas would try connecting to head/tail-pea via __docker_host__
-                    if runtime_cls == 'WorkerRuntime' and (
-                        hasattr(pod.args, 'replicas') and pod.args.replicas > 1
-                    ):
-                        pod.args.runs_in_docker = False
-                        pod.update_worker_pea_args()
+                # avoid setting runs_in_docker for Pods with parallel > 1 and using `WorkerRuntime`
+                # else, replica-peas would try connecting to head/tail-pea via __docker_host__
+                if runtime_cls == 'WorkerRuntime' and (
+                    hasattr(pod.args, 'replicas') and pod.args.replicas > 1
+                ):
+                    pod.args.runs_in_docker = False
+                    pod.update_worker_pea_args()
 
             self.object = self.object.__enter__()
         except Exception as e:
