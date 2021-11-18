@@ -11,6 +11,7 @@ from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
 from ..asyncio import AsyncNewLoopRuntime
+from ...networking import GrpcConnectionPool
 from ....excepts import RuntimeTerminated
 from ....proto import jina_pb2_grpc
 from ....types.message import Message
@@ -49,7 +50,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        self._grpc_server.add_insecure_port(f'0.0.0.0:{self.args.port_in}')
+        bind_addr = f'0.0.0.0:{self.args.port_in}'
+        self._grpc_server.add_insecure_port(bind_addr)
+        self.logger.debug(f'Start listening on {bind_addr}')
         await self._grpc_server.start()
 
     async def async_run_forever(self):
@@ -61,6 +64,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('Cancel WorkerRuntime')
 
         await self._grpc_server.stop(0)
+        self.logger.debug('Stopped GRPC Server')
 
     async def async_teardown(self):
         """Close the data request handler"""

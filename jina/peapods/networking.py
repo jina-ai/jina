@@ -1,7 +1,6 @@
 import asyncio
 import ipaddress
 import random
-from argparse import Namespace
 from threading import Thread
 from typing import Optional, List, Dict, Callable, TYPE_CHECKING
 
@@ -10,9 +9,8 @@ import grpc
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
 from jina.types.message import Message
-from .. import __default_host__, __docker_host__
 from ..enums import PollingType
-from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
+from ..helper import get_or_reuse_loop
 from ..types.message.common import ControlMessage
 
 if TYPE_CHECKING:
