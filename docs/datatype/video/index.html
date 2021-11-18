@@ -715,7 +715,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.mp4'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_video_blob</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_video_blob</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
@@ -741,7 +741,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.mp4'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_video_blob</span><span class="p">(</span><span class="n">only_keyframes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_video_blob</span><span class="p">(</span><span class="n">only_keyframes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -768,7 +768,7 @@
 
 <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.mp4'</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">convert_uri_to_video_blob</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">load_uri_to_video_blob</span><span class="p">()</span>
     <span class="o">.</span><span class="n">dump_video_blob_to_file</span><span class="p">(</span><span class="s1">'60fps.mp4'</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>

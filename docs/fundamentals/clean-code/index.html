@@ -936,7 +936,7 @@ It also reduces the network overhead.</p>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">to_blob_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>  <span class="c1"># conversion happens inside Flow</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>  <span class="c1"># conversion happens inside Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
@@ -959,7 +959,7 @@ It also reduces the network overhead.</p>
     <span class="n">image_uris</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'/.workspace/*.png'</span><span class="p">)</span>  <span class="c1"># load high resolution images.</span>
     <span class="k">for</span> <span class="n">image_uri</span> <span class="ow">in</span> <span class="n">image_uris</span><span class="p">:</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">image_uri</span><span class="p">)</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>  <span class="c1"># time consuming-job on client side</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>  <span class="c1"># time consuming-job on client side</span>
         <span class="k">yield</span> <span class="n">doc</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>

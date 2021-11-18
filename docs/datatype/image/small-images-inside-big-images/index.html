@@ -1286,7 +1286,7 @@ This helper function will convert image files into Jina Documents and yield them
 <span class="k">def</span> <span class="nf">input_generator</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="s1">'images/*.jpg'</span><span class="p">):</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'filename'</span><span class="p">:</span> <span class="n">filename</span><span class="p">})</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
         <span class="k">yield</span> <span class="n">doc</span>
 </pre></div>
 </div>
@@ -1346,7 +1346,7 @@ For each image, we will create a Jina Document. Then we send our documents to th
 <span class="k">with</span> <span class="n">query_flow</span><span class="p">:</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'query/*.jpg'</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
     <span class="n">resp</span> <span class="o">=</span> <span class="n">query_flow</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">'query:'</span><span class="p">)</span>

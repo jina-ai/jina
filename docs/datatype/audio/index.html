@@ -754,7 +754,7 @@ Your browser does not support the audio element.
 <p>You can use Jina Document API to load a wav file as a Document.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.wav'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_audio_blob</span><span class="p">()</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'toy.wav'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_audio_blob</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 </pre></div>
@@ -775,7 +775,7 @@ Your browser does not support the audio element.
 <p>Let’s load the “hello” audio file, reverse it and finally save it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'hello.wav'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_audio_blob</span><span class="p">()</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'hello.wav'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_audio_blob</span><span class="p">()</span>
 <span class="n">d</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">d</span><span class="o">.</span><span class="n">dump_audio_blob_to_file</span><span class="p">(</span><span class="s1">'olleh.wav'</span><span class="p">)</span>
 </pre></div>

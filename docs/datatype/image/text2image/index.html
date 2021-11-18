@@ -1019,7 +1019,7 @@ This helper function will convert the image files into Documents, create a gener
 <span class="k">def</span> <span class="nf">input_docs</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">'*'</span><span class="p">)):</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'filename'</span><span class="p">:</span> <span class="n">fn</span><span class="p">})</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
         <span class="k">yield</span> <span class="n">doc</span> 
 </pre></div>
 </div>

@@ -701,7 +701,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'apple.png'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -723,7 +723,7 @@
 
 <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'apple.png'</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
     <span class="o">.</span><span class="n">set_image_blob_shape</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
     <span class="o">.</span><span class="n">set_image_blob_normalization</span><span class="p">()</span>
     <span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -781,7 +781,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'docs/datatype/image/complicated-image.jpeg'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 <span class="n">d</span><span class="o">.</span><span class="n">convert_image_blob_to_sliding_windows</span><span class="p">(</span><span class="n">window_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>

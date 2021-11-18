@@ -761,7 +761,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Local image URI</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'apple.png'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'apple.png'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -775,7 +775,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Remote text URI</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'https://www.gutenberg.org/files/1342/1342-0.txt'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_text</span><span class="p">()</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'https://www.gutenberg.org/files/1342/1342-0.txt'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_text</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
 </pre></div>
@@ -793,7 +793,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'''data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA</span>
 <span class="s1">AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO</span>
 <span class="s1">9TXL0Y4OHwAAAABJRU5ErkJggg==</span>
-<span class="s1">'''</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+<span class="s1">'''</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
 </pre></div>
@@ -808,11 +808,11 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 </div>
 </div>
-<p>There are more <code class="docutils literal notranslate"><span class="pre">.convert_uri_to_*</span></code> functions that allow you to read <a class="reference internal" href="../../../datatype/text/#text-type"><span class="std std-ref">text</span></a>, <a class="reference internal" href="../../../datatype/image/#image-type"><span class="std std-ref">image</span></a>, <a class="reference internal" href="../../../datatype/video/#video-type"><span class="std std-ref">video</span></a>, <a class="reference internal" href="../../../datatype/mesh/#mesh-type"><span class="std std-ref">3D mesh</span></a>, <a class="reference internal" href="../../../datatype/audio/#audio-type"><span class="std std-ref">audio</span></a> and <a class="reference internal" href="../../../datatype/tabular/#table-type"><span class="std std-ref">tabular</span></a> data into Jina.</p>
+<p>There are more <code class="docutils literal notranslate"><span class="pre">.load_uri_to_*</span></code> functions that allow you to read <a class="reference internal" href="../../../datatype/text/#text-type"><span class="std std-ref">text</span></a>, <a class="reference internal" href="../../../datatype/image/#image-type"><span class="std std-ref">image</span></a>, <a class="reference internal" href="../../../datatype/video/#video-type"><span class="std std-ref">video</span></a>, <a class="reference internal" href="../../../datatype/mesh/#mesh-type"><span class="std std-ref">3D mesh</span></a>, <a class="reference internal" href="../../../datatype/audio/#audio-type"><span class="std std-ref">audio</span></a> and <a class="reference internal" href="../../../datatype/tabular/#table-type"><span class="std std-ref">tabular</span></a> data into Jina.</p>
 <div class="tip admonition">
 <p class="admonition-title">Write to data URI</p>
 <p>Inline data URI is helpful when you need a quick visualization in HTML, as it embeds all resources directly into that HTML.</p>
-<p>You can convert a URI to a data URI using <code class="docutils literal notranslate"><span class="pre">doc.convert_uri_to_datauri()</span></code>. This will fetch the resource and make it inline.</p>
+<p>You can convert a URI to a data URI using <code class="docutils literal notranslate"><span class="pre">doc.load_uri_to_datauri()</span></code>. This will fetch the resource and make it inline.</p>
 </div>
 </section>
 </section>

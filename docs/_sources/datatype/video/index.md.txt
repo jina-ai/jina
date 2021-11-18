@@ -60,7 +60,7 @@ Let's use Jina Document API to load video this video:
 from jina import Document
 
 d = Document(uri='toy.mp4')
-d.convert_uri_to_video_blob()
+d.load_uri_to_video_blob()
 
 print(d.blob.shape)
 ```
@@ -93,7 +93,7 @@ From the sprite image one can observe our example video is quite redundant. Let'
 from jina import Document
 
 d = Document(uri='toy.mp4')
-d.convert_uri_to_video_blob(only_keyframes=True)
+d.load_uri_to_video_blob(only_keyframes=True)
 print(d.blob.shape)
 ```
 
@@ -129,7 +129,7 @@ from jina import Document
 
 d = (
     Document(uri='toy.mp4')
-    .convert_uri_to_video_blob()
+    .load_uri_to_video_blob()
     .dump_video_blob_to_file('60fps.mp4', 60)
 )
 ```

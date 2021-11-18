@@ -360,7 +360,7 @@ from jina import Document
 def input_docs(data_path):
     for fn in glob.glob(os.path.join(data_path, '*')):
         doc = Document(uri=fn, tags={'filename': fn})
-        doc.convert_uri_to_image_blob()
+        doc.load_uri_to_image_blob()
         yield doc 
 ```
 

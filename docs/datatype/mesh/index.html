@@ -712,7 +712,7 @@
 <h2>Point cloud<a class="headerlink" href="#point-cloud" title="Permalink to this headline">¶</a></h2>
 <p>Point cloud is another representation of a 3D mesh. It is made by repeated and uniformly sampling points within the 3D body. Comparing to the mesh representation, point cloud is a fixed size ndarray and hence easier for deep learning algorithms to handle. In Jina, you can simply load a 3D mesh and convert it into a point cloud via:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'viking.glb'</span><span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_point_cloud_blob</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'viking.glb'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_point_cloud_blob</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span>
 </pre></div>

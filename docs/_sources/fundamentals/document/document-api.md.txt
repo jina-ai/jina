@@ -83,7 +83,7 @@ The value of `.uri` can point to either local URI, remote URI or [data URI](http
 ```python
 from jina import Document
 
-d1 = Document(uri='apple.png').convert_uri_to_image_blob()
+d1 = Document(uri='apple.png').load_uri_to_image_blob()
 print(d1.content_type, d1.content)
 ```
 
@@ -101,7 +101,7 @@ blob [[[255 255 255]
 ```python
 from jina import Document
 
-d1 = Document(uri='https://www.gutenberg.org/files/1342/1342-0.txt').convert_uri_to_text()
+d1 = Document(uri='https://www.gutenberg.org/files/1342/1342-0.txt').load_uri_to_text()
 
 print(d1.content_type, d1.content)
 ```
@@ -123,7 +123,7 @@ from jina import Document
 d1 = Document(uri='''data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA
 AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
 9TXL0Y4OHwAAAABJRU5ErkJggg==
-''').convert_uri_to_image_blob()
+''').load_uri_to_image_blob()
 
 print(d1.content_type, d1.content)
 ```
@@ -138,13 +138,13 @@ blob [[[255 255 255]
 
 ````
 
-There are more `.convert_uri_to_*` functions that allow you to read {ref}`text<text-type>`, {ref}`image<image-type>`, {ref}`video<video-type>`, {ref}`3D mesh<mesh-type>`, {ref}`audio<audio-type>` and {ref}`tabular<table-type>` data into Jina.
+There are more `.load_uri_to_*` functions that allow you to read {ref}`text<text-type>`, {ref}`image<image-type>`, {ref}`video<video-type>`, {ref}`3D mesh<mesh-type>`, {ref}`audio<audio-type>` and {ref}`tabular<table-type>` data into Jina.
 
 ```{admonition} Write to data URI
 :class: tip
 Inline data URI is helpful when you need a quick visualization in HTML, as it embeds all resources directly into that HTML. 
 
-You can convert a URI to a data URI using `doc.convert_uri_to_datauri()`. This will fetch the resource and make it inline.
+You can convert a URI to a data URI using `doc.load_uri_to_datauri()`. This will fetch the resource and make it inline.
 ```
 
 

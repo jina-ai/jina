@@ -704,7 +704,7 @@
 <span class="c1"># Load some online CSV file dataset</span>
 <span class="n">src</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
     <span class="n">uri</span><span class="o">=</span><span class="s1">'https://perso.telecom-paristech.fr/eagan/class/igr204/data/film.csv'</span>
-<span class="p">)</span><span class="o">.</span><span class="n">convert_uri_to_text</span><span class="p">(</span><span class="s1">'iso8859'</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_text</span><span class="p">(</span><span class="s1">'iso8859'</span><span class="p">)</span>
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">from_csv</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">))</span>
 </pre></div>
 </div>

@@ -695,7 +695,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'https://www.w3.org/History/19921103-hypertext/hypertext/README.html'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_text</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_text</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{'id': 'c558c262-3738-11ec-861b-1e008a366d48', 'uri': 'https://www.w3.org/History/19921103-hypertext/hypertext/README.html', 'mime_type': 'text/plain', 'text': '&lt;TITLE&gt;Read Me&lt;/TITLE&gt;\n&lt;NEXTID 7&gt;\n&lt;H1&gt;WorldWideWeb distributed code&lt;/H1&gt;See the CERN &lt;A NAME=2 HREF=Copyright.html&gt;copyright&lt;/A&gt; .  This is the README file which you get when\nyou unwrap one of our tar files. These files contain information about\nhypertext, hypertext systems, and the WorldWideWeb project. If you\nhave taken this with a .tar file, you will have only a subset of the\nfiles.&lt;P&gt;\nTHIS FILE IS A VERY ABRIDGED VERSION OF THE INFORMATION AVAILABLE\nON THE WEB.   IF IN DOUBT, READ THE WEB DIRECTLY. If you have not\ngot any browser installed, do this by telnet to info.cern.ch (no username\nor password).\n&lt;H2&gt;Archive Directory structure&lt;/...'}
