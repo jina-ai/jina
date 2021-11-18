@@ -14,15 +14,20 @@ cur_dir = os.path.dirname(__file__)
 
 @pytest.mark.asyncio
 async def test_wait_for_ready(
-    slow_init_executor_image, k8s_cluster, load_images_in_kind
+    k8s_cluster,
+    image_name_tag_map,
 ):
+    image_names = ['slow-init-executor']
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
     flow = Flow(
         name='test-flow-slow-executor',
         infrastructure='K8S',
         timeout_ready=120000,
     ).add(
         name='slow_init_executor',
-        uses=slow_init_executor_image,
+        uses=images[0],
         timeout_ready=360000,
     )
 
