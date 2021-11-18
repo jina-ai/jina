@@ -71,17 +71,6 @@ jobs:
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
 
-  deploy-jinad-cloud-jina-ai:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Destroy previous & Deploy new JinaD
-          repo: jina-ai/jina-terraform
-          token: ${{ secrets.JINA_DEV_BOT }}
-          ref: refs/heads/main
-          inputs: '{ "TFID": "cloud.jina.ai", "instances": "{ \"cloud.jina.ai\": { \"type\": \"t2.micro\", \"disk\" = { \"type\" = \"gp2\", \"size\" = 20 }, \"pip\": [], \"command\": \"sudo echo Hello from cloud.jina.ai\"} }", "region": "us-east-1", "cloudflare_record_name": "cloud" }'
-
   update-doc:
     runs-on: ubuntu-latest
     steps:

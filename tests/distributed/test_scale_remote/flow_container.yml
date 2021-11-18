@@ -1,0 +1,9 @@
+jtype: Flow
+with:
+  port_expose: 12345
+executors:
+  - name: executor
+    uses: docker://jina/scale-executor
+    replicas: $REPLICAS
+    shards: $SHARDS
+    polling: ANY

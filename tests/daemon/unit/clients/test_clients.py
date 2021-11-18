@@ -305,6 +305,68 @@ async def test_peapod_create_async(monkeypatch, identity, client_cls):
     assert await client.create(identity, payload) is None
 
 
+def test_pod_rolling_update(monkeypatch):
+    payload = {'1': 2}
+
+    identity = DaemonID('jpod')
+    client = PodClient(uri=MOCK_URI, logger=logger)
+    monkeypatch.setattr(
+        aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
+    )
+    response = client.rolling_update(identity, uses_with=payload)
+    assert response == {1: 2}
+
+    monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
+    assert client.rolling_update(identity, uses_with=payload) is None
+
+
+@pytest.mark.asyncio
+async def test_pod_rolling_update_async(monkeypatch):
+    payload = {'1': 2}
+
+    identity = DaemonID('jpod')
+    client = AsyncPodClient(uri=MOCK_URI, logger=logger)
+    monkeypatch.setattr(
+        aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
+    )
+    response = await client.rolling_update(identity, uses_with=payload)
+    assert response == {1: 2}
+
+    monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
+    assert await client.rolling_update(identity, uses_with=payload) is None
+
+
+def test_pod_scale(monkeypatch):
+    payload = {'1': 2}
+
+    identity = DaemonID('jpod')
+    client = PodClient(uri=MOCK_URI, logger=logger)
+    monkeypatch.setattr(
+        aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
+    )
+    response = client.scale(identity, replicas=2)
+    assert response == {1: 2}
+
+    monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
+    assert client.scale(identity, replicas=2) is None
+
+
+@pytest.mark.asyncio
+async def test_pod_scale_async(monkeypatch):
+    payload = {'1': 2}
+
+    identity = DaemonID('jpod')
+    client = AsyncPodClient(uri=MOCK_URI, logger=logger)
+    monkeypatch.setattr(
+        aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
+    )
+    response = await client.scale(identity, replicas=2)
+    assert response == {1: 2}
+
+    monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
+    assert await client.scale(identity, replicas=2) is None
+
+
 @pytest.mark.parametrize(
     'identity',
     [DaemonID('jpea'), DaemonID('jpod')],

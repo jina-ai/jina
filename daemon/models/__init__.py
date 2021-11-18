@@ -31,13 +31,3 @@ class DaemonStatus(BaseModel):
     pods: ContainerStoreStatus
     flows: ContainerStoreStatus
     used_memory: str
-
-
-class UpdateOperationEnum(Enum):
-    """Represents the type of operation to perform in the update
-
-    We consider these an `update` operation since they **change** the underlying state
-    """
-
-    rolling_update = 'rolling_update'
-    dump = 'dump'

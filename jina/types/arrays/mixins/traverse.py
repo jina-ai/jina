@@ -16,28 +16,21 @@ if TYPE_CHECKING:
 
 
 def _check_traversal_path_type(tp):
-    is_deprecate_scheme = True
     if isinstance(tp, str):
-        tp = tp.split(',')
-        is_deprecate_scheme = False
-
-    if not (
-        tp
-        and not isinstance(tp, str)
-        and isinstance(tp, Sequence)
-        and all(isinstance(p, str) for p in tp)
-    ):
-        raise TypeError('`traversal_paths` needs to be `Sequence[str]`')
-
-    if is_deprecate_scheme:
+        return tp
+    elif isinstance(tp, Sequence) and all(isinstance(p, str) for p in tp):
+        tp = ','.join(tp)
         warnings.warn(
             f'The syntax of traversal_path is changed to comma-separated string, '
             f'that means your need to change {tp} into `{",".join(tp)}`. '
             f'The old list of string syntax will be deprecated soon',
             DeprecationWarning,
         )
-
-    return tp
+        return tp
+    else:
+        raise TypeError(
+            '`traversal_paths` needs to be a string of comma-separated paths'
+        )
 
 
 class TraverseMixin:
@@ -71,7 +64,7 @@ class TraverseMixin:
         """
         traversal_paths = _check_traversal_path_type(traversal_paths)
 
-        for p in traversal_paths:
+        for p in traversal_paths.split(','):
             yield from self._traverse(self, p, filter_fn=filter_fn)
 
     @staticmethod
@@ -120,7 +113,7 @@ class TraverseMixin:
         """
         traversal_paths = _check_traversal_path_type(traversal_paths)
 
-        for p in traversal_paths:
+        for p in traversal_paths.split(','):
             yield self._flatten(self._traverse(self, p, filter_fn=filter_fn))
 
     def traverse_flat(
@@ -142,11 +135,7 @@ class TraverseMixin:
         :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
         """
         traversal_paths = _check_traversal_path_type(traversal_paths)
-        if (
-            len(traversal_paths) == 1
-            and traversal_paths[0] == 'r'
-            and filter_fn is None
-        ):
+        if traversal_paths == 'r' and filter_fn is None:
             return self
 
         leaves = self.traverse(traversal_paths, filter_fn=filter_fn)
