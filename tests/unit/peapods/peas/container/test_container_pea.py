@@ -91,15 +91,8 @@ def test_failing_executor(fail_start_docker_image_built):
         pea._container
 
 
-@pytest.mark.slow
-@pytest.mark.skipif(
-    'GITHUB_WORKFLOW' in os.environ,
-    reason='for some reason this fails persistently in CI',
-)
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     import docker
-
-    mock = mocker.Mock()
 
     mocker.patch(
         'jina.peapods.runtimes.asyncio.AsyncNewLoopRuntime.is_ready',
@@ -134,7 +127,6 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             return MockContainers.MockContainer()
 
         def run(self, *args, **kwargs):
-            mock_kwargs = {k: kwargs[k] for k in ['hello', 'environment']}
             assert 'ports' in kwargs
             assert 'environment' in kwargs
             envs = kwargs['environment']
@@ -146,7 +138,6 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             assert envs['VAR2'] == 'FOO'
             assert 'hello' in kwargs
             assert kwargs['hello'] == 0
-            del mock_kwargs['environment']['JINA_LOG_ID']
             return MockContainers.MockContainer()
 
     class MockClient:
@@ -187,7 +178,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     )
     with ContainerPea(args) as pea:
         pass
-
+    pea.join()
     assert pea.worker.exitcode == 0
 
 
