@@ -50,7 +50,7 @@ class DocumentArray(
 
     def __init__(self, docs: Optional[DocumentArraySourceType] = None):
         super().__init__()
-        self._pb_body = []
+        self._pb_body = RepeatedContainer()
         if docs is not None:
             if isinstance(docs, jina_pb2.DocumentArrayProto):
                 # This would happen when loading from file or memmap
