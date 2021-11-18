@@ -16,25 +16,21 @@ if TYPE_CHECKING:
 
 
 def _check_traversal_path_type(tp):
-    is_deprecate_scheme = True
     if isinstance(tp, str):
-        is_deprecate_scheme = False
+        return tp
     elif isinstance(tp, Sequence) and all(isinstance(p, str) for p in tp):
         tp = ','.join(tp)
-    else:
-        raise TypeError(
-            '`traversal_paths` needs to be a string of comma-separated paths'
-        )
-
-    if is_deprecate_scheme:
         warnings.warn(
             f'The syntax of traversal_path is changed to comma-separated string, '
             f'that means your need to change {tp} into `{",".join(tp)}`. '
             f'The old list of string syntax will be deprecated soon',
             DeprecationWarning,
         )
-
-    return tp
+        return tp
+    else:
+        raise TypeError(
+            '`traversal_paths` needs to be a string of comma-separated paths'
+        )
 
 
 class TraverseMixin:
