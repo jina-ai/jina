@@ -786,7 +786,7 @@
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span>
@@ -887,8 +887,8 @@
                 <span class="n">source_id</span> <span class="o">=</span> <span class="n">doc2_id</span>
                 <span class="n">target_id</span> <span class="o">=</span> <span class="n">doc1_id</span>
 
-            <span class="n">source_node_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">source_id</span><span class="p">]])</span>
-            <span class="n">target_node_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">target_id</span><span class="p">]])</span>
+            <span class="n">source_node_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">source_id</span><span class="p">]])</span>
+            <span class="n">target_node_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">target_id</span><span class="p">]])</span>
 
             <span class="k">if</span> <span class="n">current_adjacency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">row</span> <span class="o">=</span> <span class="n">source_node_offset</span>
@@ -966,13 +966,13 @@
         <span class="n">current_adjacency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span>
         <span class="n">source_node_offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">source</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_source</span> <span class="k">else</span> <span class="n">source</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">source_docs</span>
             <span class="p">]</span>
         <span class="p">)</span>
         <span class="n">target_node_offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_dest</span> <span class="k">else</span> <span class="n">target</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">is_documents_dest</span> <span class="k">else</span> <span class="n">target</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">dest_docs</span>
             <span class="p">]</span>
         <span class="p">)</span>
@@ -1026,8 +1026,8 @@
 <span class="sd">        """</span>
         <span class="n">doc1_id</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc1</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc1</span>
         <span class="n">doc2_id</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc2</span>
-        <span class="n">offset1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">doc1_id</span><span class="p">]</span>
-        <span class="n">offset2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">doc2_id</span><span class="p">]</span>
+        <span class="n">offset1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">doc1_id</span><span class="p">]</span>
+        <span class="n">offset2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">doc2_id</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">)</span>
         <span class="p">):</span>
@@ -1137,7 +1137,7 @@
 <span class="sd">        :param doc: the document node from which to extract the outgoing nodes.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">doc</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">ChunkArray</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
@@ -1155,7 +1155,7 @@
 <span class="sd">        :param doc: the document node from which to extract the incoming nodes.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">doc</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_id_to_index</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">_index_map</span><span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">ChunkArray</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
@@ -1302,7 +1302,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 17, 2021.
+                    Last updated on Nov 18, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
