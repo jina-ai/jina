@@ -68,9 +68,7 @@ def send_requests(
     'GITHUB_WORKFLOW' in os.environ,
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
-async def test_no_message_lost_during_scaling(
-    slow_process_executor_image, logger, k8s_cluster, image_name_tag_map
-):
+async def test_no_message_lost_during_scaling(logger, k8s_cluster, image_name_tag_map):
     image_names = ['slow-process-executor']
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
