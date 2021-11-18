@@ -33,7 +33,7 @@ class JinaDProcessTarget:
         is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
         is_ready: Union['multiprocessing.Event', 'threading.Event'],
         is_cancelled: Union['multiprocessing.Event', 'threading.Event'],
-        envs: Optional[Dict] = {},
+        envs: Optional[Dict] = None,
     ):
         """Method responsible to manage a remote Pea
 
@@ -212,6 +212,7 @@ class JinaDPea(BasePea):
             target=JinaDProcessTarget(),
             kwargs={
                 'args': args,
+                'envs': self._envs,
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,

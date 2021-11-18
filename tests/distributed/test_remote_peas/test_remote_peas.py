@@ -13,6 +13,10 @@ from jina.parsers import set_pea_parser
 HOST = '127.0.0.1'
 
 
+def is_pea_ready(args):
+    return is_ready(f'{HOST}:{args.port_in}')
+
+
 @pytest.mark.asyncio
 async def test_async_jinad_client():
     args = set_pea_parser().parse_args([])
@@ -23,7 +27,7 @@ async def test_async_jinad_client():
     )
     assert DaemonID(workspace_id)
     payload = replace_enum_to_str(vars(args))
-    assert not is_ready(f'{HOST}:{args.port_in}')
+    assert not is_pea_ready(args)
 
     success, response = await client.peas.create(
         workspace_id=workspace_id, payload=payload
@@ -31,9 +35,9 @@ async def test_async_jinad_client():
     assert success
     pea_id = DaemonID(response)
 
-    assert is_ready(f'{HOST}:{args.port_in}')
+    assert is_pea_ready(args)
     assert await client.peas.delete(pea_id)
-    assert not is_ready(f'{HOST}:{args.port_in}')
+    assert not is_pea_ready(args)
 
 
 def test_sync_jinad_client():
@@ -45,15 +49,15 @@ def test_sync_jinad_client():
     )
     assert DaemonID(workspace_id)
     payload = replace_enum_to_str(vars(args))
-    assert not is_ready(f'{HOST}:{args.port_in}')
+    assert not is_pea_ready(args)
 
     success, response = client.peas.create(workspace_id=workspace_id, payload=payload)
     assert success
     pea_id = DaemonID(response)
 
-    assert is_ready(f'{HOST}:{args.port_in}')
+    assert is_pea_ready(args)
     assert client.peas.delete(pea_id)
-    assert not is_ready(f'{HOST}:{args.port_in}')
+    assert not is_pea_ready(args)
 
 
 @pytest.mark.parametrize(
@@ -81,17 +85,17 @@ def test_jinad_process_target(worker_cls, event):
     )
     process.start()
     is_ready_event.wait()
-    assert is_ready(f'{HOST}:{args.port_in}')
+    assert is_pea_ready(args)
     process.join()
     assert is_shutdown_event.is_set()
-    assert not is_ready(f'{HOST}:{args.port_in}')
+    assert not is_pea_ready(args)
 
 
 @pytest.mark.parametrize('runtime_backend', ['PROCESS', 'THREAD'])
 def test_jinad_pea(runtime_backend):
     args = set_pea_parser().parse_args(['--runtime-backend', runtime_backend])
+    assert not is_pea_ready(args)
 
-    assert not is_ready(f'{HOST}:{args.port_in}')
     with JinaDPea(args):
-        assert is_ready(f'{HOST}:{args.port_in}')
-    assert not is_ready(f'{HOST}:{args.port_in}')
+        assert is_pea_ready(args)
+    assert not is_pea_ready(args)
