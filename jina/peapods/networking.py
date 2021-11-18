@@ -386,7 +386,7 @@ class GrpcConnectionPool:
                 try:
                     return await stub.Call(new_messages)
                 except AioRpcError as e:
-                    if e.code() != grpc.StatusCode.UNAVAILABLE:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
                         raise
                     else:
                         self._logger.debug(
@@ -466,17 +466,19 @@ class GrpcConnectionPool:
         :param timeout: timeout for the send
         :returns: the response message
         """
-        with grpc.insecure_channel(
-            target,
-            options=GrpcConnectionPool.get_default_grpc_options(),
-        ) as channel:
-            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-            for i in range(3):
-                try:
-                    return stub.Call([msg], timeout=timeout)
-                except grpc.RpcError as e:
-                    if e.code() != grpc.StatusCode.UNAVAILABLE:
-                        raise
+
+        for i in range(3):
+            try:
+                with grpc.insecure_channel(
+                    target,
+                    options=GrpcConnectionPool.get_default_grpc_options(),
+                ) as channel:
+                    stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+                    response = stub.Call([msg], timeout=timeout)
+                    return response
+            except grpc.RpcError as e:
+                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    raise
 
     @staticmethod
     def get_default_grpc_options():
