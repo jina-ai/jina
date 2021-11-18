@@ -147,6 +147,7 @@ jobs:
       - name: Test
         id: test
         run: |
+          shopt -s expand_aliases
           alias run_pytest="pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s"
           run_pytest tests/unit/peapods/runtimes/worker && run_pytest tests/unit/peapods/runtimes/head && run_pytest tests/unit/peapods/runtimes/request_handlers/ && run_pytest tests/unit/peapods/runtimes/gateway/grpc/test_grpc_gateway_runtime.py && run_pytest tests/unit/peapods/runtimes/gateway/graph/test_topology_graph.py && run_pytest tests/unit/peapods/test_networking.py && run_pytest tests/unit/peapods/pods/test_pods.py tests/unit/peapods/pods/test_scale.py && run_pytest tests/unit/peapods/pods/test_pod_factory.py  && run_pytest tests/integration/runtimes/test_runtimes.py && run_pytest tests/integration/peas/test_pea.py tests/integration/peas/container/test_pea.py && run_pytest tests/unit/peapods/peas/container/test_container_pea.py && run_pytest tests/unit/peapods/peas/test_pea.py
         timeout-minutes: 30
