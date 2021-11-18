@@ -83,7 +83,7 @@ class CLIPImageEncoder(Executor):
 
 ### **YoloV5Segmenter**
 Since we want to retrieve small images in bigger images, the technique that we will heavily rely on is segmenting. 
-Basicly, we want to do object detection on the indexed images. This will generate bounding boxes around objects 
+Basically, we want to do object detection on the indexed images. This will generate bounding boxes around objects 
 detected inside the images. The detected objects will be extracted and added as chunks to the original documents.
 By the way, guess what is the state-of-the-art object detection model ?
 
@@ -97,7 +97,7 @@ implement the method `load` which checks if the model exists in the the Torch Hu
 For our use case, we will just rely on `yolov5s` (small version of `yolov5`). Of course, for better quality, you can 
 choose a more complicated model or your custom model.
 
-Furtheremore, we want **YoloV5Segmenter** to support both **GPU** and **CPU** and it should be able to process in 
+Furthermore, we want **YoloV5Segmenter** to support both **GPU** and **CPU** and it should be able to process in 
 batches. Again, this is as simple as adding parameters `device` and `batch_size` and using them during segmenting.
 
 To perform segmenting, we will implement method `_segment_docs` which performs the following steps:

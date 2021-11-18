@@ -3,7 +3,7 @@
 
 Text is everywhere and it is easily accessible. Neural search with text is probably the first application one can think of. From fuzzy string matching to question-answering, you can leverage Jina to build all kinds of text-based neural search solution in just minutes. By leveraging the state-of-the-art natural language processing and pretrained models, you can easily use Jina to bring the text intelligence of your app to the next level.
 
-In this chapter, we provide some tutorials to help you get started with different text-related tasks. But before that, let's recap our knowledege on `Document` and see how *in general* Jina is able to handle text data.
+In this chapter, we provide some tutorials to help you get started with different text-related tasks. But before that, let's recap our knowledge on `Document` and see how *in general* Jina is able to handle text data.
 
 ## Textual document
 
