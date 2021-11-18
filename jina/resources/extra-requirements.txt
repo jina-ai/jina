@@ -58,7 +58,6 @@ pytest-reraise:             test
 flaky:                      test
 mock:                       test
 requests-mock:              test
-prettytable:                devel
 optuna:                     devel
 websockets:                 standard, daemon, devel
 pydantic:                   standard, daemon, devel, demo
@@ -79,3 +78,4 @@ pytest-lazy-fixture:        test
 datasets:                   cicd
 av:                         cicd
 trimesh:                    cicd
+paddlepaddle:               cicd

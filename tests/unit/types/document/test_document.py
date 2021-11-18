@@ -12,7 +12,6 @@ from jina import DocumentArray
 from jina.logging.profile import TimeContext
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
-from jina.types.ndarray.generic import NdArray
 from jina.types.request import Request
 from jina.types.score import NamedScore
 from tests import random_docs
@@ -54,26 +53,6 @@ def torch_sparse_matrix(row, column, data):
     shape = [4, 10]
     indices = [list(row), list(column)]
     return torch.sparse_coo_tensor(indices, data, shape)
-
-
-@pytest.mark.parametrize('field', ['blob', 'embedding', 'content'])
-def test_ndarray_get_set(field):
-    a = Document()
-    b = np.random.random([10, 10])
-    setattr(a, field, b)
-    np.testing.assert_equal(getattr(a, field), b)
-
-    b = np.random.random([10, 10])
-    c = NdArray()
-    c.value = b
-    setattr(a, field, c)
-    np.testing.assert_equal(getattr(a, field), b)
-
-    b = np.random.random([10, 10])
-    c = NdArray()
-    c.value = b
-    setattr(a, field, c._pb_body)
-    np.testing.assert_equal(getattr(a, field), b)
 
 
 def test_sparse_get_set():
@@ -529,104 +508,6 @@ def test_get_attr_values():
     np.testing.assert_equal(res4, np.array([1, 2, 3]))
 
 
-def test_document_sparse_attributes_scipy(scipy_sparse_matrix):
-    d = Document()
-    d.embedding = scipy_sparse_matrix
-    d.blob = scipy_sparse_matrix
-    np.testing.assert_array_equal(d.embedding.todense(), scipy_sparse_matrix.todense())
-    np.testing.assert_array_equal(d.blob.todense(), scipy_sparse_matrix.todense())
-
-
-def test_document_sparse_attributes_tensorflow(tf_sparse_matrix):
-    import tensorflow as tf
-
-    d = Document()
-    d.embedding = tf_sparse_matrix
-    d.blob = tf_sparse_matrix
-    np.testing.assert_array_equal(
-        d.embedding.todense(), tf.sparse.to_dense(tf_sparse_matrix)
-    )
-    np.testing.assert_array_equal(
-        d.blob.todense(), tf.sparse.to_dense(tf_sparse_matrix)
-    )
-
-
-def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
-    d = Document()
-    d.embedding = torch_sparse_matrix
-    d.blob = torch_sparse_matrix
-
-    np.testing.assert_array_equal(
-        d.embedding.todense(), torch_sparse_matrix.to_dense().numpy()
-    )
-    np.testing.assert_array_equal(
-        d.blob.todense(), torch_sparse_matrix.to_dense().numpy()
-    )
-
-
-@pytest.mark.parametrize(
-    'return_sparse_ndarray_cls_type, return_scipy_class_type, return_expected_type',
-    [
-        ('scipy', 'coo', coo_matrix),
-        ('scipy', 'csr', csr_matrix),
-        ('scipy', 'csc', csc_matrix),
-        ('scipy', 'bsr', bsr_matrix),
-        ('torch', None, torch.Tensor),
-        ('tf', None, tf.SparseTensor),
-    ],
-)
-@pytest.mark.parametrize('field', ['embedding', 'blob'])
-def test_document_sparse_embedding(
-    scipy_sparse_matrix,
-    return_sparse_ndarray_cls_type,
-    return_scipy_class_type,
-    return_expected_type,
-    field,
-):
-    d = Document()
-    setattr(d, field, scipy_sparse_matrix)
-    cls_type = None
-    sparse_kwargs = {}
-    if return_sparse_ndarray_cls_type == 'scipy':
-        from jina.types.ndarray.sparse.scipy import SparseNdArray
-
-        cls_type = SparseNdArray
-        sparse_kwargs['sp_format'] = return_scipy_class_type
-    elif return_sparse_ndarray_cls_type == 'torch':
-        from jina.types.ndarray.sparse.pytorch import SparseNdArray
-
-        cls_type = SparseNdArray
-    elif return_sparse_ndarray_cls_type == 'tf':
-        from jina.types.ndarray.sparse.tensorflow import SparseNdArray
-
-        cls_type = SparseNdArray
-
-    if field == 'blob':
-        field_sparse = d.get_sparse_blob(
-            sparse_ndarray_cls_type=cls_type, **sparse_kwargs
-        )
-    elif field == 'embedding':
-        field_sparse = d.get_sparse_embedding(
-            sparse_ndarray_cls_type=cls_type, **sparse_kwargs
-        )
-
-    assert field_sparse is not None
-    assert isinstance(field_sparse, return_expected_type)
-    if return_sparse_ndarray_cls_type == 'torch':
-        assert field_sparse.is_sparse
-
-    if return_sparse_ndarray_cls_type == 'scipy':
-        np.testing.assert_equal(field_sparse.todense(), scipy_sparse_matrix.todense())
-    elif return_sparse_ndarray_cls_type == 'torch':
-        np.testing.assert_equal(
-            field_sparse.to_dense().numpy(), scipy_sparse_matrix.todense()
-        )
-    elif return_scipy_class_type == 'tf':
-        np.testing.assert_equal(
-            tf.sparse.to_dense(field_sparse).numpy(), scipy_sparse_matrix.todense()
-        )
-
-
 def test_evaluations():
     document = Document()
     document.evaluations['operation'] = 10.0
@@ -774,94 +655,6 @@ def test_doc_update_given_fields_and_source_has_more_attributes(test_docs):
     assert doc1.tags == {'a': 'b'}
     assert (doc1.embedding != doc2.embedding).all()
     assert doc1.chunks != doc2.chunks
-
-
-def test_document_pretty_dict():
-    doc = Document(
-        blob=np.array([[0, 1, 2], [2, 1, 0]]),
-        embedding=np.array([1.0, 2.0, 3.0]),
-        tags={'hello': 'world'},
-    )
-    chunk = Document(doc, copy=True)
-    chunk.blob = np.array([[3, 4, 5], [5, 4, 3]])
-    chunk.embedding = np.array([4.0, 5.0, 6.0])
-    match = Document(doc, copy=True)
-    match.blob = np.array([[6, 7, 8], [8, 7, 6]])
-    match.embedding = np.array([7.0, 8.0, 9.0])
-    doc.chunks.append(chunk)
-    doc.matches.append(match)
-    assert doc.tags == {'hello': 'world'}
-    assert doc.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert doc.embedding.tolist() == [1.0, 2.0, 3.0]
-    assert doc.chunks[0].tags == {'hello': 'world'}
-    assert doc.chunks[0].blob.tolist() == [[3, 4, 5], [5, 4, 3]]
-    assert doc.chunks[0].embedding.tolist() == [4.0, 5.0, 6.0]
-    assert doc.matches[0].tags == {'hello': 'world'}
-    assert doc.matches[0].blob.tolist() == [[6, 7, 8], [8, 7, 6]]
-    assert doc.matches[0].embedding.tolist() == [7.0, 8.0, 9.0]
-
-    d = doc.dict(prettify_ndarrays=True)
-    assert d['blob'] == [[0, 1, 2], [2, 1, 0]]
-    assert d['embedding'] == [1.0, 2.0, 3.0]
-    assert d['tags'] == {'hello': 'world'}
-    assert d['chunks'][0]['blob'] == [[3, 4, 5], [5, 4, 3]]
-    assert d['chunks'][0]['embedding'] == [4.0, 5.0, 6.0]
-    assert d['chunks'][0]['tags'] == {'hello': 'world'}
-    assert d['matches'][0]['blob'] == [[6, 7, 8], [8, 7, 6]]
-    assert d['matches'][0]['embedding'] == [7.0, 8.0, 9.0]
-    assert d['matches'][0]['tags'] == {'hello': 'world'}
-
-    d_reconstructed = Document(d)
-    assert d_reconstructed.tags == {'hello': 'world'}
-    assert d_reconstructed.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert d_reconstructed.embedding.tolist() == [1.0, 2.0, 3.0]
-    assert d_reconstructed.chunks[0].tags == {'hello': 'world'}
-    assert d_reconstructed.chunks[0].blob.tolist() == [[3, 4, 5], [5, 4, 3]]
-    assert d_reconstructed.chunks[0].embedding.tolist() == [4.0, 5.0, 6.0]
-    assert d_reconstructed.matches[0].tags == {'hello': 'world'}
-    assert d_reconstructed.matches[0].blob.tolist() == [[6, 7, 8], [8, 7, 6]]
-    assert d_reconstructed.matches[0].embedding.tolist() == [7.0, 8.0, 9.0]
-
-
-def test_document_pretty_json():
-    doc = Document(
-        blob=np.array([[0, 1, 2], [2, 1, 0]]),
-        embedding=np.array([1.0, 2.0, 3.0]),
-        tags={'hello': 'world'},
-    )
-    doc.chunks.append(Document(doc, copy=True))
-    doc.matches.append(Document(doc, copy=True))
-    assert doc.tags == {'hello': 'world'}
-    assert doc.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert doc.embedding.tolist() == [1.0, 2.0, 3.0]
-    assert doc.chunks[0].tags == {'hello': 'world'}
-    assert doc.chunks[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert doc.chunks[0].embedding.tolist() == [1.0, 2.0, 3.0]
-    assert doc.matches[0].tags == {'hello': 'world'}
-    assert doc.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert doc.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
-    doc_json = doc.json(prettify_ndarrays=True)
-    d = json.loads(doc_json)
-    assert d['blob'] == [[0, 1, 2], [2, 1, 0]]
-    assert d['embedding'] == [1.0, 2.0, 3.0]
-    assert d['tags'] == {'hello': 'world'}
-    assert d['chunks'][0]['blob'] == [[0, 1, 2], [2, 1, 0]]
-    assert d['chunks'][0]['embedding'] == [1.0, 2.0, 3.0]
-    assert d['chunks'][0]['tags'] == {'hello': 'world'}
-    assert d['matches'][0]['blob'] == [[0, 1, 2], [2, 1, 0]]
-    assert d['matches'][0]['embedding'] == [1.0, 2.0, 3.0]
-    assert d['matches'][0]['tags'] == {'hello': 'world'}
-
-    d_reconstructed = Document(doc_json)
-    assert d_reconstructed.tags == {'hello': 'world'}
-    assert d_reconstructed.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert d_reconstructed.embedding.tolist() == [1.0, 2.0, 3.0]
-    assert d_reconstructed.chunks[0].tags == {'hello': 'world'}
-    assert d_reconstructed.chunks[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert d_reconstructed.chunks[0].embedding.tolist() == [1.0, 2.0, 3.0]
-    assert d_reconstructed.matches[0].tags == {'hello': 'world'}
-    assert d_reconstructed.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert d_reconstructed.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
 
 
 def test_document_init_with_scores_and_evaluations():
@@ -1095,7 +888,7 @@ def test_empty_sparse_array():
     matrix = csr_matrix([[0, 0, 0, 0, 0]])
     doc = Document()
     doc.embedding = matrix
-    assert isinstance(doc.embedding, coo_matrix)
+    assert isinstance(doc.embedding, csr_matrix)
     assert (doc.embedding != matrix).nnz == 0
 
 
@@ -1113,3 +906,29 @@ def test_update_with_tags():
     d2 = Document(id=1)
     d2.update(d1)
     assert d2.tags['lis'] == [1, 2, 3]
+
+
+def test_location():
+    d1 = Document(location=[1, 2, 3])
+    d2 = Document()
+    d2.location = (1, 2, 3)
+    assert d1.location == d2.location == (1, 2, 3)
+
+
+def test_offset():
+    d1 = Document(offset=1.0)
+    d2 = Document()
+    d2.offset = 1.0
+    assert d1.offset == d2.offset == 1.0
+
+
+def test_singleton_match():
+    from jina import DocumentArray, Document
+    import numpy as np
+
+    da = DocumentArray.empty(10)
+    da.embeddings = np.random.random([10, 256])
+
+    q = Document(embedding=np.random.random([256]))
+    q.match(da)
+    assert len(q.matches) == 10

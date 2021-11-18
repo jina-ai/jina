@@ -110,6 +110,12 @@
 
 
 
+
+
+
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -348,6 +354,12 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.2.4`)](#release-note-224)
 - [Release Note (`2.2.5`)](#release-note-225)
 - [Release Note (`2.3.0`)](#release-note-230)
+- [Release Note (`2.4.0`)](#release-note-240)
+- [Release Note (`2.4.1`)](#release-note-241)
+- [Release Note (`2.4.2`)](#release-note-242)
+- [Release Note (`2.4.3`)](#release-note-243)
+- [Release Note (`2.4.4`)](#release-note-244)
+- [Release Note (`2.4.5`)](#release-note-245)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -11325,4 +11337,169 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```9c1aa619```](https://github.com/jina-ai/jina/commit/9c1aa619f76b8ec46c0ec3d0351d2cb6353ae94d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```38c0cd15```](https://github.com/jina-ai/jina/commit/38c0cd15e0ba4711def98f640f692bb5639092b1)] __-__ __docs__: fix typo in readme (*Han Xiao*)
  - [[```a5257853```](https://github.com/jina-ai/jina/commit/a5257853d8c8c7595ce3d1d7da28f7503de59400)] __-__ __version__: the next version will be 2.2.6 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-0></a>
+## Release Note (`2.4.0`)
+
+> Release time: 2021-11-08 22:32:01
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Wang Bo,  Jina Dev Bot,  Yang Ruiyi,  🙇
+
+
+### 🧼 Code Refactoring
+
+ - [[```ef9e4f75```](https://github.com/jina-ai/jina/commit/ef9e4f75a20ed350f9978aa027dae7731bb1bdea)] __-__ __types__: new implementation on ndarray types (#3889) (*Han Xiao*)
+ - [[```dd752ff9```](https://github.com/jina-ai/jina/commit/dd752ff919a9278c8d275710420c00fd551904c4)] __-__ __helloworld__: use inference mode (#3885) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```8b5af8fc```](https://github.com/jina-ai/jina/commit/8b5af8fcbde60be9d9d3046461c55bb97834ce4f)] __-__ version bump (*Han Xiao*)
+ - [[```1617be85```](https://github.com/jina-ai/jina/commit/1617be85bbff0ce02317300cb017032d6ed3e583)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```1b939c4c```](https://github.com/jina-ai/jina/commit/1b939c4cbcbc0e9a7317e159e9926256061e0f68)] __-__ logo change (#3867) (*Yang Ruiyi*)
+ - [[```826a79f5```](https://github.com/jina-ai/jina/commit/826a79f541a3fd97c8b62892e459884419c0e9e6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```560142a0```](https://github.com/jina-ai/jina/commit/560142a0b20af443a2ad1297ac6670328bd780f3)] __-__ __version__: the next version will be 2.3.1 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-1></a>
+## Release Note (`2.4.1`)
+
+> Release time: 2021-11-09 14:36:47
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  AlaeddineAbdessalem,  Zhaofeng Miao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1d15f470```](https://github.com/jina-ai/jina/commit/1d15f470ce3cd5e144c475cdb5926b5b2777cd91)] __-__ __types__: add scipy sparse to ravel/unravel (#3894) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```b90f7a97```](https://github.com/jina-ai/jina/commit/b90f7a9789c46c260022558b4212564c8f7faf01)] __-__ polish small to big image search (#3890) (*AlaeddineAbdessalem*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```f8fbeced```](https://github.com/jina-ai/jina/commit/f8fbeced9b0898beb279b1e14cb8356a67379a2b)] __-__ only run commit lint when only changing docs folder (#3869) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```3cbcd030```](https://github.com/jina-ai/jina/commit/3cbcd030b2512a866e7f20c97a1e13231975e7ab)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```66be071a```](https://github.com/jina-ai/jina/commit/66be071a01022ab54d7f99a9cf45d70c14561892)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f9473b85```](https://github.com/jina-ai/jina/commit/f9473b85004f1c8fe57c15ec1f232475cdf48d11)] __-__ __version__: the next version will be 2.4.1 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-2></a>
+## Release Note (`2.4.2`)
+
+> Release time: 2021-11-09 22:55:07
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Roshan Jossy,  🙇
+
+
+### 🧼 Code Refactoring
+
+ - [[```e0dff8c5```](https://github.com/jina-ai/jina/commit/e0dff8c53dc4b87ea2e43e54ba948650bfae7e3d)] __-__ __types__: leverage new ndarray to match (#3902) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```65490f8f```](https://github.com/jina-ai/jina/commit/65490f8f23c3e129731823d4471c608bbdfcd217)] __-__ polish small to big image search (#3890) (#3892) (*Roshan Jossy*)
+
+### 🍹 Other Improvements
+
+ - [[```fa14355b```](https://github.com/jina-ai/jina/commit/fa14355b25a0a63b98919f3af0842cdf0129d39f)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```c394962b```](https://github.com/jina-ai/jina/commit/c394962b2221e60d67c6cd474022599d2790ed22)] __-__ __version__: the next version will be 2.4.2 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-3></a>
+## Release Note (`2.4.3`)
+
+> Release time: 2021-11-11 23:52:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Gregor von Dulong,  Zhaofeng Miao,  Joan Fontanals,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```872684ac```](https://github.com/jina-ai/jina/commit/872684ac414fb5e3e95c88e0b8b96a920c8b19ce)] __-__ fix signal handling from __init__ streamlit (#3909) (*Joan Fontanals*)
+ - [[```dd3091ac```](https://github.com/jina-ai/jina/commit/dd3091ac4773845d3c5dbc37f2c5162d3eeb6d77)] __-__ __types__: fix all zeros and near zero sparse ravel (#3903) (*Han Xiao*)
+
+### 🧼 Code Refactoring
+
+ - [[```440e3c70```](https://github.com/jina-ai/jina/commit/440e3c70556fe7da2f709ff660324121857f9631)] __-__ __types__: use mixin to refactor document class (#3919) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```355343ae```](https://github.com/jina-ai/jina/commit/355343ae990d2d7aa658a76eb207aed656139004)] __-__ create tutorial for qa bot (#3886) (*Gregor von Dulong*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```db105828```](https://github.com/jina-ai/jina/commit/db10582899a11a09a25f45f15c2a9ef70b5428a9)] __-__ fake two required jobs for ci-no-code-related workflow (#3914) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```920dfe0e```](https://github.com/jina-ai/jina/commit/920dfe0ecb417d6fcf464d1637cc417434d77721)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```3c80a9aa```](https://github.com/jina-ai/jina/commit/3c80a9aacfca11cac2814f09ca7daf6e36c49ffc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1112756d```](https://github.com/jina-ai/jina/commit/1112756df0c59a2542a5083f09036ce5302fb7ef)] __-__ __version__: the next version will be 2.4.3 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-4></a>
+## Release Note (`2.4.4`)
+
+> Release time: 2021-11-13 19:35:26
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Aziz Belaweid,  Joan Fontanals,  Alex Cureton-Griffiths,  Jina Dev Bot,  Roshan Jossy,  Zhaofeng Miao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```5915342b```](https://github.com/jina-ai/jina/commit/5915342bebcb853b0b311ee160829c0891976aea)] __-__ __types__: add ranking evaluation mixin (#3698) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```b6ba8bf7```](https://github.com/jina-ai/jina/commit/b6ba8bf732da03c905bd4d19e9be512118f38bb8)] __-__ __types__: traversal_paths is now a comma-sep string (#3925) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```6ed6f0b1```](https://github.com/jina-ai/jina/commit/6ed6f0b11a57fc3ec36b13be4a831049ba1038c8)] __-__ draft image search via text (#3832) (*Aziz Belaweid*)
+ - [[```62f244f5```](https://github.com/jina-ai/jina/commit/62f244f59b641d525a63a2ccdddcc13dadb4980b)] __-__ __fundamentals__: more polishing (#3924) (*Alex Cureton-Griffiths*)
+ - [[```702e0e20```](https://github.com/jina-ai/jina/commit/702e0e202a237b258bd1cb243e04742b524602c9)] __-__ add configurations to hide sidebar and nav when loaded in iframe (#3895) (*Roshan Jossy*)
+
+### 🍹 Other Improvements
+
+ - [[```9a57d775```](https://github.com/jina-ai/jina/commit/9a57d7751c5a41c21cef1da06eda2c10c2f7e365)] __-__ minor fix on readme (*Han Xiao*)
+ - [[```1457c7b5```](https://github.com/jina-ai/jina/commit/1457c7b544173a50b0a9a0da8e4fd17e2dc85564)] __-__ __docs__: update flow docs and its figures (*Han Xiao*)
+ - [[```70643b7b```](https://github.com/jina-ai/jina/commit/70643b7b91fc174d70df9ed8d3f1333aaa94c89d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2a793cdd```](https://github.com/jina-ai/jina/commit/2a793cddae7da2babd441ff85b7d2ab9a8297dc1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```250998e0```](https://github.com/jina-ai/jina/commit/250998e0a2069c6c543f285b7aa18bda9d35a384)] __-__ __ci__: remove hack to ci-no-code-related workflow (#3914) (#3920) (*Zhaofeng Miao*)
+ - [[```92c613ab```](https://github.com/jina-ai/jina/commit/92c613ab69f29f234d9a87603ca0773fe8bfc38c)] __-__ __version__: the next version will be 2.4.4 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-5></a>
+## Release Note (`2.4.5`)
+
+> Release time: 2021-11-13 22:41:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```940785f8```](https://github.com/jina-ai/jina/commit/940785f892c9864c679c09acf670e55ce061115a)] __-__ __types__: add framework &amp; gpu support to match function (#3926) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```7375926d```](https://github.com/jina-ai/jina/commit/7375926d403c43434d59e518a34acdfcd9f327b9)] __-__ remove get swag (*Han Xiao*)
+ - [[```e9a61164```](https://github.com/jina-ai/jina/commit/e9a61164674f870c501f67459654f9e52e180bb6)] __-__ __version__: the next version will be 2.4.5 (*Jina Dev Bot*)
 

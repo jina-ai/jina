@@ -1,14 +1,17 @@
 import copy
 
 import numpy as np
+import paddle
 import pytest
 import scipy.sparse as sp
+import tensorflow as tf
+import torch
+from scipy.sparse import csr_matrix, bsr_matrix, coo_matrix, csc_matrix
 from scipy.spatial.distance import cdist as scipy_cdist
 
 from jina import Document, DocumentArray
 from jina.math.dimensionality_reduction import PCA
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from tests import random_docs
 
 
 @pytest.fixture()
@@ -667,7 +670,7 @@ def test_filter_fn(doc_lists, tmp_path, first_memmap, second_memmap, buffer_pool
     # match docs1 with a doc without embedding against docs2
     docs1.append(Document())
     with pytest.raises(ValueError, match='cannot reshape array'):
-        docs1.match(docs2, filter_fn=filter_fn(), limit=len(docs2))
+        docs1.match(docs2, limit=len(docs2))
 
     # match docs1 with a doc that has invalid embedding shape against docs2
     docs1[len(docs1) - 1] = Document(embedding=np.array([1]))
@@ -690,8 +693,64 @@ def test_only_id(docarrays_for_embedding_distance_computation, only_id):
             assert m.id
 
 
-def test_da_get_embeddings_slice():
-    da = DocumentArray(random_docs(100))
-    np.testing.assert_almost_equal(
-        da.get_attributes('embedding')[10:20], da._get_embeddings(slice(10, 20))
+@pytest.mark.parametrize(
+    'match_kwargs',
+    [
+        dict(limit=5, normalization=(1, 0), batch_size=10),
+        dict(normalization=(1, 0), batch_size=10),
+        dict(normalization=(1, 0)),
+        dict(),
+    ],
+)
+@pytest.mark.parametrize('nnz_ratio', [0.5, 1])
+def test_dense_vs_sparse_match(match_kwargs, nnz_ratio):
+    N = 100
+    D = 256
+    sp_embed = np.random.random([N, D])
+    sp_embed[sp_embed > nnz_ratio] = 0
+
+    da1 = DocumentArray.empty(N)
+    da2 = DocumentArray.empty(N)
+
+    # use sparse embedding
+    da1.embeddings = sp.coo_matrix(sp_embed)
+    da1.texts = [str(j) for j in range(N)]
+    size_sp = sum(d.nbytes for d in da1)
+    da1.match(da1, **match_kwargs)
+
+    sparse_result = [m.text for m in da1[0].matches]
+
+    # use dense embedding
+    da2.embeddings = sp_embed
+    da2.texts = [str(j) for j in range(N)]
+    size_dense = sum(d.nbytes for d in da2)
+    da2.match(da2, **match_kwargs)
+    dense_result = [m.text for m in da2[0].matches]
+
+    assert sparse_result == dense_result
+
+    print(
+        f'sparse DA: {size_sp} bytes is {size_sp / size_dense * 100:.0f}% of dense DA {size_dense} bytes'
     )
+
+
+def get_ndarrays():
+    a = np.random.random([10, 3])
+    a[a > 0.5] = 0
+    return [
+        a,
+        torch.tensor(a),
+        tf.constant(a),
+        paddle.to_tensor(a),
+        csr_matrix(a),
+        bsr_matrix(a),
+        coo_matrix(a),
+        csc_matrix(a),
+    ]
+
+
+@pytest.mark.parametrize('ndarray_val', get_ndarrays())
+def test_diff_framework_match(ndarray_val):
+    da = DocumentArray.empty(10)
+    da.embeddings = ndarray_val
+    da.match(da)

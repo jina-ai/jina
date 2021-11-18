@@ -21,7 +21,7 @@ f = (Flow()
      .needs(['p1', 'p2', 'p3'], name='r1'))
 ```
 
-```{figure} ../../../.github/simple-plot3.svg
+```{figure} simple-flow.svg
 :align: center
 ```
 

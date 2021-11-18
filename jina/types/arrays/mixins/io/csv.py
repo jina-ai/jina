@@ -38,7 +38,7 @@ class CsvIOMixin:
 
             writer.writeheader()
             for d in self:
-                pd = d.dict(prettify_ndarrays=True)
+                pd = d.dict()
                 if flatten_tags:
                     t = pd.pop('tags')
                     pd.update({f'tag__{k}': v for k, v in t.items()})

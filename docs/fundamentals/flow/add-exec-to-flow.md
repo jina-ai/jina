@@ -21,7 +21,7 @@ from jina import Flow
 f = Flow().add().add().add().add()
 ```
 
-```{figure} ../../../.github/2.0/chain-flow.svg
+```{figure} chain-flow.svg
 :align: center
 ```
 
@@ -113,6 +113,10 @@ requests:
 ````{tab} Dict
 ```python
 from jina import Flow
+from jina import Executor
+
+class MyExecutor(Executor):
+    ...
 
 f = Flow().add(
     uses={
@@ -198,59 +202,6 @@ with f:
     r = f.post('/', inputs=Document())
 ```
 ````
-
-## Add remote Executor
-
-### Add an already spawned Executor
-
-A Flow does not have to be local-only. You can use any Executor on remote(s). 
-
-The external Executor in the following two use-cases could have been spawned
-
-- either by another Flow
-- or by the `jina executor` CLI command
-
-```python
-f.add(host='localhost', port_in=12345, external=True)
-f.add(host='123.45.67.89', port_in=12345, external=True)
-```
-
-### [Spawn remote Executors using `JinaD`](../../advanced/daemon/remote-executors)
-
-````{admonition} Commonly used arguments for deployment in 
-:class: tip 
-
-| Name | default | Description |
-| --- | --- | --- |
-| `host` | `0.0.0.0` | The host of the machine. Can be an ip address or DNS name (e.g. `0.0.0.0`, `my_encoder.jina.ai`) |
-| `port_expose` | randomly initialized | Port of JinaD on the remote machine. |
-| `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
-| `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
-| `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
-| `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
-| `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
-
-````
-
-````{admonition} See Also
-:class: seealso
-{ref}`JinaD <daemon-cookbook>`
-
-{ref}`JinaHub <hub-cookbook>`
-````
-
-
-### Forcing an Executor in the remote-local config
-
-Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
-the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
-client before the client has opened a connection. The Flow inside Jina has an auto-detection mechanism for such cases.
-Anyhow, in some networking setups this mechanism fails. Then you can force this by hand by setting
-the `connect_to_predecessor` argument and `port_out` to the Executor in front.
-
-```python
-f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
-```
 
 ## Override Executor config
 
@@ -358,6 +309,60 @@ with flow as f:
 bar
 foo
 ```
+
+## Add remote Executor
+
+### Add an already spawned Executor
+
+A Flow does not have to be local-only. You can use any Executor on remote(s). 
+
+The external Executor in the following two use-cases could have been spawned
+
+- either by another Flow
+- or by the `jina executor` CLI command
+
+```python
+f.add(host='localhost', port_in=12345, external=True)
+f.add(host='123.45.67.89', port_in=12345, external=True)
+```
+
+### [Spawn remote Executors using `JinaD`](../../advanced/daemon/remote-executors)
+
+````{admonition} Commonly used arguments for deployment in 
+:class: tip 
+
+| Name | default | Description |
+| --- | --- | --- |
+| `host` | `0.0.0.0` | The host of the machine. Can be an ip address or DNS name (e.g. `0.0.0.0`, `my_encoder.jina.ai`) |
+| `port_expose` | randomly initialized | Port of JinaD on the remote machine. |
+| `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
+| `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
+| `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
+| `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
+| `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
+
+````
+
+````{admonition} See Also
+:class: seealso
+{ref}`JinaD <daemon-cookbook>`
+
+{ref}`JinaHub <hub-cookbook>`
+````
+
+
+### Forcing an Executor in the remote-local config
+
+Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU). Then
+the remote cannot talk back to the next local Executor directly. This is similar to a server that cannot talk to a
+client before the client has opened a connection. The Flow inside Jina has an auto-detection mechanism for such cases.
+Anyhow, in some networking setups this mechanism fails. Then you can force this by hand by setting
+the `connect_to_predecessor` argument and `port_out` to the Executor in front.
+
+```python
+f.add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
+```
+
 
 ## Summary: common patterns
 

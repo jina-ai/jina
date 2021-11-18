@@ -1,20 +1,10 @@
-from typing import Tuple, Union, TYPE_CHECKING, Optional
+from typing import Tuple, Optional
 
 import numpy as np
 
-if TYPE_CHECKING:
-    import scipy
-
-_SPARSE_SCIPY_TYPES = Union[
-    'scipy.sparse.csr_matrix',
-    'scipy.sparse.csc_matrix',
-    'scipy.sparse.bsr_matrix',
-    'scipy.sparse.coo_matrix',
-]
-
 
 def minmax_normalize(
-    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    x: 'np.ndarray',
     t_range: Tuple = (0, 1),
     x_range: Optional[Tuple] = None,
     eps: float = 1e-7,

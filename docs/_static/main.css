@@ -1,3 +1,14 @@
+html.loaded-in-iframe #announcement,
+html.loaded-in-iframe #sidebar-drawer,
+html.loaded-in-iframe footer,
+html.loaded-in-iframe #toc-drawer {
+  display: none!important;
+}
+
+html.loaded-in-iframe .page .main {
+    justify-content: center;
+}
+
 .sidebar-logo {
     max-width: 50%;
 }

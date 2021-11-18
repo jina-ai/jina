@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import numpy as np
 import yaml
@@ -20,7 +20,7 @@ from ..logging.predefined import default_logger as logger
 from ..types.request import Response
 from ..types.score.map import NamedScoreMapping
 
-if False:
+if TYPE_CHECKING:
     from .flow_runner import FlowRunner
     import optuna
     from optuna.trial import Trial

@@ -9,7 +9,7 @@ We create a Flow object and add executors one after the other with the right par
 2. CLIPImageEncoder: It also receives the device parameter. And since we only encode the chunks, we specify 
 `'traversal_paths': ['c']`
 3. SimpleIndexer: We need to specify the workspace parameter
-4. LMDBStorage: We also need to specify the workspace parameter. Furthermore, the executor can be in parallel to the 
+4. LMDBStorage: We also need to specify the workspace parameter. Furthermore, the executor can run in parallel to the 
 other branch. We can achieve this using `needs='gateway'`. Finally, we set `default_traversal_paths` to `['r']`
 5. A final executor which just waits for both branches.
 
@@ -76,7 +76,7 @@ Our Flow contains the following executors:
 we specify that `'traversal_paths': ['r']`
 2. SimpleIndexer: We need to specify the workspace parameter
 3. SimpleRanker
-4. LMDBStorage: First we specify the workspace parameter. Then we need to use a different traversal paths. This time 
+4. LMDBStorage: First we specify the workspace parameter. Then we need to use different traversal paths. This time 
 we will be traversing matches: `'default_traversal_paths': ['m']`
 
 ```python
@@ -98,10 +98,10 @@ query_flow.plot()
 :align: center
 ```
 
-Finally, we can start querying. We will use images inside the query folder.
+Finally, we can start querying. We will use images inside the `query` folder.
 For each image, we will create a Jina Document. Then we send our documents to the query Flow and receive the response. 
 
-For each query document, we can print the image and it's top 3 search results
+For each query document, we can print the image and its top 3 search results
 
 ```python
 import glob
@@ -140,8 +140,10 @@ results:
 ```
 
 Congratulations !
+
 The approach that we've adopted could effectively match the small bird image against bigger images containing birds.
 
 Again, the full source code of this tutorial is available in this [google colab notebook](https://colab.research.google.com/drive/1gKNhJYl_qfy-ZKoEF7mMED6K1a4-CXHP?usp=sharing).
+
 Feel free to try it !
 

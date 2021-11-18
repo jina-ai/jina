@@ -1,0 +1,10 @@
+jtype: Flow
+with:
+  port_expose: 12345
+executors:
+  - name: executor
+    uses: ScalableExecutor
+    py_modules: executors.py
+    replicas: $REPLICAS
+    shards: $SHARDS
+    polling: ANY

@@ -3,14 +3,14 @@
 
 You can install and use Jina on Windows.
 
-However, as Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. [If you face additional issues, please let us know.](https://github.com/jina-ai/jina/issues/)
+However, Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. [If you face additional issues, please let us know.](https://github.com/jina-ai/jina/issues/)
 
 ```{caution}
 There can be a significant performance impact while running Jina on Windows. You may not want to use it in production.
 ```
 
 ```{tip}
-Alternatively, you can use the Windows Subsystem for Linux, for better compatibility. Check the official guide [here](https://docs.microsoft.com/en-us/windows/wsl/install).
+Alternatively, you can use the Windows Subsystem for Linux for better compatibility. Check the official guide [here](https://docs.microsoft.com/en-us/windows/wsl/install).
 Make sure you install WSL**2**.
 Once done, you can install Jina as on a native *nix platform.
 ```
@@ -23,7 +23,7 @@ Jina relies heavily on `multiprocessing` to enable scaling & distribution. Windo
 
 ### Compatibility of Executors in the Hub
 
-We've added preliminary support to using Executors listed in the Hub portal. Note that, these Executors are based on *nix OS and might not be compatible to run natively on Windows. Containers that are built on Windows OS are not supported yet. 
+We've added preliminary support for using Executors listed in the Hub portal. Note that, these Executors are based on *nix OS and might not be compatible to run natively on Windows. Containers that are built on Windows are not yet supported. 
 
 
 ```{seealso}
@@ -36,7 +36,7 @@ We haven't added support for JinaD on Windows. If you can make it work, feel fre
 
 ### Limited support for `DocumentArrayMemmap`
 
-Even though support for [DocumentArrayMemmap](../../fundamentals/document/documentarraymemmap-api) is added, it is error prone. Please proceed with caution.
+Even though support for [DocumentArrayMemmap](../../fundamentals/document/documentarraymemmap-api) has been added, it is still error-prone. Please proceed with caution.
 
 ### Memory watermark is unavailable 
 
@@ -48,5 +48,5 @@ Since Windows doesn't support `resource` module, memory watermark checks are dis
 ```bash
 UnicodeEncodeError: 'charmap' codec can't encode character '\u25ae' in position : character maps to <undefined>
 ```
-Set environment variable `PYTHONIOENCODING='utf-8'` before starting your python script.
+Set environment variable `PYTHONIOENCODING='utf-8'` before starting your Python script.
 

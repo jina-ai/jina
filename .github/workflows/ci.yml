@@ -2,6 +2,9 @@ name: CI
 
 on:
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
 
 #on:
 #  push:
@@ -11,47 +14,10 @@ jobs:
   commit-lint:
     runs-on: ubuntu-latest
     steps:
-      - name: find the prev warning if exist
-        if: ${{ !github.event.pull_request.head.repo.fork }}
-        uses: peter-evans/find-comment@v1
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'bad commit message'
-      - name: Delete comment if exist
-        if: ${{ steps.fc.outputs.comment-id != 0 && !github.event.pull_request.head.repo.fork }}
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.issues.deleteComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.fc.outputs.comment-id }},
-            })
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
-      - uses: wagoid/commitlint-github-action@v1
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - name: if lint failed
-        if: ${{ failure() }}
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Thanks for your contribution :heart:
-            :broken_heart: Unfortunately, this PR has one ore more **bad commit messages**, it can not be merged. To fix this problem, please refer to:
-            - [Commit Message Guideline for the First Time Contributor](https://github.com/jina-ai/jina/issues/553)
-            - [Contributing Guideline](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md)
-
-            Note, other CI tests will *not* *start* until the commit messages get fixed.
-
-            This message will be deleted automatically when the commit messages get fixed.
-          reaction-type: "eyes"
+      - uses: wagoid/commitlint-github-action@v4
 
   lint-flake-8:
     runs-on: ubuntu-latest
@@ -284,7 +250,7 @@ jobs:
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all  daemon/distributed tests
             docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
-            if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_topologies/|tests/distributed/test_topologies_docker/|tests/distributed/test_workspaces/|tests/distributed/test_dir_structures/)$ ]]; then
+            if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_topologies/|tests/distributed/test_topologies_docker/|tests/distributed/test_workspaces/|tests/distributed/test_dir_structures/|tests/distributed/test_scale_remote/|tests/distributed/test_scale_remote_executors/)$ ]]; then
               docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
             fi
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}

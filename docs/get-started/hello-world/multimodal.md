@@ -1,7 +1,7 @@
 # Multimodal search
 
 ```{tip}
-We have a [Youtube video](https://youtu.be/B_nH8GCmBfc) for explaining this demo in details. 
+We have a [Youtube video](https://youtu.be/B_nH8GCmBfc) explaining this demo in detail. 
 ```
 
 ````{important}
@@ -25,8 +25,8 @@ jina hello multimodal
 :align: center
 ```
 
-This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2,000
-image-caption pairs with MobileNet and MPNet. The index process takes about 3 minute on CPU. Then it opens a web page
+This downloads the [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2,000
+image-caption pairs with MobileNet and MPNet. The indexing process takes about three minutes on CPU. Then it opens a web page
 where you can query multimodal documents. We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk
 you through this demo.
 

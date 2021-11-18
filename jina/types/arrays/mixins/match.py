@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
@@ -8,6 +9,7 @@ from ....math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 if TYPE_CHECKING:
     from ..document import DocumentArray
     from ..memmap import DocumentArrayMemmap
+    from ...ndarray import ArrayType
 
 
 class MatchMixin:
@@ -17,7 +19,7 @@ class MatchMixin:
         self,
         darray: Union['DocumentArray', 'DocumentArrayMemmap'],
         metric: Union[
-            str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
+            str, Callable[['ArrayType', 'ArrayType'], 'np.ndarray']
         ] = 'cosine',
         limit: Optional[Union[int, float]] = 20,
         normalization: Optional[Tuple[float, float]] = None,
@@ -25,11 +27,12 @@ class MatchMixin:
         batch_size: Optional[int] = None,
         traversal_ldarray: Optional[Sequence[str]] = None,
         traversal_rdarray: Optional[Sequence[str]] = None,
-        use_scipy: bool = False,
         exclude_self: bool = False,
-        is_sparse: bool = False,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
         only_id: bool = False,
+        use_scipy: bool = False,
+        device: str = 'cpu',
+        **kwargs,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -53,16 +56,18 @@ class MatchMixin:
         :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
                            will be slower but more memory efficient. Specialy indicated if `darray` is a big
                            DocumentArrayMemmap.
-        :param traversal_ldarray: if set, then matching is applied along the `traversal_path` of the
+        :param traversal_ldarray: DEPRECATED. if set, then matching is applied along the `traversal_path` of the
                 left-hand ``DocumentArray``.
-        :param traversal_rdarray: if set, then matching is applied along the `traversal_path` of the
+        :param traversal_rdarray: DEPRECATED. if set, then matching is applied along the `traversal_path` of the
                 right-hand ``DocumentArray``.
-        :param filter_fn: if set, apply the filter function to filter docs on the right hand side (rhv) to be matched
-        :param use_scipy: if set, use ``scipy`` as the computation backend
+        :param filter_fn: DEPRECATED. if set, apply the filter function to filter docs on the right hand side (rhv) to be matched
         :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
                         considered as matches.
-        :param is_sparse: if set, the embeddings of left & right DocumentArray are considered as sparse NdArray
         :param only_id: if set, then returning matches will only contain ``id``
+        :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance
+            on sparse matrix.
+        :param device: the computational device for ``.match()``, can be either `cpu` or `cuda`.
+        :param kwargs: other kwargs.
         """
         if limit is not None:
             if limit <= 0:
@@ -79,6 +84,19 @@ class MatchMixin:
                 batch_size = int(batch_size)
 
         lhv = self
+        rhv = darray
+
+        if traversal_rdarray or traversal_ldarray or filter_fn:
+            warnings.warn(
+                '''
+            `traversal_ldarray` and `traversal_rdarray` will be removed soon. 
+            Instead of doing `da.match(..., traveral_ldarray=[...])`, you can achieve the same via 
+            `da.traverse_flat(traveral_ldarray=[...]).match(...)`.
+            Same goes with `da.match(..., traveral_rdarray=[...])`, you can do it via: 
+            `da.match(da2.traverse_flat(traversal_rdarray=[...]))`.             
+            '''
+            )
+
         if traversal_ldarray:
             lhv = self.traverse_flat(traversal_ldarray)
 
@@ -87,7 +105,6 @@ class MatchMixin:
             if not isinstance(lhv, DocumentArray):
                 lhv = DocumentArray(lhv)
 
-        rhv = darray
         if traversal_rdarray or filter_fn:
             rhv = darray.traverse_flat(traversal_rdarray or ['r'], filter_fn=filter_fn)
 
@@ -105,7 +122,9 @@ class MatchMixin:
             if use_scipy:
                 from scipy.spatial.distance import cdist as cdist
             else:
-                from ....math.distance import cdist as cdist
+                from ....math.distance import cdist as _cdist
+
+                cdist = lambda *x: _cdist(*x, device=device)
         else:
             raise TypeError(
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
@@ -119,9 +138,7 @@ class MatchMixin:
                 rhv, cdist, _limit, normalization, metric_name, batch_size
             )
         else:
-            dist, idx = lhv._match(
-                rhv, cdist, _limit, normalization, metric_name, is_sparse
-            )
+            dist, idx = lhv._match(rhv, cdist, _limit, normalization, metric_name)
 
         def _get_id_from_da(rhv, int_offset):
             return rhv._pb_body[int_offset].id
@@ -157,7 +174,7 @@ class MatchMixin:
                     if num_matches >= (limit or _limit):
                         break
 
-    def _match(self, darray, cdist, limit, normalization, metric_name, is_sparse):
+    def _match(self, darray, cdist, limit, normalization, metric_name):
         """
         Computes the matches between self and `darray` loading `darray` into main memory.
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
@@ -168,32 +185,18 @@ class MatchMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param metric_name: if provided, then match result will be marked with this string.
-        :param is_sparse: if provided, then match is computed on sparse embeddings
         :return: distances and indices
         """
 
-        if is_sparse:
-            import scipy.sparse as sp
+        x_mat = self.embeddings
+        y_mat = darray.embeddings
 
-            x_mat = sp.vstack(self.get_attributes('embedding'))
-            y_mat = sp.vstack(darray.get_attributes('embedding'))
-            dists = cdist(x_mat, y_mat, metric_name, is_sparse=True)
-        else:
-            x_mat = self.embeddings
-            y_mat = darray.embeddings
-            dists = cdist(x_mat, y_mat, metric_name)
-
+        dists = cdist(x_mat, y_mat, metric_name)
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if isinstance(normalization, (tuple, list)) and normalization is not None:
-
             # normalization bound uses original distance not the top-k trimmed distance
-            if is_sparse:
-                min_d = dists.min(axis=-1).toarray()
-                max_d = dists.max(axis=-1).toarray()
-            else:
-                min_d = np.min(dists, axis=-1, keepdims=True)
-                max_d = np.max(dists, axis=-1, keepdims=True)
-
+            min_d = np.min(dists, axis=-1, keepdims=True)
+            max_d = np.max(dists, axis=-1, keepdims=True)
             dist = minmax_normalize(dist, normalization, (min_d, max_d))
 
         return dist, idx
@@ -215,30 +218,24 @@ class MatchMixin:
         :param metric_name: if provided, then match result will be marked with this string.
         :return: distances and indices
         """
-        assert isinstance(
-            darray[0].embedding, np.ndarray
-        ), f'expected embedding of type np.ndarray but received {type(darray[0].embedding)}'
 
         x_mat = self.embeddings
         n_x = x_mat.shape[0]
 
-        def batch_generator(y_darray: 'DocumentArrayMemmap', n_batch: int):
-            for i in range(0, len(y_darray), n_batch):
-                y_mat = y_darray._get_embeddings(slice(i, i + n_batch))
-                yield y_mat, i
-
-        y_batch_generator = batch_generator(darray, batch_size)
+        idx = 0
         top_dists = np.inf * np.ones((n_x, limit))
         top_inds = np.zeros((n_x, limit), dtype=int)
+        for ld in darray.batch(batch_size=batch_size):
+            y_batch = ld.embeddings
 
-        for y_batch, y_batch_start_pos in y_batch_generator:
             distances = cdist(x_mat, y_batch, metric_name)
             dists, inds = top_k(distances, limit, descending=False)
 
             if isinstance(normalization, (tuple, list)) and normalization is not None:
                 dists = minmax_normalize(dists, normalization)
 
-            inds = y_batch_start_pos + inds
+            inds = idx + inds
+            idx += y_batch.shape[0]
             top_dists, top_inds = update_rows_x_mat_best(
                 top_dists, top_inds, dists, inds, limit
             )
@@ -249,33 +246,3 @@ class MatchMixin:
         idx = np.take_along_axis(top_inds, permutation, axis=1)
 
         return dist, idx
-
-    def _get_embeddings(self, indices: Optional[slice] = None) -> np.ndarray:
-        """Return a `np.ndarray` stacking  the `embedding` attributes as rows.
-        If indices is passed the embeddings from the indices are retrieved, otherwise
-        all indices are retrieved.
-
-        Example: `self._get_embeddings(10:20)` will return 10 embeddings from positions 10 to 20
-                  in the `DocumentArray` or `DocumentArrayMemmap`
-
-        .. warning:: This operation assumes all embeddings have the same shape and dtype.
-                 All dtype and shape values are assumed to be equal to the values of the
-                 first element in the DocumentArray / DocumentArrayMemmap
-
-        .. warning:: This operation currently does not support sparse arrays.
-
-        :param indices: slice of data from where to retrieve embeddings.
-        :return: embeddings stacked per row as `np.ndarray`.
-        """
-        if indices is None:
-            indices = slice(0, len(self))
-
-        x_mat = bytearray()
-        len_slice = 0
-        for d in self[indices]:
-            x_mat += d.proto.embedding.dense.buffer
-            len_slice += 1
-
-        return np.frombuffer(x_mat, dtype=self[0].proto.embedding.dense.dtype).reshape(
-            (len_slice, self[0].proto.embedding.dense.shape[0])
-        )

@@ -10,7 +10,6 @@ import threading
 import time
 import uuid
 import warnings
-
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from itertools import islice
@@ -26,7 +25,10 @@ from typing import (
     Set,
     Sequence,
     Iterable,
+    TypeVar,
+    TYPE_CHECKING,
 )
+
 from . import __windows__
 
 __all__ = [
@@ -51,7 +53,10 @@ __all__ = [
     'download_mermaid_url',
     'get_readable_size',
     'get_or_reuse_loop',
+    'T',
 ]
+
+T = TypeVar('T')
 
 
 def deprecated_alias(**aliases):
@@ -1083,7 +1088,7 @@ def get_public_ip(timeout: float = 0.3):
     :return: Public IP address.
 
     .. warn::
-        Set :param:`timeout` to a large number will block the Flow.
+        Set `timeout` to a large number will block the Flow.
 
     """
     import urllib.request
@@ -1336,7 +1341,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
     return dunder_get(result, part2) if part2 else result
 
 
-if False:
+if TYPE_CHECKING:
     from fastapi import FastAPI
 
 

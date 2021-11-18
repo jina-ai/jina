@@ -1,6 +1,7 @@
-# Run Hello World Demos
+# Run Quick Demos
 
-Just starting out? Try our three well-designed Jina's "Hello, World"
+
+Just starting out? Try our three well-designed "Hello, World" demos.
 
 
 :::::{grid} 3
@@ -30,7 +31,7 @@ A simple BERT-based chatbot to answer Covid-related questions.
 :link: multimodal
 :link-type: doc
 
-Jointly searching for text and image in one query. 
+Jointly search text and image in one query. 
 +++
 `jina hello multimodal`
 ::::
@@ -39,7 +40,7 @@ Jointly searching for text and image in one query.
 
 ## Fork one and start building
 
-If you find any hello-world demo interesting, you can simply fork its source code to your own directory via
+If you find any hello-world demo interesting, you can simply fork its source code to your own directory via:
 
 ```bash
 jina hello fork fashion ./myapp
@@ -57,16 +58,17 @@ You will get something like the following:
 
 Now go to `myapp` folder, modify the code and run it again via `python app.py`. 
 
-## Learn more about of each demo
+## Learn more about each demo
 
-You can always do `jina hello --help` to get more details about each demo. For example,
+You can always run `jina hello --help` to get more details about each demo. For example:
 
 ```bash
 jina hello chatbot --help
 jina hello fashion --help
+jina hello multimodal --help
 ```
 
-If you prefer to learn by watching the video, watch [this video explanation](https://www.youtube.com/watch?v=zQqbXFY0Nco) by Jina community member Aleksa Gordic
+If you prefer to learn by watching a video, watch [this video explanation](https://www.youtube.com/watch?v=zQqbXFY0Nco) by Jina community member Aleksa Gordic.
 
 
 ```{toctree}
