@@ -128,10 +128,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.7]
+        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
-#        with:
-#          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -147,9 +146,21 @@ jobs:
       - name: Test
         id: test
         run: |
-          shopt -s expand_aliases
-          alias run_pytest="pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s"
-          run_pytest tests/unit/peapods/runtimes/worker && run_pytest tests/unit/peapods/runtimes/head && run_pytest tests/unit/peapods/runtimes/request_handlers/ && run_pytest tests/unit/peapods/runtimes/gateway/grpc/test_grpc_gateway_runtime.py && run_pytest tests/unit/peapods/runtimes/gateway/graph/test_topology_graph.py && run_pytest tests/unit/peapods/test_networking.py && run_pytest tests/unit/peapods/pods/test_pods.py tests/unit/peapods/pods/test_scale.py && run_pytest tests/unit/peapods/pods/test_pod_factory.py  && run_pytest tests/integration/runtimes/test_runtimes.py && run_pytest tests/integration/peas/test_pea.py tests/integration/peas/container/test_pea.py && run_pytest tests/unit/peapods/peas/container/test_container_pea.py && run_pytest tests/unit/peapods/peas/test_pea.py
+          if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
+            # Build daemon for all  daemon/distributed tests
+            docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
+            if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_remote_peas/)$ ]]; then
+              docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
+            fi
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
+            docker rm -f jinad || true
+          else
+            IFS=','
+            for current_test in "${{ matrix.test-path }}"; do 
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --timeout=360 -v -s ${current_test}
+            done
+          fi
+          
         timeout-minutes: 30
 
   # just for blocking the merge until all parallel core-test are successful

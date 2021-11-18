@@ -2,14 +2,30 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
-from typing import Union, TYPE_CHECKING
+from typing import Callable, Dict, Union, TYPE_CHECKING
 
 from ...enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
 from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
 
+from grpc import RpcError
+
+from ..networking import GrpcConnectionPool
+from ...types.message.common import ControlMessage
+
 if TYPE_CHECKING:
     from argparse import Namespace
+
+
+def _get_worker(
+    args, target: Callable, kwargs: Dict
+) -> Union['threading.Thread', 'multiprocessing.Process']:
+    return {
+        RuntimeBackendType.THREAD: threading.Thread,
+        RuntimeBackendType.PROCESS: multiprocessing.Process,
+    }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+        target=target, kwargs=kwargs
+    )
 
 
 def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
@@ -99,3 +115,18 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _args.runtime_cls = 'HeadRuntime'
 
     return _args
+
+
+def is_ready(address: str) -> bool:
+    """
+    TODO: make this async
+    Check if status is ready.
+    :param address: the address where the control message needs to be sent
+    :return: True if status is ready else False.
+    """
+
+    try:
+        GrpcConnectionPool.send_message_sync(ControlMessage('STATUS'), address)
+    except RpcError:
+        return False
+    return True
