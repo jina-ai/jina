@@ -68,6 +68,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the data request handler"""
+        await self.async_cancel()
         self._data_request_handler.close()
 
     async def Call(self, messages: List[Message], *args) -> Message:
