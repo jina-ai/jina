@@ -82,8 +82,8 @@ class CLIPImageEncoder(Executor):
 ```
 
 ### **YoloV5Segmenter**
-Since we want to retrieve small images in bigger images, the technique that we will havily rely on is segmenting. 
-Basicly, we want to do object detection on the indexed images. This will generate bounding boxes around objects 
+Since we want to retrieve small images in bigger images, the technique that we will heavily rely on is segmenting. 
+Basically, we want to do object detection on the indexed images. This will generate bounding boxes around objects 
 detected in side the images. The detected objects will be extracted and added as chunks to the original documents.
 BTW, guess what is the state-of-the-art object detection model ?
 Right, we will use YoloV5.
@@ -96,7 +96,7 @@ implement the method `load` which checks if the model exists in the the Torch Hu
 For our use case, we will just rely on `yolov5s` (small version of `yolov5`). Of course, for better quality, you can 
 choose a more complicated model or your custom model.
 
-Furtheremore, we want **YoloV5Segmenter** to support both **GPU** and **CPU** and it should be able to process in 
+Furthermore, we want **YoloV5Segmenter** to support both **GPU** and **CPU** and it should be able to process in 
 batches. Again, this is as simple as adding parameters `device` and `batch_size` and using them during segmenting.
 
 To perform segmenting, we will implement method `_segment_docs` which performs the following steps:
@@ -200,7 +200,7 @@ which is important match small query images against segments of original images.
 
 2. LMDBStorage: LMDB is a simple memory-mapped transactional key-value store. It is convenient for this example 
 because we can use it to store original indexed images so that we can retrieve them later. We will use it to create 
-LMDBStorage which offers 2 functionnalities: indexing documents and retrieving documents by ID.
+LMDBStorage which offers 2 functionalities: indexing documents and retrieving documents by ID.
 
 
 ### **SimpleIndexer**

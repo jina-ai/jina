@@ -27,7 +27,7 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 
 Minimum install enables basic features of Jina, but without support on HTTP, WebSocket, Docker & Hub.
 
-Minimum install is often used when building & depolying an Executor.
+Minimum install is often used when building & deploying an Executor.
 
 
 ````{tab} via PyPI

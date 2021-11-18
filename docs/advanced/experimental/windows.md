@@ -21,7 +21,7 @@ Once done, you can install Jina as on a native *nix platform.
 
 Jina relies heavily on `multiprocessing` to enable scaling & distribution. Windows only supports [spawn start method for multiprocessing](https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods), which has a few caveats. [Please follow the guidelines here.](../../../fundamentals/flow/remarks#multiprocessing-spawn)
 
-### Compatability of Executors in the Hub
+### Compatibility of Executors in the Hub
 
 We've added preliminary support to using Executors listed in the Hub portal. Note that, these Executors are based on *nix OS and might not be compatible to run natively on Windows. Containers that are built on Windows OS are not supported yet. 
 
@@ -32,7 +32,7 @@ We've added preliminary support to using Executors listed in the Hub portal. Not
 
 ### JinaD is not supported
 
-We haven't added suppoort to JinaD on Windows. If you can make it work, feel free to create a PR.
+We haven't added support for JinaD on Windows. If you can make it work, feel free to create a PR.
 
 ### Limited support for `DocumentArrayMemmap`
 

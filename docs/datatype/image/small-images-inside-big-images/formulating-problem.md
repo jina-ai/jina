@@ -77,7 +77,7 @@ Query Flow:
 ```
 
 Oh, because we use the ranker, we will need something to help us retrieve original parent documents by IDs.
-Well that can be any storage executors. Actually [Jina Hub](hub.jina.ai) includes many storage executors but in this 
+Well that can be any storage executors. Actually [Jina Hub](https://hub.jina.ai) includes many storage executors but in this 
 tutorial, we will build our own storage executor. Since this executor should store parent documents, we will call it 
 the `root_indexer`. Also, since we need it in the query Flow, we also have to add it to the index Flow. One more note, 
 this root_indexer will index documents as they are, so it makes sense to put it in parallel to the other processing 
@@ -91,7 +91,7 @@ Jina natively supports complex toplogies of Flow where you can put executors in 
 ```
 
 Cool, but what about the other indexer ? Well, it should support matching and indexing chunks of images after they are 
-segmented. Therefore, it needs to support vector search along with indexing. The [Jina Hub](hub.jina.ai) already 
+segmented. Therefore, it needs to support vector search along with indexing. The [Jina Hub](https://hub.jina.ai) already 
 includes such indexers (for example, `SimpleIndexer`), however, we will create our own version of simple indexer. And 
 BTW, it will be convenient to rename this indexer to `chunks_indexer`.
 

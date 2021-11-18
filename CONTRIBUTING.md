@@ -40,7 +40,7 @@ To understand how our issues are labeled, check out our [issue label guide](.git
 <a name="-making-your-first-submission"></a>
 ## 🥇 Making Your First Submission
 
-0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
+0. Associate your local git config with your GitHub account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
 1. Fork the Jina repo and clone onto your computer. 
 1. Configure git pre-commit hooks. Please follow [the steps](#install-pre-commit-hooks)
 1. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
@@ -54,7 +54,7 @@ To understand how our issues are labeled, check out our [issue label guide](.git
 
 **Note:** If you're just fixing a typo or grammatical issue, you can go straight to a pull request.
 
-### Associate with Github Account
+### Associate with GitHub Account
 
 - Confirm username and email on [your profile page](https://github.com/settings/profile).
 - Set git config on your computer.
@@ -127,7 +127,7 @@ feat: add hat wobble
 - fix: A bug fix
 - perf: A code change that improves performance
 - refactor: A code change that neither fixes a bug nor adds a feature
-- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
 - test: Adding missing tests or correcting existing tests
 - chore: updating grunt tasks etc; no production code change
 
@@ -160,7 +160,7 @@ docs-add-cloud-section-33
 
 A good commit message helps us track Jina's development. A Pull Request with a bad commit message will be *rejected* automatically in the CI pipeline.
 
-Commit messages should stick to our [naming conventions](#naming-conventions) outlined above, and use the format `type(scope?): subject`:
+Commit messages should stick to our [naming conventions](#-naming-conventions) outlined above, and use the format `type(scope?): subject`:
 
 * `type` is one of the [types above](#specify-the-correct-types).
 * `scope` is optional, and represents the module your commit is working on.

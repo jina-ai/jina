@@ -9,9 +9,9 @@ We create a Flow object and add executors one after the other with the right par
 2. CLIPImageEncoder: It also receives the device parameter. And since we only encode the chunks, we specify 
 `'traversal_paths': ['c']`
 3. SimpleIndexer: We need to specify the workspace parameter
-4. LMDBStorage: We also need to specify the workspace parameter. Furtheremore, the executor can be in parallel to the 
+4. LMDBStorage: We also need to specify the workspace parameter. Furthermore, the executor can be in parallel to the 
 other branch. We can achieve this using `needs='gateway'`. Finally, we set `default_traversal_paths` to `['r']`
-5. A final executor which just waits for both branchs.
+5. A final executor which just waits for both branches.
 
 After building the index Flow, we can plot it to verify that we're using the correct architecture.
 
