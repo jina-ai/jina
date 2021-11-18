@@ -24,7 +24,7 @@ If your text data is big and can not be written inline, or it comes from a URI, 
 from jina import Document
 
 d = Document(uri='https://www.w3.org/History/19921103-hypertext/hypertext/README.html')
-d.convert_uri_to_text()
+d.load_uri_to_text()
 ```
 
 ```text

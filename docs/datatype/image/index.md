@@ -35,7 +35,7 @@ You can load image data by specifying the image URI and then convert it into `.b
 from jina import Document
 
 d = Document(uri='apple.png')
-d.convert_uri_to_image_blob()
+d.load_uri_to_image_blob()
 
 print(d.blob)
 print(d.blob.shape)
@@ -59,7 +59,7 @@ from jina import Document
 
 d = (
     Document(uri='apple.png')
-    .convert_uri_to_image_blob()
+    .load_uri_to_image_blob()
     .set_image_blob_shape(shape=(224, 224))
     .set_image_blob_normalization()
     .set_image_blob_channel_axis(-1, 0)
@@ -134,7 +134,7 @@ It contains rich information in details, and it is complicated as there is no si
 from jina import Document
 
 d = Document(uri='docs/datatype/image/complicated-image.jpeg')
-d.convert_uri_to_image_blob()
+d.load_uri_to_image_blob()
 print(d.blob.shape)
 
 d.convert_image_blob_to_sliding_windows(window_shape=(64, 64))
