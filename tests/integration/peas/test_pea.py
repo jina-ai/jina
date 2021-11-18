@@ -171,9 +171,7 @@ async def test_peas_shards(polling):
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port, shard_id=i)
-        assert GrpcConnectionPool.send_message_sync(
-            activate_msg, f'127.0.0.1:{head_port}'
-        )
+        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
@@ -224,9 +222,7 @@ async def test_peas_replicas():
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        assert GrpcConnectionPool.send_message_sync(
-            activate_msg, f'127.0.0.1:{head_port}'
-        )
+        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
@@ -381,9 +377,7 @@ async def test_peas_with_replicas_advance_faster():
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        assert GrpcConnectionPool.send_message_sync(
-            activate_msg, f'127.0.0.1:{head_port}'
-        )
+        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
@@ -438,7 +432,7 @@ async def _activate_worker(head_port, worker_port, shard_id=None):
     activate_msg.add_related_entity(
         'worker', '127.0.0.1', worker_port, shard_id=shard_id
     )
-    assert GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
 
 async def _start_create_pea(pod, type='worker', executor=None):

@@ -471,8 +471,12 @@ class GrpcConnectionPool:
             options=GrpcConnectionPool.get_default_grpc_options(),
         ) as channel:
             stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-            response = stub.Call([msg], timeout=timeout)
-            return response
+            for i in range(3):
+                try:
+                    return stub.Call([msg], timeout=timeout)
+                except grpc.RpcError as e:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE:
+                        raise
 
     @staticmethod
     def get_default_grpc_options():
