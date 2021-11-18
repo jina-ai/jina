@@ -74,7 +74,7 @@ def get_fastapi_app(
 
     @app.on_event('shutdown')
     async def _shutdown():
-        connection_pool.close()
+        await connection_pool.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:
