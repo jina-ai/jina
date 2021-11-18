@@ -9,7 +9,6 @@ import docker
 from jina import __docker_host__
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
-from jina.peapods.runtimes.container.helper import get_gpu_device_requests
 from . import (
     jinad_args,
     __root_workspace__,

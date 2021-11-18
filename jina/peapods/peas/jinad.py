@@ -4,11 +4,11 @@ import argparse
 import threading
 import multiprocessing
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, Dict, List, Union, Optional
 
 from . import BasePea
-from .helper import _get_worker
-from ...helper import get_or_reuse_loop
+from .helper import _get_worker, is_ready
+from ...helper import run_async
 from ...jaml.helper import complete_path
 from ...importer import ImportExtensions
 from ...enums import replace_enum_to_str
@@ -33,6 +33,7 @@ class JinaDProcessTarget:
         is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
         is_ready: Union['multiprocessing.Event', 'threading.Event'],
         is_cancelled: Union['multiprocessing.Event', 'threading.Event'],
+        envs: Optional[Dict] = {},
     ):
         """Method responsible to manage a remote Pea
 
@@ -48,23 +49,25 @@ class JinaDProcessTarget:
         :param is_shutdown: concurrency event to communicate runtime is terminated
         :param is_ready: concurrency event to communicate runtime is ready to receive messages
         :param is_cancelled: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
+        :param envs: a dictionary of environment variables to be passed to remote Pea
         """
         self.args = args
+        self.envs = envs
         self.is_started = is_started
         self.is_shutdown = is_shutdown
         self.is_ready = is_ready
         self.is_cancelled = is_cancelled
         self.pea_id = None
         self.logstream = None
-        self.logger = JinaLogger('RemotePea', **vars(args))
-        get_or_reuse_loop().run_until_complete(self.run())
+        self._logger = JinaLogger('RemotePea', **vars(args))
+        run_async(self._run)
 
-    async def run(self):
+    async def _run(self):
         """Manage a remote Pea"""
         try:
-            await self.create_remote_pea()
+            await self._create_remote_pea()
         except Exception as ex:
-            self.logger.error(
+            self._logger.error(
                 f'{ex!r} while starting a remote Pea'
                 + f'\n add "--quiet-error" to suppress the exception details'
                 if not self.args.quiet_error
@@ -74,15 +77,14 @@ class JinaDProcessTarget:
         else:
             self.is_started.set()
             self.is_ready.set()
-            self.logstream: asyncio.Task = asyncio.create_task(self.stream_logs())
-            await self._wait_until_cancelled()
+            self.logstream: asyncio.Task = asyncio.create_task(self._stream_logs())
         finally:
             if not self.logstream.done() or not self.logstream.cancelled():
                 self.logstream.cancel()
-            await self.terminate_remote_pea()
+            await self._terminate_remote_pea()
             self.is_shutdown.set()
 
-    async def create_remote_pea(self):
+    async def _create_remote_pea(self):
         """Create Workspace, Pea on remote JinaD server"""
         with ImportExtensions(required=True):
             # rich & aiohttp are used in `AsyncJinaDClient`
@@ -96,7 +98,7 @@ class JinaDProcessTarget:
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
         # so it can't be used for Client timeout.
         self.client = AsyncJinaDClient(
-            host=self.args.host, port=self.args.port_jinad, logger=self.logger
+            host=self.args.host, port=self.args.port_jinad, logger=self._logger
         )
 
         if not await self.client.alive:
@@ -109,21 +111,21 @@ class JinaDProcessTarget:
             complete=True,
         )
         if not workspace_id:
-            self.logger.critical(f'remote workspace creation failed')
+            self._logger.critical(f'remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
         payload = replace_enum_to_str(vars(self._mask_args()))
         # Create a remote Pea in the above workspace
         success, response = await self.client.peas.create(
-            workspace_id=workspace_id, payload=payload
+            workspace_id=workspace_id, payload=payload, envs=self.envs
         )
         if not success:
-            self.logger.critical(f'remote pea creation failed')
+            self._logger.critical(f'remote pea creation failed')
             raise DaemonPeaCreationFailed(response)
         else:
             self.pea_id = response
 
-    async def stream_logs(self):
+    async def _stream_logs(self):
         """Streams log messages from remote server
 
         :return: logstreaming task
@@ -143,13 +145,15 @@ class JinaDProcessTarget:
         while not self.is_cancelled.is_set():
             await asyncio.sleep(0.1)
 
-    async def terminate_remote_pea(self):
+    async def _terminate_remote_pea(self):
         """Cancels the logstream task, removes the remote Pea"""
         if self.logstream is not None:
             self.logstream.cancel()
         if self.pea_id is not None:
             if await self.client.peas.delete(id=self.pea_id):
-                self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
+                self._logger.success(
+                    f'Successfully terminated remote Pea {self.pea_id}'
+                )
             # Don't delete workspace here, as other Executors might use them.
             # TODO(Deepankar): probably enable an arg here?
 
@@ -161,26 +165,19 @@ class JinaDProcessTarget:
         """
         paths = set()
         if not self.args.upload_files:
-            self.logger.warning(f'no files passed to upload to remote')
+            self._logger.warning(f'no files passed to upload to remote')
         else:
             for path in self.args.upload_files:
                 try:
                     fullpath = Path(complete_path(path))
                     paths.add(fullpath)
                 except FileNotFoundError:
-                    self.logger.error(f'invalid path {path} passed')
+                    self._logger.error(f'invalid path {path} passed')
 
         return list(paths)
 
     def _mask_args(self):
         cargs = copy.deepcopy(self.args)
-
-        # reset the runtime to WorkerRuntime or ContainerRuntime
-        if cargs.runtime_cls == 'JinadRuntime':
-            if cargs.uses.startswith(('docker://', 'jinahub+docker://')):
-                cargs.runtime_cls = 'ContainerRuntime'
-            else:
-                cargs.runtime_cls = 'WorkerRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
@@ -200,7 +197,7 @@ class JinaDProcessTarget:
             changes = [
                 'note the following arguments have been masked or altered for remote purpose:'
             ] + changes
-            self.logger.debug('\n'.join(changes))
+            self._logger.debug('\n'.join(changes))
 
         return cargs
 
@@ -215,14 +212,54 @@ class JinaDPea(BasePea):
             target=JinaDProcessTarget(),
             kwargs={
                 'args': args,
-                'name': self.name,
-                'envs': self._envs,
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
                 'is_cancelled': self.cancel_event,
             },
         )
+
+    def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
+        """
+        Waits for the process to be ready or to know it has failed.
+
+        :param timeout: The time to wait before readiness or failure is determined
+            .. # noqa: DAR201
+        """
+        return self.wait_for_ready_or_shutdown(
+            timeout=timeout,
+            ready_or_shutdown_event=self.ready_or_shutdown.event,
+            ctrl_address=self.runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+        )
+
+    @staticmethod
+    def wait_for_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        ctrl_address: str,
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ctrl_address: the address where the control message needs to be sent
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
+        :param kwargs: extra keyword arguments
+        :return: True if is ready or it needs to be shutdown
+        """
+        import time
+
+        timeout_ns = 1000000000 * timeout if timeout else None
+        now = time.time_ns()
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
+            # is_ready returns True is the Pea is actually created by JinaD
+            # ready_or_shutdown_event is set after JinaDProcessTarget
+            if ready_or_shutdown_event.is_set() and is_ready(ctrl_address):
+                return True
+            time.sleep(0.1)
+        return False
 
     def start(self):
         """Start the JinaD Process (to manage remote Pea).
@@ -249,6 +286,7 @@ class JinaDPea(BasePea):
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         self.cancel_event.set()  # Inform JinaD Process to stop streaming
+        self.is_shutdown.wait()  # Wait until JinaD terminates remote Pea and sets shutdown event
         if hasattr(self.worker, 'terminate'):
             self.logger.debug(f'terminating the JinaD Process')
             self.worker.terminate()

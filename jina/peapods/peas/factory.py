@@ -20,9 +20,7 @@ class PeaFactory:
     """
 
     @staticmethod
-    def build_pea(
-        args: 'Namespace',
-    ) -> Type['BasePea']:
+    def build_pea(args: 'Namespace') -> Type['BasePea']:
         """Build an implementation of a `BasePea` interface
 
         :param args: pod arguments parsed from the CLI.

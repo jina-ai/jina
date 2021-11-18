@@ -29,7 +29,6 @@ def get_runtime(name: str):
     from .gateway.grpc import GRPCGatewayRuntime
     from .gateway.http import HTTPGatewayRuntime
     from .gateway.websocket import WebSocketGatewayRuntime
-    from .jinad import JinadRuntime
     from .worker import WorkerRuntime
     from .head import HeadRuntime
 

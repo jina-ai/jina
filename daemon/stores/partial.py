@@ -1,6 +1,6 @@
 from pathlib import Path
 from argparse import Namespace
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Type, Union
 
 from jina.helper import colored, random_port
 from jina.peapods.pods.factory import PodFactory
@@ -43,11 +43,16 @@ class PartialStore:
         try:
             if hasattr(self, 'object'):
                 self.object.close()
+                self._logger.success(
+                    f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
+                )
             else:
                 self._logger.warning(f'nothing to close. exiting')
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
+        else:
+            self.item = PartialStoreItem()
 
 
 class PartialPeaStore(PartialStore):
@@ -64,13 +69,9 @@ class PartialPeaStore(PartialStore):
         """
         try:
             _id = args.identity
-            # This is set so that ContainerRuntime sets host_ctrl to __docker_host__
-            # and on linux machines, we can access dockerhost inside containers
-            if args.runtime_cls == 'ContainerRuntime':
-                args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
-            self.object: Union['BasePea', 'BasePod'] = self.peapod_constructor(
-                args
-            ).__enter__()
+            self.object: Union[
+                Type['BasePea'], Type['BasePod']
+            ] = self.__class__.peapod_constructor(args).__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
                 self.object.__exit__(type(e), e, e.__traceback__)
@@ -78,7 +79,7 @@ class PartialPeaStore(PartialStore):
             raise
         else:
             self.item = PartialStoreItem(arguments=vars(args))
-            self._logger.success(f'{colored(_id, "cyan")} is created')
+            self._logger.success(f'{colored(_id, "cyan")} is created!')
             return self.item
 
 
