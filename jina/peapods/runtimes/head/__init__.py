@@ -64,7 +64,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        self._grpc_server.add_insecure_port(f'0.0.0.0:{self.args.port_in}')
+        bind_addr = f'0.0.0.0:{self.args.port_in}'
+        self._grpc_server.add_insecure_port(bind_addr)
+        self.logger.debug(f'Start listening on {bind_addr}')
         await self._grpc_server.start()
 
     async def async_run_forever(self):
@@ -76,6 +78,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('Cancel HeadRuntime')
 
         await self._grpc_server.stop(0)
+
+    async def async_teardown(self):
+        """Close the connection pool"""
+        await self.async_cancel()
+        await self.connection_pool.close()
 
     async def _handle_messages(self, messages: List[Message]) -> Message:
         # we assume that all messages have the same type, so we need to check only the first
@@ -130,7 +137,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         elif msg.request.command == 'DEACTIVATE':
             for relatedEntity in msg.request.relatedEntities:
                 connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-                self.connection_pool.remove_connection(
+                await self.connection_pool.remove_connection(
                     pod='worker',
                     address=connection_string,
                     shard_id=relatedEntity.shard_id,
