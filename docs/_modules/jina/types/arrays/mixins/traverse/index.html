@@ -669,28 +669,21 @@
 
 
 <span class="k">def</span> <span class="nf">_check_traversal_path_type</span><span class="p">(</span><span class="n">tp</span><span class="p">):</span>
-    <span class="n">is_deprecate_scheme</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">tp</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
-        <span class="n">is_deprecate_scheme</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="n">tp</span>
-        <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tp</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'`traversal_paths` needs to be `Sequence[str]`'</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">is_deprecate_scheme</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tp</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tp</span><span class="p">):</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'The syntax of traversal_path is changed to comma-separated string, '</span>
             <span class="sa">f</span><span class="s1">'that means your need to change </span><span class="si">{</span><span class="n">tp</span><span class="si">}</span><span class="s1"> into `</span><span class="si">{</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span><span class="si">}</span><span class="s1">`. '</span>
             <span class="sa">f</span><span class="s1">'The old list of string syntax will be deprecated soon'</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">tp</span>
+        <span class="k">return</span> <span class="n">tp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s1">'`traversal_paths` needs to be a string of comma-separated paths'</span>
+        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="TraverseMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin">[docs]</a><span class="k">class</span> <span class="nc">TraverseMixin</span><span class="p">:</span>
@@ -724,7 +717,7 @@
 <span class="sd">        """</span>
         <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">):</span>
             <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
@@ -773,7 +766,7 @@
 <span class="sd">        """</span>
         <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">traversal_paths</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">):</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TraverseMixin.traverse_flat"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat">[docs]</a>    <span class="k">def</span> <span class="nf">traverse_flat</span><span class="p">(</span>
@@ -795,11 +788,7 @@
 <span class="sd">        :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.</span>
 <span class="sd">        """</span>
         <span class="n">traversal_paths</span> <span class="o">=</span> <span class="n">_check_traversal_path_type</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="ow">and</span> <span class="n">traversal_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'r'</span>
-            <span class="ow">and</span> <span class="n">filter_fn</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="n">traversal_paths</span> <span class="o">==</span> <span class="s1">'r'</span> <span class="ow">and</span> <span class="n">filter_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
 
         <span class="n">leaves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traverse</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">,</span> <span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">)</span>
