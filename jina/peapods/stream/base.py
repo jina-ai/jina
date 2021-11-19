@@ -53,6 +53,7 @@ class BaseStreamer(ABC):
         ...
 
     def _handle_result(self, result):
+        print(f' sending the result {result}')
         return result
 
     def _handle_end_of_iter(self) -> None:
@@ -113,16 +114,23 @@ class BaseStreamer(ABC):
             end_of_iter.set()
 
         asyncio.create_task(iterate_requests())
-        while not end_of_iter.is_set() or len(futures) > 0 or not result_queue.empty():
+        while True:
             # `not end_of_iter.is_set()` validates iterator is completed.
             # `len(futures) > 0` makes sure all futures are taken care of.
             # `not result_queue.empty()` makes sure all items in queue are processed.
-            try:
-                response: 'asyncio.Future' = result_queue.get_nowait()
-                result_queue.task_done()
+            get_result_task = asyncio.create_task(result_queue.get())
+            wait_end_of_iter = asyncio.create_task(end_of_iter.wait())
+            done_tasks, _ = await asyncio.wait(
+                [get_result_task, wait_end_of_iter], return_when=asyncio.FIRST_COMPLETED
+            )
+
+            if get_result_task in done_tasks:
+                response = get_result_task.result()
+                print(f' response result {type(response.result())}')
+                print(f' response result {response.result()}')
                 yield self._handle_result(response.result())
-            except asyncio.QueueEmpty:
-                await asyncio.sleep(0.1)
+            else:
+                break
 
     async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int

@@ -73,10 +73,9 @@ class GatewayStreamer(BaseStreamer):
         async def _merge_results_at_end_gateway(
             tasks: List[asyncio.Task],
         ) -> asyncio.Future:
-            from jina import DocumentArray
+            from ... import DocumentArray
 
             # TODO: Should the order be deterministic by the graph structure, or depending on the response speed?
-            # partial_responses = [await result for result in asyncio.as_completed(*tasks)]
             partial_responses = await asyncio.gather(*tasks)
 
             # when merging comes, one task may return None

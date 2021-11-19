@@ -176,16 +176,16 @@ def create_runtime(graph_dict: Dict, protocol: str, port_in: int, prefetch: int 
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
-        ('grpc', slow_async_gen),
-        pytest.param(
-            'grpc',
-            slow_blocking_gen,
-            marks=pytest.mark.skip(
-                reason='grpc client + sync generator with time.sleep is expected to fail'
-            ),
-        ),
-        ('websocket', slow_async_gen),
-        ('websocket', slow_blocking_gen),
+        # ('grpc', slow_async_gen),
+        # pytest.param(
+        #     'grpc',
+        #     slow_blocking_gen,
+        #     marks=pytest.mark.skip(
+        #         reason='grpc client + sync generator with time.sleep is expected to fail'
+        #     ),
+        # ),
+        # ('websocket', slow_async_gen),
+        # ('websocket', slow_blocking_gen),
         ('http', slow_async_gen),
         ('http', slow_blocking_gen),
     ],
