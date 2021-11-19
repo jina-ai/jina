@@ -10,6 +10,7 @@ from jina.enums import PollingType
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.head import HeadRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
@@ -46,13 +47,13 @@ async def test_runtimes_trivial_topology():
 
     await asyncio.sleep(1.0)
 
-    assert HeadRuntime.wait_for_ready_or_shutdown(
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{head_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    assert WorkerRuntime.wait_for_ready_or_shutdown(
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{worker_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -61,7 +62,7 @@ async def test_runtimes_trivial_topology():
     # this would be done by the Pod, its adding the worker to the head
     activate_msg = ControlMessage(command='ACTIVATE')
     activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-    assert GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # send requests to the gateway
     c = Client(host='localhost', port=port_expose, asyncio=True)
@@ -218,9 +219,7 @@ async def test_runtimes_shards(polling):
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port, shard_id=i)
-        assert GrpcConnectionPool.send_message_sync(
-            activate_msg, f'127.0.0.1:{head_port}'
-        )
+        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -288,9 +287,7 @@ async def test_runtimes_replicas():
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        assert GrpcConnectionPool.send_message_sync(
-            activate_msg, f'127.0.0.1:{head_port}'
-        )
+        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -482,9 +479,7 @@ async def test_runtimes_with_replicas_advance_faster():
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        assert GrpcConnectionPool.send_message_sync(
-            activate_msg, f'127.0.0.1:{head_port}'
-        )
+        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -552,7 +547,7 @@ async def _activate_worker(head_port, worker_port, shard_id=None):
     activate_msg.add_related_entity(
         'worker', '127.0.0.1', worker_port, shard_id=shard_id
     )
-    assert GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
 
 async def _create_worker(pod, type='worker', executor=None):
