@@ -29,7 +29,7 @@ class RequestStreamer:
         self,
         args: argparse.Namespace,
         request_handler: Callable[['Request'], 'asyncio.Future'],
-        response_handler: Callable[
+        result_handler: Callable[
             [Union['Request', 'Message', List['Message']]], Optional['Request']
         ],
         logger: Optional['JinaLogger'] = None,
@@ -38,14 +38,15 @@ class RequestStreamer:
         """
         :param args: args from CLI
         :param request_handler: The callable responsible for handling the request. It should handle a request as input and return a Future to be awaited
-        :param response_handler: The callable responsible for handling the response.
+        :param result_handler: The callable responsible for handling the response.
+        :param logger: Optional logger that can be used for logging
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
         """
         self.args = args
         self.logger = logger or JinaLogger(self.__class__.__name__, **vars(args))
         self._prefetch = getattr(self.args, 'prefetch', 0)
         self._request_handler = request_handler
-        self._response_handler = response_handler
+        self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
 
     async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
@@ -113,8 +114,7 @@ class RequestStreamer:
             # `not result_queue.empty()` makes sure all items in queue are processed.
             try:
                 response: 'asyncio.Future' = result_queue.get_nowait()
-                result_queue.task_done()
-                yield self._response_handler(response.result())
+                yield self._result_handler(response.result())
             except asyncio.QueueEmpty:
                 await asyncio.sleep(0.01)
 
@@ -161,7 +161,7 @@ class RequestStreamer:
         if is_req_empty:
             for r in asyncio.as_completed(prefetch_task):
                 res = await r
-                yield self._response_handler(res)
+                yield self._result_handler(res)
         else:
             # if there are left over (`else` clause above is unnecessary for code but for better readability)
             onrecv_task = []
@@ -179,7 +179,7 @@ class RequestStreamer:
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
                     res = await r
-                    yield self._response_handler(res)
+                    yield self._result_handler(res)
                     if not is_req_empty:
                         is_req_empty = await iterate_requests(1, onrecv_task)
 

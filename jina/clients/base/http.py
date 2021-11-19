@@ -64,13 +64,13 @@ class HTTPBaseClient(BaseClient):
                     """
                     return asyncio.ensure_future(iolet.send_message(request=request))
 
-                def _response_handler(result):
+                def _result_handler(result):
                     return result
 
                 streamer = RequestStreamer(
                     self.args,
                     request_handler=_request_handler,
-                    response_handler=_response_handler,
+                    result_handler=_result_handler,
                 )
                 async for response in streamer.stream(request_iterator):
                     r_status = response.status

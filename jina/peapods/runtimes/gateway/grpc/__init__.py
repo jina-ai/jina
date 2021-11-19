@@ -39,7 +39,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             request_handler=handle_request(
                 graph=self._topology_graph, connection_pool=self._connection_pool
             ),
-            response_handler=handle_result,
+            result_handler=handle_result,
         )
 
         self.streamer.Call = self.streamer.stream

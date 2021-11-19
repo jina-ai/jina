@@ -58,22 +58,22 @@ class WebSocketBaseClient(BaseClient):
 
                 request_buffer: Dict[str, asyncio.Future] = dict()
 
-                def _response_handler(response):
-                    self.logger.warning(f' _response_handler {response.request_id}')
-                    if response.request_id in request_buffer:
-                        future = request_buffer.pop(response.request_id)
-                        future.set_result(response)
-                    else:
-                        self.logger.warning(
-                            f'discarding unexpected response with request id {response.request_id}'
-                        )
+                def _result_handler(result):
+                    return result
 
                 async def _receive():
+                    def _response_handler(response):
+                        if response.request_id in request_buffer:
+                            future = request_buffer.pop(response.request_id)
+                            future.set_result(response)
+                        else:
+                            self.logger.warning(
+                                f'discarding unexpected response with request id {response.request_id}'
+                            )
+
                     """Await messages from WebsocketGateway and process them in the request buffer"""
-                    self.logger.warning(f' receive start')
                     try:
                         async for response in iolet.recv_message():
-                            self.logger.warning(f' RESPONSE HANDLER - 2')
                             _response_handler(response)
                     finally:
                         if request_buffer:
@@ -99,7 +99,6 @@ class WebSocketBaseClient(BaseClient):
                     :param request: current request in the iterator
                     :return: asyncio Future for sending message
                     """
-                    self.logger.warning(f' _request_handler {request.request_id}')
                     future = get_or_reuse_loop().create_future()
                     request_buffer[request.request_id] = future
                     asyncio.create_task(iolet.send_message(request))
@@ -108,7 +107,7 @@ class WebSocketBaseClient(BaseClient):
                 streamer = RequestStreamer(
                     args=self.args,
                     request_handler=_request_handler,
-                    response_handler=_response_handler,
+                    result_handler=_result_handler,
                     end_of_iter_handler=_handle_end_of_iter,
                 )
 

@@ -55,7 +55,7 @@ def get_fastapi_app(
         request_handler=handle_request(
             graph=topology_graph, connection_pool=connection_pool
         ),
-        response_handler=handle_result,
+        result_handler=handle_result,
     )
     streamer.Call = streamer.stream
 
