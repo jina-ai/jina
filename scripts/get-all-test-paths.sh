@@ -26,11 +26,5 @@ else
 
     dest=( "${distributed_tests[@]}" "${comma_separated_tests[@]}" )
 
-    # IFS=','
-    # for current_test in ${comma_separated_tests}; do 
-    #     echo "${current_test}"
-    # done
-
-    # printf '%s\n' "${dest[@]}" | jq -R . # | jq -cs .
     printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
 fi
