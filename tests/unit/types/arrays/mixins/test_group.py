@@ -79,8 +79,7 @@ def test_dunder_split(da):
     assert len(rv['b']) == 1
     assert len(rv['a']) == 2
 
-    with pytest.raises(KeyError):
-        da.split('nest__random')
+    assert len(da.split('nest__random')) == 1
 
 
 @pytest.mark.parametrize('da', da_for_batching())
