@@ -8,7 +8,7 @@ from daemon.clients import JinaDClient, AsyncJinaDClient
 from daemon.models.id import DaemonID
 
 from jina.helper import random_port
-from jina import Document, Client
+from jina import Document, Client, __docker_host__
 from jina.enums import PollingType, PeaRoleType
 from jina.peapods.peas.factory import PeaFactory
 from jina.peapods.peas.helper import is_ready
@@ -153,15 +153,15 @@ async def async_inputs():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('gateway', ['local'])
-@pytest.mark.parametrize('head', ['local'])
+@pytest.mark.parametrize('head', ['local', 'remote'])
 @pytest.mark.parametrize('worker', ['local', 'remote'])
-async def test_remote_peas_topologies(gateway, head, worker):
+async def test_psuedo_remote_peas_topologies(gateway, head, worker):
     """
     TODO: current status
     g(l)-h(l)-w(l) - works
-    g(l)-h(l)-w(r) - works
-    g(l)-h(r)-w(r) - gateway cannot connect to head address
-    g(l)-h(r)-w(l) - gateway cannot connect to head address
+    g(l)-h(l)-w(r) - works - head connects to worker via localhost
+    g(l)-h(r)-w(l) - works - head (inside docker) connects to worker via dockerhost
+    g(l)-h(r)-w(r) - works - head (inside docker) connects to worker via dockerhost
     g(r)-... - doesn't work, as distributed parser not enabled for gateway
     After any 1 failure, segfault
     """
@@ -187,14 +187,14 @@ async def test_remote_peas_topologies(gateway, head, worker):
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
         worker_host, worker_port = worker_pea.runtime_ctrl_address.split(':')
+        if head == 'remote':
+            worker_host = __docker_host__
+
         activate_msg.add_related_entity('worker', worker_host, int(worker_port))
         assert GrpcConnectionPool.send_message_sync(
             activate_msg, head_pea.runtime_ctrl_address
         )
 
-        print(
-            f'worker_port: {worker_port}, head_port: {head_port}, port_expose: {port_expose}'
-        )
         # send requests to the gateway
         c = Client(host='localhost', port=port_expose, asyncio=True)
         responses = c.post(
