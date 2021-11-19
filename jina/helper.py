@@ -453,7 +453,7 @@ def random_identity(use_uuid1: bool = False) -> str:
     :return: A random UUID.
 
     """
-    return str(random_uuid(use_uuid1))
+    return random_uuid(use_uuid1).hex
 
 
 def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
