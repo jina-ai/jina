@@ -163,3 +163,5 @@ def test_stuct_double_getter(struct_proto):
     assert view['finetuner']['label'] == 'hello'
     assert 'label' in view['finetuner']
     assert 'non_exist_label' not in view['finetuner']
+    view['finetuner']['label'] = {'nest': 'again'}
+    assert view['finetuner']['label']['nest'] == 'again'
