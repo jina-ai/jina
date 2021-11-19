@@ -39,6 +39,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         self.name = args.name
         self.connection_pool = create_connection_pool(
+            logger=self.logger,
             k8s_connection_pool=args.k8s_connection_pool,
             k8s_namespace=args.k8s_namespace,
         )
