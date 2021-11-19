@@ -125,6 +125,7 @@ class K8sPod(BasePod):
                 else None
             )
             init_container_args = self._get_init_container_args()
+            self.deployment_args.port_in = 8081
             container_args = self._get_container_args(self.deployment_args.uses)
             self.deployment_args.port_in = 8082  # TODO refactor these port settings
             container_args_uses_before = (
@@ -560,6 +561,8 @@ class K8sPod(BasePod):
         for i in range(shards):
             cargs = copy.deepcopy(args)
             cargs.shard_id = i
+            cargs.uses_before = None
+            cargs.uses_after = None
             parsed_args['deployments'].append(cargs)
         return parsed_args
 
