@@ -71,3 +71,13 @@ def set_test_pip_version():
     os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
     yield
     del os.environ['JINA_K8S_USE_TEST_PIP']
+
+
+@pytest.fixture
+def docker_images(request, image_name_tag_map, k8s_cluster):
+    image_names = request.param
+    k8s_cluster.load_docker_images(image_names, image_name_tag_map)
+    images = [
+        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
+    ]
+    return images
