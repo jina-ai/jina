@@ -51,7 +51,7 @@ def test_worker_runtime():
 
     assert response
 
-    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
 @pytest.mark.slow
