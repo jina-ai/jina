@@ -80,22 +80,29 @@ class BaseStreamer(ABC):
         """
         result_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
-        futures = []
+        requests_to_handle = set()
+        no_more_requests_to_handle = asyncio.Event()
 
-        def callback(future: 'asyncio.Future'):
-            """callback to be run after future is completed.
-            1. Put the future in the result queue.
-            2. Remove the future from futures when future is completed.
+        def callback_wrapper(request):
+            self.logger.debug(f' type {type(request)}')
+            requests_to_handle.add(request.request_id)
+            self.logger.debug(f' requests_to_handle added {len(requests_to_handle)}')
 
-            ..note::
-                callback cannot be an awaitable, hence we cannot do `await queue.put(...)` here.
-                We don't add `future.result()` to the queue, as that would consume the exception in the callback,
-                which is difficult to handle.
+            def callback(future: 'asyncio.Future'):
+                """callback to be run after future is completed.
+                1. Put the future in the result queue.
+                2. Remove the future from futures when future is completed.
 
-            :param future: asyncio Future object retured from `handle_response`
-            """
-            result_queue.put_nowait(future)
-            futures.remove(future)
+                ..note::
+                    callback cannot be an awaitable, hence we cannot do `await queue.put(...)` here.
+                    We don't add `future.result()` to the queue, as that would consume the exception in the callback,
+                    which is difficult to handle.
+
+                :param future: asyncio Future object retured from `handle_response`
+                """
+                result_queue.put_nowait((request.request_id, future))
+
+            return callback
 
         async def iterate_requests() -> None:
             """
@@ -108,29 +115,73 @@ class BaseStreamer(ABC):
             """
             async for request in AsyncRequestsIterator(iterator=request_iterator):
                 future: 'asyncio.Future' = self._handle_request(request=request)
-                future.add_done_callback(callback)
-                futures.append(future)
+                future.add_done_callback(callback_wrapper(request))
             self._handle_end_of_iter()
             end_of_iter.set()
+            self.logger.debug(' END OF ITER SET')
 
         asyncio.create_task(iterate_requests())
+
+        # while not end_of_iter.is_set() or len(futures) > 0 or not result_queue.empty():
+        #     # `not end_of_iter.is_set()` validates iterator is completed.
+        #     # `len(futures) > 0` makes sure all futures are taken care of.
+        #     # `not result_queue.empty()` makes sure all items in queue are processed.
+        #     try:
+        #         response: 'asyncio.Future' = result_queue.get_nowait()
+        #         result_queue.task_done()
+        #         print(f' response result {type(response.result())}')
+        #         print(f' response result {response.result()}')
+        #         yield self._handle_result(response.result())
+        #     except asyncio.QueueEmpty:
+        #         await asyncio.sleep(0.1)
+
         while True:
-            # `not end_of_iter.is_set()` validates iterator is completed.
-            # `len(futures) > 0` makes sure all futures are taken care of.
-            # `not result_queue.empty()` makes sure all items in queue are processed.
             get_result_task = asyncio.create_task(result_queue.get())
             wait_end_of_iter = asyncio.create_task(end_of_iter.wait())
+            self.logger.warning(f' WAIT 1 => {no_more_requests_to_handle.is_set()}')
             done_tasks, _ = await asyncio.wait(
                 [get_result_task, wait_end_of_iter], return_when=asyncio.FIRST_COMPLETED
             )
-
-            if get_result_task in done_tasks:
-                response = get_result_task.result()
-                print(f' response result {type(response.result())}')
-                print(f' response result {response.result()}')
-                yield self._handle_result(response.result())
-            else:
-                break
+            self.logger.debug(f' done_tasks {done_tasks}')
+            self.logger.debug(f' get_result_task {get_result_task}')
+            if get_result_task.done():
+                request_id, future = get_result_task.result()
+                self.logger.debug(f'1- yield response result {future.result()}')
+                yield self._handle_result(future.result())
+                requests_to_handle.remove(request_id)
+                if len(requests_to_handle) == 0:
+                    no_more_requests_to_handle.set()
+            if wait_end_of_iter.done():
+                self.logger.debug(f' end of iteration is set')
+                get_result_task = (
+                    get_result_task
+                    if not get_result_task.done()
+                    else asyncio.create_task(result_queue.get())
+                )
+                wait_no_more_requests_to_handle = asyncio.create_task(
+                    no_more_requests_to_handle.wait()
+                )
+                self.logger.warning(
+                    f' WAIT 2 => {no_more_requests_to_handle.is_set()} => {len(requests_to_handle)}'
+                )
+                done_tasks, _ = await asyncio.wait(
+                    [get_result_task, wait_no_more_requests_to_handle],
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                self.logger.debug(f' done_tasks {done_tasks}')
+                self.logger.debug(f' get_result_task {get_result_task}')
+                if get_result_task.done():
+                    request_id, future = get_result_task.result()
+                    self.logger.debug(
+                        f'2- yield response result {future.result()} => {len(requests_to_handle)}'
+                    )
+                    yield self._handle_result(future.result())
+                    requests_to_handle.remove(request_id)
+                    if len(requests_to_handle) == 0:
+                        no_more_requests_to_handle.set()
+                elif wait_no_more_requests_to_handle.done():
+                    break
+        self.logger.warning(f' OUTSIDE STREAM METHOD')
 
     async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
