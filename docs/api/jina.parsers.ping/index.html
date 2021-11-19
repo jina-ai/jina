@@ -743,7 +743,7 @@
 
             <div class="toc-sticky toc-scroll">
                 
-                <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card">
+                <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card" v-bind:class="{ready: ready}">
     <summary class="sd-summary-title sd-card-header">
         <svg aria-hidden="true" class="sd-octicon sd-octicon-comment-discussion" height="1.0em"
              version="1.1" viewBox="0 0 16 16" width="1.0em">
@@ -769,14 +769,15 @@
     <div class="sd-summary-content docutils">
         <div class="jina-doc-answer">
             <div class="jina-doc-answer-hint" v-if="qa_pairs.length===0">
-                <p class="jina-doc-bot-help-text sd-font-weight-bold">You can ask questions about our docs. Try:</p>
+                <p class="jina-doc-bot-help-text sd-font-weight-bold" v-if="!ready">Chat loading...<br><br> You can think of questions while our bot load. Try:</p>
+                <p class="jina-doc-bot-help-text sd-font-weight-bold hidden-before-ready" v-else>You can ask questions about our docs. Try:</p>
                 <ul class="example-question simple sd-font-weight-light">
                     <li><p>Does Jina support Kubernetes?</p></li>
                     <li><p>How can I traverse a nested DocumentArray?</p></li>
                     <li><p>What are the basic concepts in Jina?</p></li>
                 </ul>
             </div>
-            <div class="jina-doc-answer-dialog" v-else>
+            <div class="jina-doc-answer-dialog hidden-before-ready" v-else>
                 <div v-for="qa in qa_pairs" class="qa-container">
                     <div v-if="qa.question" class="sd-text-right">
                         <div class="talk-bubble question-bubble">
@@ -828,10 +829,13 @@
             <textarea v-model="cur_question" class="sd-border-0" maxlength="100" rows="3"
                       id="bot-input-question"
                       style="width: 100%"
-                      placeholder="Type your question here"
+                      placeholder="Just a moment, please ..."
+                      :placeholder="'Type your question here'"
                       v-on:keyup.enter="submit_q"
+                      disabled
+                      :disabled="!ready"
                       :readonly="is_busy" autofocus></textarea>
-            <button class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary sd-rounded-0"
+            <button class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary sd-rounded-0 hidden-before-ready"
                     v-on:click="submit_q" v-show="cur_question.length>0 && !is_busy" id="bot-input-btn">
                 <svg aria-hidden="true" class="sd-octicon sd-octicon-paper-airplane" height="1.0em"
                      version="1.1" viewBox="0 0 16 16" width="1.0em">
