@@ -10,6 +10,9 @@ class StructView(ProtoTypeMixin, MutableMapping):
     """Create a Python mutable mapping view of Protobuf Struct.
 
     This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags
+
+    .. note::
+        This class behaves like :class:`defaultdict`.
     """
 
     def __init__(self, struct: struct_pb2.Struct):
@@ -26,7 +29,7 @@ class StructView(ProtoTypeMixin, MutableMapping):
         del self._pb_body[key]
 
     def __getitem__(self, key):
-        if key in self._pb_body.keys():
+        if key in self._pb_body:
             value = self._pb_body[key]
             if isinstance(value, struct_pb2.Struct):
                 return StructView(value)
@@ -37,7 +40,11 @@ class StructView(ProtoTypeMixin, MutableMapping):
             else:
                 return value
         else:
-            raise KeyError()
+            self._pb_body[key] = {}
+            return StructView(self._pb_body[key])
+
+    def __contains__(self, item):
+        return item in self._pb_body
 
     def __len__(self) -> int:
         return len(self._pb_body.keys())
