@@ -89,7 +89,6 @@ class DummyMockConnectionPool:
 
                 response_msg.request.docs.clear()
                 response_msg.request.docs.extend(new_docs)
-                print(f' response_msg {response_msg}')
                 return response_msg
 
         async def task_wrapper():
