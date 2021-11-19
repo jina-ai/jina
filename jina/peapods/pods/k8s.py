@@ -543,7 +543,7 @@ class K8sPod(BasePod):
         uses_before = getattr(args, 'uses_before', None)
         uses_after = getattr(args, 'uses_after', None)
 
-        if args.name is not 'gateway':
+        if args.name != 'gateway':
             parsed_args['head_deployment'] = copy.copy(args)
             parsed_args['head_deployment'].replicas = 1
             parsed_args['head_deployment'].runtime_cls = 'HeadRuntime'
