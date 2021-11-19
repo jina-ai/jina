@@ -386,7 +386,7 @@ class GrpcConnectionPool:
                 try:
                     return await stub.Call(new_messages)
                 except AioRpcError as e:
-                    if e.code() != grpc.StatusCode.UNAVAILABLE:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
                         raise
                     else:
                         self._logger.debug(
@@ -466,13 +466,19 @@ class GrpcConnectionPool:
         :param timeout: timeout for the send
         :returns: the response message
         """
-        with grpc.insecure_channel(
-            target,
-            options=GrpcConnectionPool.get_default_grpc_options(),
-        ) as channel:
-            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-            response = stub.Call([msg], timeout=timeout)
-            return response
+
+        for i in range(3):
+            try:
+                with grpc.insecure_channel(
+                    target,
+                    options=GrpcConnectionPool.get_default_grpc_options(),
+                ) as channel:
+                    stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+                    response = stub.Call([msg], timeout=timeout)
+                    return response
+            except grpc.RpcError as e:
+                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    raise
 
     @staticmethod
     def get_default_grpc_options():
@@ -725,11 +731,13 @@ def is_remote_local_connection(first: str, second: str):
 def create_connection_pool(
     k8s_connection_pool: bool = False,
     k8s_namespace: Optional[str] = None,
+    logger: Optional[JinaLogger] = None,
 ) -> GrpcConnectionPool:
     """
     Creates the appropriate connection pool based on parameters
     :param k8s_namespace: k8s namespace the pool will live in, None if outside K8s
     :param k8s_connection_pool: flag to indicate if K8sGrpcConnectionPool should be used, defaults to true in K8s
+    :param logger: the logger to use
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
@@ -737,8 +745,7 @@ def create_connection_pool(
 
         k8s_clients = K8sClients()
         return K8sGrpcConnectionPool(
-            namespace=k8s_namespace,
-            client=k8s_clients.core_v1,
+            namespace=k8s_namespace, client=k8s_clients.core_v1, logger=logger
         )
     else:
-        return GrpcConnectionPool()
+        return GrpcConnectionPool(logger=logger)
