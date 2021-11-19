@@ -1,12 +1,20 @@
+import json
 import os
 import tempfile
-import json
 from typing import Dict, Optional, Generator
 
 from .kubernetes_client import K8sClients
 from ....importer import ImportExtensions
 from ....logging.logger import JinaLogger
 from ....logging.predefined import default_logger
+
+DEPLOYMENT_FILES = [
+    'deployment',
+    'deployment-init',
+    'deployment-uses-before',
+    'deployment-uses-after',
+    'deployment-uses-before-after',
+]
 
 cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
@@ -35,7 +43,7 @@ def create(
     clients = K8sClients()
     if template == 'configmap':
         yaml = _patch_configmap_yaml(template, params)
-    elif template in ['deployment', 'deployment-init'] and params.get('device_plugins'):
+    elif template in DEPLOYMENT_FILES and params.get('device_plugins'):
         yaml = _get_yaml(template, params, custom_resource_dir)
         yaml = _patch_deployment_with_device_plugins(yaml, params)
     else:

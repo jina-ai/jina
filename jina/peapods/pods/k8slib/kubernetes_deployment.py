@@ -31,6 +31,12 @@ def restart_deployment(
     shard_id: Optional[int] = None,
     custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
+    image_name_uses_before: Optional[str] = None,
+    image_name_uses_after: Optional[str] = None,
+    container_cmd_uses_before: Optional[str] = None,
+    container_cmd_uses_after: Optional[str] = None,
+    container_args_uses_before: Optional[str] = None,
+    container_args_uses_after: Optional[str] = None,
 ) -> str:
     """Restarts a service on Kubernetes.
 
@@ -48,6 +54,12 @@ def restart_deployment(
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
+    :param image_name_uses_before: image for uses_before container in the k8s deployment
+    :param image_name_uses_after: image for uses_after container in the k8s deployment
+    :param container_cmd_uses_before: command executed in the uses_before container on the k8s pods
+    :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
+    :param container_args_uses_before: arguments used for uses_before container on the k8s pod
+    :param container_args_uses_after: arguments used for uses_after container on the k8s pod
     :return: dns name of the created service
     """
 
@@ -56,8 +68,6 @@ def restart_deployment(
     if not port_expose:
         port_expose = 8080
     port_in = 8081
-    port_out = 8082
-    port_ctrl = 8083
 
     logger.debug(
         f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
@@ -75,12 +85,18 @@ def restart_deployment(
             'args': container_args,
             'port_expose': port_expose,
             'port_in': port_in,
-            'port_out': port_out,
-            'port_ctrl': port_ctrl,
+            'port_in_uses_before': 8082,
+            'port_in_uses_after': 8083,
             'pull_policy': pull_policy,
             'jina_pod_name': jina_pod_name,
             'shard_id': str(shard_id) if shard_id else '',
             'pea_type': pea_type,
+            'args_uses_before': container_args_uses_before,
+            'args_uses_after': container_args_uses_after,
+            'command_uses_before': container_cmd_uses_before,
+            'command_uses_after': container_cmd_uses_after,
+            'image_uses_before': image_name_uses_before,
+            'image_uses_after:': image_name_uses_after,
         },
         custom_resource_dir=custom_resource_dir,
     )
@@ -104,6 +120,12 @@ def deploy_service(
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
     gpus: Optional[Union[int, str]] = None,
+    image_name_uses_before: Optional[str] = None,
+    image_name_uses_after: Optional[str] = None,
+    container_cmd_uses_before: Optional[str] = None,
+    container_cmd_uses_after: Optional[str] = None,
+    container_args_uses_before: Optional[str] = None,
+    container_args_uses_after: Optional[str] = None,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -124,6 +146,12 @@ def deploy_service(
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
+    :param image_name_uses_before: image for uses_before container in the k8s deployment
+    :param image_name_uses_after: image for uses_after container in the k8s deployment
+    :param container_cmd_uses_before: command executed in the uses_before container on the k8s pods
+    :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
+    :param container_args_uses_before: arguments used for uses_before container on the k8s pod
+    :param container_args_uses_after: arguments used for uses_after container on the k8s pod
     :return: dns name of the created service
     """
 
@@ -132,8 +160,6 @@ def deploy_service(
     if not port_expose:
         port_expose = 8080
     port_in = 8081
-    port_out = 8082
-    port_ctrl = 8083
 
     logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
@@ -144,8 +170,6 @@ def deploy_service(
             'namespace': namespace,
             'port_expose': port_expose,
             'port_in': port_in,
-            'port_out': port_out,
-            'port_ctrl': port_ctrl,
             'type': 'ClusterIP',
         },
         logger=logger,
@@ -178,8 +202,14 @@ def deploy_service(
         'args': container_args,
         'port_expose': port_expose,
         'port_in': port_in,
-        'port_out': port_out,
-        'port_ctrl': port_ctrl,
+        'port_in_uses_before': 8082,
+        'port_in_uses_after': 8083,
+        'args_uses_before': container_args_uses_before,
+        'args_uses_after': container_args_uses_after,
+        'command_uses_before': container_cmd_uses_before,
+        'command_uses_after': container_cmd_uses_after,
+        'image_uses_before': image_name_uses_before,
+        'image_uses_after': image_name_uses_after,
         'pull_policy': pull_policy,
         'jina_pod_name': jina_pod_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
@@ -189,6 +219,12 @@ def deploy_service(
     if init_container:
         template_name = 'deployment-init'
         deployment_params = {**deployment_params, **init_container}
+    elif image_name_uses_before and image_name_uses_after:
+        template_name = 'deployment-uses-before-after'
+    elif image_name_uses_before:
+        template_name = 'deployment-uses-before'
+    elif image_name_uses_after:
+        template_name = 'deployment-uses-after'
     else:
         template_name = 'deployment'
     if gpus:
@@ -241,9 +277,6 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'uses_before',
         'replicas',
         'polling',
-        'port_in',
-        'port_out',
-        'port_ctrl',
         'k8s_init_container_command',
         'k8s_uses_init',
         'k8s_mount_path',
@@ -258,15 +291,11 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
             continue
         if type(value) == bool and value:
             cli_args.append(f'"--{cli_attribute}"')
-        else:
-            if value:
+        elif type(value) != bool:
+            if value is not None:
                 value = str(value)
                 value = value.replace('\'', '').replace('"', '\\"')
                 cli_args.append(f'"--{cli_attribute}", "{value}"')
-
-    cli_args.append('"--port-in", "8081"')
-    cli_args.append('"--port-out", "8082"')
-    cli_args.append('"--port-ctrl", "8083"')
 
     cli_string = ', '.join(cli_args)
     return cli_string
