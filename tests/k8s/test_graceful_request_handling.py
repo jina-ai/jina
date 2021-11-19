@@ -1,8 +1,7 @@
-import asyncio
-import multiprocessing
 import os
 import time
-from multiprocessing import Process
+import asyncio
+import multiprocessing
 
 import docker
 import pytest
@@ -68,11 +67,8 @@ def send_requests(
     'GITHUB_WORKFLOW' in os.environ,
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
-async def test_no_message_lost_during_scaling(logger, k8s_cluster, image_name_tag_map):
-    image_names = ['slow-process-executor']
-    images = [
-        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
-    ]
+@pytest.mark.parametrize('docker_images', [['slow-process-executor']], indirect=True)
+async def test_no_message_lost_during_scaling(logger, docker_images):
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -80,7 +76,7 @@ async def test_no_message_lost_during_scaling(logger, k8s_cluster, image_name_ta
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=images[0],
+        uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
         grpc_data_requests=True,
@@ -101,7 +97,7 @@ async def test_no_message_lost_during_scaling(logger, k8s_cluster, image_name_ta
             stop_event = multiprocessing.Event()
             scale_event = multiprocessing.Event()
             received_resposes = multiprocessing.Queue()
-            process = Process(
+            process = multiprocessing.Process(
                 target=send_requests,
                 kwargs={
                     'client_kwargs': client_kwargs,
@@ -162,11 +158,8 @@ async def test_no_message_lost_during_scaling(logger, k8s_cluster, image_name_ta
     'GITHUB_WORKFLOW' in os.environ,
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
-async def test_no_message_lost_during_kill(logger, k8s_cluster, image_name_tag_map):
-    image_names = ['slow-process-executor']
-    images = [
-        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
-    ]
+@pytest.mark.parametrize('docker_images', [['slow-process-executor']], indirect=True)
+async def test_no_message_lost_during_kill(logger, docker_images):
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -174,7 +167,7 @@ async def test_no_message_lost_during_kill(logger, k8s_cluster, image_name_tag_m
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=images[0],
+        uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
         grpc_data_requests=True,
@@ -193,7 +186,7 @@ async def test_no_message_lost_during_kill(logger, k8s_cluster, image_name_tag_m
             stop_event = multiprocessing.Event()
             scale_event = multiprocessing.Event()
             received_resposes = multiprocessing.Queue()
-            process = Process(
+            process = multiprocessing.Process(
                 target=send_requests,
                 kwargs={
                     'client_kwargs': client_kwargs,
@@ -260,15 +253,11 @@ async def test_no_message_lost_during_kill(logger, k8s_cluster, image_name_tag_m
             )
 
 
+@pytest.mark.parametrize('docker_images', [['slow-process-executor']], indirect=True)
 def test_linear_processing_time_scaling(
-    k8s_cluster,
+    docker_images,
     logger,
-    image_name_tag_map,
 ):
-    image_names = ['slow-process-executor']
-    images = [
-        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
-    ]
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -276,7 +265,7 @@ def test_linear_processing_time_scaling(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=images[0],
+        uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
         grpc_data_requests=True,
@@ -298,7 +287,7 @@ def test_linear_processing_time_scaling(
             scale_event = multiprocessing.Event()
             received_resposes = multiprocessing.Queue()
             response_arrival_times = multiprocessing.Queue()
-            process = Process(
+            process = multiprocessing.Process(
                 target=send_requests,
                 kwargs={
                     'client_kwargs': client_kwargs,
