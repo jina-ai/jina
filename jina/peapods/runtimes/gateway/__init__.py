@@ -24,6 +24,7 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
         pods_addresses = json.loads(self.args.pods_addresses)
         # add the connections needed
         self._connection_pool = create_connection_pool(
+            logger=self.logger,
             k8s_connection_pool=self.args.k8s_connection_pool,
             k8s_namespace=self.args.k8s_namespace,
         )
