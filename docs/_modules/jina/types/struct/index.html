@@ -663,6 +663,9 @@
     <span class="sd">"""Create a Python mutable mapping view of Protobuf Struct.</span>
 
 <span class="sd">    This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        This class behaves like :class:`defaultdict`.</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">:</span> <span class="n">struct_pb2</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
@@ -679,7 +682,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">struct_pb2</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -690,7 +693,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>

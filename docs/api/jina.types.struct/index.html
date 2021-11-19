@@ -683,6 +683,10 @@
 <dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableMapping</span></code></p>
 <p>Create a Python mutable mapping view of Protobuf Struct.</p>
 <p>This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class behaves like <code class="xref py py-class docutils literal notranslate"><span class="pre">defaultdict</span></code>.</p>
+</div>
 <p>Create a Python dict view of Protobuf Struct.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
