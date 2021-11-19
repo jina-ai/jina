@@ -295,7 +295,11 @@ def test_start_deploys_runtime(uses_before, uses_after):
             call_args = deployment._construct_runtime_container_args.call_args_list[
                 0
             ].args
-            assert call_args[0] == deployment.deployment_args
+            assert namespace_equal(
+                call_args[0],
+                deployment.deployment_args,
+                skip_attr=('uses_before', 'uses_after'),
+            )
             assert call_args[1] == pod.args.uses
             assert call_args[2] == kubernetes_deployment.dictionary_to_cli_param(
                 {'pea_id': i}
