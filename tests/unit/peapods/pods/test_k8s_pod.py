@@ -103,7 +103,12 @@ def test_parse_args_custom_executor(shards: int):
 
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg == cargs
+
+        assert namespace_equal(
+            depl_arg,
+            cargs,
+            skip_attr=('uses_before', 'uses_after'),
+        )
 
 
 @pytest.mark.parametrize(
