@@ -571,6 +571,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         super().__init__(logger=logger)
 
         self._namespace = namespace
+        self._process_events_task = None
         self._k8s_client = client
         self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
@@ -622,7 +623,8 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         Closes the connection pool
         """
         self.enabled = False
-        self._process_events_task.cancel()
+        if self._process_events_task:
+            self._process_events_task.cancel()
         self._api_watch.stop()
         await super().close()
 

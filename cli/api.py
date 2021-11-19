@@ -52,9 +52,12 @@ def executor_native(args: 'Namespace'):
         )
 
     with runtime_cls(args) as rt:
-        rt.logger.success(
-            f' Executor {rt._data_request_handler._executor.metas.name} started'
+        name = (
+            rt._data_request_handler._executor.metas.name
+            if hasattr(rt, '_data_request_handler')
+            else rt.name
         )
+        rt.logger.success(f' Executor {name} started')
         rt.run_forever()
 
 
