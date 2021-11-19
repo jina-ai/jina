@@ -1,15 +1,18 @@
 """A module for the websockets-based Client for Jina."""
+import asyncio
 from contextlib import nullcontext, AsyncExitStack
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Dict
 
 from .helper import WebsocketClientlet
 from ..base import BaseClient
 from ..helper import callback_exec
 from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
-from ...peapods.stream.client import WebsocketClientStreamer
+from ...peapods.stream import RequestStreamer
+from ...helper import get_or_reuse_loop
 
 if TYPE_CHECKING:
+    from ...types.request import Request
     from ..base import CallbackFnType, InputType
 
 
@@ -53,7 +56,68 @@ class WebSocketBaseClient(BaseClient):
                     WebsocketClientlet(url=url, logger=self.logger)
                 )
 
-                streamer = WebsocketClientStreamer(self.args, iolet=iolet)
+                request_buffer: Dict[str, asyncio.Future] = dict()
+
+                def _response_handler(response):
+                    self.logger.warning(f' _response_handler {response.request_id}')
+                    if response.request_id in request_buffer:
+                        future = request_buffer.pop(response.request_id)
+                        future.set_result(response)
+                    else:
+                        self.logger.warning(
+                            f'discarding unexpected response with request id {response.request_id}'
+                        )
+
+                async def _receive():
+                    """Await messages from WebsocketGateway and process them in the request buffer"""
+                    self.logger.warning(f' receive start')
+                    try:
+                        async for response in iolet.recv_message():
+                            self.logger.warning(f' RESPONSE HANDLER - 2')
+                            _response_handler(response)
+                    finally:
+                        if request_buffer:
+                            self.logger.warning(
+                                f'{self.__class__.__name__} closed, cancelling all outstanding requests'
+                            )
+                            for future in request_buffer.values():
+                                future.cancel()
+                            request_buffer.clear()
+
+                def _handle_end_of_iter():
+                    """Send End of iteration signal to the Gateway"""
+                    asyncio.create_task(iolet.send_eoi())
+
+                def _request_handler(request: 'Request') -> 'asyncio.Future':
+                    """
+                    For zmq & grpc data requests from gateway, for each request in the iterator, we send the `Message`
+                    using `iolet.send_message()`.
+                    For websocket requests from client, for each request in the iterator, we send the request in `bytes`
+                    using using `iolet.send_message()`.
+                    Then add {<request-id>: <an-empty-future>} to the request buffer.
+                    This empty future is used to track the `result` of this request during `receive`.
+                    :param request: current request in the iterator
+                    :return: asyncio Future for sending message
+                    """
+                    self.logger.warning(f' _request_handler {request.request_id}')
+                    future = get_or_reuse_loop().create_future()
+                    request_buffer[request.request_id] = future
+                    asyncio.create_task(iolet.send_message(request))
+                    return future
+
+                streamer = RequestStreamer(
+                    args=self.args,
+                    request_handler=_request_handler,
+                    response_handler=_response_handler,
+                    end_of_iter_handler=_handle_end_of_iter,
+                )
+
+                receive_task = get_or_reuse_loop().create_task(_receive())
+
+                if receive_task.done():
+                    raise RuntimeError(
+                        'receive task not running, can not send messages'
+                    )
                 async for response in streamer.stream(request_iterator):
                     callback_exec(
                         response=response,

@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import nullcontext, AsyncExitStack
 from typing import Optional, TYPE_CHECKING
 
@@ -7,8 +8,8 @@ from ..helper import callback_exec
 from ...excepts import BadClient
 from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
-from ...peapods.stream.client import HTTPClientStreamer
 from ...types.request import Request
+from ...peapods.stream import RequestStreamer
 
 if TYPE_CHECKING:
     from ..base import InputType, CallbackFnType
@@ -54,7 +55,23 @@ class HTTPBaseClient(BaseClient):
                     HTTPClientlet(url=url, logger=self.logger)
                 )
 
-                streamer = HTTPClientStreamer(self.args, iolet=iolet)
+                def _request_handler(request: 'Request') -> 'asyncio.Future':
+                    """
+                    For HTTP Client, for each request in the iterator, we `send_message` using
+                    http POST request and add it to the list of tasks which is awaited and yielded.
+                    :param request: current request in the iterator
+                    :return: asyncio Task for sending message
+                    """
+                    return asyncio.ensure_future(iolet.send_message(request=request))
+
+                def _response_handler(result):
+                    return result
+
+                streamer = RequestStreamer(
+                    self.args,
+                    request_handler=_request_handler,
+                    response_handler=_response_handler,
+                )
                 async for response in streamer.stream(request_iterator):
                     r_status = response.status
                     r_str = await response.json()

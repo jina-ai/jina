@@ -47,11 +47,17 @@ def get_fastapi_app(
 
     app = FastAPI()
 
-    from ....stream.gateway import GatewayStreamer
+    from ....stream import RequestStreamer
+    from ..request_handling import handle_request, handle_result
 
-    streamer = GatewayStreamer(
-        args, graph=topology_graph, connection_pool=connection_pool
+    streamer = RequestStreamer(
+        args=args,
+        request_handler=handle_request(
+            graph=topology_graph, connection_pool=connection_pool
+        ),
+        response_handler=handle_result,
     )
+    streamer.Call = streamer.stream
 
     @app.on_event('shutdown')
     async def _shutdown():
