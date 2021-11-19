@@ -96,21 +96,15 @@ async def test_process_up_down_events(
 
 
 @pytest.mark.asyncio
-async def test_wait_for_ready(
-    k8s_cluster,
-    image_name_tag_map,
-):
-    image_names = ['slow-init-executor']
-    images = [
-        image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
-    ]
+@pytest.mark.parametrize('docker_images', [['slow-init-executor']], indirect=True)
+async def test_wait_for_ready(docker_images):
     flow = Flow(
         name='test-flow-slow-executor',
         infrastructure='K8S',
         timeout_ready=120000,
     ).add(
         name='slow_init_executor',
-        uses=images[0],
+        uses=docker_images[0],
         timeout_ready=360000,
     )
 
