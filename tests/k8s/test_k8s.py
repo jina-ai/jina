@@ -113,7 +113,7 @@ def k8s_flow_with_reload_executor(docker_images):
 
 
 @pytest.fixture
-def k8s_flow_with_namespace():
+def k8s_flow_with_namespace(docker_images):
     flow = Flow(
         name='test-flow-with-namespace',
         port_expose=9090,
