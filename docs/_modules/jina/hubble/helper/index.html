@@ -653,6 +653,7 @@
                 <h1>Source code for jina.hubble.helper</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for helper functions for Hub API."""</span>
 
+<span class="kn">import</span> <span class="nn">filelock</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -934,19 +935,20 @@
 
             <span class="n">pickle_protocol</span> <span class="o">=</span> <span class="mi">4</span>
 
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
-                    <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
-                    <span class="c1"># cache is in an unsupported format, reset the cache</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cache_file</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">filelock</span><span class="o">.</span><span class="n">FileLock</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">.lock"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
                     <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
                         <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
                     <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
+                        <span class="c1"># cache is in an unsupported format, reset the cache</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cache_file</span><span class="p">)</span>
+                        <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+                            <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span>
 
             <span class="k">with</span> <span class="n">cache_db</span> <span class="k">as</span> <span class="n">dict_db</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -1054,7 +1056,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 19, 2021.
+                    Last updated on Nov 21, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
