@@ -800,7 +800,7 @@
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">_d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">_d</span><span class="o">.</span><span class="n">content_type</span> <span class="o">!=</span> <span class="s1">'blob'</span><span class="p">:</span>
-                    <span class="n">_d</span><span class="o">.</span><span class="n">convert_uri_to_image_blob</span><span class="p">()</span>
+                    <span class="n">_d</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
                     <span class="n">channel_axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
                 <span class="n">_d</span><span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="n">channel_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_image_blob_shape</span><span class="p">(</span>
