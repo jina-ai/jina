@@ -28,6 +28,7 @@ $(document).ready(function () {
         },
         methods: {
             notify_slack: function (question, answer, thumbup) {
+                const self = this;
                 $.ajax({
                     type: "POST",
                     url: app.slack_address,
@@ -45,10 +46,7 @@ $(document).ready(function () {
                     success: function (data, textStatus, jqXHR) {
                         // reset current question to empty
                         if (thumbup !== null) {
-                            Array.from(document.getElementsByClassName("answer-bubble")).slice(-1)[0].scrollIntoView({
-                                block: "nearest",
-                                inline: "nearest"
-                            });
+                            self.scrollToBottom();
                         }
                     },
                     error: function (request, status, error) {
@@ -67,6 +65,11 @@ $(document).ready(function () {
                 app.notify_slack(qa.question, qa.answer, val);
             },
             submit_q: function () {
+                if (app.is_busy) {
+                    return;
+                }
+                const self = this;
+                this.scrollToBottom();
                 app.is_busy = true;
                 app.is_conn_broken = false;
                 app.qa_pairs.push({ "question": app.cur_question, "rating": null });
@@ -91,14 +94,18 @@ $(document).ready(function () {
                     },
                     complete: function () {
                         app.is_busy = false;
-                        Array.from(document.getElementsByClassName("answer-bubble")).slice(-1)[0].scrollIntoView({
-                            block: "nearest",
-                            inline: "nearest"
-                        });
+                        self.scrollToBottom();
                     }
                 });
             },
+            scrollToBottom() {
+                setTimeout(() => {
+                    Array.from(document.getElementsByClassName("qa-container")).pop().scrollIntoView({
+                        block: "end",
+                        inline: "nearest"
+                    });
+                }, 100);
+            },
         }
     });
-
 });
