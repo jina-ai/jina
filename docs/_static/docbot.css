@@ -175,7 +175,7 @@
 }
 
 .ready .hidden-before-ready{
-    display: unset;
+    display: revert;
 }
 
 @media (prefers-color-scheme: dark) {
