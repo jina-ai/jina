@@ -1,9 +1,10 @@
-from typing import List, Sequence, TYPE_CHECKING
+from typing import List, Sequence, TYPE_CHECKING, Optional, Union
 
 from ...ndarray import NdArray
 
 if TYPE_CHECKING:
     from ...document import ArrayType
+    from ...document.mixins.content import DocumentContentType
 
 
 class ContentPropertyMixin:
@@ -16,12 +17,13 @@ class ContentPropertyMixin:
             )
 
     @property
-    def embeddings(self) -> 'ArrayType':
+    def embeddings(self) -> Optional['ArrayType']:
         """Return a :class:`ArrayType` stacking all the `embedding` attributes as rows.
 
         :return: a :class:`ArrayType` of embedding
         """
-        return NdArray.unravel([d.embedding for d in self._pb_body])
+        if self:
+            return NdArray.unravel([d.embedding for d in self._pb_body])
 
     @embeddings.setter
     def embeddings(self, value: 'ArrayType'):
@@ -45,7 +47,7 @@ class ContentPropertyMixin:
             NdArray.ravel(value, self, 'embedding')
 
     @property
-    def blobs(self) -> 'ArrayType':
+    def blobs(self) -> Optional['ArrayType']:
         """Return a :class:`ArrayType` stacking all :attr:`.blob`.
 
         The `blob` attributes are stacked together along a newly created first
@@ -57,7 +59,8 @@ class ContentPropertyMixin:
 
         :return: a :class:`ArrayType` of blobs
         """
-        return NdArray.unravel([d.blob for d in self._pb_body])
+        if self:
+            return NdArray.unravel([d.blob for d in self._pb_body])
 
     @blobs.setter
     def blobs(self, value: 'ArrayType'):
@@ -76,12 +79,13 @@ class ContentPropertyMixin:
             NdArray.ravel(value, self, 'blob')
 
     @property
-    def texts(self) -> List[str]:
+    def texts(self) -> Optional[List[str]]:
         """Get :attr:`.text` of all Documents
 
         :return: a list of texts
         """
-        return [d.text for d in self._pb_body]
+        if self:
+            return [d.text for d in self._pb_body]
 
     @texts.setter
     def texts(self, value: Sequence[str]):
@@ -100,12 +104,13 @@ class ContentPropertyMixin:
                 doc.text = text
 
     @property
-    def buffers(self) -> List[bytes]:
+    def buffers(self) -> Optional[List[bytes]]:
         """Get the buffer attribute of all Documents.
 
         :return: a list of buffers
         """
-        return [d.buffer for d in self._pb_body]
+        if self:
+            return [d.buffer for d in self._pb_body]
 
     @buffers.setter
     def buffers(self, value: List[bytes]):
@@ -123,3 +128,27 @@ class ContentPropertyMixin:
 
             for doc, buffer in zip(self._pb_body, value):
                 doc.buffer = buffer
+
+    @property
+    def contents(self) -> Optional[Union[Sequence['DocumentContentType'], 'ArrayType']]:
+        """Get the :attr:`.content` of all Documents.
+
+        :return: a list of texts, buffers or :class:`ArrayType`
+        """
+        if self:
+            content_type = self[0].content_type
+            if content_type:
+                return getattr(self, f'{self[0].content_type}s')
+
+    @contents.setter
+    def contents(
+        self, value: Sequence[Union[Sequence['DocumentContentType'], 'ArrayType']]
+    ):
+        """Set the :attr:`.content` of all Documents.
+
+        :param value: a list of texts, buffers or :class:`ArrayType`
+        """
+        if self:
+            content_type = self[0].content_type
+            if content_type:
+                setattr(self, f'{self[0].content_type}s', value)
