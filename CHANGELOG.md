@@ -117,6 +117,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11558,4 +11559,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ea4033b3```](https://github.com/jina-ai/jina/commit/ea4033b37554ef6a20d014c2ddd0323437914b07)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9e58149a```](https://github.com/jina-ai/jina/commit/9e58149a414214dbc0ce9d7f873f8d820d83ba84)] __-__ __docs__: fix docstring empty space (*Han Xiao*)
  - [[```83b6ed3e```](https://github.com/jina-ai/jina/commit/83b6ed3e8a06811ab8983e38cead855797cad8a8)] __-__ __version__: the next version will be 2.4.6 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-7></a>
+## Release Note (`2.4.7`)
+
+> Release time: 2021-11-21 20:23:16
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Yanlong Wang,  Han Xiao,  Hidan,  Jina Dev Bot,  Wang Bo,  🙇
+
+
+### 🆕 New Features
+
+ - [[```ceb24c5f```](https://github.com/jina-ai/jina/commit/ceb24c5f3c497ccc0110e5e0a8b19bd867af7df7)] __-__ __types__: make structview more defaultdict like (#3963) (*Han Xiao*)
+
+### ⚡ Performance Improvements
+
+ - [[```a70fbaa8```](https://github.com/jina-ai/jina/commit/a70fbaa8894f160240d8b555c137f2edbed18601)] __-__ small improve on uuid generation in doc (#3956) (*Wang Bo*)
+
+### 🐞 Bug fixes
+
+ - [[```06126de1```](https://github.com/jina-ai/jina/commit/06126de137cb69d22b6709ed747d872be3df6e1f)] __-__ docbot overflow and scrolling (#3969) (*Yanlong Wang*)
+ - [[```4eea5889```](https://github.com/jina-ai/jina/commit/4eea5889edfedfe02ca08dfe793cad966a057086)] __-__ __types__: fix getter setter when da/dam/values is empty (#3967) (*Han Xiao*)
+ - [[```34c34acf```](https://github.com/jina-ai/jina/commit/34c34acfb0115ad2ec4cc8e2e9a86c521855612f)] __-__ hubio disk cache for multithreading (#3966) (*Hidan*)
+
+### 📗 Documentation
+
+ - [[```f1bd2ab9```](https://github.com/jina-ai/jina/commit/f1bd2ab908fd98bde68074b744e1c47955597ca8)] __-__ fix doc-bot style during load (#3959) (*Yanlong Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```0432bc3c```](https://github.com/jina-ai/jina/commit/0432bc3cf483cd3b901a20f22335ae32db62e253)] __-__ fix deprecated api in main codebase (*Han Xiao*)
+ - [[```908e4da9```](https://github.com/jina-ai/jina/commit/908e4da985acd396a933e420f2ea81d60643b52d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```ecd81054```](https://github.com/jina-ai/jina/commit/ecd810543e19f91af80e91df11afb03ff96b1ec6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```945a35b9```](https://github.com/jina-ai/jina/commit/945a35b91cef68ed76f63e667f5b0da0a389f337)] __-__ __version__: the next version will be 2.4.7 (*Jina Dev Bot*)
 
