@@ -6,6 +6,7 @@ from typing import Optional, Dict, Union, Set, List, Iterable
 
 import jina
 from .k8slib import kubernetes_deployment, kubernetes_client
+from ..networking import K8sGrpcConnectionPool
 from ..pods import BasePod
 from ... import __default_executor__
 from ...enums import PeaRoleType
@@ -53,7 +54,7 @@ class K8sPod(BasePod):
                 image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'["gateway", '
-                f'{kubernetes_deployment.get_cli_params(self.common_args, ("pod_role",))}]',
+                f'{kubernetes_deployment.get_cli_params(arguments=self.common_args, skip_list=("pod_role",))}]',
                 logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=1,
                 pull_policy='IfNotPresent',
@@ -64,7 +65,7 @@ class K8sPod(BasePod):
 
         @staticmethod
         def _construct_runtime_container_args(
-            deployment_args, uses, uses_metas, uses_with_string, pea_type
+            deployment_args, uses, uses_metas, uses_with_string, pea_type, port_in
         ):
             container_args = (
                 f'["executor", '
@@ -73,7 +74,7 @@ class K8sPod(BasePod):
                 f'"--runtime-cls", {"WorkerRuntime" if pea_type.lower() == "worker" else "HeadRuntime"}, '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+                + f'{kubernetes_deployment.get_cli_params(arguments=deployment_args, port_in=port_in)}]'
             )
             return container_args
 
@@ -92,7 +93,7 @@ class K8sPod(BasePod):
         def _get_init_container_args(self):
             return kubernetes_deployment.get_init_container_args(self.common_args)
 
-        def _get_container_args(self, uses, pea_type=None):
+        def _get_container_args(self, uses, pea_type=None, port_in=None):
             uses_metas = kubernetes_deployment.dictionary_to_cli_param(
                 {'pea_id': self.shard_id}
             )
@@ -108,6 +109,7 @@ class K8sPod(BasePod):
                 uses_metas,
                 uses_with_string,
                 pea_type if pea_type else self.pea_type,
+                port_in,
             )
 
         def _deploy_runtime(self):
@@ -125,18 +127,23 @@ class K8sPod(BasePod):
                 else None
             )
             init_container_args = self._get_init_container_args()
-            self.deployment_args.port_in = 8081
             container_args = self._get_container_args(self.deployment_args.uses)
-            self.deployment_args.port_in = 8082  # TODO refactor these port settings
             container_args_uses_before = (
-                self._get_container_args(self.deployment_args.uses_before, 'worker')
+                self._get_container_args(
+                    self.deployment_args.uses_before,
+                    'worker',
+                    port_in=K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
+                )
                 if hasattr(self.deployment_args, 'uses_before')
                 and self.deployment_args.uses_before
                 else None
             )
-            self.deployment_args.port_in = 8083
             container_args_uses_after = (
-                self._get_container_args(self.deployment_args.uses_after, 'worker')
+                self._get_container_args(
+                    self.deployment_args.uses_after,
+                    'worker',
+                    port_in=K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
+                )
                 if hasattr(self.deployment_args, 'uses_after')
                 and self.deployment_args.uses_after
                 else None
@@ -501,9 +508,6 @@ class K8sPod(BasePod):
         super().__init__()
         self.args = args
         self.needs = needs or set()
-        self.fixed_head_port_in = 8081
-        self.fixed_uses_before_port_in = 8082
-        self.fixed_uses_after_port_in = 8083
         self.deployment_args = self._parse_args(args)
         self.version = self._get_base_executor_version()
         self.k8s_head_deployment = None
@@ -511,7 +515,7 @@ class K8sPod(BasePod):
             name = f'{self.name}-head'
             self.k8s_head_deployment = self._K8sDeployment(
                 name=name,
-                head_port_in=self.fixed_head_port_in,
+                head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                 version=self.version,
                 shard_id=None,
                 jina_pod_name=self.name,
@@ -530,7 +534,7 @@ class K8sPod(BasePod):
             self.k8s_deployments.append(
                 self._K8sDeployment(
                     name=name,
-                    head_port_in=self.fixed_head_port_in,
+                    head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                     version=self.version,
                     shard_id=i,
                     common_args=self.args,
@@ -559,21 +563,27 @@ class K8sPod(BasePod):
             parsed_args['head_deployment'].replicas = 1
             parsed_args['head_deployment'].runtime_cls = 'HeadRuntime'
             parsed_args['head_deployment'].pea_role = PeaRoleType.HEAD
+            parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
 
         if uses_before:
             parsed_args[
                 'head_deployment'
-            ].uses_before_address = f'127.0.0.1:{self.fixed_uses_before_port_in}'
+            ].uses_before_address = (
+                f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE}'
+            )
         if uses_after:
             parsed_args[
                 'head_deployment'
-            ].uses_after_address = f'127.0.0.1:{self.fixed_uses_after_port_in}'
+            ].uses_after_address = (
+                f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_AFTER}'
+            )
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
+            cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
             if args.name == 'gateway':
                 cargs.role_type = PeaRoleType.GATEWAY
             parsed_args['deployments'].append(cargs)

@@ -7,6 +7,7 @@ from kubernetes import client
 import jina
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
+from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
@@ -157,7 +158,7 @@ def test_deployments(name: str, shards: str, expected_deployments: List[Dict]):
     for actual, expected in zip(actual_deployments, expected_deployments):
         assert actual['name'] == expected['name']
         assert actual['head_host'] == expected['head_host']
-        assert actual['head_port_in'] == pod.fixed_head_port_in
+        assert actual['head_port_in'] == K8sGrpcConnectionPool.K8S_PORT_IN
 
 
 def get_k8s_pod(

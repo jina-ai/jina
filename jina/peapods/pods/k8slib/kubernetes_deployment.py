@@ -5,6 +5,7 @@ from typing import Dict, Optional, Tuple, Union
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.logging.logger import JinaLogger
+from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.k8slib import kubernetes_tools
 
 
@@ -74,8 +75,8 @@ def deploy_service(
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port_expose:
-        port_expose = 8080
-    port_in = 8081
+        port_expose = K8sGrpcConnectionPool.K8S_PORT_EXPOSE
+    port_in = K8sGrpcConnectionPool.K8S_PORT_IN
     if name == 'gateway':
         port_ready_probe = port_expose
     else:
@@ -90,8 +91,8 @@ def deploy_service(
         'args': container_args,
         'port_expose': port_expose,
         'port_in': port_in,
-        'port_in_uses_before': 8082,
-        'port_in_uses_after': 8083,
+        'port_in_uses_before': K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
+        'port_in_uses_after': K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
         'args_uses_before': container_args_uses_before,
         'args_uses_after': container_args_uses_after,
         'command_uses_before': container_cmd_uses_before,
@@ -191,11 +192,14 @@ def deploy_service(
     return f'{name}.{namespace}.svc'
 
 
-def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
+def get_cli_params(
+    arguments: Namespace, skip_list: Tuple[str] = (), port_in: Optional[int] = None
+) -> str:
     """Get cli parameters based on the arguments.
 
     :param arguments: arguments where the cli parameters are generated from
     :param skip_list: list of arguments which should be ignored
+    :param port_in: overwrite port_in with the provided value if set
 
     :return: string which contains all cli parameters
     """
@@ -217,6 +221,8 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
         'k8s_uses_init',
         'k8s_mount_path',
     ] + list(skip_list)
+    if port_in:
+        arguments.port_in = port_in
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
         for attribute, value in arguments.__dict__.items()
