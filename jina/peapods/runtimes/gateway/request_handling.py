@@ -14,6 +14,14 @@ if TYPE_CHECKING:
 def handle_request(
     graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
 ) -> Callable[['Request'], 'asyncio.Future']:
+    """
+    Function that handles the requests arriving to the gateway. This will be passed to the streamer.
+
+    :param graph: The TopologyGraph of the Flow.
+    :param connection_pool: The connection pool to be used to send messages to specific nodes of the graph
+    :return: Return a Function that given a Request will return a Future from where to extract the response
+    """
+
     def _handle_request(request: 'Request') -> 'asyncio.Future':
 
         request_graph = copy.deepcopy(graph)
@@ -61,6 +69,12 @@ def handle_request(
 
 
 def handle_result(result: Union['Message', List['Message']]):
+    """
+    Function that handles the result when extracted from the request future
+
+    :param result: The result returned to the gateway. It extracts the request to be returned to the client
+    :return: Returns a request to be returned to the client
+    """
     # TODO: Handle better the merging of messages
     if isinstance(result, List):
         return result[0].request
