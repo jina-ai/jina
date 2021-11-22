@@ -37,6 +37,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         """
         super().__init__(args, cancel_event, **kwargs)
 
+        if args.name is None:
+            args.name = ''
         self.name = args.name
         self.pod_name = (
             args.name[0 : args.name.index('/')] if '/' in args.name else args.name
