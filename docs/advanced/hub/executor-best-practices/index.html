@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/advanced/hub/executor-best-practices.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="When developing Hub Executors, make sure to follow these tips: Use jina hub new CLI to create an Executor To get started, always use the command and follow the instructions. This will ensure you follow the right file structure., No need to write Dockerfile manually Hubble will generate a well-opt..." />
+  <meta property="og:description" content="Developing Hub Executors: When developing Hub Executors, make sure to follow these tips: Use jina hub new CLI to create an Executor To get started, always use the command and follow the instructions. This will ensure you follow the right file structure., No need to write Dockerfile manually Hubbl..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -183,7 +183,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -678,6 +678,8 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="best-practices">
 <span id="hub-executor-best-practices"></span><h1>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h1>
+<section id="developing-hub-executors">
+<h2>Developing Hub Executors<a class="headerlink" href="#developing-hub-executors" title="Permalink to this headline">¶</a></h2>
 <p>When developing Hub Executors, make sure to follow these tips:</p>
 <ul>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> CLI to create an Executor</p>
@@ -697,6 +699,16 @@ version for you. No worries about Jina version upgrade!</p>
 Want to make your Executor eye-catching on our website? Fill all fields in <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code> with heart &amp; love!</p>
 </li>
 </ul>
+</section>
+<section id="using-hub-executors">
+<h2>Using Hub Executors<a class="headerlink" href="#using-hub-executors" title="Permalink to this headline">¶</a></h2>
+<p>When using Hub Executors, make sure to follow these tips:</p>
+<ul>
+<li><p>Ensure sufficient Docker resources are allocated when using <code class="docutils literal notranslate"><span class="pre">jinahub+docker</span></code></p>
+<p>When <code class="docutils literal notranslate"><span class="pre">jinahub+docker</span></code> executors are not loading properly or are having issues during initialization, please ensure sufficient Docker resources are allocated.</p>
+</li>
+</ul>
+</section>
 </section>
 
             </article>
@@ -731,7 +743,7 @@ Want to make your Executor eye-catching on our website? Fill all fields in <code
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 21, 2021.
+                    Last updated on Nov 22, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -747,6 +759,24 @@ Want to make your Executor eye-catching on our website? Fill all fields in <code
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Best Practices</a><ul>
+<li><a class="reference internal" href="#developing-hub-executors">Developing Hub Executors</a></li>
+<li><a class="reference internal" href="#using-hub-executors">Using Hub Executors</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
                 <details id='jina-docbot' class="jina-doc-bot sd-sphinx-override sd-dropdown sd-card" v-bind:class="{ready: ready}">
     <summary class="sd-summary-title sd-card-header">
