@@ -316,13 +316,15 @@ jobs:
           COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
           NEXT_VER=$RELEASE_VER".dev"$COMMITS_SINCE_LAST_VER
           echo "NEXT_VER=$NEXT_VER" >> $GITHUB_ENV
+          TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
+          echo "TAG=$TAG" >> $GITHUB_ENV
       - uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           workflow: Benchmark Jina
           repo: jina-ai/jina-terraform
           ref: "main"
-          inputs: '{ "pypi_releases": "[\"${{ env.NEXT_VER }}\"]"}'
+          inputs: '{ "pypi_releases": "[\"${{ env.NEXT_VER }}\"]", "git_tags": "[\"${{ env.TAG }}\"]"}'
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
