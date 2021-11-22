@@ -62,7 +62,7 @@ def test_parse_args(shards: int):
     assert namespace_equal(
         pod.deployment_args['head_deployment'],
         args,
-        skip_attr=('runtime_cls', 'pea_role'),
+        skip_attr=('runtime_cls', 'pea_role', 'port_in'),
     )
     assert pod.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
     for i, depl_arg in enumerate(pod.deployment_args['deployments']):
@@ -70,7 +70,11 @@ def test_parse_args(shards: int):
 
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg == cargs
+        assert namespace_equal(
+            depl_arg,
+            cargs,
+            skip_attr=('runtime_cls', 'pea_role', 'port_in'),
+        )
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4, 5])
@@ -108,7 +112,7 @@ def test_parse_args_custom_executor(shards: int):
         assert namespace_equal(
             depl_arg,
             cargs,
-            skip_attr=('uses_before', 'uses_after'),
+            skip_attr=('uses_before', 'uses_after', 'port_in'),
         )
 
 
@@ -251,8 +255,6 @@ def test_start_deploys_gateway():
         assert pod.version in call_kwargs['image_name']
 
         kubernetes_deployment.get_cli_params.assert_called_once()
-        assert kubernetes_deployment.get_cli_params.call_args[0][0] == pod.args
-        assert kubernetes_deployment.get_cli_params.call_args[0][1] == ('pod_role',)
 
 
 @pytest.mark.parametrize(
