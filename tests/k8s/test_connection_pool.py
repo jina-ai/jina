@@ -14,9 +14,8 @@ cur_dir = os.path.dirname(__file__)
 
 
 @pytest.mark.asyncio
-async def test_process_up_down_events(
-    alpine_image, k8s_cluster, load_images_in_kind, logger, test_dir: str
-):
+@pytest.mark.parametrize('docker_images', [['alpine']], indirect=True)
+async def test_process_up_down_events(docker_images, logger, test_dir: str):
     namespace = 'pool-test-namespace'
 
     kubernetes_tools.create(
@@ -27,7 +26,7 @@ async def test_process_up_down_events(
     kubernetes_deployment.deploy_service(
         name='dummy-deployment',
         namespace=namespace,
-        image_name=alpine_image,
+        image_name=docker_images[0],
         container_cmd='["tail"]',
         container_args='["-f", "/dev/null"]',
         logger=logger,
@@ -46,6 +45,10 @@ async def test_process_up_down_events(
     pool.start()
 
     namespaced_pods = k8s_clients.core_v1.list_namespaced_pod(namespace)
+    while not namespaced_pods.items:
+        await asyncio.sleep(1.0)
+        namespaced_pods = k8s_clients.core_v1.list_namespaced_pod(namespace)
+
     assigned_pod_ip = namespaced_pods.items[0].status.pod_ip
     for container in namespaced_pods.items[0].spec.containers:
         if container.name == 'executor':

@@ -10,9 +10,8 @@ from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 from jina.types.message import Message
 
 
-def test_regular_pod(
-    test_executor_image, k8s_cluster, load_images_in_kind, logger, test_dir: str
-):
+@pytest.mark.parametrize('docker_images', [['test-executor']], indirect=True)
+def test_regular_pod(docker_images):
     args = set_pod_parser().parse_args(
         [
             '--name',
@@ -24,11 +23,11 @@ def test_regular_pod(
             '--replicas',
             '2',
             '--uses',
-            f'docker://{test_executor_image}',
+            f'docker://{docker_images[0]}',
             '--uses-before',
-            f'docker://{test_executor_image}',
+            f'docker://{docker_images[0]}',
             '--uses-after',
-            f'docker://{test_executor_image}',
+            f'docker://{docker_images[0]}',
         ]
     )
     with K8sPod(args) as pod:
@@ -92,78 +91,77 @@ def test_regular_pod(
             assert 'traversed-executors' in response.response.docs[0].tags
 
 
-def test_gateway_pod(k8s_cluster, load_images_in_kind, logger, test_dir: str):
-    args = set_gateway_parser().parse_args(
+@pytest.mark.parametrize(
+    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
+)
+def test_gateway_pod(docker_images):
+    worker_args = set_pod_parser().parse_args(
         [
             '--name',
-            'gateway',
+            'pod0',
             '--k8s-namespace',
             'default',
-            '--port-expose',
-            '8080',
-            '--graph-description',
-            '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
-            '--pods-addresses',
-            '{"pod0": ["0.0.0.0:8081"]}',
+            '--uses',
+            f'docker://{docker_images[0]}',
         ]
     )
-    with K8sPod(args) as pod:
-        k8s_clients = K8sClients()
-        pods = k8s_clients.core_v1.list_namespaced_pod(
-            namespace='default',
+    with K8sPod(worker_args) as worker_pod:
+        args = set_gateway_parser().parse_args(
+            [
+                '--name',
+                'gateway',
+                '--k8s-namespace',
+                'default',
+                '--port-expose',
+                '8080',
+                '--graph-description',
+                '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
+                '--pods-addresses',
+                '{}',
+            ]
         )
-        deployments = k8s_clients.apps_v1.list_namespaced_deployment(
-            namespace='default',
-        )
-        label_dicts = [item.spec.template.metadata.labels for item in deployments.items]
-
-        # check that one deployments exist
-        assert len(label_dicts) == 1
-        assert (
-            len(
-                [
-                    label_dict
-                    for label_dict in label_dicts
-                    if label_dict['pea_type'] == 'gateway'
-                ]
+        with K8sPod(args) as pod:
+            k8s_clients = K8sClients()
+            pods = k8s_clients.core_v1.list_namespaced_pod(
+                namespace='default',
             )
-            == 1
-        )
-        # check that one pod exists
-        assert len(pods.items) == 1
-        # check that head has one container
-        for item in pods.items:
-            assert len(item.spec.containers) == 1
-
-        # expose the head port and send a request
-        with kubernetes_tools.get_port_forward_contextmanager(
-            namespace='default', port_expose=8080
-        ):
-
-            client_kwargs = dict(
-                host='localhost',
-                port=8080,
+            deployments = k8s_clients.apps_v1.list_namespaced_deployment(
+                namespace='default',
             )
-            client = Client(**client_kwargs)
-            client.show_progress = True
+            label_dicts = [
+                item.spec.template.metadata.labels for item in deployments.items
+            ]
 
-            def inputs():
-                for i in range(1):
-                    yield Document(text=f'{i}')
+            # check that thee deployments exist (gateway/head/worker)
+            assert len(label_dicts) == 3
+            # check that three pod exists
+            assert len(pods.items) == 3
+            # check that head has one container
+            for item in pods.items:
+                assert len(item.spec.containers) == 1
 
-            response = client.post(
-                '/index', inputs=inputs, request_size=1, return_results=True
-            )
+            # expose the head port and send a request
+            with kubernetes_tools.get_port_forward_contextmanager(
+                namespace='default', port_expose=8080
+            ):
 
-            print(f'got result {response}')
+                client_kwargs = dict(
+                    host='localhost',
+                    port=8080,
+                )
+                client = Client(**client_kwargs)
+                client.show_progress = True
 
-            # response = GrpcConnectionPool.send_messages_sync(
-            #     [_create_test_data_message()],
-            #     f'localhost:8081',
-            # )
-            # assert len(response.response.docs) == 1
-            # assert response.response.docs[0].text == 'client'
-            # assert 'traversed-executors' in response.response.docs[0].tags
+                def inputs():
+                    for i in range(1):
+                        yield Document(text=f'{i}')
+
+                response = client.post(
+                    '/index', inputs=inputs, request_size=1, return_results=True
+                )
+
+                assert len(response[0].docs) == 1
+                assert response[0].docs[0].text == '0'
 
 
 def _create_test_data_message():

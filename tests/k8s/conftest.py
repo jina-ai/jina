@@ -26,8 +26,14 @@ class KindClusterWrapper:
 
     def load_docker_images(self, images, image_tag_map):
         for image in images:
-            build_docker_image(image, image_tag_map)
+            if image != 'alpine' and image != 'jinaai/jina':
+                build_docker_image(image, image_tag_map)
             self._cluster.load_docker_image(image + ':' + image_tag_map[image])
+
+
+@pytest.fixture()
+def test_dir() -> str:
+    return cur_dir
 
 
 @pytest.fixture
@@ -49,6 +55,8 @@ def image_name_tag_map():
         'dummy-dumper': '0.1.1',
         'slow-process-executor': '0.14.1',
         'slow-init-executor': '0.13.1',
+        'alpine': '3.14',
+        'jinaai/jina': 'test-pip',
     }
 
 
