@@ -17,92 +17,6 @@ def to_dns_name(name: str) -> str:
     return name.replace('/', '-').replace('_', '-').lower()
 
 
-def restart_deployment(
-    name: str,
-    namespace: str,
-    image_name: str,
-    container_cmd: str,
-    container_args: str,
-    logger: JinaLogger,
-    replicas: int,
-    pull_policy: str,
-    jina_pod_name: str,
-    pea_type: str,
-    shard_id: Optional[int] = None,
-    custom_resource_dir: Optional[str] = None,
-    port_expose: Optional[int] = None,
-    image_name_uses_before: Optional[str] = None,
-    image_name_uses_after: Optional[str] = None,
-    container_cmd_uses_before: Optional[str] = None,
-    container_cmd_uses_after: Optional[str] = None,
-    container_args_uses_before: Optional[str] = None,
-    container_args_uses_after: Optional[str] = None,
-) -> str:
-    """Restarts a service on Kubernetes.
-
-    :param name: name of the service and deployment
-    :param namespace: k8s namespace of the service and deployment
-    :param image_name: image for the k8s deployment
-    :param container_cmd: command executed on the k8s pods
-    :param container_args: arguments used for the k8s pod
-    :param logger: used logger
-    :param replicas: number of replicas
-    :param pull_policy: pull policy used for fetching the Docker images from the registry.
-    :param jina_pod_name: Name of the Jina Pod this deployment belongs to
-    :param pea_type: type os this pea, can be gateway/head/worker
-    :param shard_id: id of this shard, None if shards=1 or this is gateway/head
-    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
-        Defaults to the standard location jina.resources if not specified.
-    :param port_expose: port which will be exposed by the deployed containers
-    :param image_name_uses_before: image for uses_before container in the k8s deployment
-    :param image_name_uses_after: image for uses_after container in the k8s deployment
-    :param container_cmd_uses_before: command executed in the uses_before container on the k8s pods
-    :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
-    :param container_args_uses_before: arguments used for uses_before container on the k8s pod
-    :param container_args_uses_after: arguments used for uses_after container on the k8s pod
-    :return: dns name of the created service
-    """
-
-    # we can always assume the ports are the same for all executors since they run on different k8s pods
-    # port expose can be defined by the user
-    if not port_expose:
-        port_expose = 8080
-    port_in = 8081
-
-    logger.debug(
-        f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
-    )
-    kubernetes_tools.replace(
-        deployment_name=name,
-        namespace_name=namespace,
-        template='deployment',
-        params={
-            'name': name,
-            'namespace': namespace,
-            'image': image_name,
-            'replicas': replicas,
-            'command': container_cmd,
-            'args': container_args,
-            'port_expose': port_expose,
-            'port_in': port_in,
-            'port_in_uses_before': 8082,
-            'port_in_uses_after': 8083,
-            'pull_policy': pull_policy,
-            'jina_pod_name': jina_pod_name,
-            'shard_id': str(shard_id) if shard_id else '',
-            'pea_type': pea_type,
-            'args_uses_before': container_args_uses_before,
-            'args_uses_after': container_args_uses_after,
-            'command_uses_before': container_cmd_uses_before,
-            'command_uses_after': container_cmd_uses_after,
-            'image_uses_before': image_name_uses_before,
-            'image_uses_after:': image_name_uses_after,
-        },
-        custom_resource_dir=custom_resource_dir,
-    )
-    return f'{name}.{namespace}.svc'
-
-
 def deploy_service(
     name: str,
     namespace: str,
@@ -126,6 +40,7 @@ def deploy_service(
     container_cmd_uses_after: Optional[str] = None,
     container_args_uses_before: Optional[str] = None,
     container_args_uses_after: Optional[str] = None,
+    replace_deployment: Optional[bool] = False,
 ) -> str:
     """Deploy service on Kubernetes.
 
@@ -152,6 +67,7 @@ def deploy_service(
     :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
     :param container_args_uses_before: arguments used for uses_before container on the k8s pod
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
+    :param replace_deployment: If set to True the entity name in namespace will be replaced and not created
     :return: dns name of the created service
     """
 
@@ -164,6 +80,58 @@ def deploy_service(
         port_ready_probe = port_expose
     else:
         port_ready_probe = port_in
+
+    deployment_params = {
+        'name': name,
+        'namespace': namespace,
+        'image': image_name,
+        'replicas': replicas,
+        'command': container_cmd,
+        'args': container_args,
+        'port_expose': port_expose,
+        'port_in': port_in,
+        'port_in_uses_before': 8082,
+        'port_in_uses_after': 8083,
+        'args_uses_before': container_args_uses_before,
+        'args_uses_after': container_args_uses_after,
+        'command_uses_before': container_cmd_uses_before,
+        'command_uses_after': container_cmd_uses_after,
+        'image_uses_before': image_name_uses_before,
+        'image_uses_after': image_name_uses_after,
+        'pull_policy': pull_policy,
+        'jina_pod_name': jina_pod_name,
+        'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
+        'pea_type': pea_type,
+        'port_ready_probe': port_ready_probe,
+    }
+
+    if gpus:
+        deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
+
+    if init_container:
+        template_name = 'deployment-init'
+        deployment_params = {**deployment_params, **init_container}
+    elif image_name_uses_before and image_name_uses_after:
+        template_name = 'deployment-uses-before-after'
+    elif image_name_uses_before:
+        template_name = 'deployment-uses-before'
+    elif image_name_uses_after:
+        template_name = 'deployment-uses-after'
+    else:
+        template_name = 'deployment'
+
+    if replace_deployment:
+        logger.debug(
+            f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
+        )
+        kubernetes_tools.replace(
+            deployment_name=name,
+            namespace_name=namespace,
+            template=template_name,
+            params=deployment_params,
+            custom_resource_dir=custom_resource_dir,
+        )
+        return f'{name}.{namespace}.svc'
 
     logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
@@ -197,43 +165,6 @@ def deploy_service(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
-    deployment_params = {
-        'name': name,
-        'namespace': namespace,
-        'image': image_name,
-        'replicas': replicas,
-        'command': container_cmd,
-        'args': container_args,
-        'port_expose': port_expose,
-        'port_in': port_in,
-        'port_in_uses_before': 8082,
-        'port_in_uses_after': 8083,
-        'args_uses_before': container_args_uses_before,
-        'args_uses_after': container_args_uses_after,
-        'command_uses_before': container_cmd_uses_before,
-        'command_uses_after': container_cmd_uses_after,
-        'image_uses_before': image_name_uses_before,
-        'image_uses_after': image_name_uses_after,
-        'pull_policy': pull_policy,
-        'jina_pod_name': jina_pod_name,
-        'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
-        'pea_type': pea_type,
-        'port_ready_probe': port_ready_probe,
-    }
-
-    if init_container:
-        template_name = 'deployment-init'
-        deployment_params = {**deployment_params, **init_container}
-    elif image_name_uses_before and image_name_uses_after:
-        template_name = 'deployment-uses-before-after'
-    elif image_name_uses_before:
-        template_name = 'deployment-uses-before'
-    elif image_name_uses_after:
-        template_name = 'deployment-uses-after'
-    else:
-        template_name = 'deployment'
-    if gpus:
-        deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
     kubernetes_tools.create(
         template_name,
         deployment_params,

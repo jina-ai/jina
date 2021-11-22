@@ -142,6 +142,27 @@ class K8sPod(BasePod):
                 else None
             )
 
+            self._do_deploy(
+                container_args=container_args,
+                container_args_uses_before=container_args_uses_before,
+                container_args_uses_after=container_args_uses_after,
+                image_name=image_name,
+                image_name_uses_after=image_name_uses_after,
+                image_name_uses_before=image_name_uses_before,
+                init_container_args=init_container_args,
+            )
+
+        def _do_deploy(
+            self,
+            container_args,
+            container_args_uses_before,
+            container_args_uses_after,
+            image_name,
+            image_name_uses_after,
+            image_name_uses_before,
+            init_container_args,
+            replace=False,
+        ):
             kubernetes_deployment.deploy_service(
                 self.dns_name,
                 namespace=self.k8s_namespace,
@@ -168,6 +189,7 @@ class K8sPod(BasePod):
                 custom_resource_dir=getattr(
                     self.common_args, 'k8s_custom_resource_dir', None
                 ),
+                replace_deployment=replace,
             )
 
         def _restart_runtime(self):
@@ -189,28 +211,17 @@ class K8sPod(BasePod):
                 if self.deployment_args.uses_after
                 else None
             )
+            init_container_args = self._get_init_container_args()
 
-            kubernetes_deployment.restart_deployment(
-                self.dns_name,
-                namespace=self.k8s_namespace,
-                image_name=image_name,
-                image_name_uses_after=image_name_uses_after,
-                image_name_uses_before=image_name_uses_before,
-                container_cmd='["jina"]',
-                container_cmd_uses_before='["jina"]',
-                container_cmd_uses_after='["jina"]',
+            self._do_deploy(
                 container_args=container_args,
                 container_args_uses_before=container_args_uses_before,
                 container_args_uses_after=container_args_uses_after,
-                logger=JinaLogger(f'restart_{self.name}'),
-                replicas=self.num_replicas,
-                pull_policy='IfNotPresent',
-                jina_pod_name=self.jina_pod_name,
-                pea_type=self.pea_type,
-                shard_id=self.shard_id,
-                custom_resource_dir=getattr(
-                    self.common_args, 'k8s_custom_resource_dir', None
-                ),
+                image_name=image_name,
+                image_name_uses_after=image_name_uses_after,
+                image_name_uses_before=image_name_uses_before,
+                init_container_args=init_container_args,
+                replace=True,
             )
 
         def wait_start_success(self):
