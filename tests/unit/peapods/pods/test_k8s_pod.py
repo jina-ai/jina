@@ -289,22 +289,8 @@ def test_start_deploys_runtime(uses_before, uses_after):
         assert kwargs['init_container'] is None
         assert kwargs['custom_resource_dir'] is None
 
-        assert len(pod.k8s_deployments) > 0
+        assert len(pod.k8s_deployments) == 1
         assert pod.k8s_head_deployment.head_port_in == 8081
-        for i, deployment in enumerate(pod.k8s_deployments):
-            call_args = deployment._construct_runtime_container_args.call_args_list[
-                0
-            ].args
-            assert namespace_equal(
-                call_args[0],
-                deployment.deployment_args,
-                skip_attr=('uses_before', 'uses_after'),
-            )
-            assert call_args[1] == pod.args.uses
-            assert call_args[2] == kubernetes_deployment.dictionary_to_cli_param(
-                {'pea_id': i}
-            )
-            assert call_args[3] == ''
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4])
