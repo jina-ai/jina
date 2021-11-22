@@ -396,11 +396,13 @@ class GrpcConnectionPool:
                 except AioRpcError as e:
                     if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
                         raise
+                    elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
+                        self._logger.debug(f'GRPC call failed, retries exhausted')
+                        raise
                     else:
                         self._logger.debug(
-                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/'
+                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/3'
                         )
-            self._logger.debug(f'GRPC call failed, retries exhausted')
 
         return asyncio.create_task(task_wrapper(messages, connection))
 
