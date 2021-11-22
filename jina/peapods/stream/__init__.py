@@ -26,6 +26,12 @@ class RequestStreamer:
     A base async request/response streamer.
     """
 
+    class _EndOfStreaming(Exception):
+        pass
+
+    class _RequestsCounter:
+        count = 0
+
     def __init__(
         self,
         args: argparse.Namespace,
@@ -78,7 +84,15 @@ class RequestStreamer:
         """
         result_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
-        futures = []
+        all_requests_handled = asyncio.Event()
+        requests_to_handle = self._RequestsCounter()
+
+        def update_all_handled():
+            if end_of_iter.is_set() and requests_to_handle.count == 0:
+                all_requests_handled.set()
+
+        async def end_future():
+            raise self._EndOfStreaming
 
         def callback(future: 'asyncio.Future'):
             """callback to be run after future is completed.
@@ -91,7 +105,6 @@ class RequestStreamer:
             :param future: asyncio Future object retured from `handle_response`
             """
             result_queue.put_nowait(future)
-            futures.remove(future)
 
         async def iterate_requests() -> None:
             """
@@ -103,23 +116,28 @@ class RequestStreamer:
             5. Set `end_of_iter` event
             """
             async for request in AsyncRequestsIterator(iterator=request_iterator):
+                requests_to_handle.count += 1
                 future: 'asyncio.Future' = self._request_handler(request=request)
                 future.add_done_callback(callback)
-                futures.append(future)
             if self._end_of_iter_handler is not None:
                 self._end_of_iter_handler()
             end_of_iter.set()
+            update_all_handled()
+            if all_requests_handled.is_set():
+                # It will be waiting for something that will never appear
+                future_cancel = asyncio.ensure_future(end_future())
+                result_queue.put_nowait(future_cancel)
 
         asyncio.create_task(iterate_requests())
-        while not end_of_iter.is_set() or len(futures) > 0 or not result_queue.empty():
-            # `not end_of_iter.is_set()` validates iterator is completed.
-            # `len(futures) > 0` makes sure all futures are taken care of.
-            # `not result_queue.empty()` makes sure all items in queue are processed.
+        while not all_requests_handled.is_set():
+            future = await result_queue.get()
             try:
-                response: 'asyncio.Future' = result_queue.get_nowait()
-                yield self._result_handler(response.result())
-            except asyncio.QueueEmpty:
-                await asyncio.sleep(0.01)
+                response = self._result_handler(future.result())
+                yield response
+                requests_to_handle.count -= 1
+                update_all_handled()
+            except self._EndOfStreaming:
+                pass
 
     async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
