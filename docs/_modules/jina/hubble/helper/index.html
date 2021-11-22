@@ -653,7 +653,6 @@
                 <h1>Source code for jina.hubble.helper</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for helper functions for Hub API."""</span>
 
-<span class="kn">import</span> <span class="nn">filelock</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -927,15 +926,23 @@
 
 <span class="sd">    :return: function decorator</span>
 <span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'FileLock is needed to guarantee non-concurrent access to the'</span>
+        <span class="sa">f</span><span class="s1">'cache_file </span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">filelock</span>
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
             <span class="n">call_hash</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span><span class="si">}</span><span class="s1">)'</span>
 
             <span class="n">pickle_protocol</span> <span class="o">=</span> <span class="mi">4</span>
 
-            <span class="k">with</span> <span class="n">filelock</span><span class="o">.</span><span class="n">FileLock</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s2">.lock"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">cache_db</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">with</span> <span class="n">filelock</span><span class="o">.</span><span class="n">FileLock</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cache_file</span><span class="si">}</span><span class="s1">.lock'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
                         <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
@@ -947,23 +954,27 @@
                         <span class="n">cache_db</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
                             <span class="n">cache_file</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="kc">True</span>
                         <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span>
 
-            <span class="k">with</span> <span class="n">cache_db</span> <span class="k">as</span> <span class="n">dict_db</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'force'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                        <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">cache_db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># if we failed to load cache, do not raise, it is only an optimization thing</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">cache_db</span> <span class="k">as</span> <span class="n">dict_db</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'force'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
 
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                    <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
-                <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">URLError</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span><span class="p">:</span>
-                        <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
-                        <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span>
-            <span class="k">return</span> <span class="n">result</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                        <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+                    <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">URLError</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span><span class="p">:</span>
+                            <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span>
+                <span class="k">return</span> <span class="n">result</span>
 
         <span class="k">return</span> <span class="n">wrapper</span>
 
