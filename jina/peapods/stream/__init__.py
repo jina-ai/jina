@@ -8,6 +8,7 @@ from typing import (
     TYPE_CHECKING,
     Callable,
     Optional,
+    Awaitable,
 )
 
 from .helper import AsyncRequestsIterator
@@ -28,19 +29,21 @@ class RequestStreamer:
     def __init__(
         self,
         args: argparse.Namespace,
-        request_handler: Callable[['Request'], 'asyncio.Future'],
+        request_handler: Callable[
+            ['Request'], 'Awaitable[Union[Request, Message, List[Message]]]'
+        ],
         result_handler: Callable[
             [Union['Request', 'Message', List['Message']]], Optional['Request']
         ],
-        logger: Optional['JinaLogger'] = None,
         end_of_iter_handler: Optional[Callable[[], None]] = None,
+        logger: Optional['JinaLogger'] = None,
     ):
         """
         :param args: args from CLI
         :param request_handler: The callable responsible for handling the request. It should handle a request as input and return a Future to be awaited
         :param result_handler: The callable responsible for handling the response.
-        :param logger: Optional logger that can be used for logging
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
+        :param logger: Optional logger that can be used for logging
         """
         self.args = args
         self.logger = logger or JinaLogger(self.__class__.__name__, **vars(args))
