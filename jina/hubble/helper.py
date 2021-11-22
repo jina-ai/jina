@@ -1,6 +1,5 @@
 """Module for helper functions for Hub API."""
 
-import filelock
 import hashlib
 import io
 import json
@@ -274,15 +273,23 @@ def disk_cache_offline(
 
     :return: function decorator
     """
+    with ImportExtensions(
+        required=True,
+        help_text=f'FileLock is needed to guarantee non-concurrent access to the'
+        f'cache_file {cache_file}',
+    ):
+        import filelock
 
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
 
             pickle_protocol = 4
 
-            with filelock.FileLock(f"{cache_file}.lock", timeout=-1):
+            cache_db = None
+            with filelock.FileLock(f'{cache_file}.lock', timeout=-1):
                 try:
                     cache_db = shelve.open(
                         cache_file, protocol=pickle_protocol, writeback=True
@@ -294,23 +301,27 @@ def disk_cache_offline(
                         cache_db = shelve.open(
                             cache_file, protocol=pickle_protocol, writeback=True
                         )
-                    else:
-                        raise
 
-            with cache_db as dict_db:
-                try:
-                    if call_hash in dict_db and not kwargs.get('force', False):
-                        return dict_db[call_hash]
+            if cache_db is None:
+                # if we failed to load cache, do not raise, it is only an optimization thing
+                return func(*args, **kwargs)
+            else:
+                with cache_db as dict_db:
+                    try:
+                        if call_hash in dict_db and not kwargs.get('force', False):
+                            return dict_db[call_hash]
 
-                    result = func(*args, **kwargs)
-                    dict_db[call_hash] = result
-                except urllib.error.URLError:
-                    if call_hash in dict_db:
-                        default_logger.warning(message.format(func_name=func.__name__))
-                        return dict_db[call_hash]
-                    else:
-                        raise
-            return result
+                        result = func(*args, **kwargs)
+                        dict_db[call_hash] = result
+                    except urllib.error.URLError:
+                        if call_hash in dict_db:
+                            default_logger.warning(
+                                message.format(func_name=func.__name__)
+                            )
+                            return dict_db[call_hash]
+                        else:
+                            raise
+                return result
 
         return wrapper
 
