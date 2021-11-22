@@ -30,10 +30,9 @@ class GroupMixin:
         for doc in self:
             if '__' in tag:
                 value = dunder_get(doc.tags, tag)
+            elif tag in doc.tags:
+                value = doc.tags[tag]
             else:
-                value = doc.tags.get(tag, None)
-
-            if value is None:
                 continue
             rv[value].append(doc)
         return dict(rv)

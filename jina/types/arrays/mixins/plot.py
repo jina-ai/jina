@@ -147,7 +147,7 @@ class PlotMixin:
             for d in self:
                 _d = Document(d, copy=True)
                 if _d.content_type != 'blob':
-                    _d.convert_uri_to_image_blob()
+                    _d.load_uri_to_image_blob()
                     channel_axis = -1
 
                 _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_shape(

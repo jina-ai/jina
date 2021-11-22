@@ -47,7 +47,7 @@ Point cloud is another representation of a 3D mesh. It is made by repeated and u
 
 ```python
 from jina import Document
-doc = Document(uri='viking.glb').convert_uri_to_point_cloud_blob(1000)
+doc = Document(uri='viking.glb').load_uri_to_point_cloud_blob(1000)
 
 print(doc.blob)
 ```

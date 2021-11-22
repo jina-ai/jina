@@ -34,7 +34,7 @@ from jina.types.document.generators import from_csv
 # Load some online CSV file dataset
 src = Document(
     uri='https://perso.telecom-paristech.fr/eagan/class/igr204/data/film.csv'
-).convert_uri_to_text('iso8859')
+).load_uri_to_text('iso8859')
 da = DocumentArray(from_csv(io.StringIO(src.text), dialect='auto'))
 ```
 

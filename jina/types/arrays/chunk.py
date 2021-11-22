@@ -25,11 +25,10 @@ class ChunkArray(DocumentArray):
         self._ref_doc = reference_doc
         super().__init__(doc_views)
 
-    def append(self, document: 'Document', **kwargs) -> 'Document':
+    def append(self, document: 'Document') -> 'Document':
         """Add a sub-document (i.e chunk) to the current Document.
 
         :param document: Sub-document to be appended
-        :param kwargs: additional keyword arguments
         :return: the newly added sub-document in :class:`Document` view
         :rtype: :class:`Document`
 
@@ -39,9 +38,8 @@ class ChunkArray(DocumentArray):
         """
         super().append(document)
         chunk = self[-1]
-        chunk.set_attributes(
-            parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
-        )
+        chunk.parent_id = self._ref_doc.id
+        chunk.granularity = self.granularity
 
         return chunk
 

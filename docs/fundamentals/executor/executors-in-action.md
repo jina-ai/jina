@@ -190,7 +190,7 @@ a [TF-IDF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_ext
 feature vector to generate sparse embeddings for text search.
 
 The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that it is fitted with a dataset already
-present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document
+present in `sklearn`. The executor provides an `encode` method that receives a `DocumentArray` and updates each document
 in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the
 document.
 

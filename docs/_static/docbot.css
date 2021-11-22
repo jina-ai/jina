@@ -170,6 +170,14 @@
     height: 1rem;
 }
 
+.hidden-before-ready{
+    display: none;
+}
+
+.ready .hidden-before-ready{
+    display: revert;
+}
+
 @media (prefers-color-scheme: dark) {
     .powered-by {
         background: url(./Powered-by-Jina-Large-Basic.svg);

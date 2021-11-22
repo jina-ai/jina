@@ -169,7 +169,8 @@ class MatchMixin:
                     d = Document(d, copy=True)
                     d.pop('matches')
                 if not (d.id == _q.id and exclude_self):
-                    _q.matches.append(d, scores={metric_name: _dist})
+                    d.scores = {metric_name: _dist}
+                    _q.matches.append(d)
                     num_matches += 1
                     if num_matches >= (limit or _limit):
                         break

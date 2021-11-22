@@ -1,5 +1,6 @@
 """Module for helper functions for Hub API."""
 
+import filelock
 import hashlib
 import io
 import json
@@ -281,19 +282,20 @@ def disk_cache_offline(
 
             pickle_protocol = 4
 
-            try:
-                cache_db = shelve.open(
-                    cache_file, protocol=pickle_protocol, writeback=True
-                )
-            except Exception:
-                if os.path.exists(cache_file):
-                    # cache is in an unsupported format, reset the cache
-                    os.remove(cache_file)
+            with filelock.FileLock(f"{cache_file}.lock", timeout=-1):
+                try:
                     cache_db = shelve.open(
                         cache_file, protocol=pickle_protocol, writeback=True
                     )
-                else:
-                    raise
+                except Exception:
+                    if os.path.exists(cache_file):
+                        # cache is in an unsupported format, reset the cache
+                        os.remove(cache_file)
+                        cache_db = shelve.open(
+                            cache_file, protocol=pickle_protocol, writeback=True
+                        )
+                    else:
+                        raise
 
             with cache_db as dict_db:
                 try:

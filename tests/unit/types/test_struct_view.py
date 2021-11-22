@@ -155,3 +155,13 @@ def test_struct_contains(struct_proto):
     view = StructView(struct_proto)
     assert 'key_nested' in view
     assert 'a' not in view
+
+
+def test_stuct_double_getter(struct_proto):
+    view = StructView(struct_proto)
+    view['finetuner']['label'] = 'hello'
+    assert view['finetuner']['label'] == 'hello'
+    assert 'label' in view['finetuner']
+    assert 'non_exist_label' not in view['finetuner']
+    view['finetuner']['label'] = {'nest': 'again'}
+    assert view['finetuner']['label']['nest'] == 'again'

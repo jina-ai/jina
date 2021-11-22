@@ -328,7 +328,7 @@ class ConvertSegmenter(Executor):
     @requests
     def segment(self, docs: DocumentArray, **kwargs) -> None:
         for d in docs:
-            d.convert_uri_to_buffer()
+            d.load_uri_to_buffer()
             d.chunks = [Document(blob=_r['blob'], tags=_r['tags']) for _r in get_mesh(d.content)]
             d.pop('buffer', 'uri')
 ```

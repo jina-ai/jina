@@ -144,13 +144,13 @@ Let's take a look how to use it for full-text search. We first download the <Pri
 from jina import Document, DocumentArray, Executor
 
 # load <Pride and Prejudice by Jane Austen>
-d = Document(uri='https://www.gutenberg.org/files/1342/1342-0.txt').convert_uri_to_text()
+d = Document(uri='https://www.gutenberg.org/files/1342/1342-0.txt').load_uri_to_text()
 
 # cut into non-empty sentences store in a DA
 da = DocumentArray(Document(text=s.strip()) for s in d.text.split('\n') if s.strip())
 ```
 
-Here we use Document API `convert_uri_to_text` and store sentences in `da` as one DocumentArray.
+Here we use Document API `load_uri_to_text` and store sentences in `da` as one DocumentArray.
 
 Embed all of them with our FeatureHasher, and do a self-matching, take the top-5 results:
 ```python

@@ -1,7 +1,6 @@
 import uuid
 from typing import Dict, Union
 
-from jina.helper import random_identity
 from .enums import IDLiterals
 
 
@@ -74,7 +73,7 @@ class DaemonID(str):
             )
 
         if not jid:
-            jid = random_identity()
+            jid = str(uuid.uuid4())
         else:
             try:
                 jid = uuid.UUID(*jid)
