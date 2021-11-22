@@ -649,7 +649,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
         is_deleted = item.metadata.deletion_timestamp is not None
         ip = item.status.pod_ip
-        port = self._extract_port(item)
+        port = 8081  # all heads and workers are listening on fixed port 8081 in K8s
 
         if (
             ip

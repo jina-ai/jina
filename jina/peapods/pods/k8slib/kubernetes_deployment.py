@@ -160,6 +160,10 @@ def deploy_service(
     if not port_expose:
         port_expose = 8080
     port_in = 8081
+    if name == 'gateway':
+        port_ready_probe = port_expose
+    else:
+        port_ready_probe = port_in
 
     logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
     kubernetes_tools.create(
@@ -214,6 +218,7 @@ def deploy_service(
         'jina_pod_name': jina_pod_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pea_type': pea_type,
+        'port_ready_probe': port_ready_probe,
     }
 
     if init_container:

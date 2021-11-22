@@ -42,6 +42,6 @@ spec:
 
         readinessProbe:
           tcpSocket:
-            port: {port_in}
+            port: {port_ready_probe}
           initialDelaySeconds: 5
           periodSeconds: 10

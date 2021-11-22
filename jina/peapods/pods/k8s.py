@@ -563,6 +563,8 @@ class K8sPod(BasePod):
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
+            if args.name == 'gateway':
+                cargs.role_type = PeaRoleType.GATEWAY
             parsed_args['deployments'].append(cargs)
         return parsed_args
 

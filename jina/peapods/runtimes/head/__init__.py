@@ -38,6 +38,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         super().__init__(args, cancel_event, **kwargs)
 
         self.name = args.name
+        self.pod_name = (
+            args.name[0 : args.name.index('/')] if '/' in args.name else args.name
+        )
         self.connection_pool = create_connection_pool(
             logger=self.logger,
             k8s_connection_pool=args.k8s_connection_pool,
@@ -72,6 +75,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated """
+        self.connection_pool.start()
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
@@ -129,7 +133,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
 
                 self.connection_pool.add_connection(
-                    pod='worker',
+                    pod=self.pod_name,
                     address=connection_string,
                     shard_id=relatedEntity.shard_id
                     if relatedEntity.HasField('shard_id')
@@ -139,7 +143,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             for relatedEntity in msg.request.relatedEntities:
                 connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
                 await self.connection_pool.remove_connection(
-                    pod='worker',
+                    pod=self.pod_name,
                     address=connection_string,
                     shard_id=relatedEntity.shard_id,
                 )
@@ -157,14 +161,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ]
 
         worker_send_tasks = self.connection_pool.send_messages(
-            messages=messages, pod='worker', polling_type=self.polling
+            messages=messages, pod=self.pod_name, polling_type=self.polling
         )
         worker_results = [
             await result for result in asyncio.as_completed(worker_send_tasks)
         ]
 
         # If there is no uses_after, the head needs to concatenate the documents returned from the workers
-        if self.uses_after_address:
+        if self.uses_after_address and len(worker_results) > 0:
             response_message = await self.connection_pool.send_messages_once(
                 worker_results, pod='uses_after'
             )
