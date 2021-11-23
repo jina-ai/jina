@@ -1,3 +1,5 @@
+from jina.peapods.runtimes.head import HeadRuntime
+
 if False:
     from argparse import Namespace
 
@@ -42,15 +44,20 @@ def executor_native(args: 'Namespace'):
 
     if args.runtime_cls == 'WorkerRuntime':
         runtime_cls = WorkerRuntime
+    elif args.runtime_cls == 'HeadRuntime':
+        runtime_cls = HeadRuntime
     else:
         raise RuntimeError(
             f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `WorkerRuntime` is supported'
         )
 
     with runtime_cls(args) as rt:
-        rt.logger.success(
-            f' Executor {rt._data_request_handler._executor.metas.name} started'
+        name = (
+            rt._data_request_handler._executor.metas.name
+            if hasattr(rt, '_data_request_handler')
+            else rt.name
         )
+        rt.logger.success(f' Executor {name} started')
         rt.run_forever()
 
 
@@ -70,7 +77,7 @@ def executor(args: 'Namespace'):
 
 def worker_runtime(args: 'Namespace'):
     """
-    Starts a GRPCDataRuntime
+    Starts a WorkerRuntime
 
     :param args: arguments coming from the CLI.
     """

@@ -125,6 +125,8 @@ def _create_runtime(args):
 
             return asyncio.create_task(mock_task_wrapper(messages, connection))
 
+        if not hasattr(args, 'name') or not args.name:
+            args.name = 'testHead'
         with HeadRuntime(args, cancel_event) as runtime:
             runtime.connection_pool._send_messages = _send_messages_mock
             runtime.run_forever()
