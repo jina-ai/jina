@@ -44,6 +44,13 @@ spec:
         envFrom:
           - configMapRef:
               name: {name}-configmap
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
         volumeMounts:
           - name: shared
             mountPath: {mount-path}

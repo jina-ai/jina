@@ -39,6 +39,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
 
         readinessProbe:
           tcpSocket:
@@ -60,6 +62,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
 
         readinessProbe:
           tcpSocket:
@@ -81,6 +85,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
 
         readinessProbe:
           tcpSocket:

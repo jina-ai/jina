@@ -394,7 +394,7 @@ class GrpcConnectionPool:
                 try:
                     return await stub.Call(new_messages)
                 except AioRpcError as e:
-                    if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE:
                         raise
                     elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
                         self._logger.debug(f'GRPC call failed, retries exhausted')

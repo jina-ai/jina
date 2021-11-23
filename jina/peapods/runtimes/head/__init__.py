@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import multiprocessing
+import os
 import threading
 from abc import ABC
 from typing import Optional, Union, List
@@ -9,7 +10,7 @@ import grpc
 
 from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
-from ...networking import create_connection_pool
+from ...networking import create_connection_pool, K8sGrpcConnectionPool
 from .... import DocumentArray
 from ....enums import PollingType
 from ....excepts import RuntimeTerminated
@@ -40,14 +41,21 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if args.name is None:
             args.name = ''
         self.name = args.name
-        self.pod_name = (
-            args.name[0 : args.name.index('/')] if '/' in args.name else args.name
-        )
+        self._pod_name = os.getenv('JINA_POD_NAME', 'worker')
         self.connection_pool = create_connection_pool(
             logger=self.logger,
             k8s_connection_pool=args.k8s_connection_pool,
             k8s_namespace=args.k8s_namespace,
         )
+        # In K8s the ConnectionPool needs the information about the Jina Pod its running in
+        # This is stored in the environment variable JINA_POD_NAME in all Jina K8s default templates
+        if (
+            type(self.connection_pool) == K8sGrpcConnectionPool
+            and 'JINA_POD_NAME' not in os.environ
+        ):
+            raise ValueError(
+                'K8s deployments need to specify the environment variable "JINA_POD_NAME"'
+            )
         self.uses_before_address = args.uses_before_address
         if self.uses_before_address:
             self.connection_pool.add_connection(
@@ -135,7 +143,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
 
                 self.connection_pool.add_connection(
-                    pod=self.pod_name,
+                    pod=self._pod_name,
                     address=connection_string,
                     shard_id=relatedEntity.shard_id
                     if relatedEntity.HasField('shard_id')
@@ -145,7 +153,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             for relatedEntity in msg.request.relatedEntities:
                 connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
                 await self.connection_pool.remove_connection(
-                    pod=self.pod_name,
+                    pod=self._pod_name,
                     address=connection_string,
                     shard_id=relatedEntity.shard_id,
                 )
@@ -163,7 +171,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ]
 
         worker_send_tasks = self.connection_pool.send_messages(
-            messages=messages, pod=self.pod_name, polling_type=self.polling
+            messages=messages, pod=self._pod_name, polling_type=self.polling
         )
         worker_results = [
             await result for result in asyncio.as_completed(worker_send_tasks)
