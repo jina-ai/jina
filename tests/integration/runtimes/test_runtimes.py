@@ -1,6 +1,7 @@
 import asyncio
 import json
 import multiprocessing
+import threading
 import time
 
 import pytest
@@ -144,6 +145,11 @@ async def test_runtimes_flow_topology(complete_graph_dict, uses_before, uses_aft
 
         # create worker
         worker_port, worker_process = await _create_worker(pod)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ready_or_shutdown_event=threading.Event(),
+            ctrl_address=f'127.0.0.1:{worker_port}',
+        )
         runtime_processes.append(worker_process)
         await asyncio.sleep(0.1)
 
@@ -215,6 +221,11 @@ async def test_runtimes_shards(polling):
         worker_process.start()
 
         await asyncio.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ready_or_shutdown_event=threading.Event(),
+            ctrl_address=f'127.0.0.1:{worker_port}',
+        )
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
@@ -283,6 +294,11 @@ async def test_runtimes_replicas():
         worker_process.start()
 
         await asyncio.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ready_or_shutdown_event=threading.Event(),
+            ctrl_address=f'127.0.0.1:{worker_port}',
+        )
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
@@ -364,6 +380,11 @@ async def test_runtimes_with_executor():
         )
         runtime_processes.append(worker_process)
         await asyncio.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ready_or_shutdown_event=threading.Event(),
+            ctrl_address=f'127.0.0.1:{worker_port}',
+        )
 
         await _activate_worker(head_port, worker_port, shard_id=i)
 
@@ -475,6 +496,11 @@ async def test_runtimes_with_replicas_advance_faster():
         worker_process.start()
 
         await asyncio.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ready_or_shutdown_event=threading.Event(),
+            ctrl_address=f'127.0.0.1:{worker_port}',
+        )
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
