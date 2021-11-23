@@ -74,7 +74,7 @@ def test_doc_update_fields():
     d = [12, 34, 56]
     e = 'text-mod'
     w = 2.0
-    a.set_attributes(embedding=b, tags=c, location=d, modality=e, weight=w)
+    a._set_attributes(embedding=b, tags=c, location=d, modality=e, weight=w)
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e

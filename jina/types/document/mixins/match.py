@@ -24,7 +24,7 @@ class MatchMixin:
         exclude_self: bool = False,
         only_id: bool = False,
         use_scipy: bool = False,
-    ):
+    ) -> None:
         """Matching the current Document against a set of Documents.
 
         The result will be stored in :attr:`.matches`.
@@ -52,7 +52,7 @@ class MatchMixin:
         """
         ...
 
-    def match(self, *args, **kwargs):
+    def match(self, *args, **kwargs) -> None:
         """
         # noqa: D102
         # noqa: DAR101

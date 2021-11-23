@@ -240,7 +240,9 @@ class Document(AllMixins, ProtoTypeMixin):
                         _remainder2 = _remainder.difference(_intersect2)
 
                         if _intersect2:
-                            self.set_attributes(**{p: document[p] for p in _intersect2})
+                            self._set_attributes(
+                                **{p: document[p] for p in _intersect2}
+                            )
 
                         if _remainder2:
                             self._pb_body.tags.update(
@@ -274,7 +276,7 @@ class Document(AllMixins, ProtoTypeMixin):
                 raise ValueError(
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
-            self.set_attributes(**kwargs)
+            self._set_attributes(**kwargs)
 
     @property
     def weight(self) -> float:
