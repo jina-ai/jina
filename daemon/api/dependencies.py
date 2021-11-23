@@ -135,16 +135,14 @@ class FlowDepends:
         with ExitStack() as stack:
             # set env vars
             stack.enter_context(change_env('JINA_FULL_CLI', 'true'))
-            if self.envs:
-                for key, val in self.envs.items():
-                    stack.enter_context(change_env(key, val))
 
             # change directory to `workspace`
             stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
 
             # load and build
-            f: Flow = Flow.load_config(str(self.localpath())).build()
-
+            f: Flow = Flow.load_config(
+                str(self.localpath()), substitute=True, context=self.envs
+            ).build()
             # get & set the ports mapping, set `runs_in_docker`
             port_mapping = []
             port_mapping.append(
