@@ -162,6 +162,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         expose_public: Optional[bool] = False,
         graph_description: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
+        host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
@@ -213,6 +214,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -559,6 +561,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
+        host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
@@ -616,6 +619,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
