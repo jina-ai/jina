@@ -17,11 +17,20 @@
   <div class="sd-text-center">
     <select id="versions" onChange="window.location.href=this.value">
       {% if versions %}
-        {%- for item in versions|reverse %}  
+        {%- for item in versions|reverse %}        
           {% if item.name == latest_jina_version %}
-            <option value={{ item.url }} {{ 'selected' if current_version.version == item.version else '' }}>latest ({{ item.name }})</option>
+            {% set new_url = item.url if current_version.name == latest_jina_version else item.url | replace('/' + latest_jina_version, "") %}
+            {% if current_version.version == item.version %}
+              <option value="{{ new_url }}" selected }} >latest ({{ item.name }})</option>
+            {% else %}
+              <option value="{{ new_url }}" }} >latest({{ item.name }})</option>
+            {% endif %}
           {% else %}
-            <option value={{ item.url }} {{ 'selected' if current_version.version == item.version else '' }} >{{ item.name }}</option>
+            {% if current_version.version == item.version %}
+              <option value="{{ item.url }}" selected }} >{{ item.name }}</option>
+            {% else %}
+              <option value="{{ item.url }}" }} >{{ item.name }}</option>
+            {% endif %}
           {% endif %}
         {%- endfor %}
       {% endif %}

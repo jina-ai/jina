@@ -119,6 +119,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11628,4 +11629,29 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b8f1d5dd```](https://github.com/jina-ai/jina/commit/b8f1d5dd8953e5f938ac05ec9ce6a751da544481)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```febc2037```](https://github.com/jina-ai/jina/commit/febc20372751aa1dba7d293306bebbbb2db3eb19)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```74bd1906```](https://github.com/jina-ai/jina/commit/74bd190688a83e67f2589ec15a0fd7fdab7b1db3)] __-__ __version__: the next version will be 2.4.8 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-9></a>
+## Release Note (`2.4.9`)
+
+> Release time: 2021-11-23 16:57:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Deepankar Mahapatro,  cristian,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```f065ab84```](https://github.com/jina-ai/jina/commit/f065ab8427f75e1a5553957b55473bf0508f34ee)] __-__ move filelock dependency import (#3983) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```fdc0dbfa```](https://github.com/jina-ai/jina/commit/fdc0dbfab538208a927b5d69bff14595ccf83aae)] __-__ add versioning (#3981) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```c7e25cff```](https://github.com/jina-ai/jina/commit/c7e25cffd5a15847ef26a62f06bfd506b9e29062)] __-__ __warning__: warning ldarray rdarray should be &#39;traversal_paths&#39; (#3984) (*cristian*)
+ - [[```d2ce057f```](https://github.com/jina-ai/jina/commit/d2ce057f7387567926428a4deed960a0dbe13d12)] __-__ fix readme (*Han Xiao*)
+ - [[```e9b87b90```](https://github.com/jina-ai/jina/commit/e9b87b90acf6ca8c07ba35a7f14aa84ae76ea0f2)] __-__ __version__: the next version will be 2.4.9 (*Jina Dev Bot*)
 

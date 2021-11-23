@@ -48,7 +48,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           git fetch origin
-          export NUM_RELEASES=1 # only 2 last tags to save build time 
+          export NUM_RELEASES=2 # only 2 last tags to save build time 
           bash makedoc.sh development
           netlify deploy --dir=_build/dirhtml --alias=${{ env.BRANCH_NAME }} --message="Deploying docs to ${{ env.BRANCH_NAME }} branch"
         env:

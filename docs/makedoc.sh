@@ -40,27 +40,4 @@ docker run --rm \
   pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
 
 sphinx-multiversion . ${BUILD_DIR}
-
-cat >${BUILD_DIR}/index.html <<EOF
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Redirecting to latest</title>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; url=./${LATEST_JINA_VERSION}/index.html">
-    <link rel="canonical" href="https://docs.jina.ai">
-  </head>
-</html>
-EOF
-cat >${BUILD_DIR}/404.html <<EOF
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Redirecting to latest</title>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; url=./${LATEST_JINA_VERSION}/404.html">
-    <link rel="canonical" href="https://docs.jina.ai">
-  </head>
-</html>
-EOF
-
+mv -v _build/dirhtml/${LATEST_JINA_VERSION}/* _build/dirhtml

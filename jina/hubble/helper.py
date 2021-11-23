@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
+from contextlib import nullcontext
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
@@ -273,12 +274,6 @@ def disk_cache_offline(
 
     :return: function decorator
     """
-    with ImportExtensions(
-        required=True,
-        help_text=f'FileLock is needed to guarantee non-concurrent access to the'
-        f'cache_file {cache_file}',
-    ):
-        import filelock
 
     def decorator(func):
         @wraps(func)
@@ -287,10 +282,18 @@ def disk_cache_offline(
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
 
             pickle_protocol = 4
-            import filelock
+            file_lock = nullcontext()
+            with ImportExtensions(
+                required=False,
+                help_text=f'FileLock is needed to guarantee non-concurrent access to the'
+                f'cache_file {cache_file}',
+            ):
+                import filelock
+
+                file_lock = filelock.FileLock(f'{cache_file}.lock', timeout=-1)
 
             cache_db = None
-            with filelock.FileLock(f'{cache_file}.lock', timeout=-1):
+            with file_lock:
                 try:
                     cache_db = shelve.open(
                         cache_file, protocol=pickle_protocol, writeback=True
