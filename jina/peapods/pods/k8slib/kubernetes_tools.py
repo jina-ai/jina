@@ -1,12 +1,20 @@
+import json
 import os
 import tempfile
-import json
 from typing import Dict, Optional, Generator
 
 from .kubernetes_client import K8sClients
 from ....importer import ImportExtensions
 from ....logging.logger import JinaLogger
 from ....logging.predefined import default_logger
+
+DEPLOYMENT_FILES = [
+    'deployment',
+    'deployment-init',
+    'deployment-uses-before',
+    'deployment-uses-after',
+    'deployment-uses-before-after',
+]
 
 cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
@@ -35,7 +43,7 @@ def create(
     clients = K8sClients()
     if template == 'configmap':
         yaml = _patch_configmap_yaml(template, params)
-    elif template in ['deployment', 'deployment-init'] and params.get('device_plugins'):
+    elif template in DEPLOYMENT_FILES and params.get('device_plugins'):
         yaml = _get_yaml(template, params, custom_resource_dir)
         yaml = _patch_deployment_with_device_plugins(yaml, params)
     else:
@@ -151,14 +159,13 @@ def _get_gateway_pod_name(namespace, k8s_clients):
 
 
 def get_port_forward_contextmanager(
-    namespace: str,
-    port_expose: int,
-    config_path: str = None,
+    namespace: str, port_expose: int, config_path: str = None, pod_name: str = None
 ) -> Generator[None, None, None]:
     """Forward local requests to the gateway which is running in the Kubernetes cluster.
     :param namespace: namespace of the gateway
     :param port_expose: exposed port of the gateway
     :param config_path: path to the Kubernetes config file
+    :param pod_name: name of the pod to forward to, None by default will hit the gateway pod
     :return: context manager which sets up and terminates the port-forward
     """
     with ImportExtensions(
@@ -170,9 +177,11 @@ def get_port_forward_contextmanager(
         import portforward
 
     clients = K8sClients()
-    gateway_pod_name = _get_gateway_pod_name(namespace, k8s_clients=clients)
+    pod_name = (
+        pod_name if pod_name else _get_gateway_pod_name(namespace, k8s_clients=clients)
+    )
     if config_path is None and 'KUBECONFIG' in os.environ:
         config_path = os.environ['KUBECONFIG']
     return portforward.forward(
-        namespace, gateway_pod_name, port_expose, port_expose, config_path
+        namespace, pod_name, port_expose, port_expose, config_path
     )
