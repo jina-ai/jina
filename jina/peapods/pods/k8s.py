@@ -6,8 +6,10 @@ from typing import Optional, Dict, Union, Set, List, Iterable
 
 import jina
 from .k8slib import kubernetes_deployment, kubernetes_client
+from ..networking import K8sGrpcConnectionPool
 from ..pods import BasePod
 from ... import __default_executor__
+from ...enums import PeaRoleType
 from ...logging.logger import JinaLogger
 from ...excepts import RuntimeFailToStart
 
@@ -20,7 +22,6 @@ class K8sPod(BasePod):
             self,
             name: str,
             head_port_in: int,
-            tail_port_out: int,
             version: str,
             pea_type: str,
             jina_pod_name: str,
@@ -31,7 +32,6 @@ class K8sPod(BasePod):
             self.name = name
             self.dns_name = kubernetes_deployment.to_dns_name(name)
             self.head_port_in = head_port_in
-            self.tail_port_out = tail_port_out
             self.version = version
             self.pea_type = pea_type
             self.jina_pod_name = jina_pod_name
@@ -54,8 +54,7 @@ class K8sPod(BasePod):
                 image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'["gateway", '
-                f'"--grpc-data-requests", '
-                f'{kubernetes_deployment.get_cli_params(self.common_args, ("pod_role",))}]',
+                f'{kubernetes_deployment.get_cli_params(arguments=self.common_args, skip_list=("pod_role",))}]',
                 logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=1,
                 pull_policy='IfNotPresent',
@@ -66,22 +65,21 @@ class K8sPod(BasePod):
 
         @staticmethod
         def _construct_runtime_container_args(
-            deployment_args, uses, uses_metas, uses_with_string
+            deployment_args, uses, uses_metas, uses_with_string, pea_type, port_in
         ):
             container_args = (
                 f'["executor", '
                 f'"--native", '
                 f'"--uses", "{uses}", '
-                f'"--grpc-data-requests", '
-                f'"--runtime-cls", "GRPCDataRuntime", '
+                f'"--runtime-cls", {"WorkerRuntime" if pea_type.lower() == "worker" else "HeadRuntime"}, '
                 f'"--uses-metas", "{uses_metas}", '
                 + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
+                + f'{kubernetes_deployment.get_cli_params(arguments=deployment_args, port_in=port_in)}]'
             )
             return container_args
 
-        def _get_image_name(self):
-            image_name = kubernetes_deployment.get_image_name(self.deployment_args.uses)
+        def _get_image_name(self, uses: str):
+            image_name = kubernetes_deployment.get_image_name(uses)
             if image_name == __default_executor__:
                 test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
                 image_name = (
@@ -95,7 +93,7 @@ class K8sPod(BasePod):
         def _get_init_container_args(self):
             return kubernetes_deployment.get_init_container_args(self.common_args)
 
-        def _get_container_args(self):
+        def _get_container_args(self, uses, pea_type=None, port_in=None):
             uses_metas = kubernetes_deployment.dictionary_to_cli_param(
                 {'pea_id': self.shard_id}
             )
@@ -103,24 +101,87 @@ class K8sPod(BasePod):
                 self.deployment_args.uses_with
             )
             uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
-            uses = self.deployment_args.uses
-            if self.deployment_args.uses != __default_executor__:
+            if uses != __default_executor__:
                 uses = 'config.yml'
             return self._construct_runtime_container_args(
-                self.deployment_args, uses, uses_metas, uses_with_string
+                self.deployment_args,
+                uses,
+                uses_metas,
+                uses_with_string,
+                pea_type if pea_type else self.pea_type,
+                port_in,
             )
 
         def _deploy_runtime(self):
-            image_name = self._get_image_name()
+            image_name = self._get_image_name(self.deployment_args.uses)
+            image_name_uses_before = (
+                self._get_image_name(self.deployment_args.uses_before)
+                if hasattr(self.deployment_args, 'uses_before')
+                and self.deployment_args.uses_before
+                else None
+            )
+            image_name_uses_after = (
+                self._get_image_name(self.deployment_args.uses_after)
+                if hasattr(self.deployment_args, 'uses_after')
+                and self.deployment_args.uses_after
+                else None
+            )
             init_container_args = self._get_init_container_args()
-            container_args = self._get_container_args()
+            container_args = self._get_container_args(self.deployment_args.uses)
+            container_args_uses_before = (
+                self._get_container_args(
+                    self.deployment_args.uses_before,
+                    'worker',
+                    port_in=K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
+                )
+                if hasattr(self.deployment_args, 'uses_before')
+                and self.deployment_args.uses_before
+                else None
+            )
+            container_args_uses_after = (
+                self._get_container_args(
+                    self.deployment_args.uses_after,
+                    'worker',
+                    port_in=K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
+                )
+                if hasattr(self.deployment_args, 'uses_after')
+                and self.deployment_args.uses_after
+                else None
+            )
 
+            self._do_deploy(
+                container_args=container_args,
+                container_args_uses_before=container_args_uses_before,
+                container_args_uses_after=container_args_uses_after,
+                image_name=image_name,
+                image_name_uses_after=image_name_uses_after,
+                image_name_uses_before=image_name_uses_before,
+                init_container_args=init_container_args,
+            )
+
+        def _do_deploy(
+            self,
+            container_args,
+            container_args_uses_before,
+            container_args_uses_after,
+            image_name,
+            image_name_uses_after,
+            image_name_uses_before,
+            init_container_args,
+            replace=False,
+        ):
             kubernetes_deployment.deploy_service(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
+                image_name_uses_after=image_name_uses_after,
+                image_name_uses_before=image_name_uses_before,
                 container_cmd='["jina"]',
+                container_cmd_uses_before='["jina"]',
+                container_cmd_uses_after='["jina"]',
                 container_args=container_args,
+                container_args_uses_before=container_args_uses_before,
+                container_args_uses_after=container_args_uses_after,
                 logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
@@ -129,31 +190,45 @@ class K8sPod(BasePod):
                 shard_id=self.shard_id,
                 init_container=init_container_args,
                 env=self.deployment_args.env,
-                gpus=self.deployment_args.gpus,
+                gpus=self.deployment_args.gpus
+                if hasattr(self.deployment_args, 'gpus')
+                else None,
                 custom_resource_dir=getattr(
                     self.common_args, 'k8s_custom_resource_dir', None
                 ),
+                replace_deployment=replace,
             )
 
         def _restart_runtime(self):
-            image_name = self._get_image_name()
-            container_args = self._get_container_args()
+            image_name = self._get_image_name(self.deployment_args.uses)
+            image_name_uses_before = self._get_image_name(
+                self.deployment_args.uses_before
+            )
+            image_name_uses_after = self._get_image_name(
+                self.deployment_args.uses_after
+            )
+            container_args = self._get_container_args(self.deployment_args.uses)
+            container_args_uses_before = (
+                self._get_container_args(self.deployment_args.uses_before)
+                if self.deployment_args.uses_before
+                else None
+            )
+            container_args_uses_after = (
+                self._get_container_args(self.deployment_args.uses_after)
+                if self.deployment_args.uses_after
+                else None
+            )
+            init_container_args = self._get_init_container_args()
 
-            kubernetes_deployment.restart_deployment(
-                self.dns_name,
-                namespace=self.k8s_namespace,
-                image_name=image_name,
-                container_cmd='["jina"]',
+            self._do_deploy(
                 container_args=container_args,
-                logger=JinaLogger(f'restart_{self.name}'),
-                replicas=self.num_replicas,
-                pull_policy='IfNotPresent',
-                jina_pod_name=self.jina_pod_name,
-                pea_type=self.pea_type,
-                shard_id=self.shard_id,
-                custom_resource_dir=getattr(
-                    self.common_args, 'k8s_custom_resource_dir', None
-                ),
+                container_args_uses_before=container_args_uses_before,
+                container_args_uses_after=container_args_uses_after,
+                image_name=image_name,
+                image_name_uses_after=image_name_uses_after,
+                image_name_uses_before=image_name_uses_before,
+                init_container_args=init_container_args,
+                replace=True,
             )
 
         def wait_start_success(self):
@@ -425,7 +500,6 @@ class K8sPod(BasePod):
                 'name': self.dns_name,
                 'head_host': f'{self.dns_name}.{self.k8s_namespace}.svc',
                 'head_port_in': self.head_port_in,
-                'tail_port_out': self.tail_port_out,
             }
 
     def __init__(
@@ -436,36 +510,18 @@ class K8sPod(BasePod):
         self.needs = needs or set()
         self.deployment_args = self._parse_args(args)
         self.version = self._get_base_executor_version()
-
-        self.fixed_head_port_in = 8081
-        self.fixed_tail_port_out = 8082
         self.k8s_head_deployment = None
-        self.k8s_tail_deployment = None
         if self.deployment_args['head_deployment'] is not None:
             name = f'{self.name}-head'
             self.k8s_head_deployment = self._K8sDeployment(
                 name=name,
-                head_port_in=self.fixed_head_port_in,
-                tail_port_out=self.fixed_tail_port_out,
+                head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                 version=self.version,
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
                 deployment_args=self.deployment_args['head_deployment'],
                 pea_type='head',
-            )
-        if self.deployment_args['tail_deployment'] is not None:
-            name = f'{self.name}-tail'
-            self.k8s_tail_deployment = self._K8sDeployment(
-                name=name,
-                head_port_in=self.fixed_head_port_in,
-                tail_port_out=self.fixed_tail_port_out,
-                version=self.version,
-                shard_id=None,
-                jina_pod_name=self.name,
-                common_args=self.args,
-                deployment_args=self.deployment_args['tail_deployment'],
-                pea_type='tail',
             )
 
         self.k8s_deployments = []
@@ -478,8 +534,7 @@ class K8sPod(BasePod):
             self.k8s_deployments.append(
                 self._K8sDeployment(
                     name=name,
-                    head_port_in=self.fixed_head_port_in,
-                    tail_port_out=self.fixed_tail_port_out,
+                    head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                     version=self.version,
                     shard_id=i,
                     common_args=self.args,
@@ -497,30 +552,40 @@ class K8sPod(BasePod):
     def _parse_deployment_args(self, args):
         parsed_args = {
             'head_deployment': None,
-            'tail_deployment': None,
             'deployments': [],
         }
         shards = getattr(args, 'shards', 1)
-        replicas = getattr(args, 'replicas', 1)
         uses_before = getattr(args, 'uses_before', None)
-        if shards > 1 or (len(self.needs) > 1 and replicas > 1) or uses_before:
-            # reasons to separate head and tail from peas is that they
-            # can be deducted based on the previous and next pods
+        uses_after = getattr(args, 'uses_after', None)
+
+        if args.name != 'gateway':
             parsed_args['head_deployment'] = copy.copy(args)
             parsed_args['head_deployment'].replicas = 1
-            parsed_args['head_deployment'].uses = (
-                args.uses_before or __default_executor__
+            parsed_args['head_deployment'].runtime_cls = 'HeadRuntime'
+            parsed_args['head_deployment'].pea_role = PeaRoleType.HEAD
+            parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+
+        if uses_before:
+            parsed_args[
+                'head_deployment'
+            ].uses_before_address = (
+                f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE}'
             )
-        if shards > 1 or getattr(args, 'uses_after', None):
-            parsed_args['tail_deployment'] = copy.copy(args)
-            parsed_args['tail_deployment'].replicas = 1
-            parsed_args['tail_deployment'].uses = (
-                args.uses_after or __default_executor__
+        if uses_after:
+            parsed_args[
+                'head_deployment'
+            ].uses_after_address = (
+                f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_AFTER}'
             )
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
             cargs.shard_id = i
+            cargs.uses_before = None
+            cargs.uses_after = None
+            cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            if args.name == 'gateway':
+                cargs.role_type = PeaRoleType.GATEWAY
             parsed_args['deployments'].append(cargs)
         return parsed_args
 
@@ -580,8 +645,6 @@ class K8sPod(BasePod):
                 self.enter_context(self.k8s_head_deployment)
             for k8s_deployment in self.k8s_deployments:
                 self.enter_context(k8s_deployment)
-            if self.k8s_tail_deployment is not None:
-                self.enter_context(self.k8s_tail_deployment)
         return self
 
     def wait_start_success(self):
@@ -595,8 +658,6 @@ class K8sPod(BasePod):
                 self.k8s_head_deployment.wait_start_success()
             for p in self.k8s_deployments:
                 p.wait_start_success()
-            if self.k8s_tail_deployment is not None:
-                self.k8s_tail_deployment.wait_start_success()
         except:
             self.close()
             raise
@@ -620,14 +681,6 @@ class K8sPod(BasePod):
         return self.args
 
     @property
-    def tail_args(self) -> Namespace:
-        """Tail args of the pod
-
-        :return: namespace
-        """
-        return self.args
-
-    @property
     def num_peas(self) -> int:
         """Number of peas. Currently unused.
 
@@ -637,11 +690,6 @@ class K8sPod(BasePod):
             [
                 self.k8s_head_deployment.num_replicas
                 if self.k8s_head_deployment is not None
-                else 0
-            ]
-            + [
-                self.k8s_tail_deployment.num_replicas
-                if self.k8s_tail_deployment is not None
                 else 0
             ]
             + [k8s_deployment.num_replicas for k8s_deployment in self.k8s_deployments]
@@ -661,8 +709,6 @@ class K8sPod(BasePod):
             if self.k8s_head_deployment:
                 res.append(self.k8s_head_deployment.to_node())
             res.extend([_.to_node() for _ in self.k8s_deployments])
-            if self.k8s_tail_deployment:
-                res.append(self.k8s_tail_deployment.to_node())
         return res
 
     def _get_base_executor_version(self):
@@ -707,23 +753,13 @@ class K8sPod(BasePod):
                     shard_mermaid_graph.append(f'end\n')
                     mermaid_graph.extend(shard_mermaid_graph)
                 head_name = f'{self.name}/head'
-                tail_name = f'{self.name}/tail'
                 head_to_show = self.args.uses_before
                 if head_to_show is None or head_to_show == __default_executor__:
                     head_to_show = head_name
-                tail_to_show = self.args.uses_after
-                if tail_to_show is None or tail_to_show == __default_executor__:
-                    tail_to_show = tail_name
                 if head_name:
                     for shard_name in shard_names:
                         mermaid_graph.append(
                             f'{head_name}[{head_to_show}]:::HEADTAIL --> {shard_name}[{uses}];'
-                        )
-
-                if tail_name:
-                    for shard_name in shard_names:
-                        mermaid_graph.append(
-                            f'{shard_name}[{uses}] --> {tail_name}[{tail_to_show}]:::HEADTAIL;'
                         )
             else:
                 for replica_id in range(num_replicas):

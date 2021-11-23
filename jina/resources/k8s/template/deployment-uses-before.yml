@@ -47,3 +47,26 @@ spec:
             port: {port_ready_probe}
           initialDelaySeconds: 5
           periodSeconds: 10
+      - name: uses-before
+        image: {image_uses_before}
+        imagePullPolicy: {pull_policy}
+        command: {command_uses_before}
+        args: {args_uses_before}
+        ports:
+          - containerPort: {port_in_uses_before}
+        envFrom:
+          - configMapRef:
+              name: {name}-configmap
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
+
+        readinessProbe:
+          tcpSocket:
+            port: {port_in_uses_before}
+          initialDelaySeconds: 5
+          periodSeconds: 10

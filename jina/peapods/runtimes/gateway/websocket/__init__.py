@@ -74,6 +74,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
+        self._connection_pool.start()
         await self._server.serve()
 
     async def _wait_for_cancel(self):
