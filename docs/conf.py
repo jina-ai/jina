@@ -95,9 +95,9 @@ epub_exclude_files = ['search.html']
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx_autodoc_typehints',
-    'sphinx.ext.viewcode',
+    # 'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
-    'sphinxcontrib.apidoc',
+    # 'sphinxcontrib.apidoc',
     'sphinxarg.ext',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
@@ -127,7 +127,7 @@ notfound_context = {
 
 ''',
 }
-notfound_no_urls_prefix = True
+notfound_urls_prefix = f'/{os.environ.get("SPHINX_MULTIVERSION_NAME", version)}/'
 
 apidoc_module_dir = repo_dir
 apidoc_output_dir = 'api'
