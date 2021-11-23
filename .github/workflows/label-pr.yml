@@ -47,7 +47,9 @@ jobs:
           npm i -g netlify-cli
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          bash makedoc.sh
+          git fetch origin
+          export NUM_RELEASES=2 # only 2 last tags to save build time 
+          bash makedoc.sh development
           netlify deploy --dir=_build/dirhtml --alias=${{ env.BRANCH_NAME }} --message="Deploying docs to ${{ env.BRANCH_NAME }} branch"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
