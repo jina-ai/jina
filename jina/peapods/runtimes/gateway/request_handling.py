@@ -4,6 +4,7 @@ import asyncio
 from typing import List, TYPE_CHECKING, Callable, Union
 
 from .graph.topology_graph import TopologyGraph
+from ..request_handlers.data_request_handler import DataRequestHandler
 from ...networking import GrpcConnectionPool
 from ....types.message import Message
 
@@ -28,6 +29,9 @@ def handle_request(
         # important that the gateway needs to have an instance of the graph per request
         tasks_to_respond = []
         tasks_to_ignore = []
+        r = request.routes.add()
+        r.pod = 'gateway'
+        r.start_time.GetCurrentTime()
         for origin_node in request_graph.origin_nodes:
             leaf_tasks = origin_node.get_leaf_tasks(
                 connection_pool, Message(None, request), None
@@ -61,6 +65,8 @@ def handle_request(
                 filtered_partial_responses[0].request.docs.clear()
                 filtered_partial_responses[0].request.docs.extend(docs)
 
+                DataRequestHandler.merge_routes(filtered_partial_responses)
+
             return filtered_partial_responses[0]
 
         return asyncio.ensure_future(_merge_results_at_end_gateway(tasks_to_respond))
@@ -77,6 +83,14 @@ def handle_result(result: Union['Message', List['Message']]):
     """
     # TODO: Handle better the merging of messages
     if isinstance(result, List):
+        _set_gateway_end_time(result[0])
         return result[0].request
     elif isinstance(result, Message):
+        _set_gateway_end_time(result)
         return result.request
+
+
+def _set_gateway_end_time(result):
+    for route in result.request.routes:
+        if route.pod == 'gateway':
+            route.end_time.GetCurrentTime()

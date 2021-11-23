@@ -140,10 +140,9 @@ message DocumentProto {
  */
 message RouteProto {
     string pod = 1; // the name of the BasePod
-    string pod_id = 2; // the id of the BasePod
-    google.protobuf.Timestamp start_time = 3; // receiving time
-    google.protobuf.Timestamp end_time = 4; // sending (out) time
-    StatusProto status = 5; // the status of the execution
+    google.protobuf.Timestamp start_time = 2; // receiving time
+    google.protobuf.Timestamp end_time = 3; // sending (out) time
+    StatusProto status = 4; // the status of the execution
 }
 
 /**

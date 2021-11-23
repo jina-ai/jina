@@ -39,11 +39,21 @@ class TopologyGraph:
                 msg = await previous_task
             if msg is not None:
                 self.parts_to_send.append(msg)
+                if msg.request.routes[-1].pod != 'gateway':
+                    msg.request.routes[-1].end_time.GetCurrentTime()
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
+                    for part in self.parts_to_send:
+                        r = part.request.routes.add()
+                        r.pod = self.name
+                        r.start_time.GetCurrentTime()
                     resp = await connection_pool.send_messages_once(
                         messages=self.parts_to_send, pod=self.name, head=True
                     )
+                    for route in resp.response.routes:
+                        if route.pod == self.name:
+                            route.end_time.GetCurrentTime()
+                            break
                     return resp
 
         def get_leaf_tasks(
