@@ -63,4 +63,5 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def async_run_forever(self):
         """The async running of server."""
+        self._connection_pool.start()
         await self.server.wait_for_termination()

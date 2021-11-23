@@ -329,7 +329,11 @@ class GrpcConnectionPool:
         return self._send_messages(messages, connection)
 
     def add_connection(
-        self, pod: str, address: str, head: bool = False, shard_id: Optional[int] = None
+        self,
+        pod: str,
+        address: str,
+        head: Optional[bool] = False,
+        shard_id: Optional[int] = None,
     ):
         """
         Adds a connection for a pod to this connection pool
@@ -347,7 +351,11 @@ class GrpcConnectionPool:
             self._connections.add_replica(pod, shard_id, address)
 
     async def remove_connection(
-        self, pod: str, address: str, head: bool = False, shard_id: Optional[int] = None
+        self,
+        pod: str,
+        address: str,
+        head: Optional[bool] = False,
+        shard_id: Optional[int] = None,
     ):
         """
         Removes a connection to a pod
@@ -386,13 +394,15 @@ class GrpcConnectionPool:
                 try:
                     return await stub.Call(new_messages)
                 except AioRpcError as e:
-                    if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    if e.code() != grpc.StatusCode.UNAVAILABLE:
+                        raise
+                    elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
+                        self._logger.debug(f'GRPC call failed, retries exhausted')
                         raise
                     else:
                         self._logger.debug(
-                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/'
+                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/3'
                         )
-            self._logger.debug(f'GRPC call failed, retries exhausted')
 
         return asyncio.create_task(task_wrapper(messages, connection))
 
@@ -554,6 +564,11 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     :param logger: the logger to use
     """
 
+    K8S_PORT_EXPOSE = 8080
+    K8S_PORT_IN = 8081
+    K8S_PORT_USES_BEFORE = 8082
+    K8S_PORT_USES_AFTER = 8083
+
     def __init__(
         self,
         namespace: str,
@@ -563,6 +578,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         super().__init__(logger=logger)
 
         self._namespace = namespace
+        self._process_events_task = None
         self._k8s_client = client
         self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
@@ -614,7 +630,8 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         Closes the connection pool
         """
         self.enabled = False
-        self._process_events_task.cancel()
+        if self._process_events_task:
+            self._process_events_task.cancel()
         self._api_watch.stop()
         await super().close()
 
@@ -639,7 +656,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
         is_deleted = item.metadata.deletion_timestamp is not None
         ip = item.status.pod_ip
-        port = self._extract_port(item)
+        port = self.K8S_PORT_IN
 
         if (
             ip
@@ -648,14 +665,14 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
             and self._pod_is_up(item)
             and self._pod_is_ready(item)
         ):
-            super().add_connection(
+            self.add_connection(
                 pod=jina_pod_name,
                 head=is_head,
                 address=f'{ip}:{port}',
                 shard_id=shard_id,
             )
         elif ip and port and is_deleted and self._pod_is_up(item):
-            await super().remove_connection(
+            await self.remove_connection(
                 pod=jina_pod_name,
                 head=is_head,
                 address=f'{ip}:{port}',
@@ -667,35 +684,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         for container in item.spec.containers:
             if container.name == 'executor':
                 return container.ports[0].container_port
-        return None
-
-    def add_connection(
-        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
-    ):
-        """
-        In K8s the connection pool is auto configured by subscribing to K8s API.
-        It can not be managed manually, so add_connection is a not doing anything
-
-        :param pod: The pod the connection belongs to, like 'encoder'
-        :param head: True if the connection is for a head
-        :param address: Address used for the grpc connection, format is <host>:<port>
-        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
-        """
-        pass
-
-    def remove_connection(
-        self, pod: str, head: bool, address: str, shard_id: Optional[int] = None
-    ):
-        """
-        In K8s the connection pool is auto configured by subscribing to K8s API.
-        It can not be managed manually, so remove_connection is a not doing anything
-
-        :param pod: The pod the connection belongs to, like 'encoder'
-        :param head: True if the connection is for a head
-        :param address: Address used for the grpc connection, format is <host>:<port>
-        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
-        :return: Always None as this is a Noop
-        """
         return None
 
 
