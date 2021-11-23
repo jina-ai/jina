@@ -69,6 +69,12 @@ def handle_request(
 
             return filtered_partial_responses[0]
 
+        # In case of empty topologies
+        if not tasks_to_respond:
+            r.end_time.GetCurrentTime()
+            future = asyncio.Future()
+            future.set_result(Message(envelope=None, request=request))
+            tasks_to_respond.append(future)
         return asyncio.ensure_future(_merge_results_at_end_gateway(tasks_to_respond))
 
     return _handle_request

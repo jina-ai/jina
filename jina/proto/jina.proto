@@ -136,12 +136,15 @@ message DocumentProto {
 }
 
 /**
- * Represents a the route paths of this message
+ * Represents a the route paths of this message as perceived by the Gateway
+ * start_time is set when the Gateway sends a message to a Pod
+ * end_time is set when the Gateway receives a message from a Pod
+ * thus end_time - start_time includes Executor computation, runtime overhead, serialization and network
  */
 message RouteProto {
     string pod = 1; // the name of the BasePod
-    google.protobuf.Timestamp start_time = 2; // receiving time
-    google.protobuf.Timestamp end_time = 3; // sending (out) time
+    google.protobuf.Timestamp start_time = 2; // time when the Gateway starts sending to the Pod
+    google.protobuf.Timestamp end_time = 3; // time when the Gateway received it from the Pod
     StatusProto status = 4; // the status of the execution
 }
 

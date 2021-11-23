@@ -111,7 +111,10 @@ class TopologyGraph:
 
     def __init__(self, graph_representation: Dict, *args, **kwargs):
         num_parts_per_node = defaultdict(int)
-        origin_node_names = graph_representation['start-gateway']
+        if 'start-gateway' in graph_representation:
+            origin_node_names = graph_representation['start-gateway']
+        else:
+            origin_node_names = set()
         hanging_pod_names = set()
         node_set = set()
         for node_name, outgoing_node_names in graph_representation.items():
