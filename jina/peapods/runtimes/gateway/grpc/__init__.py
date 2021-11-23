@@ -6,7 +6,8 @@ from jina import __default_host__
 
 from .....proto import jina_pb2_grpc
 from .. import GatewayRuntime
-from ....stream.gateway import GatewayStreamer
+from ....stream import RequestStreamer
+from ..request_handling import handle_request, handle_result
 
 __all__ = ['GRPCGatewayRuntime']
 
@@ -33,9 +34,15 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self._set_topology_graph()
         self._set_connection_pool()
 
-        self.streamer = GatewayStreamer(
-            self.args, graph=self._topology_graph, connection_pool=self._connection_pool
+        self.streamer = RequestStreamer(
+            args=self.args,
+            request_handler=handle_request(
+                graph=self._topology_graph, connection_pool=self._connection_pool
+            ),
+            result_handler=handle_result,
         )
+
+        self.streamer.Call = self.streamer.stream
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
