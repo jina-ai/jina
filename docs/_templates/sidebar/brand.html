@@ -14,6 +14,19 @@
   <div class="sd-text-center">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub">Star</a>
   </div>
+  <div class="sd-text-center">
+    <select id="versions" onChange="window.location.href=this.value">
+      {% if versions %}
+        {%- for item in versions|reverse %}  
+          {% if item.name == latest_jina_version %}
+            <option value={{ item.url }} {{ 'selected' if current_version.version == item.version else '' }}>latest ({{ item.name }})</option>
+          {% else %}
+            <option value={{ item.url }} {{ 'selected' if current_version.version == item.version else '' }} >{{ item.name }}</option>
+          {% endif %}
+        {%- endfor %}
+      {% endif %}
+    </select>
+  </div>
   {% if not theme_sidebar_hide_name %}
   <span class="sidebar-brand-text">{{ docstitle if docstitle else project }}</span>
   {%- endif %}

@@ -1,5 +1,11 @@
 # Document
 
+```{toctree}
+:hidden:
+
+fluent-interface
+```
+
 {class}`~jina.types.document.Document` is the basic data type in Jina. Whether you're working with text, image, video, audio, or 3D meshes, they are
 all `Document`s in Jina.
 

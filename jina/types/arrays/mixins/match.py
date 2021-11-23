@@ -91,9 +91,9 @@ class MatchMixin:
                 '''
             `traversal_ldarray` and `traversal_rdarray` will be removed soon. 
             Instead of doing `da.match(..., traveral_ldarray=[...])`, you can achieve the same via 
-            `da.traverse_flat(traveral_ldarray=[...]).match(...)`.
+            `da.traverse_flat(traversal_paths=[...]).match(...)`.
             Same goes with `da.match(..., traveral_rdarray=[...])`, you can do it via: 
-            `da.match(da2.traverse_flat(traversal_rdarray=[...]))`.             
+            `da.match(da2.traverse_flat(traversal_paths=[...]))`.             
             '''
             )
 

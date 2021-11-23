@@ -108,6 +108,7 @@ extensions = [
     'myst_parser',
     'sphinx_design',
     'sphinx_inline_tabs',
+    'sphinx_multiversion',
 ]
 
 myst_enable_extensions = ['colon_fence']
@@ -163,7 +164,7 @@ ogp_image = 'https://docs.jina.ai/_static/banner.png'
 ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'
-ogp_site_name = 'Jina Documentation'
+ogp_site_name = f'Jina {os.environ.get("SPHINX_MULTIVERSION_VERSION", version)} Documentation'
 
 ogp_custom_meta_tags = [
     '<meta name="twitter:card" content="summary_large_image">',
@@ -185,6 +186,16 @@ ogp_custom_meta_tags = [
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     ''',
 ]
+
+def smv_config(string: str):
+    return r'^{}$'.format(string.strip().replace(' ', '|'))
+
+html_context = {
+    'latest_jina_version': os.environ.get('LATEST_JINA_VERSION', 'master')
+}
+smv_tag_whitelist = smv_config(os.environ.get('SMV_TAG_WHITELIST', 'v2.4.7'))
+smv_branch_whitelist = smv_config(os.environ.get('SMV_BRANCH_WHITELIST', 'master'))
+smv_remote_whitelist = None
 
 
 def add_server_address(app):

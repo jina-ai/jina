@@ -158,3 +158,15 @@ body[data-theme="auto"] .only-dark-line {
     50%{background-position:100% 50%}
     100%{background-position:0% 50%}
 }
+
+#versions {
+    font-size: .7em;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
+    border-color: var(--color-background-border);
+    margin: 1em;
+    outline: none;
+    text-align: center;
+}

@@ -42,7 +42,8 @@ def matcharray(matches, reference_doc):
 def test_append_from_documents(matcharray, document_factory, reference_doc):
     match = document_factory.create(4, 'test 4')
     match.scores['score'] = 10
-    rv = matcharray.append(match)
+    matcharray.append(match)
+    rv = matcharray[-1]
     assert len(matcharray) == 4
     assert matcharray[-1].text == 'test 4'
     assert rv.text == match.text
@@ -58,8 +59,8 @@ def test_mime_type_not_reassigned():
     m = Document()
     assert m.mime_type == ''
     d.mime_type = 'text/plain'
-    r = d.matches.append(m)
-    assert r.mime_type == ''
+    d.matches.append(m)
+    assert d.matches[0].mime_type == ''
 
 
 def test_matches_sort_by_document_interface_in_proto():

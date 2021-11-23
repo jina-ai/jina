@@ -118,6 +118,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11596,4 +11597,35 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```908e4da9```](https://github.com/jina-ai/jina/commit/908e4da985acd396a933e420f2ea81d60643b52d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```ecd81054```](https://github.com/jina-ai/jina/commit/ecd810543e19f91af80e91df11afb03ff96b1ec6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```945a35b9```](https://github.com/jina-ai/jina/commit/945a35b91cef68ed76f63e667f5b0da0a389f337)] __-__ __version__: the next version will be 2.4.7 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-8></a>
+## Release Note (`2.4.8`)
+
+> Release time: 2021-11-23 08:44:10
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Yanlong Wang,  AlaeddineAbdessalem,  Jina Dev Bot,  Joan Fontanals,  Winston Wong,  🙇
+
+
+### 🆕 New Features
+
+ - [[```fec0d424```](https://github.com/jina-ai/jina/commit/fec0d42456341908fdc4f61b55eb7a45ad060a21)] __-__ no return in ChunkArray/MatchArray append (#3974) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```c7bbd308```](https://github.com/jina-ai/jina/commit/c7bbd3087e88fcee949059a3987002925b9ca8c5)] __-__ __docbot__: feedback tooltip ui style (#3978) (*Yanlong Wang*)
+ - [[```d52a4308```](https://github.com/jina-ai/jina/commit/d52a43086121ff15578a6ead15ed9ba25285b222)] __-__ fix fileLock dependency (#3977) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```e7822c30```](https://github.com/jina-ai/jina/commit/e7822c30025090fe255c670008fb19d8ea4c9f0f)] __-__ __document__: add fluent interface and make docbot generate it (#3980) (*Han Xiao*)
+ - [[```48b14e0c```](https://github.com/jina-ai/jina/commit/48b14e0c0410e91f2ba0db05edf9f60def5933dd)] __-__ executor best practice regarding docker resource (#3970) (*Winston Wong*)
+
+### 🍹 Other Improvements
+
+ - [[```b8f1d5dd```](https://github.com/jina-ai/jina/commit/b8f1d5dd8953e5f938ac05ec9ce6a751da544481)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```febc2037```](https://github.com/jina-ai/jina/commit/febc20372751aa1dba7d293306bebbbb2db3eb19)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```74bd1906```](https://github.com/jina-ai/jina/commit/74bd190688a83e67f2589ec15a0fd7fdab7b1db3)] __-__ __version__: the next version will be 2.4.8 (*Jina Dev Bot*)
 
