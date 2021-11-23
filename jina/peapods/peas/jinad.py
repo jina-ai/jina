@@ -80,7 +80,9 @@ class JinaDProcessTarget:
             self.logstream: asyncio.Task = asyncio.create_task(self._stream_logs())
             await self._wait_until_cancelled()
         finally:
-            if not self.logstream.done() or not self.logstream.cancelled():
+            if self.logstream is not None and (
+                not self.logstream.done() or not self.logstream.cancelled()
+            ):
                 self.logstream.cancel()
             await self._terminate_remote_pea()
             self.is_shutdown.set()

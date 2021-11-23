@@ -108,6 +108,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             if self.logger.debug_enabled:
                 self._log_info_messages(messages)
 
+            self._data_request_handler.merge_routes(messages)
             return self._data_request_handler.handle(messages=messages)
 
     def _handle_control_requests(self, messages):

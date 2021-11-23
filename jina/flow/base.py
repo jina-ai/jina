@@ -25,7 +25,7 @@ from typing import (
 )
 
 from .builder import allowed_levels, _hanging_pods
-from .. import __default_host__
+from .. import __default_host__, helper
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
 from ..enums import (
@@ -162,7 +162,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         expose_public: Optional[bool] = False,
         graph_description: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
-        host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
@@ -214,7 +213,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -357,6 +355,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     self.args, 'k8s_custom_resource_dir', None
                 ),
             )
+        else:
+            self.k8s_connection_pool = False
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
                 self.__class__.__name__, **vars(self.args), **self._common_kwargs
@@ -447,7 +447,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._build_level = FlowBuildLevel.EMPTY
 
     @allowed_levels([FlowBuildLevel.EMPTY])
-    def _add_gateway(self, needs, **kwargs):
+    def _add_gateway(self, needs, graph_description, pod_addresses, **kwargs):
         kwargs.update(
             dict(
                 name=GATEWAY_NAME,
@@ -464,11 +464,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.k8s_namespace = self.args.k8s_namespace or self.args.name
-        args.connect_to_predecessor = False
         args.noblock_on_start = True
+        args.graph_description = json.dumps(graph_description)
+        args.pods_addresses = json.dumps(pod_addresses)
+        if not self.args.infrastructure == InfrastructureType.K8S:
+            args.k8s_connection_pool = False
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
+
+    def _get_pod_addresses(self):
+        graph_dict = {}
+        for node, v in self._pod_nodes.items():
+            if node == 'gateway':
+                continue
+            graph_dict[node] = [f'{v.host}:{v.head_port_in}']
+
+        return graph_dict
+
+    def _get_graph_representation(self):
+        def _add_node(graph, n):
+            # in the graph we need to distinguish between start and end gateway, although they are the same pod
+            if n == 'gateway':
+                n = 'start-gateway'
+            if n not in graph:
+                graph[n] = []
+            return n
+
+        graph_dict = {}
+        for node, v in self._pod_nodes.items():
+            node = _add_node(graph_dict, node)
+            if node == 'start-gateway':
+                continue
+            for need in sorted(v.needs):
+                need = _add_node(graph_dict, need)
+                graph_dict[need].append(node)
+
+        # find all non hanging leafs
+        last_pod = self.last_pod
+        if last_pod != 'gateway':
+            graph_dict[last_pod].append('end-gateway')
+
+        return graph_dict
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
@@ -522,7 +559,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
-        host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
@@ -580,7 +616,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
@@ -743,15 +778,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
 
-        # grpc data runtime does not support sharding at the moment
-        if (
-            args.grpc_data_requests
-            and kwargs.get('shards') is not None
-            and kwargs.get('shards', 1) > 1
-            and self.args.infrastructure != InfrastructureType.K8S
-        ):
-            raise NotImplementedError("GRPC data runtime does not support sharding")
-
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
@@ -765,6 +791,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # But dont override any user provided polling
         if args.replicas > 1 and args.shards > 1 and 'polling' not in kwargs:
             args.polling = PollingType.ALL
+
+        port_in = kwargs.get('port_in', None)
+        if not port_in:
+            port_in = helper.random_port()
+            args.port_in = port_in
+
+        if not self.args.infrastructure == InfrastructureType.K8S:
+            args.k8s_connection_pool = False
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
@@ -914,7 +948,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             op_flow.gather_inspect(copy_flow=False)
 
         if GATEWAY_NAME not in op_flow._pod_nodes:
-            op_flow._add_gateway(needs={op_flow.last_pod})
+            op_flow._add_gateway(
+                needs={op_flow.last_pod},
+                graph_description=self._get_graph_representation(),
+                pod_addresses=self._get_pod_addresses(),
+            )
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
@@ -933,8 +971,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 )
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
-
-        op_flow._set_initial_dynamic_routing_table()
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:

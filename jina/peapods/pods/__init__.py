@@ -364,6 +364,9 @@ class Pod(BasePod):
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
         )
+        # polling only works for shards, if there are none, polling will be ignored
+        if getattr(args, 'shards', 1) == 1:
+            self.args.polling = PollingType.ANY
         self.needs = (
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
