@@ -6,8 +6,8 @@ with:
   protocol: http
   env:
     key1: ${{ context_var1 }}  # this should be replaced
-    key2: $context_var2  # this is not
-    key3: ${ context_var3 }  # this is not this should be replaced
+    key2: $context_var2  # this should not be replaced
+    key3: ${ context_var3 }  # this should not be replaced
 executors:
   - name: local_replicas
     port_in: 45678
