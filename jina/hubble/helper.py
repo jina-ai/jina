@@ -1,6 +1,5 @@
 """Module for helper functions for Hub API."""
 
-import filelock
 import hashlib
 import io
 import json
@@ -281,6 +280,7 @@ def disk_cache_offline(
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
 
             pickle_protocol = 4
+            import filelock
 
             with filelock.FileLock(f"{cache_file}.lock", timeout=-1):
                 try:
