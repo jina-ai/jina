@@ -113,6 +113,14 @@ extensions = [
 
 myst_enable_extensions = ['colon_fence']
 
+
+def get_notfound_urls_prefix():
+    smv_name = os.environ.get('SPHINX_MULTIVERSION_NAME', version)
+    if smv_name != os.environ.get('LATEST_JINA_VERSION', 'master'):
+        return f'/{smv_name}/'
+    else:
+        return None
+
 # -- Custom 404 page
 
 # sphinx-notfound-page
@@ -127,7 +135,7 @@ notfound_context = {
 
 ''',
 }
-notfound_no_urls_prefix = True
+notfound_urls_prefix = get_notfound_urls_prefix()
 
 apidoc_module_dir = repo_dir
 apidoc_output_dir = 'api'
