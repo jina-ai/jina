@@ -4,13 +4,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta property="og:title" content="Question-Answering Chatbot for Documentation" />
+  <meta property="og:title" content="Open-Domain Question-Answering on Long Document" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://docs.jina.ai/tutorials/quesion-answering-bot.html" />
+  <meta property="og:url" content="https://docs.jina.ai/tutorials/question-answering-bot.html" />
   <meta property="og:site_name" content="Jina 2.4.10 Documentation" />
-  <meta property="og:description" content="Gregor @ Jina AI November 3, 2021 This tutorial will take you through the process of creating a question-answering chatbot. This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask. One way to solve this is by predicting answe..." />
-  <meta property="og:image" content="https://docs.jina.ai/tutorials/avatars/gregor.jpg" />
-  <meta property="og:image:alt" content="" />
+  <meta property="og:description" content="This tutorial will take you through a solution of a question-answering on long document. This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask. One way to solve this is by predicting answers using a neural network that was ..." />
+  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  <meta property="og:image:alt" content="Jina 2.4.10 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -28,10 +28,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Image" href="../datatype/image/index.html" /><link rel="prev" title="Question-Answering Chatbot via Transformer" href="chatbot.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>Question-Answering Chatbot for Documentation - Jina 2.4.10 documentation</title>
+        <title>Open-Domain Question-Answering on Long Document - Jina 2.4.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -208,43 +208,43 @@
     
         
           
-            <option value="quesion-answering-bot.html" selected }} >master</option>
+            <option value="question-answering-bot.html" selected }} >master</option>
           
         
         
           
           
-            <option value="../../tutorials/quesion-answering-bot.html" }} >latest(v2.4.9)</option>
+            <option value="../../index.html" }} >latest(v2.4.9)</option>
           
         
         
           
-            <option value="../../v2.4.8/tutorials/quesion-answering-bot.html" }} >v2.4.8</option>
+            <option value="../../v2.4.8/index.html" }} >v2.4.8</option>
           
         
         
           
-            <option value="../../v2.4.7/tutorials/quesion-answering-bot.html" }} >v2.4.7</option>
+            <option value="../../v2.4.7/index.html" }} >v2.4.7</option>
           
         
         
           
-            <option value="../../v2.4.6/tutorials/quesion-answering-bot.html" }} >v2.4.6</option>
+            <option value="../../v2.4.6/index.html" }} >v2.4.6</option>
           
         
         
           
-            <option value="../../v2.4.5/tutorials/quesion-answering-bot.html" }} >v2.4.5</option>
+            <option value="../../v2.4.5/index.html" }} >v2.4.5</option>
           
         
         
           
-            <option value="../../v2.4.4/tutorials/quesion-answering-bot.html" }} >v2.4.4</option>
+            <option value="../../v2.4.4/index.html" }} >v2.4.4</option>
           
         
         
           
-            <option value="../../v2.4.3/tutorials/quesion-answering-bot.html" }} >v2.4.3</option>
+            <option value="../../v2.4.3/index.html" }} >v2.4.3</option>
           
         
         
@@ -323,11 +323,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../fundamentals/clean-code.html">Clean &amp; Efficient Code</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Data Types</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../datatype/text/index.html"><svg aria-hidden="true" class="sd-octicon sd-octicon-typography" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M6.21 8.5L4.574 3.594 2.857 8.5H6.21zm.5 1.5l.829 2.487a.75.75 0 001.423-.474L5.735 2.332a1.216 1.216 0 00-2.302-.018l-3.39 9.688a.75.75 0 001.415.496L2.332 10H6.71zm3.13-4.358C10.53 4.374 11.87 4 13 4c1.5 0 3 .939 3 2.601v5.649a.75.75 0 01-1.448.275C13.995 12.82 13.3 13 12.5 13c-.77 0-1.514-.231-2.078-.709-.577-.488-.922-1.199-.922-2.041 0-.694.265-1.411.887-1.944C11 7.78 11.88 7.5 13 7.5h1.5v-.899c0-.54-.5-1.101-1.5-1.101-.869 0-1.528.282-1.84.858a.75.75 0 11-1.32-.716zM14.5 9H13c-.881 0-1.375.22-1.637.444-.253.217-.363.5-.363.806 0 .408.155.697.39.896.249.21.63.354 1.11.354.732 0 1.26-.209 1.588-.449.35-.257.412-.495.412-.551V9z" fill-rule="evenodd"></path></svg> Text</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../datatype/text/index.html"><svg aria-hidden="true" class="sd-octicon sd-octicon-typography" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M6.21 8.5L4.574 3.594 2.857 8.5H6.21zm.5 1.5l.829 2.487a.75.75 0 001.423-.474L5.735 2.332a1.216 1.216 0 00-2.302-.018l-3.39 9.688a.75.75 0 001.415.496L2.332 10H6.71zm3.13-4.358C10.53 4.374 11.87 4 13 4c1.5 0 3 .939 3 2.601v5.649a.75.75 0 01-1.448.275C13.995 12.82 13.3 13 12.5 13c-.77 0-1.514-.231-2.078-.709-.577-.488-.922-1.199-.922-2.041 0-.694.265-1.411.887-1.944C11 7.78 11.88 7.5 13 7.5h1.5v-.899c0-.54-.5-1.101-1.5-1.101-.869 0-1.528.282-1.84.858a.75.75 0 11-1.32-.716zM14.5 9H13c-.881 0-1.375.22-1.637.444-.253.217-.363.5-.363.806 0 .408.155.697.39.896.249.21.63.354 1.11.354.732 0 1.26-.209 1.588-.449.35-.257.412-.495.412-.551V9z" fill-rule="evenodd"></path></svg> Text</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="fuzzy-grep.html">Fuzzy String Matching in 30 Lines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datatype/text/full-text-search.html">Full Text Search via Feature Hashing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="chatbot.html">Question-Answering Chatbot via Transformer</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Open-Domain Question-Answering on Long Document</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../datatype/image/index.html"><svg aria-hidden="true" class="sd-octicon sd-octicon-image" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 2.5a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h.94a.76.76 0 01.03-.03l6.077-6.078a1.75 1.75 0 012.412-.06L14.5 10.31V2.75a.25.25 0 00-.25-.25H1.75zm12.5 11H4.81l5.048-5.047a.25.25 0 01.344-.009l4.298 3.889v.917a.25.25 0 01-.25.25zm1.75-.25V2.75A1.75 1.75 0 0014.25 1H1.75A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25zM5.5 6a.5.5 0 11-1 0 .5.5 0 011 0zM7 6a2 2 0 11-4 0 2 2 0 014 0z" fill-rule="evenodd"></path></svg> Image</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -738,28 +739,9 @@
                         </i>
                     </label>
                 </div>
-                <section class="tex2jax_ignore mathjax_ignore" id="question-answering-chatbot-for-documentation">
-<h1>Question-Answering Chatbot for Documentation<a class="headerlink" href="#question-answering-chatbot-for-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="sd-container-fluid sd-sphinx-override sd-p-0 sd-mt-2 sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-2 sd-gx-2 sd-gy-1 docutils">
-<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
-<a class="reference external image-reference" href="https://jobs.jina.ai"><img alt="" class="sd-avatar-sm sd-outline-muted" src="tutorials/avatars/gregor.jpg"/></a>
-</div>
-<div class="sd-col sd-d-flex-row sd-align-minor-center docutils">
-<div class="sd-container-fluid sd-sphinx-override docutils">
-<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-gx-3 sd-gy-1 docutils">
-<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
-<p class="sd-p-0 sd-m-0">Gregor @ Jina AI</p>
-</div>
-<div class="sd-col sd-col-auto sd-d-flex-row sd-align-minor-center docutils">
-<p class="sd-p-0 sd-m-0"><span class="sd-pr-2"><svg aria-hidden="true" class="sd-octicon sd-octicon-calendar" height="16.0px" version="1.1" viewbox="0 0 16 16" width="16.0px"><path d="M4.75 0a.75.75 0 01.75.75V2h5V.75a.75.75 0 011.5 0V2h1.25c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0113.25 16H2.75A1.75 1.75 0 011 14.25V3.75C1 2.784 1.784 2 2.75 2H4V.75A.75.75 0 014.75 0zm0 3.5h8.5a.25.25 0 01.25.25V6h-11V3.75a.25.25 0 01.25-.25h2zm-2.25 4v6.75c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25V7.5h-11z" fill-rule="evenodd"></path></svg></span>November 3, 2021</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<p>This tutorial will take you through the process of creating a question-answering chatbot.
+                <section class="tex2jax_ignore mathjax_ignore" id="open-domain-question-answering-on-long-document">
+<h1>Open-Domain Question-Answering on Long Document<a class="headerlink" href="#open-domain-question-answering-on-long-document" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will take you through a solution of a question-answering on long document.
 This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask.</p>
 <p>One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let’s say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?</p>
 <p>How, you ask? <em>Let me explain!</em></p>
@@ -957,8 +939,30 @@ Namely, the indexing and the search.</p>
             <footer>
                 
                 <div class="related-pages">
-                    
-                    
+                    <a class="next-page" href="../datatype/image/index.html">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-image" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 2.5a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h.94a.76.76 0 01.03-.03l6.077-6.078a1.75 1.75 0 012.412-.06L14.5 10.31V2.75a.25.25 0 00-.25-.25H1.75zm12.5 11H4.81l5.048-5.047a.25.25 0 01.344-.009l4.298 3.889v.917a.25.25 0 01-.25.25zm1.75-.25V2.75A1.75 1.75 0 0014.25 1H1.75A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25zM5.5 6a.5.5 0 11-1 0 .5.5 0 011 0zM7 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Image</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="chatbot.html">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Question-Answering Chatbot via Transformer</div>
+                            
+                        </div>
+                    </a>
                 </div>
 
                 <div class="related-information sd-d-inline-flex">
@@ -988,7 +992,7 @@ Namely, the indexing and the search.</p>
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Question-Answering Chatbot for Documentation</a><ul>
+<li><a class="reference internal" href="#">Open-Domain Question-Answering on Long Document</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#indexing-the-text-document">Indexing the text document</a></li>
 <li><a class="reference internal" href="#searching-of-the-user-s-query-against-the-index">Searching of the user’s query against the index</a></li>
