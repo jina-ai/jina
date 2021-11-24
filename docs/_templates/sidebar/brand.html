@@ -19,15 +19,15 @@
         {% if item.name == latest_jina_version %}
           {% set new_url = item.url if current_version.name == latest_jina_version else item.url | replace('/' + latest_jina_version, "") %}
           {% if current_version.version == item.version %}
-            <option value="{{ new_url }}" selected }} >latest ({{ item.name }})</option>
+            <option value="{{ new_url }}" selected >latest ({{ item.name }})</option>
           {% else %}
-            <option value="{{ new_url }}" }} >latest({{ item.name }})</option>
+            <option value="{{ new_url }}" >latest({{ item.name }})</option>
           {% endif %}
         {% else %}
           {% if current_version.version == item.version %}
-            <option value="{{ item.url }}" selected }} >{{ item.name }}</option>
+            <option value="{{ item.url }}" selected >{{ item.name }}</option>
           {% else %}
-            <option value="{{ item.url }}" }} >{{ item.name }}</option>
+            <option value="{{ item.url }}" >{{ item.name }}</option>
           {% endif %}
         {% endif %}
       {%- endfor %}
