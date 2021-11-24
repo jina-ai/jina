@@ -39,7 +39,7 @@ class TopologyGraph:
                 msg = await previous_task
             if msg is not None:
                 self.parts_to_send.append(msg)
-                if msg.request.routes[-1].pod != 'gateway':
+                if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
                     msg.request.routes[-1].end_time.GetCurrentTime()
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
