@@ -6,7 +6,6 @@ from functools import partial
 import pytest
 
 from jina import Flow, Executor, Document, DocumentArray, requests, Client
-from jina.excepts import RuntimeFailToStart, ScalingFails
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 IMG_NAME = 'jina/scale-executor'
