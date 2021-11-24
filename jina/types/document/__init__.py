@@ -388,7 +388,6 @@ class Document(AllMixins, ProtoTypeMixin):
 
             This property will return the `blob` of the `Document` as a `Dense` or `Sparse` array depending on the actual
             proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.
-            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.
 
         :return: the blob content of thi Document
         """
@@ -412,7 +411,6 @@ class Document(AllMixins, ProtoTypeMixin):
          .. note::
             This property will return the `embedding` of the `Document` as a `Dense` or `Sparse` array depending on the actual
             proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.
-            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.
 
         :return: the embedding of this Document
         """
