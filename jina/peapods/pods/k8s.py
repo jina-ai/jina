@@ -40,6 +40,7 @@ class K8sPod(BasePod):
             self.deployment_args = deployment_args
             self.k8s_namespace = self.common_args.k8s_namespace
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
+            self.cluster_address = None
 
         def _deploy_gateway(self):
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
@@ -48,7 +49,7 @@ class K8sPod(BasePod):
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
-            kubernetes_deployment.deploy_service(
+            self.cluster_address = kubernetes_deployment.deploy_service(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
@@ -112,7 +113,10 @@ class K8sPod(BasePod):
                 port_in,
             )
 
-        def _deploy_runtime(self):
+        def _deploy_runtime(
+            self,
+            replace=False,
+        ):
             image_name = self._get_image_name(self.deployment_args.uses)
             image_name_uses_before = (
                 self._get_image_name(self.deployment_args.uses_before)
@@ -149,28 +153,7 @@ class K8sPod(BasePod):
                 else None
             )
 
-            self._do_deploy(
-                container_args=container_args,
-                container_args_uses_before=container_args_uses_before,
-                container_args_uses_after=container_args_uses_after,
-                image_name=image_name,
-                image_name_uses_after=image_name_uses_after,
-                image_name_uses_before=image_name_uses_before,
-                init_container_args=init_container_args,
-            )
-
-        def _do_deploy(
-            self,
-            container_args,
-            container_args_uses_before,
-            container_args_uses_after,
-            image_name,
-            image_name_uses_after,
-            image_name_uses_before,
-            init_container_args,
-            replace=False,
-        ):
-            kubernetes_deployment.deploy_service(
+            self.cluster_address = kubernetes_deployment.deploy_service(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
@@ -200,36 +183,7 @@ class K8sPod(BasePod):
             )
 
         def _restart_runtime(self):
-            image_name = self._get_image_name(self.deployment_args.uses)
-            image_name_uses_before = self._get_image_name(
-                self.deployment_args.uses_before
-            )
-            image_name_uses_after = self._get_image_name(
-                self.deployment_args.uses_after
-            )
-            container_args = self._get_container_args(self.deployment_args.uses)
-            container_args_uses_before = (
-                self._get_container_args(self.deployment_args.uses_before)
-                if self.deployment_args.uses_before
-                else None
-            )
-            container_args_uses_after = (
-                self._get_container_args(self.deployment_args.uses_after)
-                if self.deployment_args.uses_after
-                else None
-            )
-            init_container_args = self._get_init_container_args()
-
-            self._do_deploy(
-                container_args=container_args,
-                container_args_uses_before=container_args_uses_before,
-                container_args_uses_after=container_args_uses_after,
-                image_name=image_name,
-                image_name_uses_after=image_name_uses_after,
-                image_name_uses_before=image_name_uses_before,
-                init_container_args=init_container_args,
-                replace=True,
-            )
+            self._deploy_runtime(replace=True)
 
         def wait_start_success(self):
             _timeout = self.common_args.timeout_ready
@@ -250,7 +204,7 @@ class K8sPod(BasePod):
                 while timeout_ns is None or time.time_ns() - now < timeout_ns:
                     try:
                         api_response = self._read_namespaced_deployment()
-                        assert api_response.status.replicas == self.num_replicas
+
                         if (
                             api_response.status.ready_replicas is not None
                             and api_response.status.ready_replicas == self.num_replicas
@@ -260,7 +214,7 @@ class K8sPod(BasePod):
                         else:
                             ready_replicas = api_response.status.ready_replicas or 0
                             logger.debug(
-                                f'\nNumber of ready replicas {ready_replicas}, waiting for {self.num_replicas - ready_replicas} replicas to be available'
+                                f'\nNumber of ready replicas {ready_replicas}, waiting for {self.num_replicas - ready_replicas} replicas to be available for {self.name}'
                             )
                             time.sleep(1.0)
                     except client.ApiException as ex:
@@ -507,10 +461,12 @@ class K8sPod(BasePod):
     ):
         super().__init__()
         self.args = args
+        self.k8s_namespace = self.args.k8s_namespace
         self.needs = needs or set()
         self.deployment_args = self._parse_args(args)
         self.version = self._get_base_executor_version()
         self.k8s_head_deployment = None
+        self.k8s_connection_pool = getattr(args, 'k8s_connection_pool', True)
         if self.deployment_args['head_deployment'] is not None:
             name = f'{self.name}-head'
             self.k8s_head_deployment = self._K8sDeployment(
@@ -565,6 +521,17 @@ class K8sPod(BasePod):
             parsed_args['head_deployment'].pea_role = PeaRoleType.HEAD
             parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
 
+            # if the k8s connection pool is disabled, the connection pool is managed manually
+            if not args.k8s_connection_pool:
+                connection_list = '{'
+                for i in range(shards):
+                    name = f'{self.name}-{i}' if shards > 1 else f'{self.name}'
+                    connection_list += f'"{str(i)}": "{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT_IN}",'
+                connection_list = connection_list[:-1]
+                connection_list += '}'
+
+                parsed_args['head_deployment'].connection_list = connection_list
+
         if uses_before:
             parsed_args[
                 'head_deployment'
@@ -585,8 +552,9 @@ class K8sPod(BasePod):
             cargs.uses_after = None
             cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
             if args.name == 'gateway':
-                cargs.role_type = PeaRoleType.GATEWAY
+                cargs.pea_role = PeaRoleType.GATEWAY
             parsed_args['deployments'].append(cargs)
+
         return parsed_args
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

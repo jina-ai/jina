@@ -3,6 +3,7 @@ import argparse
 import os
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS
+from ...enums import PollingType
 from ...helper import random_identity
 
 
@@ -104,4 +105,26 @@ When not given, then the default naming strategy will apply.
         type=int,
         default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '5000')),
         help='The timeout in milliseconds of the control request, -1 for waiting forever',
+    )
+
+    gp.add_argument(
+        '--k8s-disable-connection-pool',
+        action='store_false',
+        dest='k8s_connection_pool',
+        default=True,
+        help='Defines if connection pooling for replicas should be disabled in K8s. This mechanism implements load balancing between replicas of the same executor. This should be disabled if a service mesh (like istio) is used for load balancing.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--polling',
+        type=PollingType.from_string,
+        choices=list(PollingType),
+        default=PollingType.ANY,
+        help='''
+    The polling strategy of the Pod (when `shards>1`)
+    - ANY: only one (whoever is idle) Pea polls the message
+    - ALL: all Peas poll the message (like a broadcast)
+    ''',
     )

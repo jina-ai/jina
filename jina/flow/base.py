@@ -115,6 +115,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if self.namespace_created:
                 client = kubernetes_client.K8sClients().core_v1
                 client.delete_namespace(name=self.k8s_namespace)
+                # Wait for namespace being actually deleted
+                while True:
+                    list_namespaces = [
+                        item.metadata.name for item in client.list_namespace().items
+                    ]
+                    if self.k8s_namespace not in list_namespaces:
+                        break
+                    else:
+                        time.sleep(1.0)
 
     # overload_inject_start_client_flow
     @overload
@@ -351,6 +360,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self.k8s_infrastructure_manager = None
         if self.args.infrastructure == InfrastructureType.K8S:
+            self.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
             self.k8s_infrastructure_manager = self._FlowK8sInfraResourcesManager(
                 k8s_namespace=self.args.k8s_namespace or self.args.name,
                 k8s_custom_resource_dir=getattr(
@@ -471,16 +481,35 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.pods_addresses = json.dumps(pod_addresses)
         if not self.args.infrastructure == InfrastructureType.K8S:
             args.k8s_connection_pool = False
+        else:
+            args.k8s_connection_pool = self.k8s_connection_pool
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
 
     def _get_pod_addresses(self):
         graph_dict = {}
-        for node, v in self._pod_nodes.items():
-            if node == 'gateway':
-                continue
-            graph_dict[node] = [f'{v.host}:{v.head_port_in}']
+        if self.args.infrastructure == InfrastructureType.K8S:
+            if self.k8s_connection_pool:
+                return {}
+            else:
+                # build graph dict
+                for node, v in self._pod_nodes.items():
+                    if node == 'gateway':
+                        continue
+                    from jina.peapods.networking import K8sGrpcConnectionPool
+
+                    pod_k8s_address = (
+                        f'{v.name}.{self.args.k8s_namespace or self.args.name}.svc'
+                    )
+                    graph_dict[node] = [
+                        f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
+                    ]
+        else:
+            for node, v in self._pod_nodes.items():
+                if node == 'gateway':
+                    continue
+                graph_dict[node] = [f'{v.host}:{v.head_port_in}']
 
         return graph_dict
 
@@ -803,6 +832,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if not self.args.infrastructure == InfrastructureType.K8S:
             args.k8s_connection_pool = False
+        else:
+            # TODO: this should not be necessary, but the boolean flag handling in the parser is not able to handle this
+            args.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure

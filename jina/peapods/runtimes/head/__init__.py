@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import json
 import multiprocessing
 import os
 import threading
@@ -47,6 +48,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             k8s_connection_pool=args.k8s_connection_pool,
             k8s_namespace=args.k8s_namespace,
         )
+
         # In K8s the ConnectionPool needs the information about the Jina Pod its running in
         # This is stored in the environment variable JINA_POD_NAME in all Jina K8s default templates
         if (
@@ -56,7 +58,18 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             raise ValueError(
                 'K8s deployments need to specify the environment variable "JINA_POD_NAME"'
             )
+
+        if hasattr(args, 'connection_list') and args.connection_list:
+            connection_list = json.loads(args.connection_list)
+            for shard_id in connection_list:
+                self.connection_pool.add_connection(
+                    pod=self._pod_name,
+                    address=connection_list[shard_id],
+                    shard_id=shard_id,
+                )
+
         self.uses_before_address = args.uses_before_address
+
         if self.uses_before_address:
             self.connection_pool.add_connection(
                 pod='uses_before', address=self.uses_before_address

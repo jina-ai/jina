@@ -24,17 +24,6 @@ def mixin_base_pod_parser(parser):
         help='The executor attached after the Peas described by --uses, typically used for receiving from '
         'all shards, accepted type follows `--uses`',
     )
-    gp.add_argument(
-        '--polling',
-        type=PollingType.from_string,
-        choices=list(PollingType),
-        default=PollingType.ANY,
-        help='''
-The polling strategy of the Pod (when `shards>1`)
-- ANY: only one (whoever is idle) Pea polls the message
-- ALL: all Peas poll the message (like a broadcast)
-''',
-    )
 
     gp.add_argument(
         '--scheduling',
