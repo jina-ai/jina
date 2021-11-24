@@ -162,6 +162,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
+        connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
@@ -180,6 +181,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
         pods_addresses: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
         prefetch: Optional[int] = 0,
@@ -214,6 +216,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
@@ -249,6 +252,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
+        :param polling: The polling strategy of the Pod (when `shards>1`)
+              - ANY: only one (whoever is idle) Pea polls the message
+              - ALL: all Peas poll the message (like a broadcast)
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -307,6 +313,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 5000,
@@ -330,6 +337,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param polling: The polling strategy of the Pod (when `shards>1`)
+              - ANY: only one (whoever is idle) Pea polls the message
+              - ALL: all Peas poll the message (like a broadcast)
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -581,6 +591,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
+        connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -629,6 +640,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -674,8 +686,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   Peas will be evenly distributed among the hosts. By default,
                   peas are running on host provided by the argument ``host``
         :param polling: The polling strategy of the Pod (when `shards>1`)
-          - ANY: only one (whoever is idle) Pea polls the message
-          - ALL: all Peas poll the message (like a broadcast)
+              - ANY: only one (whoever is idle) Pea polls the message
+              - ALL: all Peas poll the message (like a broadcast)
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
