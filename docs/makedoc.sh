@@ -40,4 +40,5 @@ docker run --rm \
   pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
 
 sphinx-multiversion . ${BUILD_DIR} -b dirhtml
-mv -v _build/dirhtml/${LATEST_JINA_VERSION}/* _build/dirhtml
+mv -v ${BUILD_DIR}/${LATEST_JINA_VERSION}/* _build/dirhtml
+cp ${BUILD_DIR}/404/index.html ${BUILD_DIR}/404.html
