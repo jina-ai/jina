@@ -1035,8 +1035,8 @@ implements <a class="reference internal" href="#jina.jaml.JAMLCompatible" title=
 <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDriver</span></code> and all their subclasses.</p>
 <dl class="simple">
 <dt>Support substitutions in YAML:</dt><dd><ul class="simple">
-<li><p>Environment variables: <cite>${{ENV.VAR}}</cite> (recommended), <code class="docutils literal notranslate"><span class="pre">${{VAR}}</span></code>, <code class="docutils literal notranslate"><span class="pre">$VAR</span></code>.</p></li>
-<li><p>Context dict (<code class="docutils literal notranslate"><span class="pre">context</span></code>): <code class="docutils literal notranslate"><span class="pre">${{VAR}}``(recommended),</span> <span class="pre">``$VAR</span></code>.</p></li>
+<li><p>Environment variables: <cite>${{ENV.VAR}}</cite> (recommended), <code class="docutils literal notranslate"><span class="pre">${{VAR}}</span></code>.</p></li>
+<li><p>Context dict (<code class="docutils literal notranslate"><span class="pre">context</span></code>): <a href="#id7"><span class="problematic" id="id8">``</span></a>${{VAR}}``(recommended).</p></li>
 <li><p>Internal reference via <code class="docutils literal notranslate"><span class="pre">this</span></code> and <code class="docutils literal notranslate"><span class="pre">root</span></code>: <code class="docutils literal notranslate"><span class="pre">${{this.same_level_key}}</span></code>, <code class="docutils literal notranslate"><span class="pre">${{root.root_level_key}}</span></code></p></li>
 </ul>
 </dd>
@@ -1132,7 +1132,7 @@ parser errors
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 23, 2021.
+                    Last updated on Nov 24, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

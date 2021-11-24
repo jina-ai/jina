@@ -852,16 +852,14 @@
         <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
             <span class="c1"># set env vars</span>
             <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">change_env</span><span class="p">(</span><span class="s1">'JINA_FULL_CLI'</span><span class="p">,</span> <span class="s1">'true'</span><span class="p">))</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">change_env</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
 
             <span class="c1"># change directory to `workspace`</span>
             <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">change_cwd</span><span class="p">(</span><span class="n">get_workspace_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">)))</span>
 
             <span class="c1"># load and build</span>
-            <span class="n">f</span><span class="p">:</span> <span class="n">Flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localpath</span><span class="p">()))</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-
+            <span class="n">f</span><span class="p">:</span> <span class="n">Flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localpath</span><span class="p">()),</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">envs</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
             <span class="c1"># get &amp; set the ports mapping, set `runs_in_docker`</span>
             <span class="n">port_mapping</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">port_mapping</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1130,7 +1128,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 23, 2021.
+                    Last updated on Nov 24, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
