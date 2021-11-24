@@ -489,8 +489,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
 
         Support substitutions in YAML:
-            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``, ``$VAR``.
-            - Context dict (``context``): ``${{VAR}}``(recommended), ``$VAR``.
+            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``.
+            - Context dict (``context``): ``${{VAR}}``(recommended).
             - Internal reference via ``this`` and ``root``: ``${{this.same_level_key}}``, ``${{root.root_level_key}}``
 
         Substitutions are carried in the order and multiple passes to resolve variables with best effort.
