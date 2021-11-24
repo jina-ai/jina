@@ -736,6 +736,15 @@ class K8sPod(BasePod):
             num_replicas = getattr(self.args, 'replicas', 1)
             num_shards = getattr(self.args, 'shards', 1)
             uses = self.args.uses
+            head_name = f'{self.name}/head'
+            tail_name = f'{self.name}/tail'
+            uses_before = (
+                self.args.uses_before if self.args.uses_before is not None else None
+            )
+            uses_after = (
+                self.args.uses_after if self.args.uses_after is not None else None
+            )
+
             if num_shards > 1:
                 shard_names = [
                     f'{args.name}/shard-{i}'
@@ -752,18 +761,34 @@ class K8sPod(BasePod):
                         )
                     shard_mermaid_graph.append(f'end\n')
                     mermaid_graph.extend(shard_mermaid_graph)
-                head_name = f'{self.name}/head'
-                head_to_show = self.args.uses_before
-                if head_to_show is None or head_to_show == __default_executor__:
-                    head_to_show = head_name
-                if head_name:
+
+                if uses_before:
                     for shard_name in shard_names:
                         mermaid_graph.append(
-                            f'{head_name}[{head_to_show}]:::HEADTAIL --> {shard_name}[{uses}];'
+                            f'{head_name}[{uses_before}]:::HEADTAIL --> {shard_name}[{uses}];'
+                        )
+                if uses_after:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{shard_name}[{uses}] --> {tail_name}[{uses_after}]:::HEADTAIL;'
                         )
             else:
-                for replica_id in range(num_replicas):
-                    mermaid_graph.append(f'{self.name}/replica-{replica_id}[{uses}];')
+                if uses_before is None and uses_after is None:
+                    for replica_id in range(num_replicas):
+                        mermaid_graph.append(
+                            f'{self.name}/replica-{replica_id}[{uses}];'
+                        )
+                else:
+                    if uses_before is not None:
+                        for replica_id in range(num_replicas):
+                            mermaid_graph.append(
+                                f'{head_name}[{uses_before}]:::HEADTAIL --> {self.name}/replica-{replica_id}[{uses}]:::PEA;'
+                            )
+                    if uses_after is not None:
+                        for replica_id in range(num_replicas):
+                            mermaid_graph.append(
+                                f'{self.name}/replica-{replica_id}[{uses}]:::PEA --> {tail_name}[{uses_after}]:::HEADTAIL;'
+                            )
 
             mermaid_graph.append(f'end;')
         return mermaid_graph
