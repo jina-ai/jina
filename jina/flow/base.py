@@ -460,7 +460,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._build_level = FlowBuildLevel.EMPTY
 
     @allowed_levels([FlowBuildLevel.EMPTY])
-    def _add_gateway(self, needs, graph_description, pod_addresses, **kwargs):
+    def _add_gateway(
+        self,
+        needs: str,
+        graph_description: Dict[str, List[str]],
+        pod_addresses: Dict[str, List[str]],
+        **kwargs,
+    ):
         kwargs.update(
             dict(
                 name=GATEWAY_NAME,
@@ -488,7 +494,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args, needs, self.args.infrastructure
         )
 
-    def _get_pod_addresses(self):
+    def _get_pod_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         if self.args.infrastructure == InfrastructureType.K8S:
             if self.k8s_connection_pool:
@@ -503,6 +509,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     pod_k8s_address = (
                         f'{v.name}.{self.args.k8s_namespace or self.args.name}.svc'
                     )
+
                     graph_dict[node] = [
                         f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
                     ]
@@ -514,7 +521,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return graph_dict
 
-    def _get_graph_representation(self):
+    def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
             # in the graph we need to distinguish between start and end gateway, although they are the same pod
             if n == 'gateway':
@@ -1039,6 +1046,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes.pop(GATEWAY_NAME)
 
         self._build_level = FlowBuildLevel.EMPTY
+
         self.logger.debug('Flow is closed!')
         self.logger.close()
 
