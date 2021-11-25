@@ -96,23 +96,6 @@ which should be structured as a python package. For more details, please see the
     )
 
     gp.add_argument(
-        '--on-error-strategy',
-        type=OnErrorStrategy.from_string,
-        choices=list(OnErrorStrategy),
-        default=OnErrorStrategy.IGNORE,
-        help='''
-The skip strategy on exceptions.
-
-- IGNORE: Ignore it, keep running all Executors in the sequel flow
-- SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-- THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
-
-Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
-is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
-''',
-    )
-
-    gp.add_argument(
         '--native',
         action='store_true',
         default=False,

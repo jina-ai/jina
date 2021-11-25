@@ -3,6 +3,7 @@ import asyncio
 from collections import defaultdict
 from typing import List, Optional, Dict, Tuple
 
+from .....proto import jina_pb2
 from .....types.message import Message
 from ....networking import GrpcConnectionPool
 
@@ -37,7 +38,12 @@ class TopologyGraph:
         ):
             if previous_task is not None:
                 msg = await previous_task
-            if msg is not None:
+            if msg.request.status.code == jina_pb2.StatusProto.ERROR:
+                if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
+                    msg.request.routes[-1].end_time.GetCurrentTime()
+                    msg.request.routes[-1].status.CopyFrom(msg.request.status)
+                return msg
+            elif msg is not None:
                 self.parts_to_send.append(msg)
                 if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
                     msg.request.routes[-1].end_time.GetCurrentTime()
@@ -52,6 +58,8 @@ class TopologyGraph:
                     )
                     for route in resp.response.routes:
                         if route.pod == self.name:
+                            if resp.request.status.code == jina_pb2.StatusProto.ERROR:
+                                route.status.CopyFrom(resp.request.status)
                             route.end_time.GetCurrentTime()
                             break
                     return resp
