@@ -185,7 +185,7 @@ def test_flow_on_callback(protocol):
 
 class DummyCrafterNotImplemented(Executor):
     @requests
-    def craft(self, text, *args, **kwargs):
+    def craft(self, *args, **kwargs):
         raise NotImplementedError
 
 
