@@ -88,7 +88,7 @@ def set_gateway_parser(parser=None):
     mixin_head_parser(parser)
     mixin_k8s_pod_parser(parser)
 
-    from ..enums import SocketType, PodRoleType
+    from ..enums import PodRoleType
 
     parser.set_defaults(
         name='gateway',

@@ -7,16 +7,15 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document, Executor, requests, __windows__
-from jina.enums import InfrastructureType, SocketType, FlowBuildLevel, PollingType
+from jina.enums import FlowBuildLevel, PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
-from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.pods import BasePod
+from jina.proto import jina_pb2
 from jina.types.document.generators import from_ndarray
 from jina.types.request import Response
-from jina.proto import jina_pb2
-from tests import random_docs, validate_callback
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -612,8 +611,6 @@ def test_flow_routes_list(monkeypatch):
                 > _time(merge_entry['start_time'])
                 > _time(a2_entry['end_time'])
                 > _time(a2_entry['start_time'])
-                > _time(b1_entry['end_time'])
-                > _time(b1_entry['start_time'])
                 > _time(a1_entry['start_time'])
                 > _time(gateway_entry['start_time'])
             )

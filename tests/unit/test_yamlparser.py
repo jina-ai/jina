@@ -4,7 +4,6 @@ import pytest
 import yaml
 
 from jina import __default_executor__
-from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
@@ -108,10 +107,6 @@ def test_load_external_success():
 
 def test_expand_env():
     assert expand_env_var('$PATH-${AA}') != '$PATH-${AA}'
-
-
-def test_enum_yaml():
-    assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == 'PAIR_BIND'
 
 
 def test_encoder_name_env_replace():

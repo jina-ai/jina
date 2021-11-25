@@ -4,7 +4,6 @@ import argparse
 from ...helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 from .... import __default_host__
 from .... import helper
-from ....enums import OnErrorStrategy, SocketType
 
 
 def mixin_worker_runtime_parser(parser):
