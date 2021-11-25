@@ -432,8 +432,6 @@ executors:
 
 
 @pytest.mark.slow
-@pytest.mark.skip('the jinad failure is not propagated and the flow is stuck waiting')
-# TODO dont skip this test
 def test_bad_pod_graceful_termination():
     def asset_bad_flow(f):
         with pytest.raises(RuntimeFailToStart):
