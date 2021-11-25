@@ -804,20 +804,80 @@ class Pod(BasePod):
         if self.role != PodRoleType.GATEWAY and not getattr(
             self.args, 'external', False
         ):
-            mermaid_graph = [f'subgraph {self.name};']
+            mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
 
-            names = [args.name for args in self.all_args]
-            uses = self.args.uses
-            if len(names) == 1:
-                mermaid_graph.append(f'{names[0]}/pea-0[{uses}]:::PEA;')
+            uses_before_name = (
+                self.uses_before_args.name
+                if self.uses_before_args is not None
+                else None
+            )
+            uses_before_uses = (
+                self.uses_before_args.uses
+                if self.uses_before_args is not None
+                else None
+            )
+            uses_after_name = (
+                self.uses_after_args.name if self.uses_after_args is not None else None
+            )
+            uses_after_uses = (
+                self.uses_after_args.uses if self.uses_after_args is not None else None
+            )
+            shard_names = []
+            if len(self.peas_args['peas']) > 1:
+                # multiple shards
+                for shard_id, peas_args in self.peas_args['peas'].items():
+                    shard_name = f'{self.name}/shard-{shard_id}'
+                    shard_names.append(shard_name)
+                    shard_mermaid_graph = [
+                        f'subgraph {shard_name};',
+                        f'\ndirection TB;\n',
+                    ]
+                    names = [
+                        args.name for args in peas_args
+                    ]  # all the names of each of the replicas
+                    uses = [
+                        args.uses for args in peas_args
+                    ]  # all the uses should be the same but let's keep it this
+                    # way
+                    for rep_i, (name, use) in enumerate(zip(names, uses)):
+                        shard_mermaid_graph.append(f'{name}[{use}]:::PEA;')
+                    shard_mermaid_graph.append('end;')
+                    shard_mermaid_graph = [
+                        node.replace(';', '\n') for node in shard_mermaid_graph
+                    ]
+                    mermaid_graph.extend(shard_mermaid_graph)
+                    mermaid_graph.append('\n')
+                if uses_before_name is not None:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {shard_name};'
+                        )
+                if uses_after_name is not None:
+                    for shard_name in shard_names:
+                        mermaid_graph.append(
+                            f'{shard_name} --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
+                        )
             else:
-                mermaid_graph.append(f'\ndirection LR;\n')
-                head_name = names[0]
-                head_to_show = head_name
-
-                for name in names[1:-1]:
-                    mermaid_graph.append(
-                        f'{head_name}[{head_to_show}]:::HEAD --> {name}[{uses}]:::PEA;'
-                    )
+                # single shard case
+                names = [
+                    args.name for args in self.peas_args['peas'][0]
+                ]  # all the names of each of the replicas
+                uses = [
+                    args.uses for args in self.peas_args['peas'][0]
+                ]  # all the uses should be the same but let's keep it this way
+                if uses_before_name is None and uses_after_name is None:
+                    # just put the replicas in parallel
+                    for rep_i, (name, use) in enumerate(zip(names, uses)):
+                        mermaid_graph.append(f'{name}/rep-{rep_i}[{use}]:::PEA;')
+                if uses_before_name is not None:
+                    for name, use in zip(names, uses):
+                        mermaid_graph.append(
+                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {name}[{use}]:::PEA;'
+                        )
+                if uses_after_name is not None:
+                    for name, use in zip(names, uses):
+                        mermaid_graph.append(
+                            f'{name}[{use}]:::PEA --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
+                        )
             mermaid_graph.append('end;')
         return mermaid_graph
