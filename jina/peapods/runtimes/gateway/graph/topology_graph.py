@@ -38,7 +38,10 @@ class TopologyGraph:
         ):
             if previous_task is not None:
                 msg = await previous_task
-            if msg.request.status.code == jina_pb2.StatusProto.ERROR:
+            if (
+                msg is not None
+                and msg.request.status.code == jina_pb2.StatusProto.ERROR
+            ):
                 if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
                     msg.request.routes[-1].end_time.GetCurrentTime()
                     msg.request.routes[-1].status.CopyFrom(msg.request.status)
