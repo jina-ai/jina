@@ -48,10 +48,13 @@ class PartialPeaStore(PartialStore):
 
     peapod_cls = Pea
 
-    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
+    def add(
+        self, args: Namespace, envs: Optional[Dict] = None, **kwargs
+    ) -> PartialStoreItem:
         """Starts a Pea in `partial-daemon`
 
         :param args: namespace args for the pea/pod
+        :param envs: environment variables to be passed into partial pea/pod
         :param kwargs: keyword args
         :return: Item describing the Pea object
         """
@@ -117,12 +120,17 @@ class PartialFlowStore(PartialStore):
     """A Flow store spawned inside partial-daemon container"""
 
     def add(
-        self, args: Namespace, port_mapping: Optional[PortMappings] = None, **kwargs
+        self,
+        args: Namespace,
+        port_mapping: Optional[PortMappings] = None,
+        envs: Optional[Dict] = None,
+        **kwargs,
     ) -> PartialStoreItem:
         """Starts a Flow in `partial-daemon`.
 
         :param args: namespace args for the flow
         :param port_mapping: ports to be set
+        :param envs: environment variables to be passed into partial flow
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """

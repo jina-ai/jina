@@ -21,6 +21,7 @@ class FlowStore(ContainerStore, AiohttpMixin):
 
         :param uri: uri of partial-daemon
         :param params: Flow params
+        :param envs: environment variables to be passed into partial flow
         :param kwargs: keyword args
         :return: response from POST request
         """

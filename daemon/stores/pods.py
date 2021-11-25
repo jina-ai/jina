@@ -20,6 +20,7 @@ class PodStore(PeaStore):
 
         :param uri: uri of partial-daemon
         :param params: json payload to be sent
+        :param envs: environment variables to be passed into partial pod
         :param kwargs: keyword args
         :return: response from mini-jinad
         """

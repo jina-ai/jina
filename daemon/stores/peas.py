@@ -16,6 +16,7 @@ class PeaStore(ContainerStore, AiohttpMixin):
 
         :param uri: uri of partial-daemon
         :param params: json payload to be sent
+        :param envs: environment variables to be passed into partial pea
         :param kwargs: keyword args
         :return: response from mini-jinad
         """
