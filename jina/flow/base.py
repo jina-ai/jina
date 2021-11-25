@@ -179,7 +179,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        on_error_strategy: Optional[str] = 'IGNORE',
         pods_addresses: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port_expose: Optional[int] = None,
@@ -243,14 +242,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
-        :param on_error_strategy: The skip strategy on exceptions.
-
-          - IGNORE: Ignore it, keep running all Executors in the sequel flow
-          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
-
-          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
-          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
         :param polling: The polling strategy of the Pod (when `shards>1`)
               - ANY: only one (whoever is idle) Pea polls the message
@@ -607,7 +598,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        on_error_strategy: Optional[str] = 'IGNORE',
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
         port_in: Optional[int] = None,
@@ -674,14 +664,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param on_error_strategy: The skip strategy on exceptions.
-
-          - IGNORE: Ignore it, keep running all Executors in the sequel flow
-          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
-
-          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
-          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param peas_hosts: The hosts of the peas when shards greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
                   peas are running on host provided by the argument ``host``
