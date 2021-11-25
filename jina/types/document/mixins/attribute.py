@@ -101,7 +101,7 @@ class GetSetAttributeMixin:
 
         return ret
 
-    def set_attributes(self, **kwargs):
+    def _set_attributes(self, **kwargs) -> None:
         """Bulk update Document fields with key-value specified in kwargs
 
         .. seealso::

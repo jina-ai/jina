@@ -240,7 +240,9 @@ class Document(AllMixins, ProtoTypeMixin):
                         _remainder2 = _remainder.difference(_intersect2)
 
                         if _intersect2:
-                            self.set_attributes(**{p: document[p] for p in _intersect2})
+                            self._set_attributes(
+                                **{p: document[p] for p in _intersect2}
+                            )
 
                         if _remainder2:
                             self._pb_body.tags.update(
@@ -274,7 +276,7 @@ class Document(AllMixins, ProtoTypeMixin):
                 raise ValueError(
                     f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
                 )
-            self.set_attributes(**kwargs)
+            self._set_attributes(**kwargs)
 
     @property
     def weight(self) -> float:
@@ -386,7 +388,6 @@ class Document(AllMixins, ProtoTypeMixin):
 
             This property will return the `blob` of the `Document` as a `Dense` or `Sparse` array depending on the actual
             proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.
-            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.
 
         :return: the blob content of thi Document
         """
@@ -410,7 +411,6 @@ class Document(AllMixins, ProtoTypeMixin):
          .. note::
             This property will return the `embedding` of the `Document` as a `Dense` or `Sparse` array depending on the actual
             proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.
-            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.
 
         :return: the embedding of this Document
         """

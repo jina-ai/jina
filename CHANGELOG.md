@@ -118,6 +118,9 @@
 
 
 
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -364,6 +367,9 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.4.5`)](#release-note-245)
 - [Release Note (`2.4.6`)](#release-note-246)
 - [Release Note (`2.4.7`)](#release-note-247)
+- [Release Note (`2.4.8`)](#release-note-248)
+- [Release Note (`2.4.9`)](#release-note-249)
+- [Release Note (`2.4.10`)](#release-note-2410)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -11596,4 +11602,92 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```908e4da9```](https://github.com/jina-ai/jina/commit/908e4da985acd396a933e420f2ea81d60643b52d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```ecd81054```](https://github.com/jina-ai/jina/commit/ecd810543e19f91af80e91df11afb03ff96b1ec6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```945a35b9```](https://github.com/jina-ai/jina/commit/945a35b91cef68ed76f63e667f5b0da0a389f337)] __-__ __version__: the next version will be 2.4.7 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-8></a>
+## Release Note (`2.4.8`)
+
+> Release time: 2021-11-23 08:44:10
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Yanlong Wang,  AlaeddineAbdessalem,  Jina Dev Bot,  Joan Fontanals,  Winston Wong,  🙇
+
+
+### 🆕 New Features
+
+ - [[```fec0d424```](https://github.com/jina-ai/jina/commit/fec0d42456341908fdc4f61b55eb7a45ad060a21)] __-__ no return in ChunkArray/MatchArray append (#3974) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```c7bbd308```](https://github.com/jina-ai/jina/commit/c7bbd3087e88fcee949059a3987002925b9ca8c5)] __-__ __docbot__: feedback tooltip ui style (#3978) (*Yanlong Wang*)
+ - [[```d52a4308```](https://github.com/jina-ai/jina/commit/d52a43086121ff15578a6ead15ed9ba25285b222)] __-__ fix fileLock dependency (#3977) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```e7822c30```](https://github.com/jina-ai/jina/commit/e7822c30025090fe255c670008fb19d8ea4c9f0f)] __-__ __document__: add fluent interface and make docbot generate it (#3980) (*Han Xiao*)
+ - [[```48b14e0c```](https://github.com/jina-ai/jina/commit/48b14e0c0410e91f2ba0db05edf9f60def5933dd)] __-__ executor best practice regarding docker resource (#3970) (*Winston Wong*)
+
+### 🍹 Other Improvements
+
+ - [[```b8f1d5dd```](https://github.com/jina-ai/jina/commit/b8f1d5dd8953e5f938ac05ec9ce6a751da544481)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```febc2037```](https://github.com/jina-ai/jina/commit/febc20372751aa1dba7d293306bebbbb2db3eb19)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```74bd1906```](https://github.com/jina-ai/jina/commit/74bd190688a83e67f2589ec15a0fd7fdab7b1db3)] __-__ __version__: the next version will be 2.4.8 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-9></a>
+## Release Note (`2.4.9`)
+
+> Release time: 2021-11-23 16:57:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Deepankar Mahapatro,  cristian,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```f065ab84```](https://github.com/jina-ai/jina/commit/f065ab8427f75e1a5553957b55473bf0508f34ee)] __-__ move filelock dependency import (#3983) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```fdc0dbfa```](https://github.com/jina-ai/jina/commit/fdc0dbfab538208a927b5d69bff14595ccf83aae)] __-__ add versioning (#3981) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```c7e25cff```](https://github.com/jina-ai/jina/commit/c7e25cffd5a15847ef26a62f06bfd506b9e29062)] __-__ __warning__: warning ldarray rdarray should be &#39;traversal_paths&#39; (#3984) (*cristian*)
+ - [[```d2ce057f```](https://github.com/jina-ai/jina/commit/d2ce057f7387567926428a4deed960a0dbe13d12)] __-__ fix readme (*Han Xiao*)
+ - [[```e9b87b90```](https://github.com/jina-ai/jina/commit/e9b87b90acf6ca8c07ba35a7f14aa84ae76ea0f2)] __-__ __version__: the next version will be 2.4.9 (*Jina Dev Bot*)
+
+<a name=release-note-2-4-10></a>
+## Release Note (`2.4.10`)
+
+> Release time: 2021-11-24 16:15:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Gregor von Dulong,  Wang Bo,  Jina Dev Bot,  Deepankar Mahapatro,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```f35d0b7c```](https://github.com/jina-ai/jina/commit/f35d0b7c3bf545b5bc6132849e547261e60670d0)] __-__ change name of qa bot tutorial md file (#3991) (*Gregor von Dulong*)
+
+### 🧼 Code Refactoring
+
+ - [[```a35130f1```](https://github.com/jina-ai/jina/commit/a35130f1b8b44f6db5001cd0ae56944a61ed891c)] __-__ __daemon__: use context to set envs (#3982) (*Wang Bo*)
+
+### 📗 Documentation
+
+ - [[```77e16f8c```](https://github.com/jina-ai/jina/commit/77e16f8caf2a9cb8af8d57a1800421c5c6dcca26)] __-__ fix doc gen (*Han Xiao*)
+ - [[```579e029f```](https://github.com/jina-ai/jina/commit/579e029f309c42dbd5c520b5f3a655a51db4904b)] __-__ fix gregor tutorial (*Han Xiao*)
+ - [[```6b5cd351```](https://github.com/jina-ai/jina/commit/6b5cd351649401705868a0f27a6cb322d0bc2601)] __-__ fix css versioning in docs (*Han Xiao*)
+ - [[```4fdb5c5f```](https://github.com/jina-ai/jina/commit/4fdb5c5fb4a90dccc3e8984f0dc2afa544ef0c67)] __-__ add latest version to root (#3985) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```ae72cc5c```](https://github.com/jina-ai/jina/commit/ae72cc5ce1f7e7f4c662e72e96ea21dddc28bf43)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```95b79359```](https://github.com/jina-ai/jina/commit/95b7935977b15798c2379bdcb960a2c00373322a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```e1ffba00```](https://github.com/jina-ai/jina/commit/e1ffba00edf4628eab68462aa6b1d12379c781f0)] __-__ __version__: the next version will be 2.4.10 (*Jina Dev Bot*)
 

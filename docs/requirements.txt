@@ -12,3 +12,5 @@ furo
 myst-parser==0.15.1
 sphinx-design
 sphinx-inline-tabs
+# sphinx-multiversion
+git+https://github.com/Holzhaus/sphinx-multiversion.git

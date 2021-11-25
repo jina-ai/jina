@@ -40,7 +40,8 @@ def chunkarray(chunks, reference_doc):
 
 def test_append_from_documents(chunkarray, document_factory, reference_doc):
     chunk = document_factory.create(4, 'test 4')
-    rv = chunkarray.append(chunk)
+    chunkarray.append(chunk)
+    rv = chunkarray[-1]
     assert len(chunkarray) == 4
     assert chunkarray[-1].text == 'test 4'
     assert rv.text == chunk.text
