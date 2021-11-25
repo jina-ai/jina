@@ -15,7 +15,7 @@ class FlowStore(ContainerStore, AiohttpMixin):
     _kind = 'flow'
 
     async def add_in_partial(
-        self, uri: str, params: Dict, envs: Optional[Dict] = None, **kwargs
+        self, uri: str, params: Dict, envs: Optional[Dict] = {}, **kwargs
     ) -> Dict:
         """Sends `POST` request to `partial-daemon` to create a Flow.
 

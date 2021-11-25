@@ -49,7 +49,7 @@ class PartialPeaStore(PartialStore):
     peapod_cls = Pea
 
     def add(
-        self, args: Namespace, envs: Optional[Dict] = None, **kwargs
+        self, args: Namespace, envs: Optional[Dict] = {}, **kwargs
     ) -> PartialStoreItem:
         """Starts a Pea in `partial-daemon`
 
@@ -124,7 +124,7 @@ class PartialFlowStore(PartialStore):
         self,
         args: Namespace,
         port_mapping: Optional[PortMappings] = None,
-        envs: Optional[Dict] = None,
+        envs: Optional[Dict] = {},
         **kwargs,
     ) -> PartialStoreItem:
         """Starts a Flow in `partial-daemon`.

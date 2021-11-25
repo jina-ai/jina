@@ -31,7 +31,7 @@ async def _status():
     response_model=PartialFlowItem,
 )
 async def _create(
-    flow: 'FlowModel', ports: Optional[PortMappings] = None, envs: Optional[Dict] = None
+    flow: 'FlowModel', ports: Optional[PortMappings] = None, envs: Optional[Dict] = {}
 ):
     """
 

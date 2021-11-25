@@ -30,7 +30,7 @@ async def _status():
     status_code=201,
     response_model=PartialStoreItem,
 )
-async def _create(pea: 'PeaModel', envs: Optional[Dict] = None):
+async def _create(pea: 'PeaModel', envs: Optional[Dict] = {}):
     """
 
     .. #noqa: DAR101
