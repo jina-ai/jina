@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from .mixin import AiohttpMixin
 from .containers import ContainerStore
@@ -9,7 +9,9 @@ class PeaStore(ContainerStore, AiohttpMixin):
 
     _kind = 'pea'
 
-    async def add_in_partial(self, uri: str, params: Dict, **kwargs) -> Dict:
+    async def add_in_partial(
+        self, uri: str, params: Dict, envs: Optional[Dict] = None, **kwargs
+    ) -> Dict:
         """Sends `POST` request to `partial-daemon` to create a Pea/Pod.
 
         :param uri: uri of partial-daemon
@@ -20,7 +22,7 @@ class PeaStore(ContainerStore, AiohttpMixin):
         return await self.POST(
             url=f'{uri}/{self._kind}',
             params=None,
-            json=params,
+            json={'pea': params, 'envs': envs},
         )
 
     async def delete_in_partial(self, uri, **kwargs) -> Dict:
