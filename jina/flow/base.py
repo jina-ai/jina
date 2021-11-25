@@ -1046,7 +1046,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes.pop(GATEWAY_NAME)
 
         self._build_level = FlowBuildLevel.EMPTY
-
         self.logger.debug('Flow is closed!')
         self.logger.close()
 
@@ -1528,10 +1527,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @protocol.setter
     def protocol(self, value: Union[str, GatewayProtocolType]):
-        """Set the protocol of this Flow
+        """Set the protocol of this Flow, can only be set before the Flow has been started
 
         :param value: the protocol to set
         """
+        # Flow is running already, protocol cant be changed anymore
+        if self._build_level >= FlowBuildLevel.RUNNING:
+            raise RuntimeError("Protocol can not be changed after the Flow has started")
+
         if isinstance(value, str):
             self._common_kwargs['protocol'] = GatewayProtocolType.from_string(value)
         elif isinstance(value, GatewayProtocolType):
@@ -1542,12 +1545,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
             self[GATEWAY_NAME].args.protocol = self._common_kwargs['protocol']
-
-        # Flow is running already, then close the existing gateway
-        if self._build_level >= FlowBuildLevel.RUNNING:
-            self[GATEWAY_NAME].close()
-            self.enter_context(self[GATEWAY_NAME])
-            self[GATEWAY_NAME].wait_start_success()
 
     def __getitem__(self, item):
         if isinstance(item, str):
