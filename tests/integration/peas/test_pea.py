@@ -1,13 +1,11 @@
 import asyncio
 import json
-import multiprocessing
 import time
 
 import pytest
 
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType, PeaRoleType
-from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.peas import Pea
@@ -16,10 +14,10 @@ from jina.types.message.common import ControlMessage
 
 @pytest.mark.asyncio
 # test gateway, head and worker pea by creating them manually in the most simple configuration
-async def test_peas_trivial_topology():
-    worker_port = random_port()
-    head_port = random_port()
-    port_expose = random_port()
+async def test_peas_trivial_topology(port_generator):
+    worker_port = port_generator()
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -74,7 +72,9 @@ def complete_graph_dict():
 @pytest.mark.parametrize('uses_before', [True, False])
 @pytest.mark.parametrize('uses_after', [True, False])
 # test gateway, head and worker pea by creating them manually in a more Flow like topology with branching/merging
-async def test_peas_flow_topology(complete_graph_dict, uses_before, uses_after):
+async def test_peas_flow_topology(
+    complete_graph_dict, uses_before, uses_after, port_generator
+):
     pods = [
         pod_name for pod_name in complete_graph_dict.keys() if 'gateway' not in pod_name
     ]
@@ -83,17 +83,17 @@ async def test_peas_flow_topology(complete_graph_dict, uses_before, uses_after):
     for pod in pods:
         if uses_before:
             uses_before_port, uses_before_pea = await _start_create_pea(
-                pod, type='uses_before'
+                pod, port_generator, type='uses_before'
             )
             peas.append(uses_before_pea)
         if uses_after:
             uses_after_port, uses_after_pea = await _start_create_pea(
-                pod, type='uses_after'
+                pod, port_generator, type='uses_after'
             )
             peas.append(uses_after_pea)
 
         # create head
-        head_port = random_port()
+        head_port = port_generator()
         pod_addresses += f'"{pod}": ["0.0.0.0:{head_port}"],'
         head_pea = _create_head_pea(
             head_port,
@@ -107,7 +107,7 @@ async def test_peas_flow_topology(complete_graph_dict, uses_before, uses_after):
         head_pea.start()
 
         # create worker
-        worker_port, worker_pea = await _start_create_pea(pod)
+        worker_port, worker_pea = await _start_create_pea(pod, port_generator)
         peas.append(worker_pea)
         await asyncio.sleep(0.1)
 
@@ -116,7 +116,7 @@ async def test_peas_flow_topology(complete_graph_dict, uses_before, uses_after):
     # remove last comma
     pod_addresses = pod_addresses[:-1]
     pod_addresses += '}'
-    port_expose = random_port()
+    port_expose = port_generator()
 
     # create a single gateway pea
 
@@ -146,9 +146,9 @@ async def test_peas_flow_topology(complete_graph_dict, uses_before, uses_after):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('polling', ['ALL', 'ANY'])
 # test simple topology with shards
-async def test_peas_shards(polling):
-    head_port = random_port()
-    port_expose = random_port()
+async def test_peas_shards(polling, port_generator):
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -160,7 +160,7 @@ async def test_peas_shards(polling):
     shard_peas = []
     for i in range(10):
         # create worker
-        worker_port = random_port()
+        worker_port = port_generator()
         # create a single worker pea
         worker_pea = _create_worker_pea(worker_port, f'pod0/shard/{i}')
         shard_peas.append(worker_pea)
@@ -197,9 +197,9 @@ async def test_peas_shards(polling):
 
 @pytest.mark.asyncio
 # test simple topology with replicas
-async def test_peas_replicas():
-    head_port = random_port()
-    port_expose = random_port()
+async def test_peas_replicas(port_generator):
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -211,7 +211,7 @@ async def test_peas_replicas():
     replica_peas = []
     for i in range(10):
         # create worker
-        worker_port = random_port()
+        worker_port = port_generator()
         # create a single worker pea
         worker_pea = _create_worker_pea(worker_port, f'pod0/{i}')
         replica_peas.append(worker_pea)
@@ -247,22 +247,22 @@ async def test_peas_replicas():
 
 
 @pytest.mark.asyncio
-async def test_peas_with_executor():
+async def test_peas_with_executor(port_generator):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     peas = []
 
     uses_before_port, uses_before_pea = await _start_create_pea(
-        'pod0', type='uses_before', executor='NameChangeExecutor'
+        'pod0', port_generator, type='uses_before', executor='NameChangeExecutor'
     )
     peas.append(uses_before_pea)
 
     uses_after_port, uses_after_pea = await _start_create_pea(
-        'pod0', type='uses_after', executor='NameChangeExecutor'
+        'pod0', port_generator, type='uses_after', executor='NameChangeExecutor'
     )
     peas.append(uses_after_pea)
 
     # create head
-    head_port = random_port()
+    head_port = port_generator()
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
     head_pea = _create_head_pea(
         head_port,
@@ -279,7 +279,7 @@ async def test_peas_with_executor():
     for i in range(10):
         # create worker
         worker_port, worker_pea = await _start_create_pea(
-            'pod0', type=f'shards/{i}', executor='NameChangeExecutor'
+            'pod0', port_generator, type=f'shards/{i}', executor='NameChangeExecutor'
         )
         peas.append(worker_pea)
         await asyncio.sleep(0.1)
@@ -287,7 +287,7 @@ async def test_peas_with_executor():
         await _activate_worker(head_port, worker_port, shard_id=i)
 
     # create a single gateway pea
-    port_expose = random_port()
+    port_expose = port_generator()
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
 
     gateway_pea.start()
@@ -319,9 +319,9 @@ async def test_peas_with_executor():
 
 
 @pytest.mark.asyncio
-async def test_peas_gateway_worker_direct_connection():
-    worker_port = random_port()
-    port_expose = random_port()
+async def test_peas_gateway_worker_direct_connection(port_generator):
+    worker_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
@@ -352,9 +352,9 @@ async def test_peas_gateway_worker_direct_connection():
 
 
 @pytest.mark.asyncio
-async def test_peas_with_replicas_advance_faster():
-    head_port = random_port()
-    port_expose = random_port()
+async def test_peas_with_replicas_advance_faster(port_generator):
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -366,7 +366,7 @@ async def test_peas_with_replicas_advance_faster():
     peas = []
     for i in range(10):
         # create worker
-        worker_port = random_port()
+        worker_port = port_generator()
         # create a single worker pea
         worker_pea = _create_worker_pea(worker_port, f'pod0/{i}', 'FastSlowExecutor')
         peas.append(worker_pea)
@@ -435,8 +435,8 @@ async def _activate_worker(head_port, worker_port, shard_id=None):
     GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
 
-async def _start_create_pea(pod, type='worker', executor=None):
-    port = random_port()
+async def _start_create_pea(pod, port_generator, type='worker', executor=None):
+    port = port_generator()
     pea = _create_worker_pea(port, f'{pod}/{type}', executor)
 
     pea.start()
