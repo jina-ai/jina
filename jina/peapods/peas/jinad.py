@@ -80,7 +80,9 @@ class JinaDProcessTarget:
             self.logstream: asyncio.Task = asyncio.create_task(self._stream_logs())
             await self._wait_until_cancelled()
         finally:
-            if not self.logstream.done() or not self.logstream.cancelled():
+            if self.logstream is not None and (
+                not self.logstream.done() or not self.logstream.cancelled()
+            ):
                 self.logstream.cancel()
             await self._terminate_remote_pea()
             self.is_shutdown.set()
@@ -258,7 +260,7 @@ class JinaDPea(BasePea):
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             # is_ready returns True is the Pea is actually created by JinaD
             # ready_or_shutdown_event is set after JinaDProcessTarget
-            if ready_or_shutdown_event.is_set() and is_ready(ctrl_address):
+            if ready_or_shutdown_event.is_set() or is_ready(ctrl_address):
                 return True
             time.sleep(0.1)
         return False

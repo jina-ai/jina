@@ -99,7 +99,9 @@ async def test_process_up_down_events(docker_images, logger, test_dir: str):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('docker_images', [['slow-init-executor']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images', [['slow-init-executor', 'jinaai/jina']], indirect=True
+)
 async def test_wait_for_ready(docker_images):
     flow = Flow(
         name='test-flow-slow-executor',
@@ -118,12 +120,13 @@ async def test_wait_for_ready(docker_images):
             client=k8s_clients.core_v1,
         )
         pool.start()
+        await asyncio.sleep(1.0)
 
         # pool should have connection to gateway and the one pod
-        assert len(pool._connections) == 2
-        for cluster_ip in pool._connections:
+        assert len(pool._connections._pods) == 2
+        for pod in pool._connections._pods:
             # k8s pod has one instance at the moment
-            assert len(pool._connections[cluster_ip]._connections) == 1
+            assert len(pool._connections.get_replicas_all_shards(pod)) == 1
 
         # scale slow init executor up
         k8s_clients.apps_v1.patch_namespaced_deployment_scale(
@@ -141,16 +144,27 @@ async def test_wait_for_ready(docker_images):
                 and api_response.status.ready_replicas == 2
             ):
                 # new replica is ready, check that connection pool knows about it
-                slow_executor_connections = pool._connections[
-                    pool._deployment_clusteraddresses['slow-init-executor']
-                ]
-                assert len(slow_executor_connections._connections) == 2
+                replica_lists = pool._connections.get_replicas_all_shards(
+                    'slow_init_executor'
+                )
+                assert 2 == sum(
+                    [
+                        len(replica_list.get_all_connections())
+                        for replica_list in replica_lists
+                    ]
+                )
+
                 break
             else:
                 # new replica is not ready yet, make sure connection pool ignores it
-                slow_executor_connections = pool._connections[
-                    pool._deployment_clusteraddresses['slow-init-executor']
-                ]
-                assert len(slow_executor_connections._connections) == 1
+                replica_lists = pool._connections.get_replicas_all_shards(
+                    'slow_init_executor'
+                )
+                assert 1 == sum(
+                    [
+                        len(replica_list.get_all_connections())
+                        for replica_list in replica_lists
+                    ]
+                )
             await asyncio.sleep(1.0)
         await pool.close()

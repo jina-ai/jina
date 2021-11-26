@@ -1,26 +1,24 @@
 import os
-from pathlib import Path
-from http import HTTPStatus
 from contextlib import ExitStack
+from http import HTTPStatus
+from pathlib import Path
 from typing import Dict, List, Optional
 
+from fastapi import HTTPException, UploadFile, File, Query, Depends
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
-from fastapi import HTTPException, UploadFile, File, Query, Depends
 
-from jina import Flow, __docker_host__
-from jina.helper import cached_property
-from jina.peapods.peas.helper import update_runtime_cls
-from jina.peapods.peas.container_helper import get_gpu_device_requests
+from jina import Flow
 from jina.enums import (
-    PeaRoleType,
-    SocketType,
     RemoteWorkspaceState,
 )
+from jina.helper import cached_property
+from jina.peapods.peas.container_helper import get_gpu_device_requests
+from jina.peapods.peas.helper import update_runtime_cls
 from .. import daemon_logger
-from ..models.ports import Ports, PortMapping, PortMappings
-from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
 from ..helper import get_workspace_path, change_cwd, change_env
+from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
+from ..models.ports import Ports, PortMapping, PortMappings
 from ..stores import workspace_store as store
 
 

@@ -25,7 +25,7 @@ from typing import (
 )
 
 from .builder import allowed_levels, _hanging_pods
-from .. import __default_host__
+from .. import __default_host__, helper
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
 from ..enums import (
@@ -115,6 +115,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if self.namespace_created:
                 client = kubernetes_client.K8sClients().core_v1
                 client.delete_namespace(name=self.k8s_namespace)
+                # Wait for namespace being actually deleted
+                while True:
+                    list_namespaces = [
+                        item.metadata.name for item in client.list_namespace().items
+                    ]
+                    if self.k8s_namespace not in list_namespaces:
+                        break
+                    else:
+                        time.sleep(1.0)
 
     # overload_inject_start_client_flow
     @overload
@@ -153,6 +162,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
+        connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
@@ -169,8 +179,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        on_error_strategy: Optional[str] = 'IGNORE',
         pods_addresses: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
         prefetch: Optional[int] = 0,
@@ -205,6 +215,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
@@ -231,15 +242,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
-        :param on_error_strategy: The skip strategy on exceptions.
-
-          - IGNORE: Ignore it, keep running all Executors in the sequel flow
-          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
-
-          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
-          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
+        :param polling: The polling strategy of the Pod (when `shards>1`)
+              - ANY: only one (whoever is idle) Pea polls the message
+              - ALL: all Peas poll the message (like a broadcast)
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -298,6 +304,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 5000,
@@ -321,6 +328,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param polling: The polling strategy of the Pod (when `shards>1`)
+              - ANY: only one (whoever is idle) Pea polls the message
+              - ALL: all Peas poll the message (like a broadcast)
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -351,12 +361,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self.k8s_infrastructure_manager = None
         if self.args.infrastructure == InfrastructureType.K8S:
+            self.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
             self.k8s_infrastructure_manager = self._FlowK8sInfraResourcesManager(
                 k8s_namespace=self.args.k8s_namespace or self.args.name,
                 k8s_custom_resource_dir=getattr(
                     self.args, 'k8s_custom_resource_dir', None
                 ),
             )
+        else:
+            self.k8s_connection_pool = False
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
                 self.__class__.__name__, **vars(self.args), **self._common_kwargs
@@ -447,7 +460,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._build_level = FlowBuildLevel.EMPTY
 
     @allowed_levels([FlowBuildLevel.EMPTY])
-    def _add_gateway(self, needs, **kwargs):
+    def _add_gateway(
+        self,
+        needs: str,
+        graph_description: Dict[str, List[str]],
+        pod_addresses: Dict[str, List[str]],
+        **kwargs,
+    ):
         kwargs.update(
             dict(
                 name=GATEWAY_NAME,
@@ -464,11 +483,68 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.k8s_namespace = self.args.k8s_namespace or self.args.name
-        args.connect_to_predecessor = False
         args.noblock_on_start = True
+        args.graph_description = json.dumps(graph_description)
+        args.pods_addresses = json.dumps(pod_addresses)
+        if not self.args.infrastructure == InfrastructureType.K8S:
+            args.k8s_connection_pool = False
+        else:
+            args.k8s_connection_pool = self.k8s_connection_pool
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
         )
+
+    def _get_pod_addresses(self) -> Dict[str, List[str]]:
+        graph_dict = {}
+        if self.args.infrastructure == InfrastructureType.K8S:
+            if self.k8s_connection_pool:
+                return {}
+            else:
+                # build graph dict
+                for node, v in self._pod_nodes.items():
+                    if node == 'gateway':
+                        continue
+                    from jina.peapods.networking import K8sGrpcConnectionPool
+
+                    pod_k8s_address = (
+                        f'{v.name}.{self.args.k8s_namespace or self.args.name}.svc'
+                    )
+
+                    graph_dict[node] = [
+                        f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
+                    ]
+        else:
+            for node, v in self._pod_nodes.items():
+                if node == 'gateway':
+                    continue
+                graph_dict[node] = [f'{v.host}:{v.head_port_in}']
+
+        return graph_dict
+
+    def _get_graph_representation(self) -> Dict[str, List[str]]:
+        def _add_node(graph, n):
+            # in the graph we need to distinguish between start and end gateway, although they are the same pod
+            if n == 'gateway':
+                n = 'start-gateway'
+            if n not in graph:
+                graph[n] = []
+            return n
+
+        graph_dict = {}
+        for node, v in self._pod_nodes.items():
+            node = _add_node(graph_dict, node)
+            if node == 'start-gateway':
+                continue
+            for need in sorted(v.needs):
+                need = _add_node(graph_dict, need)
+                graph_dict[need].append(node)
+
+        # find all non hanging leafs
+        last_pod = self.last_pod
+        if last_pod != 'gateway':
+            graph_dict[last_pod].append('end-gateway')
+
+        return graph_dict
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
@@ -513,6 +589,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
+        connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -528,7 +605,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        on_error_strategy: Optional[str] = 'IGNORE',
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
         port_in: Optional[int] = None,
@@ -561,6 +637,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -594,20 +671,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param on_error_strategy: The skip strategy on exceptions.
-
-          - IGNORE: Ignore it, keep running all Executors in the sequel flow
-          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
-
-          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
-          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param peas_hosts: The hosts of the peas when shards greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
                   peas are running on host provided by the argument ``host``
         :param polling: The polling strategy of the Pod (when `shards>1`)
-          - ANY: only one (whoever is idle) Pea polls the message
-          - ALL: all Peas poll the message (like a broadcast)
+              - ANY: only one (whoever is idle) Pea polls the message
+              - ALL: all Peas poll the message (like a broadcast)
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
@@ -743,15 +812,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
 
-        # grpc data runtime does not support sharding at the moment
-        if (
-            args.grpc_data_requests
-            and kwargs.get('shards') is not None
-            and kwargs.get('shards', 1) > 1
-            and self.args.infrastructure != InfrastructureType.K8S
-        ):
-            raise NotImplementedError("GRPC data runtime does not support sharding")
-
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
@@ -765,6 +825,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # But dont override any user provided polling
         if args.replicas > 1 and args.shards > 1 and 'polling' not in kwargs:
             args.polling = PollingType.ALL
+
+        port_in = kwargs.get('port_in', None)
+        if not port_in:
+            port_in = helper.random_port()
+            args.port_in = port_in
+
+        if not self.args.infrastructure == InfrastructureType.K8S:
+            args.k8s_connection_pool = False
+        else:
+            # TODO: this should not be necessary, but the boolean flag handling in the parser is not able to handle this
+            args.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
@@ -914,7 +985,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             op_flow.gather_inspect(copy_flow=False)
 
         if GATEWAY_NAME not in op_flow._pod_nodes:
-            op_flow._add_gateway(needs={op_flow.last_pod})
+            op_flow._add_gateway(
+                needs={op_flow.last_pod},
+                graph_description=self._get_graph_representation(),
+                pod_addresses=self._get_pod_addresses(),
+            )
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
@@ -933,8 +1008,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 )
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
-
-        op_flow._set_initial_dynamic_routing_table()
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
@@ -1454,10 +1527,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @protocol.setter
     def protocol(self, value: Union[str, GatewayProtocolType]):
-        """Set the protocol of this Flow
+        """Set the protocol of this Flow, can only be set before the Flow has been started
 
         :param value: the protocol to set
         """
+        # Flow is running already, protocol cant be changed anymore
+        if self._build_level >= FlowBuildLevel.RUNNING:
+            raise RuntimeError('Protocol can not be changed after the Flow has started')
+
         if isinstance(value, str):
             self._common_kwargs['protocol'] = GatewayProtocolType.from_string(value)
         elif isinstance(value, GatewayProtocolType):
@@ -1468,12 +1545,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
             self[GATEWAY_NAME].args.protocol = self._common_kwargs['protocol']
-
-        # Flow is running already, then close the existing gateway
-        if self._build_level >= FlowBuildLevel.RUNNING:
-            self[GATEWAY_NAME].close()
-            self.enter_context(self[GATEWAY_NAME])
-            self[GATEWAY_NAME].wait_start_success()
 
     def __getitem__(self, item):
         if isinstance(item, str):

@@ -3,7 +3,7 @@ import pytest
 from jina import Document, DocumentArray, Client
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser, set_gateway_parser
-from jina.peapods.networking import GrpcConnectionPool
+from jina.peapods.networking import GrpcConnectionPool, K8sGrpcConnectionPool
 from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_tools
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
@@ -30,6 +30,7 @@ def test_regular_pod(docker_images):
             f'docker://{docker_images[0]}',
         ]
     )
+
     with K8sPod(args) as pod:
         k8s_clients = K8sClients()
         pods = k8s_clients.core_v1.list_namespaced_pod(
@@ -94,7 +95,8 @@ def test_regular_pod(docker_images):
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-def test_gateway_pod(docker_images):
+@pytest.mark.parametrize('k8s_disable_connection_pool', [True, False])
+def test_gateway_pod(docker_images, k8s_disable_connection_pool):
     worker_args = set_pod_parser().parse_args(
         [
             '--name',
@@ -120,6 +122,11 @@ def test_gateway_pod(docker_images):
                 '{}',
             ]
         )
+        if k8s_disable_connection_pool:
+            args.k8s_connection_pool = False
+            args.pods_addresses = f'{{"pod0": ["{worker_pod.k8s_head_deployment.cluster_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}"]}}'
+        else:
+            args.pods_addresses = '{}'
         with K8sPod(args) as pod:
             k8s_clients = K8sClients()
             pods = k8s_clients.core_v1.list_namespaced_pod(

@@ -210,13 +210,10 @@ def get_cli_params(
         'runtime_cls',  # set manually
         'workspace',
         'log_config',
-        'dynamic_routing',
-        'hosts_in_connect',
         'polling_type',
         'uses_after',
         'uses_before',
         'replicas',
-        'polling',
         'k8s_init_container_command',
         'k8s_uses_init',
         'k8s_mount_path',
@@ -229,6 +226,9 @@ def get_cli_params(
     ]
     cli_args = []
     for attribute, cli_attribute, value in arg_list:
+        # TODO: This should not be here, its a workaround for our parser design with boolean values
+        if attribute == 'k8s_connection_pool' and not value:
+            cli_args.append(f'"--k8s-disable-connection-pool"')
         if attribute in skip_attributes:
             continue
         if type(value) == bool and value:
