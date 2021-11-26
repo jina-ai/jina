@@ -19,3 +19,9 @@ def mixin_head_parser(parser):
         type=str,
         help='The address of the uses-before runtime',
     )
+
+    gp.add_argument(
+        '--connection-list',
+        type=str,
+        help='dictionary JSON with a list of connections to configure',
+    )

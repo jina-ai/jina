@@ -10,6 +10,8 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
+from jina import helper
+
 
 @pytest.fixture(scope='function')
 def random_workspace_name():
@@ -163,6 +165,20 @@ def _create_workspace_directly(cur_dir):
         ),
     )
     return image_id, network_id, workspace_id, workspace_store
+
+
+@pytest.fixture(scope='function')
+def port_generator():
+    generated_ports = set()
+
+    def random_port():
+        port = helper.random_port()
+        while port in generated_ports:
+            port = helper.random_port()
+        generated_ports.add(port)
+        return port
+
+    return random_port
 
 
 @pytest.fixture(scope='function')
