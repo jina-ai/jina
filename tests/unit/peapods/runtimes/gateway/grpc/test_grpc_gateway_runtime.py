@@ -384,3 +384,40 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     p.start()
     p.join()
     assert p.exitcode == 0
+
+
+def test_grpc_gateway_runtime_handle_empty_graph():
+    def process_wrapper():
+        port_in = random_port()
+
+        with GRPCGatewayRuntime(
+            set_gateway_parser().parse_args(
+                [
+                    '--port-expose',
+                    f'{port_in}',
+                    '--graph-description',
+                    f'{json.dumps({})}',
+                    '--pods-addresses',
+                    '{}',
+                ]
+            )
+        ) as runtime:
+
+            async def _test():
+                responses = []
+                req = request_generator(
+                    '/', DocumentArray([Document(text='client0-Request')])
+                )
+                async for resp in runtime.streamer.Call(request_iterator=req):
+                    responses.append(resp)
+                return responses
+
+            responses = asyncio.run(_test())
+        assert len(responses) > 0
+        assert len(responses[0].docs) == 1
+        assert responses[0].docs[0].text == f'client0-Request'
+
+    p = Process(target=process_wrapper)
+    p.start()
+    p.join()
+    assert p.exitcode == 0

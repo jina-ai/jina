@@ -7,11 +7,10 @@ from typing import Optional, Union, List
 
 import grpc
 
+from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
-from ..asyncio import AsyncNewLoopRuntime
-from ...networking import GrpcConnectionPool
 from ....excepts import RuntimeTerminated
 from ....proto import jina_pb2_grpc
 from ....types.message import Message
@@ -90,7 +89,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 else '',
                 exc_info=not self.args.quiet_error,
             )
-            raise
+
+            messages[0].add_exception(ex, self._data_request_handler._executor)
+            return messages[0]
 
     def _handle(self, messages: List[Message]) -> Message:
         """Process the given message, data requests are passed to the DataRequestHandler
@@ -108,6 +109,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             if self.logger.debug_enabled:
                 self._log_info_messages(messages)
 
+            self._data_request_handler.merge_routes(messages)
             return self._data_request_handler.handle(messages=messages)
 
     def _handle_control_requests(self, messages):

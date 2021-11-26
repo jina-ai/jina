@@ -253,7 +253,9 @@ async def test_no_message_lost_during_kill(logger, docker_images):
             )
 
 
-@pytest.mark.parametrize('docker_images', [['slow-process-executor']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
+)
 def test_linear_processing_time_scaling(
     docker_images,
     logger,

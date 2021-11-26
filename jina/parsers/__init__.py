@@ -88,13 +88,10 @@ def set_gateway_parser(parser=None):
     mixin_head_parser(parser)
     mixin_k8s_pod_parser(parser)
 
-    from ..enums import SocketType, PodRoleType
+    from ..enums import PodRoleType
 
     parser.set_defaults(
         name='gateway',
-        socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
-        socket_out=SocketType.PUSH_CONNECT,
-        ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
         runtime_cls='GRPCGatewayRuntime',
         pod_role=PodRoleType.GATEWAY,
     )
