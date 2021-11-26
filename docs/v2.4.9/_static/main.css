@@ -160,26 +160,16 @@ body[data-theme="auto"] .only-dark-line {
 }
 
 .version-select {
+    font-size: .7em;
+    border-radius: 5px;
     cursor: pointer;
     background-color: #fff;
     background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
-    min-width: 4rem;
-    max-width: 7rem;
+    border-color: var(--color-background-border);
+    height: 1.8em;
+    line-height: 1.8em;
     outline: none;
     text-align: center;
-
-    /*
-        To visually align with github-buttons, set the same style according to github-buttons.
-    */
-    padding: 0 0 1px 1px;
-    font-size: 11px;
-    font-weight: 600;
-    height: 20px;
-    line-height: 14px;
-    border: 1px solid;
-    border-radius: .25em;
-    color: #24292f;
-    background-color: #ebf0f4;
-    border-color: #ccd1d5;
-    border-color: rgba(27,31,36,.15);
+    max-width: 7em;
+    color: var(--color-foreground-muted);
 }
