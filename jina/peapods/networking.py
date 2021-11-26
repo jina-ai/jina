@@ -322,11 +322,15 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
         :return: asyncio.Task representing the send call
         """
-        connection = self._connections.get_replicas(
-            pod, head, shard_id
-        ).get_next_connection()
-
-        return self._send_messages(messages, connection)
+        replicas = self._connections.get_replicas(pod, head, shard_id)
+        if replicas:
+            connection = replicas.get_next_connection()
+            return self._send_messages(messages, connection)
+        else:
+            self._logger.debug(
+                f'No available connections for pod {pod} and shard {shard_id}'
+            )
+            return None
 
     def add_connection(
         self,

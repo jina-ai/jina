@@ -3,6 +3,7 @@ import asyncio
 from collections import defaultdict
 from typing import List, Optional, Dict, Tuple
 
+from .....proto import jina_pb2
 from .....types.message import Message
 from ....networking import GrpcConnectionPool
 
@@ -37,13 +38,33 @@ class TopologyGraph:
         ):
             if previous_task is not None:
                 msg = await previous_task
-            if msg is not None:
+            if (
+                msg is not None
+                and msg.request.status.code == jina_pb2.StatusProto.ERROR
+            ):
+                if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
+                    msg.request.routes[-1].end_time.GetCurrentTime()
+                    msg.request.routes[-1].status.CopyFrom(msg.request.status)
+                return msg
+            elif msg is not None:
                 self.parts_to_send.append(msg)
+                if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
+                    msg.request.routes[-1].end_time.GetCurrentTime()
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
+                    for part in self.parts_to_send:
+                        r = part.request.routes.add()
+                        r.pod = self.name
+                        r.start_time.GetCurrentTime()
                     resp = await connection_pool.send_messages_once(
                         messages=self.parts_to_send, pod=self.name, head=True
                     )
+                    for route in resp.response.routes:
+                        if route.pod == self.name:
+                            if resp.request.status.code == jina_pb2.StatusProto.ERROR:
+                                route.status.CopyFrom(resp.request.status)
+                            route.end_time.GetCurrentTime()
+                            break
                     return resp
 
         def get_leaf_tasks(
@@ -101,7 +122,10 @@ class TopologyGraph:
 
     def __init__(self, graph_representation: Dict, *args, **kwargs):
         num_parts_per_node = defaultdict(int)
-        origin_node_names = graph_representation['start-gateway']
+        if 'start-gateway' in graph_representation:
+            origin_node_names = graph_representation['start-gateway']
+        else:
+            origin_node_names = set()
         hanging_pod_names = set()
         node_set = set()
         for node_name, outgoing_node_names in graph_representation.items():

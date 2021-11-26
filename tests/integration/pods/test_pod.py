@@ -6,16 +6,15 @@ import pytest
 
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType
-from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.peapods import Pod
 
 
 @pytest.mark.asyncio
 # test gateway, head and worker pea by creating them manually in the most simple configuration
-async def test_pods_trivial_topology():
-    pod_port = random_port()
-    port_expose = random_port()
+async def test_pods_trivial_topology(port_generator):
+    pod_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{pod_port}"]}}'
 
@@ -61,14 +60,16 @@ def complete_graph_dict():
 @pytest.mark.parametrize('uses_before', [True, False])
 @pytest.mark.parametrize('uses_after', [True, False])
 # test gateway, head and worker pea by creating them manually in a more Flow like topology with branching/merging
-async def test_pods_flow_topology(complete_graph_dict, uses_before, uses_after):
+async def test_pods_flow_topology(
+    complete_graph_dict, uses_before, uses_after, port_generator
+):
     pods = [
         pod_name for pod_name in complete_graph_dict.keys() if 'gateway' not in pod_name
     ]
     started_pods = []
     pod_addresses = '{'
     for pod in pods:
-        head_port = random_port()
+        head_port = port_generator()
         pod_addresses += f'"{pod}": ["0.0.0.0:{head_port}"],'
         regular_pod = _create_regular_pod(
             port=head_port,
@@ -83,7 +84,7 @@ async def test_pods_flow_topology(complete_graph_dict, uses_before, uses_after):
     # remove last comma
     pod_addresses = pod_addresses[:-1]
     pod_addresses += '}'
-    port_expose = random_port()
+    port_expose = port_generator()
 
     # create a single gateway pea
 
@@ -118,9 +119,9 @@ async def test_pods_flow_topology(complete_graph_dict, uses_before, uses_after):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('polling', [PollingType.ALL, PollingType.ANY])
 # test simple topology with shards
-async def test_pods_shards(polling):
-    head_port = random_port()
-    port_expose = random_port()
+async def test_pods_shards(polling, port_generator):
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -147,9 +148,9 @@ async def test_pods_shards(polling):
 
 @pytest.mark.asyncio
 # test simple topology with replicas
-async def test_pods_replicas():
-    head_port = random_port()
-    port_expose = random_port()
+async def test_pods_replicas(port_generator):
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -175,10 +176,10 @@ async def test_pods_replicas():
 
 
 @pytest.mark.asyncio
-async def test_pods_with_executor():
+async def test_pods_with_executor(port_generator):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
 
-    head_port = random_port()
+    head_port = port_generator()
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
     regular_pod = _create_regular_pod(
@@ -191,7 +192,7 @@ async def test_pods_with_executor():
     )
     regular_pod.start()
 
-    port_expose = random_port()
+    port_expose = port_generator()
     gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
     gateway_pod.start()
 
@@ -216,9 +217,9 @@ async def test_pods_with_executor():
 
 
 @pytest.mark.asyncio
-async def test_pods_with_replicas_advance_faster():
-    head_port = random_port()
-    port_expose = random_port()
+async def test_pods_with_replicas_advance_faster(port_generator):
+    head_port = port_generator()
+    port_expose = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -267,14 +268,6 @@ class FastSlowExecutor(Executor):
         for doc in docs:
             if doc.text == 'slow':
                 time.sleep(1.0)
-
-
-async def _start_create_pod(pod, executor=None):
-    port = random_port()
-    pod = _create_regular_pod(port, f'{pod}', executor)
-
-    pod.start()
-    return port, pod
 
 
 def _create_regular_pod(

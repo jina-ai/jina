@@ -39,7 +39,7 @@ def k8s_flow_with_init_container(docker_images):
 
 
 @pytest.fixture()
-def k8s_flow_with_sharding(docker_images):
+def k8s_flow_with_sharding(docker_images, polling):
     flow = Flow(
         name='test-flow-with-sharding',
         port_expose=9090,
@@ -54,6 +54,7 @@ def k8s_flow_with_sharding(docker_images):
         uses=docker_images[0],
         uses_after=docker_images[1],
         timeout_ready=360000,
+        polling=polling,
     )
     return flow
 
@@ -128,7 +129,7 @@ def k8s_flow_with_namespace(docker_images):
 
 
 @pytest.fixture
-def k8s_flow_with_needs(docker_images):
+def k8s_flow_with_needs(docker_images, k8s_connection_pool):
     flow = (
         Flow(
             name='test-flow-with-needs',
@@ -137,45 +138,51 @@ def k8s_flow_with_needs(docker_images):
             protocol='http',
             timeout_ready=120000,
             k8s_namespace='test-flow-with-needs-ns',
+            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='segmenter',
             uses=docker_images[0],
             timeout_ready=120000,
+            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='textencoder',
             uses=docker_images[0],
             needs='segmenter',
             timeout_ready=120000,
+            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='imageencoder',
             uses=docker_images[0],
             needs='segmenter',
             timeout_ready=120000,
+            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='merger',
             uses=docker_images[1],
             timeout_ready=120000,
             needs=['imageencoder', 'textencoder'],
+            k8s_connection_pool=k8s_connection_pool,
         )
     )
     return flow
 
 
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize('k8s_disable_connection_pool', [True, False])
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
-    'docker_images', [['test-executor', 'executor-merger']], indirect=True
+    'docker_images',
+    [['test-executor', 'executor-merger', 'jinaai/jina']],
+    indirect=True,
 )
 def test_flow_with_needs(
     logger,
-    k8s_disable_connection_pool,
+    k8s_connection_pool,
     k8s_flow_with_needs,
 ):
-    k8s_flow_with_needs.k8s_disable_connection_pool = not k8s_disable_connection_pool
     resp = run_test(
         k8s_flow_with_needs,
         endpoint='/index',
@@ -193,17 +200,14 @@ def test_flow_with_needs(
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
 
     for pod in k8s_flow_with_needs._pod_nodes.values():
-        assert pod.args.k8s_connection_pool == k8s_disable_connection_pool
+        assert pod.args.k8s_connection_pool == k8s_connection_pool
         for peapod in pod.k8s_deployments:
-            assert (
-                peapod.deployment_args.k8s_connection_pool
-                == k8s_disable_connection_pool
-            )
+            assert peapod.deployment_args.k8s_connection_pool == k8s_connection_pool
 
 
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
-    'docker_images', [['test-executor', 'dummy-dumper']], indirect=True
+    'docker_images', [['test-executor', 'dummy-dumper', 'jinaai/jina']], indirect=True
 )
 def test_flow_with_init(
     k8s_flow_with_init_container,
@@ -222,11 +226,12 @@ def test_flow_with_init(
 
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
-    'docker_images', [['test-executor', 'executor-merger']], indirect=True
+    'docker_images',
+    [['test-executor', 'executor-merger', 'jinaai/jina']],
+    indirect=True,
 )
-def test_flow_with_sharding(
-    k8s_flow_with_sharding,
-):
+@pytest.mark.parametrize('polling', ['ALL', 'ANY'])
+def test_flow_with_sharding(k8s_flow_with_sharding, polling):
     resp = run_test(
         k8s_flow_with_sharding,
         endpoint='/index',
@@ -241,14 +246,24 @@ def test_flow_with_sharding(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
-        assert set(doc.tags['pea_id']) == {0, 1}
-        assert set(doc.tags['shard_id']) == {0, 1}
-        assert doc.tags['parallel'] == [2, 2]
-        assert doc.tags['shards'] == [2, 2]
+        if polling == 'ALL':
+            assert set(doc.tags['pea_id']) == {0, 1}
+            assert set(doc.tags['shard_id']) == {0, 1}
+            assert doc.tags['parallel'] == [2, 2]
+            assert doc.tags['shards'] == [2, 2]
+        else:
+            assert len(set(doc.tags['pea_id'])) == 1
+            assert len(set(doc.tags['shard_id'])) == 1
+            assert 0 in set(doc.tags['pea_id']) or 1 in set(doc.tags['pea_id'])
+            assert 0 in set(doc.tags['shard_id']) or 1 in set(doc.tags['shard_id'])
+            assert doc.tags['parallel'] == [2]
+            assert doc.tags['shards'] == [2]
 
 
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize('docker_images', [['test-executor']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
+)
 def test_flow_with_configmap(
     k8s_flow_configmap,
 ):
@@ -269,7 +284,9 @@ def test_flow_with_configmap(
 
 @pytest.mark.timeout(3600)
 @pytest.mark.skip('Need to config gpu host.')
-@pytest.mark.parametrize('docker_images', [['test-executor']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
+)
 def test_flow_with_gpu(
     k8s_flow_gpu,
 ):
@@ -286,7 +303,9 @@ def test_flow_with_gpu(
 
 
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize('docker_images', [['test-executor']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
+)
 def test_flow_with_k8s_namespace(
     k8s_flow_with_namespace,
 ):
@@ -297,7 +316,9 @@ def test_flow_with_k8s_namespace(
         assert 'my-custom-namespace' in namespaces
 
 
-@pytest.mark.parametrize('docker_images', [['reload-executor']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images', [['reload-executor', 'jinaai/jina']], indirect=True
+)
 def test_rolling_update_simple(
     k8s_flow_with_reload_executor,
     logger,
