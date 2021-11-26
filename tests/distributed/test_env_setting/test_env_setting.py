@@ -18,7 +18,6 @@ def RemoteFlow(filename, envs):
     flow_id = None
     try:
         workspace_id = jinad_client.workspaces.create(paths=[cur_dir])
-        print(f'\n\n{workspace_id}\n\n')
         flow_id = jinad_client.flows.create(
             workspace_id=workspace_id, filename=filename, envs=envs
         )
@@ -33,7 +32,11 @@ def RemoteFlow(filename, envs):
 def test_remote_flow_local_executors(replicas):
     with RemoteFlow(
         filename='flow_with_env.yml',
-        envs={'key1': 'val1', 'key2': 'val2', 'REPLICAS': replicas},
+        envs={
+            'context_var_1': 'val1',
+            'context_var_2': 'val2',
+            'num_replicas': replicas,
+        },
     ):
         resp = Client(port=12345).post(
             on='/',
@@ -41,5 +44,6 @@ def test_remote_flow_local_executors(replicas):
             return_results=True,
         )
         for doc in resp[0].data.docs:
-            print(doc)
-        # assert resp[0].data.docs[0].text == directory * mul
+            assert doc.tags['key1'] == 'val1'
+            assert doc.tags['key2'] == 'val2'
+            assert doc.tags['replicas'] == replicas

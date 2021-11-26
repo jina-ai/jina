@@ -1,4 +1,3 @@
-# Used only with Remote Flow tests
 jtype: Flow
 with:
   envs:
