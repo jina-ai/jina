@@ -163,7 +163,8 @@ body[data-theme="auto"] .only-dark-line {
     cursor: pointer;
     background-color: #fff;
     background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
-    min-width: 6rem;
+    min-width: 4rem;
+    max-width: 7rem;
     outline: none;
     text-align: center;
 
