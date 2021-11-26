@@ -15,11 +15,8 @@ def test_change_gateway(protocol, changeto_protocol):
         results = f.post('/', random_docs(10), return_results=True)
         assert len(results) > 0
         assert len(results[0].docs) == 10
-        f.protocol = changeto_protocol
-
-        f.post('/', random_docs(10), return_results=True)
-        assert len(results) > 0
-        assert len(results[0].docs) == 10
+        with pytest.raises(RuntimeError):
+            f.protocol = changeto_protocol
 
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])

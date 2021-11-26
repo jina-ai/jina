@@ -1,13 +1,12 @@
 from jina import Flow, Executor, requests
 
 
-class MyExecutor(Executor):
-    @requests
-    def foo(self, **kwargs):
-        print('hello world')
-
-
 def test_empty_post_request(mocker):
+    class MyExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            print('hello world')
+
     f = Flow().add(uses=MyExecutor, shards=2, polling='ALL')
     with f:
         on_error_mock = mocker.Mock()

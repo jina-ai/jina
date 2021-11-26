@@ -728,3 +728,8 @@ async def test_message_ordering_hanging_after_merge_graph(
                 f'client{client_id}-Request-client{client_id}-pod8-client{client_id}-pod7'
                 == runtime.connection_pool.sent_msg[f'client{client_id}']['pod9']
             )
+
+
+def test_empty_graph():
+    graph = TopologyGraph({})
+    assert not graph.origin_nodes

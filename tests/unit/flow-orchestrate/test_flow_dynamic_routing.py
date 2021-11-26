@@ -1,7 +1,3 @@
-import time
-
-import pytest
-
 from jina import Document, Executor, Flow, requests
 
 
@@ -25,29 +21,9 @@ class MergeExecutor(Executor):
             docs[0].text = str(len(docs_matrix))
 
 
-@pytest.mark.parametrize(
-    'use_grpc',
-    [True],
-)
-def test_expected_messages_routing(use_grpc):
+def test_expected_messages_routing():
     f = (
-        Flow(grpc_data_requests=use_grpc)
-        .add(name='foo', uses=SimplExecutor)
-        .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
-    )
-
-    with f:
-        results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert results[0].docs[0].text == '2'
-
-
-@pytest.mark.parametrize(
-    'use_grpc',
-    [True, False],
-)
-def test_static_routing_table_setup(use_grpc):
-    f = (
-        Flow(static_routing_table=True, grpc_data_requests=use_grpc)
+        Flow()
         .add(name='foo', uses=SimplExecutor)
         .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
     )
@@ -63,8 +39,8 @@ class SimplAddExecutor(Executor):
         docs.append(Document(text=self.runtime_args.name))
 
 
-def test_static_routing_table_shards():
-    f = Flow(static_routing_table=True).add(uses=SimplAddExecutor, shards=2)
+def test_shards():
+    f = Flow().add(uses=SimplAddExecutor, shards=2)
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
@@ -77,9 +53,9 @@ class MergeDocsExecutor(Executor):
         return docs
 
 
-def test_static_routing_table_complex_flow():
+def test_complex_flow():
     f = (
-        Flow(static_routing_table=True)
+        Flow()
         .add(name='first', uses=SimplAddExecutor, needs=['gateway'])
         .add(name='forth', uses=SimplAddExecutor, needs=['first'], shards=2)
         .add(
@@ -99,4 +75,4 @@ def test_static_routing_table_complex_flow():
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert len(results[0].docs) == 6
+    assert len(results[0].docs) == 6
