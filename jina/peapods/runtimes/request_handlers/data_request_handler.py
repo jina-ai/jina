@@ -187,6 +187,21 @@ class DataRequestHandler:
         msg.request.docs.clear()
         msg.request.docs.extend(docs)
 
+    @staticmethod
+    def merge_routes(messages):
+        """Merges all routes found in messages into the first message
+
+        :param messages: The messages containing the requests with the routes to merge
+        """
+        if len(messages) <= 1:
+            return
+        existing_pod_routes = [r.pod for r in messages[0].request.routes]
+        for message in messages[1:]:
+            for route in message.request.routes:
+                if route.pod not in existing_pod_routes:
+                    messages[0].request.routes.append(route)
+                    existing_pod_routes.append(route.pod)
+
     def close(self):
         """ Close the data request handler, by closing the executor """
         if not self._is_closed:

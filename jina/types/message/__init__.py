@@ -430,23 +430,17 @@ class Message:
         :param ex: Exception to be added
         :param executor: Executor related to the exception
         """
-        d = self.envelope.routes[-1].status
-        if ex:
-            self.envelope.status.code = jina_pb2.StatusProto.ERROR
-            if not self.envelope.status.description:
-                self.envelope.status.description = repr(ex)
-            d.code = jina_pb2.StatusProto.ERROR
-            d.description = repr(ex)
-            d.exception.executor = executor.__class__.__name__
-            d.exception.name = ex.__class__.__name__
-            d.exception.args.extend([str(v) for v in ex.args])
-            d.exception.stacks.extend(
-                traceback.format_exception(
-                    etype=type(ex), value=ex, tb=ex.__traceback__
-                )
-            )
-        else:
-            d.code = jina_pb2.StatusProto.ERROR_CHAINED
+        d = self.request.status
+        d.code = jina_pb2.StatusProto.ERROR
+        d.description = repr(ex)
+
+        d.exception.executor = executor.__class__.__name__
+        d.exception.name = ex.__class__.__name__
+        d.exception.args.extend([str(v) for v in ex.args])
+        d.exception.stacks.extend(
+            traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__)
+        )
+        self.envelope.status.CopyFrom(self.request.status)
 
     @property
     def is_error(self) -> bool:

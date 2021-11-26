@@ -1,6 +1,5 @@
 import pytest
 
-from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.jaml import JAML, JAMLCompatible
 from jina import __default_executor__, requests
@@ -84,10 +83,6 @@ def test_escape(original, escaped):
         ).strip()
         == original.strip()
     )
-
-
-def test_enum_dump():
-    assert JAML.dump(SocketType.PUSH_CONNECT).strip() == '"PUSH_CONNECT"'
 
 
 class MyExec(BaseExecutor):
