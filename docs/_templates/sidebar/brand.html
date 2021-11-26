@@ -13,8 +13,8 @@
   {%- endif %}
   <div class="sd-d-flex-row">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub">Star</a>
-  <select id="versions" onChange="window.location.href=this.value">
-    {% if versions %}
+  {% if versions %}
+    <select id="versions" onChange="window.location.href=this.value"></select>
       {%- for item in versions|reverse %}
         {% if item.name == latest_jina_version %}
           {% set new_url = item.url if current_version.name == latest_jina_version else item.url | replace('/' + latest_jina_version, "") %}
@@ -31,8 +31,8 @@
           {% endif %}
         {% endif %}
       {%- endfor %}
-    {% endif %}
-  </select>
+    </select>
+  {% endif %}
   </div>
   {% if not theme_sidebar_hide_name %}
   <span class="sidebar-brand-text">{{ docstitle if docstitle else project }}</span>
