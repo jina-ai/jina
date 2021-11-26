@@ -9,7 +9,10 @@ api = '/pea'
 def test_pea_api(partial_pea_client):
     pea_model = PeaModel()
 
-    response = partial_pea_client.post(api, json=pea_model.dict(exclude={'log_config'}))
+    response = partial_pea_client.post(
+        api,
+        json={'pea': pea_model.dict(exclude={'log_config'}), 'envs': {'key1': 'val1'}},
+    )
     assert response
 
     response = partial_pea_client.get(api)
