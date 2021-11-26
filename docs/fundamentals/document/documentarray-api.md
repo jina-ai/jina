@@ -5,7 +5,7 @@ A {class}`~jina.types.arrays.document.DocumentArray` is a list of `Document` obj
 a `DocumentArray` like a Python `list`. It implements all Python List interface. 
 
 ```{hint}
-Jina provides a memory-efficient version of `DocumentArray`, you {ref}`can find its API here<documentarraymemmap-api>`.  
+We also provide a memory-efficient version of `DocumentArray` coined as {class}`~jina.DocumentArrayMemmap`. It shares *almost* the same API as `DocumentArray`, which means you can easily use it as a drop-in replacement when your data is big. You can {ref}`can find more about here<documentarraymemmap-api>`.
 ```
 
 ## Construct
@@ -125,7 +125,7 @@ d.embedding.shape= (1, 256)
 
 ```{important}
 
-{meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` function supports both CPU & GPU, which can be controlled by its `device` argument.
+{meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` function supports both CPU & GPU, which can be specified by its `device` argument.
 ```
 
 When a `DocumentArray` has `.blobs` set, you can use a deep neural network to {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` it, which means filling `DocumentArray.embeddings`. For example, our `DocumentArray` looks like the following:
@@ -219,6 +219,11 @@ On large `DocumentArray`, you can set `batch_size` via `.embed(..., batch_size=1
 ```
 
 ## Find nearest neighbours
+
+```{important}
+
+{meth}`~jina.types.arrays.mixins.match.SingletonSugarMixin.match` function supports both CPU & GPU, which can be specified by its `device` argument.
+```
 
 Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.SingletonSugarMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
 
