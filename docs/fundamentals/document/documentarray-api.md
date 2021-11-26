@@ -43,7 +43,7 @@ da1 = DocumentArray(da)
 ````
 
 
-## Access Element
+## Access element
 
 You can access a `Document` element in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
@@ -64,7 +64,7 @@ da[1:2]
 ```
 
 (bulk-access)=
-## Bulk access content
+## Bulk access contents
 
 You can quickly access `.text`, `.blob`, `.buffer`, `.embedding` of all Documents in the DocumentArray without writing a for-loop.
 
@@ -121,13 +121,14 @@ d.embedding.shape= (1, 256)
 
 (match-documentarray)=
 
-## Embedding via model
+## Embed via model
 
-```{hint}
-This function supports CPU & GPU.
+```{important}
+
+{meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` function supports both CPU & GPU, which can be controlled by its `device` argument.
 ```
 
-When a `DocumentArray` has `.blobs` set, you can use a deep neural network to embed it, which means filling `DocumentArray.embeddings`. For example, our `DocumentArray` looks like the following:
+When a `DocumentArray` has `.blobs` set, you can use a deep neural network to {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` it, which means filling `DocumentArray.embeddings`. For example, our `DocumentArray` looks like the following:
 
 ```python
 from jina import DocumentArray
