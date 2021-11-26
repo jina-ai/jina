@@ -168,7 +168,8 @@ body[data-theme="auto"] .only-dark-line {
     background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
     border-color: var(--color-background-border);
     margin-left: 1em;
-    height: 1.8em;
+    height: 1.7em;
+    width: 6rem;
     line-height: 1.8em;
     outline: none;
     text-align: center;
