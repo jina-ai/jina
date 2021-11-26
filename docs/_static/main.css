@@ -159,11 +159,12 @@ body[data-theme="auto"] .only-dark-line {
     100%{background-position:0% 50%}
 }
 
-#versions {
-    font-size: .7em;
-    border-radius: 5px;
+.version-select {
+    font-size: .75em;
+    border-radius: 4px;
     cursor: pointer;
     background-color: #fff;
+    color: #000000;
     background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
     border-color: var(--color-background-border);
     margin-left: 1em;
