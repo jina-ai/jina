@@ -199,13 +199,16 @@
             <div class="sidebar-sticky"><a class="sidebar-brand" href="../">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../_static/logo-light.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../_static/logo-dark.svg" alt="Dark Logo"/>
+    <img class="sidebar-logo only-light" src="../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../_static/logo-dark.svg" alt="Dark Logo" />
   </div>
-  <div class="sd-d-flex-row">
-  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub">Star</a>
   
-    <select id="versions" onChange="window.location.href=this.value"></select>
+  
+</a>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="window.location.href=this.value" class="version-select">
+    
         
           
             <option value="../../master/cli/index.html" >master</option>
@@ -228,7 +231,7 @@
         
         
           
-            <option value="index.html" selected >v2.4.6</option>
+            <option value="index.html" selected="selected" >v2.4.6</option>
           
         
         
@@ -262,12 +265,9 @@
             <option value="../../v2.4.1/cli/index.html" >v2.4.1</option>
           
         
-    </select>
-  
-  </div>
-  
-  
-</a><form class="sidebar-search-container" method="get" action="../search/" role="search">
+    
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -796,7 +796,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “ebc3a47f-fed0-4488-9f96-fa1087fcba5c”</p>
+<p>Default: “3999e3f3-8de5-4a8d-a97b-cf182e8fd4ce”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -867,7 +867,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “2ceada04-43e1-4bde-95ad-2d760566860e”</p>
+<p>Default: “b6e971bf-d0af-4673-a0c1-84016cea32c0”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -900,7 +900,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “e17ee0f8-ce72-4872-8d43-afe4c5af5e88”</p>
+<p>Default: “7dbbc7db-49c8-448d-971f-c45164937ccf”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -972,7 +972,7 @@
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmp_jis269y/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmpnryhuj8p/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -996,7 +996,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 34403</p>
+<p>Default: 43033</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1058,11 +1058,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 48533</p>
+<p>Default: 36611</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 33119</p>
+<p>Default: 48985</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1256,7 +1256,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmp_jis269y/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmpnryhuj8p/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -1385,7 +1385,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmp_jis269y/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmpnryhuj8p/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -1409,7 +1409,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 59973</p>
+<p>Default: 59023</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1471,11 +1471,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 53103</p>
+<p>Default: 59345</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 53781</p>
+<p>Default: 43487</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1612,7 +1612,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 35477</p>
+<p>Default: 36283</p>
 </dd>
 </dl>
 </section>
@@ -1853,7 +1853,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmp_jis269y/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmpnryhuj8p/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -1877,7 +1877,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 60003</p>
+<p>Default: 45229</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1939,11 +1939,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 44339</p>
+<p>Default: 46021</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 34241</p>
+<p>Default: 41009</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2169,7 +2169,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmp_jis269y/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmpnryhuj8p/6b728966c43d21e6cca017d025d584cad3881766/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -2193,7 +2193,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 56741</p>
+<p>Default: 55891</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2255,11 +2255,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 38935</p>
+<p>Default: 39667</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60281</p>
+<p>Default: 35075</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2494,7 +2494,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 52351</p>
+<p>Default: 47207</p>
 </dd>
 <dt><kbd>--https</kbd></dt>
 <dd><p>If set, connect to gateway using https</p>

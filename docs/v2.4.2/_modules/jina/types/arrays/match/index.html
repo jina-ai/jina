@@ -173,13 +173,16 @@
             <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../../">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../../../../../_static/logo-light.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../../../../../_static/logo-dark.svg" alt="Dark Logo"/>
+    <img class="sidebar-logo only-light" src="../../../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../../../_static/logo-dark.svg" alt="Dark Logo" />
   </div>
-  <div class="sd-d-flex-row">
-  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub">Star</a>
   
-    <select id="versions" onChange="window.location.href=this.value"></select>
+  
+</a>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="window.location.href=this.value" class="version-select">
+    
         
           
             <option value="../../../../../master/index.html" >master</option>
@@ -222,7 +225,7 @@
         
         
           
-            <option value="match.html" selected >v2.4.2</option>
+            <option value="match.html" selected="selected" >v2.4.2</option>
           
         
         
@@ -236,12 +239,9 @@
             <option value="../../../../../v2.4.1/index.html" >v2.4.1</option>
           
         
-    </select>
-  
-  </div>
-  
-  
-</a><form class="sidebar-search-container" method="get" action="../../../../../search/" role="search">
+    
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
