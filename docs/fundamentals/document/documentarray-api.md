@@ -8,17 +8,9 @@ a `DocumentArray` like a Python `list`. It implements all Python List interface.
 Jina provides a memory-efficient version of `DocumentArray`, you {ref}`can find its API here<documentarraymemmap-api>`.  
 ```
 
-## Minimum working example
-
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(), Document()])  # equivalent to DocumentArray.empty(2)  
-```
-
 ## Construct
 
-You can construct a `DocumentArray` from an iterable of `Document`s:
+You can construct a `DocumentArray` in different ways:
 
 ````{tab} From empty Documents
 ```python
@@ -51,9 +43,9 @@ da1 = DocumentArray(da)
 ````
 
 
-## Access Documents
+## Access Element
 
-You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
+You can access a `Document` element in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
 ```python
 from jina import DocumentArray, Document
@@ -129,9 +121,105 @@ d.embedding.shape= (1, 256)
 
 (match-documentarray)=
 
+## Embedding via model
+
+```{hint}
+This function supports CPU & GPU.
+```
+
+When a `DocumentArray` has `.blobs` set, you can use a deep neural network to embed it, which means filling `DocumentArray.embeddings`. For example, our `DocumentArray` looks like the following:
+
+```python
+from jina import DocumentArray
+import numpy as np
+
+docs = DocumentArray.empty(10)
+docs.blobs = np.random.random([10, 128]).astype(np.float32)
+```
+
+And our embedding model is a simple MLP in Keras/Pytorch/Paddle:
+
+````{tab} PyTorch
+
+```python
+import torch
+
+model = torch.nn.Sequential(
+    torch.nn.Linear(
+        in_features=128,
+        out_features=128,
+    ),
+    torch.nn.ReLU(),
+    torch.nn.Linear(in_features=128, out_features=32))
+```
+
+````
+
+````{tab} Keras
+```python
+import tensorflow as tf
+
+model = tf.keras.Sequential(
+    [
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(32),
+    ]
+)
+
+```
+````
+
+````{tab} Paddle
+
+```python
+import paddle
+
+model = paddle.nn.Sequential(
+    paddle.nn.Linear(
+        in_features=128,
+        out_features=128,
+    ),
+    paddle.nn.ReLU(),
+    paddle.nn.Linear(in_features=128, out_features=32),
+)
+
+```
+````
+
+Now, you can simply do
+
+```python
+docs.embed(model)
+
+print(docs.embeddings)
+```
+
+```text
+tensor([[-0.1234,  0.0506, -0.0015,  0.1154, -0.1630, -0.2376,  0.0576, -0.4109,
+          0.0052,  0.0027,  0.0800, -0.0928,  0.1326, -0.2256,  0.1649, -0.0435,
+         -0.2312, -0.0068, -0.0991,  0.0767, -0.0501, -0.1393,  0.0965, -0.2062,
+```
+
+
+```{hint}
+By default, `.embeddings` is in the model framework's format. If you want it always be `numpy.ndarray`, use `.embed(..., to_numpy=True)`. 
+```
+
+You can also use pretrained model for embedding:
+
+```python
+import torchvision
+model = torchvision.models.resnet50(pretrained=True)
+docs.embed(model)
+```
+
+```{hint}
+On large `DocumentArray`, you can set `batch_size` via `.embed(..., batch_size=128)`
+```
+
 ## Find nearest neighbours
 
-Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.MatchMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
+Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.SingletonSugarMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
 
 The following image visualizes how `DocumentArrayA` finds `limit=5` matches from the Documents in `DocumentArrayB`. By
 default, the cosine similarity is used to evaluate the score between Documents.
