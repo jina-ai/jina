@@ -1533,7 +1533,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         # Flow is running already, protocol cant be changed anymore
         if self._build_level >= FlowBuildLevel.RUNNING:
-            raise RuntimeError("Protocol can not be changed after the Flow has started")
+            raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
             self._common_kwargs['protocol'] = GatewayProtocolType.from_string(value)
