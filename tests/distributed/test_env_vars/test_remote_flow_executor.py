@@ -17,7 +17,7 @@ def RemoteFlow(filename, envs):
     flow_id = None
     try:
         workspace_id = jinad_client.workspaces.create(
-            paths=[os.path.join(cur_dir, 'env_var_ws2')]
+            paths=[os.path.join(cur_dir, 'envvars_ws2')]
         )
         flow_id = jinad_client.flows.create(
             workspace_id=workspace_id, filename=filename, envs=envs
