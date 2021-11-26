@@ -13,23 +13,6 @@ class PodStore(PeaStore):
 
     _kind = 'pod'
 
-    async def add_in_partial(
-        self, uri: str, params: Dict, envs: Optional[Dict] = {}, **kwargs
-    ) -> Dict:
-        """Sends `POST` request to `partial-daemon` to create a Pea/Pod.
-
-        :param uri: uri of partial-daemon
-        :param params: json payload to be sent
-        :param envs: environment variables to be passed into partial pod
-        :param kwargs: keyword args
-        :return: response from mini-jinad
-        """
-        return await self.POST(
-            url=f'{uri}/{self._kind}',
-            params=None,
-            json={'pod': params, 'envs': envs},
-        )
-
     @BaseStore.dump
     async def rolling_update(
         self, id: 'DaemonID', uses_with: Optional[Dict] = None

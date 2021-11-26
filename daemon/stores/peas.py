@@ -23,7 +23,7 @@ class PeaStore(ContainerStore, AiohttpMixin):
         return await self.POST(
             url=f'{uri}/{self._kind}',
             params=None,
-            json={'pea': params, 'envs': envs},
+            json={self._kind: params, 'envs': envs},
         )
 
     async def delete_in_partial(self, uri, **kwargs) -> Dict:
