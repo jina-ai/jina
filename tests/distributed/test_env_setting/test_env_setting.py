@@ -10,7 +10,7 @@ CLOUD_HOST = 'localhost:8000'
 NUM_DOCS = 10
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-jinad_client = JinaDClient(host=__default_host__, port=8000)
+jinad_client = JinaDClient(host='54.93.57.58', port=8000)
 
 
 @contextmanager
@@ -28,7 +28,7 @@ def RemoteFlow(filename, envs):
             print(f'Remote Flow {flow_id} successfully terminated')
 
 
-@pytest.mark.parametrize('replicas', [1])
+@pytest.mark.parametrize('replicas', [1, 2])
 def test_remote_flow_local_executors(replicas):
     with RemoteFlow(
         filename='flow_with_env.yml',
@@ -38,7 +38,7 @@ def test_remote_flow_local_executors(replicas):
             'num_replicas': replicas,
         },
     ):
-        resp = Client(port=12345).post(
+        resp = Client(host='54.93.57.58', port=12345).post(
             on='/',
             inputs=[Document(id=idx) for idx in range(NUM_DOCS)],
             return_results=True,
@@ -46,4 +46,4 @@ def test_remote_flow_local_executors(replicas):
         for doc in resp[0].data.docs:
             assert doc.tags['key1'] == 'val1'
             assert doc.tags['key2'] == 'val2'
-            assert doc.tags['replicas'] == replicas
+            assert doc.tags['replicas'] == str(replicas)
