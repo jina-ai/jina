@@ -49,6 +49,11 @@ More install options including Conda, Docker, on Windows [can be found here](htt
 
 ## Get Started
 
+We promise you to build a scalable image search via ResNet50 in less than 20 minutes.
+
+### Basic Concepts
+<sup align="right">💡 1 minute </sup>
+
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
@@ -59,6 +64,8 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 Leveraging these three components, let's build an app that **find similar images using ResNet50**.
 
 ### ResNet50 Image Search
+<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
+</sup>
 
 **20 lines of code in 5 minutes**, that's how easy to implement it in Jina:
 
@@ -73,17 +80,17 @@ for d in docs:  # preprocess them
 
 import torchvision
 model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
-docs.embed(model)  # embed
+docs.embed(model, device='cuda')  # embed via GPU to speedup
 
 q = (Document(uri='img/00003.jpg')  # build query image & preprocess
      .load_uri_to_image_blob()
      .set_image_blob_normalization()
      .set_image_blob_channel_axis(-1, 0))
 q.embed(model)  # embed
-q.match(docs)  # find nearest neighbours, done!
+q.match(docs)  # find top-20 nearest neighbours, done!
 ```
 
-Print `q.matches` and you will see top-20 most-similar images URIs.
+Print `q.matches` and you will see top-10 most-similar images URIs.
 
 <p align="center">
 <a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-matches.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
@@ -98,6 +105,15 @@ q.matches.plot_image_sprites()
 ```
 
 
+Sweet! One can also use Keras or PaddlePaddle for the embedding model. Jina supports them well.
+
+### Scale, Distribute and Serve it
+
+We are not done yet. With an extremely trivial refactoring and 10 extra lines of code, you will get: **scaling out embedding**, **distributing the workflow**, **exposing REST interface** and so many more features:
+
+
+
+At this point, you probably have taken 20 minutes and here we are: a scalable image search service. Worth it? Then [find more about Jina from our docs](https://docs.jina.ai).
 
 
 
