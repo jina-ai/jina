@@ -5,7 +5,7 @@ from .content import ContentPropertyMixin
 from .convert import ConvertMixin
 from .dump import DumpFileMixin
 from .image import ImageDataMixin
-from .match import SingletonSugarMixin
+from .sugar import SingletonSugarMixin
 from .mesh import MeshDataMixin
 from .plot import PlotMixin
 from .text import TextDataMixin

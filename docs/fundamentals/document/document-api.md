@@ -117,6 +117,7 @@ d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'
 
 ## Set/unset attributes
 
+````{tab} Set
 Set an attribute as you would with any Python object: 
 
 ```python
@@ -129,8 +130,9 @@ d.text = 'hello world'
 ```text
 <jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
 ```
+````
 
-Unset an attribute:
+````{tab} Unset
 
 ```python
 d.text = None
@@ -145,8 +147,9 @@ d.pop('text')
 ```text
 <jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
 ```
+````
 
-Unset multiple attributes:
+````{tab} Unset multiple attributes
 
 ```python
 d.pop('text', 'id', 'mime_type')
@@ -155,6 +158,8 @@ d.pop('text', 'id', 'mime_type')
 ```text
 <jina.types.document.Document at 5668344144>
 ```
+````
+
 
 
 ## Content 

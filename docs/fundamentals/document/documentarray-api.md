@@ -360,6 +360,82 @@ match emb =   (0, 0)	1.0
 
 ````
 
+### Keep only ID
+
+Default `A.match(B)` will copy the top-K matched Documents from B to `A.matches`. When these matches are big, copying them can be time-consuming. In this case, one can leverage `.match(..., only_id=True)` to keep only {attr}`~jina.Document.id`:
+
+```python
+from jina import DocumentArray
+import numpy as np
+
+A = DocumentArray.empty(2)
+A.texts = ['hello', 'world']
+A.embeddings = np.random.random([2, 10])
+
+B = DocumentArray.empty(3)
+B.texts = ['long-doc1', 'long-doc2', 'long-doc3']
+B.embeddings = np.random.random([3, 10])
+```
+
+````{tab} Only ID
+
+```python
+A.match(B, only_id=True)
+
+for m in A.traverse_flat('m'):
+    print(m.json())
+```
+
+```text
+{
+  "adjacency": 1,
+  "id": "4a8ad5fe4f9b11ec90e61e008a366d48",
+  "scores": {
+    "cosine": {
+      "value": 0.08097544
+    }
+  }
+}
+...
+```
+
+````
+
+````{tab} Default (keep all attributes)
+
+```python
+A.match(B)
+
+for m in A.traverse_flat('m'):
+    print(m.json())
+```
+
+```text
+{
+  "adjacency": 1,
+  "embedding": {
+    "cls_name": "numpy",
+    "dense": {
+      "buffer": "csxkKGfE7T+/JUBkNzHiP3Lx96W4SdE/SVXrOxYv7T9Fmb+pp3rvP8YdsjGsXuw/CNbxUQ7v2j81AjCpbfjrP6g5iPB9hL4/PHljbxPi1D8=",
+      "dtype": "<f8",
+      "shape": [
+        10
+      ]
+    }
+  },
+  "id": "9078d1ec4f9b11eca9141e008a366d48",
+  "scores": {
+    "cosine": {
+      "value": 0.15957883
+    }
+  },
+  "text": "long-doc1"
+}
+...
+```
+
+````
+
 ### GPU support
 
 If `.embeddings` is a Tensorflow tensor, PyTorch tensor or Paddle tensor, `.match()` function can work directly on GPU. To do that, simply set `device=cuda`. For example,
