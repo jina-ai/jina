@@ -51,8 +51,8 @@ More install options including Conda, Docker, on Windows [can be found here](htt
 
 We promise you to have a scalable ResNet-powered image search service in less than 20 minutes, from scratch. If not, you can forget about Jina.
 
-### Basic Concepts
-<sup align="right">⏱️ 1 minute </sup>
+
+### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
 
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
@@ -63,8 +63,8 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 
 Leveraging these three components, let's build an app that **find similar images using ResNet50**.
 
-### ResNet50 Image Search in 20 Lines
-<sup align="right">⏱️ 5 minute </sup>
+### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
+
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
@@ -107,9 +107,8 @@ q.matches.plot_image_sprites()
 
 Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
 
-### Scale, Distribute and Serve it
+### Scale, Distribute and Serve it <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-10min.svg?raw=true"></img>
 
-<sup align="right">⏱️ 10 minute </sup>
 
 We are not done yet. With an extremely trivial refactoring and 10 extra lines of code, you will get: **scaling out embedding**, **distributing the workflow**, **exposing REST interface** and so many more.
 
@@ -149,7 +148,7 @@ We are not done yet. With an extremely trivial refactoring and 10 extra lines of
         @requests(on='/search')
         def foo(self, docs: DocumentArray, **kwargs):
             docs.match(self._da)
-            for d in docs:  # only required for visualization
+            for d in docs:  # only required for visualization in HTML
                 d.convert_uri_to_datauri()
                 for m in d.matches:
                     m.convert_uri_to_datauri()
