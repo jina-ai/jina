@@ -49,10 +49,10 @@ More install options including Conda, Docker, on Windows [can be found here](htt
 
 ## Get Started
 
-We promise you to build a scalable image search via ResNet50 in less than 20 minutes.
+We promise you to have a scalable ResNet-powered image search service in less than 20 minutes, from scratch. If not, you can forget about Jina.
 
 ### Basic Concepts
-<sup align="right">💡 1 minute </sup>
+<sup align="right">⏱️ 1 minute </sup>
 
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
@@ -63,11 +63,11 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 
 Leveraging these three components, let's build an app that **find similar images using ResNet50**.
 
-### ResNet50 Image Search
+### ResNet50 Image Search in 20 Lines
+<sup align="right">⏱️ 5 minute </sup>
+
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
-
-**20 lines of code in 5 minutes**, that's how easy to implement it in Jina:
 
 ```python
 from jina import DocumentArray, Document
@@ -105,11 +105,65 @@ q.matches.plot_image_sprites()
 ```
 
 
-Sweet! One can also use Keras or PaddlePaddle for the embedding model. Jina supports them well.
+Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
 
 ### Scale, Distribute and Serve it
 
-We are not done yet. With an extremely trivial refactoring and 10 extra lines of code, you will get: **scaling out embedding**, **distributing the workflow**, **exposing REST interface** and so many more features:
+<sup align="right">⏱️ 10 minute </sup>
+
+We are not done yet. With an extremely trivial refactoring and 10 extra lines of code, you will get: **scaling out embedding**, **distributing the workflow**, **exposing REST interface** and so many more.
+
+1. Import what we need.
+    ```python
+    from jina import DocumentArray, Executor, Flow, requests
+    ```
+2. Copy-paste the preprocessing step and wrap it via `Executor`:
+    ```python
+    class PreprocImg(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            for d in docs:
+                (d.load_uri_to_image_blob()
+                 .set_image_blob_normalization()
+                 .set_image_blob_channel_axis(-1, 0))
+    ```
+3. Copy-paste the embedding step and wrap it via `Executor`:
+    
+    ```python
+    class EmbedImg(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            import torchvision
+            model = torchvision.models.resnet50(pretrained=True)
+            docs.embed(model)
+    ```
+4. Wrap the matching step into `Executor`:
+    ```python
+    class MatchImg(Executor):
+        _da = DocumentArray()
+    
+        @requests(on='/index')
+        def index(self, docs: DocumentArray, **kwargs):
+            self._da.extend(docs)
+    
+        @requests(on='/search')
+        def foo(self, docs: DocumentArray, **kwargs):
+            docs.match(self._da)
+            for d in docs:  # only required for visualization
+                d.convert_uri_to_datauri()
+                for m in d.matches:
+                    m.convert_uri_to_datauri()
+    ```
+5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
+    ```python
+    f = Flow(port_expose=12345, protocol='http').add(uses=PreprocImg).add(uses=EmbedImg, replicas=3).add(uses=MatchImg)
+    ```
+6. Index image data and serve REST query from public:
+    ```python
+    with f:
+        f.post('/index', DocumentArray.from_files('img/*.jpg'), show_progress=True, request_size=8)
+        f.block()
+    ```
 
 
 
