@@ -42,8 +42,20 @@ da1 = DocumentArray(da)
 ```
 ````
 
+````{tab} From JSON, CSV, ndarray, files, ...
 
-## Access element
+You can find more details about those APIs in {class}`~jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin`.
+
+```python
+da = DocumentArray.from_ndjson(...)
+da = DocumentArray.from_csv(...)
+da = DocumentArray.from_files(...)
+da = DocumentArray.from_lines(...)
+da = DocumentArray.from_ndarray(...)
+```
+````
+
+## Access elements
 
 You can access a `Document` element in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
@@ -61,6 +73,10 @@ da[1:2]
 <jina.types.document.Document id=hello at 5699749904>
 <jina.types.document.Document id=world at 5736614992>
 <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
+```
+
+```{tip}
+To access Documents with nested Documents, please refer to {ref}`traverse-doc`.
 ```
 
 (bulk-access)=
@@ -119,8 +135,9 @@ d.embedding.shape= (1, 256)
 d.embedding.shape= (1, 256)
 ```
 
-(match-documentarray)=
 
+
+(embed-via-model)=
 ## Embed via model
 
 ```{important}
@@ -218,14 +235,15 @@ docs.embed(model)
 On large `DocumentArray`, you can set `batch_size` via `.embed(..., batch_size=128)`
 ```
 
+(match-documentarray)=
 ## Find nearest neighbours
 
 ```{important}
 
-{meth}`~jina.types.arrays.mixins.match.SingletonSugarMixin.match` function supports both CPU & GPU, which can be specified by its `device` argument.
+{meth}`~jina.types.arrays.mixins.match.MatchMixin.match` function supports both CPU & GPU, which can be specified by its `device` argument.
 ```
 
-Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.SingletonSugarMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
+Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.MatchMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
 
 The following image visualizes how `DocumentArrayA` finds `limit=5` matches from the Documents in `DocumentArrayB`. By
 default, the cosine similarity is used to evaluate the score between Documents.
@@ -484,7 +502,8 @@ for d in da2:
 
 Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~jina.Document.id`. You can specify your own hash function.
 
-## Traverse nested structure
+(traverse-doc)=
+## Traverse nested elements
 
 {meth}`~jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat` function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates `Document`s on the provided traversal paths. You can use or modify `Document`s and the change will be applied in-place. 
 

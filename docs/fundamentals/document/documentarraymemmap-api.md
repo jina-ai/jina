@@ -3,9 +3,12 @@
 
 When a `DocumentArray` object contains a large number of `Document`s, holding it in memory can be very demanding, 
 {class}`~jina.types.arrays.memmap.DocumentArrayMemmap` is a drop-in replacement of `DocumentArray` in this scenario. 
-It shares {ref}`nearly all APIs<api-da-dam>` with `DocumentArray`. 
 
-## How it works?
+```{important}
+`DocumentArrayMemmap` shares almost the same API as `DocumentArray` besides `insert`, inplace `reverse`, inplace `sort`.
+```
+
+## How does it work?
 
 A `DocumentArrayMemmap` stores all `Documents` directly on
 disk, while keeping a small lookup table in memory and a buffer pool of Documents with a fixed size. The lookup 
@@ -14,18 +17,7 @@ Elements are loaded on-demand to memory during access. Memory-loaded Documents a
 modifying Documents.
 
 
-The next table shows the speed and memory consumption when writing and reading 50,000 `Documents`.
-
-|| `DocumentArrayMemmap` | `DocumentArray` |
-|---|---|---|
-|Write to disk | 0.62s | 0.71s |
-|Read from disk | 0.11s | 0.20s |
-|Memory usage | 20MB | 342MB |
-|Disk storage | 14.3MB | 12.6MB |
-
-## Basics
-
-### Create
+## Construct
 
 ```python
 from jina import DocumentArrayMemmap
@@ -34,34 +26,13 @@ dam = DocumentArrayMemmap()  # use a local temporary folder as storage
 dam2 = DocumentArrayMemmap('./my-memmap')  # use './my-memmap' as storage
 ```
 
-### Add elements
+## Delete
 
-```{code-block} python
----
-emphasize-lines: 7
----
-from jina import DocumentArrayMemmap, Document
-
-d1 = Document(text='hello')
-d2 = Document(text='world')
-
-dam = DocumentArrayMemmap('./my-memmap')
-dam.extend([d1, d2])
-```
-
-The `dam` object stores all `Document`s in the `./my-memmap` folder on the disk and there is no need to manually call save or load.
-
-```{tip}
-You can of course use `.append()` to add a single `Document`. But when adding multiple `Document`s, `.extend()` is much more efficient.
-```
-
-### Clear elements
-
-To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on the disk.
+To delete all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on the disk.
 
 You can also check the disk usage of a `DocumentArrayMemmap` by `.physical_size` property. 
 
-### Convert to/from `DocumentArray`
+## Convert to/from `DocumentArray`
 
 ```python
 from jina import Document, DocumentArray, DocumentArrayMemmap
@@ -69,7 +40,7 @@ from jina import Document, DocumentArray, DocumentArrayMemmap
 da = DocumentArray([Document(text='hello'), Document(text='world')])
 
 # convert DocumentArray to DocumentArrayMemmap
-dam = DocumentArrayMemmap('./my-memmap')
+dam = DocumentArrayMemmap()
 dam.extend(da)
 
 # convert DocumentArrayMemmap to DocumentArray
@@ -308,41 +279,3 @@ dam.flush()
 dam2.reload()
 assert dam2[0].text == 'goodbye'
 ```
-
-
-(api-da-dam)=
-## API side-by-side vs. `DocumentArray`
-
-The API of `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`: You can use integer/string index to
-access element; you can loop over a `DocumentArrayMemmap` to get all `Document`s; you can use `get_attributes`
-or `traverse_flat` to achieve advanced traversal or getter.
-
-This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray`:
-
-|| `DocumentArrayMemmap` | `DocumentArray` |
-|---|---|---|
-| `__getitem__`, `__setitem__`, `__delitem__` (int) | ✅|✅|
-| `__getitem__`, `__setitem__`, `__delitem__` (string) | ✅|✅|
-| `__getitem__`, `__delitem__` (slice)  |✅ |✅|
-| `__iter__` |✅|✅|
-| `__contains__` |✅|✅|
-| `__len__` | ✅|✅|
-| `append` | ✅|✅|
-| `extend` | ✅|✅|
-| `traverse_flat`, `traverse` | ✅|✅|
-| `get_attributes`, `get_attributes_with_docs` | ✅|✅|
-| `insert` |❌ |✅|
-| `reverse` (inplace) |❌ |✅|
-| `sort` (inplace) | ❌|✅|
-| `__add__`, `__iadd__` | ❌|✅|
-| `__bool__` |✅|✅|
-| `__eq__` |✅|✅|
-| `sample` |✅ |✅|
-| `shuffle` |✅ |✅|
-| `split` |✅ |✅|
-| `match` (L/Rvalue) |✅|✅|
-| `plot_embeddings` |✅|✅|
-| `plot_image_sprites` |✅|✅|
-| `batch` | ✅|✅|
-| `flatten` | ✅|✅|
-| `.save`, `.load`, `.save_binary`, `.load_binary`, `.save_json`, `.load_json`, `.save_csv`, `.load_csv` |✅|✅|
