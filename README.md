@@ -39,14 +39,67 @@ fragmented, multi-vendor, generic legacy tools.
 
 <!-- end elevator-pitch -->
 
-## Install
-
-- via PyPI: `pip install jina`
-- via Conda: `conda install jina -c conda-forge`
-- via Docker: `docker run jinaai/jina:latest`
-- [More install options](https://docs.jina.ai/get-started/install/)
+## Install 
+```
+pip install -U jina
+```
+More install options including Conda, Docker, on Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
 ## [Documentation](https://docs.jina.ai)
+
+## Get Started
+
+Document, Executor, and Flow are three fundamental concepts in Jina.
+
+- [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
+
+
+Leveraging these three components, let's build an app that **find similar images using ResNet50**.
+
+### ResNet50 Image Search
+
+**20 lines of code in 5 minutes**, that's how easy to implement it in Jina:
+
+```python
+from jina import DocumentArray, Document
+
+docs = DocumentArray.from_files('img/*.jpg')  # load all image filenames into a DocumentArray
+for d in docs:  # preprocess them
+    (d.load_uri_to_image_blob()  # load
+     .set_image_blob_normalization()  # normalize color 
+     .set_image_blob_channel_axis(-1, 0))  # switch color axis
+
+import torchvision
+model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
+docs.embed(model)  # embed
+
+q = (Document(uri='img/00003.jpg')  # build query image & preprocess
+     .load_uri_to_image_blob()
+     .set_image_blob_normalization()
+     .set_image_blob_channel_axis(-1, 0))
+q.embed(model)  # embed
+q.match(docs)  # find nearest neighbours, done!
+```
+
+Print `q.matches` and you will see top-20 most-similar images URIs.
+
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-matches.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
+</p>
+
+Add 3 lines of code to visualize them:
+
+```python
+for m in q.matches:
+    m.set_image_blob_channel_axis(0, -1).set_image_blob_inv_normalization()
+q.matches.plot_image_sprites()
+```
+
+
+
+
 
 ## Run Quick Demo
 
@@ -55,118 +108,6 @@ fragmented, multi-vendor, generic legacy tools.
 - [📰 Multimodal search](https://docs.jina.ai/get-started/hello-world/multimodal/): `pip install "jina[demo]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
-## Build Your First Jina App
-
-Document, Executor, and Flow are three fundamental concepts in Jina.
-
-- [📄 **Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
-- [⚙️ **Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
-- [🔀 **Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
-
-Leveraging these three components, let's build an app that **find lines from a code snippet that are most similar to the
-query.**
-
-<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>
-, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>
-, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
-<sup><a href="https://docs.jina.ai/tutorials/fuzzy-grep/">📗 Read our docs for details</a></sup>
-
-1️⃣ Copy-paste the minimum example below and run it:
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg?raw=true" alt="The architecture of a simple neural search system powered by Jina">
-
-<!-- README-SERVER-START -->
-
-```python
-import numpy as np
-from jina import Document, DocumentArray, Executor, Flow, requests
-
-
-class CharEmbed(Executor):  # a simple character embedding with mean-pooling
-    offset = 32  # letter `a`
-    dim = 127 - offset + 1  # last pos reserved for `UNK`
-    char_embd = np.eye(dim) * 1  # one-hot embedding for all chars
-
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1) for c in d.text]
-            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # average pooling
-
-
-class Indexer(Executor):
-    _docs = DocumentArray()  # for storing all documents in memory
-
-    @requests(on='/index')
-    def foo(self, docs: DocumentArray, **kwargs):
-        self._docs.extend(docs)  # extend stored `docs`
-
-    @requests(on='/search')
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.match(self._docs, metric='euclidean')
-
-
-f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, replicas=2).add(
-    uses=Indexer)  # build a Flow, with 2 replica CharEmbed, tho unnecessary
-with f:
-    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
-    f.block()  # block for listening request
-```
-
-<!-- README-SERVER-END -->
-
-2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input:
-
-```json
-{
-  "data": [
-    {
-      "text": "@requests(on=something)"
-    }
-  ]
-}
-```
-
-That means, **we want to find lines from the above code snippet that are most similar to** `@request(on=something)`. Now
-click <kbd>Execute</kbd> button!
-
-<p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/swaggerui.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
-</p>
-
-3️⃣ Not a GUI fan? Let's do it in Python then! Keep the above server running and start a simple client:
-
-
-<!-- README-CLIENT-START -->
-
-```python
-from jina import Client, Document
-from jina.types.request import Response
-
-
-def print_matches(resp: Response):  # the callback function invoked when task is done
-    for idx, d in enumerate(resp.docs[0].matches[:3]):  # print top-3 matches
-        print(f'[{idx}]{d.scores["euclidean"].value:2f}: "{d.text}"')
-
-
-c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
-```
-
-<!-- README-CLIENT-END -->
-
-This prints the following results:
-
-```text
-         Client@1608[S]:connected to the gateway at localhost:12345!
-[0]0.168526: "@requests(on='/index')"
-[1]0.181676: "@requests(on='/search')"
-[2]0.218218: "from jina import Document, DocumentArray, Executor, Flow, requests"
-```
-
-<sup>😔 Doesn't work? Our
-bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">
-Please report it here.</a></sup>
 
 <!-- start support-pitch -->
 

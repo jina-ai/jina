@@ -33,7 +33,9 @@ Then you are likely installing Jina on a less-supported system/architecture. For
 
 ## On Mac M1
 
-Some upstream dependencies do not yet have pre-built wheels for the M1 chip, so you are likely to encounter some issues during the install. In this case, you need to configure the development environment using [Rosetta2](https://support.apple.com/en-us/HT211861), including your terminal, `brew` and `python`. They must all be running under Rosetta2 instead of natively on M1.
+Some users may have difficulty to install Protobuf on MacOS from `pip`, you may try `brew install protobuf`.
+
+In general, some upstream dependencies do not yet have pre-built wheels for the M1 chip, so you are likely to encounter some issues during the install. In this case, you need to configure the development environment using [Rosetta2](https://support.apple.com/en-us/HT211861), including your terminal, `brew` and `python`. They must all be running under Rosetta2 instead of natively on M1.
 
 ````{tip}
 You can run the following command in the terminal to check if you are running under Rosetta2 or natively on M1.
