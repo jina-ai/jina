@@ -72,6 +72,7 @@ Provide helper functions for {class}`Document` to support image data.
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.dump_image_blob_to_file`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.load_uri_to_image_blob`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_channel_axis`
+- {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_inv_normalization`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_normalization`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_shape`
 
