@@ -109,8 +109,7 @@ Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supp
 
 ### Scale, Distribute and Serve it <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-10min.svg?raw=true"></img>
 
-
-We are not done yet. With an extremely trivial refactoring and 10 extra lines of code, you will get: **scaling out embedding**, **distributing the workflow**, **exposing REST interface** and so many more.
+With an extremely trivial refactoring and 10 extra lines of code, you can make the local script as a ready-to-serve service:
 
 1. Import what we need.
     ```python
@@ -178,20 +177,57 @@ Or go to `http://0.0.0.0:12345/docs` and test requests via Swagger UI:
 <a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
 </p>
 
-At this point, you probably have taken 20 minutes and here we are: an image search service with features like.
+Or use a Python client to access the service:
+
+```python
+from jina import Client, Document
+from jina.types.request import Response
+
+def print_matches(resp: Response):  # the callback function invoked when task is done
+    for idx, d in enumerate(resp.docs[0].matches):  # print top-3 matches
+        print(f'[{idx}]{d.scores["cosine"].value:2f}: "{d.uri}"')
+
+c = Client(protocol='http', port=12345)  # connect to localhost:12345
+c.post('/search', Document(uri='img/00021.jpg'), on_done=print_matches)
+```
+
+At this point, you probably have taken 20 minutes and here we are: an image search service with rich features:
 
 <sup>
 
 ||||
 |---|---|---|
-|✅ Solution as a service | ✅ Query via HTTP/WebSocket/gRPC/Client | ✅ Scale in/out any component|
-|✅ Distribute components local/remote| ✅ Async/non-blocking workflow | ✅ Extendable REST interface |
+|✅ Solution as a service | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
+|✅ Distribute & Dockerized components| ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
 
 </sup>
 
-Worth it? Then [find more about Jina from our docs](https://docs.jina.ai).
+### Deploy to Kubernetes on GCP <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
 
+If you have another 5 minutes, we can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
 
+1. Create kubernetes cluster: `gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a`.
+2. Get credentials: `gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase`.
+3. Move each `Executor` class to a separate folder with one Python file:
+   - `PreprocImg` -> 📁 `preproc_img/exec.py`
+   - `EmbedImg` -> 📁 `embed_img/exec.py`
+   - `MatchImg` -> 📁 `match_img/exec.py`
+4. Push all `Executor`s to [Jina Hub](https://hub.jina.ai):
+    ```bash
+    jina hub push preproc_img
+    jina hub push embed_img
+    jina hub push embed_img
+    ```
+   You will get three Hub Executors that can be used in Docker container. 
+5. Adjust `Flow` a bit and open it:
+    ```python
+    f = Flow(name='readme-flow', port_expose=12345, infrastructure='k8s').add(uses='jinahub+docker://PreprocImg').add(uses='jinahub+docker://EmbedImg', replicas=3).add(uses='jinahub+docker://MatchImg')
+    
+    with f:
+        f.block()
+    ```
+
+Intrigued? Then [find more about Jina from our docs](https://docs.jina.ai).
 
 ## Run Quick Demo
 
