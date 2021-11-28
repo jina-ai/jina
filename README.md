@@ -206,8 +206,11 @@ At this point, you probably have taken 15 minutes but here we are: an image sear
 
 Have another 5 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
 
-1. Create kubernetes cluster: `gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a`.
-2. Get credentials: `gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase`.
+1. Create a Kubernetes cluster and get credentials:
+   ```bash
+   gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
+   gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
+   ```
 3. Move each `Executor` class to a separate folder with one Python file:
    - `PreprocImg` -> 📁 `preproc_img/exec.py`
    - `EmbedImg` -> 📁 `embed_img/exec.py`
