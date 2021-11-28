@@ -178,7 +178,18 @@ Or go to `http://0.0.0.0:12345/docs` and test requests via Swagger UI:
 <a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
 </p>
 
-At this point, you probably have taken 20 minutes and here we are: a scalable image search service. Worth it? Then [find more about Jina from our docs](https://docs.jina.ai).
+At this point, you probably have taken 20 minutes and here we are: an image search service with features like.
+
+<sup>
+
+||||
+|---|---|---|
+|✅ Solution as a service | ✅ Query via HTTP/WebSocket/gRPC/Client | ✅ Scale in/out any component|
+|✅ Distribute components local/remote| ✅ Async/non-blocking workflow | ✅ Extendable REST interface |
+
+</sup>
+
+Worth it? Then [find more about Jina from our docs](https://docs.jina.ai).
 
 
 
