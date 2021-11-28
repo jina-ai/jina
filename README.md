@@ -195,7 +195,7 @@ At this point, you probably have taken 20 minutes and here we are: an image sear
 
 <sup>
 
-|||||
+||||
 |---|---|---|
 |✅ Solution as a service | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
 |✅ Distribute/Dockerize components | ✅ Async/non-blocking I/O | ✅ Extendable REST interface | |
