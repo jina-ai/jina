@@ -23,18 +23,15 @@
 
 <!-- start elevator-pitch -->
 
-Jina is a neural search framework that empowers anyone to build
-SOTA and scalable deep learning search applications in minutes.
+Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-🌌 **All data types** - Scalable indexing, querying, understanding of any data: video, image, long/short text, music,
-source code, PDF, etc.
+⏱️ **Save time** - *The* design pattern of neural search systems, building a solution in just minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
+🌌 **All data types** - Processing, indexing, querying, understanding of video, image, long/short text, music, source code, PDF, etc.
 
-🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
-containerization, streaming, sharding, replication, async scheduling, HTTP/gRPC/WebSocket protocols.
+🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
 
-🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
+🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
 
 <!-- end elevator-pitch -->
@@ -49,7 +46,7 @@ More install options including Conda, Docker, on Windows [can be found here](htt
 
 ## Get Started
 
-We promise you to have a scalable ResNet-powered image search service in less than 20 minutes, from scratch. If not, you can forget about Jina.
+We promise you to build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
 
 
 ### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
@@ -90,10 +87,10 @@ q.embed(model)  # embed
 q.match(docs)  # find top-20 nearest neighbours, done!
 ```
 
-Print `q.matches` and you will see top-10 most-similar images URIs.
+Print `q.matches` and you will see most-similar images URIs.
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-matches.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
 </p>
 
 Add 3 lines of code to visualize them:
@@ -148,10 +145,9 @@ We are not done yet. With an extremely trivial refactoring and 10 extra lines of
         @requests(on='/search')
         def foo(self, docs: DocumentArray, **kwargs):
             docs.match(self._da)
-            for d in docs:  # only required for visualization in HTML
-                d.convert_uri_to_datauri()
-                for m in d.matches:
-                    m.convert_uri_to_datauri()
+            for d in docs.traverse_flat('r,m'):  # only require for visualization
+                d.convert_uri_to_datauri()  # convert to datauri
+                d.pop('embedding', 'blob')  # remove unnecessary fields for save bandwidth
     ```
 5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
     ```python
@@ -164,7 +160,11 @@ We are not done yet. With an extremely trivial refactoring and 10 extra lines of
         f.block()
     ```
 
+Query it via `curl` you can get most-similar images:
 
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
+</p>
 
 At this point, you probably have taken 20 minutes and here we are: a scalable image search service. Worth it? Then [find more about Jina from our docs](https://docs.jina.ai).
 
