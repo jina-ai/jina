@@ -63,7 +63,7 @@ Leveraging these three components, let's build an app that **find similar images
 ### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
 
 
-<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
+<sup>💡 Preliminaries: <a href="https://drive.google.com/file/d/1OLg-JRBJJgTYYcXBJ2x35wJyzqSty4mu/view?usp=sharing">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
 ```python
