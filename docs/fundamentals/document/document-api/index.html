@@ -7,10 +7,10 @@
   <meta property="og:title" content="Document" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/document/document-api.html" />
-  <meta property="og:site_name" content="Jina 2.4.10 Documentation" />
-  <meta property="og:description" content="Document is the basic data type in Jina. Whether you’re working with text, image, video, audio, or 3D meshes, they are all Document s in Jina. Minimum working example: Basics: Content: text, blob, and buffer are the three content attributes of a Document. They correspond to string-like data (e.g...." />
+  <meta property="og:site_name" content="Jina 2.5.0 Documentation" />
+  <meta property="og:description" content="Document is the basic data type in Jina. Whether you’re working with text, image, video, audio, or 3D meshes, they are all Document s in Jina. Construct: Empty document From attributes From another Document To make a deep copy, use copy=True: From dict or JSON string Set/unset attributes: Set Set..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  <meta property="og:image:alt" content="Jina 2.4.10 Documentation" />
+  <meta property="og:image:alt" content="Jina 2.5.0 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Fluent Interface" href="../fluent-interface/" /><link rel="prev" title="Document" href="../" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>Document - Jina 2.4.10 documentation</title>
+        <title>Document - Jina 2.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 2.4.10 documentation</div>
+                <div class="brand">Jina 2.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -211,18 +211,13 @@
     
         
           
-            <option value="../../../master/fundamentals/document/document-api.html" >master</option>
+          
+            <option value="document-api.html" selected="selected" >latest (v2.5.0)</option>
           
         
         
           
-            <option value="../../../v2.4.9/fundamentals/document/document-api.html" >v2.4.9</option>
-          
-        
-        
-          
-          
-            <option value="document-api.html" selected="selected" >latest (v2.4.10)</option>
+            <option value="../../../v2.4.10/fundamentals/document/document-api.html" >v2.4.10</option>
           
         
     
@@ -567,10 +562,12 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
@@ -599,9 +596,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
@@ -705,27 +702,127 @@
 </div>
 <p><a class="reference internal" href="../../../api/jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is the basic data type in Jina. Whether you’re working with text, image, video, audio, or 3D meshes, they are
 all <code class="docutils literal notranslate"><span class="pre">Document</span></code>s in Jina.</p>
-<section id="minimum-working-example">
-<h2>Minimum working example<a class="headerlink" href="#minimum-working-example" title="Permalink to this headline">¶</a></h2>
+<section id="construct">
+<h2>Construct<a class="headerlink" href="#construct" title="Permalink to this headline">¶</a></h2>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Empty document</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">From attributes </label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">buffer</span><span class="o">=</span><span class="sa">b</span><span class="s1">'</span><span class="se">\f</span><span class="s1">1'</span><span class="p">)</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span>
 <span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">blob</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+<span class="n">d4</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'https://jina.ai'</span><span class="p">,</span>
+             <span class="n">mime_type</span><span class="o">=</span><span class="s1">'text/plain'</span><span class="p">,</span>
+             <span class="n">granularity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">adjacency</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+             <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">})</span>
 </pre></div>
 </div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">&lt;jina.types.document.Document ('id', 'mime_type', 'text') at 4483297360&gt;</span>
 <span class="go">&lt;jina.types.document.Document ('id', 'buffer') at 5710817424&gt;</span>
 <span class="go">&lt;jina.types.document.Document ('id', 'blob') at 4483299536&gt;</span>
+<span class="go">&lt;jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200&gt;</span>
 </pre></div>
 </div>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">From another Document</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world!'</span><span class="p">)</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">d</span>
+
+<span class="k">assert</span> <span class="nb">id</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+<p>To make a deep copy, use <code class="docutils literal notranslate"><span class="pre">copy=True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">id</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>  <span class="c1"># False</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--4" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--4">From dict or JSON string</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'content'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">}</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'content'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">})</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">Parsing unrecognized fields</p>
+<p>Unrecognized fields in a <code class="docutils literal notranslate"><span class="pre">dict</span></code>/JSON string are automatically put into the Document’s <code class="docutils literal notranslate"><span class="pre">.tags</span></code> field:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056&gt;
+</pre></div>
+</div>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">field_resolver</span></code> to map external field names to <code class="docutils literal notranslate"><span class="pre">Document</span></code> attributes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">},</span> <span class="n">field_resolver</span><span class="o">=</span><span class="p">{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'content'</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 </section>
-<section id="basics">
-<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<section id="set-unset-attributes">
+<h2>Set/unset attributes<a class="headerlink" href="#set-unset-attributes" title="Permalink to this headline">¶</a></h2>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Set</label><div class="tab-content docutils">
+<p>Set an attribute as you would with any Python object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'hello world'</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648&gt;
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Unset</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'text'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504&gt;
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--3">Unset multiple attributes</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'text'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'mime_type'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document at 5668344144&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="content">
-<h3>Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
+<h2>Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="../../../api/jina/#jina.Document.text" title="jina.Document.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a>, <a class="reference internal" href="../../../api/jina/#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>, and <a class="reference internal" href="../../../api/jina/#jina.Document.buffer" title="jina.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a> are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -777,13 +874,13 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <p class="admonition-title">Tip</p>
 <p>There is also a <code class="docutils literal notranslate"><span class="pre">doc.content</span></code> sugar getter/setter of the above non-empty field. The content will be automatically grabbed or assigned to either <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, or <code class="docutils literal notranslate"><span class="pre">blob</span></code> field based on the given type.</p>
 </div>
-<section id="loading-content-from-uri">
-<h4>Loading content from URI<a class="headerlink" href="#loading-content-from-uri" title="Permalink to this headline">¶</a></h4>
+<section id="load-content-from-uri">
+<h3>Load content from URI<a class="headerlink" href="#load-content-from-uri" title="Permalink to this headline">¶</a></h3>
 <p>Often, you need to load data from a URI instead of assigning them directly in your code, <a class="reference internal" href="../../../api/jina/#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> is the attribute you must learn.</p>
 <p>After setting <code class="docutils literal notranslate"><span class="pre">.uri</span></code>, you can load data into <code class="docutils literal notranslate"><span class="pre">.text</span></code>/<code class="docutils literal notranslate"><span class="pre">.buffer</span></code>/<code class="docutils literal notranslate"><span class="pre">.blob</span></code> as follows.</p>
 <p>The value of <code class="docutils literal notranslate"><span class="pre">.uri</span></code> can point to either local URI, remote URI or <a class="reference external" href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URI</a>.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Local image URI</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Local image URI</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'apple.png'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
@@ -797,7 +894,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Remote text URI</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">Remote text URI</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'https://www.gutenberg.org/files/1342/1342-0.txt'</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_text</span><span class="p">()</span>
@@ -812,7 +909,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">Inline data URI</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--3" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--3">Inline data URI</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'''data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA</span>
@@ -842,7 +939,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </section>
 </section>
 <section id="embedding">
-<h3>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h3>
+<h2>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h2>
 <p>Embedding is a multi-dimensional representation of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> (often a <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">D]</span></code> vector). It serves as a very important piece in the neural search.</p>
 <p>Document has an attribute <a class="reference internal" href="../../../api/jina/#jina.Document.embedding" title="jina.Document.embedding"><code class="xref py py-attr docutils literal notranslate"><span class="pre">embedding</span></code></a> to contain the embedding information.</p>
 <p>Like <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, you can assign it with Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, SciPy sparse matrix (<code class="docutils literal notranslate"><span class="pre">spmatrix</span></code>), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.</p>
@@ -859,8 +956,32 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <span class="n">d5</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">from_dense</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])))</span>
 </pre></div>
 </div>
-<section id="finding-nearest-neighbours">
-<h4>Finding nearest-neighbours<a class="headerlink" href="#finding-nearest-neighbours" title="Permalink to this headline">¶</a></h4>
+<section id="fill-embedding-from-dnn-model">
+<h3>Fill embedding from DNN model<a class="headerlink" href="#fill-embedding-from-dnn-model" title="Permalink to this headline">¶</a></h3>
+<div class="tip admonition">
+<p class="admonition-title">On multiple Documents</p>
+<p>This is a syntax sugar on single Document, which leverages <a class="reference internal" href="../../../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin.embed" title="jina.types.arrays.mixins.embed.EmbedMixin.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> underneath. To embed multiple Documents, do not use this feature in a for-loop. Instead, read more details in <a class="reference internal" href="../documentarray/#embed-via-model"><span class="std std-ref">Embed via model</span></a>.</p>
+</div>
+<p>Once a <code class="docutils literal notranslate"><span class="pre">Document</span></code> has <code class="docutils literal notranslate"><span class="pre">.blob</span></code> set, you can use a deep neural network to <a class="reference internal" href="../../../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin.embed" title="jina.types.arrays.mixins.embed.EmbedMixin.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> it, which means filling <code class="docutils literal notranslate"><span class="pre">Document.embedding</span></code>. For example, our <code class="docutils literal notranslate"><span class="pre">Document</span></code> looks like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'/Users/hanxiao/Downloads/left/00003.jpg'</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
+     <span class="o">.</span><span class="n">set_image_blob_normalization</span><span class="p">()</span>
+     <span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Let’s embed it into vector via ResNet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torchvision</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet50</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">q</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="find-nearest-neighbours">
+<h3>Find nearest-neighbours<a class="headerlink" href="#find-nearest-neighbours" title="Permalink to this headline">¶</a></h3>
+<div class="tip admonition">
+<p class="admonition-title">On multiple Documents</p>
+<p>This is a syntax sugar on single Document, which leverages  <a class="reference internal" href="../../../api/jina.types.arrays.mixins.match/#jina.types.arrays.mixins.match.MatchMixin.match" title="jina.types.arrays.mixins.match.MatchMixin.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">match()</span></code></a> underneath. To match multiple Documents, do not use this feature in a for-loop. Instead, find out more in <a class="reference internal" href="../documentarray/#match-documentarray"><span class="std std-ref">Find nearest neighbours</span></a>.</p>
+</div>
 <p>Once a Document has <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> filled, it can be “matched”. In this example, we build ten Documents and put them into a <span class="xref std std-ref">DocumentArray</span>, and then use another Document to search against them.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -877,16 +998,12 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">&lt;jina.types.document.Document ('id', 'embedding', 'adjacency', 'scores') at 8256118608&gt;</span>
 </pre></div>
 </div>
-<div class="tip admonition">
-<p class="admonition-title">Working on multiple queries</p>
-<p>When you want to match a set of Documents (let’s call it set <code class="docutils literal notranslate"><span class="pre">A</span></code>) against another set of Documents (set <code class="docutils literal notranslate"><span class="pre">B</span></code>), where you want to find for each element in <code class="docutils literal notranslate"><span class="pre">A</span></code> its nearest neighbours in <code class="docutils literal notranslate"><span class="pre">B</span></code>, then you need <code class="docutils literal notranslate"><span class="pre">DocumentArray.match()</span></code>. It is far more efficient than looping over each Document. You can <a class="reference internal" href="../documentarray/#match-documentarray"><span class="std std-ref">read more about it here</span></a>.</p>
-</div>
 </section>
 </section>
-<section id="recursive-documents">
-<span id="recursive-nested-document"></span><h3>Recursive Documents<a class="headerlink" href="#recursive-documents" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> can be recursive both horizontally and vertically. The following graphic illustrates the recursive <code class="docutils literal notranslate"><span class="pre">Document</span></code> structure. Each <code class="docutils literal notranslate"><span class="pre">Document</span></code> can have multiple “Chunks”
-and “matches”. Chunks and matches are <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects as well.</p>
+<section id="nested-documents">
+<span id="recursive-nested-document"></span><h2>Nested Documents<a class="headerlink" href="#nested-documents" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Document</span></code> can be nested both horizontally and vertically. The following graphic illustrates the recursive <code class="docutils literal notranslate"><span class="pre">Document</span></code> structure. Each <code class="docutils literal notranslate"><span class="pre">Document</span></code> can have multiple “chunks”
+and “matches”, which are <code class="docutils literal notranslate"><span class="pre">Document</span></code> as well.</p>
 <img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg"/>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -941,11 +1058,11 @@ and “matches”. Chunks and matches are <code class="docutils literal notransl
 <p>Both <code class="docutils literal notranslate"><span class="pre">doc.chunks</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.matches</span></code> return <code class="docutils literal notranslate"><span class="pre">ChunkArray</span></code> and <code class="docutils literal notranslate"><span class="pre">MatchArray</span></code>, which are sub-classes
 of <a class="reference internal" href="../documentarray/#documentarray"><span class="std std-ref">DocumentArray</span></a>. We will introduce <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> later.</p>
 </div>
-<section id="caveat-order-matters">
-<h4>Caveat: order matters<a class="headerlink" href="#caveat-order-matters" title="Permalink to this headline">¶</a></h4>
+<div class="alert admonition">
+<p class="admonition-title">Caveat: order matters</p>
 <p>When adding sub-Documents to <code class="docutils literal notranslate"><span class="pre">Document.chunks</span></code>, avoid creating them in one line, otherwise the recursive Document structure will not be correct. This is because <code class="docutils literal notranslate"><span class="pre">chunks</span></code> use <code class="docutils literal notranslate"><span class="pre">ref_doc</span></code> to control their <code class="docutils literal notranslate"><span class="pre">granularity</span></code>. At <code class="docutils literal notranslate"><span class="pre">chunk</span></code> creation time the <code class="docutils literal notranslate"><span class="pre">chunk</span></code> doesn’t know anything about its parent, and will get a wrong <code class="docutils literal notranslate"><span class="pre">granularity</span></code> value.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">root_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'i am root'</span><span class="p">)</span>
@@ -958,7 +1075,7 @@ of <a class="reference internal" href="../documentarray/#documentarray"><span cl
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">😔 Don’t</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">😔 Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">root_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
@@ -972,10 +1089,10 @@ of <a class="reference internal" href="../documentarray/#documentarray"><span cl
 </div>
 </div>
 </div>
-</section>
+</div>
 </section>
 <section id="tags">
-<h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Document</span></code> contains the <a class="reference internal" href="../../../api/jina/#jina.Document.tags" title="jina.Document.tags"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tags</span></code></a> attribute that can hold a map-like structure that can map arbitrary values.
 In practice, you can store meta information in <code class="docutils literal notranslate"><span class="pre">tags</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -1019,7 +1136,7 @@ differentiate <code class="docutils literal notranslate"><span class="pre">int</
 sent to an Executor.</p>
 <p>As a result, users need be explicit and cast the data to the expected type as follows:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="n">animals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'turtle'</span><span class="p">]</span>
     <span class="nd">@request</span>
@@ -1035,7 +1152,7 @@ sent to an Executor.</p>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">😔 Don’t</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">😔 Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="n">animals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'turtle'</span><span class="p">]</span>
     <span class="nd">@request</span>
@@ -1054,8 +1171,51 @@ sent to an Executor.</p>
 </div>
 </div>
 </section>
+<section id="serialization">
+<h2>Serialization<a class="headerlink" href="#serialization" title="Permalink to this headline">¶</a></h2>
+<p>You can serialize a <code class="docutils literal notranslate"><span class="pre">Document</span></code> into JSON string or Python dict or binary string:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">JSON</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"6a1c7f34-aef7-11eb-b075-1e008a366d48"</span><span class="p">,</span>
+  <span class="nt">"mimeType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">,</span>
+  <span class="nt">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">Binary</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">binary_str</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">$6a1c7f34-aef7-11eb-b075-1e008a366d48R</span><span class="se">\n</span><span class="s1">text/plainj</span><span class="se">\x0b</span><span class="s1">hello world'</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--3" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--3">Dict</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'6a1c7f34-aef7-11eb-b075-1e008a366d48'</span><span class="p">,</span> <span class="s1">'mimeType'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'hello world'</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="visualization">
-<h3>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h3>
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
 <p>To better see the Document’s recursive structure, you can use <a class="reference internal" href="../../../api/jina.types.document.mixins.plot/#jina.types.document.mixins.plot.PlotMixin.plot" title="jina.types.document.mixins.plot.PlotMixin.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a> function. If you are using JupyterLab/Notebook,
 all <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects will be auto-rendered:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -1075,350 +1235,6 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </div>
 <figure class="align-center">
 <img alt="../../../_images/four-symbol-docs.svg" src="../../../_images/four-symbol-docs.svg"/></figure>
-</section>
-<section id="serialization">
-<h3>Serialization<a class="headerlink" href="#serialization" title="Permalink to this headline">¶</a></h3>
-<p>You can serialize a <code class="docutils literal notranslate"><span class="pre">Document</span></code> into JSON string or Python dict or binary string:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">JSON</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"6a1c7f34-aef7-11eb-b075-1e008a366d48"</span><span class="p">,</span>
-  <span class="nt">"mimeType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">,</span>
-  <span class="nt">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">Binary</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">binary_str</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">$6a1c7f34-aef7-11eb-b075-1e008a366d48R</span><span class="se">\n</span><span class="s1">text/plainj</span><span class="se">\x0b</span><span class="s1">hello world'</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--3-input--3" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--3">Dict</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'6a1c7f34-aef7-11eb-b075-1e008a366d48'</span><span class="p">,</span> <span class="s1">'mimeType'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'hello world'</span><span class="p">}</span>
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="set-unset-attributes">
-<h3>Set/unset attributes<a class="headerlink" href="#set-unset-attributes" title="Permalink to this headline">¶</a></h3>
-<p>Set an attribute as you would with any Python object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-<span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'hello world'</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648&gt;
-</pre></div>
-</div>
-<p>Unset an attribute:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="kc">None</span>
-</pre></div>
-</div>
-<p>or</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'text'</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504&gt;
-</pre></div>
-</div>
-<p>Unset multiple attributes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'text'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'mime_type'</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document at 5668344144&gt;
-</pre></div>
-</div>
-</section>
-</section>
-<section id="advanced">
-<h2>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h2>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Category</th>
-<th>Attributes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Meta attributes</td>
-<td><code>.id</code>, <code>.parent_id</code>, <code>.weight</code>, <code>.mime_type</code>, <code>.content_type</code>, <code>.modality</code>,<code>.granularity</code>, <code>.adjacency</code>, <code>.location</code>, <code>.offset</code></td>
-</tr>
-<tr>
-<td>Relevance attributes</td>
-<td><code>.scores</code>, <code>.evaluations</code></td>
-</tr>
-</tbody>
-</table></div>
-<section id="add-relevancy">
-<h3>Add relevancy<a class="headerlink" href="#add-relevancy" title="Permalink to this headline">¶</a></h3>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>You normally don’t need to add those values by yourself. For example, the <code class="docutils literal notranslate"><span class="pre">.match()</span></code> function automatically fills in
-<code class="docutils literal notranslate"><span class="pre">.scores</span></code> of each matched Document.</p>
-</div>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Attributes</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>doc.scores</code></td>
-<td>The relevance information of this Document. A dict-like structure supporting storing different metrics</td>
-</tr>
-<tr>
-<td><code>doc.evaluations</code></td>
-<td>The evaluation information of this Document. A dict-like structure supporting storing different metrics</td>
-</tr>
-</tbody>
-</table></div>
-<p>You can add a relevance score to a <code class="docutils literal notranslate"><span class="pre">Document</span></code> object via:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-<span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine similarity'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.96</span>
-<span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine similarity'</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'cosine similarity'</span>
-<span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine similarity'</span><span class="p">]</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="s1">'cosine()'</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'recall'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.56</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'recall'</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'recall at 10'</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'recall'</span><span class="p">]</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="s1">'recall()'</span>
-<span class="n">d</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}} at 140003211429776&gt;```
-</pre></div>
-</div>
-<p>Score information is often used jointly with <code class="docutils literal notranslate"><span class="pre">matches</span></code>. For example, you often see the indexer adding <code class="docutils literal notranslate"><span class="pre">matches</span></code> as
-follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="c1"># some query Document</span>
-<span class="n">q</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-<span class="c1"># get match Document `m`</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-<span class="n">m</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'metric'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.96</span>
-<span class="n">q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96}}} at 140001502011856&gt;
-</pre></div>
-</div>
-<p>These attributes (<code class="docutils literal notranslate"><span class="pre">scores</span></code> and <code class="docutils literal notranslate"><span class="pre">evaluations</span></code>) provide a dict-like interface that lets access all its elements:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'precision'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'precision'</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'precision at 10'</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'precision'</span><span class="p">]</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="s1">'precision()'</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'recall'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'recall'</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'recall at 10'</span>
-<span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'recall'</span><span class="p">]</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="s1">'recall()'</span>
-<span class="k">for</span> <span class="n">evaluation_key</span><span class="p">,</span> <span class="n">evaluation_score</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="n">evaluation_key</span><span class="si">}</span><span class="s1"> =&gt; </span><span class="si">{</span><span class="n">evaluation_score</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">evaluation_score</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> 
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span> precision =&gt; precision at 10: 1.0
- recall =&gt; recall at 10: 0.5
-</pre></div>
-</div>
-</section>
-<section id="summary-on-document-construction">
-<h3>Summary on Document construction<a class="headerlink" href="#summary-on-document-construction" title="Permalink to this headline">¶</a></h3>
-<section id="construct-with-multiple-attributes">
-<h4>Construct with multiple attributes<a class="headerlink" href="#construct-with-multiple-attributes" title="Permalink to this headline">¶</a></h4>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>doc.id</code></td>
-<td>A hexdigest that represents a unique Document ID</td>
-</tr>
-<tr>
-<td><code>doc.parent_id</code></td>
-<td>A hexdigest that represents the Document's parent id</td>
-</tr>
-<tr>
-<td><code>doc.weight</code></td>
-<td>The weight of the Document</td>
-</tr>
-<tr>
-<td><code>doc.mime_type</code></td>
-<td>The mime type of the Document</td>
-</tr>
-<tr>
-<td><code>doc.content_type</code></td>
-<td>The content type of the Document</td>
-</tr>
-<tr>
-<td><code>doc.modality</code></td>
-<td>An identifier of the modality the Document belongs to</td>
-</tr>
-</tbody>
-</table></div>
-<p>You can assign multiple attributes in the constructor via:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'https://jina.ai'</span><span class="p">,</span>
-             <span class="n">mime_type</span><span class="o">=</span><span class="s1">'text/plain'</span><span class="p">,</span>
-             <span class="n">granularity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-             <span class="n">adjacency</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-             <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">})</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200&gt;
-</pre></div>
-</div>
-</section>
-<section id="construct-from-dict-or-json-string">
-<h4>Construct from dict or JSON string<a class="headerlink" href="#construct-from-dict-or-json-string" title="Permalink to this headline">¶</a></h4>
-<p>You can build a <code class="docutils literal notranslate"><span class="pre">Document</span></code> from a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or JSON string:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">import</span> <span class="nn">json</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'content'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">}</span>
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'content'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">})</span>
-<span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="parsing-unrecognized-fields">
-<h4>Parsing unrecognized fields<a class="headerlink" href="#parsing-unrecognized-fields" title="Permalink to this headline">¶</a></h4>
-<p>Unrecognized fields in a <code class="docutils literal notranslate"><span class="pre">dict</span></code>/JSON string are automatically put into the Document’s <code class="docutils literal notranslate"><span class="pre">.tags</span></code> field:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">})</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056&gt;
-</pre></div>
-</div>
-<p>You can use <code class="docutils literal notranslate"><span class="pre">field_resolver</span></code> to map external field names to <code class="docutils literal notranslate"><span class="pre">Document</span></code> attributes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">({</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'hello123'</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">},</span> <span class="n">field_resolver</span><span class="o">=</span><span class="p">{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'content'</span><span class="p">})</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488&gt;
-</pre></div>
-</div>
-</section>
-<section id="construct-from-another-document">
-<h4>Construct from another Document<a class="headerlink" href="#construct-from-another-document" title="Permalink to this headline">¶</a></h4>
-<p>Assigning a <code class="docutils literal notranslate"><span class="pre">Document</span></code> object to another <code class="docutils literal notranslate"><span class="pre">Document</span></code> object will make a shallow copy:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world!'</span><span class="p">)</span>
-<span class="n">d1</span> <span class="o">=</span> <span class="n">d</span>
-
-<span class="k">assert</span> <span class="nb">id</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>  <span class="c1"># True</span>
-</pre></div>
-</div>
-<p>To make a deep copy, use <code class="docutils literal notranslate"><span class="pre">copy=True</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="k">assert</span> <span class="nb">id</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>  <span class="c1"># False</span>
-</pre></div>
-</div>
-<p>You can partially update a <code class="docutils literal notranslate"><span class="pre">Document</span></code> according to another source <code class="docutils literal notranslate"><span class="pre">Document</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="n">s</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="nb">id</span><span class="o">=</span><span class="s1">'🐲'</span><span class="p">,</span>
-    <span class="n">content</span><span class="o">=</span><span class="s1">'hello-world'</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="s1">'b'</span><span class="p">},</span>
-    <span class="n">chunks</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐢'</span><span class="p">)],</span>
-<span class="p">)</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="nb">id</span><span class="o">=</span><span class="s1">'🐦'</span><span class="p">,</span>
-    <span class="n">content</span><span class="o">=</span><span class="s1">'goodbye-world'</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'c'</span><span class="p">:</span> <span class="s1">'d'</span><span class="p">},</span>
-    <span class="n">chunks</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐯'</span><span class="p">)],</span>
-<span class="p">)</span>
-
-<span class="c1"># only update `id` field</span>
-<span class="hll"><span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">'id'</span><span class="p">])</span>
-</span>
-<span class="c1"># update all fields. `tags` field as `dict` will be merged.</span>
-<span class="hll"><span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-</span></pre></div>
-</div>
-</section>
-<section id="construct-from-json-csv-files">
-<h4>Construct from JSON, CSV, files<a class="headerlink" href="#construct-from-json-csv-files" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">jina.types.document.generators</span></code> module let you construct <code class="docutils literal notranslate"><span class="pre">Document</span></code>s from common file types such as JSON,
-CSV, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and text files. The following functions will give a generator of <code class="docutils literal notranslate"><span class="pre">Document</span></code>s, where each <code class="docutils literal notranslate"><span class="pre">Document</span></code> object
-corresponds to a line/row in the original format:</p>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>from_ndjson()</code></td>
-<td>Yield <code>Document</code> from a line-based JSON file. Each line is a <code>Document</code> object</td>
-</tr>
-<tr>
-<td><code>from_csv()</code></td>
-<td>Yield <code>Document</code> from a CSV file. Each line is a <code>Document</code> object</td>
-</tr>
-<tr>
-<td><code>from_files()</code></td>
-<td>Yield <code>Document</code> from a glob of files. Each file is a <code>Document</code> object</td>
-</tr>
-<tr>
-<td><code>from_ndarray()</code></td>
-<td>Yield <code>Document</code> from an <code>ndarray</code>. Each row (depending on <code>axis</code>) is a <code>Document</code> object</td>
-</tr>
-<tr>
-<td><code>from_lines()</code></td>
-<td>Yield <code>Document</code> from lines, JSON and CSV</td>
-</tr>
-</tbody>
-</table></div>
-<p>Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.</p>
-<p>To convert the generator to <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> use:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_files</span>
-
-<span class="n">DocumentArray</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'/*.png'</span><span class="p">))</span>
-</pre></div>
-</div>
-</section>
-</section>
 </section>
 </section>
 
@@ -1480,38 +1296,21 @@ corresponds to a line/row in the original format:</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Document</a><ul>
-<li><a class="reference internal" href="#minimum-working-example">Minimum working example</a></li>
-<li><a class="reference internal" href="#basics">Basics</a><ul>
+<li><a class="reference internal" href="#construct">Construct</a></li>
+<li><a class="reference internal" href="#set-unset-attributes">Set/unset attributes</a></li>
 <li><a class="reference internal" href="#content">Content</a><ul>
-<li><a class="reference internal" href="#loading-content-from-uri">Loading content from URI</a></li>
+<li><a class="reference internal" href="#load-content-from-uri">Load content from URI</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#embedding">Embedding</a><ul>
-<li><a class="reference internal" href="#finding-nearest-neighbours">Finding nearest-neighbours</a></li>
+<li><a class="reference internal" href="#fill-embedding-from-dnn-model">Fill embedding from DNN model</a></li>
+<li><a class="reference internal" href="#find-nearest-neighbours">Find nearest-neighbours</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#recursive-documents">Recursive Documents</a><ul>
-<li><a class="reference internal" href="#caveat-order-matters">Caveat: order matters</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#nested-documents">Nested Documents</a></li>
 <li><a class="reference internal" href="#tags">Tags</a></li>
-<li><a class="reference internal" href="#visualization">Visualization</a></li>
 <li><a class="reference internal" href="#serialization">Serialization</a></li>
-<li><a class="reference internal" href="#set-unset-attributes">Set/unset attributes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#advanced">Advanced</a><ul>
-<li><a class="reference internal" href="#add-relevancy">Add relevancy</a></li>
-<li><a class="reference internal" href="#summary-on-document-construction">Summary on Document construction</a><ul>
-<li><a class="reference internal" href="#construct-with-multiple-attributes">Construct with multiple attributes</a></li>
-<li><a class="reference internal" href="#construct-from-dict-or-json-string">Construct from dict or JSON string</a></li>
-<li><a class="reference internal" href="#parsing-unrecognized-fields">Parsing unrecognized fields</a></li>
-<li><a class="reference internal" href="#construct-from-another-document">Construct from another Document</a></li>
-<li><a class="reference internal" href="#construct-from-json-csv-files">Construct from JSON, CSV, files</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#visualization">Visualization</a></li>
 </ul>
 </li>
 </ul>

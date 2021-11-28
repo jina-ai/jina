@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.arrays.memmap - Jina 2.4.10 documentation</title>
+        <title>jina.types.arrays.memmap - Jina 2.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 2.4.10 documentation</div>
+                <div class="brand">Jina 2.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,18 +185,13 @@
     
         
           
-            <option value="../../../../../master/index.html" >master</option>
+          
+            <option value="memmap.html" selected="selected" >latest (v2.5.0)</option>
           
         
         
           
-            <option value="../../../../../v2.4.9/index.html" >v2.4.9</option>
-          
-        
-        
-          
-          
-            <option value="memmap.html" selected="selected" >latest (v2.4.10)</option>
+            <option value="../../../../../v2.4.10/index.html" >v2.4.10</option>
           
         
     
@@ -541,10 +536,12 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
@@ -573,9 +570,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
@@ -764,11 +761,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'header.bin'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'body.bin'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'embeddings.bin'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_key_length</span> <span class="o">=</span> <span class="n">key_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_mmap</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_pool</span> <span class="o">=</span> <span class="n">BufferPoolManager</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="n">buffer_pool_size</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DocumentArrayMemmap.insert"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.DocumentArrayMemmap.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -849,8 +844,7 @@
 
 <div class="viewcode-block" id="DocumentArrayMemmap.clear"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.DocumentArrayMemmap.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Clear the on-disk data of :class:`DocumentArrayMemmap`"""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">(</span><span class="s1">'wb'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_embeddings_memmap</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_header_body</span><span class="p">(</span><span class="s1">'wb'</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_update_or_append</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -895,7 +889,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">r</span> <span class="o">+</span> <span class="n">l</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_embeddings_memmap</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">flush</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -1036,7 +1029,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_keys</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pop_idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_pool</span><span class="o">.</span><span class="n">delete_if_exists</span><span class="p">(</span><span class="n">str_key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_embeddings_memmap</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1136,61 +1128,6 @@
 <span class="sd">        :return: the number of bytes</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-        <span class="sd">"""Return the cached embedding stored in np.memmap.</span>
-
-<span class="sd">        :returns: Embeddings as np.ndarray stored in memmap, if not persist, return None.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span><span class="p">:</span>
-            <span class="c1"># The memmap object can be used anywhere an ndarray is accepted.</span>
-            <span class="c1"># Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_path</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span>
-                <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span><span class="p">,</span>
-            <span class="p">)</span>
-
-    <span class="nd">@_embeddings_memmap</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_embeddings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
-        <span class="sd">"""Set the cached embedding values in case it is not cached.</span>
-
-<span class="sd">        :param other_embeddings: The embedding to be stored into numpy.memmap, or can be set</span>
-<span class="sd">            to None to invalidate the property.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">other_embeddings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_path</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="s1">'float'</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s1">'w+'</span><span class="p">,</span>
-                <span class="n">shape</span><span class="o">=</span><span class="n">other_embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="n">other_embeddings</span><span class="o">.</span><span class="n">shape</span>
-            <span class="n">fp</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">other_embeddings</span><span class="p">[:]</span>
-            <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="k">del</span> <span class="n">fp</span>
-
-    <span class="nd">@ContentPropertyMixin</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">getter</span>
-    <span class="k">def</span> <span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>
-        <span class="sd">"""Return a `np.ndarray` stacking all the `embedding` attributes as rows.</span>
-
-<span class="sd">        :return: embeddings stacked per row as `np.ndarray`.</span>
-
-<span class="sd">        .. warning:: This operation assumes all embeddings have the same shape and dtype.</span>
-<span class="sd">            All dtype and shape values are assumed to be equal to the values of the</span>
-<span class="sd">            first element in the DocumentArray / DocumentArrayMemmap.</span>
-
-<span class="sd">        .. warning:: This operation currently does not support sparse arrays.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="n">ContentPropertyMixin</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">fget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span>
-
-    <span class="k">def</span> <span class="nf">_invalidate_embeddings_memmap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_memmap</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_shape</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_flatten</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>

@@ -15,9 +15,9 @@ Submodules
    jina.types.document.mixins.dump
    jina.types.document.mixins.helper
    jina.types.document.mixins.image
-   jina.types.document.mixins.match
    jina.types.document.mixins.mesh
    jina.types.document.mixins.plot
+   jina.types.document.mixins.sugar
    jina.types.document.mixins.text
    jina.types.document.mixins.version
    jina.types.document.mixins.video
