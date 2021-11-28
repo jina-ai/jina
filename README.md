@@ -90,7 +90,7 @@ q.match(docs)  # find top-20 nearest neighbours, done!
 Done! Now print `q.matches` and you will see most-similar images URIs.
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="80%"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
 Add 3 lines of code to visualize them:
@@ -195,10 +195,10 @@ At this point, you probably have taken 20 minutes and here we are: an image sear
 
 <sup>
 
-||||
-|---|---|---|
-|✅ Solution as a service | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
-|✅ Distribute & Dockerized components| ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
+|||||
+|---|---|---|---|
+|✅ Solution as a service | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  | ✅ Dockerized component |
+|✅ Distribute components local/remote| ✅ Async/non-blocking I/O | ✅ Extendable REST interface | |
 
 </sup>
 
