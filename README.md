@@ -111,7 +111,7 @@ q.matches.plot_image_sprites()
 
 Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
 
-### Scale and Serve in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-10min.svg?raw=true"></img>
+### Scale and Serve in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
 With an extremely trivial refactoring and 10 extra lines of code, you can make the local script as a ready-to-serve service:
 
@@ -206,7 +206,7 @@ At this point, you probably have taken 15 minutes but here we are: an image sear
 
 </sup>
 
-### Deploy to Kubernetes on GCP in 5 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
+### Deploy to Kubernetes on GCP in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
 Have another 5 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
 
@@ -215,21 +215,20 @@ Have another 5 minutes? We can show you how to bring your service to the next le
    gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
    gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
    ```
-3. Move each `Executor` class to a separate folder with one Python file:
+2. Move each `Executor` class to a separate folder with one Python file:
    - `PreprocImg` -> 📁 `preproc_img/exec.py`
    - `EmbedImg` -> 📁 `embed_img/exec.py`
    - `MatchImg` -> 📁 `match_img/exec.py`
-4. Push all `Executor`s to [Jina Hub](https://hub.jina.ai):
+3. Push all `Executor`s to [Jina Hub](https://hub.jina.ai):
     ```bash
     jina hub push preproc_img
     jina hub push embed_img
     jina hub push embed_img
     ```
    You will get three Hub Executors that can be used via Docker container. 
-5. Adjust `Flow` a bit and open it:
+4. Adjust `Flow` a bit and open it:
     ```python
     f = Flow(name='readme-flow', port_expose=12345, infrastructure='k8s').add(uses='jinahub+docker://PreprocImg').add(uses='jinahub+docker://EmbedImg', replicas=3).add(uses='jinahub+docker://MatchImg')
-    
     with f:
         f.block()
     ```
