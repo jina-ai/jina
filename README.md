@@ -208,7 +208,7 @@ At this point, you probably have taken 15 minutes but here we are: an image sear
 
 ### Deploy to Kubernetes on GCP in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
-Have another 5 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
+Have another 7 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
 
 1. Create a Kubernetes cluster and get credentials:
    ```bash
@@ -219,7 +219,7 @@ Have another 5 minutes? We can show you how to bring your service to the next le
    - `PreprocImg` -> 📁 `preproc_img/exec.py`
    - `EmbedImg` -> 📁 `embed_img/exec.py`
    - `MatchImg` -> 📁 `match_img/exec.py`
-3. Push all `Executor`s to [Jina Hub](https://hub.jina.ai):
+3. Push all Executors to [Jina Hub](https://hub.jina.ai):
     ```bash
     jina hub push preproc_img
     jina hub push embed_img
