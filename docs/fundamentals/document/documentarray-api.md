@@ -5,20 +5,12 @@ A {class}`~jina.types.arrays.document.DocumentArray` is a list of `Document` obj
 a `DocumentArray` like a Python `list`. It implements all Python List interface. 
 
 ```{hint}
-Jina provides a memory-efficient version of `DocumentArray`, you {ref}`can find its API here<documentarraymemmap-api>`.  
-```
-
-## Minimum working example
-
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(), Document()])  # equivalent to DocumentArray.empty(2)  
+We also provide a memory-efficient version of `DocumentArray` coined as {class}`~jina.DocumentArrayMemmap`. It shares *almost* the same API as `DocumentArray`, which means you can easily use it as a drop-in replacement when your data is big. You can {ref}`can find more about here<documentarraymemmap-api>`.
 ```
 
 ## Construct
 
-You can construct a `DocumentArray` from an iterable of `Document`s:
+You can construct a `DocumentArray` in different ways:
 
 ````{tab} From empty Documents
 ```python
@@ -50,10 +42,22 @@ da1 = DocumentArray(da)
 ```
 ````
 
+````{tab} From JSON, CSV, ndarray, files, ...
 
-## Access Documents
+You can find more details about those APIs in {class}`~jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin`.
 
-You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
+```python
+da = DocumentArray.from_ndjson(...)
+da = DocumentArray.from_csv(...)
+da = DocumentArray.from_files(...)
+da = DocumentArray.from_lines(...)
+da = DocumentArray.from_ndarray(...)
+```
+````
+
+## Access elements
+
+You can access a `Document` element in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
 ```python
 from jina import DocumentArray, Document
@@ -71,8 +75,12 @@ da[1:2]
 <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
+```{tip}
+To access Documents with nested Documents, please refer to {ref}`traverse-doc`.
+```
+
 (bulk-access)=
-## Bulk access content
+## Bulk access contents
 
 You can quickly access `.text`, `.blob`, `.buffer`, `.embedding` of all Documents in the DocumentArray without writing a for-loop.
 
@@ -127,9 +135,113 @@ d.embedding.shape= (1, 256)
 d.embedding.shape= (1, 256)
 ```
 
-(match-documentarray)=
 
+
+(embed-via-model)=
+## Embed via model
+
+```{important}
+
+{meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` function supports both CPU & GPU, which can be specified by its `device` argument.
+```
+
+When a `DocumentArray` has `.blobs` set, you can use a deep neural network to {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` it, which means filling `DocumentArray.embeddings`. For example, our `DocumentArray` looks like the following:
+
+```python
+from jina import DocumentArray
+import numpy as np
+
+docs = DocumentArray.empty(10)
+docs.blobs = np.random.random([10, 128]).astype(np.float32)
+```
+
+And our embedding model is a simple MLP in Keras/Pytorch/Paddle:
+
+````{tab} PyTorch
+
+```python
+import torch
+
+model = torch.nn.Sequential(
+    torch.nn.Linear(
+        in_features=128,
+        out_features=128,
+    ),
+    torch.nn.ReLU(),
+    torch.nn.Linear(in_features=128, out_features=32))
+```
+
+````
+
+````{tab} Keras
+```python
+import tensorflow as tf
+
+model = tf.keras.Sequential(
+    [
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(32),
+    ]
+)
+
+```
+````
+
+````{tab} Paddle
+
+```python
+import paddle
+
+model = paddle.nn.Sequential(
+    paddle.nn.Linear(
+        in_features=128,
+        out_features=128,
+    ),
+    paddle.nn.ReLU(),
+    paddle.nn.Linear(in_features=128, out_features=32),
+)
+
+```
+````
+
+Now, you can simply do
+
+```python
+docs.embed(model)
+
+print(docs.embeddings)
+```
+
+```text
+tensor([[-0.1234,  0.0506, -0.0015,  0.1154, -0.1630, -0.2376,  0.0576, -0.4109,
+          0.0052,  0.0027,  0.0800, -0.0928,  0.1326, -0.2256,  0.1649, -0.0435,
+         -0.2312, -0.0068, -0.0991,  0.0767, -0.0501, -0.1393,  0.0965, -0.2062,
+```
+
+
+```{hint}
+By default, `.embeddings` is in the model framework's format. If you want it always be `numpy.ndarray`, use `.embed(..., to_numpy=True)`. 
+```
+
+You can also use pretrained model for embedding:
+
+```python
+import torchvision
+model = torchvision.models.resnet50(pretrained=True)
+docs.embed(model)
+```
+
+```{hint}
+On large `DocumentArray`, you can set `batch_size` via `.embed(..., batch_size=128)`
+```
+
+(match-documentarray)=
 ## Find nearest neighbours
+
+```{important}
+
+{meth}`~jina.types.arrays.mixins.match.MatchMixin.match` function supports both CPU & GPU, which can be specified by its `device` argument.
+```
 
 Once `embeddings` is set, one can use {func}`~jina.types.arrays.mixins.match.MatchMixin.match` function to find the nearest neighbour Documents from another `DocumentArray` based on their `.embeddings`.  
 
@@ -244,6 +356,82 @@ match emb =   (0, 0)	1.0
   (0, 3)	1.0 score = 1.5620499849319458
 match emb =   (0, 0)	1.0
   (0, 1)	0.1 score = 1.6763054132461548
+```
+
+````
+
+### Keep only ID
+
+Default `A.match(B)` will copy the top-K matched Documents from B to `A.matches`. When these matches are big, copying them can be time-consuming. In this case, one can leverage `.match(..., only_id=True)` to keep only {attr}`~jina.Document.id`:
+
+```python
+from jina import DocumentArray
+import numpy as np
+
+A = DocumentArray.empty(2)
+A.texts = ['hello', 'world']
+A.embeddings = np.random.random([2, 10])
+
+B = DocumentArray.empty(3)
+B.texts = ['long-doc1', 'long-doc2', 'long-doc3']
+B.embeddings = np.random.random([3, 10])
+```
+
+````{tab} Only ID
+
+```python
+A.match(B, only_id=True)
+
+for m in A.traverse_flat('m'):
+    print(m.json())
+```
+
+```text
+{
+  "adjacency": 1,
+  "id": "4a8ad5fe4f9b11ec90e61e008a366d48",
+  "scores": {
+    "cosine": {
+      "value": 0.08097544
+    }
+  }
+}
+...
+```
+
+````
+
+````{tab} Default (keep all attributes)
+
+```python
+A.match(B)
+
+for m in A.traverse_flat('m'):
+    print(m.json())
+```
+
+```text
+{
+  "adjacency": 1,
+  "embedding": {
+    "cls_name": "numpy",
+    "dense": {
+      "buffer": "csxkKGfE7T+/JUBkNzHiP3Lx96W4SdE/SVXrOxYv7T9Fmb+pp3rvP8YdsjGsXuw/CNbxUQ7v2j81AjCpbfjrP6g5iPB9hL4/PHljbxPi1D8=",
+      "dtype": "<f8",
+      "shape": [
+        10
+      ]
+    }
+  },
+  "id": "9078d1ec4f9b11eca9141e008a366d48",
+  "scores": {
+    "cosine": {
+      "value": 0.15957883
+    }
+  },
+  "text": "long-doc1"
+}
+...
 ```
 
 ````
@@ -390,7 +578,8 @@ for d in da2:
 
 Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~jina.Document.id`. You can specify your own hash function.
 
-## Traverse nested structure
+(traverse-doc)=
+## Traverse nested elements
 
 {meth}`~jina.types.arrays.mixins.traverse.TraverseMixin.traverse_flat` function is an extremely powerful tool for iterating over nested and recursive Documents. You get a generator as the return value, which generates `Document`s on the provided traversal paths. You can use or modify `Document`s and the change will be applied in-place. 
 

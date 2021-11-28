@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 from math import sqrt, ceil, floor
 from typing import Optional
 
@@ -109,7 +110,7 @@ class PlotMixin:
         canvas_size: int = 512,
         min_size: int = 16,
         channel_axis: int = -1,
-    ):
+    ) -> None:
         """Generate a sprite image for all image blobs in this DocumentArray-like object.
 
         An image sprite is a collection of images put into a single image. It is always square-sized.
@@ -139,32 +140,26 @@ class PlotMixin:
         )
         img_id = 0
 
-        actual_num_img = min(len(self), max_num_img)
+        for d in self:
+            _d = Document(d, copy=True)
+            if _d.content_type != 'blob':
+                _d.load_uri_to_image_blob()
+                channel_axis = -1
 
-        with ProgressBar(
-            description='Generating sprite', total_length=actual_num_img
-        ) as pg:
-            for d in self:
-                _d = Document(d, copy=True)
-                if _d.content_type != 'blob':
-                    _d.load_uri_to_image_blob()
-                    channel_axis = -1
+            _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_shape(
+                shape=(img_size, img_size)
+            )
 
-                _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_shape(
-                    shape=(img_size, img_size)
-                )
+            row_id = floor(img_id / img_per_row)
+            col_id = img_id % img_per_row
+            sprite_img[
+                (row_id * img_size) : ((row_id + 1) * img_size),
+                (col_id * img_size) : ((col_id + 1) * img_size),
+            ] = _d.blob
 
-                row_id = floor(img_id / img_per_row)
-                col_id = img_id % img_per_row
-                sprite_img[
-                    (row_id * img_size) : ((row_id + 1) * img_size),
-                    (col_id * img_size) : ((col_id + 1) * img_size),
-                ] = _d.blob
-
-                img_id += 1
-                pg.update()
-                if img_id >= max_num_img:
-                    break
+            img_id += 1
+            if img_id >= max_num_img:
+                break
 
         plt.gca().set_axis_off()
         plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)

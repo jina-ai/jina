@@ -36,7 +36,7 @@ def from_ndarray(
     :param axis: iterate over that axis
     :param size: the maximum number of the sub arrays
     :param shuffle: shuffle the numpy data source beforehand
-    :yield: ndarray
+    :yield: documents
     """
 
     from ..document import Document

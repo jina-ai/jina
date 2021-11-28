@@ -23,30 +23,211 @@
 
 <!-- start elevator-pitch -->
 
-Jina is a neural search framework that empowers anyone to build
-SOTA and scalable deep learning search applications in minutes.
+Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-🌌 **All data types** - Scalable indexing, querying, understanding of any data: video, image, long/short text, music,
-source code, PDF, etc.
+⏱️ **Save time** - *The* design pattern of neural search systems, building a solution in just minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
+🌌 **All data types** - Processing, indexing, querying, understanding of video, image, long/short text, music, source code, PDF, etc.
 
-🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
-containerization, streaming, sharding, replication, async scheduling, HTTP/gRPC/WebSocket protocols.
+🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
 
-🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
+🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
 
 <!-- end elevator-pitch -->
 
-## Install
-
-- via PyPI: `pip install jina`
-- via Conda: `conda install jina -c conda-forge`
-- via Docker: `docker run jinaai/jina:latest`
-- [More install options](https://docs.jina.ai/get-started/install/)
+## Install 
+```
+pip install -U jina
+```
+More install options including Conda, Docker, on Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
 ## [Documentation](https://docs.jina.ai)
+
+## Get Started
+
+We promise you to build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
+
+
+### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
+
+Document, Executor, and Flow are three fundamental concepts in Jina.
+
+- [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
+
+
+Leveraging these three components, let's build an app that **find similar images using ResNet50**.
+
+### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
+
+
+<sup>💡 Preliminaries: <a href="https://drive.google.com/file/d/1OLg-JRBJJgTYYcXBJ2x35wJyzqSty4mu/view?usp=sharing">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
+</sup>
+
+```python
+from jina import DocumentArray, Document
+
+docs = DocumentArray.from_files('img/*.jpg')  # load all image filenames into a DocumentArray
+for d in docs:  # preprocess them
+    (d.load_uri_to_image_blob()  # load
+     .set_image_blob_normalization()  # normalize color 
+     .set_image_blob_channel_axis(-1, 0))  # switch color axis
+
+import torchvision
+model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
+docs.embed(model, device='cuda')  # embed via GPU to speedup
+
+q = (Document(uri='img/00021.jpg')  # build query image & preprocess
+     .load_uri_to_image_blob()
+     .set_image_blob_normalization()
+     .set_image_blob_channel_axis(-1, 0))
+q.embed(model)  # embed
+q.match(docs)  # find top-20 nearest neighbours, done!
+```
+
+Done! Now print `q.matches` and you will see most-similar images URIs.
+
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="80%"></a>
+</p>
+
+Add 3 lines of code to visualize them:
+
+```python
+for m in q.matches:
+    m.set_image_blob_channel_axis(0, -1).set_image_blob_inv_normalization()
+q.matches.plot_image_sprites()
+```
+
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
+</p>
+
+Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
+
+### Scale, Distribute and Serve it <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-10min.svg?raw=true"></img>
+
+With an extremely trivial refactoring and 10 extra lines of code, you can make the local script as a ready-to-serve service:
+
+1. Import what we need.
+    ```python
+    from jina import DocumentArray, Executor, Flow, requests
+    ```
+2. Copy-paste the preprocessing step and wrap it via `Executor`:
+    ```python
+    class PreprocImg(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            for d in docs:
+                (d.load_uri_to_image_blob()
+                 .set_image_blob_normalization()
+                 .set_image_blob_channel_axis(-1, 0))
+    ```
+3. Copy-paste the embedding step and wrap it via `Executor`:
+    
+    ```python
+    class EmbedImg(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            import torchvision
+            model = torchvision.models.resnet50(pretrained=True)
+            docs.embed(model)
+    ```
+4. Wrap the matching step into `Executor`:
+    ```python
+    class MatchImg(Executor):
+        _da = DocumentArray()
+    
+        @requests(on='/index')
+        def index(self, docs: DocumentArray, **kwargs):
+            self._da.extend(docs)
+    
+        @requests(on='/search')
+        def foo(self, docs: DocumentArray, **kwargs):
+            docs.match(self._da)
+            for d in docs.traverse_flat('r,m'):  # only require for visualization
+                d.convert_uri_to_datauri()  # convert to datauri
+                d.pop('embedding', 'blob')  # remove unnecessary fields for save bandwidth
+    ```
+5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
+    ```python
+    f = Flow(port_expose=12345, protocol='http').add(uses=PreprocImg).add(uses=EmbedImg, replicas=3).add(uses=MatchImg)
+    ```
+    Plot it via `f.plot('flow.svg')` and you get:
+    ![](.github/images/readme-flow-plot.svg)
+
+6. Index image data and serve REST query from public:
+    ```python
+    with f:
+        f.post('/index', DocumentArray.from_files('img/*.jpg'), show_progress=True, request_size=8)
+        f.block()
+    ```
+
+Done! Now query it via `curl` you can get most-similar images:
+
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.svg?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
+</p>
+
+Or go to `http://0.0.0.0:12345/docs` and test requests via Swagger UI:
+
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
+</p>
+
+Or use a Python client to access the service:
+
+```python
+from jina import Client, Document
+from jina.types.request import Response
+
+def print_matches(resp: Response):  # the callback function invoked when task is done
+    for idx, d in enumerate(resp.docs[0].matches):  # print top-3 matches
+        print(f'[{idx}]{d.scores["cosine"].value:2f}: "{d.uri}"')
+
+c = Client(protocol='http', port=12345)  # connect to localhost:12345
+c.post('/search', Document(uri='img/00021.jpg'), on_done=print_matches)
+```
+
+At this point, you probably have taken 20 minutes and here we are: an image search service with rich features:
+
+<sup>
+
+||||
+|---|---|---|
+|✅ Solution as a service | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
+|✅ Distribute & Dockerized components| ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
+
+</sup>
+
+### Deploy to Kubernetes on GCP <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
+
+If you have another 5 minutes, we can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
+
+1. Create kubernetes cluster: `gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a`.
+2. Get credentials: `gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase`.
+3. Move each `Executor` class to a separate folder with one Python file:
+   - `PreprocImg` -> 📁 `preproc_img/exec.py`
+   - `EmbedImg` -> 📁 `embed_img/exec.py`
+   - `MatchImg` -> 📁 `match_img/exec.py`
+4. Push all `Executor`s to [Jina Hub](https://hub.jina.ai):
+    ```bash
+    jina hub push preproc_img
+    jina hub push embed_img
+    jina hub push embed_img
+    ```
+   You will get three Hub Executors that can be used in Docker container. 
+5. Adjust `Flow` a bit and open it:
+    ```python
+    f = Flow(name='readme-flow', port_expose=12345, infrastructure='k8s').add(uses='jinahub+docker://PreprocImg').add(uses='jinahub+docker://EmbedImg', replicas=3).add(uses='jinahub+docker://MatchImg')
+    
+    with f:
+        f.block()
+    ```
+
+Intrigued? Then [find more about Jina from our docs](https://docs.jina.ai).
 
 ## Run Quick Demo
 
@@ -55,118 +236,6 @@ fragmented, multi-vendor, generic legacy tools.
 - [📰 Multimodal search](https://docs.jina.ai/get-started/hello-world/multimodal/): `pip install "jina[demo]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
-## Build Your First Jina App
-
-Document, Executor, and Flow are three fundamental concepts in Jina.
-
-- [📄 **Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
-- [⚙️ **Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
-- [🔀 **Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
-
-Leveraging these three components, let's build an app that **find lines from a code snippet that are most similar to the
-query.**
-
-<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>
-, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>
-, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
-<sup><a href="https://docs.jina.ai/tutorials/fuzzy-grep/">📗 Read our docs for details</a></sup>
-
-1️⃣ Copy-paste the minimum example below and run it:
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg?raw=true" alt="The architecture of a simple neural search system powered by Jina">
-
-<!-- README-SERVER-START -->
-
-```python
-import numpy as np
-from jina import Document, DocumentArray, Executor, Flow, requests
-
-
-class CharEmbed(Executor):  # a simple character embedding with mean-pooling
-    offset = 32  # letter `a`
-    dim = 127 - offset + 1  # last pos reserved for `UNK`
-    char_embd = np.eye(dim) * 1  # one-hot embedding for all chars
-
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1) for c in d.text]
-            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # average pooling
-
-
-class Indexer(Executor):
-    _docs = DocumentArray()  # for storing all documents in memory
-
-    @requests(on='/index')
-    def foo(self, docs: DocumentArray, **kwargs):
-        self._docs.extend(docs)  # extend stored `docs`
-
-    @requests(on='/search')
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.match(self._docs, metric='euclidean')
-
-
-f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, replicas=2).add(
-    uses=Indexer)  # build a Flow, with 2 replica CharEmbed, tho unnecessary
-with f:
-    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
-    f.block()  # block for listening request
-```
-
-<!-- README-SERVER-END -->
-
-2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input:
-
-```json
-{
-  "data": [
-    {
-      "text": "@requests(on=something)"
-    }
-  ]
-}
-```
-
-That means, **we want to find lines from the above code snippet that are most similar to** `@request(on=something)`. Now
-click <kbd>Execute</kbd> button!
-
-<p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/swaggerui.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
-</p>
-
-3️⃣ Not a GUI fan? Let's do it in Python then! Keep the above server running and start a simple client:
-
-
-<!-- README-CLIENT-START -->
-
-```python
-from jina import Client, Document
-from jina.types.request import Response
-
-
-def print_matches(resp: Response):  # the callback function invoked when task is done
-    for idx, d in enumerate(resp.docs[0].matches[:3]):  # print top-3 matches
-        print(f'[{idx}]{d.scores["euclidean"].value:2f}: "{d.text}"')
-
-
-c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
-```
-
-<!-- README-CLIENT-END -->
-
-This prints the following results:
-
-```text
-         Client@1608[S]:connected to the gateway at localhost:12345!
-[0]0.168526: "@requests(on='/index')"
-[1]0.181676: "@requests(on='/search')"
-[2]0.218218: "from jina import Document, DocumentArray, Executor, Flow, requests"
-```
-
-<sup>😔 Doesn't work? Our
-bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">
-Please report it here.</a></sup>
 
 <!-- start support-pitch -->
 
