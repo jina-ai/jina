@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="../search/" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/><title>Index - Jina 2.4.11 documentation</title>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/><title>Index - Jina 2.5.0 documentation</title>
 <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -138,7 +138,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 2.4.11 documentation</div>
+                <div class="brand">Jina 2.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -540,10 +540,12 @@
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
@@ -572,9 +574,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
@@ -2000,6 +2002,12 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.edge_features">edge_features (jina.types.document.graph.GraphDocument property)</a>
 </li>
+        <li><a href="../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin.embed">embed() (jina.types.arrays.mixins.embed.EmbedMixin method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.embed">(jina.types.document.mixins.sugar.SingletonSugarMixin method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina/#jina.Document.embedding">embedding (jina.Document property)</a>
 
         <ul>
@@ -2008,14 +2016,10 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType">EmbeddingClsType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArrayMemmap.embeddings">embeddings (jina.DocumentArrayMemmap property)</a>
-
-        <ul>
-          <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.embeddings">(jina.types.arrays.memmap.DocumentArrayMemmap property)</a>
+        <li><a href="../api/jina.types.arrays.mixins.content/#jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings">embeddings (jina.types.arrays.mixins.content.ContentPropertyMixin property)</a>
 </li>
-          <li><a href="../api/jina.types.arrays.mixins.content/#jina.types.arrays.mixins.content.ContentPropertyMixin.embeddings">(jina.types.arrays.mixins.content.ContentPropertyMixin property)</a>
+        <li><a href="../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin">EmbedMixin (class in jina.types.arrays.mixins.embed)</a>
 </li>
-        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.FlowBuildLevel.EMPTY">EMPTY (jina.enums.FlowBuildLevel attribute)</a>
 </li>
         <li><a href="../api/jina.types.arrays.mixins.empty/#jina.types.arrays.mixins.empty.EmptyMixin.empty">empty() (jina.types.arrays.mixins.empty.EmptyMixin class method)</a>
@@ -2199,8 +2203,6 @@
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/daemon.clients/#daemon.clients.JinaDClient.flows">flows (daemon.clients.JinaDClient property)</a>
@@ -2209,6 +2211,8 @@
           <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.flows">(daemon.models.DaemonStatus attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore">FlowStore (class in daemon.stores.flows)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowTopologyError">FlowTopologyError</a>
@@ -2234,22 +2238,48 @@
         <li><a href="../api/daemon.clients.workspaces/#daemon.clients.workspaces.FormData">FormData (class in daemon.clients.workspaces)</a>
 </li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_csv">from_csv() (in module jina.types.document.generators)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_csv">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_files">from_files() (in module jina.types.document.generators)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_files">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.from_hub">from_hub() (jina.executors.BaseExecutor class method)</a>
 </li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_huggingface_datasets">from_huggingface_datasets() (in module jina.types.document.generators)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_huggingface_datasets">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_lines">from_lines() (in module jina.types.document.generators)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_lines">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_ndarray">from_ndarray() (in module jina.types.document.generators)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_ndarray">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_ndjson">from_ndjson() (in module jina.types.document.generators)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_ndjson">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.from_proto">from_proto() (jina.types.message.Message class method)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum.from_string">from_string() (jina.enums.BetterEnum class method)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin">FromGeneratorMixin (class in jina.types.arrays.mixins.io.from_gen)</a>
 </li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.MessageProto.FromString">FromString() (jina.proto.serializer.MessageProto static method)</a>
 
@@ -2355,6 +2385,8 @@
           <li><a href="../api/jina.optimizers/#jina.optimizers.OptimizerCallback.get_final_evaluation">(jina.optimizers.OptimizerCallback method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.get_framework">get_framework() (in module jina.types.arrays.mixins.embed)</a>
+</li>
         <li><a href="../api/jina.schemas/#jina.schemas.get_full_schema">get_full_schema() (in module jina.schemas)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.container.helper/#jina.peapods.runtimes.container.helper.get_gpu_device_requests">get_gpu_device_requests() (in module jina.peapods.runtimes.container.helper)</a>
@@ -2373,10 +2405,10 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile">get_lockfile() (in module jina.hubble.hubapi)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile">get_lockfile() (in module jina.hubble.hubapi)</a>
+</li>
         <li><a href="../api/daemon.helper/#daemon.helper.get_log_file_path">get_log_file_path() (in module daemon.helper)</a>
 </li>
         <li><a href="../api/daemon.parser/#daemon.parser.get_main_parser">get_main_parser() (in module daemon.parser)</a>
@@ -3516,8 +3548,6 @@
           <li><a href="../api/jina.peapods.runtimes.base/#module-jina.peapods.runtimes.base">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.runtimes.container
 
@@ -3525,6 +3555,8 @@
           <li><a href="../api/jina.peapods.runtimes.container/#module-jina.peapods.runtimes.container">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.runtimes.container.helper
 
@@ -3806,6 +3838,13 @@
 </li>
         </ul></li>
         <li>
+    jina.types.arrays.mixins.embed
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.embed/#module-jina.types.arrays.mixins.embed">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.types.arrays.mixins.empty
 
         <ul>
@@ -3859,6 +3898,13 @@
 
         <ul>
           <li><a href="../api/jina.types.arrays.mixins.io.csv/#module-jina.types.arrays.mixins.io.csv">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.arrays.mixins.io.from_gen
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#module-jina.types.arrays.mixins.io.from_gen">module</a>
 </li>
         </ul></li>
         <li>
@@ -4009,13 +4055,6 @@
 </li>
         </ul></li>
         <li>
-    jina.types.document.mixins.match
-
-        <ul>
-          <li><a href="../api/jina.types.document.mixins.match/#module-jina.types.document.mixins.match">module</a>
-</li>
-        </ul></li>
-        <li>
     jina.types.document.mixins.mesh
 
         <ul>
@@ -4027,6 +4066,13 @@
 
         <ul>
           <li><a href="../api/jina.types.document.mixins.plot/#module-jina.types.document.mixins.plot">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.document.mixins.sugar
+
+        <ul>
+          <li><a href="../api/jina.types.document.mixins.sugar/#module-jina.types.document.mixins.sugar">module</a>
 </li>
         </ul></li>
         <li>
@@ -4397,7 +4443,7 @@
         <li><a href="../api/jina.types.arrays.mixins.match/#jina.types.arrays.mixins.match.MatchMixin.match">match() (jina.types.arrays.mixins.match.MatchMixin method)</a>
 
         <ul>
-          <li><a href="../api/jina.types.document.mixins.match/#jina.types.document.mixins.match.MatchMixin.match">(jina.types.document.mixins.match.MatchMixin method)</a>
+          <li><a href="../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.match">(jina.types.document.mixins.sugar.SingletonSugarMixin method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray">MatchArray (class in jina.types.arrays.match)</a>
@@ -4411,11 +4457,7 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.types.arrays.mixins.match/#jina.types.arrays.mixins.match.MatchMixin">MatchMixin (class in jina.types.arrays.mixins.match)</a>
-
-        <ul>
-          <li><a href="../api/jina.types.document.mixins.match/#jina.types.document.mixins.match.MatchMixin">(class in jina.types.document.mixins.match)</a>
 </li>
-        </ul></li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.md5file">md5file() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina.hubble/#jina.hubble.HubExecutor.md5sum">md5sum (jina.hubble.HubExecutor attribute)</a>
@@ -4908,6 +4950,8 @@
 </li>
           <li><a href="../api/jina.types.arrays.mixins.content/#module-jina.types.arrays.mixins.content">jina.types.arrays.mixins.content</a>
 </li>
+          <li><a href="../api/jina.types.arrays.mixins.embed/#module-jina.types.arrays.mixins.embed">jina.types.arrays.mixins.embed</a>
+</li>
           <li><a href="../api/jina.types.arrays.mixins.empty/#module-jina.types.arrays.mixins.empty">jina.types.arrays.mixins.empty</a>
 </li>
           <li><a href="../api/jina.types.arrays.mixins.evaluation/#module-jina.types.arrays.mixins.evaluation">jina.types.arrays.mixins.evaluation</a>
@@ -4923,6 +4967,8 @@
           <li><a href="../api/jina.types.arrays.mixins.io.common/#module-jina.types.arrays.mixins.io.common">jina.types.arrays.mixins.io.common</a>
 </li>
           <li><a href="../api/jina.types.arrays.mixins.io.csv/#module-jina.types.arrays.mixins.io.csv">jina.types.arrays.mixins.io.csv</a>
+</li>
+          <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#module-jina.types.arrays.mixins.io.from_gen">jina.types.arrays.mixins.io.from_gen</a>
 </li>
           <li><a href="../api/jina.types.arrays.mixins.io.json/#module-jina.types.arrays.mixins.io.json">jina.types.arrays.mixins.io.json</a>
 </li>
@@ -4966,11 +5012,11 @@
 </li>
           <li><a href="../api/jina.types.document.mixins.image/#module-jina.types.document.mixins.image">jina.types.document.mixins.image</a>
 </li>
-          <li><a href="../api/jina.types.document.mixins.match/#module-jina.types.document.mixins.match">jina.types.document.mixins.match</a>
-</li>
           <li><a href="../api/jina.types.document.mixins.mesh/#module-jina.types.document.mixins.mesh">jina.types.document.mixins.mesh</a>
 </li>
           <li><a href="../api/jina.types.document.mixins.plot/#module-jina.types.document.mixins.plot">jina.types.document.mixins.plot</a>
+</li>
+          <li><a href="../api/jina.types.document.mixins.sugar/#module-jina.types.document.mixins.sugar">jina.types.document.mixins.sugar</a>
 </li>
           <li><a href="../api/jina.types.document.mixins.text/#module-jina.types.document.mixins.text">jina.types.document.mixins.text</a>
 </li>
@@ -5921,10 +5967,10 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_help_parser">set_help_parser() (in module jina.parsers)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_new_parser">set_hub_new_parser() (in module jina.parsers.hubble)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser">set_hub_parser() (in module jina.parsers.hubble)</a>
 </li>
         <li><a href="../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_pull_parser">set_hub_pull_parser() (in module jina.parsers.hubble)</a>
@@ -5940,6 +5986,8 @@
         <li><a href="../api/jina.parsers.helloworld/#jina.parsers.helloworld.set_hw_parser">set_hw_parser() (in module jina.parsers.helloworld)</a>
 </li>
         <li><a href="../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.set_image_blob_channel_axis">set_image_blob_channel_axis() (jina.types.document.mixins.image.ImageDataMixin method)</a>
+</li>
+        <li><a href="../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.set_image_blob_inv_normalization">set_image_blob_inv_normalization() (jina.types.document.mixins.image.ImageDataMixin method)</a>
 </li>
         <li><a href="../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.set_image_blob_normalization">set_image_blob_normalization() (jina.types.document.mixins.image.ImageDataMixin method)</a>
 </li>
@@ -5960,6 +6008,8 @@
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner">SingleFlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.SINGLETON">SINGLETON (jina.enums.PeaRoleType attribute)</a>
+</li>
+        <li><a href="../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin">SingletonSugarMixin (class in jina.types.document.mixins.sugar)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.size">size (jina.types.message.Message property)</a>
 </li>
@@ -6488,7 +6538,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 26, 2021.
+                    Last updated on Nov 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

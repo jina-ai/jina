@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
-    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>jina.types.document.mixins.image - Jina 2.4.11 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
+        <title>jina.types.document.mixins.image - Jina 2.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 2.4.11 documentation</div>
+                <div class="brand">Jina 2.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -541,10 +541,12 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
@@ -573,9 +575,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
@@ -796,6 +798,35 @@
         <span class="n">buffer</span> <span class="o">=</span> <span class="n">_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
         <span class="n">blob</span> <span class="o">=</span> <span class="n">_to_image_blob</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="n">original_channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ImageDataMixin.set_image_blob_inv_normalization"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.set_image_blob_inv_normalization">[docs]</a>    <span class="k">def</span> <span class="nf">set_image_blob_inv_normalization</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span>
+        <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">img_mean</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">),</span>
+        <span class="n">img_std</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="sd">"""Inverse the normalization of a float32 image :attr:`.blob` into a uint8 image :attr:`.blob` inplace.</span>
+
+<span class="sd">        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+<span class="sd">        :param img_mean: the mean of all images</span>
+<span class="sd">        :param img_std: the standard deviation of all images</span>
+<span class="sd">        :return: itself after processed</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">img_mean</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">img_std</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="p">((</span><span class="n">blob</span> <span class="o">*</span> <span class="n">std</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">mean</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">uint8</span>
+            <span class="p">)</span>
+            <span class="c1"># set back channel to original</span>
+            <span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">blob</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">blob</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'`blob` must be a float32 ndarray with ndim=3, but receiving </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1"> with ndim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ImageDataMixin.set_image_blob_normalization"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.set_image_blob_normalization">[docs]</a>    <span class="k">def</span> <span class="nf">set_image_blob_normalization</span><span class="p">(</span>
@@ -1049,7 +1080,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 26, 2021.
+                    Last updated on Nov 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

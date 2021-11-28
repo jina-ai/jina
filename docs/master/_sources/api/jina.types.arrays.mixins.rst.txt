@@ -16,6 +16,7 @@ Submodules
    :maxdepth: 4
 
    jina.types.arrays.mixins.content
+   jina.types.arrays.mixins.embed
    jina.types.arrays.mixins.empty
    jina.types.arrays.mixins.evaluation
    jina.types.arrays.mixins.getattr

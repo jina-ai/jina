@@ -7,10 +7,10 @@
   <meta property="og:title" content="Jina Command-Line Interface" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/cli/index.html" />
-  <meta property="og:site_name" content="Jina 2.4.11 Documentation" />
+  <meta property="og:site_name" content="Jina 2.5.0 Documentation" />
   <meta property="og:description" content="Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. subcommands: Use%(prog)-8s [sub-command] –help to get detailed information about each sub-command. To show all commands, run JINA_FULL_CLI=1 jina –help. cli,, Possible choices: hell..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  <meta property="og:image:alt" content="Jina 2.4.11 Documentation" />
+  <meta property="og:image:alt" content="Jina 2.5.0 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -30,8 +30,8 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Jina Protobuf Specification" href="../proto/" /><link rel="prev" title="jina.importer module" href="../api/jina.importer/" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>Jina Command-Line Interface - Jina 2.4.11 documentation</title>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
+        <title>Jina Command-Line Interface - Jina 2.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 2.4.11 documentation</div>
+                <div class="brand">Jina 2.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -567,10 +567,12 @@
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
@@ -599,9 +601,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
@@ -760,7 +762,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “bdd29ab6ec4b4664b1ba1aabd34633a2”</p>
+<p>Default: “4bcd9c9053c341efa0a6ef8883fedbf2”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -831,7 +833,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “44ed637f611f4d8a80c7917f703b164c”</p>
+<p>Default: “aade2723f2a549d0ad1c9977d0458596”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -864,7 +866,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “08a6e1cfa9904b3bb8742cbbfb9e5a56”</p>
+<p>Default: “815665c9132a48758265ba35d3cc5d1a”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -936,7 +938,7 @@
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmpm4n3n43e/17859eb8927b73b66b03bc5105b29b78bc1aac7f/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmp9bg_sryv/cb24d8ae947f1df3c3f187148b7412b67ffbba99/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -960,7 +962,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 49643</p>
+<p>Default: 60293</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1022,11 +1024,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 56715</p>
+<p>Default: 48577</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 53391</p>
+<p>Default: 33719</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1220,7 +1222,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmpm4n3n43e/17859eb8927b73b66b03bc5105b29b78bc1aac7f/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmp9bg_sryv/cb24d8ae947f1df3c3f187148b7412b67ffbba99/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -1349,7 +1351,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmpm4n3n43e/17859eb8927b73b66b03bc5105b29b78bc1aac7f/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmp9bg_sryv/cb24d8ae947f1df3c3f187148b7412b67ffbba99/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -1373,7 +1375,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 58853</p>
+<p>Default: 58235</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1435,11 +1437,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 58741</p>
+<p>Default: 34139</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 45819</p>
+<p>Default: 33677</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1576,7 +1578,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 44547</p>
+<p>Default: 52441</p>
 </dd>
 </dl>
 </section>
@@ -1817,7 +1819,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmpm4n3n43e/17859eb8927b73b66b03bc5105b29b78bc1aac7f/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmp9bg_sryv/cb24d8ae947f1df3c3f187148b7412b67ffbba99/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -1841,7 +1843,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 41391</p>
+<p>Default: 43527</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1903,11 +1905,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 48481</p>
+<p>Default: 59927</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 37013</p>
+<p>Default: 43109</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2133,7 +2135,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--log-config</kbd></dt>
 <dd><p>The YAML config of the logger used in this object.</p>
-<p>Default: “/tmp/tmpm4n3n43e/17859eb8927b73b66b03bc5105b29b78bc1aac7f/jina/resources/logging.default.yml”</p>
+<p>Default: “/tmp/tmp9bg_sryv/cb24d8ae947f1df3c3f187148b7412b67ffbba99/jina/resources/logging.default.yml”</p>
 </dd>
 <dt><kbd>--quiet</kbd></dt>
 <dd><p>If set, then no log will be emitted from this object.</p>
@@ -2157,7 +2159,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 59417</p>
+<p>Default: 49597</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2219,11 +2221,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 56455</p>
+<p>Default: 59549</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60379</p>
+<p>Default: 39557</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2458,7 +2460,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 52053</p>
+<p>Default: 44929</p>
 </dd>
 <dt><kbd>--https</kbd></dt>
 <dd><p>If set, connect to gateway using https</p>
@@ -2525,7 +2527,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 26, 2021.
+                    Last updated on Nov 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

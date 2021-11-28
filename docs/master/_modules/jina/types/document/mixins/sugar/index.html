@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
-    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.0, furo 2021.10.09"/>
-        <title>jina.types.document.mixins.match - Jina 2.4.11 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
+        <title>jina.types.document.mixins.sugar - Jina 2.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 2.4.11 documentation</div>
+                <div class="brand">Jina 2.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,7 +185,7 @@
     
         
           
-            <option value="match.html" selected="selected" >master</option>
+            <option value="sugar.html" selected="selected" >master</option>
           
         
         
@@ -541,10 +541,12 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
@@ -573,9 +575,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.match/">jina.types.document.mixins.match module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
@@ -673,18 +675,21 @@
                         </i>
                     </label>
                 </div>
-                <h1>Source code for jina.types.document.mixins.match</h1><div class="highlight"><pre>
+                <h1>Source code for jina.types.document.mixins.sugar</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">...arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
     <span class="kn">from</span> <span class="nn">...arrays.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
     <span class="kn">from</span> <span class="nn">...ndarray</span> <span class="kn">import</span> <span class="n">ArrayType</span>
+    <span class="kn">from</span> <span class="nn">...arrays.mixins.embed</span> <span class="kn">import</span> <span class="n">AnyDNN</span>
+
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="MatchMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.match/#jina.types.document.mixins.match.MatchMixin">[docs]</a><span class="k">class</span> <span class="nc">MatchMixin</span><span class="p">:</span>
-    <span class="sd">"""Provide sugary syntax for :class:`Document` to match against a :class:`DocumentArray`"""</span>
+<div class="viewcode-block" id="SingletonSugarMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin">[docs]</a><span class="k">class</span> <span class="nc">SingletonSugarMixin</span><span class="p">:</span>
+    <span class="sd">"""Provide sugary syntax for :class:`Document` by inheriting methods from :class:`DocumentArray`"""</span>
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
@@ -728,7 +733,7 @@
 <span class="sd">        """</span>
         <span class="o">...</span>
 
-<div class="viewcode-block" id="MatchMixin.match"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.match/#jina.types.document.mixins.match.MatchMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SingletonSugarMixin.match"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: D102</span>
 <span class="sd">        # noqa: DAR101</span>
@@ -736,7 +741,32 @@
         <span class="kn">from</span> <span class="nn">...arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
         <span class="n">_tmp</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
-        <span class="n">_tmp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="n">_tmp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">embed_model</span><span class="p">:</span> <span class="s1">'AnyDNN'</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Fill the embedding of Documents inplace by using `embed_model`</span>
+
+<span class="sd">        :param embed_model: the embedding model written in Keras/Pytorch/Paddle</span>
+<span class="sd">        :param device: the computational device for `embed_model`, can be either</span>
+<span class="sd">            `cpu` or `cuda`.</span>
+<span class="sd">        :param batch_size: number of Documents in a batch for embedding</span>
+<span class="sd">        """</span>
+
+<div class="viewcode-block" id="SingletonSugarMixin.embed"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.embed">[docs]</a>    <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        # noqa: D102</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">...arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+        <span class="n">_tmp</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
+        <span class="n">_tmp</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
             </article>
             <footer>
@@ -748,7 +778,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 26, 2021.
+                    Last updated on Nov 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
