@@ -4,7 +4,7 @@
 <!--endmsg-->
 </p>
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
 <p align="center">
@@ -90,7 +90,7 @@ q.match(docs)  # find top-20 nearest neighbours, done!
 Done! Now print `q.matches` and you will see most-similar images URIs.
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.png?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="50%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.png?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
 Add 3 lines of code to visualize them:
@@ -102,7 +102,7 @@ q.matches.plot_image_sprites()
 ```
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
 Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
@@ -168,13 +168,13 @@ With an extremely trivial refactoring and 10 extra lines of code, you can make t
 Done! Now query it via `curl` you can get most-similar images:
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
 </p>
 
 Or go to `http://0.0.0.0:12345/docs` and test requests via Swagger UI:
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
 </p>
 
 Or use a Python client to access the service:
