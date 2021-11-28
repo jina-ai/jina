@@ -79,7 +79,7 @@ import torchvision
 model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
 docs.embed(model, device='cuda')  # embed via GPU to speedup
 
-q = (Document(uri='img/00003.jpg')  # build query image & preprocess
+q = (Document(uri='img/00021.jpg')  # build query image & preprocess
      .load_uri_to_image_blob()
      .set_image_blob_normalization()
      .set_image_blob_channel_axis(-1, 0))
@@ -87,10 +87,10 @@ q.embed(model)  # embed
 q.match(docs)  # find top-20 nearest neighbours, done!
 ```
 
-Print `q.matches` and you will see most-similar images URIs.
+Done! Now print `q.matches` and you will see most-similar images URIs.
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="80%"></a>
 </p>
 
 Add 3 lines of code to visualize them:
@@ -101,6 +101,9 @@ for m in q.matches:
 q.matches.plot_image_sprites()
 ```
 
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
+</p>
 
 Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
 
@@ -153,6 +156,9 @@ We are not done yet. With an extremely trivial refactoring and 10 extra lines of
     ```python
     f = Flow(port_expose=12345, protocol='http').add(uses=PreprocImg).add(uses=EmbedImg, replicas=3).add(uses=MatchImg)
     ```
+    Plot it via `f.plot('flow.svg')` and you get:
+    ![](.github/images/readme-flow-plot.svg)
+
 6. Index image data and serve REST query from public:
     ```python
     with f:
@@ -160,10 +166,16 @@ We are not done yet. With an extremely trivial refactoring and 10 extra lines of
         f.block()
     ```
 
-Query it via `curl` you can get most-similar images:
+Done! Now query it via `curl` you can get most-similar images:
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.svg?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet20" width="80%"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.svg?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
+</p>
+
+Or go to `http://0.0.0.0:12345/docs` and test requests via Swagger UI:
+
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
 </p>
 
 At this point, you probably have taken 20 minutes and here we are: a scalable image search service. Worth it? Then [find more about Jina from our docs](https://docs.jina.ai).
