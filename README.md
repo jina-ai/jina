@@ -102,7 +102,7 @@ q.matches.plot_image_sprites()
 ```
 
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
 Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
