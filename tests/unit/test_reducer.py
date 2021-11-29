@@ -1,5 +1,7 @@
+from copy import deepcopy
+
 from jina import DocumentArray, Document
-from jina.reducer import merge, merge_doc
+from jina.reducer import merge, merge_doc, merge_mat
 
 
 def test_merge_doc():
@@ -76,3 +78,81 @@ def test_merge():
         assert f'r{i}' in da1
         for j in range(4):
             assert f'r{i}m{j}' in da1[f'r{i}'].matches
+
+
+def test_merge_nested():
+    da1, da2 = (
+        DocumentArray(
+            [
+                Document(
+                    id='r1',
+                    chunks=[
+                        Document(
+                            id='c1',
+                            chunks=[Document(id='c1c2')],
+                            matches=[Document(id='c1m2')],
+                        ),
+                    ],
+                    matches=[
+                        Document(
+                            id='m1', chunks=[Document(id='m1c1'), Document(id='m1c2')]
+                        ),
+                        Document(id='m2'),
+                    ],
+                ),
+            ]
+        ),
+        DocumentArray(
+            [
+                Document(
+                    id='r1',
+                    chunks=[
+                        Document(
+                            id='c1',
+                            chunks=[Document(id='c1c1')],
+                            matches=[Document(id='c1m1')],
+                        ),
+                        Document(
+                            id='c2',
+                            chunks=[Document(id='c2c1'), Document(id='c2c2')],
+                            matches=[Document(id='c2m1'), Document(id='c2m2')],
+                        ),
+                    ],
+                    matches=[
+                        Document(
+                            id='m1', matches=[Document(id='m1m1'), Document(id='m1m2')]
+                        ),
+                        Document(
+                            id='m2',
+                            chunks=[Document(id='m2c1'), Document(id='m2c2')],
+                            matches=[Document(id='m2m1'), Document(id='m2m2')],
+                        ),
+                    ],
+                ),
+            ]
+        ),
+    )
+
+    merge(da1, da2)
+    for i in range(1, 3):
+        assert f'c{i}' in da1[0].chunks
+        assert f'm{i}' in da1[0].matches
+        for j in range(1, 3):
+            assert f'c{i}c{j}' in da1[0].chunks[f'c{i}'].chunks
+            assert f'c{i}m{j}' in da1[0].chunks[f'c{i}'].matches
+
+            assert f'm{i}c{j}' in da1[0].matches[f'm{i}'].chunks
+            assert f'm{i}m{j}' in da1[0].matches[f'm{i}'].matches
+
+
+def test_merge_mat():
+    docs = DocumentArray([Document(id=f'r{i}') for i in range(10)])
+    doc_matrix = [deepcopy(docs) for _ in range(10)]
+    for i, da in enumerate(doc_matrix):
+        for doc in da:
+            doc.matches.append(Document(id=str(i)))
+
+    merged_da = merge_mat(doc_matrix)
+    for doc in merged_da:
+        for i in range(10):
+            assert str(i) in doc.matches
