@@ -88,11 +88,9 @@ class DocumentArrayMemmap(
         self._path = path
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
-        self._embeddings_path = os.path.join(path, 'embeddings.bin')
         self._key_length = key_length
         self._last_mmap = None
         self._load_header_body()
-        self._embeddings_shape = None
         self._buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
 
     def insert(self, index: int, doc: 'Document') -> None:
@@ -174,7 +172,6 @@ class DocumentArrayMemmap(
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
-        self._invalidate_embeddings_memmap()
 
     def _update_or_append(
         self,
@@ -219,7 +216,6 @@ class DocumentArrayMemmap(
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
-        self._invalidate_embeddings_memmap()
         if flush:
             self._header.flush()
             self._body.flush()
@@ -360,7 +356,6 @@ class DocumentArrayMemmap(
         self._header_map.pop(str_key)
         self._header_keys.pop(pop_idx)
         self._buffer_pool.delete_if_exists(str_key)
-        self._invalidate_embeddings_memmap()
 
     def __delitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
@@ -460,61 +455,6 @@ class DocumentArrayMemmap(
         :return: the number of bytes
         """
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
-
-    @property
-    def _embeddings_memmap(self) -> Optional[np.ndarray]:
-        """Return the cached embedding stored in np.memmap.
-
-        :returns: Embeddings as np.ndarray stored in memmap, if not persist, return None.
-        """
-        if self._embeddings_shape:
-            # The memmap object can be used anywhere an ndarray is accepted.
-            # Given a memmap fp, isinstance(fp, numpy.ndarray) returns True.
-            return np.memmap(
-                self._embeddings_path,
-                mode='r',
-                dtype='float',
-                shape=self._embeddings_shape,
-            )
-
-    @_embeddings_memmap.setter
-    def _embeddings_memmap(self, other_embeddings: Optional[np.ndarray]):
-        """Set the cached embedding values in case it is not cached.
-
-        :param other_embeddings: The embedding to be stored into numpy.memmap, or can be set
-            to None to invalidate the property.
-        """
-        if other_embeddings is not None:
-            fp = np.memmap(
-                self._embeddings_path,
-                dtype='float',
-                mode='w+',
-                shape=other_embeddings.shape,
-            )
-            self._embeddings_shape = other_embeddings.shape
-            fp[:] = other_embeddings[:]
-            fp.flush()
-            del fp
-
-    @ContentPropertyMixin.embeddings.getter
-    def embeddings(self) -> 'ArrayType':
-        """Return a `np.ndarray` stacking all the `embedding` attributes as rows.
-
-        :return: embeddings stacked per row as `np.ndarray`.
-
-        .. warning:: This operation assumes all embeddings have the same shape and dtype.
-            All dtype and shape values are assumed to be equal to the values of the
-            first element in the DocumentArray / DocumentArrayMemmap.
-
-        .. warning:: This operation currently does not support sparse arrays.
-        """
-        if self._embeddings_memmap is None:
-            self._embeddings_memmap = ContentPropertyMixin.embeddings.fget(self)
-        return self._embeddings_memmap
-
-    def _invalidate_embeddings_memmap(self):
-        self._embeddings_memmap = None
-        self._embeddings_shape = None
 
     @staticmethod
     def _flatten(sequence):

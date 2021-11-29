@@ -1,10 +1,9 @@
 import json
 from contextlib import nullcontext
-from typing import Union, TextIO, TYPE_CHECKING
+from typing import Union, TextIO, TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
-    from ...document import DocumentArray
-    from ...memmap import DocumentArrayMemmap
+    from .....helper import T
 
 
 class JsonIOMixin:
@@ -28,9 +27,7 @@ class JsonIOMixin:
                 fp.write('\n')
 
     @classmethod
-    def load_json(
-        cls, file: Union[str, TextIO]
-    ) -> Union['DocumentArray', 'DocumentArrayMemmap']:
+    def load_json(cls: Type['T'], file: Union[str, TextIO]) -> 'T':
         """Load array elements from a JSON file.
 
         :param file: File or filename to which the data is saved.

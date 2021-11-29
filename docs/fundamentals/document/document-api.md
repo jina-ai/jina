@@ -9,28 +9,160 @@ fluent-interface
 {class}`~jina.types.document.Document` is the basic data type in Jina. Whether you're working with text, image, video, audio, or 3D meshes, they are
 all `Document`s in Jina.
 
-## Minimum working example
+
+## Construct
+
+````{tab} Empty document
 
 ```python
 from jina import Document
 
+d = Document()
+```
+
+````
+
+````{tab} From attributes 
+
+```python
+from jina import Document
+import numpy
+
 d1 = Document(text='hello')
 d2 = Document(buffer=b'\f1')
-
-import numpy
 d3 = Document(blob=numpy.array([1, 2, 3]))
+d4 = Document(uri='https://jina.ai',
+             mime_type='text/plain',
+             granularity=1,
+             adjacency=3,
+             tags={'foo': 'bar'})
 ```
+
 
 ```console
 <jina.types.document.Document ('id', 'mime_type', 'text') at 4483297360>
 <jina.types.document.Document ('id', 'buffer') at 5710817424>
 <jina.types.document.Document ('id', 'blob') at 4483299536>
+<jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
 ```
 
+````
 
-## Basics
 
-### Content 
+````{tab} From another Document
+
+```python
+from jina import Document
+
+d = Document(content='hello, world!')
+d1 = d
+
+assert id(d) == id(d1)  # True
+```
+
+To make a deep copy, use `copy=True`:
+
+```python
+d1 = Document(d, copy=True)
+
+assert id(d) == id(d1)  # False
+```
+
+````
+
+`````{tab} From dict or JSON string
+
+```python
+from jina import Document
+import json
+
+d = {'id': 'hello123', 'content': 'world'}
+d1 = Document(d)
+
+d = json.dumps({'id': 'hello123', 'content': 'world'})
+d2 = Document(d)
+```
+
+````{admonition} Parsing unrecognized fields
+:class: tip
+
+Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
+
+```python
+from jina import Document
+
+d1 = Document({'id': 'hello123', 'foo': 'bar'})
+```
+
+```text
+<jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056>
+```
+
+You can use `field_resolver` to map external field names to `Document` attributes:
+
+```python
+from jina import Document
+
+d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'})
+```
+
+```text
+<jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
+```
+
+````
+
+
+`````
+
+## Set/unset attributes
+
+````{tab} Set
+Set an attribute as you would with any Python object: 
+
+```python
+from jina import Document
+
+d = Document()
+d.text = 'hello world'
+```
+
+```text
+<jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
+```
+````
+
+````{tab} Unset
+
+```python
+d.text = None
+```
+
+or 
+
+```python
+d.pop('text')
+```
+
+```text
+<jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
+```
+````
+
+````{tab} Unset multiple attributes
+
+```python
+d.pop('text', 'id', 'mime_type')
+```
+
+```text
+<jina.types.document.Document at 5668344144>
+```
+````
+
+
+
+## Content 
 
 {attr}`~jina.Document.text`, {attr}`~jina.Document.blob`, and {attr}`~jina.Document.buffer` are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
@@ -75,7 +207,7 @@ There is also a `doc.content` sugar getter/setter of the above non-empty field. 
 
 
 
-#### Loading content from URI
+### Load content from URI
 
 Often, you need to load data from a URI instead of assigning them directly in your code, {attr}`~jina.Document.uri` is the attribute you must learn. 
 
@@ -154,7 +286,7 @@ You can convert a URI to a data URI using `doc.load_uri_to_datauri()`. This will
 ```
 
 
-### Embedding
+## Embedding
 
 Embedding is a multi-dimensional representation of a `Document` (often a `[1, D]` vector). It serves as a very important piece in the neural search. 
 
@@ -176,7 +308,38 @@ d4 = Document(embedding=torch.tensor([1, 2, 3]))
 d5 = Document(embedding=tf.sparse.from_dense(np.array([[1, 2, 3], [4, 5, 6]])))
 ```
 
-#### Finding nearest-neighbours
+### Fill embedding from DNN model
+
+```{admonition} On multiple Documents
+:class: tip
+
+This is a syntax sugar on single Document, which leverages {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` underneath. To embed multiple Documents, do not use this feature in a for-loop. Instead, read more details in {ref}`embed-via-model`.    
+```
+
+Once a `Document` has `.blob` set, you can use a deep neural network to {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` it, which means filling `Document.embedding`. For example, our `Document` looks like the following:
+
+```python
+q = (Document(uri='/Users/hanxiao/Downloads/left/00003.jpg')
+     .load_uri_to_image_blob()
+     .set_image_blob_normalization()
+     .set_image_blob_channel_axis(-1, 0))
+```
+
+Let's embed it into vector via ResNet:
+
+```python
+import torchvision
+model = torchvision.models.resnet50(pretrained=True)
+q.embed(model)
+```
+
+### Find nearest-neighbours
+
+```{admonition} On multiple Documents
+:class: tip
+
+This is a syntax sugar on single Document, which leverages  {meth}`~jina.types.arrays.mixins.match.MatchMixin.match` underneath. To match multiple Documents, do not use this feature in a for-loop. Instead, find out more in {ref}`match-documentarray`.  
+```
 
 Once a Document has `.embedding` filled, it can be "matched". In this example, we build ten Documents and put them into a {ref}`DocumentArray<da-intro>`, and then use another Document to search against them.
 
@@ -197,17 +360,13 @@ print(q.matches[0])
 <jina.types.document.Document ('id', 'embedding', 'adjacency', 'scores') at 8256118608>
 ```
 
-```{admonition} Working on multiple queries
-:class: tip
 
-When you want to match a set of Documents (let's call it set `A`) against another set of Documents (set `B`), where you want to find for each element in `A` its nearest neighbours in `B`, then you need `DocumentArray.match()`. It is far more efficient than looping over each Document. You can {ref}`read more about it here<match-documentarray>`.    
-```
 
 (recursive-nested-document)=
-### Recursive Documents
+## Nested Documents
 
-`Document` can be recursive both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "Chunks"
-and "matches". Chunks and matches are `Document` objects as well.
+`Document` can be nested both horizontally and vertically. The following graphic illustrates the recursive `Document` structure. Each `Document` can have multiple "chunks"
+and "matches", which are `Document` as well.
 
 <img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
 
@@ -248,7 +407,9 @@ Both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which 
 of {ref}`DocumentArray<documentarray>`. We will introduce `DocumentArray` later.
 ````
 
-#### Caveat: order matters
+`````{admonition} Caveat: order matters
+:class: alert
+
 
 When adding sub-Documents to `Document.chunks`, avoid creating them in one line, otherwise the recursive Document structure will not be correct. This is because `chunks` use `ref_doc` to control their `granularity`. At `chunk` creation time the `chunk` doesn't know anything about its parent, and will get a wrong `granularity` value.
 
@@ -280,7 +441,11 @@ root_document = Document(
 ```
 ````
 
-### Tags
+
+`````
+
+
+## Tags
 
 `Document` contains the {attr}`~jina.Document.tags` attribute that can hold a map-like structure that can map arbitrary values. 
 In practice, you can store meta information in `tags`.
@@ -383,37 +548,8 @@ with Flow().add(uses=MyExecutor) as f:
 
 
 
-### Visualization
 
-To better see the Document's recursive structure, you can use {meth}`~jina.types.document.mixins.plot.PlotMixin.plot` function. If you are using JupyterLab/Notebook,
-all `Document` objects will be auto-rendered:
-
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document
-
-d0 = Document(id='🐲', embedding=np.array([0, 0]))
-d1 = Document(id='🐦', embedding=np.array([1, 0]))
-d2 = Document(id='🐢', embedding=np.array([0, 1]))
-d3 = Document(id='🐯', embedding=np.array([1, 1]))
-
-d0.chunks.append(d1)
-d0.chunks[0].chunks.append(d2)
-d0.matches.append(d3)
-
-d0.plot()  # simply `d0` on JupyterLab
-```
-
-
-```{figure} ../../../.github/images/four-symbol-docs.svg
-:align: center
-```
-
-### Serialization
+## Serialization
 
 You can serialize a `Document` into JSON string or Python dict or binary string:
 ````{tab} JSON
@@ -459,267 +595,32 @@ d.dict()
 ```
 ````
 
-### Set/unset attributes
+## Visualization
 
-Set an attribute as you would with any Python object: 
+To better see the Document's recursive structure, you can use {meth}`~jina.types.document.mixins.plot.PlotMixin.plot` function. If you are using JupyterLab/Notebook,
+all `Document` objects will be auto-rendered:
 
-```python
-from jina import Document
-
-d = Document()
-d.text = 'hello world'
-```
-
-```text
-<jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
-```
-
-Unset an attribute:
-
-```python
-d.text = None
-```
-
-or 
-
-```python
-d.pop('text')
-```
-
-```text
-<jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
-```
-
-Unset multiple attributes:
-
-```python
-d.pop('text', 'id', 'mime_type')
-```
-
-```text
-<jina.types.document.Document at 5668344144>
-```
-
-## Advanced
-
-| Category | Attributes |
-|---|---|
-| Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.modality`,`.granularity`, `.adjacency`, `.location`, `.offset`  |
-| Relevance attributes | `.scores`, `.evaluations` |
-
-
-### Add relevancy
-
-```{tip}
-You normally don't need to add those values by yourself. For example, the `.match()` function automatically fills in 
-`.scores` of each matched Document.
-```
-
-|  Attributes   |  Description   |
-| --- | --- |
-| `doc.scores` | The relevance information of this Document. A dict-like structure supporting storing different metrics |
-| `doc.evaluations` | The evaluation information of this Document. A dict-like structure supporting storing different metrics |
-
-You can add a relevance score to a `Document` object via:
-
-```python
-from jina import Document
-
-d = Document()
-d.scores['cosine similarity'] = 0.96
-d.scores['cosine similarity'].description = 'cosine similarity'
-d.scores['cosine similarity'].op_name = 'cosine()'
-d.evaluations['recall'] = 0.56
-d.evaluations['recall'].description = 'recall at 10'
-d.evaluations['recall'].op_name = 'recall()'
-d
-```
-
-```text
-<jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}} at 140003211429776>```
-```
-
-Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
-follows:
-
-```python
-from jina import Document
-
-# some query Document
-q = Document()
-# get match Document `m`
-m = Document()
-m.scores['metric'] = 0.96
-q.matches.append(m)
-```
-
-```text
-<jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96}}} at 140001502011856>
-```
-
-These attributes (`scores` and `evaluations`) provide a dict-like interface that lets access all its elements:
-
-```python
-from jina import Document
-
-d = Document()
-d.evaluations['precision'] = 1.0
-d.evaluations['precision'].description = 'precision at 10'
-d.evaluations['precision'].op_name = 'precision()'
-d.evaluations['recall'] = 0.5
-d.evaluations['recall'].description = 'recall at 10'
-d.evaluations['recall'].op_name = 'recall()'
-for evaluation_key, evaluation_score in d.evaluations.items():
-    print(f' {evaluation_key} => {evaluation_score.description}: {evaluation_score.value}') 
-```
-
-```text
- precision => precision at 10: 1.0
- recall => recall at 10: 0.5
-```
-
-
-### Summary on Document construction
-
-#### Construct with multiple attributes
-
-| Attribute | Description |
-| --- | --- |
-| `doc.id` | A hexdigest that represents a unique Document ID |
-| `doc.parent_id` | A hexdigest that represents the Document's parent id |
-| `doc.weight` | The weight of the Document |
-| `doc.mime_type` | The mime type of the Document |
-| `doc.content_type` | The content type of the Document |
-| `doc.modality` | An identifier of the modality the Document belongs to|
-
-You can assign multiple attributes in the constructor via:
-
-```python
-from jina import Document
-
-d = Document(uri='https://jina.ai',
-             mime_type='text/plain',
-             granularity=1,
-             adjacency=3,
-             tags={'foo': 'bar'})
-```
-
-```text
-<jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
-```
-
-#### Construct from dict or JSON string
-
-You can build a `Document` from a `dict` or JSON string:
-
-```python
-from jina import Document
-import json
-
-d = {'id': 'hello123', 'content': 'world'}
-d1 = Document(d)
-
-d = json.dumps({'id': 'hello123', 'content': 'world'})
-d2 = Document(d)
-```
-
-#### Parsing unrecognized fields
-
-Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
-
-```python
-from jina import Document
-
-d1 = Document({'id': 'hello123', 'foo': 'bar'})
-```
-
-```text
-<jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056>
-```
-
-You can use `field_resolver` to map external field names to `Document` attributes:
-
-```python
-from jina import Document
-
-d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'})
-```
-
-```text
-<jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
-```
-
-#### Construct from another Document
-
-Assigning a `Document` object to another `Document` object will make a shallow copy:
-
-```python
-from jina import Document
-
-d = Document(content='hello, world!')
-d1 = d
-
-assert id(d) == id(d1)  # True
-```
-
-To make a deep copy, use `copy=True`:
-
-```python
-d1 = Document(d, copy=True)
-
-assert id(d) == id(d1)  # False
-```
-
-You can partially update a `Document` according to another source `Document`:
 
 ```{code-block} python
 ---
-emphasize-lines: 17, 20
+emphasize-lines: 13
 ---
+import numpy as np
 from jina import Document
 
-s = Document(
-    id='🐲',
-    content='hello-world',
-    tags={'a': 'b'},
-    chunks=[Document(id='🐢')],
-)
-d = Document(
-    id='🐦',
-    content='goodbye-world',
-    tags={'c': 'd'},
-    chunks=[Document(id='🐯')],
-)
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
 
-# only update `id` field
-d.update(s, fields=['id'])
+d0.chunks.append(d1)
+d0.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
 
-# update all fields. `tags` field as `dict` will be merged.
-d.update(s)
+d0.plot()  # simply `d0` on JupyterLab
 ```
 
-#### Construct from JSON, CSV, files
 
-The `jina.types.document.generators` module let you construct `Document`s from common file types such as JSON,
-CSV, `ndarray` and text files. The following functions will give a generator of `Document`s, where each `Document` object
-corresponds to a line/row in the original format:
-
-|                  |                                                                                           |
-| ---              | ---                                                                                       |
-| `from_ndjson()`  | Yield `Document` from a line-based JSON file. Each line is a `Document` object            |
-| `from_csv()`     | Yield `Document` from a CSV file. Each line is a `Document` object                        |
-| `from_files()`   | Yield `Document` from a glob of files. Each file is a `Document` object                   |
-| `from_ndarray()` | Yield `Document` from an `ndarray`. Each row (depending on `axis`) is a `Document` object |
-| `from_lines()`   | Yield `Document` from lines, JSON and CSV                                                 |
-
-Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
-
-To convert the generator to `DocumentArray` use:
-
-```python
-from jina import DocumentArray
-from jina.types.document.generators import from_files
-
-DocumentArray(from_files('/*.png'))
+```{figure} ../../../.github/images/four-symbol-docs.svg
+:align: center
 ```
-

@@ -122,6 +122,35 @@ class ImageDataMixin:
         self.blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
         return self
 
+    def set_image_blob_inv_normalization(
+        self: T,
+        channel_axis: int = -1,
+        img_mean: Tuple[float] = (0.485, 0.456, 0.406),
+        img_std: Tuple[float] = (0.229, 0.224, 0.225),
+    ) -> T:
+        """Inverse the normalization of a float32 image :attr:`.blob` into a uint8 image :attr:`.blob` inplace.
+
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param img_mean: the mean of all images
+        :param img_std: the standard deviation of all images
+        :return: itself after processed
+        """
+        if self.blob.dtype == np.float32 and self.blob.ndim == 3:
+            blob = _move_channel_axis(self.blob, channel_axis, 0)
+            mean = np.asarray(img_mean, dtype=np.float32)
+            std = np.asarray(img_std, dtype=np.float32)
+            blob = ((blob * std[:, None, None] + mean[:, None, None]) * 255).astype(
+                np.uint8
+            )
+            # set back channel to original
+            blob = _move_channel_axis(blob, 0, channel_axis)
+            self.blob = blob
+        else:
+            raise ValueError(
+                f'`blob` must be a float32 ndarray with ndim=3, but receiving {self.blob.dtype} with ndim={self.blob.ndim}'
+            )
+        return self
+
     def set_image_blob_normalization(
         self: T,
         channel_axis: int = -1,
