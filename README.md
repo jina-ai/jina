@@ -206,11 +206,11 @@ At this point, you probably have taken 15 minutes but here we are: an image sear
 
 </sup>
 
-### Deploy to Kubernetes on GCP in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
+### Deploy to Kubernetes in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
-Have another 7 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes on Google Cloud Platform.
+Have another 7 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes.
 
-1. Create a Kubernetes cluster and get credentials:
+1. Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
    ```bash
    gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
    gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
