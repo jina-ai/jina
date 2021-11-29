@@ -203,7 +203,7 @@ def test_input_huggingface_datasets_from_csv_file(dataset_configs):
         from_huggingface_datasets(
             'csv',
             field_resolver=field_resolver,
-            data_files='docs.csv',
+            data_files=os.path.join(cur_dir, 'docs.csv'),
             split='train',
         )
     )
