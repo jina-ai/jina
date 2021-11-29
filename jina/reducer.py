@@ -9,11 +9,10 @@ def merge(da1: DocumentArray, da2: DocumentArray):
     :param da1: first DocumentArray
     :param da2: second DocumentArray
     """
-    for doc1 in da1:
-        if doc1.id in da2:
-            merge_doc(doc1, da2[doc1.id])
     for doc2 in da2:
-        if doc2.id not in da1:
+        if doc2.id in da1:
+            merge_doc(da1[doc2.id], doc2)
+        else:
             da1.append(doc2)
 
 
@@ -23,8 +22,11 @@ def merge_doc(doc1: Document, doc2: Document):
     :param doc1: first Document
     :param doc2: second Document
     """
-    merge(doc1.matches, doc2.matches)
-    merge(doc1.chunks, doc2.chunks)
+    if len(doc2.matches) > 0:
+        merge(doc1.matches, doc2.matches)
+
+    if len(doc2.chunks) > 0:
+        merge(doc1.chunks, doc2.chunks)
 
 
 def merge_mat(da_matrix: List[DocumentArray]) -> DocumentArray:
