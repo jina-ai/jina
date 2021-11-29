@@ -676,7 +676,8 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.mixins.embed</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
@@ -762,7 +763,30 @@
             <span class="n">r</span> <span class="o">=</span> <span class="n">embed_model</span><span class="p">(</span><span class="n">batch_inputs</span><span class="p">)</span>
             <span class="n">b</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">if</span> <span class="n">to_numpy</span> <span class="k">else</span> <span class="n">r</span>
         <span class="k">if</span> <span class="n">is_training_before</span><span class="p">:</span>
-            <span class="n">embed_model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span></div>
+            <span class="n">embed_model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_embeddings_onnx</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
+        <span class="n">embed_model</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># embed_model is always an onnx.InferenceSession</span>
+        <span class="k">if</span> <span class="n">device</span> <span class="o">!=</span> <span class="s1">'cpu'</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">onnxruntime</span> <span class="k">as</span> <span class="nn">ort</span>
+
+            <span class="n">support_device</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">get_device</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="n">support_device</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Your installed `onnxruntime` supports `</span><span class="si">{</span><span class="n">support_device</span><span class="si">}</span><span class="s1">`, but you give </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">embed_model</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="n">embed_model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">blobs</span><span class="p">}</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="get_framework"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.get_framework">[docs]</a><span class="k">def</span> <span class="nf">get_framework</span><span class="p">(</span><span class="n">dnn_model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -796,6 +820,12 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dnn_model</span><span class="p">,</span> <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
             <span class="k">return</span> <span class="s1">'keras'</span>
+
+    <span class="k">if</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="s1">'onnx'</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">onnxruntime</span> <span class="kn">import</span> <span class="n">InferenceSession</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dnn_model</span><span class="p">,</span> <span class="n">InferenceSession</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">'onnx'</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not determine the backend of </span><span class="si">{</span><span class="n">dnn_model</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
 </pre></div>
