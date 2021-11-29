@@ -25,7 +25,7 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Native support on Pytorch, Keras, ONNX, Paddle, solution building in just minutes.
+⏱️ **Save time** - *The* design pattern of neural search systems. Native support on Pytorch, Keras, ONNX, Paddle; solution building in just minutes.
 
 🌌 **All data types** - Processing, indexing, querying, understanding of video, image, long/short text, music, source code, PDF, etc.
 
