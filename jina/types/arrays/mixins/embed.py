@@ -1,3 +1,4 @@
+import warnings
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
@@ -86,6 +87,29 @@ class EmbedMixin:
         if is_training_before:
             embed_model.train()
 
+    def _set_embeddings_onnx(
+        self: 'T',
+        embed_model,
+        device: str = 'cpu',
+        batch_size: int = 256,
+        *args,
+        **kwargs,
+    ):
+        # embed_model is always an onnx.InferenceSession
+        if device != 'cpu':
+            import onnxruntime as ort
+
+            support_device = ort.get_device()
+            if device.lower().strip() != support_device.lower().strip():
+                warnings.warn(
+                    f'Your installed `onnxruntime` supports `{support_device}`, but you give {device}'
+                )
+
+        for b in self.batch(batch_size):
+            b.embeddings = embed_model.run(
+                None, {embed_model.get_inputs()[0].name: b.blobs}
+            )[0]
+
 
 def get_framework(dnn_model) -> str:
     """Return the framework that powers a DNN model.
@@ -118,5 +142,11 @@ def get_framework(dnn_model) -> str:
 
         if isinstance(dnn_model, keras.layers.Layer):
             return 'keras'
+
+    if importlib.util.find_spec('onnx'):
+        from onnxruntime import InferenceSession
+
+        if isinstance(dnn_model, InferenceSession):
+            return 'onnx'
 
     raise ValueError(f'can not determine the backend of {dnn_model!r}')

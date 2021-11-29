@@ -25,7 +25,7 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems, building a solution in just minutes.
+⏱️ **Save time** - *The* design pattern of neural search systems. Native support on Pytorch, Keras, ONNX, Paddle; solution building in just minutes.
 
 🌌 **All data types** - Processing, indexing, querying, understanding of video, image, long/short text, music, source code, PDF, etc.
 
@@ -109,7 +109,7 @@ q.matches.plot_image_sprites()
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
-Sweet! FYI, one can use Keras or PaddlePaddle for the embedding model. Jina supports them well.
+Sweet! FYI, one can use Keras, ONNX, PaddlePaddle for the embedding model. Jina supports them well.
 
 ### Scale and Serve in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
@@ -131,13 +131,16 @@ With an extremely trivial refactoring and 10 extra lines of code, you can make t
     ```
 3. Copy-paste the embedding step and wrap it via `Executor`:
     
-    ```python
+    ```python   
     class EmbedImg(Executor):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            import torchvision
+            self.model = torchvision.models.resnet50(pretrained=True)        
+   
         @requests
         def foo(self, docs: DocumentArray, **kwargs):
-            import torchvision
-            model = torchvision.models.resnet50(pretrained=True)
-            docs.embed(model)
+            docs.embed(self.model)
     ```
 4. Wrap the matching step into `Executor`:
     ```python

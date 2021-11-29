@@ -1,10 +1,13 @@
+import os
+
+import numpy as np
+import onnxruntime
 import paddle
 import pytest
 import tensorflow as tf
 import torch
-from jina import DocumentArray, DocumentArrayMemmap
-import numpy as np
 
+from jina import DocumentArray, DocumentArrayMemmap
 
 random_embed_models = {
     'keras': lambda: tf.keras.Sequential(
@@ -17,9 +20,26 @@ random_embed_models = {
         paddle.nn.Dropout(0.5), paddle.nn.BatchNorm1D(128)
     ),
 }
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+torch.onnx.export(
+    random_embed_models['pytorch'](),
+    torch.rand(1, 128),
+    os.path.join(cur_dir, 'test-net.onnx'),
+    do_constant_folding=True,  # whether to execute constant folding for optimization
+    input_names=['input'],  # the model's input names
+    output_names=['output'],  # the model's output names
+    dynamic_axes={
+        'input': {0: 'batch_size'},  # variable length axes
+        'output': {0: 'batch_size'},
+    },
+)
+
+random_embed_models['onnx'] = lambda: onnxruntime.InferenceSession(
+    os.path.join(cur_dir, 'test-net.onnx')
+)
 
 
-@pytest.mark.parametrize('framework', ['keras', 'pytorch', 'paddle'])
+@pytest.mark.parametrize('framework', ['onnx', 'keras', 'pytorch', 'paddle'])
 @pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
 @pytest.mark.parametrize('N', [2, 1000])
 @pytest.mark.parametrize('batch_size', [1, 256])

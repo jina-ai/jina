@@ -145,6 +145,10 @@ d.embedding.shape= (1, 256)
 {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` function supports both CPU & GPU, which can be specified by its `device` argument.
 ```
 
+```{important}
+You can use PyTorch, Keras, ONNX, PaddlePaddle as the embedding model.
+```
+
 When a `DocumentArray` has `.blobs` set, you can use a deep neural network to {meth}`~jina.types.arrays.mixins.embed.EmbedMixin.embed` it, which means filling `DocumentArray.embeddings`. For example, our `DocumentArray` looks like the following:
 
 ```python
@@ -155,7 +159,7 @@ docs = DocumentArray.empty(10)
 docs.blobs = np.random.random([10, 128]).astype(np.float32)
 ```
 
-And our embedding model is a simple MLP in Keras/Pytorch/Paddle:
+And our embedding model is a simple MLP in Pytorch/Keras/ONNX/Paddle:
 
 ````{tab} PyTorch
 
@@ -184,6 +188,33 @@ model = tf.keras.Sequential(
     ]
 )
 
+```
+````
+
+````{tab} ONNX
+
+Preliminary: you need to first export a DNN model to ONNX via API/CLI. 
+For example let's use the PyTorch one:
+
+```python
+data = torch.rand(1, 128)
+
+torch.onnx.export(model, data, 'mlp.onnx', 
+    do_constant_folding=True,  # whether to execute constant folding for optimization
+    input_names=['input'],  # the model's input names
+    output_names=['output'],  # the model's output names
+    dynamic_axes={
+        'input': {0: 'batch_size'},  # variable length axes
+        'output': {0: 'batch_size'},
+    })
+```
+
+Then load it as `InferenceSession`:
+ 
+```python
+import onnxruntime
+
+model = onnxruntime.InferenceSession('mlp.onnx')
 ```
 ````
 
