@@ -13,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def test_port_expose_env_var(port_expose, func):
     jinad_client = JinaDClient(host='localhost', port=8000)
     workspace_id = jinad_client.workspaces.create(
-        paths=[os.path.join(cur_dir, 'envvars_ws')]
+        paths=[os.path.join(cur_dir, 'envvars_ws1')]
     )
     flow_id = jinad_client.flows.create(
         workspace_id=workspace_id,

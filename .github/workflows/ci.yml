@@ -250,7 +250,10 @@ jobs:
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all  daemon/distributed tests
             docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
-            if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_topologies/|tests/distributed/test_topologies_docker/|tests/distributed/test_workspaces/|tests/distributed/test_dir_structures/|tests/distributed/test_scale_remote/|tests/distributed/test_scale_remote_executors/)$ ]]; then
+            
+            declare -a distributed_tests=("tests/distributed/test_topologies/" "tests/distributed/test_topologies_docker/" "tests/distributed/test_workspaces/" "tests/distributed/test_dir_structures/" "tests/distributed/test_scale_remote/" "tests/distributed/test_scale_remote_executors/" "tests/distributed/test_env_vars/")
+
+            if [[ " ${distributed_tests[*]} " =~ "${{ matrix.test-path }}" ]]; then
               docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
             fi
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
