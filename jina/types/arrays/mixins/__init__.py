@@ -17,6 +17,7 @@ from .sample import SampleMixin
 from .text import TextToolsMixin
 from .traverse import TraverseMixin
 from .embed import EmbedMixin
+from .parallel import ParallelMixin
 
 
 class AllMixins(
@@ -37,6 +38,7 @@ class AllMixins(
     SampleMixin,
     TextToolsMixin,
     EvaluationMixin,
+    ParallelMixin,
     ABC,
 ):
     """All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """

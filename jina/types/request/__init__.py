@@ -58,23 +58,26 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         copy: bool = False,
     ):
         self._buffer = None
-        self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
         self._compression_algorithm = compression_algorithm
         try:
             if isinstance(request, jina_pb2.RequestProto):
                 if copy:
+                    self._pb_body = jina_pb2.RequestProto()
                     self._pb_body.CopyFrom(request)
                 else:
                     self._pb_body = request
             elif isinstance(request, dict):
+                self._pb_body = jina_pb2.RequestProto()
                 json_format.ParseDict(request, self._pb_body)
             elif isinstance(request, str):
+                self._pb_body = jina_pb2.RequestProto()
                 json_format.Parse(request, self._pb_body)
             elif isinstance(request, bytes):
                 self._buffer = request
                 self._pb_body = None
             elif request is None:
                 # make sure every new request has a request id
+                self._pb_body = jina_pb2.RequestProto()
                 self._pb_body.request_id = random_identity()
             elif request is not None:
                 # note ``None`` is not considered as a bad type

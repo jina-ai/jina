@@ -7,7 +7,22 @@ from ..proto import jina_pb2
 
 
 class ProtoTypeMixin:
-    """Mixin class of `ProtoType`."""
+    """The base mixin class of all Jina types.
+
+    .. note::
+        - All Jina types should inherit from this class.
+        - All subclass should have ``self._pb_body``
+        - All subclass should implement ``__init__`` with the possibility of initializing from ``None``, e.g.:
+
+            .. highlight:: python
+            .. code-block:: python
+
+                class MyJinaType(ProtoTypeMixin):
+
+                    def __init__(self, proto: Optional[jina_pb2.SomePbMsg] = None):
+                        self._pb_body = proto or jina_pb2.SomePbMsg()
+
+    """
 
     def json(self) -> str:
         """Return the object in JSON string
@@ -45,6 +60,13 @@ class ProtoTypeMixin:
         :return: binary string representation of the object
         """
         return self._pb_body.SerializePartialToString()
+
+    def __getstate__(self):
+        return dict(serialized=self.binary_str())
+
+    def __setstate__(self, state):
+        self.__init__()
+        self._pb_body.ParseFromString(state['serialized'])
 
     @property
     def nbytes(self) -> int:

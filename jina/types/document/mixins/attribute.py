@@ -9,12 +9,9 @@ from ....proto import jina_pb2
 class GetSetAttributeMixin:
     """Provide helper functions for :class:`Document` to allow advanced set and get attributes """
 
-    _ON_GETATTR = ['matches', 'chunks']
     _special_mapped_keys = ('scores', 'evaluations')
 
     def __getattr__(self, item):
-        if item in self._ON_GETATTR:
-            self._increaseVersion()
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
         elif '__' in item:
