@@ -1,21 +1,19 @@
 from contextlib import nullcontext
-from typing import Union, BinaryIO, TYPE_CHECKING
+from typing import Union, BinaryIO, TYPE_CHECKING, Type
 
 from ..... import __windows__
 from .....proto import jina_pb2
 
 if TYPE_CHECKING:
     from ...document import DocumentArray
-    from ...memmap import DocumentArrayMemmap
+    from .....helper import T
 
 
 class BinaryIOMixin:
     """Save/load an array to a binary file. """
 
     @classmethod
-    def load_binary(
-        cls, file: Union[str, BinaryIO]
-    ) -> Union['DocumentArray', 'DocumentArrayMemmap']:
+    def load_binary(cls: Type['T'], file: Union[str, BinaryIO]) -> 'T':
         """Load array elements from a binary file.
 
         :param file: File or filename to which the data is saved.

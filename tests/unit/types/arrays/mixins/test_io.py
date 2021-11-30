@@ -40,3 +40,25 @@ def test_da_csv_write(flatten_tags, tmp_path, da):
     da.save_csv(tmpfile, flatten_tags)
     with open(tmpfile) as fp:
         assert len([v for v in fp]) == len(da) + 1
+
+
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_from_ndarray(da):
+    _da = da.from_ndarray(np.random.random([10, 256]))
+    assert len(_da) == 10
+
+
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_from_files(da):
+    _da = da.from_files(patterns='*.*', to_dataturi=True, size=10)
+    assert len(_da) == 10
+
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_from_ndjson(da):
+    with open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
+        _da = da.from_ndjson(fp)
+        assert len(_da) == 2

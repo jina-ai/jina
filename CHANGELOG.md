@@ -121,6 +121,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -370,6 +371,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.4.8`)](#release-note-248)
 - [Release Note (`2.4.9`)](#release-note-249)
 - [Release Note (`2.4.10`)](#release-note-2410)
+- [Release Note (`2.5.0`)](#release-note-250)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -11690,4 +11692,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ae72cc5c```](https://github.com/jina-ai/jina/commit/ae72cc5ce1f7e7f4c662e72e96ea21dddc28bf43)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```95b79359```](https://github.com/jina-ai/jina/commit/95b7935977b15798c2379bdcb960a2c00373322a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```e1ffba00```](https://github.com/jina-ai/jina/commit/e1ffba00edf4628eab68462aa6b1d12379c781f0)] __-__ __version__: the next version will be 2.4.10 (*Jina Dev Bot*)
+
+<a name=release-note-2-5-0></a>
+## Release Note (`2.5.0`)
+
+> Release time: 2021-11-28 17:55:41
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Roshan Jossy,  Deepankar Mahapatro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```cb24d8ae```](https://github.com/jina-ai/jina/commit/cb24d8ae947f1df3c3f187148b7412b67ffbba99)] __-__ __types__: add embed and fromgen mixin to da &amp; dam (#4005) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```17859eb8```](https://github.com/jina-ai/jina/commit/17859eb8927b73b66b03bc5105b29b78bc1aac7f)] __-__ fix version-select css (*Han Xiao*)
+ - [[```cc109ddf```](https://github.com/jina-ai/jina/commit/cc109ddfb0b13449e44c8594c3054dd70472ce0a)] __-__ __version__: fix selected version not rendering (#3999) (*Roshan Jossy*)
+ - [[```dee28db7```](https://github.com/jina-ai/jina/commit/dee28db77d4e273f27a5083ef1644133da91c819)] __-__ allow local branch only (#4001) (*Deepankar Mahapatro*)
+ - [[```cdaef053```](https://github.com/jina-ai/jina/commit/cdaef053e06b199ae64d9978374ff66f879c73f7)] __-__ __multiversion__: fix markup in options (#3992) (*Roshan Jossy*)
+ - [[```0c1be30d```](https://github.com/jina-ai/jina/commit/0c1be30d8b572c7752a544bea58ef15a7c117d16)] __-__ fix 404 page gen (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```ca254a35```](https://github.com/jina-ai/jina/commit/ca254a35de7bd77a0361772abe5580755871ab82)] __-__ fix readme layout (*Han Xiao*)
+ - [[```f7ce4da6```](https://github.com/jina-ai/jina/commit/f7ce4da65a19bb4bfa705abcbc207688642a99b9)] __-__ readme (*Han Xiao*)
+ - [[```d588bdc6```](https://github.com/jina-ai/jina/commit/d588bdc63389784bf311a720941581ca3667a019)] __-__ fix readme (*Han Xiao*)
+ - [[```6fa5fba5```](https://github.com/jina-ai/jina/commit/6fa5fba5022e91bd3671467abe072279b71e42c2)] __-__ update readme (*Han Xiao*)
+ - [[```1d321ebb```](https://github.com/jina-ai/jina/commit/1d321ebb373475206427f7e741d49c2dbe8aae12)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```c9c6e4d4```](https://github.com/jina-ai/jina/commit/c9c6e4d470f9d093cbb6eb477000078055c3b119)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```3d5df405```](https://github.com/jina-ai/jina/commit/3d5df405277a1b6e47314a2d8f1e6e293cddb645)] __-__ __version__: the next version will be 2.4.11 (*Jina Dev Bot*)
 

@@ -48,10 +48,13 @@ class PartialPeaStore(PartialStore):
 
     peapod_cls = Pea
 
-    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
+    def add(
+        self, args: Namespace, envs: Optional[Dict] = {}, **kwargs
+    ) -> PartialStoreItem:
         """Starts a Pea in `partial-daemon`
 
         :param args: namespace args for the pea/pod
+        :param envs: environment variables to be passed into partial pea/pod
         :param kwargs: keyword args
         :return: Item describing the Pea object
         """
@@ -62,6 +65,7 @@ class PartialPeaStore(PartialStore):
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
             self.object: Union['Pea', 'Pod'] = self.peapod_cls(args).__enter__()
+            self.object.env = envs
         except Exception as e:
             if hasattr(self, 'object'):
                 self.object.__exit__(type(e), e, e.__traceback__)
@@ -117,12 +121,17 @@ class PartialFlowStore(PartialStore):
     """A Flow store spawned inside partial-daemon container"""
 
     def add(
-        self, args: Namespace, port_mapping: Optional[PortMappings] = None, **kwargs
+        self,
+        args: Namespace,
+        port_mapping: Optional[PortMappings] = None,
+        envs: Optional[Dict] = {},
+        **kwargs,
     ) -> PartialStoreItem:
         """Starts a Flow in `partial-daemon`.
 
         :param args: namespace args for the flow
         :param port_mapping: ports to be set
+        :param envs: environment variables to be passed into partial flow
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
@@ -135,9 +144,7 @@ class PartialFlowStore(PartialStore):
             self.object: Flow = Flow.load_config(args.uses).build()
             self.object.workspace_id = jinad_args.workspace_id
             self.object.workspace = __partial_workspace__
-            self.object.env = {'HOME': __partial_workspace__}
-            # TODO(Deepankar): pass envs from main daemon process to partial-daemon so that
-            # Pods/Peas/Runtimes/Executors can inherit these env vars
+            self.object.env = {'HOME': __partial_workspace__, **envs}
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls

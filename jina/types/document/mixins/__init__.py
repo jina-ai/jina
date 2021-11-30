@@ -5,7 +5,7 @@ from .content import ContentPropertyMixin
 from .convert import ConvertMixin
 from .dump import DumpFileMixin
 from .image import ImageDataMixin
-from .match import MatchMixin
+from .sugar import SingletonSugarMixin
 from .mesh import MeshDataMixin
 from .plot import PlotMixin
 from .text import TextDataMixin
@@ -25,7 +25,7 @@ class AllMixins(
     PlotMixin,
     DumpFileMixin,
     VersionedMixin,
-    MatchMixin,
+    SingletonSugarMixin,
     GetSetAttributeMixin,
 ):
     """All plugins that can be used in :class:`Document`. """

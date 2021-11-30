@@ -28,10 +28,12 @@ def partial_flow_store():
 
 def test_peastore_add(partial_pea_store):
     partial_store_item = partial_pea_store.add(
-        args=ArgNamespace.kwargs2namespace(PeaModel().dict(), set_pea_parser())
+        args=ArgNamespace.kwargs2namespace(PeaModel().dict(), set_pea_parser()),
+        envs={'key1': 'val1'},
     )
     assert partial_store_item
     assert partial_pea_store.object
+    assert partial_pea_store.object.env['key1'] == 'val1'
     assert partial_store_item.arguments['runtime_cls'] == 'ZEDRuntime'
     assert partial_store_item.arguments['host_in'] == __default_host__
     assert partial_store_item.arguments['host_out'] == __default_host__
@@ -51,8 +53,9 @@ def test_flowstore_add(monkeypatch, partial_flow_store):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
-    partial_store_item = partial_flow_store.add(args)
+    partial_store_item = partial_flow_store.add(args, envs={'key1': 'val1'})
 
+    assert partial_flow_store.object.env['key1'] == 'val1'
     assert partial_store_item
     assert isinstance(partial_flow_store.object, Flow)
     assert 'executor1' in partial_store_item.yaml_source

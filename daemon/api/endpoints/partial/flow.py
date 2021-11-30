@@ -30,14 +30,16 @@ async def _status():
     status_code=201,
     response_model=PartialFlowItem,
 )
-async def _create(flow: 'FlowModel', ports: Optional[PortMappings] = None):
+async def _create(
+    flow: 'FlowModel', ports: Optional[PortMappings] = None, envs: Optional[Dict] = {}
+):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
         args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
-        return store.add(args, ports)
+        return store.add(args, ports, envs)
     except Exception as ex:
         raise PartialDaemon400Exception from ex
 

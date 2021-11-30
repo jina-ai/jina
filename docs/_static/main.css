@@ -159,16 +159,17 @@ body[data-theme="auto"] .only-dark-line {
     100%{background-position:0% 50%}
 }
 
-#versions {
+.version-select {
     font-size: .7em;
     border-radius: 5px;
     cursor: pointer;
     background-color: #fff;
     background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
     border-color: var(--color-background-border);
-    margin-left: 1em;
     height: 1.8em;
     line-height: 1.8em;
     outline: none;
     text-align: center;
+    max-width: 7em;
+    color: var(--color-foreground-muted);
 }
