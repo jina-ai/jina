@@ -46,13 +46,25 @@ class ImageDataMixin:
         self.blob = blob
         return self
 
-    def convert_image_blob_to_uri(self: T) -> T:
+    def convert_image_blob_to_uri(self: T, channel_axis: int = -1) -> T:
         """Assuming :attr:`.blob` is a _valid_ image, set :attr:`uri` accordingly
 
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :return: itself after processed
         """
-        png_bytes = _to_png_buffer(self.blob)
+        blob = _move_channel_axis(self.blob, original_channel_axis=channel_axis)
+        png_bytes = _to_png_buffer(blob)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+        return self
+
+    def convert_image_blob_to_buffer(self: T, channel_axis: int = -1) -> T:
+        """Assuming :attr:`.blob` is a _valid_ image, set :attr:`buffer` accordingly
+
+        :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :return: itself after processed
+        """
+        blob = _move_channel_axis(self.blob, original_channel_axis=channel_axis)
+        self.buffer = _to_png_buffer(blob)
         return self
 
     def set_image_blob_shape(

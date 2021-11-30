@@ -121,7 +121,7 @@ def test_convert_image_blob_to_uri(arr_size, channel_axis, width, height):
     assert not doc.uri
     doc.set_image_blob_shape(channel_axis=channel_axis, shape=(width, height))
 
-    doc.convert_image_blob_to_uri()
+    doc.convert_image_blob_to_uri(channel_axis=channel_axis)
     assert doc.uri.startswith('data:image/png;base64,')
     assert doc.mime_type == 'image/png'
     assert doc.blob.any()  # assure after conversion blob still exist.
