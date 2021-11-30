@@ -95,8 +95,6 @@ class Document(AllMixins, ProtoTypeMixin):
 
     """
 
-    _ON_GETATTR = ['matches', 'chunks']
-
     # overload_inject_start_document
     @overload
     def __init__(
