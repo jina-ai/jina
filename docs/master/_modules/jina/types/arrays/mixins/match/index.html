@@ -724,6 +724,7 @@
 <span class="sd">        - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``</span>
 <span class="sd">        - To invert the distance as score and make all values in range [0, 1],</span>
 <span class="sd">            use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.</span>
+<span class="sd">        - If a custom metric distance is provided. Make sure that it returns scores as distances and not similarity, meaning the smaller the better.</span>
 <span class="sd">        :param darray: the other DocumentArray or DocumentArrayMemmap to match against</span>
 <span class="sd">        :param metric: the distance metric</span>
 <span class="sd">        :param limit: the maximum number of matches, when not given defaults to 20.</span>
