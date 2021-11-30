@@ -1,5 +1,23 @@
 # Indexers Benchmark
 
+## Results
+
+In the below graphs you can see the performance, in terms of speed and evaluation.
+Speed is reported for query time, in total seconds.
+Evaluation is provided in both precision and recall, out of the `top_k` 100.
+The tables are sorted by `time_search`.
+
+```{include} bench/gist.md
+```
+
+```{include} bench/sift.md
+```
+
+```{include} bench/sift1bil.md
+```
+
+## Indexers
+
 In this page we will show the performance capabilities of the different indexers available in Jina Hub.
 The purpose is to compare how they each scale, both with the amount of Documents indexed and with the embedding dimensionality.
 We have restricted our selection to the following
@@ -38,20 +56,4 @@ This is done with a further sub-sampling of the index set.
 This depended on the configuration parameters for the FAISS model.
 Then we search with the respective search set, using a batch size of `1`, to mimic single query operations. 
 
-
-## Results
-
-In the below graphs you can see the performance, in terms of speed and evaluation.
-Speed is reported for query time, in total seconds.
-Evaluation is provided in both precision and recall, out of the `top_k` 100.
-The tables are sorted by `time_search`, the total number of seconds the search task took to complete.
-
-```{include} bench/gist.md
-```
-
-```{include} bench/sift.md
-```
-
-```{include} bench/sift1bil.md
-```
 
