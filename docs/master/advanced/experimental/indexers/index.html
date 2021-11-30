@@ -720,24 +720,27 @@
 <p>These usually implement a form of similarity search, based on the embeddings created by the encoders you have chosen in your Flow.</p>
 <p>Example Hub Executors:</p>
 <ul class="simple">
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/jdb3vkgo">HnswlibSearcher</a></p></li>
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/gilkzt3f">FaissSearcher</a></p></li>
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/wiu040h9">AnnoySearcher</a></p></li>
 </ul>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">Compound Indexer</label><div class="tab-content docutils">
-<p>Compound indexer usually made up of a vector-based searcher, for computing the most similar matches, and a storage, for retrieving the match’s original metadata.</p>
+<p>Compound indexers are composed of a Searcher, for storing vectors and computing matches, and a Storage, for retrieving the document’s original metadata.</p>
 <p>Example Hub Executors:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://hub.jina.ai/executor/g57rla9l">FaissLMDBSearcher</a></p></li>
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a></p></li>
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/g57rla9l">FaissLMDBIndexer</a></p></li>
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a></p></li>
 </ul>
-<p>If you want to develop one like these, check the guide <a class="reference internal" href="../compound-executor/#compound-executor"><span class="std std-ref">here</span></a>.</p>
+<p>If you want to develop a composite like these, check the guide <a class="reference internal" href="../compound-executor/#compound-executor"><span class="std std-ref">here</span></a>.</p>
 </div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Besides, there are two types of special indexer,</p>
+<p>Besides, there are other special indexers,</p>
 <ul class="simple">
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/zb38xlt4">SimpleIndexer</a>. This uses the Jina built-in <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code> class to store data on disk and read it into RAM as needed.</p></li>
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/3klmcx6r">DocCache</a>. It is not used for storing and retrieving data directly, but for caching and avoiding duplicating of data during the indexing process.</p></li>
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a>. It is used for merging the results retrieved from sharding. It merges the results of shards by aggregating all matches by the corresponding Document in the original search request.</p></li>
 </ul>
@@ -781,24 +784,35 @@ The <code class="docutils literal notranslate"><span class="pre">/search</span><
 Some Indexers do implement a <code class="docutils literal notranslate"><span class="pre">/fill_embedding</span></code> endpoint, which functions as a Read by id.
 Please refer to the specific documentation or implementation of the Executor for details.</p>
 </section>
-<section id="indexing-vs-searching-operations">
-<h2>Indexing vs Searching Operations<a class="headerlink" href="#indexing-vs-searching-operations" title="Permalink to this headline">¶</a></h2>
-<p>The recommended usage of these Executors is to split them into Indexing vs Search Flows.
+<section id="recommended-all-in-one-indexers">
+<h2>Recommended All-in-one Indexers<a class="headerlink" href="#recommended-all-in-one-indexers" title="Permalink to this headline">¶</a></h2>
+<p>We recommend you use one of our pre-built full solution Indexers.
+These support both CRUD and Search operations without the need for any manual configuration or further operations.
+They are:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/zb38xlt4">SimpleIndexer</a>. This works well with small amounts of data, &lt;200k. Recommended usage is for experimentation and early prototyping. It uses exhaustive search.</p></li>
+<li><p><a class="reference external" href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a>. This is a robust, scalable Indexer that support replication and sharding, and uses the powerful <a class="reference external" href="https://github.com/nmslib/hnswlib">HNSWlib</a> approximate nearest neighbor algorithm.</p></li>
+</ul>
+<p>Check their respective documentation pages for more information.</p>
+</section>
+<section id="your-custom-solution">
+<h2>Your Custom Solution<a class="headerlink" href="#your-custom-solution" title="Permalink to this headline">¶</a></h2>
+<p>If, on the other hand, you want to use another combination of Storage Indexer and Search Indexer, you will need to do some manual patching.
+The recommended usage of these Executors is to split them into Indexing vs Search Flows.
 In the Indexing Flow, you perform write, update, and delete.
-In order to search them, you need to start a Search Flow, dump the data from the Index Flow, and load it into the Query Flow.</p>
+In order to search them, you need to start a Search Flow, dump the data from the Index Flow, and load it into the Search Flow.</p>
 <p>See below figure for how this would look like:</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../../../_images/replicas.png"><img alt="../../../_images/replicas.png" src="../../../_images/replicas.png" style="width: 80%;"/></a>
 </figure>
-<p>In the above case, the Storage could be the <a class="reference external" href="https://hub.jina.ai/executor/d45rawx6">PostgreSQL</a>-based Storage, while the Query Flow could be based on <a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a>.</p>
+<p>In the above case, the Storage could be the <a class="reference external" href="https://hub.jina.ai/executor/3e1sp6fp">MongoDBStorage</a>-based Storage, while the Search Flow could be based on <a class="reference external" href="https://hub.jina.ai/executor/jdb3vkgo">HnswlibSearcher</a> .</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>For a showcase code, check our <a class="reference external" href="https://github.com/jina-ai/executors/tree/main/tests/integration/psql_dump_reload">integration tests</a>.</p>
 </div>
 <p>The split between indexing and search Flows allows you to continuously serve requests in your application (in the search Flow), while still being able to write or modify the underlying data. Then when you want to update the state of the searchable data for your users, you perform a dump and rolling update.</p>
-</section>
-<section id="dump-and-rolling-update">
-<span id="dump-rolling-restart"></span><h2>Dump and Rolling Update<a class="headerlink" href="#dump-and-rolling-update" title="Permalink to this headline">¶</a></h2>
+<section id="synchronizing-state-via-rolling-update">
+<span id="dump-rolling-restart"></span><h3>Synchronizing State via Rolling Update<a class="headerlink" href="#synchronizing-state-via-rolling-update" title="Permalink to this headline">¶</a></h3>
 <p>The communication between index and search Flows is done via this pair of actions.
 The <strong>dump</strong> action tells the indexer to export its internal data (from whatever format it stores it in) to a disk location, optimized to be read by the shards in your search Flow.
 At the other end, the <strong>rolling update</strong> tells the search Flow to recreate its internal state with the new version of the data.</p>
@@ -836,6 +850,7 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 <p><code class="docutils literal notranslate"><span class="pre">dump_path</span></code> needs to be accessible by local reference. It can however be a network location / internal Docker location that you have mapped</p>
 </div>
 </section>
+</section>
 <section id="indexer-cheat-sheet">
 <h2>Indexer Cheat Sheet<a class="headerlink" href="#indexer-cheat-sheet" title="Permalink to this headline">¶</a></h2>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -858,25 +873,25 @@ At the other end, the <strong>rolling update</strong> tells the search Flow to r
 <td>any</td>
 <td>&gt; 20</td>
 <td>any</td>
-<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use k8s &amp; replicas</td>
+<td><a href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a> + use k8s &amp; replicas</td>
 </tr>
 <tr>
 <td>not fit into memory</td>
 <td>any</td>
 <td>any</td>
-<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use shards</td>
+<td><a href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a> + use shards</td>
 </tr>
 <tr>
 <td>not fit into memory</td>
 <td>&gt; 20</td>
 <td>any</td>
-<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use k8s &amp; shards &amp; replicas</td>
+<td><a href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a> + use k8s &amp; shards &amp; replicas</td>
 </tr>
 <tr>
 <td>any</td>
 <td>any</td>
 <td>small</td>
-<td><a href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> + use k8s &amp; shards &amp; replicas</td>
+<td><a href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a> + use k8s &amp; shards &amp; replicas</td>
 </tr>
 </tbody>
 </table></div>
@@ -910,7 +925,7 @@ A high-quality Q&amp;A chatbot might be OK with having answers only after one or
 Usually, a new machine will spawn and take over.
 Anyhow, this might take some minutes.
 If you need instant failure recovery, you need to use replicas.
-Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/ugatwtp8">FaissPostgresIndexer</a> in combination with <span class="xref std std-ref">replicas</span> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
+Jina provides this via the <a class="reference external" href="https://hub.jina.ai/executor/dvp0845a">HNSWPostgresIndexer</a> in combination with <span class="xref std std-ref">replicas</span> inside <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">kubernetes (k8s)</span></a>.</p>
 </section>
 </section>
 </section>
@@ -947,7 +962,7 @@ Jina provides this via the <a class="reference external" href="https://hub.jina.
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 29, 2021.
+                    Last updated on Nov 30, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -974,8 +989,11 @@ Jina provides this via the <a class="reference external" href="https://hub.jina.
                         <ul>
 <li><a class="reference internal" href="#">Indexers on Jina Hub</a><ul>
 <li><a class="reference internal" href="#crud-operations-and-the-executor-endpoints">CRUD operations and the Executor endpoints</a></li>
-<li><a class="reference internal" href="#indexing-vs-searching-operations">Indexing vs Searching Operations</a></li>
-<li><a class="reference internal" href="#dump-and-rolling-update">Dump and Rolling Update</a></li>
+<li><a class="reference internal" href="#recommended-all-in-one-indexers">Recommended All-in-one Indexers</a></li>
+<li><a class="reference internal" href="#your-custom-solution">Your Custom Solution</a><ul>
+<li><a class="reference internal" href="#synchronizing-state-via-rolling-update">Synchronizing State via Rolling Update</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indexer-cheat-sheet">Indexer Cheat Sheet</a><ul>
 <li><a class="reference internal" href="#does-my-data-fit-into-memory">Does my data fit into memory?</a></li>
 <li><a class="reference internal" href="#how-many-requests-per-second-rps-does-the-system-need-to-handle">How many requests per second (RPS) does the system need to handle?</a></li>
