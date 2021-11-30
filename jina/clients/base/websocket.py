@@ -90,8 +90,7 @@ class WebSocketBaseClient(BaseClient):
 
                 def _request_handler(request: 'Request') -> 'asyncio.Future':
                     """
-                    For zmq & grpc data requests from gateway, for each request in the iterator, we send the `Message`
-                    using `iolet.send_message()`.
+                    For each request in the iterator, we send the `Message` using `iolet.send_message()`.
                     For websocket requests from client, for each request in the iterator, we send the request in `bytes`
                     using using `iolet.send_message()`.
                     Then add {<request-id>: <an-empty-future>} to the request buffer.

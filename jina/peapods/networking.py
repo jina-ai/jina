@@ -54,10 +54,11 @@ class ReplicaList:
                 else 0
             )
             idx_to_delete = self._address_to_connection_idx.pop(address)
-            await self._address_to_channel[address].close(None)
-            del self._address_to_channel[address]
 
             popped_connection = self._connections.pop(idx_to_delete)
+            # we should handle graceful termination better, 0.5 is a rather random number here
+            await self._address_to_channel[address].close(0.5)
+            del self._address_to_channel[address]
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
@@ -108,7 +109,7 @@ class ReplicaList:
         Close all connections and clean up internal state
         """
         for address in self._address_to_channel:
-            await self._address_to_channel[address].close(None)
+            await self._address_to_channel[address].close(0.5)
         self._address_to_channel.clear()
         self._address_to_connection_idx.clear()
         self._connections.clear()
@@ -205,6 +206,10 @@ class GrpcConnectionPool:
                     f'Adding connection for pod {pod}/{type}/{entity_id} to {address}'
                 )
                 self._pods[pod][type][entity_id].add_connection(address)
+            else:
+                self._logger.debug(
+                    f'Ignoring activation of pea, {address} already known'
+                )
 
         async def remove_head(self, pod, address, head_id: Optional[int] = 0):
             return await self._remove_connection(pod, head_id, address, 'heads')

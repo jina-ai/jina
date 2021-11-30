@@ -1,9 +1,0 @@
-!Override
-with:
-  param3: 10
-  param2: 10
-  param1: 10
-metas:
-  py_modules: [executor.py]
-  name: 'name'
-  workspace: 'predefined_workpace'

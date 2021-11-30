@@ -90,25 +90,6 @@ def docker_compose(request):
     )
 
 
-@pytest.fixture(scope='function', autouse=True)
-def patched_random_port(mocker):
-    used_ports = set()
-    from jina.helper import random_port
-    from jina.excepts import NoAvailablePortError
-
-    def _random_port():
-
-        for i in range(50):
-            _port = random_port()
-
-            if _port is not None and _port not in used_ports:
-                used_ports.add(_port)
-                return _port
-        raise NoAvailablePortError
-
-    mocker.patch('jina.helper.random_port', new_callable=lambda: _random_port)
-
-
 def _clean_up_workspace(image_id, network_id, workspace_id, workspace_store):
     from daemon.dockerize import Dockerizer
 

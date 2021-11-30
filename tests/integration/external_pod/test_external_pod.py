@@ -75,7 +75,6 @@ def test_flow_with_external_pod(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
-        del external_args['dynamic_routing']
         flow = Flow().add(
             **external_args,
             name='external_fake',
@@ -95,11 +94,6 @@ def external_executor_args():
         'external_real',
         '--port-in',
         str(random_port()),
-        '--host-in',
-        '0.0.0.0',
-        '--socket-in',
-        'ROUTER_BIND',
-        '--dynamic-routing-out',
     ]
     return set_pea_parser().parse_args(args)
 
@@ -135,7 +129,6 @@ def test_two_flow_with_shared_external_pod(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
-        del external_args['dynamic_routing']
         flow1 = Flow().add(
             **external_args,
             name='external_fake',
@@ -201,8 +194,6 @@ def external_pod_shards_1_args(num_replicas, num_shards):
         'external_real_1',
         '--port-in',
         str(random_port()),
-        '--host-in',
-        '0.0.0.0',
         '--shards',
         str(num_shards),
         '--replicas',
@@ -227,8 +218,6 @@ def external_pod_shards_2_args(num_replicas, num_shards):
         'external_real_2',
         '--port-in',
         str(random_port()),
-        '--host-in',
-        '0.0.0.0',
         '--shards',
         str(num_shards),
         '--replicas',
@@ -261,11 +250,9 @@ def test_flow_with_external_pod_shards(
         del external_args_1['name']
         del external_args_1['external']
         del external_args_1['pod_role']
-        del external_args_1['dynamic_routing']
         del external_args_2['name']
         del external_args_2['external']
         del external_args_2['pod_role']
-        del external_args_2['dynamic_routing']
         flow = (
             Flow()
             .add(name='executor1')
@@ -298,8 +285,6 @@ def external_pod_pre_shards_args(num_replicas, num_shards):
         'external_real',
         '--port-in',
         str(random_port()),
-        '--host-in',
-        '0.0.0.0',
         '--shards',
         str(num_shards),
         '--replicas',
@@ -329,7 +314,6 @@ def test_flow_with_external_pod_pre_shards(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
-        del external_args['dynamic_routing']
         flow = (
             Flow()
             .add(
@@ -361,8 +345,6 @@ def external_pod_join_args(num_replicas, num_shards):
         'external_real',
         '--port-in',
         str(random_port()),
-        '--host-in',
-        '0.0.0.0',
         '--pod-role',
         'JOIN',
         '--shards',
@@ -394,7 +376,6 @@ def test_flow_with_external_pod_join(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
-        del external_args['dynamic_routing']
         flow = (
             Flow()
             .add(

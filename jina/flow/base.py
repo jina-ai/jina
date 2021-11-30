@@ -1046,6 +1046,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes.pop(GATEWAY_NAME)
 
         self._build_level = FlowBuildLevel.EMPTY
+
         self.logger.debug('Flow is closed!')
         self.logger.close()
 

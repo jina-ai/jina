@@ -79,7 +79,6 @@ async def test_no_message_lost_during_scaling(logger, docker_images):
         uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
-        grpc_data_requests=True,
     )
 
     with flow:
@@ -170,7 +169,6 @@ async def test_no_message_lost_during_kill(logger, docker_images):
         uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
-        grpc_data_requests=True,
     )
 
     with flow:
@@ -270,7 +268,6 @@ def test_linear_processing_time_scaling(
         uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
-        grpc_data_requests=True,
     )
 
     with flow:
