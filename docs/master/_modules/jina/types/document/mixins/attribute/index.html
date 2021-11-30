@@ -553,6 +553,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -687,12 +688,9 @@
 <div class="viewcode-block" id="GetSetAttributeMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.attribute/#jina.types.document.mixins.attribute.GetSetAttributeMixin">[docs]</a><span class="k">class</span> <span class="nc">GetSetAttributeMixin</span><span class="p">:</span>
     <span class="sd">"""Provide helper functions for :class:`Document` to allow advanced set and get attributes """</span>
 
-    <span class="n">_ON_GETATTR</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'matches'</span><span class="p">,</span> <span class="s1">'chunks'</span><span class="p">]</span>
     <span class="n">_special_mapped_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'scores'</span><span class="p">,</span> <span class="s1">'evaluations'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ON_GETATTR</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_increaseVersion</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">elif</span> <span class="s1">'__'</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>

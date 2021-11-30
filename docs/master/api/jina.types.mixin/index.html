@@ -578,6 +578,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -706,7 +707,24 @@
 <dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.mixin.</span></span><span class="sig-name descname"><span class="pre">ProtoTypeMixin</span></span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mixin class of <cite>ProtoType</cite>.</p>
+<p>The base mixin class of all Jina types.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><p>All Jina types should inherit from this class.</p></li>
+<li><p>All subclass should have <code class="docutils literal notranslate"><span class="pre">self._pb_body</span></code></p></li>
+<li><p>All subclass should implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> with the possibility of initializing from <code class="docutils literal notranslate"><span class="pre">None</span></code>, e.g.:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyJinaType</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">SomePbMsg</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">proto</span> <span class="ow">or</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SomePbMsg</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.json">
 <span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.json" title="Permalink to this definition">¶</a></dt>

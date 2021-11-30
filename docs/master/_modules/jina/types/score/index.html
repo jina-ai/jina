@@ -553,6 +553,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -731,21 +732,24 @@
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">score</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">NamedScore</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">score</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">_pb_body</span>
             <span class="k">elif</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># note ``None`` is not considered as a bad type</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">score</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadNamedScoreType</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'fail to construct a NamedScore from </span><span class="si">{</span><span class="n">score</span><span class="si">}</span><span class="s1">'</span>

@@ -553,6 +553,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -676,7 +677,7 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.ndarray</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterator</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -696,7 +697,6 @@
         <span class="n">tensorflow</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
         <span class="n">tensorflow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-        <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -713,8 +713,8 @@
 <span class="sd">    :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">proto</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">proto</span> <span class="k">if</span> <span class="n">proto</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>

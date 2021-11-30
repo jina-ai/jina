@@ -552,6 +552,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -1290,10 +1291,10 @@
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin">CommandMixin (class in jina.types.request.mixin)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.arrays.mixins.io.common/#jina.types.arrays.mixins.io.common.CommonIOMixin">CommonIOMixin (class in jina.types.arrays.mixins.io.common)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.complete_path">complete_path() (in module jina.jaml.helper)</a>
 </li>
         <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">CompoundPod (class in jina.peapods.pods.compound)</a>
@@ -1379,6 +1380,8 @@
         <li><a href="../api/jina.types.document.mixins.buffer/#jina.types.document.mixins.buffer.BufferDataMixin.convert_buffer_to_uri">convert_buffer_to_uri() (jina.types.document.mixins.buffer.BufferDataMixin method)</a>
 </li>
         <li><a href="../api/jina.types.document.mixins.content/#jina.types.document.mixins.content.ContentPropertyMixin.convert_content_to_uri">convert_content_to_uri() (jina.types.document.mixins.content.ContentPropertyMixin method)</a>
+</li>
+        <li><a href="../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_buffer">convert_image_blob_to_buffer() (jina.types.document.mixins.image.ImageDataMixin method)</a>
 </li>
         <li><a href="../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_sliding_windows">convert_image_blob_to_sliding_windows() (jina.types.document.mixins.image.ImageDataMixin method)</a>
 </li>
@@ -3555,8 +3558,6 @@
           <li><a href="../api/jina.peapods.runtimes.container/#module-jina.peapods.runtimes.container">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.runtimes.container.helper
 
@@ -3564,6 +3565,8 @@
           <li><a href="../api/jina.peapods.runtimes.container.helper/#module-jina.peapods.runtimes.container.helper">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.runtimes.gateway
 
@@ -3926,6 +3929,13 @@
 
         <ul>
           <li><a href="../api/jina.types.arrays.mixins.match/#module-jina.types.arrays.mixins.match">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.arrays.mixins.parallel
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.parallel/#module-jina.types.arrays.mixins.parallel">module</a>
 </li>
         </ul></li>
         <li>
@@ -4437,6 +4447,8 @@
 </li>
         </ul></li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.managed_objects">managed_objects (daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map">map() (jina.types.arrays.mixins.parallel.ParallelMixin method)</a>
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter.MAPPING">MAPPING (jina.logging.formatter.ColorFormatter attribute)</a>
 </li>
@@ -4976,6 +4988,8 @@
 </li>
           <li><a href="../api/jina.types.arrays.mixins.match/#module-jina.types.arrays.mixins.match">jina.types.arrays.mixins.match</a>
 </li>
+          <li><a href="../api/jina.types.arrays.mixins.parallel/#module-jina.types.arrays.mixins.parallel">jina.types.arrays.mixins.parallel</a>
+</li>
           <li><a href="../api/jina.types.arrays.mixins.plot/#module-jina.types.arrays.mixins.plot">jina.types.arrays.mixins.plot</a>
 </li>
           <li><a href="../api/jina.types.arrays.mixins.sample/#module-jina.types.arrays.mixins.sample">jina.types.arrays.mixins.sample</a>
@@ -5227,6 +5241,8 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.PARALLEL">PARALLEL (jina.enums.PeaRoleType attribute)</a>
 </li>
+        <li><a href="../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin">ParallelMixin (class in jina.types.arrays.mixins.parallel)</a>
+</li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaRequestModel.parameters">parameters (jina.peapods.runtimes.gateway.http.models.JinaRequestModel attribute)</a>
 
         <ul>
@@ -5377,10 +5393,10 @@
 </li>
         <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.PodClient">PodClient (class in daemon.clients.pods)</a>
 </li>
-        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
+</li>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory">PodFactory (class in jina.peapods.pods.factory)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType">PodRoleType (class in jina.enums)</a>

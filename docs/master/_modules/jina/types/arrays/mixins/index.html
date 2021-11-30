@@ -553,6 +553,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -695,6 +696,7 @@
 <span class="kn">from</span> <span class="nn">.text</span> <span class="kn">import</span> <span class="n">TextToolsMixin</span>
 <span class="kn">from</span> <span class="nn">.traverse</span> <span class="kn">import</span> <span class="n">TraverseMixin</span>
 <span class="kn">from</span> <span class="nn">.embed</span> <span class="kn">import</span> <span class="n">EmbedMixin</span>
+<span class="kn">from</span> <span class="nn">.parallel</span> <span class="kn">import</span> <span class="n">ParallelMixin</span>
 
 
 <div class="viewcode-block" id="AllMixins"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.mixins/#jina.types.arrays.mixins.AllMixins">[docs]</a><span class="k">class</span> <span class="nc">AllMixins</span><span class="p">(</span>
@@ -715,6 +717,7 @@
     <span class="n">SampleMixin</span><span class="p">,</span>
     <span class="n">TextToolsMixin</span><span class="p">,</span>
     <span class="n">EvaluationMixin</span><span class="p">,</span>
+    <span class="n">ParallelMixin</span><span class="p">,</span>
     <span class="n">ABC</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """</span>

@@ -553,6 +553,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -685,7 +686,22 @@
 
 
 <div class="viewcode-block" id="ProtoTypeMixin"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin">[docs]</a><span class="k">class</span> <span class="nc">ProtoTypeMixin</span><span class="p">:</span>
-    <span class="sd">"""Mixin class of `ProtoType`."""</span>
+    <span class="sd">"""The base mixin class of all Jina types.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        - All Jina types should inherit from this class.</span>
+<span class="sd">        - All subclass should have ``self._pb_body``</span>
+<span class="sd">        - All subclass should implement ``__init__`` with the possibility of initializing from ``None``, e.g.:</span>
+
+<span class="sd">            .. highlight:: python</span>
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                class MyJinaType(ProtoTypeMixin):</span>
+
+<span class="sd">                    def __init__(self, proto: Optional[jina_pb2.SomePbMsg] = None):</span>
+<span class="sd">                        self._pb_body = proto or jina_pb2.SomePbMsg()</span>
+
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="ProtoTypeMixin.json"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the object in JSON string</span>
@@ -723,6 +739,13 @@
 <span class="sd">        :return: binary string representation of the object</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">SerializePartialToString</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">serialized</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">binary_str</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">'serialized'</span><span class="p">])</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>

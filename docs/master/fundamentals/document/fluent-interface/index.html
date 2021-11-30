@@ -579,6 +579,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -741,6 +742,39 @@
 </pre></div>
 </div>
 </div>
+<section id="parallelization">
+<h2>Parallelization<a class="headerlink" href="#parallelization" title="Permalink to this headline">¶</a></h2>
+<p>Fluent interface is super useful when processing a large <a class="reference internal" href="../../../api/jina/#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> or <a class="reference internal" href="../../../api/jina/#jina.DocumentArrayMemmap" title="jina.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>. One can leverage <a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map" title="jina.types.arrays.mixins.parallel.ParallelMixin.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> to speed up things quite a lot.</p>
+<p>The following example shows the time difference on preprocessing ~6000 image Documents.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">set_image_blob_normalization</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">'map-process'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'process'</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">'map-thread'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'thread'</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">'for-loop'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="n">foo</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>map-process ...	map-process takes 5 seconds (5.55s)
+map-thread ...	map-thread takes 10 seconds (10.28s)
+for-loop ...	for-loop takes 18 seconds (18.52s)
+</pre></div>
+</div>
+</section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <p>All the following methods can be chained.</p>
@@ -770,6 +804,7 @@ and <a class="reference internal" href="../../../api/jina/#jina.Document.buffer"
 <p>Provide helper functions for <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> to support image data.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.convert_buffer_to_image_blob" title="jina.types.document.mixins.image.ImageDataMixin.convert_buffer_to_image_blob"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_buffer_to_image_blob()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_buffer" title="jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_buffer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_image_blob_to_buffer()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_sliding_windows" title="jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_sliding_windows"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_image_blob_to_sliding_windows()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_uri" title="jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_uri"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_image_blob_to_uri()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin.dump_image_blob_to_file" title="jina.types.document.mixins.image.ImageDataMixin.dump_image_blob_to_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dump_image_blob_to_file()</span></code></a></p></li>
@@ -888,6 +923,7 @@ and <a class="reference internal" href="../../../api/jina/#jina.Document.buffer"
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Fluent Interface</a><ul>
+<li><a class="reference internal" href="#parallelization">Parallelization</a></li>
 <li><a class="reference internal" href="#methods">Methods</a><ul>
 <li><a class="reference internal" href="#convert">Convert</a></li>
 <li><a class="reference internal" href="#textdata">TextData</a></li>

@@ -579,6 +579,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
@@ -1421,6 +1422,68 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 </section>
+<section id="parallel-processing">
+<h2>Parallel processing<a class="headerlink" href="#parallel-processing" title="Permalink to this headline">¶</a></h2>
+<p>Working with large <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all <code class="docutils literal notranslate"><span class="pre">Document</span></code> one by one. Jina provides <a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map" title="jina.types.arrays.mixins.parallel.ParallelMixin.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> to speed up things quite a lot. It is like Python
+built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code> function but mapping the function to every element of the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in parallel.</p>
+<p>Let’s see an example, where we want to preprocess ~6000 image Documents. First we fill the URI of each Document.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>  <span class="c1"># 6000 image Document with .uri set</span>
+</pre></div>
+</div>
+<p>To load and preprocess <code class="docutils literal notranslate"><span class="pre">docs</span></code>, we have:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">load_uri_to_image_blob</span><span class="p">()</span>
+             <span class="o">.</span><span class="n">set_image_blob_normalization</span><span class="p">()</span>
+             <span class="o">.</span><span class="n">set_image_blob_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This load the image from file into <code class="docutils literal notranslate"><span class="pre">.blob</span></code> do some normalization and set the channel axis. Now, let’s compare the time difference when we do things sequentially and use <code class="docutils literal notranslate"><span class="pre">DocumentArray.map()</span></code> with different backends.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">For-loop</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+    <span class="n">foo</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">Map with process backend</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'process'</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--5-input--3" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--3">Map with thread backend</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'thread'</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>map-process ...	map-process takes 5 seconds (5.55s)
+map-thread ...	map-thread takes 10 seconds (10.28s)
+foo-loop ...	foo-loop takes 18 seconds (18.52s)
+</pre></div>
+</div>
+<p>One can see big improvement with <code class="docutils literal notranslate"><span class="pre">.map()</span></code>.</p>
+<div class="important admonition">
+<p class="admonition-title">When to choose process or thread backend?</p>
+<p>It depends on how your <code class="docutils literal notranslate"><span class="pre">func</span></code> in <code class="docutils literal notranslate"><span class="pre">.map(func)</span></code> look like:</p>
+<ul class="simple">
+<li><p>First, if you want <code class="docutils literal notranslate"><span class="pre">func</span></code> to modify elements inplace, the you can only use <code class="docutils literal notranslate"><span class="pre">thread</span></code> backend. With <code class="docutils literal notranslate"><span class="pre">process</span></code> backend you can only rely on the return values of <code class="docutils literal notranslate"><span class="pre">.map()</span></code>, the modification happens inside <code class="docutils literal notranslate"><span class="pre">func</span></code> is lost.</p></li>
+<li><p>Second, follow what people often suggests: IO-bound <code class="docutils literal notranslate"><span class="pre">func</span></code> uses <code class="docutils literal notranslate"><span class="pre">thread</span></code>, CPU-bound <code class="docutils literal notranslate"><span class="pre">func</span></code> uses <code class="docutils literal notranslate"><span class="pre">process</span></code>.</p></li>
+</ul>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you only modify elements in-place, and do not need return values, you can write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This follows the same convention as you using Python built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code>.</p>
+</div>
+</section>
 <section id="batching">
 <h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
 <p>One can batch a large <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> into small ones via <a class="reference internal" href="../../../api/jina.types.arrays.mixins.group/#jina.types.arrays.mixins.group.GroupMixin.batch" title="jina.types.arrays.mixins.group.GroupMixin.batch"><code class="xref py py-func docutils literal notranslate"><span class="pre">batch()</span></code></a>. This is useful when a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is too big to process at once. It is particular useful on <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, which ensures the data gets loaded on-demand and in a conservative manner.</p>
@@ -1682,6 +1745,7 @@ one shot:</p>
 </li>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
 <li><a class="reference internal" href="#persistence">Persistence</a></li>
+<li><a class="reference internal" href="#parallel-processing">Parallel processing</a></li>
 <li><a class="reference internal" href="#batching">Batching</a></li>
 <li><a class="reference internal" href="#sampling">Sampling</a></li>
 <li><a class="reference internal" href="#shuffle">Shuffle</a></li>
