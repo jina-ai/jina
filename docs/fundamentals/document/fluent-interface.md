@@ -102,6 +102,7 @@ Provide helper functions for {class}`Document` to support text data.
 ### ImageData
 Provide helper functions for {class}`Document` to support image data.
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_buffer_to_image_blob`
+- {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_buffer`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_sliding_windows`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_uri`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.dump_image_blob_to_file`
