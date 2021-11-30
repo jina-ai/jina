@@ -41,6 +41,41 @@ d = Document(uri='apple.png')
 ```
 ````
 
+## Parallelization
+
+Fluent interface is super useful when processing a large {class}`~jina.DocumentArray` or {class}`~jina.DocumentArrayMemmap`. One can leverage {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. 
+
+The following example shows the time difference on preprocessing ~6000 image Documents.
+
+```python
+from jina import DocumentArray
+from jina.logging.profile import TimeContext
+
+docs = DocumentArray.from_files('*.jpg')
+
+def foo(d):
+    return (d.load_uri_to_image_blob()
+            .set_image_blob_normalization()
+            .set_image_blob_channel_axis(-1, 0))
+
+with TimeContext('map-process'):
+    for d in docs.map(foo, backend='process'):
+        pass
+
+with TimeContext('map-thread'):
+    for d in docs.map(foo, backend='thread'):
+        pass
+
+with TimeContext('for-loop'):
+    for d in docs:
+        foo(d)
+```
+
+```text
+map-process ...	map-process takes 5 seconds (5.55s)
+map-thread ...	map-thread takes 10 seconds (10.28s)
+for-loop ...	for-loop takes 18 seconds (18.52s)
+```
 
 ## Methods
 
