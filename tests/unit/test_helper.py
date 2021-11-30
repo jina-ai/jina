@@ -271,16 +271,6 @@ def config_few_ports():
     del os.environ['JINA_RANDOM_PORT_MAX']
 
 
-def test_random_port_max_failures_for_tests_only(config_few_ports):
-    from jina.helper import random_port as random_port_with_max_failures
-
-    with pytest.raises(NoAvailablePortError):
-        random_port_with_max_failures()
-        random_port_with_max_failures()
-        random_port_with_max_failures()
-        random_port_with_max_failures()
-
-
 class MyDummyExecutor(Executor):
     @requests
     def foo(self, **kwargs):
