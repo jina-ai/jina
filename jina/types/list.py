@@ -19,7 +19,7 @@ class ListView(ProtoTypeMixin, MutableSequence):
 
         :param list: the protobuf ListValue object
         """
-        self._pb_body = list or struct_pb2.ListValue()
+        self._pb_body = list if list is not None else struct_pb2.ListValue()
 
     def insert(self, index: int, object: Any) -> None:
         """

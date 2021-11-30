@@ -35,7 +35,7 @@ class NdArray(ProtoTypeMixin):
     """
 
     def __init__(self, proto: Optional[jina_pb2.NdArrayProto] = None):
-        self._pb_body = proto or jina_pb2.NdArrayProto()
+        self._pb_body = proto if proto is not None else jina_pb2.NdArrayProto()
 
     @property
     def value(self) -> 'ArrayType':

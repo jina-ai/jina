@@ -20,7 +20,7 @@ class StructView(ProtoTypeMixin, MutableMapping):
 
         :param struct: the protobuf Struct object
         """
-        self._pb_body = struct or struct_pb2.Struct()
+        self._pb_body = struct if struct is not None else struct_pb2.Struct()
 
     def __setitem__(self, key, value):
         self._pb_body[key] = value

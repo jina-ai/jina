@@ -20,7 +20,7 @@ class TargetPod(ProtoTypeMixin):
     """
 
     def __init__(self, target: Optional['jina_pb2.TargetPodProto'] = None) -> None:
-        self._pb_body = target or jina_pb2.TargetPodProto()
+        self._pb_body = target if target is not None else jina_pb2.TargetPodProto()
 
     @property
     def port(self) -> int:
