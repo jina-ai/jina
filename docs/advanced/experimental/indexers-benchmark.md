@@ -7,9 +7,10 @@ We have restricted our selection to the following
 - [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4)
 - [FaissSearcher](https://hub.jina.ai/executor/gilkzt3f)
 - [HNSWSearcher](https://hub.jina.ai/executor/jdb3vkgo)
+- [RiiSearcher](https://hub.jina.ai/executor/ksr1lmku)
 
 `SimpleIndexer` is based on doing exhaustive search across all the Documents.
-However, Both FAISS and HNSW are based on the approximate nearest neighbor approach. 
+However, FAISS, HNSW and Rii are based on the approximate nearest neighbor approach. 
 For each of these, we provide several configurations of parameters, in order to ascertain which behaves best.
 
 ## Datasets
@@ -40,14 +41,17 @@ Then we search with the respective search set, using a batch size of `1`, to mim
 
 ## Results
 
-[comment]: <> (TODO To store html plots somewhere and reference them here with iframes?)
-
 In the below graphs you can see the performance, in terms of speed and evaluation.
-Speed is reported for both index and query time, in total seconds.
+Speed is reported for query time, in total seconds.
 Evaluation is provided in both precision and recall, out of the `top_k` 100.
+The tables are sorted by `time_search`, the total number of seconds the search task took to complete.
 
-<iframe src="https://www.w3schools.com"></iframe>
+```{include} bench/gist.md
+```
 
-Here is the data in table form as well:
+```{include} bench/sift.md
+```
 
-[comment]: <> (TODO)
+```{include} bench/sift1bil.md
+```
+
