@@ -17,5 +17,4 @@ That said, have fun!
 
 kubernetes
 indexers
-indexers-benchmark
 ```

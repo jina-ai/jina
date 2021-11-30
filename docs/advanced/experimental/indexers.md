@@ -1,5 +1,11 @@
 # Indexers on Jina Hub
 
+```{toctree}
+:hidden:
+
+indexers-benchmark
+```
+
 Indexers are a subtype of Hub Executors that store or retrieve data. They are designed to replace `DocumentArray` and `DocumentArrayMemmap` in large-scale applications.
 
 They are split by usage and interface. These types are:
