@@ -819,6 +819,82 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
+## Parallel processing
+
+Working with large `DocumentArray` element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all `Document` one by one. Jina provides {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. It is like Python 
+built-in `map()` function but mapping the function to every element of the `DocumentArray` in parallel. 
+
+Let's see an example, where we want to preprocess ~6000 image Documents. First we fill the URI of each Document.
+
+```python
+from jina import DocumentArray
+
+docs = DocumentArray.from_files('*.jpg')  # 6000 image Document with .uri set
+```
+
+To load and preprocess `docs`, we have:
+
+```python
+def foo(d):
+    return (d.load_uri_to_image_blob()
+             .set_image_blob_normalization()
+             .set_image_blob_channel_axis(-1, 0))
+```
+
+This load the image from file into `.blob` do some normalization and set the channel axis. Now, let's compare the time difference when we do things sequentially and use `DocumentArray.map()` with different backends.
+
+````{tab} For-loop
+
+```python
+for d in docs:
+    foo(d)
+```
+````
+
+````{tab} Map with process backend
+
+```python
+for d in docs.map(foo, backend='process'):
+    pass
+```
+````
+
+````{tab} Map with thread backend
+
+```python
+for d in docs.map(foo, backend='thread'):
+    pass
+```
+````
+
+```text
+map-process ...	map-process takes 5 seconds (5.55s)
+map-thread ...	map-thread takes 10 seconds (10.28s)
+foo-loop ...	foo-loop takes 18 seconds (18.52s)
+```
+
+One can see big improvement with `.map()`.
+
+```{admonition} When to choose process or thread backend?
+:class: important
+
+It depends on how your `func` in `.map(func)` look like:
+- First, if you want `func` to modify elements inplace, the you can only use `thread` backend. With `process` backend you can only rely on the return values of `.map()`, the modification happens inside `func` is lost.
+- Second, follow what people often suggests: IO-bound `func` uses `thread`, CPU-bound `func` uses `process`.
+```
+
+````{tip}
+If you only modify elements in-place, and do not need return values, you can write:
+
+```python
+da = DocumentArray(...)
+list(da.map(func))
+```
+
+This follows the same convention as you using Python built-in `map()`.
+
+````
+
 ## Batching
 
 One can batch a large `DocumentArray` into small ones via {func}`~jina.types.arrays.mixins.group.GroupMixin.batch`. This is useful when a `DocumentArray` is too big to process at once. It is particular useful on `DocumentArrayMemmap`, which ensures the data gets loaded on-demand and in a conservative manner.
