@@ -1031,12 +1031,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
         if len(removed_pods) > 0:
+            # very dirty
             op_flow._pod_nodes[GATEWAY_NAME].args.graph_description = json.dumps(
                 op_flow._get_graph_representation()
             )
             op_flow._pod_nodes[GATEWAY_NAME].args.pod_addresses = json.dumps(
                 op_flow._get_pod_addresses()
             )
+
+            op_flow._pod_nodes[GATEWAY_NAME].update_pea_args()
         return op_flow
 
     def __call__(self, *args, **kwargs):
