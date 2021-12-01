@@ -121,6 +121,7 @@ class TopologyGraph:
             return hanging_tasks_tuples
 
     def __init__(self, graph_representation: Dict, *args, **kwargs):
+        print(f' graph_representation {graph_representation}')
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
             origin_node_names = graph_representation['start-gateway']

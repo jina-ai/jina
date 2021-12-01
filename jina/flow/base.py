@@ -531,6 +531,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return n
 
         graph_dict = {}
+        print(f'nodes {self._pod_nodes}')
         for node, v in self._pod_nodes.items():
             node = _add_node(graph_dict, node)
             if node == 'start-gateway':
@@ -987,16 +988,29 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if GATEWAY_NAME not in op_flow._pod_nodes:
             op_flow._add_gateway(
                 needs={op_flow.last_pod},
-                graph_description=self._get_graph_representation(),
-                pod_addresses=self._get_pod_addresses(),
+                graph_description=op_flow._get_graph_representation(),
+                pod_addresses=op_flow._get_pod_addresses(),
             )
+
+        removed_pods = []
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
-            op_flow._pod_nodes = {
-                k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect
-            }
+            filtered_pod_nodes = OrderedDict()
+            for k, v in op_flow._pod_nodes.items():
+                if not v.role.is_inspect:
+                    filtered_pod_nodes[k] = v
+                else:
+                    removed_pods.append(v.name)
+
+            op_flow._pod_nodes = filtered_pod_nodes
             reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
+            while (
+                len(op_flow._last_changed_pod) > 0
+                and len(removed_pods) > 0
+                and op_flow.last_pod in removed_pods
+            ):
+                op_flow._last_changed_pod.pop()
 
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
@@ -1016,6 +1030,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
+        if len(removed_pods) > 0:
+            op_flow._pod_nodes[GATEWAY_NAME].args.graph_description = json.dumps(
+                op_flow._get_graph_representation()
+            )
+            op_flow._pod_nodes[GATEWAY_NAME].args.pod_addresses = json.dumps(
+                op_flow._get_pod_addresses()
+            )
         return op_flow
 
     def __call__(self, *args, **kwargs):

@@ -59,11 +59,12 @@ def handle_request(
 
             # TODO: Should the order be deterministic by the graph structure, or depending on the response speed?
             partial_responses = await asyncio.gather(*tasks)
-
+            print(f' partial_responses {len(partial_responses)}')
             # when merging comes, one task may return None
             filtered_partial_responses = list(
                 filter(lambda x: x is not None, partial_responses)
             )
+            print(f' filtered_partial_responses {len(filtered_partial_responses)}')
             if len(filtered_partial_responses) > 1:
                 docs = DocumentArray(
                     [

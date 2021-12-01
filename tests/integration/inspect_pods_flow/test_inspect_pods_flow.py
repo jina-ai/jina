@@ -4,7 +4,7 @@ import pytest
 
 from jina.types.score.map import NamedScoreMapping
 from jina import Flow, Executor, DocumentArray, requests
-from tests import random_docs, validate_callback
+from tests import random_docs
 
 
 class DummyEvaluator1(Executor):
