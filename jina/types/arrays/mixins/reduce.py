@@ -7,21 +7,6 @@ if TYPE_CHECKING:
     from ....helper import T
 
 
-def _reduce_mat_dac(da_matrix: List['DocumentArray']) -> 'DocumentArray':
-    if len(da_matrix) == 2:
-        da_matrix[0].reduce(da_matrix[1])
-        return da_matrix[0]
-    elif len(da_matrix) == 1:
-        return da_matrix[0]
-
-    else:
-        length = len(da_matrix)
-        da1 = _reduce_mat_dac(da_matrix[: int(length / 2)])
-        da2 = _reduce_mat_dac(da_matrix[int(length / 2) :])
-        da1.reduce(da2)
-        return da1
-
-
 class ReduceMixin:
     """A mixing that provides reducing logic for :class:`DocumentArray` or :class:`DocumentArrayMemmap`"""
 
@@ -60,11 +45,3 @@ class ReduceMixin:
         for da in da_matrix:
             self.reduce(da)
         return self
-
-    def reduce_mat_dac(self: 'T', da_matrix: List['DocumentArray']) -> 'DocumentArray':
-        """
-        Reduces a list of DocumentArrays into this  DocumentArray following the divide and conquer strategy
-        :param da_matrix: List of DocumentArray to be reduced
-        :return: the resulting DocumentArray
-        """
-        return _reduce_mat_dac([self] + da_matrix)

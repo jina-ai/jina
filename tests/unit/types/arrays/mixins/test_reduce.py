@@ -151,7 +151,7 @@ def test_reduce_mat():
         for doc in da:
             doc.matches.append(Document(id=str(i)))
 
-    reduced_da = doc_matrix[0].reduce_mat_dac(doc_matrix[1:])
+    reduced_da = doc_matrix[0].reduce_mat(doc_matrix[1:])
     for doc in reduced_da:
         for i in range(10):
             assert str(i) in doc.matches
