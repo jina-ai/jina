@@ -14,7 +14,7 @@ def test_merge_doc():
         chunks=[Document(id='c0'), Document(id='c2')],
     )
 
-    DocumentArray.merge_doc(doc1, doc2)
+    DocumentArray._merge_doc(doc1, doc2)
     for i in range(3):
         assert f'c{i}' in doc1.chunks
         assert f'm{i}' in doc1.matches

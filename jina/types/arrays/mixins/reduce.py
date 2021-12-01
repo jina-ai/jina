@@ -37,7 +37,7 @@ class ReduceMixin:
                 self.append(doc)
 
     @staticmethod
-    def merge_doc(doc1: 'Document', doc2: 'Document'):
+    def _merge_doc(doc1: 'Document', doc2: 'Document'):
         """
         Merges doc1 into doc2 in-place
         :param doc1: first Document
