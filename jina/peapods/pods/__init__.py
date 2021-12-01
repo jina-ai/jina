@@ -673,10 +673,10 @@ class Pod(BasePod):
                 # it is dangerous to fork new processes (peas) while grpc operations are ongoing
                 # while we use fork, we need to guarantee that forking/grpc status checking is done sequentially
                 # this is true at least when the flow process and the forked processes are running in the same OS
-                # thus this does not apply to containers
+                # thus this does not apply to K8s
+                # to ContainerPea it still applies due to the managing process being forked
                 # source: https://grpc.github.io/grpc/cpp/impl_2codegen_2fork_8h.html#a450c01a1187f69112a22058bf690e2a0
-                if self._has_forked_processes:
-                    await task
+                await task
                 tasks.append(task)
 
             await asyncio.gather(*tasks)
@@ -702,8 +702,7 @@ class Pod(BasePod):
                     self.shards[shard_id].scale(replicas=replicas)
                 )
                 # see rolling_update for explanation of sequential excution
-                if self._has_forked_processes:
-                    await task
+                await task
                 tasks.append(task)
 
             await asyncio.gather(*tasks)
