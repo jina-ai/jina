@@ -80,6 +80,7 @@ async def test_peas_flow_topology(
     ]
     peas = []
     pod_addresses = '{'
+    ports = []
     for pod in pods:
         if uses_before:
             uses_before_port, uses_before_pea = await _start_create_pea(
@@ -108,9 +109,11 @@ async def test_peas_flow_topology(
 
         # create worker
         worker_port, worker_pea = await _start_create_pea(pod, port_generator)
+        ports.append((head_port, worker_port))
         peas.append(worker_pea)
         await asyncio.sleep(0.1)
 
+    for head_port, worker_port in ports:
         await _activate_worker(head_port, worker_port)
 
     # remove last comma
@@ -168,9 +171,12 @@ async def test_peas_shards(polling, port_generator):
 
         await asyncio.sleep(0.1)
 
+    for i, pea in enumerate(shard_peas):
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port, shard_id=i)
+        activate_msg.add_related_entity(
+            'worker', '127.0.0.1', pea.args.port_in, shard_id=i
+        )
         GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
@@ -219,9 +225,10 @@ async def test_peas_replicas(port_generator):
 
         await asyncio.sleep(0.1)
 
-        # this would be done by the Pod, its adding the worker to the head
+    # this would be done by the Pod, its adding the worker to the head
+    for worker_pea in replica_peas:
         activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
+        activate_msg.add_related_entity('worker', '127.0.0.1', worker_pea.args.port_in)
         GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
@@ -283,7 +290,6 @@ async def test_peas_with_executor(port_generator):
         )
         peas.append(worker_pea)
         await asyncio.sleep(0.1)
-
         await _activate_worker(head_port, worker_port, shard_id=i)
 
     # create a single gateway pea
@@ -374,9 +380,10 @@ async def test_peas_with_replicas_advance_faster(port_generator):
 
         await asyncio.sleep(0.1)
 
+    for pea in peas:
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
+        activate_msg.add_related_entity('worker', '127.0.0.1', pea.args.port_in)
         GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
