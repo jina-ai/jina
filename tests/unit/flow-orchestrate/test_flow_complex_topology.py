@@ -16,8 +16,6 @@ def test_flow_complex_toploogy(protocol):
     )
 
     with f:
-        print(f' JOAN HERE PLOT')
-        print(f.plot(build=False, copy_flow=False))
         res = f.index(Document(), return_results=True)
 
     assert len(res) > 0
