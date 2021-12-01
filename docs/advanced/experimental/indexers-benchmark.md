@@ -1,5 +1,7 @@
 # Indexers Benchmark
 
+In this page we show the performance capabilities of the different Indexers available in Jina Hub.
+
 ## Results
 
 In the below graphs you can see the performance, in terms of speed and evaluation.
@@ -18,9 +20,8 @@ The tables are sorted by `time_search`.
 
 ## Indexers
 
-In this page we will show the performance capabilities of the different indexers available in Jina Hub.
 The purpose is to compare how they each scale, both with the amount of Documents indexed and with the embedding dimensionality.
-We have restricted our selection to the following
+We have restricted our selection to the following:
 
 - [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4)
 - [FaissSearcher](https://hub.jina.ai/executor/gilkzt3f)
