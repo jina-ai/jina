@@ -28,7 +28,7 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="DocumentArrayMemmap" href="../documentarraymemmap-api/" /><link rel="prev" title="Fluent Interface" href="../fluent-interface/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
         <title>DocumentArray - Jina 2.5.1 documentation</title>
@@ -249,14 +249,14 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Fundamentals</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../concepts/">Basic Concepts</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../">Document</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Document</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../document-api/">Document</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../fluent-interface/">Fluent Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../documentarray/">DocumentArray</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">DocumentArray</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../documentarraymemmap-api/">DocumentArrayMemmap</a></li>
 </ul>
 </li>
@@ -704,6 +704,8 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="documentarray">
 <span id="id1"></span><h1>DocumentArray<a class="headerlink" href="#documentarray" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>A <a class="reference internal" href="../../../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> is a list of <code class="docutils literal notranslate"><span class="pre">Document</span></code> objects. You can construct, delete, insert, sort and traverse
 a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> like a Python <code class="docutils literal notranslate"><span class="pre">list</span></code>. It implements all Python List interface.</p>
 <div class="admonition hint">
@@ -774,7 +776,7 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>To access Documents with nested Documents, please refer to <a class="reference internal" href="../documentarray/#traverse-doc"><span class="std std-ref">Traverse nested elements</span></a>.</p>
+<p>To access Documents with nested Documents, please refer to <a class="reference internal" href="#traverse-doc"><span class="std std-ref">Traverse nested elements</span></a>.</p>
 </div>
 </section>
 <section id="bulk-access-contents">
@@ -946,7 +948,7 @@ For example let’s use the PyTorch one:</p>
 <p>The following image visualizes how <code class="docutils literal notranslate"><span class="pre">DocumentArrayA</span></code> finds <code class="docutils literal notranslate"><span class="pre">limit=5</span></code> matches from the Documents in <code class="docutils literal notranslate"><span class="pre">DocumentArrayB</span></code>. By
 default, the cosine similarity is used to evaluate the score between Documents.</p>
 <figure class="align-center">
-<img alt="fundamentals/document/match_illustration_5.svg" src="fundamentals/document/match_illustration_5.svg"/></figure>
+<img alt="../../../_images/match_illustration_5.svg" src="../../../_images/match_illustration_5.svg"/></figure>
 <p>More generally, given two <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> objects <code class="docutils literal notranslate"><span class="pre">da_1</span></code> and <code class="docutils literal notranslate"><span class="pre">da_2</span></code> the
 function <code class="docutils literal notranslate"><span class="pre">da_1.match(da_2,</span> <span class="pre">metric=some_metric,</span> <span class="pre">normalization=(0,</span> <span class="pre">1),</span> <span class="pre">limit=N)</span></code> finds for each Document in <code class="docutils literal notranslate"><span class="pre">da_1</span></code> the <code class="docutils literal notranslate"><span class="pre">N</span></code> Documents from <code class="docutils literal notranslate"><span class="pre">da_2</span></code> with the lowest metric values according to <code class="docutils literal notranslate"><span class="pre">some_metric</span></code>.</p>
 <p>Note that,</p>
@@ -1283,7 +1285,7 @@ Click to see the construction of the nested Document<div class="sd-summary-down 
 </div>
 </div>
 </details><figure class="align-center">
-<img alt="fundamentals/document/traverse-example-docs.svg" src="fundamentals/document/traverse-example-docs.svg"/></figure>
+<img alt="../../../_images/traverse-example-docs.svg" src="../../../_images/traverse-example-docs.svg"/></figure>
 <p>Now one can use <code class="docutils literal notranslate"><span class="pre">da.traverse_flat('c')</span></code> To get all the <code class="docutils literal notranslate"><span class="pre">Chunks</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>; <code class="docutils literal notranslate"><span class="pre">da.traverse_flat('m')</span></code> to can get all the <code class="docutils literal notranslate"><span class="pre">Matches</span></code> of the root <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <p>This allows us to composite the <code class="docutils literal notranslate"><span class="pre">c</span></code> and <code class="docutils literal notranslate"><span class="pre">m</span></code> to find <code class="docutils literal notranslate"><span class="pre">Chunks</span></code>/<code class="docutils literal notranslate"><span class="pre">Matches</span></code> which are in a deeper level:</p>
 <ul class="simple">
@@ -1670,7 +1672,7 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
 </span></pre></div>
 </div>
 <figure class="align-center">
-<img alt="fundamentals/document/document-array-visualize.png" src="fundamentals/document/document-array-visualize.png"/>
+<img alt="../../../_images/document-array-visualize.png" src="../../../_images/document-array-visualize.png"/>
 </figure>
 </section>
 </section>
@@ -1679,8 +1681,30 @@ to project in 2D space: <code class="docutils literal notranslate"><span class="
             <footer>
                 
                 <div class="related-pages">
-                    
-                    
+                    <a class="next-page" href="../documentarraymemmap-api/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">DocumentArrayMemmap</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="../fluent-interface/">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Fluent Interface</div>
+                            
+                        </div>
+                    </a>
                 </div>
 
                 <div class="related-information sd-d-inline-flex">

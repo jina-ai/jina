@@ -256,7 +256,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../fluent-interface/">Fluent Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../documentarray/">DocumentArray</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../documentarray-api/">DocumentArray</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../documentarraymemmap-api/">DocumentArrayMemmap</a></li>
 </ul>
 </li>
@@ -966,7 +966,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <h3>Fill embedding from DNN model<a class="headerlink" href="#fill-embedding-from-dnn-model" title="Permalink to this headline">¶</a></h3>
 <div class="tip admonition">
 <p class="admonition-title">On multiple Documents</p>
-<p>This is a syntax sugar on single Document, which leverages <a class="reference internal" href="../../../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin.embed" title="jina.types.arrays.mixins.embed.EmbedMixin.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> underneath. To embed multiple Documents, do not use this feature in a for-loop. Instead, read more details in <a class="reference internal" href="../documentarray/#embed-via-model"><span class="std std-ref">Embed via model</span></a>.</p>
+<p>This is a syntax sugar on single Document, which leverages <a class="reference internal" href="../../../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin.embed" title="jina.types.arrays.mixins.embed.EmbedMixin.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> underneath. To embed multiple Documents, do not use this feature in a for-loop. Instead, read more details in <a class="reference internal" href="../documentarray-api/#embed-via-model"><span class="std std-ref">Embed via model</span></a>.</p>
 </div>
 <p>Once a <code class="docutils literal notranslate"><span class="pre">Document</span></code> has <code class="docutils literal notranslate"><span class="pre">.blob</span></code> set, you can use a deep neural network to <a class="reference internal" href="../../../api/jina.types.arrays.mixins.embed/#jina.types.arrays.mixins.embed.EmbedMixin.embed" title="jina.types.arrays.mixins.embed.EmbedMixin.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> it, which means filling <code class="docutils literal notranslate"><span class="pre">Document.embedding</span></code>. For example, our <code class="docutils literal notranslate"><span class="pre">Document</span></code> looks like the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">'/Users/hanxiao/Downloads/left/00003.jpg'</span><span class="p">)</span>
@@ -986,7 +986,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <h3>Find nearest-neighbours<a class="headerlink" href="#find-nearest-neighbours" title="Permalink to this headline">¶</a></h3>
 <div class="tip admonition">
 <p class="admonition-title">On multiple Documents</p>
-<p>This is a syntax sugar on single Document, which leverages  <a class="reference internal" href="../../../api/jina.types.arrays.mixins.match/#jina.types.arrays.mixins.match.MatchMixin.match" title="jina.types.arrays.mixins.match.MatchMixin.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">match()</span></code></a> underneath. To match multiple Documents, do not use this feature in a for-loop. Instead, find out more in <a class="reference internal" href="../documentarray/#match-documentarray"><span class="std std-ref">Find nearest neighbours</span></a>.</p>
+<p>This is a syntax sugar on single Document, which leverages  <a class="reference internal" href="../../../api/jina.types.arrays.mixins.match/#jina.types.arrays.mixins.match.MatchMixin.match" title="jina.types.arrays.mixins.match.MatchMixin.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">match()</span></code></a> underneath. To match multiple Documents, do not use this feature in a for-loop. Instead, find out more in <a class="reference internal" href="../documentarray-api/#match-documentarray"><span class="std std-ref">Find nearest neighbours</span></a>.</p>
 </div>
 <p>Once a Document has <code class="docutils literal notranslate"><span class="pre">.embedding</span></code> filled, it can be “matched”. In this example, we build ten Documents and put them into a <span class="xref std std-ref">DocumentArray</span>, and then use another Document to search against them.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -1062,7 +1062,7 @@ and “matches”, which are <code class="docutils literal notranslate"><span cl
 <div class="note admonition">
 <p class="admonition-title">Note</p>
 <p>Both <code class="docutils literal notranslate"><span class="pre">doc.chunks</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.matches</span></code> return <code class="docutils literal notranslate"><span class="pre">ChunkArray</span></code> and <code class="docutils literal notranslate"><span class="pre">MatchArray</span></code>, which are sub-classes
-of <a class="reference internal" href="../documentarray/#documentarray"><span class="std std-ref">DocumentArray</span></a>. We will introduce <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> later.</p>
+of <a class="reference internal" href="../documentarray-api/#documentarray"><span class="std std-ref">DocumentArray</span></a>. We will introduce <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> later.</p>
 </div>
 <div class="alert admonition">
 <p class="admonition-title">Caveat: order matters</p>
