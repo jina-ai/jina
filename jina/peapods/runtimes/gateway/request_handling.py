@@ -59,7 +59,6 @@ def handle_request(
 
             # TODO: Should the order be deterministic by the graph structure, or depending on the response speed?
             partial_responses = await asyncio.gather(*tasks)
-
             # when merging comes, one task may return None
             filtered_partial_responses = list(
                 filter(lambda x: x is not None, partial_responses)

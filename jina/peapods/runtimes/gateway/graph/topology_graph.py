@@ -66,6 +66,7 @@ class TopologyGraph:
                             route.end_time.GetCurrentTime()
                             break
                     return resp
+            return None
 
         def get_leaf_tasks(
             self,
@@ -117,7 +118,8 @@ class TopologyGraph:
                     connection_pool, None, wait_previous_and_send_task
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
-                hanging_tasks_tuples.append(t[-1])
+                hanging_tasks_tuples.extend(t)
+
             return hanging_tasks_tuples
 
     def __init__(self, graph_representation: Dict, *args, **kwargs):
