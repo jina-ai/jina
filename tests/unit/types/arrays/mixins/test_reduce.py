@@ -1,7 +1,6 @@
 from copy import deepcopy
 
 from jina import DocumentArray, Document
-from jina.reducer import merge, merge_doc, merge_mat
 
 
 def test_merge_doc():
@@ -15,7 +14,7 @@ def test_merge_doc():
         chunks=[Document(id='c0'), Document(id='c2')],
     )
 
-    merge_doc(doc1, doc2)
+    DocumentArray.merge_doc(doc1, doc2)
     for i in range(3):
         assert f'c{i}' in doc1.chunks
         assert f'm{i}' in doc1.matches
@@ -72,7 +71,7 @@ def test_merge():
         ),
     )
 
-    merge(da1, da2)
+    da1.merge(da2)
 
     for i in range(3):
         assert f'r{i}' in da1
@@ -133,7 +132,7 @@ def test_merge_nested():
         ),
     )
 
-    merge(da1, da2)
+    da1.merge(da2)
     for i in range(1, 3):
         assert f'c{i}' in da1[0].chunks
         assert f'm{i}' in da1[0].matches
@@ -152,7 +151,7 @@ def test_merge_mat():
         for doc in da:
             doc.matches.append(Document(id=str(i)))
 
-    merged_da = merge_mat(doc_matrix)
+    merged_da = doc_matrix[0].merge_mat(doc_matrix[1:])
     for doc in merged_da:
         for i in range(10):
             assert str(i) in doc.matches

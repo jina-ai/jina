@@ -12,6 +12,7 @@ from .io.json import JsonIOMixin
 from .magic import MagicMixin
 from .match import MatchMixin
 from .plot import PlotMixin
+from .reduce import ReduceMixin
 from .sample import SampleMixin
 from .text import TextToolsMixin
 from .traverse import TraverseMixin
@@ -33,6 +34,7 @@ class AllMixins(
     SampleMixin,
     TextToolsMixin,
     EvaluationMixin,
+    ReduceMixin,
     ABC,
 ):
     """All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """
