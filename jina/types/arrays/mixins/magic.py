@@ -36,12 +36,22 @@ class MagicMixin:
     def __getstate__(self):
         dap = jina_pb2.DocumentArrayProto()
         dap.docs.extend(self._pb_body)
-        return dict(serialized=dap.SerializePartialToString())
+        r = dict(serialized=dap.SerializePartialToString())
+        if hasattr(self, '_ref_doc'):
+            r['ref_doc'] = self._ref_doc.binary_str()
+        return r
 
     def __setstate__(self, state):
         dap = jina_pb2.DocumentArrayProto()
         dap.ParseFromString(state['serialized'])
-        self.__init__()
         from ..document import DocumentArray
 
-        self.extend(DocumentArray(dap.docs))
+        da = DocumentArray(dap.docs)
+        if 'ref_doc' in state:
+            from ...document import Document
+
+            ref_doc = Document(state['ref_doc'])
+            self.__init__(da, ref_doc)
+        else:
+            self.__init__()
+            self.extend(da)
