@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from ....helper import typename
+from ....proto import jina_pb2
 
 if TYPE_CHECKING:
     from ..types import DocumentArraySourceType
@@ -31,3 +32,16 @@ class MagicMixin:
         for doc in other:
             self.append(doc)
         return self
+
+    def __getstate__(self):
+        dap = jina_pb2.DocumentArrayProto()
+        dap.docs.extend(self._pb_body)
+        return dict(serialized=dap.SerializePartialToString())
+
+    def __setstate__(self, state):
+        dap = jina_pb2.DocumentArrayProto()
+        dap.ParseFromString(state['serialized'])
+        self.__init__()
+        from ..document import DocumentArray
+
+        self.extend(DocumentArray(dap.docs))
