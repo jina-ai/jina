@@ -764,67 +764,37 @@ DocumentArray([
 
 If you simply want to traverse **all** chunks and matches regardless their levels. You can simply use {meth}`~jina.types.arrays.mixins.traverse.TraverseMixin.flatten`. It will return a `DocumentArray` with all chunks and matches flattened into the top-level, no more nested structure.
 
-## Visualization
+## Batching
 
-`DocumentArray` provides the `.plot_embeddings` function to plot Document embeddings in a 2D graph. `visualize` supports two methods
-to project in 2D space: `pca` and `tsne`.
-
-In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document, DocumentArray
-
-da = DocumentArray(
-    [
-        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
-    ]
-)
-da.plot_embeddings()
-
-```
-
-```{figure} document-array-visualize.png
-:align: center
-```
-
-## Persistence
-
-To save all elements in a `DocumentArray` in a JSON line format:
+One can batch a large `DocumentArray` into small ones via {func}`~jina.types.arrays.mixins.group.GroupMixin.batch`. This is useful when a `DocumentArray` is too big to process at once. It is particular useful on `DocumentArrayMemmap`, which ensures the data gets loaded on-demand and in a conservative manner.
 
 ```python
-from jina import DocumentArray, Document
+from jina import DocumentArray
 
-da = DocumentArray([Document(), Document()])
+da = DocumentArray.empty(1000)
 
-da.save('data.json')
-da1 = DocumentArray.load('data.json')
+for b_da in da.batch(batch_size=256):
+    print(len(b_da))
 ```
 
-`DocumentArray` can be also stored in binary format, which is much faster and yields a smaller file:
+```text
+256
+256
+256
+232
+```
 
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(), Document()])
-
-da.save('data.bin', file_format='binary')
-da1 = DocumentArray.load('data.bin', file_format='binary')
+```{tip}
+For processing batches in parallel, please refer to {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch`.
 ```
 
 ## Parallel processing
 
 Working with large `DocumentArray` element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all `Document` one by one. Jina provides {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. It is like Python 
-built-in `map()` function but mapping the function to every element of the `DocumentArray` in parallel. 
+built-in `map()` function but mapping the function to every element of the `DocumentArray` in parallel. There is also {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch` that works on the minibatch level.
 
-Let's see an example, where we want to preprocess ~6000 image Documents. First we fill the URI of each Document.
+
+Let's see an example, where we want to preprocess ~6000 image Documents. First we fill the URI to each Document.
 
 ```python
 from jina import DocumentArray
@@ -895,25 +865,7 @@ This follows the same convention as you using Python built-in `map()`.
 
 ````
 
-## Batching
 
-One can batch a large `DocumentArray` into small ones via {func}`~jina.types.arrays.mixins.group.GroupMixin.batch`. This is useful when a `DocumentArray` is too big to process at once. It is particular useful on `DocumentArrayMemmap`, which ensures the data gets loaded on-demand and in a conservative manner.
-
-```python
-from jina import DocumentArray
-
-da = DocumentArray.empty(1000)
-
-for b_da in da.batch(batch_size=256):
-    print(len(b_da))
-```
-
-```text
-256
-256
-256
-232
-```
 
 
 ## Sampling
@@ -1125,4 +1077,65 @@ np.stack(da.get_attributes('embedding'))
 [[1 2 3]
  [4 5 6]
  [7 8 9]]
+```
+
+
+## Persistence
+
+To save all elements in a `DocumentArray` in a JSON line format:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.json')
+da1 = DocumentArray.load('data.json')
+```
+
+`DocumentArray` can be also stored in binary format, which is much faster and yields a smaller file:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.bin', file_format='binary')
+da1 = DocumentArray.load('data.bin', file_format='binary')
+```
+
+```{hint}
+For writing to disk on-the-fly, please use {ref}`documentarraymemmap-api`.
+```
+
+
+## Visualization
+
+`DocumentArray` provides the `.plot_embeddings` function to plot Document embeddings in a 2D graph. `visualize` supports two methods
+to project in 2D space: `pca` and `tsne`.
+
+In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.
+
+```{code-block} python
+---
+emphasize-lines: 13
+---
+import numpy as np
+from jina import Document, DocumentArray
+
+da = DocumentArray(
+    [
+        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
+    ] + [
+        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
+    ] + [
+        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
+    ]
+)
+da.plot_embeddings()
+
+```
+
+```{figure} document-array-visualize.png
+:align: center
 ```
