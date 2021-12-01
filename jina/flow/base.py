@@ -531,7 +531,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return n
 
         graph_dict = {}
-        print(f'nodes {self._pod_nodes}')
         for node, v in self._pod_nodes.items():
             node = _add_node(graph_dict, node)
             if node == 'start-gateway':

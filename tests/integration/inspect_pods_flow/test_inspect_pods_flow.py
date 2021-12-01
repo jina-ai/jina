@@ -27,7 +27,7 @@ class DummyEvaluator3(DummyEvaluator1):
 
 
 docs = DocumentArray([x for x in random_docs(1)])
-params = ['REMOVE']
+params = ['HANG', 'COLLECT', 'REMOVE']
 
 
 def validate(ids, expect):
