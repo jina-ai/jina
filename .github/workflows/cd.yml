@@ -111,13 +111,13 @@ jobs:
           files: |
             docs/**
       - if: steps.changed-files-docs.outputs.any_changed == 'true'
-        name: Reindex & redeploy docsbot
+        name: Deploy Jina Docsbot
         uses: benc-uk/workflow-dispatch@v1
         with:
-          repo: jina-ai/jina-docs-bot
-          workflow: E2E pipeline
-          inputs: '{ "project": "JINA", "environment": "prod" }'
-          ref: main
+          repo: jina-ai/cloud-ops
+          workflow: Docsbot Deployment Pipeline
+          inputs: '{ "environment": "prod", "project": "JINA", "branch": "main" }'
+          ref: "master"
           token: ${{ secrets.JINA_DEV_BOT }}
 
   update-docker:
