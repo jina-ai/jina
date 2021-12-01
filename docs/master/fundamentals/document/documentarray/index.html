@@ -1377,56 +1377,33 @@ DocumentArray([
 <p>If you simply want to traverse <strong>all</strong> chunks and matches regardless their levels. You can simply use <a class="reference internal" href="../../../api/jina.types.arrays.mixins.traverse/#jina.types.arrays.mixins.traverse.TraverseMixin.flatten" title="jina.types.arrays.mixins.traverse.TraverseMixin.flatten"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatten()</span></code></a>. It will return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> with all chunks and matches flattened into the top-level, no more nested structure.</p>
 </section>
 </section>
-<section id="visualization">
-<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the <code class="docutils literal notranslate"><span class="pre">.plot_embeddings</span></code> function to plot Document embeddings in a 2D graph. <code class="docutils literal notranslate"><span class="pre">visualize</span></code> supports two methods
-to project in 2D space: <code class="docutils literal notranslate"><span class="pre">pca</span></code> and <code class="docutils literal notranslate"><span class="pre">tsne</span></code>.</p>
-<p>In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<section id="batching">
+<h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
+<p>One can batch a large <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> into small ones via <a class="reference internal" href="../../../api/jina.types.arrays.mixins.group/#jina.types.arrays.mixins.group.GroupMixin.batch" title="jina.types.arrays.mixins.group.GroupMixin.batch"><code class="xref py py-func docutils literal notranslate"><span class="pre">batch()</span></code></a>. This is useful when a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is too big to process at once. It is particular useful on <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, which ensures the data gets loaded on-demand and in a conservative manner.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
-    <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
-        <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
-    <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
-        <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-<span class="hll"><span class="n">da</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">()</span>
-</span></pre></div>
-</div>
-<figure class="align-center">
-<img alt="../../../_images/document-array-visualize.png" src="../../../_images/document-array-visualize.png"/>
-</figure>
-</section>
-<section id="persistence">
-<h2>Persistence<a class="headerlink" href="#persistence" title="Permalink to this headline">¶</a></h2>
-<p>To save all elements in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in a JSON line format:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
-
-<span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
-<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">b_da</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b_da</span><span class="p">))</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> can be also stored in binary format, which is much faster and yields a smaller file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
-
-<span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
-<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>256
+256
+256
+232
 </pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For processing batches in parallel, please refer to <a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map_batch" title="jina.types.arrays.mixins.parallel.ParallelMixin.map_batch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map_batch()</span></code></a>.</p>
 </div>
 </section>
 <section id="parallel-processing">
 <h2>Parallel processing<a class="headerlink" href="#parallel-processing" title="Permalink to this headline">¶</a></h2>
 <p>Working with large <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all <code class="docutils literal notranslate"><span class="pre">Document</span></code> one by one. Jina provides <a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map" title="jina.types.arrays.mixins.parallel.ParallelMixin.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a> to speed up things quite a lot. It is like Python
-built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code> function but mapping the function to every element of the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in parallel.</p>
-<p>Let’s see an example, where we want to preprocess ~6000 image Documents. First we fill the URI of each Document.</p>
+built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code> function but mapping the function to every element of the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in parallel. There is also <a class="reference internal" href="../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map_batch" title="jina.types.arrays.mixins.parallel.ParallelMixin.map_batch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map_batch()</span></code></a> that works on the minibatch level.</p>
+<p>Let’s see an example, where we want to preprocess ~6000 image Documents. First we fill the URI to each Document.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>  <span class="c1"># 6000 image Document with .uri set</span>
@@ -1482,24 +1459,6 @@ foo-loop ...	foo-loop takes 18 seconds (18.52s)
 </pre></div>
 </div>
 <p>This follows the same convention as you using Python built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code>.</p>
-</div>
-</section>
-<section id="batching">
-<h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
-<p>One can batch a large <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> into small ones via <a class="reference internal" href="../../../api/jina.types.arrays.mixins.group/#jina.types.arrays.mixins.group.GroupMixin.batch" title="jina.types.arrays.mixins.group.GroupMixin.batch"><code class="xref py py-func docutils literal notranslate"><span class="pre">batch()</span></code></a>. This is useful when a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is too big to process at once. It is particular useful on <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, which ensures the data gets loaded on-demand and in a conservative manner.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">b_da</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b_da</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>256
-256
-256
-232
-</pre></div>
 </div>
 </section>
 <section id="sampling">
@@ -1664,6 +1623,55 @@ one shot:</p>
  [7 8 9]]
 </pre></div>
 </div>
+</section>
+<section id="persistence">
+<h2>Persistence<a class="headerlink" href="#persistence" title="Permalink to this headline">¶</a></h2>
+<p>To save all elements in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in a JSON line format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
+
+<span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
+<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> can be also stored in binary format, which is much faster and yields a smaller file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
+
+<span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>For writing to disk on-the-fly, please use <a class="reference internal" href="../documentarraymemmap-api/#documentarraymemmap-api"><span class="std std-ref">DocumentArrayMemmap</span></a>.</p>
+</div>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the <code class="docutils literal notranslate"><span class="pre">.plot_embeddings</span></code> function to plot Document embeddings in a 2D graph. <code class="docutils literal notranslate"><span class="pre">visualize</span></code> supports two methods
+to project in 2D space: <code class="docutils literal notranslate"><span class="pre">pca</span></code> and <code class="docutils literal notranslate"><span class="pre">tsne</span></code>.</p>
+<p>In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="hll"><span class="n">da</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/document-array-visualize.png" src="../../../_images/document-array-visualize.png"/>
+</figure>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -1701,7 +1709,7 @@ one shot:</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 30, 2021.
+                    Last updated on Dec 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1743,10 +1751,8 @@ one shot:</p>
 <li><a class="reference internal" href="#flatten-document">Flatten Document</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#visualization">Visualization</a></li>
-<li><a class="reference internal" href="#persistence">Persistence</a></li>
-<li><a class="reference internal" href="#parallel-processing">Parallel processing</a></li>
 <li><a class="reference internal" href="#batching">Batching</a></li>
+<li><a class="reference internal" href="#parallel-processing">Parallel processing</a></li>
 <li><a class="reference internal" href="#sampling">Sampling</a></li>
 <li><a class="reference internal" href="#shuffle">Shuffle</a></li>
 <li><a class="reference internal" href="#split-by-tags">Split by <code class="docutils literal notranslate"><span class="pre">.tags</span></code></a></li>
@@ -1754,6 +1760,8 @@ one shot:</p>
 <li><a class="reference internal" href="#sort">Sort</a></li>
 <li><a class="reference internal" href="#filter">Filter</a></li>
 <li><a class="reference internal" href="#get-bulk-attributes">Get bulk attributes</a></li>
+<li><a class="reference internal" href="#persistence">Persistence</a></li>
+<li><a class="reference internal" href="#visualization">Visualization</a></li>
 </ul>
 </li>
 </ul>

@@ -711,7 +711,11 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.parallel.ParallelMixin.map">
 <span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'process'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/parallel/#ParallelMixin.map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.parallel.ParallelMixin.map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator that applies function to every item of iterable in parallel, yielding the results.</p>
+<dd><p>Return an iterator that applies function to every <strong>element</strong> of iterable in parallel, yielding the results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>To process on a batch of elements, please use <a class="reference internal" href="#jina.types.arrays.mixins.parallel.ParallelMixin.map_batch" title="jina.types.arrays.mixins.parallel.ParallelMixin.map_batch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map_batch()</span></code></a></p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -736,6 +740,40 @@ and the original object do <strong>not</strong> share the same memory.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.arrays.mixins.parallel.ParallelMixin.map_batch">
+<span class="sig-name descname"><span class="pre">map_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'process'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/parallel/#ParallelMixin.map_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.parallel.ParallelMixin.map_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that applies function to every <strong>minibatch</strong> of iterable in parallel, yielding the results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>To process single element, please use <a class="reference internal" href="#jina.types.arrays.mixins.parallel.ParallelMixin.map" title="jina.types.arrays.mixins.parallel.ParallelMixin.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map()</span></code></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Size of each generated batch (except the last one, which might be smaller, default: 32)</p></li>
+<li><p><strong>shuffle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, shuffle the Documents before dividing into minibatches.</p></li>
+<li><p><strong>func</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – a function that takes <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> as input and outputs anything. You can either modify elements
+in-place (only with <cite>thread</cite> backend) or work later on return elements.</p></li>
+<li><p><strong>backend</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – <p>if to use multi-<cite>process</cite> or multi-<cite>thread</cite> as the parallelization backend. In general, if your
+<code class="docutils literal notranslate"><span class="pre">func</span></code> is IO-bound then perhaps <cite>thread</cite> is good enough. If your <code class="docutils literal notranslate"><span class="pre">func</span></code> is CPU-bound then you may use <cite>process</cite>.
+In practice, you should try yourselves to figure out the best value. However, if you wish to modify the elements
+in-place, regardless of IO/CPU-bound, you should always use <cite>thread</cite> backend.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using <cite>process</cite> backend, you should not expect <code class="docutils literal notranslate"><span class="pre">func</span></code> modify elements in-place. This is because
+the multiprocessing backing pass the variable via pickle and work in another process. The passed object
+and the original object do <strong>not</strong> share the same memory.</p>
+</div>
+</p></li>
+<li><p><strong>num_worker</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the number of parallel workers. If not given, then the number of CPUs in the system will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yield</dt>
+<dd class="field-even"><p>anything return from <code class="docutils literal notranslate"><span class="pre">func</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -774,7 +812,7 @@ and the original object do <strong>not</strong> share the same memory.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 30, 2021.
+                    Last updated on Dec 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

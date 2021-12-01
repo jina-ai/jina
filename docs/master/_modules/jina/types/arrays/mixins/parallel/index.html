@@ -682,6 +682,7 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
     <span class="kn">from</span> <span class="nn">...document</span> <span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">...arrays.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 
 <div class="viewcode-block" id="ParallelMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin">[docs]</a><span class="k">class</span> <span class="nc">ParallelMixin</span><span class="p">:</span>
@@ -693,7 +694,10 @@
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'process'</span><span class="p">,</span>
         <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'T'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">"""Return an iterator that applies function to every item of iterable in parallel, yielding the results.</span>
+        <span class="sd">"""Return an iterator that applies function to every **element** of iterable in parallel, yielding the results.</span>
+
+<span class="sd">        .. seealso::</span>
+<span class="sd">            To process on a batch of elements, please use :meth:`.map_batch`</span>
 
 <span class="sd">        :param func: a function that takes :class:`Document` as input and outputs anything. You can either modify elements</span>
 <span class="sd">            in-place (only with `thread` backend) or work later on return elements.</span>
@@ -710,17 +714,58 @@
 <span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
 <span class="sd">        :yield: anything return from ``func``</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">'thread'</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span> <span class="k">as</span> <span class="n">Pool</span>
-        <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">'process'</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">Pool</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'`backend` must be either `process` or `thread`, receiving </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
-        <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">num_worker</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_get_pool</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">num_worker</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="ParallelMixin.map_batch"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map_batch">[docs]</a>    <span class="k">def</span> <span class="nf">map_batch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'DocumentArray'</span><span class="p">],</span> <span class="s1">'T'</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'process'</span><span class="p">,</span>
+        <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Return an iterator that applies function to every **minibatch** of iterable in parallel, yielding the results.</span>
+
+<span class="sd">        .. seealso::</span>
+<span class="sd">            To process single element, please use :meth:`.map`</span>
+
+<span class="sd">        :param batch_size: Size of each generated batch (except the last one, which might be smaller, default: 32)</span>
+<span class="sd">        :param shuffle: If set, shuffle the Documents before dividing into minibatches.</span>
+<span class="sd">        :param func: a function that takes :class:`DocumentArray` as input and outputs anything. You can either modify elements</span>
+<span class="sd">            in-place (only with `thread` backend) or work later on return elements.</span>
+<span class="sd">        :param backend: if to use multi-`process` or multi-`thread` as the parallelization backend. In general, if your</span>
+<span class="sd">            ``func`` is IO-bound then perhaps `thread` is good enough. If your ``func`` is CPU-bound then you may use `process`.</span>
+<span class="sd">            In practice, you should try yourselves to figure out the best value. However, if you wish to modify the elements</span>
+<span class="sd">            in-place, regardless of IO/CPU-bound, you should always use `thread` backend.</span>
+
+<span class="sd">            .. warning::</span>
+<span class="sd">                When using `process` backend, you should not expect ``func`` modify elements in-place. This is because</span>
+<span class="sd">                the multiprocessing backing pass the variable via pickle and work in another process. The passed object</span>
+<span class="sd">                and the original object do **not** share the same memory.</span>
+
+<span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
+<span class="sd">        :yield: anything return from ``func``</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">_get_pool</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">num_worker</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)):</span>
                 <span class="k">yield</span> <span class="n">x</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_get_pool</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">num_worker</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">'thread'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span> <span class="k">as</span> <span class="n">Pool</span>
+
+        <span class="k">return</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">num_worker</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">'process'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">Pool</span>
+
+        <span class="k">return</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">num_worker</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'`backend` must be either `process` or `thread`, receiving </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s1">'</span>
+        <span class="p">)</span>
 </pre></div>
             </article>
             <footer>
@@ -732,7 +777,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 30, 2021.
+                    Last updated on Dec 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

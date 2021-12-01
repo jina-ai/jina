@@ -732,8 +732,7 @@
 
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">dap</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentArrayProto</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">:</span>
-                <span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
+            <span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dap</span><span class="o">.</span><span class="n">SerializePartialToString</span><span class="p">())</span></div></div>
 </pre></div>
             </article>
@@ -746,7 +745,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 30, 2021.
+                    Last updated on Dec 01, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
