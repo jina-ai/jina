@@ -59,13 +59,17 @@ def mixin_gateway_parser(parser):
     )
 
     parser.add_argument(
-        '--graph-description', type=str, help='Routing graph for the gateway'
+        '--graph-description',
+        type=str,
+        help='Routing graph for the gateway',
+        default='{}',
     )
 
     parser.add_argument(
         '--pods-addresses',
         type=str,
         help='dictionary JSON with the input addresses of each Pod',
+        default='{}',
     )
 
 
