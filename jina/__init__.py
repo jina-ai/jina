@@ -31,6 +31,7 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
 
 
 _warnings.formatwarning = _warning_on_one_line
+_warnings.simplefilter('always', DeprecationWarning)
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -57,7 +58,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.1.11'
+__version__ = '2.5.1'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -138,7 +139,10 @@ JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 JINA_GLOBAL.dgl_installed = None
 
-_signal.signal(_signal.SIGINT, _signal.default_int_handler)
+try:
+    _signal.signal(_signal.SIGINT, _signal.default_int_handler)
+except Exception as exc:
+    _warnings.warn(f'failed to set default signal handler: {exc!r}`')
 
 
 def _set_nofile(nofile_atleast=4096):

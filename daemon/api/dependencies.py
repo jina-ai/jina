@@ -90,13 +90,28 @@ class FlowDepends:
             )
 
     @property
+    def newname(self) -> str:
+        """Return newfile path in following format
+        `flow.yml` -> `<root-workspace>/<workspace-id>/<flow-id>_flow.yml`
+        `flow1.yml` -> `<root-workspace>/<workspace-id>/<flow-id>_flow1.yml`
+        `src/flow.yml` -> `<root-workspace>/<workspace-id>/src/<flow-id>_flow.yml`
+        `src/abc/flow.yml` -> `<root-workspace>/<workspace-id>/src/abc/<flow-id>_flow.yml`
+
+        :return: newname for the flow yaml file
+        """
+        parts = Path(self.filename).parts
+        if len(parts) == 1:
+            return f'{self.id}_{self.filename}'
+        else:
+            return os.path.join(*parts[:-1], f'{self.id}_{parts[-1]}')
+
+    @property
     def newfile(self) -> str:
-        """return newfile path in format
-        `<root-workspace>/<workspace-id>/<flow-id>_<original-filename>`
+        """Return newfile path fetched from newname
 
         :return: return filepath to save flow config in
         """
-        return get_workspace_path(self.workspace_id, f'{self.id}_{self.filename}')
+        return get_workspace_path(self.workspace_id, self.newname)
 
     def load_and_dump(self) -> None:
         """
@@ -120,16 +135,14 @@ class FlowDepends:
         with ExitStack() as stack:
             # set env vars
             stack.enter_context(change_env('JINA_FULL_CLI', 'true'))
-            if self.envs:
-                for key, val in self.envs.items():
-                    stack.enter_context(change_env(key, val))
 
             # change directory to `workspace`
             stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
 
             # load and build
-            f: Flow = Flow.load_config(str(self.localpath())).build()
-
+            f: Flow = Flow.load_config(
+                str(self.localpath()), substitute=True, context=self.envs
+            ).build()
             # get & set the ports mapping, set `runs_in_docker`
             port_mapping = []
             port_mapping.append(
@@ -186,7 +199,7 @@ class FlowDepends:
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)
-            self.params.uses = os.path.basename(self.newfile)
+            self.params.uses = self.newname
 
     def _update_port_mapping(self, pea_args, pod_name, port_mapping):
         current_ports = Ports()

@@ -1,9 +1,40 @@
 (use-hub-executor)=
 # Use Hub Executor
 
-## via Docker
+```{tip}
+Starting from Jina version 2.25, you can directly use a Hub Executor as a native Python object *without* putting it into a Flow.  
+```
 
-Use the prebuilt images from Hub in your python codes,
+We provide three ways of using Hub Executors in your project. Each has its own use case and benefit.
+
+## Use as-is
+
+You can use a Hub Executor as-is via `Executor.from_hub()`:
+
+```python
+from jina import Executor, DocumentArray, Document
+
+exec = Executor.from_hub('jinahub://DummyHubExecutor')
+da = DocumentArray([Document()])
+exec.foo(da)
+assert da.texts == ['hello']
+```
+
+The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out `exec` object, set breakpoints, and observe how it behaves. You can directly feed in a `DocumentArray`. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.
+
+```{caution}
+Not all executors on the Hub can be directly run in this way, some require extra dependencies. In that case you can add `.from_hub(..., install_requirements=True)` to install the requirements automatically. Be careful, these dependencies may not be compatible with your local packages and may override your local development environment.
+```
+
+```{tip}
+Hub Executors are cached locally on the first pull. Afterwards, they will not be updated. 
+
+To keep up-to-date with upstream, use `.from_hub(..., force_update=True)`.
+```
+
+## Use in a Flow: via Docker
+
+Use prebuilt images from Hub in your Python code:
 
 ```python
 from jina import Flow
@@ -12,10 +43,10 @@ from jina import Flow
 f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 ```
 
-If there is no `/<TAG>` provided when using, it by default equals to `/latest`, which means using the `latest` tag.
+If you do not provide a `/<TAG>`, it defaults to `/latest`, which means using the `latest` tag.
 
 ````{important}
-To use private Executor, you must provide the `SECRET`. It is generated after `jina hub push`.
+To use private a Executor, you must provide the `SECRET`. It is generated after `jina hub push`.
 
 ```{figure} screenshots/secret.png
 :align: center
@@ -26,11 +57,11 @@ To use private Executor, you must provide the `SECRET`. It is generated after `j
 ````{admonition} Attention
 :class: attention
 
-If you are a Mac user, please use `host.docker.internal` as your url when you want to connect a local port from Executor
-docker container.
+If you are a Mac user, please use `host.docker.internal` as your URL when you want to connect a local port from an Executor
+Docker container.
 
 For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
-will connect PostgreSQL server which was started at local. Then you must use it with:
+will connect PostgreSQL server which was started locally. Then you must use it with:
 
 ```python
 from jina import Flow, Document
@@ -43,9 +74,9 @@ with f:
 ```
 ````
 
-## via source code
+## Use in a Flow: via source code
 
-Use the source codes from `Hubble` in your python codes,
+Use the source code from `Hubble` in your Python code:
 
 ```python
 from jina import Flow
@@ -55,8 +86,8 @@ f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]')
 
 ## Override default parameters
 
-It is possible that the default parameters of the published Executor may not be ideal for your use case. You can override
-any of these parameters by passing `uses_with` and `uses_metas` as parameters.
+The default parameters of the published Executor may not be ideal for your use case. You can override
+any of these by passing `uses_with` and `uses_metas` as parameters.
 
 ```python
 from jina import Flow
@@ -66,13 +97,11 @@ f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]',
                uses_metas={'name': 'new_name'})
 ```
 
-This way, the Executor will work with the overridden parameters.
-
 
 (pull-executor)=
 ## Pulling without using
 
-You can also use `jina hub` CLI to pull an executor without actually using it in the Flow.
+You can also use `jina hub` CLI to pull an Executor without actually using it in the Flow.
 
 ### Pull the Docker image
 
@@ -81,7 +110,7 @@ jina hub pull jinahub+docker://<UUID>[:<SECRET>][/<TAG>]
 ```
 
 
-You can find the Executor by running this command `docker images`. You can also indicate which version of the Executor you want to use by naming the `/<TAG>`.
+You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by naming the `/<TAG>`.
 
 ```bash
 jina hub pull jinahub+docker://DummyExecutor/v1.0.0

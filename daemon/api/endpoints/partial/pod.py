@@ -1,3 +1,4 @@
+from typing import Optional, Dict, Any
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
@@ -30,15 +31,49 @@ async def _status():
     status_code=201,
     response_model=PartialStoreItem,
 )
-async def _create(pod: 'PodModel'):
+async def _create(pod: 'PodModel', envs: Optional[Dict] = {}):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
-        return store.add(args)
+        return store.add(args, envs)
     except Exception as ex:
+        raise PartialDaemon400Exception from ex
+
+
+@router.put(
+    path='/rolling_update',
+    summary='Run a rolling_update operation on the Pod object',
+    response_model=PartialStoreItem,
+)
+async def rolling_update(uses_with: Optional[Dict[str, Any]] = None):
+    """
+
+    .. #noqa: DAR101
+    .. #noqa: DAR201
+    """
+    try:
+        return await store.rolling_update(uses_with=uses_with)
+    except ValueError as ex:
+        raise PartialDaemon400Exception from ex
+
+
+@router.put(
+    path='/scale',
+    summary='Run a scale operation on the Pod object',
+    response_model=PartialStoreItem,
+)
+async def scale(replicas: int):
+    """
+
+    .. #noqa: DAR101
+    .. #noqa: DAR201
+    """
+    try:
+        return await store.scale(replicas=replicas)
+    except ValueError as ex:
         raise PartialDaemon400Exception from ex
 
 

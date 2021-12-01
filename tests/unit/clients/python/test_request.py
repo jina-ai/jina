@@ -12,7 +12,6 @@ from jina.enums import DataInputType
 from jina.excepts import BadDocType
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.ndarray.generic import NdArray
 
 
 @pytest.mark.skipif(
@@ -202,12 +201,12 @@ def test_request_generate_numpy_arrays():
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert NdArray(doc.blob).value.shape == (10,)
+        assert doc.blob.shape == (10,)
 
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert NdArray(doc.blob).value.shape == (10,)
+        assert doc.blob.shape == (10,)
 
 
 def test_request_generate_numpy_arrays_iterator():
@@ -222,9 +221,9 @@ def test_request_generate_numpy_arrays_iterator():
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert NdArray(doc.blob).value.shape == (10,)
+        assert doc.blob.shape == (10,)
 
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert NdArray(doc.blob).value.shape == (10,)
+        assert doc.blob.shape == (10,)

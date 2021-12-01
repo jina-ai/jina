@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 from google.protobuf import struct_pb2
 
@@ -10,14 +10,17 @@ class StructView(ProtoTypeMixin, MutableMapping):
     """Create a Python mutable mapping view of Protobuf Struct.
 
     This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags
+
+    .. note::
+        This class behaves like :class:`defaultdict`.
     """
 
-    def __init__(self, struct: struct_pb2.Struct):
+    def __init__(self, struct: Optional[struct_pb2.Struct] = None):
         """Create a Python dict view of Protobuf Struct.
 
         :param struct: the protobuf Struct object
         """
-        self._pb_body = struct
+        self._pb_body = struct if struct is not None else struct_pb2.Struct()
 
     def __setitem__(self, key, value):
         self._pb_body[key] = value
@@ -26,7 +29,7 @@ class StructView(ProtoTypeMixin, MutableMapping):
         del self._pb_body[key]
 
     def __getitem__(self, key):
-        if key in self._pb_body.keys():
+        if key in self._pb_body:
             value = self._pb_body[key]
             if isinstance(value, struct_pb2.Struct):
                 return StructView(value)
@@ -37,7 +40,11 @@ class StructView(ProtoTypeMixin, MutableMapping):
             else:
                 return value
         else:
-            raise KeyError()
+            self._pb_body[key] = {}
+            return StructView(self._pb_body[key])
+
+    def __contains__(self, item):
+        return item in self._pb_body
 
     def __len__(self) -> int:
         return len(self._pb_body.keys())
@@ -66,11 +73,3 @@ class StructView(ProtoTypeMixin, MutableMapping):
             self._pb_body.update(d._pb_body)
         else:
             self._pb_body.update(d)
-
-    def clear(self) -> None:
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR103
-        """
-        self._pb_body.Clear()

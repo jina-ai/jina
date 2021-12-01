@@ -2,18 +2,17 @@ import copy
 from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
-from contextlib import ExitStack
 
 from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ..networking import get_connect_host
 from ... import helper
-from ...enums import SocketType, SchedulerType, PollingType
+from ...enums import SocketType, SchedulerType
 from ...helper import random_identity
 
 
-class CompoundPod(BasePod, ExitStack):
+class CompoundPod(BasePod):
     """A CompoundPod is a immutable set of pods, which run in parallel.
     A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as shards.
 
@@ -287,6 +286,29 @@ class CompoundPod(BasePod, ExitStack):
             for task in tasks:
                 if not task.done():
                     task.cancel()
+
+    async def scale(self, replicas: int):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param replicas: The number of replicas to scale to
+        """
+        tasks = []
+        try:
+            import asyncio
+
+            tasks = [
+                asyncio.create_task(shard.scale(replicas=replicas))
+                for shard in self.shards
+            ]
+            for future in asyncio.as_completed(tasks):
+                _ = await future
+        except:
+            # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state? Cancelling would potentially be dangerous.
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            raise
 
     @property
     def _mermaid_str(self) -> List[str]:

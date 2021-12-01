@@ -63,6 +63,30 @@ Forwarding from [::1]:8080 -> 8080
 embedding size:  512                                                                                       
 ```
 
+You might have noticed that the above `Flow` has been deployed to the Namespace `example-clip`.
+By default, we use the `Flow` name as the `Kubernetes` namespace.
+However, you can deploy `Flow` to any given `Namespace`, like this:
+
+```{code-block} python
+---
+emphasize-lines: 8
+---
+from jina import Flow
+
+f = Flow(
+    name='example-clip',
+    port_expose=8080,
+    infrastructure='K8S',
+    protocol='http',
+    k8s_namespace='custom-namespace',
+).add(uses='jinahub+docker://CLIPImageEncoder')
+```
+
+```{admonition} Caution
+:class: caution
+We heavily recommend you to deploy each `Flow` into a separate namespace. In particular it should not be deployed into namespaces, where other essential non Jina services are running. 
+if `custom-namespace` has been used by another `Flow`, please set a different `k8s_namespace` name.
+```
 
 ### Postgres indexer
 

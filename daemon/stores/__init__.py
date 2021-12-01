@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING, Type
+from typing import Optional, TYPE_CHECKING, Type, Union
 
 from .base import BaseStore
 from .flows import FlowStore
@@ -10,7 +10,7 @@ from ..models import DaemonID
 from ..models.enums import IDLiterals
 
 if TYPE_CHECKING:
-    from .partial import PartialStore
+    from .partial import PartialPeaStore, PartialPodStore, PartialFlowStore
 
 
 def _get_store(cls: Type[BaseStore]) -> BaseStore:
@@ -29,7 +29,9 @@ def _get_store(cls: Type[BaseStore]) -> BaseStore:
             return cls()
 
 
-def _get_partial_store() -> Optional['PartialStore']:
+def _get_partial_store() -> Optional[
+    Union['PartialPeaStore', 'PartialPodStore', 'PartialFlowStore']
+]:
     """Get partial store object
 
     :return: partial store object

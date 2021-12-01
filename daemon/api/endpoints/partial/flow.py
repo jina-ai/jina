@@ -1,11 +1,10 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
 from jina.parsers.flow import set_flow_parser
 
 from ....models import FlowModel
-from ....models.enums import UpdateOperation
 from ....models.ports import PortMappings
 from ....models.partial import PartialFlowItem
 from ....excepts import PartialDaemon400Exception
@@ -31,36 +30,53 @@ async def _status():
     status_code=201,
     response_model=PartialFlowItem,
 )
-async def _create(flow: 'FlowModel', ports: Optional[PortMappings] = None):
-    """
-
-    .. #noqa: DAR101
-    .. #noqa: DAR201"""
-    try:
-        args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
-        return store.add(args, ports)
-    except Exception as ex:
-        raise PartialDaemon400Exception from ex
-
-
-@router.put(
-    path='',
-    summary='Run an update operation on the Flow object',
-    description='Types supported: "rolling_update"',
-    response_model=PartialFlowItem,
-)
-async def _update(
-    kind: UpdateOperation,
-    dump_path: str,
-    pod_name: str,
-    shards: int = None,
+async def _create(
+    flow: 'FlowModel', ports: Optional[PortMappings] = None, envs: Optional[Dict] = {}
 ):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
-        return store.update(kind, dump_path, pod_name, shards)
+        args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
+        return store.add(args, ports, envs)
+    except Exception as ex:
+        raise PartialDaemon400Exception from ex
+
+
+@router.put(
+    path='/rolling_update',
+    summary='Peform rolling_update on the Flow object',
+    response_model=PartialFlowItem,
+)
+async def rolling_update(
+    pod_name: str,
+    uses_with: Optional[Dict[str, Any]] = None,
+):
+    """
+
+    .. #noqa: DAR101
+    .. #noqa: DAR201
+    """
+    try:
+        return store.rolling_update(pod_name=pod_name, uses_with=uses_with)
+    except ValueError as ex:
+        raise PartialDaemon400Exception from ex
+
+
+@router.put(
+    path='/scale',
+    summary='Scale a Pod in the running Flow',
+    response_model=PartialFlowItem,
+)
+async def scale(pod_name: str, replicas: int):
+    """
+
+    .. #noqa: DAR101
+    .. #noqa: DAR201
+    """
+    try:
+        return store.scale(pod_name=pod_name, replicas=replicas)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 

@@ -3,16 +3,26 @@ import base64
 import copy
 import itertools
 import json
+import multiprocessing
 import os
 import re
 import sys
 import threading
 import time
 import uuid
-import warnings
 from collections import OrderedDict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
+from typing import (
+    Optional,
+    Union,
+    Tuple,
+    List,
+    Set,
+    Dict,
+    overload,
+    Type,
+    TYPE_CHECKING,
+)
 
 from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
@@ -42,15 +52,14 @@ from ..helper import (
     CatchAllCleanupContextManager,
 )
 from ..jaml import JAMLCompatible
-
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..parsers.flow import set_flow_parser
 from ..peapods import CompoundPod, Pod
-from ..peapods.pods.k8s import K8sPod
-from ..peapods.pods.factory import PodFactory
-from ..types.routing.table import RoutingTable
 from ..peapods.networking import is_remote_local_connection
+from ..peapods.pods.factory import PodFactory
+from ..peapods.pods.k8s import K8sPod
+from ..types.routing.table import RoutingTable
 
 __all__ = ['Flow']
 
@@ -63,7 +72,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
-if False:
+if TYPE_CHECKING:
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
     from .asyncio import AsyncFlow
@@ -265,7 +274,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -363,7 +372,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.k8s_infrastructure_manager = None
         if self.args.infrastructure == InfrastructureType.K8S:
             self.k8s_infrastructure_manager = self._FlowK8sInfraResourcesManager(
-                k8s_namespace=self.args.name,
+                k8s_namespace=self.args.k8s_namespace or self.args.name,
                 k8s_custom_resource_dir=getattr(
                     self.args, 'k8s_custom_resource_dir', None
                 ),
@@ -468,13 +477,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 port_expose=self.port_expose,
                 pod_role=PodRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
-                k8s_namespace=self.args.name,
+                k8s_namespace=self.args.k8s_namespace or self.args.name,
             )
         )
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
-        args.k8s_namespace = self.args.name
+        args.k8s_namespace = self.args.k8s_namespace or self.args.name
         args.connect_to_predecessor = False
         args.noblock_on_start = True
         self._pod_nodes[GATEWAY_NAME] = PodFactory.build_pod(
@@ -532,7 +541,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_public: Optional[bool] = False,
         external: Optional[bool] = False,
-        force: Optional[bool] = False,
+        force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -594,7 +603,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
-        :param force: If set, always pull the latest Hub Executor bundle even it exists on local
+        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
               Note,
@@ -653,7 +662,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
         :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
@@ -791,8 +800,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        args.k8s_namespace = self.args.name
+        args.k8s_namespace = self.args.k8s_namespace or self.args.name
         args.noblock_on_start = True
+        args.extra_search_paths = self.args.extra_search_paths
+        args.zmq_identity = None
 
         # BACKWARDS COMPATIBILITY:
         # We assume that this is used in a search Flow if replicas and shards are used
@@ -1115,6 +1126,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if hasattr(self, '_stop_event'):
+            self._stop_event.set()
+
         super().__exit__(exc_type, exc_val, exc_tb)
 
         # unset all envs to avoid any side-effect
@@ -1164,7 +1178,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return self
 
-    def _wait_until_all_ready(self) -> bool:
+    def _wait_until_all_ready(self):
         results = {}
         threads = []
 
@@ -1416,7 +1430,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         mermaid_str = op_flow._mermaid_str
         if vertical_layout:
-            mermaid_str = mermaid_str.replace('graph LR', 'graph TD')
+            mermaid_str = mermaid_str.replace('flowchart LR', 'flowchart TD')
 
         image_type = 'svg'
         if output and not output.endswith('svg'):
@@ -1576,10 +1590,22 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         return address_table
 
-    def block(self):
-        """Block the process until user hits KeyboardInterrupt"""
+    def block(
+        self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
+    ):
+        """Block the Flow until `stop_event` is set or user hits KeyboardInterrupt
+
+        :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow
+            to main thread.
+        """
         try:
-            threading.Event().wait()
+            if stop_event is None:
+                self._stop_event = (
+                    threading.Event()
+                )  #: this allows `.close` to close the Flow from another thread/proc
+                self._stop_event.wait()
+            else:
+                stop_event.wait()
         except KeyboardInterrupt:
             pass
 
@@ -1798,6 +1824,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes[pod_name].rolling_update,
             dump_path=dump_path,
             uses_with=uses_with,
+            any_event_loop=True,
+        )
+
+    def scale(
+        self,
+        pod_name: str,
+        replicas: int,
+    ):
+        """
+        Scale the amount of replicas of a given Executor.
+
+        :param pod_name: pod to update
+        :param replicas: The number of replicas to scale to
+        """
+
+        # TODO when replicas-host is ready, needs to be passed here
+
+        from ..helper import run_async
+
+        run_async(
+            self._pod_nodes[pod_name].scale,
+            replicas=replicas,
             any_event_loop=True,
         )
 

@@ -1,8 +1,9 @@
+from typing import Optional, Dict, Any
+
 from fastapi import Depends, APIRouter, HTTPException
 
 from ... import Runtime400Exception
 from ..dependencies import PodDepends
-from ...models.enums import UpdateOperation
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PodModel
 from ...stores import pod_store as store
 
@@ -43,13 +44,33 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
 
 
 @router.put(
-    path='/{id}',
-    summary='Trigger a rolling update on this Pod',
-    description='Types supported: "rolling_update"',
+    path='/rolling_update/{id}',
+    summary='Trigger a rolling_update operation on the Pod object',
 )
-async def _update(id: DaemonID, kind: UpdateOperation, dump_path: str):
+async def _rolling_update(
+    id: DaemonID,
+    dump_path: Optional[str] = None,
+    uses_with: Optional[Dict[str, Any]] = None,
+):
     try:
-        return await store.update(id, kind, dump_path)
+        if dump_path is not None:
+            if uses_with is not None:
+                uses_with['dump_path'] = dump_path
+            else:
+                uses_with = {'dump_path': dump_path}
+
+        return await store.rolling_update(id=id, uses_with=uses_with)
+    except Exception as ex:
+        raise Runtime400Exception from ex
+
+
+@router.put(
+    path='/scale/{id}',
+    summary='Trigger a scale operation on the Pod object',
+)
+async def _scale(id: DaemonID, replicas: int):
+    try:
+        return await store.scale(id=id, replicas=replicas)
     except Exception as ex:
         raise Runtime400Exception from ex
 

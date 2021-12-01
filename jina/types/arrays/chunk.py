@@ -1,8 +1,8 @@
-from typing import Iterable
+from typing import Iterable, TYPE_CHECKING
 
 from .document import DocumentArray
 
-if False:
+if TYPE_CHECKING:
     from ..document import Document
 
 
@@ -25,27 +25,19 @@ class ChunkArray(DocumentArray):
         self._ref_doc = reference_doc
         super().__init__(doc_views)
 
-    def append(self, document: 'Document', **kwargs) -> 'Document':
+    def append(self, document: 'Document'):
         """Add a sub-document (i.e chunk) to the current Document.
 
         :param document: Sub-document to be appended
-        :param kwargs: additional keyword arguments
-        :return: the newly added sub-document in :class:`Document` view
-        :rtype: :class:`Document`
 
         .. note::
             Comparing to :attr:`DocumentArray.append()`, this method adds more safeguard to
             make sure the added chunk is legit.
         """
         super().append(document)
-        chunk = self[-1]
-        if not chunk.mime_type:
-            chunk.mime_type = self._ref_doc.mime_type
-        chunk.set_attributes(
-            parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
-        )
-
-        return chunk
+        proto = self._pb_body[-1]
+        proto.parent_id = self._ref_doc._pb_body.id
+        proto.granularity = self._ref_doc._pb_body.granularity + 1
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """

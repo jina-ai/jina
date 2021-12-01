@@ -1,8 +1,8 @@
-from typing import Optional, Sequence, List, Dict, Union
+from typing import Any, Optional, Sequence, List, Dict, Union, TYPE_CHECKING
 
 from ..jaml import JAML, JAMLCompatible
 
-if False:
+if TYPE_CHECKING:
     from optuna.trial import Trial
 
 
@@ -28,6 +28,17 @@ class OptimizationParameter(JAMLCompatible):
 
         :param trial: An instance of an Optuna Trial object
             # noqa: DAR201
+        """
+        raise NotImplementedError
+
+    @property
+    def search_space(self) -> Dict[str, List[Any]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :raises NotImplementedError: :class:`OptimizationParameter` is just an interface. Please
+            use any implemented subclass.
         """
         raise NotImplementedError
 
@@ -85,6 +96,19 @@ class IntegerParameter(OptimizationParameter):
             log=self.log,
         )
 
+    @property
+    def search_space(self) -> Dict[str, List[int]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :return:: The parameter's search space in dictionary form with the parameter name as key
+            and a list of values as value
+        """
+        return {
+            self.jaml_variable: list(range(self.low, self.high + 1, self.step_size))
+        }
+
 
 class UniformParameter(OptimizationParameter):
     """
@@ -109,6 +133,19 @@ class UniformParameter(OptimizationParameter):
             name=self.jaml_variable,
             low=self.low,
             high=self.high,
+        )
+
+    @property
+    def search_space(self) -> Dict[str, List[Any]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :raises NotImplementedError: search space is not defined for parameter type
+            :class:`UniformParameter`.
+        """
+        raise NotImplementedError(
+            f"Can't define the search space of a {self.__class__.__name__}"
         )
 
 
@@ -137,6 +174,19 @@ class LogUniformParameter(OptimizationParameter):
             high=self.high,
         )
 
+    @property
+    def search_space(self) -> Dict[str, List[Any]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :raises NotImplementedError: search space is not defined for parameter type
+            :class:`LogUniformParameter`.
+        """
+        raise NotImplementedError(
+            f"Can't define the search space of a {self.__class__.__name__}"
+        )
+
 
 class CategoricalParameter(OptimizationParameter):
     """
@@ -159,6 +209,17 @@ class CategoricalParameter(OptimizationParameter):
             # noqa: DAR201
         """
         return trial.suggest_categorical(name=self.jaml_variable, choices=self.choices)
+
+    @property
+    def search_space(self) -> Dict[str, List[Optional[Union[bool, int, float, str]]]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :return:: The parameter's search space in dictionary form with the parameter name as key
+            and a list of values as value
+        """
+        return {self.jaml_variable: list(self.choices)}
 
 
 class DiscreteUniformParameter(OptimizationParameter):
@@ -187,6 +248,23 @@ class DiscreteUniformParameter(OptimizationParameter):
             high=self.high,
             q=self.q,
         )
+
+    @property
+    def search_space(self) -> Dict[str, List[float]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :return:: The parameter's search space in dictionary form with the parameter name as key
+            and a list of values as value
+        """
+        search_space_values: List[float] = []
+        value = self.low
+        while value <= self.high:
+            search_space_values.append(value)
+            value += self.q
+
+        return {self.jaml_variable: search_space_values}
 
 
 class ExecutorAlternativeParameter(CategoricalParameter):
@@ -220,6 +298,22 @@ class ExecutorAlternativeParameter(CategoricalParameter):
             inner_parameters.keys()
         ), 'Every executor alternative needs to have its set of parameters'
         self.inner_parameters = inner_parameters
+
+    @property
+    def search_space(self) -> Dict[str, List[Any]]:
+        """
+        Get the parameter's search space, i.e. a dictionary mapping the parameter name to a list of
+        possible values for the parameter.
+
+        :return:: The parameter's search space in dictionary form with the parameter name as key
+            and a list of values as value
+        """
+        search_space = super().search_space
+        for _, inner_parameters in self.inner_parameters.items():
+            for parameter in inner_parameters:
+                search_space.update(parameter.search_space)
+
+        return search_space
 
     def update_trial_params(self, trial: 'Trial', trial_params: Dict):
         """

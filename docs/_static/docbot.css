@@ -150,9 +150,17 @@
 }
 
 .feedback-tooltip {
-    bottom: -20px;
-    position: absolute;
-    left: 20px;
+  bottom: -20px;
+  position: absolute;
+  left: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 20px - 12px)
+}
+
+.answer-reference {
+  white-space: nowrap;
 }
 
 .answer-reference:after {
@@ -168,6 +176,14 @@
     background-position: center;
     background-size: contain;
     height: 1rem;
+}
+
+.hidden-before-ready{
+    display: none;
+}
+
+.ready .hidden-before-ready{
+    display: revert;
 }
 
 @media (prefers-color-scheme: dark) {

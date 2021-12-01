@@ -4,3 +4,5 @@ with:
   port_expose: 12345
 executors:
   - name: executor1
+    replicas: 1
+    shards: 2

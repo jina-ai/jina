@@ -47,7 +47,7 @@ class MyTransformer(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
-        with torch.no_grad():
+        with torch.inference_mode():
             if not self.tokenizer.pad_token:
                 self.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))
@@ -65,8 +65,7 @@ class MyTransformer(Executor):
             outputs = self.model(**input_tokens)
             hidden_states = outputs.hidden_states
 
-            embeds = self._compute_embedding(hidden_states, input_tokens)
-            docs.embeddings = embeds
+            docs.embeddings = self._compute_embedding(hidden_states, input_tokens)
 
 
 class MyIndexer(Executor):

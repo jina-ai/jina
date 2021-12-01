@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from typing import Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import numpy as np
 import yaml
@@ -20,7 +20,7 @@ from ..logging.predefined import default_logger as logger
 from ..types.request import Response
 from ..types.score.map import NamedScoreMapping
 
-if False:
+if TYPE_CHECKING:
     from .flow_runner import FlowRunner
     import optuna
     from optuna.trial import Trial
@@ -205,6 +205,10 @@ class FlowOptimizer(JAMLCompatible):
         self._seed = seed
         self.parameters = load_optimization_parameters(self._parameter_yaml)
 
+        self._search_space: Dict[str, List[Any]] = {}
+        for parameter in self.parameters:
+            self._search_space.update(parameter.search_space)
+
     def _trial_parameter_sampler(self, trial: 'Trial'):
         trial_parameters = {}
         for param in self.parameters:
@@ -240,7 +244,9 @@ class FlowOptimizer(JAMLCompatible):
         with ImportExtensions(required=True):
             import optuna
         if self._sampler == 'GridSampler':
-            sampler = getattr(optuna.samplers, self._sampler)(**kwargs)
+            sampler = getattr(optuna.samplers, self._sampler)(
+                search_space=self._search_space, **kwargs
+            )
         else:
             sampler = getattr(optuna.samplers, self._sampler)(seed=self._seed, **kwargs)
         study = optuna.create_study(direction=self._direction, sampler=sampler)

@@ -1,6 +1,8 @@
 (hub-executor-best-practices)=
 # Best Practices
 
+## Developing Hub Executors
+
 When developing Hub Executors, make sure to follow these tips:
 
 * Use `jina hub new` CLI to create an Executor
@@ -25,3 +27,11 @@ version for you. No worries about Jina version upgrade!
   Information you include in `manifest.yml` will be displayed on our website.
 Want to make your Executor eye-catching on our website? Fill all fields in `manifest.yml` with heart & love!
 
+
+## Using Hub Executors
+
+When using Hub Executors, make sure to follow these tips:
+
+* Ensure sufficient Docker resources are allocated when using `jinahub+docker`
+
+  When `jinahub+docker` executors are not loading properly or are having issues during initialization, please ensure sufficient Docker resources are allocated.

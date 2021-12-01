@@ -1,6 +1,8 @@
+from typing import TYPE_CHECKING
+
 from .document import DocumentArray
 
-if False:
+if TYPE_CHECKING:
     from ..document import Document
 
 
@@ -17,21 +19,15 @@ class MatchArray(DocumentArray):
         self._ref_doc = reference_doc
         super().__init__(doc_views)
 
-    def append(self, document: 'Document', **kwargs) -> 'Document':
+    def append(self, document: 'Document'):
         """Add a matched document to the current Document.
 
         :param document: Sub-document to be added
-        :param kwargs: Extra key value arguments
-        :return: the newly added sub-document in :class:`Document` view
-        :rtype: :class:`Document` view
         """
         super().append(document)
-        match = self[-1]
-        match.set_attributes(
-            granularity=self.granularity, adjacency=self.adjacency, **kwargs
-        )
-
-        return match
+        proto = self._pb_body[-1]
+        proto.granularity = self._ref_doc._pb_body.granularity
+        proto.adjacency = self._ref_doc._pb_body.adjacency + 1
 
     @property
     def reference_doc(self) -> 'Document':

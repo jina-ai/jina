@@ -142,10 +142,10 @@ def test_pod_naming_with_replica(runtime):
         ['--name', 'pod', '--replicas', '2', '--runtime-backend', runtime]
     )
     with Pod(args) as bp:
-        assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/rep-0'
-        assert bp.peas[2].name == 'pod/rep-1'
-        assert bp.peas[3].name == 'pod/tail'
+        assert bp.head_pea.name == 'pod/head'
+        assert bp.replica_set._peas[0].name == 'pod/rep-0'
+        assert bp.replica_set._peas[1].name == 'pod/rep-1'
+        assert bp.tail_pea.name == 'pod/tail'
 
 
 def test_pod_args_remove_uses_ba():
@@ -178,9 +178,8 @@ def test_pod_remote_pea_without_replicas():
         ['--peas-hosts', '0.0.0.1', '--replicas', str(1)]
     )
     with Pod(args) as pod:
-        peas = pod.peas
-        for pea in peas:
-            assert pea.args.host == pod.host
+        pea = pod.replica_set._peas[0]
+        assert pea.args.host == pod.host
 
 
 @pytest.mark.parametrize(

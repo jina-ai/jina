@@ -14,7 +14,7 @@ def test_push_parser(tmpdir):
 
     args = parser.parse_args([tmpdir])
     assert args.path == tmpdir
-    assert args.force is None
+    assert args.force_update is None
     assert args.secret is None
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')
@@ -44,8 +44,10 @@ def test_push_parser(tmpdir):
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 2
 
-    args = parser.parse_args([tmpdir, '--force', '8iag38yu', '--secret', '8iag38yu'])
-    assert args.force == '8iag38yu'
+    args = parser.parse_args(
+        [tmpdir, '--force-update', '8iag38yu', '--secret', '8iag38yu']
+    )
+    assert args.force_update == '8iag38yu'
     assert args.secret == '8iag38yu'
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')

@@ -91,11 +91,16 @@ def test_simple_run(docs):
 
 @pytest.fixture()
 def docker_image():
-    docker_file = os.path.join(cur_dir, 'Dockerfile')
-    os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
-    time.sleep(3)
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir), tag='test_rolling_update_docker')
+    client.close()
     yield
-    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
 @pytest.mark.repeat(5)
@@ -332,3 +337,36 @@ def test_override_uses_with(docs):
         assert doc.tags['dump_path'] == '/tmp/dump_path2/'
         assert doc.tags['arg1'] == 'version2'
         assert doc.tags['arg2'] == 'version2'
+
+
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize(
+    'replicas, scale_to, expected_before_scale, expected_after_scale',
+    [(2, 3, {0, 1}, {0, 1, 2}), (3, 2, {0, 1, 2}, {0, 1})],
+)
+def test_scale_after_rolling_update(
+    docs, replicas, scale_to, expected_before_scale, expected_after_scale
+):
+    flow = Flow().add(
+        name='executor1',
+        uses=DummyMarkExecutor,
+        replicas=replicas,
+    )
+    with flow:
+        ret1 = flow.search(docs, return_results=True, request_size=1)
+        flow.rolling_update('executor1', None)
+        flow.scale('executor1', replicas=scale_to)
+        ret2 = flow.search(docs, return_results=True, request_size=1)
+
+    replica_ids = set()
+    for r in ret1:
+        for replica_id in r.docs.get_attributes('tags__replica'):
+            replica_ids.add(replica_id)
+
+    assert replica_ids == expected_before_scale
+
+    replica_ids = set()
+    for r in ret2:
+        for replica_id in r.docs.get_attributes('tags__replica'):
+            replica_ids.add(replica_id)
+    assert replica_ids == expected_after_scale

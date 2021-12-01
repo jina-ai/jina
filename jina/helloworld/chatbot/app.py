@@ -58,8 +58,13 @@ def hello_world(args):
     f = _get_flow(args)
 
     # index it!
-    with f, open(targets['covid-csv']['filename']) as fp:
-        f.index(from_csv(fp, field_resolver={'question': 'text'}), show_progress=True)
+    with f:
+        f.index(
+            from_csv(
+                targets['covid-csv']['filename'], field_resolver={'question': 'text'}
+            ),
+            show_progress=True,
+        )
 
         # switch to REST gateway at runtime
         f.protocol = 'http'

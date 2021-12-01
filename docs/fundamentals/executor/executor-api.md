@@ -1,7 +1,7 @@
 (executor)=
 # Create Executor
 
-`Executor` process `DocumentArray` in-place via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
+{class}`~jina.Executor` process `DocumentArray` in-place via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
 - An `Executor` should subclass directly from `jina.Executor` class.
 - An `Executor` class is a bag of functions with shared state (via `self`); it can contain an arbitrary number of
@@ -328,7 +328,7 @@ class ConvertSegmenter(Executor):
     @requests
     def segment(self, docs: DocumentArray, **kwargs) -> None:
         for d in docs:
-            d.convert_uri_to_buffer()
+            d.load_uri_to_buffer()
             d.chunks = [Document(blob=_r['blob'], tags=_r['tags']) for _r in get_mesh(d.content)]
             d.pop('buffer', 'uri')
 ```

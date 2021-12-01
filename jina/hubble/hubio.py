@@ -27,7 +27,7 @@ from .hubapi import (
     install_package_dependencies,
 )
 from .. import __resources_path__
-from ..helper import get_full_version, ArgNamespace
+from ..helper import get_full_version, ArgNamespace, colored
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..parsers.hubble import set_hub_parser
@@ -149,7 +149,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 if self.args.keywords
                 else (
                     Prompt.ask(
-                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
+                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by comma)[/dim]\n'
                         f'[dim]Example: image cv embedding encoding resnet[/dim]'
                     )
                 )
@@ -196,7 +196,7 @@ your executor has non-trivial dependencies or must be run under certain environm
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
                         .replace('{{exec_description}}', exec_description)
-                        .replace('{{exec_keywords}}', exec_keywords)
+                        .replace('{{exec_keywords}}', str(exec_keywords.split(',')))
                         .replace('{{exec_url}}', exec_url)
                     )
 
@@ -385,8 +385,8 @@ metas:
                     form_data['dockerfile'] = str(dockerfile)
 
                 uuid8, secret = load_secret(work_path)
-                if self.args.force or uuid8:
-                    form_data['force'] = self.args.force or uuid8
+                if self.args.force_update or uuid8:
+                    form_data['force'] = self.args.force_update or uuid8
                 if self.args.secret or secret:
                     form_data['secret'] = self.args.secret or secret
 
@@ -426,7 +426,18 @@ metas:
                 if result is None:
                     raise Exception('Unknown Error')
                 elif not result.get('data', None):
-                    raise Exception(result.get('message', 'Unknown Error'))
+                    msg = result.get('message', 'Unknown Error')
+                    if 'Process(docker) exited on non-zero code' in msg:
+                        self.logger.error(
+                            '''
+                        Failed on building Docker image. Potential solutions:
+                        - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one, 
+                          as the auto-generated one on the cloud did not work.   
+                        - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
+                        '''
+                        )
+
+                    raise Exception(msg)
                 elif 200 <= result['statusCode'] < 300:
                     new_uuid8, new_secret = self._prettyprint_result(console, result)
                     if new_uuid8 != uuid8 or new_secret != secret:
@@ -444,8 +455,8 @@ metas:
 
             except Exception as e:  # IO related errors
                 self.logger.error(
-                    f'Error while pushing session_id={req_header["jinameta-session-id"]}: '
-                    f'\n{e!r}'
+                    f'''Please report this session_id: {colored(req_header["jinameta-session-id"], color="yellow", attrs="bold")} to https://github.com/jina-ai/jina/issues'
+                {e!r}'''
                 )
                 raise e
 
@@ -484,7 +495,6 @@ metas:
             width=80,
             expand=False,
         )
-
         console.print(p1)
 
         presented_id = image.get('name', uuid8)
@@ -668,7 +678,7 @@ with f:
         usage_kind = None
 
         try:
-            need_pull = self.args.force
+            need_pull = self.args.force_update
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 

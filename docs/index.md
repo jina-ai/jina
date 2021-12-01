@@ -8,7 +8,6 @@
 ## Install
 
 1. Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
-2. Install Jina
 
     ````{tab} via PyPI
     ```shell
@@ -22,15 +21,21 @@
     ````
     ````{tab} via Docker
     ```shell
-    docker run jinaai/jina:latest
+    docker pull jinaai/jina:latest
     ```
     ````
 
-3. Run hello-world demo
-   ```bash 
+2. That’s it! Try a hello-world demo
+   ````{tab} Run natively
+   ```shell
    jina hello fashion
    ```
-4. That’s it! In the next few seconds the demo will open in a new page in your browser.
+   ````
+   ````{tab} Run in Docker
+   ```shell
+   docker run -v "$(pwd)/j:/j" jinaai/jina:latest hello fashion --workdir /j && open j/demo.html
+   ```
+   ````
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 
@@ -56,11 +61,19 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 ::::
 
+::::{grid-item-card} {octicon}`infinity;1.5em` Tasks on Multi Data Types
+:link: datatype/text/index
+:link-type: doc
+:class-card: color-gradient-card
+
+Learn to use Jina to build neural search solution for different types of data.
+::::
+
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
 :link: advanced/hub/index
 :link-type: doc
 
-Learn how to share and reuse Executors from community.
+Learn to share and reuse Executors from the Jina community.
 
 ::::
 
@@ -69,29 +82,19 @@ Learn how to share and reuse Executors from community.
 :link: advanced/daemon/index
 :link-type: doc
 
-Learn how to deploy and manage Jina on remote via a RESTful interface.
+Learn to deploy and manage Jina on remote via a RESTful interface.
 ::::
 
 
-::::{grid-item-card} {octicon}`thumbsup;1.5em` Clean & Efficient Code 
-:link: fundamentals/clean-code
-:link-type: doc
 
-Write beautiful & lean code with Jina.
-::::
 
 ::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
 :link: advanced/experimental/index
 :link-type: doc
 
-Preview the next big thing we are building. Careful, zapping!
+Preview the next big things we are building. Careful not to get zapped!
 ::::
 
-::::{grid-item-card} {octicon}`gift;1.5em` Get Yourself Jina Swag
-:link: https://jina.ai/blog/swag/
-
-Awesome Jina swag to our awesome contributors (aka you)!
-::::
 
 :::::
 
@@ -105,7 +108,7 @@ Awesome Jina swag to our awesome contributors (aka you)!
 :hidden:
 
 get-started/neural-search
-get-started/install
+get-started/install/index
 get-started/hello-world/index
 ```
 
@@ -122,6 +125,18 @@ fundamentals/clean-code
 
 
 ```{toctree}
+:caption: Data Types
+:hidden:
+
+datatype/text/index
+datatype/image/index
+datatype/video/index
+datatype/audio/index
+datatype/mesh/index
+datatype/tabular/index
+```
+
+```{toctree}
 :caption: Advanced
 :hidden:
 
@@ -130,16 +145,6 @@ advanced/daemon/index
 advanced/experimental/index
 ```
 
-```{toctree}
-:caption: Tutorials
-:hidden:
-
-tutorials/fuzzy-grep
-tutorials/chatbot
-tutorials/master-executor
-tutorials/refactor-hello-world
-tutorials/gpu-executor
-```
 
 ```{toctree}
 :caption: API Reference

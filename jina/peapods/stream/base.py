@@ -92,12 +92,6 @@ class BaseStreamer(ABC):
         """Send end of iterator signal to Gateway"""
         pass
 
-    async def close(self):
-        """
-        Stop receiving messages
-        """
-        self.receive_task.cancel()
-
     @abstractmethod
     async def stream(
         self, request_iterator: Union[Iterator, AsyncIterator]
@@ -183,7 +177,7 @@ class BaseStreamer(ABC):
 
             :param num_req: number of requests
             :param fetch_to: the task list storing requests
-            :return: False if append task to :param:`fetch_to` else False
+            :return: False if append task to `fetch_to` else False
             """
             count = 0
             async for request in AsyncRequestsIterator(iterator=request_iterator):

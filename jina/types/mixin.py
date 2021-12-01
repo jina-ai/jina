@@ -1,13 +1,28 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from ..helper import typename
+from ..helper import typename, T
 from ..proto import jina_pb2
 
 
 class ProtoTypeMixin:
-    """Mixin class of `ProtoType`."""
+    """The base mixin class of all Jina types.
+
+    .. note::
+        - All Jina types should inherit from this class.
+        - All subclass should have ``self._pb_body``
+        - All subclass should implement ``__init__`` with the possibility of initializing from ``None``, e.g.:
+
+            .. highlight:: python
+            .. code-block:: python
+
+                class MyJinaType(ProtoTypeMixin):
+
+                    def __init__(self, proto: Optional[jina_pb2.SomePbMsg] = None):
+                        self._pb_body = proto or jina_pb2.SomePbMsg()
+
+    """
 
     def json(self) -> str:
         """Return the object in JSON string
@@ -46,6 +61,13 @@ class ProtoTypeMixin:
         """
         return self._pb_body.SerializePartialToString()
 
+    def __getstate__(self):
+        return dict(serialized=self.binary_str())
+
+    def __setstate__(self, state):
+        self.__init__()
+        self._pb_body.ParseFromString(state['serialized'])
+
     @property
     def nbytes(self) -> int:
         """Return total bytes consumed by protobuf.
@@ -57,29 +79,44 @@ class ProtoTypeMixin:
     def __getattr__(self, name: str):
         return getattr(self._pb_body, name)
 
-    def __str__(self):
-        return str(self._build_content_dict())
-
     def __repr__(self):
-        d = self._build_content_dict()
-        if isinstance(d, list):
-            content = ' '.join(f'{v}' for v in self._build_content_dict())
-        else:
-            content = ' '.join(
-                f'{k}={v}' for k, v in self._build_content_dict().items()
-            )
+        content = str(self.non_empty_fields)
         content += f' at {id(self)}'
-        content = content.strip()
-        return f'<{typename(self)} {content}>'
+        return f'<{typename(self)} {content.strip()}>'
 
-    def _build_content_dict(self):
-        """Helper method for __str__ and __repr__
+    @property
+    def non_empty_fields(self) -> Tuple[str, ...]:
+        """Return the set fields of the current Protobuf message that are not empty
 
-        :return: the dict representation for the object
+        :return: the tuple of non-empty fields
         """
-        content = self.dict()
-        if hasattr(self, '_attributes_in_str') and isinstance(
-            self._attributes_in_str, list
-        ):
-            content = {k: content[k] for k in self._attributes_in_str}
-        return content
+        return tuple(field[0].name for field in self._pb_body.ListFields())
+
+    def MergeFrom(self: T, other: T) -> None:
+        """Merge the content of target
+
+        :param other: the document to merge from
+        """
+        self._pb_body.MergeFrom(other._pb_body)
+
+    def CopyFrom(self: T, other: T) -> None:
+        """Copy the content of target
+
+        :param other: the document to copy from
+        """
+        self._pb_body.MergeFrom(other._pb_body)
+
+    def clear(self) -> None:
+        """Remove all values from all fields of this Document."""
+        self._pb_body.Clear()
+
+    def pop(self, *fields) -> None:
+        """Remove the values from the given fields of this Document.
+
+        :param fields: field names
+        """
+        for k in fields:
+            self._pb_body.ClearField(k)
+
+    def __eq__(self, other):
+        return self.proto == other.proto

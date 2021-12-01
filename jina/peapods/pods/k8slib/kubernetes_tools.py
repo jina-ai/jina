@@ -35,6 +35,9 @@ def create(
     clients = K8sClients()
     if template == 'configmap':
         yaml = _patch_configmap_yaml(template, params)
+    elif template in ['deployment', 'deployment-init'] and params.get('device_plugins'):
+        yaml = _get_yaml(template, params, custom_resource_dir)
+        yaml = _patch_deployment_with_device_plugins(yaml, params)
     else:
         yaml = _get_yaml(template, params, custom_resource_dir)
     fd, path = tempfile.mkstemp()
@@ -119,6 +122,25 @@ def _patch_configmap_yaml(template: str, params: Dict):
         for key, value in params['data'].items():
             config_map['data'][key] = value
     return json.dumps(config_map)
+
+
+def _create_device_plugins(params: Dict):
+    data = {'limits': {}}
+    for key, value in params.items():
+        data['limits'][key] = value
+    return data
+
+
+def _patch_deployment_with_device_plugins(yaml_content: str, params: Dict):
+    import yaml
+
+    device_plugins = _create_device_plugins(params['device_plugins'])
+
+    deployment = yaml.safe_load(yaml_content)
+    deployment['spec']['template']['spec']['containers'][0][
+        'resources'
+    ] = device_plugins
+    return json.dumps(deployment)
 
 
 def _get_gateway_pod_name(namespace, k8s_clients):

@@ -7,7 +7,7 @@ from typing import Any, Tuple, Union, Dict, Optional
 
 from ...jaml import JAML
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__
+from ... import __stop_msg__, __ready_msg__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
@@ -108,7 +108,6 @@ class BasePea:
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        super().__init__()  #: required here to call process/thread __init__
         self.args = args
         # BACKWARDS COMPATIBILITY
         self.args.pea_id = self.args.shard_id
@@ -353,9 +352,9 @@ class BasePea:
         terminated = False
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self.logger.warning(f' Cancel runtime')
+                self.logger.debug(f' Cancel runtime')
                 self._cancel_runtime()
-                self.logger.warning(f' Wait to shutdown')
+                self.logger.debug(f' Wait to shutdown')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
                     terminated = True
@@ -379,6 +378,9 @@ class BasePea:
                 self.join()
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish
+            self.logger.debug(
+                'shutdown is already set. Runtime will end gracefully on its own'
+            )
             pass
         else:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.

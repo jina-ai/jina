@@ -15,6 +15,7 @@ def mixin_hub_pull_options_parser(parser):
         help='If set, install `requirements.txt` in the Hub Executor bundle to local',
     ),
     gp.add_argument(
+        '--force-update',
         '--force',
         action='store_true',
         default=False,

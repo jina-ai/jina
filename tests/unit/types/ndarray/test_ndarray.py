@@ -1,191 +1,116 @@
 import numpy as np
+import paddle
 import pytest
+import tensorflow as tf
+import torch
+from scipy.sparse import csr_matrix, coo_matrix, bsr_matrix, csc_matrix
+
+from jina import Document, DocumentArray
 
 
-def test_empty_ndarray():
-    from jina.types.ndarray.dense.numpy import DenseNdArray
-
-    a = DenseNdArray()
-    assert a.value is None
-
-    from jina.types.ndarray.sparse.pytorch import SparseNdArray as sp1
-
-    a = sp1()
-    assert a.value is None
-
-    from jina.types.ndarray.sparse.numpy import SparseNdArray as sp2
-
-    a = sp2()
-    assert a.value is None
-
-    from jina.types.ndarray.sparse.tensorflow import SparseNdArray as sp2
-
-    a = sp2()
-    assert a.value is None
-
-    from jina.types.ndarray.sparse.pytorch import SparseNdArray as sp2
-
-    a = sp2()
-    assert a.value is None
-
-    from jina.types.ndarray.generic import NdArray as sp2
-
-    a = sp2()
-    assert a.value is None
+def get_ndarrays():
+    a = np.random.random([10, 3])
+    a[a > 0.5] = 0
+    return [
+        (a, False),
+        (torch.tensor(a), False),
+        (tf.constant(a), False),
+        (paddle.to_tensor(a), False),
+        (torch.tensor(a).to_sparse(), True),
+        (tf.sparse.from_dense(a), True),
+        (csr_matrix(a), True),
+        (bsr_matrix(a), True),
+        (coo_matrix(a), True),
+        (csc_matrix(a), True),
+    ]
 
 
-@pytest.mark.parametrize('sp_format', ['coo'])
-def test_scipy_sparse(sp_format):
-    from scipy.sparse import coo_matrix
-    from jina.types.ndarray.sparse.scipy import SparseNdArray
+@pytest.mark.parametrize('ndarray_val, is_sparse', get_ndarrays())
+@pytest.mark.parametrize('attr', ['embedding', 'blob'])
+def test_ndarray_setter_getter(ndarray_val, attr, is_sparse):
+    d = Document()
+    setattr(d, attr, ndarray_val)
+    # test write/setter
+    ndav = getattr(d, attr)
 
-    row = np.array([0, 3, 1, 0])
-    col = np.array([0, 3, 1, 2])
-    data = np.array([4, 5, 7, 9])
-    a = coo_matrix((data, (row, col)), shape=(4, 4))
-    dense_a = a.toarray()
-    b = SparseNdArray(sp_format=sp_format)
-    # write to proto
-    b.value = a
-    # read from proto
-    dense_b = b.value.toarray()
-    np.testing.assert_equal(dense_b, dense_a)
+    # test read/getter
+    assert type(ndav) is type(ndarray_val)
 
+    if is_sparse:
+        if hasattr(ndav, 'todense'):
+            ndav = (ndav.todense(),)
+            ndarray_val = ndarray_val.todense()
+        if hasattr(ndav, 'to_dense'):
+            ndav = (ndav.to_dense(),)
+            ndarray_val = ndarray_val.to_dense()
+        if isinstance(ndav, tf.SparseTensor):
+            ndav = tf.sparse.to_dense(ndav)
+            ndarray_val = tf.sparse.to_dense(ndarray_val)
 
-@pytest.mark.parametrize(
-    'dtype',
-    ['float64', 'float32', 'float16', 'int64', 'int32', 'int16', 'uint32', 'uint8'],
-)
-def test_numpy_dense(dtype):
-    from jina.types.ndarray.dense.numpy import DenseNdArray
+    if isinstance(ndav, tuple):
+        ndav = ndav[0]
+    if hasattr(ndav, 'numpy'):
+        ndav = ndav.numpy()
+        ndarray_val = ndarray_val.numpy()
 
-    a = (100 * np.random.random([10, 6, 8, 2])).astype(dtype)
-    b = DenseNdArray()
-    # set
-    b.value = a
-    # get
-    np.testing.assert_equal(b.value.shape, a.shape)
-    np.testing.assert_equal(b.value, a)
+    np.testing.assert_almost_equal(ndav, ndarray_val)
 
 
-@pytest.mark.parametrize(
-    'idx_shape',
-    [
-        ([[0], [1], [2]], [3]),
-        ([[0, 1], [0, 2], [1, 2]], [3, 3]),
-        ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3]),
-    ],
-)
-def test_tf_sparse(idx_shape):
-    import tensorflow as tf
-    from tensorflow import SparseTensor
-    from jina.types.ndarray.sparse.tensorflow import SparseNdArray
-
-    a = SparseTensor(indices=idx_shape[0], values=[1, 2, 3], dense_shape=idx_shape[1])
-    b = SparseNdArray()
-    b.value = a
-    np.testing.assert_equal(
-        tf.sparse.to_dense(b.value).numpy(), tf.sparse.to_dense(a).numpy()
-    )
+def get_ndarrays_for_ravel():
+    a = np.random.random([10, 3])
+    a[a > 0.5] = 0
+    return [
+        (a, False),
+        (torch.tensor(a), False),
+        (tf.constant(a), False),
+        (paddle.to_tensor(a), False),
+        (torch.tensor(a).to_sparse(), True),
+        # (tf.sparse.from_dense(a), True),
+        (csr_matrix(a), True),
+        (bsr_matrix(a), True),
+        (coo_matrix(a), True),
+        (csc_matrix(a), True),
+    ]
 
 
-@pytest.mark.parametrize(
-    'idx_shape',
-    [
-        ([[0], [1], [2]], [3]),
-        ([[0, 2], [1, 0], [1, 2]], [2, 3]),
-        ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3]),
-    ],
-)
-def test_torch_sparse_with_transpose(idx_shape, transpose=True):
-    from jina.types.ndarray.sparse.pytorch import SparseNdArray
-    import torch
+@pytest.mark.parametrize('ndarray_val, is_sparse', get_ndarrays_for_ravel())
+@pytest.mark.parametrize('attr', ['embeddings', 'blobs'])
+def test_ravel_embeddings_blobs(ndarray_val, attr, is_sparse):
+    da = DocumentArray.empty(10)
+    setattr(da, attr, ndarray_val)
 
-    i = torch.LongTensor(idx_shape[0])
-    v = torch.FloatTensor([3, 4, 5])
-    a = torch.sparse.FloatTensor(i.t() if transpose else i, v, torch.Size(idx_shape[1]))
+    ndav = getattr(da, attr)
 
-    b = SparseNdArray(transpose_indices=transpose)
-    b.value = a
-    np.testing.assert_equal(b.value.to_dense().numpy(), a.to_dense().numpy())
+    # test read/getter
+    assert type(ndav) is type(ndarray_val)
 
+    if is_sparse:
+        if hasattr(ndav, 'todense'):
+            ndav = (ndav.todense(),)
+            ndarray_val = ndarray_val.todense()
+        if hasattr(ndav, 'to_dense'):
+            ndav = (ndav.to_dense(),)
+            ndarray_val = ndarray_val.to_dense()
+        if isinstance(ndav, tf.SparseTensor):
+            ndav = tf.sparse.to_dense(ndav)
+            ndarray_val = tf.sparse.to_dense(ndarray_val)
 
-@pytest.mark.parametrize(
-    'idx_shape',
-    [
-        ([[0, 1, 2]], [3]),
-        ([[0, 2, 1], [1, 0, 2]], [3, 3]),
-        ([[0, 1, 1], [0, 1, 2], [2, 1, 2]], [3, 3, 3]),
-    ],
-)
-def test_torch_sparse(idx_shape, transpose=False):
-    from jina.types.ndarray.sparse.pytorch import SparseNdArray
-    import torch
+    if isinstance(ndav, tuple):
+        ndav = ndav[0]
+    if hasattr(ndav, 'numpy'):
+        ndav = ndav.numpy()
+        ndarray_val = ndarray_val.numpy()
 
-    i = torch.LongTensor(idx_shape[0])
-    v = torch.FloatTensor([3, 4, 5])
-    a = torch.sparse.FloatTensor(i, v, torch.Size(idx_shape[1]))
-
-    b = SparseNdArray(transpose_indices=transpose)
-    b.value = a
-    np.testing.assert_equal(b.value.to_dense().numpy(), a.to_dense().numpy())
+    np.testing.assert_almost_equal(ndav, ndarray_val)
 
 
-def test_generic():
-    from jina.types.ndarray.generic import NdArray
-    from scipy.sparse import coo_matrix
+@pytest.mark.parametrize('sparse_cls', [csr_matrix, csc_matrix, bsr_matrix, coo_matrix])
+def test_bsr_coo_unravel(sparse_cls):
+    a = np.random.random([10, 72])
+    a[a > 0.5] = 0
 
-    row = np.array([0, 3, 1, 0])
-    col = np.array([0, 3, 1, 2])
-    data = np.array([4, 5, 7, 9])
-    a = coo_matrix((data, (row, col)), shape=(4, 4))
-    dense_a = a.toarray()
+    da = DocumentArray.empty(10)
+    for d, a_row in zip(da, a):
+        d.embedding = sparse_cls(a_row)
 
-    b = NdArray(a, is_sparse=True)
-    assert b.is_sparse
-    dense_b = b.value.toarray()
-    assert b.is_sparse
-    np.testing.assert_equal(dense_b, dense_a)
-
-    c = np.random.random([10, 3, 4])
-
-    # without change of `is_sparse`, this should raise error
-    with pytest.raises(AttributeError):
-        b.value = c
-    b.is_sparse = False
-    b.value = c
-
-    np.testing.assert_equal(b.value, c)
-
-
-@pytest.mark.parametrize('shape', [[10], [7, 8], [7, 8, 9]])
-def test_dummy_numpy_sparse(shape):
-    a = np.random.random(shape)
-    a[a > 0.5] = 1
-
-    from jina.types.ndarray.sparse.numpy import SparseNdArray
-
-    b = SparseNdArray()
-    b.value = a
-
-    np.testing.assert_almost_equal(a, b.value)
-
-
-def test_direct_dense_casting():
-    from jina.types.ndarray.generic import NdArray
-
-    a = np.random.random([5, 4])
-    np.testing.assert_equal(NdArray(a).value, a)
-
-
-def test_direct_sparse_casting():
-    from jina.types.ndarray.generic import NdArray
-    from scipy.sparse import coo_matrix
-
-    row = np.array([0, 3, 1, 0])
-    col = np.array([0, 3, 1, 2])
-    data = np.array([4, 5, 7, 9])
-    a = coo_matrix((data, (row, col)), shape=(4, 4))
-    dense_a = a.toarray()
-
-    np.testing.assert_equal(NdArray(a, is_sparse=True).value.toarray(), dense_a)
+    np.testing.assert_almost_equal(a, da.embeddings.todense())

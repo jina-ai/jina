@@ -39,6 +39,28 @@ prevent that, use `.block()` to suspend the current process.
 with f:
     f.block()  # block the current process
 ```
+
+To terminate a blocked Flow, one can send use `threading.Event` or `multiprocessing.Event` to send the terminate signal.
+The following example terminates a Flow from another process. 
+
+```python
+import multiprocessing
+import time
+
+from jina import Flow
+
+ev = multiprocessing.Event()
+
+def close_after_5s():
+    time.sleep(5)
+    ev.set()
+
+f = Flow().add()
+with f:
+    t = multiprocessing.Process(target=close_after_5s)
+    t.start()
+    f.block(stop_event=ev)
+```
 ````
 ## Visualize a Flow
 
@@ -48,7 +70,7 @@ from jina import Flow
 f = Flow().add().plot('f.svg')
 ```
 
-```{figure} ../../../.github/2.0/empty-flow.svg
+```{figure} empty-flow.svg
 :align: center
 ```
 

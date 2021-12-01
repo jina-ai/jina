@@ -10,7 +10,6 @@ import threading
 import time
 import uuid
 import warnings
-
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from itertools import islice
@@ -26,7 +25,10 @@ from typing import (
     Set,
     Sequence,
     Iterable,
+    TypeVar,
+    TYPE_CHECKING,
 )
+
 from . import __windows__
 
 __all__ = [
@@ -51,7 +53,10 @@ __all__ = [
     'download_mermaid_url',
     'get_readable_size',
     'get_or_reuse_loop',
+    'T',
 ]
+
+T = TypeVar('T')
 
 
 def deprecated_alias(**aliases):
@@ -448,7 +453,7 @@ def random_identity(use_uuid1: bool = False) -> str:
     :return: A random UUID.
 
     """
-    return str(random_uuid(use_uuid1))
+    return random_uuid(use_uuid1).hex
 
 
 def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
@@ -720,7 +725,8 @@ class ArgNamespace:
         kwargs: Dict[str, Union[str, int, bool]],
         parser: ArgumentParser,
         warn_unknown: bool = False,
-        fallback_parsers: List[ArgumentParser] = None,
+        fallback_parsers: Optional[List[ArgumentParser]] = None,
+        positional_args: Optional[Tuple[str, ...]] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -729,9 +735,12 @@ class ArgNamespace:
         :param parser: the parser for building kwargs into a namespace
         :param warn_unknown: True, if unknown arguments should be logged
         :param fallback_parsers: a list of parsers to help resolving the args
+        :param positional_args: some parser requires positional arguments to be presented
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
+        if positional_args:
+            args += positional_args
         p_args, unknown_args = parser.parse_known_args(args)
         if warn_unknown and unknown_args:
             _leftovers = set(unknown_args)
@@ -1079,7 +1088,7 @@ def get_public_ip(timeout: float = 0.3):
     :return: Public IP address.
 
     .. warn::
-        Set :param:`timeout` to a large number will block the Flow.
+        Set `timeout` to a large number will block the Flow.
 
     """
     import urllib.request
@@ -1090,7 +1099,7 @@ def get_public_ip(timeout: float = 0.3):
         try:
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=timeout) as fp:
-                _ip = fp.read().decode()
+                _ip = fp.read().decode().strip()
                 results.append(_ip)
 
         except:
@@ -1316,23 +1325,24 @@ def dunder_get(_dict: Any, key: str) -> Any:
     from google.protobuf.struct_pb2 import ListValue
     from google.protobuf.struct_pb2 import Struct
     from google.protobuf.pyext._message import MessageMapContainer
+    from .types.struct import StructView
 
     if isinstance(part1, int):
         result = _dict[part1]
-    elif isinstance(_dict, (Iterable, ListValue)):
-        result = _dict[part1]
-    elif isinstance(_dict, (dict, Struct, MessageMapContainer)):
+    elif isinstance(_dict, (dict, Struct, MessageMapContainer, StructView)):
         if part1 in _dict:
             result = _dict[part1]
         else:
             result = None
+    elif isinstance(_dict, (Iterable, ListValue)):
+        result = _dict[part1]
     else:
         result = getattr(_dict, part1)
 
     return dunder_get(result, part2) if part2 else result
 
 
-if False:
+if TYPE_CHECKING:
     from fastapi import FastAPI
 
 

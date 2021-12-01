@@ -1,16 +1,14 @@
 import inspect
 import os
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Optional, Callable
+from typing import Dict, Optional, Type
 
 from .decorators import store_init_kwargs, wrap_func
 from .. import __default_endpoint__, __args_executor_init__
-from ..helper import typename
+from ..helper import typename, ArgNamespace, T
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
-
-AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
+__all__ = ['BaseExecutor']
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -106,28 +104,28 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.runtime_args = SimpleNamespace()
 
     def _add_requests(self, _requests: Optional[Dict]):
-        request_mapping = {}  # type: Dict[str, Callable]
+        if not hasattr(self, 'requests'):
+            self.requests = {}
 
         if _requests:
+            func_names = {f.__name__: e for e, f in self.requests.items()}
             for endpoint, func in _requests.items():
                 # the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`
                 # this to ensure we always have `_func` as unbound method
+                if func in func_names:
+                    del self.requests[func_names[func]]
+
                 _func = getattr(self.__class__, func)
                 if callable(_func):
                     # the target function is not decorated with `@requests` yet
-                    request_mapping[endpoint] = _func
+                    self.requests[endpoint] = _func
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
-                    request_mapping[endpoint] = _func.fn
+                    self.requests[endpoint] = _func.fn
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
-
-        if hasattr(self, 'requests'):
-            self.requests.update(request_mapping)
-        else:
-            self.requests = request_mapping
 
     def _add_metas(self, _metas: Optional[Dict]):
         from .metas import get_default_metas
@@ -201,11 +199,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )  # unbound method, self is required
 
     @property
-    def workspace(self) -> str:
+    def workspace(self) -> Optional[str]:
         """
-        Get the path of the current shard.
+        Get the workspace directory of the Executor.
 
-        :return: returns the workspace of the shard of this Executor.
+        :return: returns the workspace of the current shard of this Executor.
         """
         workspace = getattr(self.metas, 'workspace') or getattr(
             self.runtime_args, 'workspace', None
@@ -213,26 +211,50 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if workspace:
             complete_workspace = os.path.join(workspace, self.metas.name)
             replica_id = getattr(self.runtime_args, 'replica_id', None)
-            pea_id = getattr(
+            shard_id = getattr(
                 self.runtime_args,
-                'pea_id',
-                getattr(self.runtime_args, 'shard_id', None),
+                'shard_id',
+                getattr(self.runtime_args, 'pea_id', None),
             )
             if replica_id is not None and replica_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
-            if pea_id is not None and pea_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(pea_id))
+            if shard_id is not None and shard_id != -1:
+                complete_workspace = os.path.join(complete_workspace, str(shard_id))
             if not os.path.exists(complete_workspace):
                 os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
-        else:
-            raise ValueError(
-                'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
-                'are you using this Executor is a Flow?'
-            )
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+    @classmethod
+    def from_hub(cls: Type[T], uri: str, **kwargs) -> T:
+        """Construct an Executor from Hub.
+
+        :param uri: a hub Executor scheme starts with `jinahub://`
+        :param kwargs: other kwargs accepted by the CLI ``jina hub pull``
+        :return: the Hub Executor object.
+        """
+        from ..hubble.helper import is_valid_huburi
+
+        _source = None
+        if is_valid_huburi(uri):
+            from ..hubble.hubio import HubIO
+            from ..parsers.hubble import set_hub_pull_parser
+
+            _args = ArgNamespace.kwargs2namespace(
+                {'no_usage': True, **kwargs},
+                set_hub_pull_parser(),
+                positional_args=(uri,),
+            )
+            _source = HubIO(args=_args).pull()
+
+        if not _source or _source.startswith('docker://'):
+            raise ValueError(
+                f'Can not construct a native Executor from {uri}. Looks like you want to use it as a '
+                f'Docker container, you may want to use it in the Flow via `.add(uses={uri})` instead.'
+            )
+        return cls.load_config(_source)
