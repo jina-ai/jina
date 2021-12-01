@@ -4,7 +4,7 @@ import pytest
 
 from jina.types.score.map import NamedScoreMapping
 from jina import Flow, Executor, DocumentArray, requests
-from tests import random_docs, validate_callback
+from tests import random_docs
 
 
 class DummyEvaluator1(Executor):
@@ -27,7 +27,7 @@ class DummyEvaluator3(DummyEvaluator1):
 
 
 docs = DocumentArray([x for x in random_docs(1)])
-params = ['HANG', 'REMOVE', 'COLLECT']
+params = ['HANG', 'COLLECT', 'REMOVE']
 
 
 def validate(ids, expect):
@@ -63,7 +63,7 @@ def test_flow1(inspect, protocol, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_flow2(inspect, protocol, temp_folder):
     f = (
         Flow(protocol=protocol, inspect=inspect)
@@ -82,7 +82,7 @@ def test_flow2(inspect, protocol, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_flow3(inspect, protocol, temp_folder):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
@@ -103,7 +103,7 @@ def test_flow3(inspect, protocol, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_flow4(inspect, protocol, temp_folder):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
@@ -136,6 +136,7 @@ class AddEvaluationExecutor(Executor):
 
 
 @pytest.mark.repeat(5)
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_flow_returned_collect(protocol):
     # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
     # use an specific executor.
