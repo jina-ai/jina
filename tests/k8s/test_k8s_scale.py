@@ -7,7 +7,7 @@ DEFAULT_REPLICAS = 2
 
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('shards, namespace', [(1, 'ns1'), (2, 'ns2')])
-def test_k8s_scale(k8s_cluster, shards, namespace):
+def test_k8s_scale(docker_images, shards, namespace):
     flow = Flow(
         name='test-flow-scale',
         port_expose=9090,
@@ -56,8 +56,7 @@ def test_k8s_scale(k8s_cluster, shards, namespace):
 
 
 def test_k8s_scale_fail(
-    k8s_cluster,
-    load_images_in_kind,
+    docker_images,
 ):
     flow = Flow(
         name='test-flow-scale',
