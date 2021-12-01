@@ -3,7 +3,7 @@ from copy import deepcopy
 from jina import DocumentArray, Document
 
 
-def test_merge_doc():
+def test_reduce_doc():
     doc1 = Document(
         matches=[Document(id='m0'), Document(id='m2')],
         chunks=[Document(id='c0'), Document(id='c1')],
@@ -14,13 +14,13 @@ def test_merge_doc():
         chunks=[Document(id='c0'), Document(id='c2')],
     )
 
-    DocumentArray._merge_doc(doc1, doc2)
+    DocumentArray._reduce_doc(doc1, doc2)
     for i in range(3):
         assert f'c{i}' in doc1.chunks
         assert f'm{i}' in doc1.matches
 
 
-def test_merge():
+def test_reduce():
     da1, da2 = (
         DocumentArray(
             [
@@ -71,7 +71,7 @@ def test_merge():
         ),
     )
 
-    da1.merge(da2)
+    da1.reduce(da2)
 
     for i in range(3):
         assert f'r{i}' in da1
@@ -79,7 +79,7 @@ def test_merge():
             assert f'r{i}m{j}' in da1[f'r{i}'].matches
 
 
-def test_merge_nested():
+def test_reduce_nested():
     da1, da2 = (
         DocumentArray(
             [
@@ -132,7 +132,7 @@ def test_merge_nested():
         ),
     )
 
-    da1.merge(da2)
+    da1.reduce(da2)
     for i in range(1, 3):
         assert f'c{i}' in da1[0].chunks
         assert f'm{i}' in da1[0].matches
@@ -144,14 +144,14 @@ def test_merge_nested():
             assert f'm{i}m{j}' in da1[0].matches[f'm{i}'].matches
 
 
-def test_merge_mat():
+def test_reduce_mat():
     docs = DocumentArray([Document(id=f'r{i}') for i in range(10)])
     doc_matrix = [deepcopy(docs) for _ in range(10)]
     for i, da in enumerate(doc_matrix):
         for doc in da:
             doc.matches.append(Document(id=str(i)))
 
-    merged_da = doc_matrix[0].merge_mat(doc_matrix[1:])
-    for doc in merged_da:
+    reduced_da = doc_matrix[0].reduce_mat_dac(doc_matrix[1:])
+    for doc in reduced_da:
         for i in range(10):
             assert str(i) in doc.matches
