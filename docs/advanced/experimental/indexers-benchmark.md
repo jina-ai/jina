@@ -6,7 +6,7 @@ In this page we show the performance capabilities of the different Indexers avai
 
 In the below graphs you can see the performance, in terms of speed and evaluation.
 Speed is reported for query time, in total seconds.
-Evaluation is provided in both precision and recall, out of the `top_k` 100.
+Evaluation is provided as recall, out of the `top_k` 100.
 The tables are sorted by `time_search`.
 
 ```{include} bench/gist.md
@@ -29,7 +29,7 @@ We have restricted our selection to the following:
 - [RiiSearcher](https://hub.jina.ai/executor/ksr1lmku)
 
 `SimpleIndexer` is based on doing exhaustive search across all the Documents.
-However, FAISS, HNSW and Rii are based on the approximate nearest neighbor approach. 
+However, FAISS, HNSW and Rii are based on different approximate nearest neighbor approaches.
 For each of these, we provide several configurations of parameters, in order to ascertain which behaves best.
 
 ## Datasets
