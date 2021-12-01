@@ -6,6 +6,7 @@ DEFAULT_REPLICAS = 2
 
 
 @pytest.mark.timeout(3600)
+@pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)
 @pytest.mark.parametrize('shards, namespace', [(1, 'ns1'), (2, 'ns2')])
 def test_k8s_scale(docker_images, shards, namespace):
     flow = Flow(
@@ -55,6 +56,7 @@ def test_k8s_scale(docker_images, shards, namespace):
         assert replica == 1
 
 
+@pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)
 def test_k8s_scale_fail(
     docker_images,
 ):
