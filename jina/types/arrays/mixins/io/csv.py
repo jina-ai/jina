@@ -1,10 +1,9 @@
 import csv
 from contextlib import nullcontext
-from typing import Union, TextIO, Optional, Dict, TYPE_CHECKING
+from typing import Union, TextIO, Optional, Dict, TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
-    from ...document import DocumentArray
-    from ...memmap import DocumentArrayMemmap
+    from .....helper import T
 
 
 class CsvIOMixin:
@@ -46,10 +45,10 @@ class CsvIOMixin:
 
     @classmethod
     def load_csv(
-        cls,
+        cls: Type['T'],
         file: Union[str, TextIO],
         field_resolver: Optional[Dict[str, str]] = None,
-    ) -> Union['DocumentArray', 'DocumentArrayMemmap']:
+    ) -> 'T':
         """Load array elements from a binary file.
 
         :param file: File or filename to which the data is saved.

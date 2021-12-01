@@ -39,7 +39,7 @@ class ContainerStore(BaseStore, ABC):
     _status_model = ContainerStoreStatus
 
     @abstractmethod
-    async def add_in_partial(self, uri, *args, **kwargs):
+    async def add_in_partial(self, uri, envs, *args, **kwargs):
         """Implements jina object creation in `partial-daemon`
 
         .. #noqa: DAR101"""

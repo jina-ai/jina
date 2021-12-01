@@ -1,14 +1,6 @@
-# Question-Answering Chatbot for Documentation 
+# Open-Domain Question-Answering on Long Document
 
-```{article-info}
-:avatar: avatars/gregor.jpg
-:avatar-link: https://jobs.jina.ai
-:avatar-outline: muted
-:author: Gregor @ Jina AI
-:date: November 3, 2021
-```
-
-This tutorial will take you through the process of creating a question-answering chatbot. 
+This tutorial will take you through a solution of a question-answering on long document. 
 This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask.
 
 One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?

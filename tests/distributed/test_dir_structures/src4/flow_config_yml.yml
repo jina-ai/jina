@@ -1,6 +1,6 @@
 jtype: Flow
 with:
-  port_expose: $PORT_EXPOSE
+  port_expose: ${{ PORT_EXPOSE }}
 executors:
   - name: remote_io_executor
     uses: config_data.yml

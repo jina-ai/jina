@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypeVar, Tuple, Sequence, Iterator
+from typing import TYPE_CHECKING, TypeVar, Tuple, Sequence, Iterator, Optional
 
 import numpy as np
 
@@ -18,7 +18,6 @@ if TYPE_CHECKING:
         tensorflow.SparseTensor,
         tensorflow.Tensor,
         torch.Tensor,
-        jina_pb2.NdArrayProto,
     )
 
     from ... import Document
@@ -35,8 +34,8 @@ class NdArray(ProtoTypeMixin):
     :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
     """
 
-    def __init__(self, proto: jina_pb2.NdArrayProto):
-        self._pb_body = proto
+    def __init__(self, proto: Optional[jina_pb2.NdArrayProto] = None):
+        self._pb_body = proto if proto is not None else jina_pb2.NdArrayProto()
 
     @property
     def value(self) -> 'ArrayType':

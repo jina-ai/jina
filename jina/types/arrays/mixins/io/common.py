@@ -1,7 +1,7 @@
-from typing import Union, TextIO, BinaryIO, TYPE_CHECKING
+from typing import Union, TextIO, BinaryIO, TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
-    from ...document import DocumentArray
+    from .....helper import T
 
 
 class CommonIOMixin:
@@ -28,8 +28,8 @@ class CommonIOMixin:
 
     @classmethod
     def load(
-        cls, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
-    ) -> 'DocumentArray':
+        cls: Type['T'], file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
+    ) -> 'T':
         """Load array elements from a JSON or a binary file, or a CSV file.
 
         :param file: File or filename to which the data is saved.

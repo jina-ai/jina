@@ -4,7 +4,7 @@ import shutil
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArrayMemmap, DocumentArray
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.types.document.generators import (
@@ -82,8 +82,9 @@ def test_input_csv_from_lines_field_resolver():
     assert result[0].text
 
 
-def test_input_csv_from_strings():
-    result = list(from_csv(os.path.join(cur_dir, 'docs.csv')))
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_input_csv_from_strings(da):
+    result = da.from_csv(os.path.join(cur_dir, 'docs.csv'))
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].tags['source'] == 'testsrc'
@@ -111,14 +112,14 @@ def test_input_lines_with_jsonlines_docs():
         (None, 0.5),
     ],
 )
-def test_input_lines_with_jsonlines_file(size, sampling_rate):
-    result = list(
-        from_lines(
-            filepath=os.path.join(cur_dir, 'docs.jsonlines'),
-            size=size,
-            sampling_rate=sampling_rate,
-        )
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_input_lines_with_jsonlines_file(size, sampling_rate, da):
+    result = da.from_lines(
+        filepath=os.path.join(cur_dir, 'docs.jsonlines'),
+        size=size,
+        sampling_rate=sampling_rate,
     )
+
     assert len(result) == size if size is not None else 2
     if sampling_rate is None:
         assert result[0].text == "a"
@@ -197,32 +198,32 @@ def test_input_huggingface_datasets_with_tweet_dataset(dataset_configs):
     assert result[0].text
 
 
-def test_input_huggingface_datasets_from_csv_file(dataset_configs):
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_input_huggingface_datasets_from_csv_file(dataset_configs, da):
     field_resolver = {'question': 'text'}
-    result = list(
-        from_huggingface_datasets(
-            'csv',
-            field_resolver=field_resolver,
-            data_files='docs.csv',
-            split='train',
-        )
+    result = da.from_huggingface_datasets(
+        'csv',
+        field_resolver=field_resolver,
+        data_files=os.path.join(cur_dir, 'docs.csv'),
+        split='train',
     )
+
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].text == 'What are the symptoms?'
     assert result[0].tags['source'] == 'testsrc'
 
 
-def test_input_huggingface_datasets_with_field_resolver(dataset_configs):
+@pytest.mark.parametrize('da', [DocumentArray, DocumentArrayMemmap])
+def test_input_huggingface_datasets_with_field_resolver(dataset_configs, da):
     field_resolver = {'question': 'text'}
-    result = list(
-        from_huggingface_datasets(
-            dataset_configs['adversarial']['dataset_path'],
-            field_resolver=field_resolver,
-            name=dataset_configs['adversarial']['name'],
-            split=dataset_configs['adversarial']['split'],
-        )
+    result = da.from_huggingface_datasets(
+        dataset_configs['adversarial']['dataset_path'],
+        field_resolver=field_resolver,
+        name=dataset_configs['adversarial']['name'],
+        split=dataset_configs['adversarial']['split'],
     )
+
     assert isinstance(result[0], Document)
     assert result[0].text
     assert 'title' in result[0].tags

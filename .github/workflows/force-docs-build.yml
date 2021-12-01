@@ -39,11 +39,8 @@ jobs:
           cd docs
           pip install -r requirements.txt
           pip install furo==2021.10.9
-          docker run --rm \
-            -v $(pwd)/proto:/out \
-            -v $(pwd)/../jina/proto:/protos \
-            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
-          make dirhtml
+          export NUM_RELEASES=2
+          bash makedoc.sh
           cd ./_build/dirhtml/
           cp -r ./ ../../../gen-html
           cd -  # back to ./docs
