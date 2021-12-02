@@ -223,6 +223,7 @@ async def test_runtimes_shards(polling, port_generator):
 
     # create the shards
     shard_processes = []
+    worker_ports = []
     for i in range(10):
         # create worker
         worker_port = port_generator()
@@ -234,16 +235,9 @@ async def test_runtimes_shards(polling, port_generator):
         worker_process.start()
 
         await asyncio.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-            timeout=5.0,
-            ready_or_shutdown_event=threading.Event(),
-            ctrl_address=f'127.0.0.1:{worker_port}',
-        )
+        worker_ports.append(worker_port)
 
-        # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port, shard_id=i)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    await _activate_runtimes(head_port, worker_ports)
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -302,6 +296,7 @@ async def test_runtimes_replicas(port_generator):
 
     # create the shards
     replica_processes = []
+    worker_ports = []
     for i in range(10):
         # create worker
         worker_port = port_generator()
@@ -313,16 +308,9 @@ async def test_runtimes_replicas(port_generator):
         worker_process.start()
 
         await asyncio.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-            timeout=5.0,
-            ready_or_shutdown_event=threading.Event(),
-            ctrl_address=f'127.0.0.1:{worker_port}',
-        )
+        worker_ports.append(worker_port)
 
-        # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    await _activate_runtimes(head_port, worker_ports)
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -398,6 +386,7 @@ async def test_runtimes_with_executor(port_generator):
     runtime_processes.append(head_process)
 
     # create some shards
+    worker_ports = []
     for i in range(10):
         # create worker
         worker_port, worker_process = await _create_worker(
@@ -405,13 +394,9 @@ async def test_runtimes_with_executor(port_generator):
         )
         runtime_processes.append(worker_process)
         await asyncio.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-            timeout=5.0,
-            ready_or_shutdown_event=threading.Event(),
-            ctrl_address=f'127.0.0.1:{worker_port}',
-        )
+        worker_ports.append(worker_port)
 
-        await _activate_worker(head_port, worker_port, shard_id=i)
+    await _activate_runtimes(head_port, worker_ports)
 
     # create a single gateway runtime
     port_expose = port_generator()
@@ -521,6 +506,7 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
 
     # create the shards
     replica_processes = []
+    worker_ports = []
     for i in range(10):
         # create worker
         worker_port = port_generator()
@@ -533,16 +519,9 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
         worker_process.start()
 
         await asyncio.sleep(0.1)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-            timeout=5.0,
-            ready_or_shutdown_event=threading.Event(),
-            ctrl_address=f'127.0.0.1:{worker_port}',
-        )
+        worker_ports.append(worker_port)
 
-        # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    await _activate_runtimes(head_port, worker_ports)
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -673,3 +652,13 @@ def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
 async def async_inputs():
     for _ in range(20):
         yield Document(text='client0-Request')
+
+
+async def _activate_runtimes(head_port, worker_ports):
+    for i, worker_port in enumerate(worker_ports):
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ready_or_shutdown_event=threading.Event(),
+            ctrl_address=f'127.0.0.1:{worker_port}',
+        )
+        await _activate_worker(head_port, worker_port, shard_id=i)
