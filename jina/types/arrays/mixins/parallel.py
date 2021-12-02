@@ -1,9 +1,10 @@
-from typing import Callable, TYPE_CHECKING, Generator, Optional, overload
+from typing import Callable, TYPE_CHECKING, Generator, Optional, overload, TypeVar
 
 if TYPE_CHECKING:
     from ....helper import T
     from ...document import Document
-    from ...arrays.document import DocumentArray
+
+T_DA = TypeVar('T_DA')
 
 
 class ParallelMixin:
@@ -79,7 +80,7 @@ class ParallelMixin:
     @overload
     def apply_batch(
         self: 'T',
-        func: Callable[['Document'], 'Document'],
+        func: Callable[['T_DA'], 'T_DA'],
         batch_size: int,
         backend: str = 'process',
         num_worker: Optional[int] = None,
@@ -117,13 +118,13 @@ class ParallelMixin:
         return new_da
 
     def map_batch(
-        self,
-        func: Callable[['DocumentArray'], 'T'],
+        self: 'T_DA',
+        func: Callable[['T_DA'], 'T'],
         batch_size: int,
         backend: str = 'process',
         num_worker: Optional[int] = None,
         shuffle: bool = False,
-    ):
+    ) -> Generator['T', None, None]:
         """Return an iterator that applies function to every **minibatch** of iterable in parallel, yielding the results.
         Each element in the returned iterator is :class:`DocumentArray`.
 
