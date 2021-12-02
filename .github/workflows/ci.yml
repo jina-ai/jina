@@ -256,7 +256,7 @@ jobs:
             # if [[ " ${distributed_tests[*]} " =~ "${{ matrix.test-path }}" ]]; then
             #   docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
             # fi
-            # pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
+            # pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s ${{ matrix.test-path }}
             # docker rm -f jinad || true
             # TODO enable again
             echo "skip distributed tests"
@@ -264,9 +264,9 @@ jobs:
             SUB='daemon'
             if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
               echo "skip daemon tests"
-              # pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              # pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             else
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             fi
           fi
           SUB='daemon'
