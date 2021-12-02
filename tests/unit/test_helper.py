@@ -262,6 +262,16 @@ def test_random_port(config):
     assert 49153 <= port <= 65535
 
 
+def test_random_port_unique(config):
+    assert os.environ['JINA_RANDOM_PORT_MIN']
+    generated_ports = set()
+    for i in range(1000):
+        port = random_port()
+        assert port not in generated_ports
+        assert 49153 <= port <= 65535
+        generated_ports.add(port)
+
+
 @pytest.fixture
 def config_few_ports():
     os.environ['JINA_RANDOM_PORT_MIN'] = "49300"
