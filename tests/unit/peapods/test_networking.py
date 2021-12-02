@@ -1,4 +1,5 @@
 import asyncio
+import multiprocessing
 import time
 from multiprocessing import Process
 
@@ -213,7 +214,10 @@ async def _mock_grpc(mocker, monkeypatch):
 @pytest.mark.slow
 @pytest.mark.timeout(5)
 async def test_grpc_connection_pool_real_sending():
-    def listen(port):
+    server1_ready_event = multiprocessing.Event()
+    server2_ready_event = multiprocessing.Event()
+
+    def listen(port, event: multiprocessing.Event):
         class DummyServer:
             async def Call(self, msg, *args):
                 returned_msg = ControlMessage(command='DEACTIVATE', identity=str(port))
@@ -233,6 +237,7 @@ async def test_grpc_connection_pool_real_sending():
             grpc_server.add_insecure_port(f'localhost:{port}')
 
             await grpc_server.start()
+            event.set()
             await grpc_server.wait_for_termination()
 
         asyncio.run(start_grpc_server())
@@ -240,18 +245,26 @@ async def test_grpc_connection_pool_real_sending():
     port1 = random_port()
     server_process1 = Process(
         target=listen,
-        args=(port1,),
+        args=(
+            port1,
+            server1_ready_event,
+        ),
     )
     server_process1.start()
 
     port2 = random_port()
     server_process2 = Process(
         target=listen,
-        args=(port2,),
+        args=(
+            port2,
+            server2_ready_event,
+        ),
     )
     server_process2.start()
 
     time.sleep(0.1)
+    server1_ready_event.wait()
+    server2_ready_event.wait()
 
     pool = GrpcConnectionPool()
 

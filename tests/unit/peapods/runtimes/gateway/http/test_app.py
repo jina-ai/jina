@@ -11,6 +11,8 @@ from jina.helper import random_port
 from jina import Executor, requests, Flow, DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
+from jina.peapods.networking import create_connection_pool
+from jina.peapods.runtimes.gateway import TopologyGraph
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
 
@@ -19,7 +21,7 @@ from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_a
 def test_custom_swagger(p):
     args = set_gateway_parser().parse_args(p)
     logger = JinaLogger('')
-    app = get_fastapi_app(args, logger)
+    app = get_fastapi_app(args, TopologyGraph({}), create_connection_pool(), logger)
     # The TestClient is needed here as a context manager to generate the shutdown event correctly
     # otherwise the app can hang as it is not cleaned up correctly
     # see https://fastapi.tiangolo.com/advanced/testing-events/
@@ -34,18 +36,10 @@ class TestExecutor(Executor):
         print(f"# docs {docs}")
 
 
-@pytest.mark.parametrize(
-    'grpc_data_requests',
-    [True, False],
-)
-def test_tag_update(grpc_data_requests):
+def test_tag_update():
     PORT_EXPOSE = random_port()
 
-    f = Flow(
-        port_expose=PORT_EXPOSE,
-        protocol='http',
-        grpc_data_requests=grpc_data_requests,
-    ).add(uses=TestExecutor)
+    f = Flow(port_expose=PORT_EXPOSE, protocol='http').add(uses=TestExecutor)
 
     with f:
         d1 = {"data": [{"id": "1", "prop1": "val"}]}

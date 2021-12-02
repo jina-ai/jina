@@ -18,7 +18,6 @@ def external_pod_args():
     del args['external']
     del args['pod_role']
     del args['host']
-    del args['dynamic_routing']
     return args
 
 

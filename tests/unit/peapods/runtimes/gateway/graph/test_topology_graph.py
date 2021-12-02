@@ -93,6 +93,19 @@ def graph_hanging_pod_after_merge():
     }
 
 
+@pytest.fixture
+def two_joins_graph():
+    return {
+        'start-gateway': ['p0', 'p1'],
+        'p0': ['joiner_1'],
+        'p1': ['joiner_1'],  # hanging_pod
+        'joiner_1': ['p2', 'p3'],
+        'p2': ['p4'],
+        'p3': ['p4'],
+        'p4': ['end-gateway'],
+    }
+
+
 def test_topology_graph_build_linear(linear_graph_dict):
     graph = TopologyGraph(linear_graph_dict)
     assert [node.name for node in graph.origin_nodes] == ['pod0']
@@ -403,6 +416,54 @@ def test_topology_graph_build_hanging_after_merge(graph_hanging_pod_after_merge)
     assert len(node_pod9.outgoing_nodes) == 0
     assert node_pod9.number_of_parts == 1
     assert node_pod9.hanging
+
+
+def test_topology_graph_build_two_joins(two_joins_graph):
+    graph = TopologyGraph(two_joins_graph)
+    assert len(graph.origin_nodes) == 2
+    origin_names = [node.name for node in graph.origin_nodes]
+    assert set(origin_names) == {'p0', 'p1'}
+
+    node_p0 = graph.origin_nodes[origin_names.index('p0')]
+    assert node_p0.name == 'p0'
+    assert node_p0.number_of_parts == 1
+    assert len(node_p0.outgoing_nodes) == 1
+    assert not node_p0.hanging
+
+    node_p1 = graph.origin_nodes[origin_names.index('p1')]
+    assert node_p1.name == 'p1'
+    assert node_p1.number_of_parts == 1
+    assert len(node_p1.outgoing_nodes) == 1
+    assert not node_p1.hanging
+
+    assert id(node_p0.outgoing_nodes[0]) == id(node_p1.outgoing_nodes[0])
+
+    joiner_pod = node_p0.outgoing_nodes[0]
+    assert joiner_pod.name == 'joiner_1'
+    assert len(joiner_pod.outgoing_nodes) == 2
+    assert joiner_pod.number_of_parts == 2
+    assert not joiner_pod.hanging
+
+    joiner_outgoing_list = [node.name for node in joiner_pod.outgoing_nodes]
+
+    node_p2 = joiner_pod.outgoing_nodes[joiner_outgoing_list.index('p2')]
+    assert node_p2.name == 'p2'
+    assert len(node_p2.outgoing_nodes) == 1
+    assert node_p2.number_of_parts == 1
+    assert not node_p2.hanging
+
+    node_p3 = joiner_pod.outgoing_nodes[joiner_outgoing_list.index('p3')]
+    assert node_p3.name == 'p3'
+    assert len(node_p3.outgoing_nodes) == 1
+    assert node_p3.number_of_parts == 1
+    assert not node_p3.hanging
+
+    assert id(node_p2.outgoing_nodes[0]) == id(node_p3.outgoing_nodes[0])
+    node_p4 = node_p2.outgoing_nodes[0]
+    assert node_p4.name == 'p4'
+    assert len(node_p4.outgoing_nodes) == 0
+    assert node_p4.number_of_parts == 2
+    assert not node_p4.hanging
 
 
 class DummyMockConnectionPool:
@@ -728,6 +789,48 @@ async def test_message_ordering_hanging_after_merge_graph(
                 f'client{client_id}-Request-client{client_id}-pod8-client{client_id}-pod7'
                 == runtime.connection_pool.sent_msg[f'client{client_id}']['pod9']
             )
+
+
+@pytest.mark.asyncio
+async def test_message_ordering_two_joins_graph(
+    two_joins_graph,
+):
+    runtime = DummyMockGatewayRuntime(two_joins_graph)
+    resps = await asyncio.gather(
+        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+    )
+    assert len(resps) == 10
+    await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
+    for client_id, client_resps in resps:
+        assert len(client_resps) == 4
+        filtered_client_resps = [resp for resp in client_resps if resp is not None]
+        assert len(filtered_client_resps) == 1
+        path12 = (
+            f'client{client_id}-Request-client{client_id}-p1-client{client_id}-joiner_1-client{client_id}-p2-client{client_id}-p4'
+            == filtered_client_resps[0].request.docs[0].text
+        )
+        path13 = (
+            f'client{client_id}-Request-client{client_id}-p1-client{client_id}-joiner_1-client{client_id}-p3-client{client_id}-p4'
+            == filtered_client_resps[0].request.docs[0].text
+        )
+        path02 = (
+            f'client{client_id}-Request-client{client_id}-p0-client{client_id}-joiner_1-client{client_id}-p2-client{client_id}-p4'
+            == filtered_client_resps[0].request.docs[0].text
+        )
+        path03 = (
+            f'client{client_id}-Request-client{client_id}-p0-client{client_id}-joiner_1-client{client_id}-p3-client{client_id}-p4'
+            == filtered_client_resps[0].request.docs[0].text
+        )
+        assert path02 or path03 or path12 or path13
 
 
 def test_empty_graph():

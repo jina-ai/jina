@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import List, Union, Iterable
 
 from . import jina_pb2
@@ -38,7 +37,6 @@ class MessageProto:
     """
 
     @staticmethod
-    @lru_cache()
     def SerializeToString(x: 'Message'):
         """
         # noqa: DAR101

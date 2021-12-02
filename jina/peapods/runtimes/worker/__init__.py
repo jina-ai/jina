@@ -62,7 +62,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """Stop the GRPC server"""
         self.logger.debug('Cancel WorkerRuntime')
 
-        await self._grpc_server.stop(0)
+        # 0.5 gives the runtime some time to complete outstanding responses
+        # this should be handled better, 0.5 is a rather random number
+        await self._grpc_server.stop(0.5)
         self.logger.debug('Stopped GRPC Server')
 
     async def async_teardown(self):

@@ -93,7 +93,7 @@ class DummyMockConnectionPool:
 
         async def task_wrapper():
             response_msg = await _compute_response()
-            return [response_msg]
+            return response_msg
 
         return asyncio.create_task(task_wrapper())
 
