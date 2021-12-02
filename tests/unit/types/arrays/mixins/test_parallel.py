@@ -20,7 +20,7 @@ def foo_batch(da: DocumentArray):
 
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 @pytest.mark.parametrize('backend', ['process', 'thread'])
-@pytest.mark.parametrize('num_worker', [1, 2, None])
+@pytest.mark.parametrize('num_worker', [1, 2])
 def test_parallel_map(pytestconfig, da_cls, backend, num_worker):
     da = da_cls.from_files(f'{pytestconfig.rootdir}/docs/**/*.png')[:10]
 

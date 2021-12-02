@@ -16,7 +16,7 @@ class SingletonSugarMixin:
 
     @overload
     def match(
-        self,
+        self: 'T',
         darray: Union['DocumentArray', 'DocumentArrayMemmap'],
         metric: Union[
             str, Callable[['ArrayType', 'ArrayType'], 'np.ndarray']
@@ -28,7 +28,7 @@ class SingletonSugarMixin:
         exclude_self: bool = False,
         only_id: bool = False,
         use_scipy: bool = False,
-    ) -> None:
+    ) -> 'T':
         """Matching the current Document against a set of Documents.
 
         The result will be stored in :attr:`.matches`.
@@ -56,15 +56,17 @@ class SingletonSugarMixin:
         """
         ...
 
-    def match(self, *args, **kwargs) -> None:
+    def match(self: 'T', *args, **kwargs) -> 'T':
         """
         # noqa: D102
         # noqa: DAR101
+        :return: itself after modified
         """
         from ...arrays import DocumentArray
 
         _tmp = DocumentArray([self])
         _tmp.match(*args, **kwargs)
+        return self
 
     @overload
     def embed(
