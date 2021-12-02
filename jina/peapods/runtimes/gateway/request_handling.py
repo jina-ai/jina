@@ -32,15 +32,25 @@ def handle_request(
         r = request.routes.add()
         r.pod = 'gateway'
         r.start_time.GetCurrentTime()
-        for origin_node in request_graph.origin_nodes:
-            leaf_tasks = origin_node.get_leaf_tasks(
-                connection_pool, Message(None, request), None
+        # If the request is targeting a specific pod, we can send directly to the pod instead of querying the graph
+        if request.header.target_peapod:
+            tasks_to_respond.extend(
+                connection_pool.send_message(
+                    msg=Message(None, request),
+                    pod=request.header.target_peapod,
+                    head=True,
+                )
             )
-            # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
-            # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
-            # nodes
-            tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
-            tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
+        else:
+            for origin_node in request_graph.origin_nodes:
+                leaf_tasks = origin_node.get_leaf_tasks(
+                    connection_pool, Message(None, request), None
+                )
+                # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
+                # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
+                # nodes
+                tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
+                tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
 
         async def _merge_results_at_end_gateway(
             tasks: List[asyncio.Task],
@@ -49,7 +59,6 @@ def handle_request(
 
             # TODO: Should the order be deterministic by the graph structure, or depending on the response speed?
             partial_responses = await asyncio.gather(*tasks)
-
             # when merging comes, one task may return None
             filtered_partial_responses = list(
                 filter(lambda x: x is not None, partial_responses)

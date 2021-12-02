@@ -81,15 +81,6 @@ def test_dunder_get():
     assert dunder_get(a, 'b__d__g__2__h') == 'i'
 
 
-def test_check_update():
-    assert _is_latest_version()
-    # now mock it as old version
-    import jina
-
-    jina.__version__ = '0.1.0'
-    assert not _is_latest_version()
-
-
 def test_wrap_func():
     from jina import Executor
 
@@ -271,6 +262,16 @@ def test_random_port(config):
     assert 49153 <= port <= 65535
 
 
+def test_random_port_unique(config):
+    assert os.environ['JINA_RANDOM_PORT_MIN']
+    generated_ports = set()
+    for i in range(1000):
+        port = random_port()
+        assert port not in generated_ports
+        assert 49153 <= port <= 65535
+        generated_ports.add(port)
+
+
 @pytest.fixture
 def config_few_ports():
     os.environ['JINA_RANDOM_PORT_MIN'] = "49300"
@@ -278,16 +279,6 @@ def config_few_ports():
     yield
     del os.environ['JINA_RANDOM_PORT_MIN']
     del os.environ['JINA_RANDOM_PORT_MAX']
-
-
-def test_random_port_max_failures_for_tests_only(config_few_ports):
-    from jina.helper import random_port as random_port_with_max_failures
-
-    with pytest.raises(NoAvailablePortError):
-        random_port_with_max_failures()
-        random_port_with_max_failures()
-        random_port_with_max_failures()
-        random_port_with_max_failures()
 
 
 class MyDummyExecutor(Executor):

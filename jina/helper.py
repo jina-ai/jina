@@ -397,6 +397,9 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
+assigned_ports = set()
+
+
 def random_port() -> Optional[int]:
     """
     Get a random available port number from '49153' to '65535'.
@@ -412,13 +415,18 @@ def random_port() -> Optional[int]:
     def _get_port(port=0):
         with multiprocessing.Lock():
             with threading.Lock():
-                with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                    try:
-                        s.bind(('', port))
-                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                        return s.getsockname()[1]
-                    except OSError:
-                        pass
+                if port not in assigned_ports:
+                    with closing(
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    ) as s:
+                        try:
+                            s.bind(('', port))
+                            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                            return s.getsockname()[1]
+                        except OSError:
+                            pass
+                else:
+                    return None
 
     _port = None
     if 'JINA_RANDOM_PORT_MIN' in os.environ or 'JINA_RANDOM_PORT_MAX' in os.environ:
@@ -436,6 +444,7 @@ def random_port() -> Optional[int]:
     else:
         _port = _get_port()
 
+    assigned_ports.add(int(_port))
     return int(_port)
 
 
