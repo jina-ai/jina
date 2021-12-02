@@ -71,7 +71,16 @@ def test_check_input_fail(inputs):
 )
 def test_gateway_ready(port_expose, route, status_code):
     p = set_gateway_parser().parse_args(
-        ['--port-expose', str(port_expose), '--protocol', 'http']
+        [
+            '--port-expose',
+            str(port_expose),
+            '--protocol',
+            'http',
+            '--graph-description',
+            '{}',
+            '--pods-addresses',
+            '{}',
+        ]
     )
     with PeaFactory.build_pea(p):
         time.sleep(0.5)

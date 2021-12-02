@@ -569,51 +569,43 @@ def test_flow_set_asyncio_switch_post(is_async):
 
 
 @pytest.mark.skipif(__windows__, reason='timing comparison is broken for 2nd Flow')
-def test_flow_routes_list(monkeypatch):
+def test_flow_routes_list():
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     with Flow().add(name='executor1') as simple_flow:
-
-        def validate_routes(x):
-
-            gateway_entry, pod1_entry = json.loads(x.json())['routes']
-            assert gateway_entry['pod'] == 'gateway'
-            assert pod1_entry['pod'].startswith('executor1')
-            assert (
-                _time(gateway_entry['end_time'])
-                > _time(pod1_entry['end_time'])
-                > _time(pod1_entry['start_time'])
-                > _time(gateway_entry['start_time'])
-            )
-
-        simple_flow.index(inputs=Document(), on_done=validate_routes)
+        response = simple_flow.index(inputs=Document(), return_results=True)
+        gateway_entry, pod1_entry = json.loads(response[0].json())['routes']
+        assert gateway_entry['pod'] == 'gateway'
+        assert pod1_entry['pod'].startswith('executor1')
+        assert (
+            _time(gateway_entry['end_time'])
+            > _time(pod1_entry['end_time'])
+            > _time(pod1_entry['start_time'])
+            > _time(gateway_entry['start_time'])
+        )
 
     with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
         name='merge', needs=['a2', 'b1']
     ) as shards_flow:
-
-        def validate_routes(x):
-            print(json.loads(x.json())['routes'])
-            gateway_entry, a1_entry, b1_entry, merge_entry, a2_entry = json.loads(
-                x.json()
-            )['routes']
-            assert gateway_entry['pod'] == 'gateway'
-            assert a1_entry['pod'].startswith('a1')
-            assert a2_entry['pod'].startswith('a2')
-            assert b1_entry['pod'].startswith('b1')
-            assert merge_entry['pod'].startswith('merge')
-            assert (
-                _time(gateway_entry['end_time'])
-                > _time(merge_entry['end_time'])
-                > _time(merge_entry['start_time'])
-                > _time(a2_entry['end_time'])
-                > _time(a2_entry['start_time'])
-                > _time(a1_entry['start_time'])
-                > _time(gateway_entry['start_time'])
-            )
-
-        shards_flow.index(inputs=Document(), on_done=validate_routes)
+        response = shards_flow.index(inputs=Document(), return_results=True)
+        gateway_entry, a1_entry, b1_entry, merge_entry, a2_entry = json.loads(
+            response[0].json()
+        )['routes']
+        assert gateway_entry['pod'] == 'gateway'
+        assert a1_entry['pod'].startswith('a1')
+        assert a2_entry['pod'].startswith('a2')
+        assert b1_entry['pod'].startswith('b1')
+        assert merge_entry['pod'].startswith('merge')
+        assert (
+            _time(gateway_entry['end_time'])
+            > _time(merge_entry['end_time'])
+            > _time(merge_entry['start_time'])
+            > _time(a2_entry['end_time'])
+            > _time(a2_entry['start_time'])
+            > _time(a1_entry['start_time'])
+            > _time(gateway_entry['start_time'])
+        )
 
 
 def test_flow_auto_polling():

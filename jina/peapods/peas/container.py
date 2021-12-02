@@ -188,8 +188,8 @@ def run(
 
     logger = JinaLogger(name, **vars(args))
 
-    cancel = asyncio.Event()
-    fail_to_start = asyncio.Event()
+    cancel = threading.Event()
+    fail_to_start = threading.Event()
 
     if not __windows__:
         try:

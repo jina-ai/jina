@@ -170,7 +170,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
-        graph_description: Optional[str] = None,
+        graph_description: Optional[str] = '{}',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -179,7 +179,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        pods_addresses: Optional[str] = None,
+        pods_addresses: Optional[str] = '{}',
         polling: Optional[str] = 'ANY',
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -835,7 +835,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args.k8s_connection_pool = False
         else:
             # TODO: this should not be necessary, but the boolean flag handling in the parser is not able to handle this
-            args.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
+            args.k8s_connection_pool = kwargs.get(
+                'k8s_connection_pool', self.k8s_connection_pool
+            )
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
@@ -987,16 +989,29 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if GATEWAY_NAME not in op_flow._pod_nodes:
             op_flow._add_gateway(
                 needs={op_flow.last_pod},
-                graph_description=self._get_graph_representation(),
-                pod_addresses=self._get_pod_addresses(),
+                graph_description=op_flow._get_graph_representation(),
+                pod_addresses=op_flow._get_pod_addresses(),
             )
+
+        removed_pods = []
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
-            op_flow._pod_nodes = {
-                k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect
-            }
+            filtered_pod_nodes = OrderedDict()
+            for k, v in op_flow._pod_nodes.items():
+                if not v.role.is_inspect:
+                    filtered_pod_nodes[k] = v
+                else:
+                    removed_pods.append(v.name)
+
+            op_flow._pod_nodes = filtered_pod_nodes
             reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
+            while (
+                len(op_flow._last_changed_pod) > 0
+                and len(removed_pods) > 0
+                and op_flow.last_pod in removed_pods
+            ):
+                op_flow._last_changed_pod.pop()
 
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
@@ -1016,6 +1031,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
+        if len(removed_pods) > 0:
+            # very dirty
+            op_flow._pod_nodes[GATEWAY_NAME].args.graph_description = json.dumps(
+                op_flow._get_graph_representation()
+            )
+            op_flow._pod_nodes[GATEWAY_NAME].args.pod_addresses = json.dumps(
+                op_flow._get_pod_addresses()
+            )
+
+            op_flow._pod_nodes[GATEWAY_NAME].update_pea_args()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -1046,6 +1071,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes.pop(GATEWAY_NAME)
 
         self._build_level = FlowBuildLevel.EMPTY
+
         self.logger.debug('Flow is closed!')
         self.logger.close()
 

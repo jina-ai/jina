@@ -121,6 +121,7 @@ class BasePea(ABC):
         self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
+        self.is_forked = False
         self.logger = JinaLogger(self.name, **vars(self.args))
 
         if self.args.runtime_backend == RuntimeBackendType.THREAD:
@@ -342,6 +343,8 @@ class Pea(BasePea):
         .. #noqa: DAR201
         """
         self.worker.start()
+        self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
+
         if not self.args.noblock_on_start:
             self.wait_start_success()
         return self
