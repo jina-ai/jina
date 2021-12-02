@@ -45,6 +45,7 @@ def test_default_k8s_connection_pooling():
 
 
 @pytest.mark.parametrize('k8s_connection_pool', [False, True])
+@pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)
 def test_disable_k8s_connection_pooling(k8s_connection_pool, docker_images):
     flow = (
         Flow(
