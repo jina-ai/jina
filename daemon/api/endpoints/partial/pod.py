@@ -31,14 +31,14 @@ async def _status():
     status_code=201,
     response_model=PartialStoreItem,
 )
-async def _create(pod: 'PodModel'):
+async def _create(pod: 'PodModel', envs: Optional[Dict] = {}):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
-        return store.add(args)
+        return store.add(args, envs)
     except Exception as ex:
         raise PartialDaemon400Exception from ex
 

@@ -79,3 +79,5 @@ datasets:                   cicd
 av:                         cicd
 trimesh:                    cicd
 paddlepaddle:               cicd
+onnx:                       cicd
+onnxruntime:                cicd

@@ -1,14 +1,17 @@
 from typing import overload, TYPE_CHECKING, Union, Callable, Optional, Tuple
 
+
 if TYPE_CHECKING:
     from ...arrays import DocumentArray
     from ...arrays.memmap import DocumentArrayMemmap
     from ...ndarray import ArrayType
+    from ...arrays.mixins.embed import AnyDNN
+
     import numpy as np
 
 
-class MatchMixin:
-    """Provide sugary syntax for :class:`Document` to match against a :class:`DocumentArray`"""
+class SingletonSugarMixin:
+    """Provide sugary syntax for :class:`Document` by inheriting methods from :class:`DocumentArray`"""
 
     @overload
     def match(
@@ -24,7 +27,7 @@ class MatchMixin:
         exclude_self: bool = False,
         only_id: bool = False,
         use_scipy: bool = False,
-    ):
+    ) -> None:
         """Matching the current Document against a set of Documents.
 
         The result will be stored in :attr:`.matches`.
@@ -52,7 +55,7 @@ class MatchMixin:
         """
         ...
 
-    def match(self, *args, **kwargs):
+    def match(self, *args, **kwargs) -> None:
         """
         # noqa: D102
         # noqa: DAR101
@@ -61,3 +64,28 @@ class MatchMixin:
 
         _tmp = DocumentArray([self])
         _tmp.match(*args, **kwargs)
+
+    @overload
+    def embed(
+        self,
+        embed_model: 'AnyDNN',
+        device: str = 'cpu',
+        batch_size: int = 256,
+    ) -> None:
+        """Fill the embedding of Documents inplace by using `embed_model`
+
+        :param embed_model: the embedding model written in Keras/Pytorch/Paddle
+        :param device: the computational device for `embed_model`, can be either
+            `cpu` or `cuda`.
+        :param batch_size: number of Documents in a batch for embedding
+        """
+
+    def embed(self, *args, **kwargs) -> None:
+        """
+        # noqa: D102
+        # noqa: DAR101
+        """
+        from ...arrays import DocumentArray
+
+        _tmp = DocumentArray([self])
+        _tmp.embed(*args, **kwargs)

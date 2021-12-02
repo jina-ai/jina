@@ -14,11 +14,14 @@ class FlowStore(ContainerStore, AiohttpMixin):
 
     _kind = 'flow'
 
-    async def add_in_partial(self, uri: str, params: Dict, **kwargs) -> Dict:
+    async def add_in_partial(
+        self, uri: str, params: Dict, envs: Optional[Dict] = {}, **kwargs
+    ) -> Dict:
         """Sends `POST` request to `partial-daemon` to create a Flow.
 
         :param uri: uri of partial-daemon
         :param params: Flow params
+        :param envs: environment variables to be passed into partial flow
         :param kwargs: keyword args
         :return: response from POST request
         """
@@ -26,7 +29,7 @@ class FlowStore(ContainerStore, AiohttpMixin):
         return await self.POST(
             url=f'{uri}/{self._kind}',
             params=None,
-            json={'flow': params, 'ports': ports},
+            json={'flow': params, 'ports': ports, 'envs': envs},
         )
 
     async def delete_in_partial(self, uri: str, **kwargs) -> Dict:

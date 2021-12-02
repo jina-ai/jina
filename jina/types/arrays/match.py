@@ -19,19 +19,15 @@ class MatchArray(DocumentArray):
         self._ref_doc = reference_doc
         super().__init__(doc_views)
 
-    def append(self, document: 'Document') -> 'Document':
+    def append(self, document: 'Document'):
         """Add a matched document to the current Document.
 
         :param document: Sub-document to be added
-        :return: the newly added sub-document in :class:`Document` view
-        :rtype: :class:`Document` view
         """
         super().append(document)
-        match = self[-1]
-        match.granularity = self.granularity
-        match.adjacency = self.adjacency
-
-        return match
+        proto = self._pb_body[-1]
+        proto.granularity = self._ref_doc._pb_body.granularity
+        proto.adjacency = self._ref_doc._pb_body.adjacency + 1
 
     @property
     def reference_doc(self) -> 'Document':

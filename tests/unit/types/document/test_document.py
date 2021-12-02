@@ -74,7 +74,7 @@ def test_doc_update_fields():
     d = [12, 34, 56]
     e = 'text-mod'
     w = 2.0
-    a.set_attributes(embedding=b, tags=c, location=d, modality=e, weight=w)
+    a._set_attributes(embedding=b, tags=c, location=d, modality=e, weight=w)
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
@@ -234,24 +234,18 @@ def test_doc_setattr():
     assert root.adjacency == 0
 
     match = Document(text='def')
-    m = root.matches.append(match)
+    root.matches.append(match)
 
     chunk = Document(text='def')
-    c = root.chunks.append(chunk)
+    root.chunks.append(chunk)
 
     assert len(root.matches) == 1
     assert root.matches[0].granularity == 0
     assert root.matches[0].adjacency == 1
 
-    assert m.granularity == 0
-    assert m.adjacency == 1
-
     assert len(root.chunks) == 1
     assert root.chunks[0].granularity == 1
     assert root.chunks[0].adjacency == 0
-
-    assert c.granularity == 1
-    assert c.adjacency == 0
 
 
 def test_doc_score():

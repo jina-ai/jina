@@ -56,7 +56,7 @@
                            target="_blank">Report</a>
                         <div v-if="qa.answer && !is_conn_broken && qa.answer.uri" class="feedback-tooltip sd-d-flex-row">
                             <a class="answer-reference" :href="root_url + qa.answer.uri">Source</a>
-                            <div class="sd-d-flex-row" style="margin-left: 40px">
+                            <div class="sd-d-flex-row">
                                 <div class="thumb-answer thumbup" v-show="qa.rating===null" style="margin: 0 6px" v-on:click="submit_rating(qa, true)">
                                     <svg aria-hidden="true" class="sd-octicon sd-octicon-thumbsup" height="1.0em"
                                          version="1.1" viewBox="0 0 16 16" width="1.0em">

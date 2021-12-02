@@ -46,6 +46,7 @@ class MatchMixin:
         - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``
         - To invert the distance as score and make all values in range [0, 1],
             use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.
+        - If a custom metric distance is provided. Make sure that it returns scores as distances and not similarity, meaning the smaller the better.
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param metric: the distance metric
         :param limit: the maximum number of matches, when not given defaults to 20.
@@ -91,9 +92,9 @@ class MatchMixin:
                 '''
             `traversal_ldarray` and `traversal_rdarray` will be removed soon. 
             Instead of doing `da.match(..., traveral_ldarray=[...])`, you can achieve the same via 
-            `da.traverse_flat(traveral_ldarray=[...]).match(...)`.
+            `da.traverse_flat(traversal_paths=[...]).match(...)`.
             Same goes with `da.match(..., traveral_rdarray=[...])`, you can do it via: 
-            `da.match(da2.traverse_flat(traversal_rdarray=[...]))`.             
+            `da.match(da2.traverse_flat(traversal_paths=[...]))`.             
             '''
             )
 
