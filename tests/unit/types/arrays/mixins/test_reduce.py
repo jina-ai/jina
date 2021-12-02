@@ -1,6 +1,10 @@
-from copy import deepcopy
+from collections import Callable
+from copy import deepcopy, copy
+
+import numpy as np
 
 from jina import DocumentArray, Document
+from jina.types.arrays import MatchArray
 
 
 def test_reduce_doc():
@@ -155,3 +159,32 @@ def test_reduce_mat():
     for doc in reduced_da:
         for i in range(10):
             assert str(i) in doc.matches
+
+
+def _assert_sorted(ma: MatchArray, key: Callable):
+    curr = -1
+    for doc in ma:
+        assert key(doc) >= curr
+        curr = key(doc)
+
+
+def test_reduce_sorted_matches():
+    index = DocumentArray([Document(embedding=np.random.rand(512)) for _ in range(100)])
+    query = DocumentArray([Document(embedding=np.random.rand(512)) for _ in range(10)])
+
+    shard_indexes = [index.sample(30) for _ in range(10)]
+
+    queries = [deepcopy(query) for _ in range(10)]
+    for q, shard_index in zip(queries, shard_indexes):
+        q.match(shard_index)
+
+    for query in queries:
+        for doc in query:
+            _assert_sorted(doc.matches, key=lambda d: d.scores['cosine'].value)
+
+    reduced_da = queries[0].reduce_mat(
+        queries[1:], sort_key=lambda d: d.scores['cosine'].value
+    )
+
+    for doc in reduced_da:
+        _assert_sorted(doc.matches, key=lambda d: d.scores['cosine'].value)
