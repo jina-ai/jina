@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from ...arrays.memmap import DocumentArrayMemmap
     from ...ndarray import ArrayType
     from ...arrays.mixins.embed import AnyDNN
+    from ....helper import T
 
     import numpy as np
 
@@ -67,11 +68,11 @@ class SingletonSugarMixin:
 
     @overload
     def embed(
-        self,
+        self: 'T',
         embed_model: 'AnyDNN',
         device: str = 'cpu',
         batch_size: int = 256,
-    ) -> None:
+    ) -> 'T':
         """Fill the embedding of Documents inplace by using `embed_model`
 
         :param embed_model: the embedding model written in Keras/Pytorch/Paddle
@@ -80,12 +81,14 @@ class SingletonSugarMixin:
         :param batch_size: number of Documents in a batch for embedding
         """
 
-    def embed(self, *args, **kwargs) -> None:
+    def embed(self: 'T', *args, **kwargs) -> 'T':
         """
         # noqa: D102
         # noqa: DAR101
+        :return: itself after modified.
         """
         from ...arrays import DocumentArray
 
         _tmp = DocumentArray([self])
         _tmp.embed(*args, **kwargs)
+        return self

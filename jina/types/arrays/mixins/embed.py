@@ -18,7 +18,7 @@ class EmbedMixin:
         device: str = 'cpu',
         batch_size: int = 256,
         to_numpy: bool = False,
-    ) -> None:
+    ) -> 'T':
         """Fill the embedding of Documents inplace by using `embed_model`
 
         :param embed_model: the embedding model written in Keras/Pytorch/Paddle
@@ -26,12 +26,14 @@ class EmbedMixin:
             `cpu` or `cuda`.
         :param batch_size: number of Documents in a batch for embedding
         :param to_numpy: if to store embeddings back to Document in ``numpy.ndarray`` or original framework format.
+        :return: itself after modified.
         """
 
         fm = get_framework(embed_model)
         getattr(self, f'_set_embeddings_{fm}')(
             embed_model, device, batch_size, to_numpy
         )
+        return self
 
     def _set_embeddings_keras(
         self: 'T',

@@ -3,6 +3,7 @@ from typing import Callable, TYPE_CHECKING, Generator, Optional, overload, TypeV
 if TYPE_CHECKING:
     from ....helper import T
     from ...document import Document
+    from .... import DocumentArray
 
 T_DA = TypeVar('T_DA')
 
@@ -17,7 +18,7 @@ class ParallelMixin:
         backend: str = 'process',
         num_worker: Optional[int] = None,
     ) -> 'T':
-        """Return a new :class:`DocumentArray` or :class:`DocumentArrayMemmap` where each element is applied with ``func``.
+        """Apply each element in itself with ``func``, return itself after modified.
 
         :param func: a function that takes :class:`Document` as input and outputs :class:`Document`.
         :param backend: if to use multi-`process` or multi-`thread` as the parallelization backend. In general, if your
@@ -44,7 +45,9 @@ class ParallelMixin:
         """
         new_da = type(self)()
         new_da.extend(self.map(*args, **kwargs))
-        return new_da
+        self.clear()
+        self.extend(new_da)
+        return self
 
     def map(
         self,
@@ -80,13 +83,13 @@ class ParallelMixin:
     @overload
     def apply_batch(
         self: 'T',
-        func: Callable[['T_DA'], 'T_DA'],
+        func: Callable[['DocumentArray'], 'DocumentArray'],
         batch_size: int,
         backend: str = 'process',
         num_worker: Optional[int] = None,
         shuffle: bool = False,
     ) -> 'T':
-        """Return a new :class:`DocumentArray` or :class:`DocumentArrayMemmap` where each element is applied with ``func``.
+        """Apply each element in itself with ``func``, return itself after modified.
 
         :param func: a function that takes :class:`Document` as input and outputs :class:`Document`.
         :param backend: if to use multi-`process` or multi-`thread` as the parallelization backend. In general, if your
@@ -115,11 +118,13 @@ class ParallelMixin:
         new_da = type(self)()
         for _b in self.map_batch(*args, **kwargs):
             new_da.extend(_b)
-        return new_da
+        self.clear()
+        self.extend(new_da)
+        return self
 
     def map_batch(
         self: 'T_DA',
-        func: Callable[['T_DA'], 'T'],
+        func: Callable[['DocumentArray'], 'T'],
         batch_size: int,
         backend: str = 'process',
         num_worker: Optional[int] = None,
