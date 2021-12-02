@@ -208,7 +208,7 @@ def test_target_peapod_with_overlaped_name(mocker):
     with f:
         # both pods are called, create no error
         mock = mocker.Mock()
-        f.post(on='/foo', target_peapod='foo', inputs=Document(), on_error=mock)
+        f.post(on='/foo', target_peapod='foo', inputs=Document(), on_done=mock)
         mock.assert_called()
 
 
@@ -233,7 +233,7 @@ def test_target_peapod_with_two_pathways():
             return_results=True,
             target_peapod='my_target',
         )
-        assert len(results[0].data.docs) == 2
+        assert len(results[0].data.docs) == 1
 
 
 def test_target_peapod_with_two_pathways_one_skip():

@@ -70,13 +70,9 @@ def test_parse_env_map():
 @pytest.mark.slow
 def test_ping():
     a1 = set_pea_parser().parse_args([])
-    a2 = set_ping_parser().parse_args(
-        ['0.0.0.0', str(a1.port_ctrl), '--print-response']
-    )
+    a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_in)])
 
-    a3 = set_ping_parser().parse_args(
-        ['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000']
-    )
+    a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_in), '--timeout', '1000'])
 
     with pytest.raises(SystemExit) as cm:
         with PeaFactory.build_pea(a1):

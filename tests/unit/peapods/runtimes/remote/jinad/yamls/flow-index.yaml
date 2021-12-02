@@ -1,9 +1,0 @@
-!Flow
-version: '1'
-executors:
-  - name: encode
-    uses: yamls/encoder.yml
-    parallel: 2
-  - name: index
-    uses: yamls/indexer.yml
-    shards: 2

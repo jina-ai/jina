@@ -122,7 +122,7 @@ ac_table = {
             '--inspect',
             '--infrastructure',
         ],
-        'ping': ['--help', '--timeout', '--retries', '--print-response'],
+        'ping': ['--help', '--timeout', '--retries'],
         'gateway': [
             '--help',
             '--name',

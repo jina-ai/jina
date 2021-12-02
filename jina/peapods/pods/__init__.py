@@ -6,6 +6,7 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
+from .. import Pea
 from ..networking import GrpcConnectionPool
 from ..peas.factory import PeaFactory
 from ... import __default_executor__, __default_host__
@@ -262,7 +263,7 @@ class Pod(BasePod):
                 new_args = copy.copy(self.args[0])
                 new_args.noblock_on_start = True
                 new_args.name = new_args.name[:-1] + f'{i}'
-                new_args.port_ctrl = helper.random_port()
+                new_args.port_in = helper.random_port()
                 new_args.replica_id = i
                 # no exception should happen at create and enter time
                 new_peas.append(PeaFactory.build_pea(new_args).start())
@@ -275,6 +276,7 @@ class Pod(BasePod):
                         worker_host=new_args.host,
                         worker_port=new_args.port_in,
                         target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                        shard_id=self.shard_id,
                     )
                 except (
                     RuntimeFailToStart,
@@ -305,6 +307,7 @@ class Pod(BasePod):
                         worker_host=self.args[i].host,
                         worker_port=self.args[i].port_in,
                         target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                        shard_id=self.shard_id,
                     )
                     self._peas[i].close()
                 finally:
@@ -330,6 +333,18 @@ class Pod(BasePod):
                     replicas
                 )  # scale down has some challenges with the exit fifo
             self.pod_args.replicas = replicas
+
+        @property
+        def has_forked_processes(self):
+            """
+            Checks if any pea in this replica set is a forked process
+
+            :returns: True if any Pea is a forked Process, False otherwise (Containers/JinaD)
+            """
+            for pea in self._peas:
+                if type(pea) == Pea and pea.is_forked:
+                    return True
+            return False
 
         def __enter__(self):
             for _args in self.args:
@@ -624,6 +639,12 @@ class Pod(BasePod):
             is_ready = self.uses_after_pea.is_ready.is_set()
         return is_ready
 
+    @property
+    def _has_forked_processes(self):
+        return any(
+            [self.shards[shard_id].has_forked_processes for shard_id in self.shards]
+        )
+
     async def rolling_update(
         self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
     ):
@@ -644,13 +665,19 @@ class Pod(BasePod):
             import asyncio
 
             for shard_id in self.shards:
-                tasks.append(
-                    asyncio.create_task(
-                        self.shards[shard_id].rolling_update(
-                            dump_path=dump_path, uses_with=uses_with
-                        )
+                task = asyncio.create_task(
+                    self.shards[shard_id].rolling_update(
+                        dump_path=dump_path, uses_with=uses_with
                     )
                 )
+                # it is dangerous to fork new processes (peas) while grpc operations are ongoing
+                # while we use fork, we need to guarantee that forking/grpc status checking is done sequentially
+                # this is true at least when the flow process and the forked processes are running in the same OS
+                # thus this does not apply to K8s
+                # to ContainerPea it still applies due to the managing process being forked
+                # source: https://grpc.github.io/grpc/cpp/impl_2codegen_2fork_8h.html#a450c01a1187f69112a22058bf690e2a0
+                await task
+                tasks.append(task)
 
             await asyncio.gather(*tasks)
         except:
@@ -671,9 +698,12 @@ class Pod(BasePod):
             import asyncio
 
             for shard_id in self.shards:
-                tasks.append(
-                    asyncio.create_task(self.shards[shard_id].scale(replicas=replicas))
+                task = asyncio.create_task(
+                    self.shards[shard_id].scale(replicas=replicas)
                 )
+                # see rolling_update for explanation of sequential excution
+                await task
+                tasks.append(task)
 
             await asyncio.gather(*tasks)
         except:
