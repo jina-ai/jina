@@ -37,6 +37,10 @@ def test_parallel_map(pytestconfig, da_cls, backend, num_worker):
     else:
         assert da.blobs is None
 
+    da = da_cls.from_files(f'{pytestconfig.rootdir}/docs/**/*.png')[:10]
+    da_new = da.apply(foo)
+    assert da_new.blobs.shape == (len(da_new), 3, 222, 222)
+
 
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 @pytest.mark.parametrize('backend', ['process', 'thread'])
@@ -64,3 +68,6 @@ def test_parallel_map(pytestconfig, da_cls, backend, num_worker, b_size):
         assert da.blobs.shape == (len(da), 3, 222, 222)
     else:
         assert da.blobs is None
+
+    da_new = da.apply_batch(foo_batch, batch_size=b_size)
+    assert da_new.blobs.shape == (len(da_new), 3, 222, 222)
