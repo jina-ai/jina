@@ -128,6 +128,8 @@ class GrpcConnectionPool:
             self._logger = logger
             # this maps pods to shards or heads
             self._pods: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
+            # dict stores last entity id used for a particular pod, used for round robin
+            self._access_count: Dict[str, int] = {}
 
         def add_replica(self, pod: str, shard_id: int, address: str):
             self._add_connection(pod, shard_id, address, 'shards')
@@ -169,8 +171,9 @@ class GrpcConnectionPool:
             try:
                 if entity_id is None and len(self._pods[pod][type]) > 0:
                     # select a random entity
+                    self._access_count[pod] += 1
                     return self._pods[pod][type][
-                        random.randrange(0, len(self._pods[pod][type]))
+                        self._access_count[pod] % len(self._pods[pod][type])
                     ]
                 else:
                     return self._pods[pod][type][entity_id]
@@ -188,6 +191,7 @@ class GrpcConnectionPool:
         def _add_pod(self, pod: str):
             if pod not in self._pods:
                 self._pods[pod] = {'shards': {}, 'heads': {}}
+                self._access_count[pod] = 0
 
         def _add_connection(
             self,
