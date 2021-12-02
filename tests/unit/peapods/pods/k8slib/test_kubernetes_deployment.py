@@ -51,6 +51,8 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
         init_container=init_container,
         custom_resource_dir=custom_resource,
         env={'k1': 'v1', 'k2': 'v2'},
+        jina_pod_name="some_pod_name",
+        pea_type='worker',
     )
 
     assert mock_create.call_count == 5
@@ -105,10 +107,7 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
     ],
 )
 def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str):
-    base_string = (
-        ', "--host", "0.0.0.0", "--port-in",'
-        ' "8081", "--port-out", "8082", "--port-ctrl", "8083"'
-    )
+    base_string = ', "--host", "0.0.0.0"'
     namespace = Namespace(**namespace)
 
     params = get_cli_params(namespace, skip_attr)

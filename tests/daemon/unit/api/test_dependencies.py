@@ -69,7 +69,7 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
         )
 
 
-def test_dump_grpc_data_requests(monkeypatch, tmpdir):
+def test_dump(monkeypatch, tmpdir):
     filename = os.path.join(cur_dir, 'flow3.yml')
     monkeypatch.setattr(dependencies, 'get_workspace_path', lambda *args: tmpdir)
     monkeypatch.setattr(
@@ -91,7 +91,6 @@ def test_dump_grpc_data_requests(monkeypatch, tmpdir):
         assert f['gateway'].args.runs_in_docker
         assert f['local_replicas'].args.runs_in_docker
         assert f['local_replicas'].args.port_in == 45678
-        assert f.gateway_args.grpc_data_requests
 
 
 @pytest.mark.parametrize(

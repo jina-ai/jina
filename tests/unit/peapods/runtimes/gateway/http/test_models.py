@@ -35,7 +35,7 @@ def test_enum_definitions():
     command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
         'definitions'
     ]['Command']
-    assert command_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
+    assert command_enum_definition['enum'] == [0, 1, 2, 3]
 
 
 def test_all_fields_in_document_proto():
