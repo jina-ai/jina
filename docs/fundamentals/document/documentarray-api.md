@@ -268,9 +268,13 @@ model = torchvision.models.resnet50(pretrained=True)
 docs.embed(model)
 ```
 
+You can also visualize `.embeddings` using Embedding Projector, {ref}`find more details here<visualize-embeddings>`.
+
+
 ```{hint}
 On large `DocumentArray`, you can set `batch_size` via `.embed(..., batch_size=128)`
 ```
+
 
 (match-documentarray)=
 ## Find nearest neighbours
@@ -1117,31 +1121,31 @@ For writing to disk on-the-fly, please use {ref}`documentarraymemmap-api`.
 
 ## Visualization
 
-`DocumentArray` provides the `.plot_embeddings` function to plot Document embeddings in a 2D graph. `visualize` supports two methods
-to project in 2D space: `pca` and `tsne`.
+If a `DocumentArray` contains all image `Document`, you can plot all images in one sprite image using {meth}`~jina.types.arrays.mixins.plot.PlotMixin.plot_image_sprites`.
 
-In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document, DocumentArray
-
-da = DocumentArray(
-    [
-        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
-    ]
-)
-da.plot_embeddings()
-
+```python
+from jina import DocumentArray
+docs = DocumentArray.from_files('*.jpg')
+docs.plot_image_sprites()
 ```
 
-```{figure} document-array-visualize.png
+```{figure} sprite-image.png
+:width: 60%
+```
+
+(visualize-embeddings)=
+If a `DocumentArray` has valid `.embeddings`, you can visualize the embeddings interactively using {meth}`~jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings`.
+
+````{hint}
+Note that `.plot_embeddings()` applies to any `DocumentArray` not just image ones. For image `DocumentArray`, you can do one step more to attach the image sprite on to the visualization points.
+
+```python
+da.plot_embeddings(image_sprites=True)
+```
+ 
+````
+
+
+```{figure} embedding-projector.gif
 :align: center
 ```
