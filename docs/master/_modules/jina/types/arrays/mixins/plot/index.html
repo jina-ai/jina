@@ -680,32 +680,163 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.mixins.plot</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">deprecated_method</span>
-<span class="kn">from</span> <span class="nn">....logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">__resources_path__</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">random_port</span>
 
 
 <div class="viewcode-block" id="PlotMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin">[docs]</a><span class="k">class</span> <span class="nc">PlotMixin</span><span class="p">:</span>
     <span class="sd">"""Helper functions for plotting the arrays. """</span>
 
-    <span class="nd">@deprecated_method</span><span class="p">(</span><span class="n">new_function_name</span><span class="o">=</span><span class="s1">'plot_embeddings'</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Deprecated! Please use :meth:`.plot_embeddings` instead.</span>
-
-<span class="sd">        Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.</span>
-
-<span class="sd">        :param args: extra args</span>
-<span class="sd">        :param kwargs: extra kwargs</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
 <div class="viewcode-block" id="PlotMixin.plot_embeddings"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings">[docs]</a>    <span class="k">def</span> <span class="nf">plot_embeddings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'MyDocumentArray'</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">image_sprites</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_image_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="n">channel_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_server</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Interactively visualize :attr:`.embeddings` using the Embedding Projector.</span>
+
+<span class="sd">        :param title: the title of this visualization. If you want to compare multiple embeddings at the same time,</span>
+<span class="sd">                make sure to give different names each time and set ``path`` to the same value.</span>
+<span class="sd">        :param port: if set, run the embedding-projector frontend at given port. Otherwise a random port is used.</span>
+<span class="sd">        :param image_sprites: if set, visualize the dots using :attr:`.uri` and :attr:`.blob`.</span>
+<span class="sd">        :param path: if set, then append the visualization to an existing folder, where you can compare multiple</span>
+<span class="sd">            embeddings at the same time. Make sure to use a different ``title`` each time .</span>
+<span class="sd">        :param min_image_size: only used when `image_sprites=True`. the minimum size of the image</span>
+<span class="sd">        :param channel_axis: only used when `image_sprites=True`. the axis id of the color channel, ``-1`` indicates the color channel info at the last axis</span>
+<span class="sd">        :param start_server: if set, start a HTTP server and open the frontend directly. Otherwise, you need to rely on ``return`` path and serve by yourself.</span>
+<span class="sd">        :return: the path to the embeddings visualization info.</span>
+<span class="sd">        """</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">or</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="n">emb_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">.tsv'</span>
+        <span class="n">meta_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">.metas.tsv'</span>
+        <span class="n">config_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'config.json'</span>
+        <span class="n">sprite_fn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">.png'</span>
+
+        <span class="k">if</span> <span class="n">image_sprites</span><span class="p">:</span>
+            <span class="n">img_per_row</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+            <span class="n">canvas_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">img_per_row</span> <span class="o">*</span> <span class="n">min_image_size</span><span class="p">,</span> <span class="mi">8192</span><span class="p">)</span>
+            <span class="n">img_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">canvas_size</span> <span class="o">/</span> <span class="n">img_per_row</span><span class="p">),</span> <span class="n">min_image_size</span><span class="p">)</span>
+
+            <span class="n">max_docs</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">canvas_size</span> <span class="o">/</span> <span class="n">img_size</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_docs</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'''</span>
+<span class="s1">                    </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> has more than </span><span class="si">{</span><span class="n">max_docs</span><span class="si">}</span><span class="s1"> elements, which is the maximum number of image sprites can support. </span>
+<span class="s1">                    The resulting visualization may not be correct. You can do the following:</span>
+<span class="s1">                    </span>
+<span class="s1">                    - use fewer images: `da[:10000].plot_embeddings()`</span>
+<span class="s1">                    - reduce the `min_image_size` to a smaller number, say 8 or 4 (but bear in mind you can hardly recognize anything with a 4x4 image)</span>
+<span class="s1">                    - turn off `image_sprites` via `da.plot_embeddings(image_sprites=False)`</span>
+<span class="s1">                    '''</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_image_sprites</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sprite_fn</span><span class="p">),</span>
+                <span class="n">canvas_size</span><span class="o">=</span><span class="n">canvas_size</span><span class="p">,</span>
+                <span class="n">min_size</span><span class="o">=</span><span class="n">min_image_size</span><span class="p">,</span>
+                <span class="n">channel_axis</span><span class="o">=</span><span class="n">channel_axis</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_embeddings_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">emb_fn</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">meta_fn</span><span class="p">),</span>
+            <span class="n">exclude_fields</span><span class="o">=</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">),</span>
+            <span class="n">dialect</span><span class="o">=</span><span class="s1">'excel-tab'</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">_epj_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'embeddings'</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">'tensorName'</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+                    <span class="s1">'tensorShape'</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+                    <span class="s1">'tensorPath'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'/static/</span><span class="si">{</span><span class="n">emb_fn</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="s1">'metadataPath'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'/static/</span><span class="si">{</span><span class="n">meta_fn</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="s1">'sprite'</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">'imagePath'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'/static/</span><span class="si">{</span><span class="n">sprite_fn</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                        <span class="s1">'singleImageDim'</span><span class="p">:</span> <span class="p">(</span><span class="n">img_size</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+                    <span class="p">}</span>
+                    <span class="k">if</span> <span class="n">image_sprites</span>
+                    <span class="k">else</span> <span class="p">{},</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">)):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">old_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+                <span class="n">_epj_config</span><span class="p">[</span><span class="s1">'embeddings'</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">old_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'embeddings'</span><span class="p">,</span> <span class="p">[]))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">),</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">_epj_config</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'embedding-projector/index.html'</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'index.html'</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">start_server</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">_get_fastapi_app</span><span class="p">():</span>
+                <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+                <span class="kn">from</span> <span class="nn">starlette.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
+                <span class="kn">from</span> <span class="nn">starlette.staticfiles</span> <span class="kn">import</span> <span class="n">StaticFiles</span>
+
+                <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+                <span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
+                    <span class="n">CORSMiddleware</span><span class="p">,</span>
+                    <span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+                    <span class="n">allow_credentials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">allow_methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+                    <span class="n">allow_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">app</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">'/static'</span><span class="p">,</span> <span class="n">StaticFiles</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">path</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">'static'</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">app</span>
+
+            <span class="kn">import</span> <span class="nn">uvicorn</span>
+
+            <span class="n">app</span> <span class="o">=</span> <span class="n">_get_fastapi_app</span><span class="p">()</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">port</span> <span class="ow">or</span> <span class="n">random_port</span><span class="p">()</span>
+            <span class="n">t_m</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s1">'error'</span><span class="p">),</span>
+                <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">t_m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">url_html_path</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">/static/index.html?config=</span><span class="si">{</span><span class="n">config_fn</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">webbrowser</span>
+
+                <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">url_html_path</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># intentional pass, browser support isn't cross-platform</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">....logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+
+                <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'You should see a webpage opened in your browser, '</span>
+                    <span class="sa">f</span><span class="s1">'if not, you may open </span><span class="si">{</span><span class="n">url_html_path</span><span class="si">}</span><span class="s1"> manually'</span>
+                <span class="p">)</span>
+            <span class="n">t_m</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+<div class="viewcode-block" id="PlotMixin.plot_embeddings_legacy"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings_legacy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_embeddings_legacy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -843,16 +974,19 @@
             <span class="k">if</span> <span class="n">img_id</span> <span class="o">&gt;=</span> <span class="n">max_num_img</span><span class="p">:</span>
                 <span class="k">break</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
+        <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sprite_img</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sprite_img</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">'tight'</span><span class="p">,</span> <span class="n">pad_inches</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
 </pre></div>
             </article>
@@ -865,7 +999,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 01, 2021.
+                    Last updated on Dec 02, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
