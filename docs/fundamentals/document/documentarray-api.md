@@ -1145,6 +1145,16 @@ da.plot_embeddings(image_sprites=True)
  
 ````
 
+```python
+import numpy as np
+from jina import DocumentArray
+
+docs = DocumentArray.from_files('*.jpg')
+docs.embeddings = np.random.random([len(docs), 256])  # some random embeddings
+
+docs.plot_embeddings(image_sprites=True)
+```
+
 
 ```{figure} embedding-projector.gif
 :align: center
