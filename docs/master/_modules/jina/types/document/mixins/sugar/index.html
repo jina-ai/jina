@@ -698,7 +698,7 @@
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
         <span class="n">darray</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="s1">'DocumentArrayMemmap'</span><span class="p">],</span>
         <span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'ArrayType'</span><span class="p">],</span> <span class="s1">'np.ndarray'</span><span class="p">]</span>
@@ -710,7 +710,7 @@
         <span class="n">exclude_self</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">only_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""Matching the current Document against a set of Documents.</span>
 
 <span class="sd">        The result will be stored in :attr:`.matches`.</span>
@@ -738,15 +738,17 @@
 <span class="sd">        """</span>
         <span class="o">...</span>
 
-<div class="viewcode-block" id="SingletonSugarMixin.match"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SingletonSugarMixin.match"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: D102</span>
 <span class="sd">        # noqa: DAR101</span>
+<span class="sd">        :return: itself after modified</span>
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">...arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
         <span class="n">_tmp</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
-        <span class="n">_tmp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">_tmp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span>
