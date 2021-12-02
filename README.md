@@ -73,11 +73,11 @@ Leveraging these three components, let's build an app that **find similar images
 ```python
 from jina import DocumentArray, Document
 
-docs = DocumentArray.from_files('img/*.jpg')  # load all image filenames into a DocumentArray
-for d in docs:  # preprocess them
-    (d.load_uri_to_image_blob()  # load
-     .set_image_blob_normalization()  # normalize color 
-     .set_image_blob_channel_axis(-1, 0))  # switch color axis
+def preproc(d: Document):
+    return (d.load_uri_to_image_blob()  # load
+             .set_image_blob_normalization()  # normalize color 
+             .set_image_blob_channel_axis(-1, 0))  # switch color axis
+docs = DocumentArray.from_files('img/*.jpg').apply(preproc)
 
 import torchvision
 model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
@@ -117,17 +117,19 @@ With an extremely trivial refactoring and 10 extra lines of code, you can make t
 
 1. Import what we need.
     ```python
-    from jina import DocumentArray, Executor, Flow, requests
+    from jina import Document, DocumentArray, Executor, Flow, requests
     ```
 2. Copy-paste the preprocessing step and wrap it via `Executor`:
     ```python
     class PreprocImg(Executor):
         @requests
         def foo(self, docs: DocumentArray, **kwargs):
-            for d in docs:
-                (d.load_uri_to_image_blob()
-                 .set_image_blob_normalization()
-                 .set_image_blob_channel_axis(-1, 0))
+            return docs.apply(preproc)
+    
+    def preproc(d: Document):
+        return (d.load_uri_to_image_blob()  # load
+                 .set_image_blob_normalization()  # normalize color 
+                 .set_image_blob_channel_axis(-1, 0))  # switch color axis
     ```
 3. Copy-paste the embedding step and wrap it via `Executor`:
     

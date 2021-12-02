@@ -800,6 +800,13 @@ For processing batches in parallel, please refer to {meth}`~jina.types.arrays.mi
 
 ## Parallel processing
 
+```{seealso}
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map`: to parallel process element by element, return an interator of elements;
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch`: to parallel process batch by batch, return an iterator of batches;
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.apply`: like `.map()`, but return a `DocumentArray`;
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.apply_batch`: like `.map_batch()`, but return a `DocumentArray`;
+```
+
 Working with large `DocumentArray` element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all `Document` one by one. Jina provides {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. It is like Python 
 built-in `map()` function but mapping the function to every element of the `DocumentArray` in parallel. There is also {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch` that works on the minibatch level.
 
@@ -872,6 +879,8 @@ list(da.map(func))
 ```
 
 This follows the same convention as you using Python built-in `map()`.
+
+You can also use `.apply()` which always returns a `DocumentArray`.
 
 ````
 
