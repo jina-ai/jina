@@ -835,7 +835,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args.k8s_connection_pool = False
         else:
             # TODO: this should not be necessary, but the boolean flag handling in the parser is not able to handle this
-            args.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
+            args.k8s_connection_pool = kwargs.get(
+                'k8s_connection_pool', self.k8s_connection_pool
+            )
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
             args, needs, self.args.infrastructure
