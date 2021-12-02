@@ -23,6 +23,7 @@ Submodules
    jina.types.arrays.mixins.group
    jina.types.arrays.mixins.magic
    jina.types.arrays.mixins.match
+   jina.types.arrays.mixins.parallel
    jina.types.arrays.mixins.plot
    jina.types.arrays.mixins.sample
    jina.types.arrays.mixins.text
