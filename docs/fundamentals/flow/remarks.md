@@ -189,3 +189,65 @@ Few cases require to use `spawn` start method for multiprocessing.
 
     While passing filepaths to different jina arguments (e.g.- `uses`, `py_modules`), always pass the absolute path.
 
+
+
+
+
+## Debugging Executor in a Flow
+
+Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip instal epdb` to have acces to this type of breakpoints.
+
+
+    ````{tab} ✅ Do
+    ```{code-block} python
+    ---
+    emphasize-lines: 7
+    ---
+    from jina import Flow, Executor, requests
+     
+    class CustomExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            a = 25
+            import edpb; epdb.set_trace() 
+            print(f'\n\na={a}\n\n')
+     
+    def main():
+        f = Flow().add(uses=CustomExecutor)
+        with f:
+            f.post(on='')
+
+    if __name__ == '__main__':
+        main()
+
+    ```
+    ````
+
+    ````{tab} 😔 Don't
+    ```{code-block} python
+    ---
+    emphasize-lines: 7
+    ---
+    from jina import Flow, Executor, requests
+     
+    class CustomExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            a = 25
+            breakpoint()
+            print(f'\n\na={a}\n\n')
+     
+    def main():
+        f = Flow().add(uses=CustomExecutor)
+        with f:
+            f.post(on='')
+     
+    if __name__ == '__main__':
+        main()
+    ```
+    ````
+
+
+
+
+
