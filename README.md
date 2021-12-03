@@ -111,7 +111,7 @@ q.matches.plot_image_sprites()
 
 Sweet! FYI, one can use Keras, ONNX, PaddlePaddle for the embedding model. Jina supports them well.
 
-### Scale and Serve in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
+### As-a-Service in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
 With an extremely trivial refactoring and 10 extra lines of code, you can make the local script as a ready-to-serve service:
 
@@ -206,8 +206,8 @@ At this point, you probably have taken 15 minutes but here we are: an image sear
 
 ||||
 |---|---|---|
-|✅ Solution as a service | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
-|✅ Distribute/Dockerize components | ✅ Async/non-blocking I/O | ✅ Extendable REST interface | |
+|✅ Solution as microservices | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
+|✅ Distribute/Dockerize components | ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
 
 </sup>
 
