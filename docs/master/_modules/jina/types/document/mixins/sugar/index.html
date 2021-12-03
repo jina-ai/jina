@@ -710,6 +710,7 @@
         <span class="n">exclude_self</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">only_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""Matching the current Document against a set of Documents.</span>
 
@@ -727,14 +728,17 @@
 <span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
 <span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
 <span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
-<span class="sd">        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option</span>
-<span class="sd">                           will be slower but more memory efficient. Specialy indicated if `darray` is a big</span>
-<span class="sd">                           DocumentArrayMemmap.</span>
+<span class="sd">        :param batch_size: if provided, then ``darray`` is loaded in batches, where each of them is at most ``batch_size``</span>
+<span class="sd">            elements. When `darray` is big, this can significantly speedup the computation.</span>
 <span class="sd">        :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be</span>
 <span class="sd">                        considered as matches.</span>
 <span class="sd">        :param only_id: if set, then returning matches will only contain ``id``</span>
 <span class="sd">        :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance</span>
 <span class="sd">            on sparse matrix.</span>
+<span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
+
+<span class="sd">                .. note::</span>
+<span class="sd">                    This argument is only effective when ``batch_size`` is set.</span>
 <span class="sd">        """</span>
         <span class="o">...</span>
 

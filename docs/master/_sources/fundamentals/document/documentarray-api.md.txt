@@ -860,7 +860,7 @@ map-thread ...	map-thread takes 10 seconds (10.28s)
 foo-loop ...	foo-loop takes 18 seconds (18.52s)
 ```
 
-One can see big improvement with `.map()`.
+One can see a significant speedup with `.map()`.
 
 ```{admonition} When to choose process or thread backend?
 :class: important
@@ -875,15 +875,9 @@ If you only modify elements in-place, and do not need return values, you can wri
 
 ```python
 da = DocumentArray(...)
-list(da.map(func))
+da.apply(func)
 ```
-
-This follows the same convention as you using Python built-in `map()`.
-
-You can also use `.apply()` which always returns a `DocumentArray`.
-
 ````
-
 
 
 

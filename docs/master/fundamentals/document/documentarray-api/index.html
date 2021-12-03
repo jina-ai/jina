@@ -1457,7 +1457,7 @@ map-thread ...	map-thread takes 10 seconds (10.28s)
 foo-loop ...	foo-loop takes 18 seconds (18.52s)
 </pre></div>
 </div>
-<p>One can see big improvement with <code class="docutils literal notranslate"><span class="pre">.map()</span></code>.</p>
+<p>One can see a significant speedup with <code class="docutils literal notranslate"><span class="pre">.map()</span></code>.</p>
 <div class="important admonition">
 <p class="admonition-title">When to choose process or thread backend?</p>
 <p>It depends on how your <code class="docutils literal notranslate"><span class="pre">func</span></code> in <code class="docutils literal notranslate"><span class="pre">.map(func)</span></code> look like:</p>
@@ -1470,11 +1470,9 @@ foo-loop ...	foo-loop takes 18 seconds (18.52s)
 <p class="admonition-title">Tip</p>
 <p>If you only modify elements in-place, and do not need return values, you can write:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="nb">list</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+<span class="n">da</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This follows the same convention as you using Python built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code>.</p>
-<p>You can also use <code class="docutils literal notranslate"><span class="pre">.apply()</span></code> which always returns a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
 </div>
 </section>
 <section id="sampling">
