@@ -78,7 +78,7 @@ class ParallelMixin:
         :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.
         :yield: anything return from ``func``
         """
-        if _is_lambda_function(func) and backend == 'process':
+        if _is_lambda_or_local_function(func) and backend == 'process':
             func = _globalize_lambda_function(func)
         with _get_pool(backend, num_worker) as p:
             for x in p.imap(func, self):
@@ -159,7 +159,7 @@ class ParallelMixin:
         :yield: anything return from ``func``
         """
 
-        if _is_lambda_function(func) and backend == 'process':
+        if _is_lambda_or_local_function(func) and backend == 'process':
             func = _globalize_lambda_function(func)
         with _get_pool(backend, num_worker) as p:
             for x in p.imap(func, self.batch(batch_size=batch_size, shuffle=shuffle)):
@@ -181,8 +181,10 @@ def _get_pool(backend, num_worker):
         )
 
 
-def _is_lambda_function(func):
-    return isinstance(func, LambdaType) and func.__name__ == '<lambda>'
+def _is_lambda_or_local_function(func):
+    return (isinstance(func, LambdaType) and func.__name__ == '<lambda>') or (
+        '<locals>' in func.__qualname__
+    )
 
 
 def _globalize_lambda_function(func):

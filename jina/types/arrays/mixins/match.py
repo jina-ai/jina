@@ -32,6 +32,7 @@ class MatchMixin:
         only_id: bool = False,
         use_scipy: bool = False,
         device: str = 'cpu',
+        num_worker: Optional[int] = None,
         **kwargs,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
@@ -54,9 +55,8 @@ class MatchMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param metric_name: if provided, then match result will be marked with this string.
-        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
-                           will be slower but more memory efficient. Specialy indicated if `darray` is a big
-                           DocumentArrayMemmap.
+        :param batch_size: if provided, then ``darray`` is loaded in batches, where each of them is at most ``batch_size``
+            elements. When `darray` is big, this can significantly speedup the computation.
         :param traversal_ldarray: DEPRECATED. if set, then matching is applied along the `traversal_path` of the
                 left-hand ``DocumentArray``.
         :param traversal_rdarray: DEPRECATED. if set, then matching is applied along the `traversal_path` of the
@@ -68,6 +68,11 @@ class MatchMixin:
         :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance
             on sparse matrix.
         :param device: the computational device for ``.match()``, can be either `cpu` or `cuda`.
+        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.
+
+                .. note::
+                    This argument is only effective when ``batch_size`` is set.
+
         :param kwargs: other kwargs.
         """
         if limit is not None:
@@ -136,7 +141,7 @@ class MatchMixin:
 
         if batch_size:
             dist, idx = lhv._match_online(
-                rhv, cdist, _limit, normalization, metric_name, batch_size
+                rhv, cdist, _limit, normalization, metric_name, batch_size, num_worker
             )
         else:
             dist, idx = lhv._match(rhv, cdist, _limit, normalization, metric_name)
@@ -204,7 +209,14 @@ class MatchMixin:
         return dist, idx
 
     def _match_online(
-        self, darray, cdist, limit, normalization, metric_name, batch_size
+        self,
+        darray,
+        cdist,
+        limit,
+        normalization,
+        metric_name,
+        batch_size,
+        num_worker,
     ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
@@ -218,6 +230,7 @@ class MatchMixin:
                               all values will be rescaled into range `[a, b]`.
         :param batch_size: length of the chunks loaded into memory from darray.
         :param metric_name: if provided, then match result will be marked with this string.
+        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.
         :return: distances and indices
         """
 
@@ -227,8 +240,9 @@ class MatchMixin:
         idx = 0
         top_dists = np.inf * np.ones((n_x, limit))
         top_inds = np.zeros((n_x, limit), dtype=int)
-        for ld in darray.batch(batch_size=batch_size):
-            y_batch = ld.embeddings
+
+        def _get_dist(da: 'DocumentArray'):
+            y_batch = da.embeddings
 
             distances = cdist(x_mat, y_batch, metric_name)
             dists, inds = top_k(distances, limit, descending=False)
@@ -236,8 +250,24 @@ class MatchMixin:
             if isinstance(normalization, (tuple, list)) and normalization is not None:
                 dists = minmax_normalize(dists, normalization)
 
-            inds = idx + inds
-            idx += y_batch.shape[0]
+            return dists, inds, y_batch.shape[0]
+
+        if num_worker is None or num_worker > 1:
+            # notice that all most all computations (regardless the framework) are conducted in C
+            # hence there is no worry on Python GIL and the backend can be safely put to `thread` to
+            # save unnecessary data passing. This in fact gives a huge boost on the performance.
+            _gen = darray.map_batch(
+                _get_dist,
+                batch_size=batch_size,
+                backend='thread',
+                num_worker=num_worker,
+            )
+        else:
+            _gen = (_get_dist(b) for b in darray.batch(batch_size=batch_size))
+
+        for (dists, inds, _bs) in _gen:
+            inds += idx
+            idx += _bs
             top_dists, top_inds = update_rows_x_mat_best(
                 top_dists, top_inds, dists, inds, limit
             )

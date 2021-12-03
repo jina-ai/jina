@@ -1,6 +1,6 @@
 import pytest
 
-from jina import DocumentArrayMemmap, DocumentArray, Document
+from jina import DocumentArray, Document, DocumentArrayMemmap
 
 
 def foo(d: Document):
@@ -20,7 +20,7 @@ def foo_batch(da: DocumentArray):
 
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 @pytest.mark.parametrize('backend', ['process', 'thread'])
-@pytest.mark.parametrize('num_worker', [1, 2])
+@pytest.mark.parametrize('num_worker', [1, 2, None])
 def test_parallel_map(pytestconfig, da_cls, backend, num_worker):
     da = da_cls.from_files(f'{pytestconfig.rootdir}/docs/**/*.png')[:10]
 
@@ -71,3 +71,14 @@ def test_parallel_map_batch(pytestconfig, da_cls, backend, num_worker, b_size):
 
     da_new = da.apply_batch(foo_batch, batch_size=b_size)
     assert da_new.blobs.shape == (len(da_new), 3, 222, 222)
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+def test_map_lambda(pytestconfig, da_cls):
+    da = da_cls.from_files(f'{pytestconfig.rootdir}/docs/**/*.png')[:10]
+
+    for d in da:
+        assert d.blob is None
+
+    for d in da.map(lambda x: x.load_uri_to_image_blob()):
+        assert d.blob is not None
