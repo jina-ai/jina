@@ -297,7 +297,8 @@ class PlotMixin:
         im = Image.fromarray(sprite_img)
 
         if output:
-            im.save(output)
+            with open(output, 'wb') as fp:
+                im.save(fp)
         else:
             plt.gca().set_axis_off()
             plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
