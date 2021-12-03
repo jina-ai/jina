@@ -1,7 +1,9 @@
+import sys
+from types import LambdaType
 from typing import Callable, TYPE_CHECKING, Generator, Optional, overload, TypeVar
 
 if TYPE_CHECKING:
-    from ....helper import T
+    from ....helper import T, random_identity
     from ...document import Document
     from .... import DocumentArray
 
@@ -76,6 +78,8 @@ class ParallelMixin:
         :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.
         :yield: anything return from ``func``
         """
+        if _is_lambda_function(func) and backend == 'process':
+            func = _globalize_lambda_function(func)
         with _get_pool(backend, num_worker) as p:
             for x in p.imap(func, self):
                 yield x
@@ -154,6 +158,9 @@ class ParallelMixin:
         :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.
         :yield: anything return from ``func``
         """
+
+        if _is_lambda_function(func) and backend == 'process':
+            func = _globalize_lambda_function(func)
         with _get_pool(backend, num_worker) as p:
             for x in p.imap(func, self.batch(batch_size=batch_size, shuffle=shuffle)):
                 yield x
@@ -172,3 +179,18 @@ def _get_pool(backend, num_worker):
         raise ValueError(
             f'`backend` must be either `process` or `thread`, receiving {backend}'
         )
+
+
+def _is_lambda_function(func):
+    return isinstance(func, LambdaType) and func.__name__ == '<lambda>'
+
+
+def _globalize_lambda_function(func):
+    def result(*args, **kwargs):
+        return func(*args, **kwargs)
+
+    from ....helper import random_identity
+
+    result.__name__ = result.__qualname__ = random_identity()
+    setattr(sys.modules[result.__module__], result.__name__, result)
+    return result
