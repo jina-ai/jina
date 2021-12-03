@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.arrays.mixins.match - Jina 2.5.1 documentation</title>
+        <title>jina.types.arrays.mixins.match - Jina 2.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 2.5.1 documentation</div>
+                <div class="brand">Jina 2.5.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,18 +185,13 @@
     
         
           
-            <option value="../../../../../../master/index.html" >master</option>
+          
+            <option value="match.html" selected="selected" >latest (v2.5.2)</option>
           
         
         
           
-          
-            <option value="match.html" selected="selected" >latest (v2.5.1)</option>
-          
-        
-        
-          
-            <option value="../../../../../../v2.5.0/index.html" >v2.5.0</option>
+            <option value="../../../../../../v2.5.1/index.html" >v2.5.1</option>
           
         
     
@@ -714,6 +709,7 @@
         <span class="n">only_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span><span class="p">,</span>
+        <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Compute embedding based nearest neighbour in `another` for each Document in `self`,</span>
@@ -736,9 +732,8 @@
 <span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
 <span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
 <span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
-<span class="sd">        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option</span>
-<span class="sd">                           will be slower but more memory efficient. Specialy indicated if `darray` is a big</span>
-<span class="sd">                           DocumentArrayMemmap.</span>
+<span class="sd">        :param batch_size: if provided, then ``darray`` is loaded in batches, where each of them is at most ``batch_size``</span>
+<span class="sd">            elements. When `darray` is big, this can significantly speedup the computation.</span>
 <span class="sd">        :param traversal_ldarray: DEPRECATED. if set, then matching is applied along the `traversal_path` of the</span>
 <span class="sd">                left-hand ``DocumentArray``.</span>
 <span class="sd">        :param traversal_rdarray: DEPRECATED. if set, then matching is applied along the `traversal_path` of the</span>
@@ -750,6 +745,11 @@
 <span class="sd">        :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance</span>
 <span class="sd">            on sparse matrix.</span>
 <span class="sd">        :param device: the computational device for ``.match()``, can be either `cpu` or `cuda`.</span>
+<span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
+
+<span class="sd">                .. note::</span>
+<span class="sd">                    This argument is only effective when ``batch_size`` is set.</span>
+
 <span class="sd">        :param kwargs: other kwargs.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -818,7 +818,7 @@
 
         <span class="k">if</span> <span class="n">batch_size</span><span class="p">:</span>
             <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">lhv</span><span class="o">.</span><span class="n">_match_online</span><span class="p">(</span>
-                <span class="n">rhv</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">_limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">batch_size</span>
+                <span class="n">rhv</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">_limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_worker</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">lhv</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">rhv</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">_limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
@@ -886,7 +886,14 @@
         <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span>
 
     <span class="k">def</span> <span class="nf">_match_online</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">darray</span><span class="p">,</span>
+        <span class="n">cdist</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">,</span>
+        <span class="n">normalization</span><span class="p">,</span>
+        <span class="n">metric_name</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">num_worker</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.</span>
@@ -900,6 +907,7 @@
 <span class="sd">                              all values will be rescaled into range `[a, b]`.</span>
 <span class="sd">        :param batch_size: length of the chunks loaded into memory from darray.</span>
 <span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
+<span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
 <span class="sd">        :return: distances and indices</span>
 <span class="sd">        """</span>
 
@@ -909,8 +917,9 @@
         <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">top_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_x</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
         <span class="n">top_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_x</span><span class="p">,</span> <span class="n">limit</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">darray</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">):</span>
-            <span class="n">y_batch</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">embeddings</span>
+
+        <span class="k">def</span> <span class="nf">_get_dist</span><span class="p">(</span><span class="n">da</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">):</span>
+            <span class="n">y_batch</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">embeddings</span>
 
             <span class="n">distances</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">y_batch</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
             <span class="n">dists</span><span class="p">,</span> <span class="n">inds</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -918,8 +927,24 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">dists</span> <span class="o">=</span> <span class="n">minmax_normalize</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
 
-            <span class="n">inds</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">inds</span>
-            <span class="n">idx</span> <span class="o">+=</span> <span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">dists</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">num_worker</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">num_worker</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># notice that all most all computations (regardless the framework) are conducted in C</span>
+            <span class="c1"># hence there is no worry on Python GIL and the backend can be safely put to `thread` to</span>
+            <span class="c1"># save unnecessary data passing. This in fact gives a huge boost on the performance.</span>
+            <span class="n">_gen</span> <span class="o">=</span> <span class="n">darray</span><span class="o">.</span><span class="n">map_batch</span><span class="p">(</span>
+                <span class="n">_get_dist</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                <span class="n">backend</span><span class="o">=</span><span class="s1">'thread'</span><span class="p">,</span>
+                <span class="n">num_worker</span><span class="o">=</span><span class="n">num_worker</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_gen</span> <span class="o">=</span> <span class="p">(</span><span class="n">_get_dist</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">darray</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">_bs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_gen</span><span class="p">:</span>
+            <span class="n">inds</span> <span class="o">+=</span> <span class="n">idx</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="n">_bs</span>
             <span class="n">top_dists</span><span class="p">,</span> <span class="n">top_inds</span> <span class="o">=</span> <span class="n">update_rows_x_mat_best</span><span class="p">(</span>
                 <span class="n">top_dists</span><span class="p">,</span> <span class="n">top_inds</span><span class="p">,</span> <span class="n">dists</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">limit</span>
             <span class="p">)</span>

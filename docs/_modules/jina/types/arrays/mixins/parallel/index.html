@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.arrays.mixins.parallel - Jina 2.5.1 documentation</title>
+        <title>jina.types.arrays.mixins.parallel - Jina 2.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 2.5.1 documentation</div>
+                <div class="brand">Jina 2.5.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,18 +185,13 @@
     
         
           
-            <option value="../../../../../../master/index.html" >master</option>
+          
+            <option value="parallel.html" selected="selected" >latest (v2.5.2)</option>
           
         
         
           
-          
-            <option value="parallel.html" selected="selected" >latest (v2.5.1)</option>
-          
-        
-        
-          
-            <option value="../../../../../../v2.5.0/index.html" >v2.5.0</option>
+            <option value="../../../../../../v2.5.1/index.html" >v2.5.1</option>
           
         
     
@@ -680,12 +675,16 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.mixins.parallel</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">overload</span>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">LambdaType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
+    <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span><span class="p">,</span> <span class="n">random_identity</span>
     <span class="kn">from</span> <span class="nn">...document</span> <span class="kn">import</span> <span class="n">Document</span>
-    <span class="kn">from</span> <span class="nn">...arrays.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+    <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">T_DA</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'T_DA'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ParallelMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin">[docs]</a><span class="k">class</span> <span class="nc">ParallelMixin</span><span class="p">:</span>
@@ -698,7 +697,7 @@
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'process'</span><span class="p">,</span>
         <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
-        <span class="sd">"""Return a new :class:`DocumentArray` or :class:`DocumentArrayMemmap` where each element is applied with ``func``.</span>
+        <span class="sd">"""Apply each element in itself with ``func``, return itself after modified.</span>
 
 <span class="sd">        :param func: a function that takes :class:`Document` as input and outputs :class:`Document`.</span>
 <span class="sd">        :param backend: if to use multi-`process` or multi-`thread` as the parallelization backend. In general, if your</span>
@@ -725,7 +724,9 @@
 <span class="sd">        """</span>
         <span class="n">new_da</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
         <span class="n">new_da</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_da</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_da</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ParallelMixin.map"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -754,6 +755,8 @@
 <span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
 <span class="sd">        :yield: anything return from ``func``</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">_is_lambda_or_local_function</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">'process'</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">_globalize_lambda_function</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">_get_pool</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">num_worker</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="n">x</span></div>
@@ -761,13 +764,13 @@
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">apply_batch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
-        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="s1">'Document'</span><span class="p">],</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'DocumentArray'</span><span class="p">],</span> <span class="s1">'DocumentArray'</span><span class="p">],</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'process'</span><span class="p">,</span>
         <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
-        <span class="sd">"""Return a new :class:`DocumentArray` or :class:`DocumentArrayMemmap` where each element is applied with ``func``.</span>
+        <span class="sd">"""Apply each element in itself with ``func``, return itself after modified.</span>
 
 <span class="sd">        :param func: a function that takes :class:`Document` as input and outputs :class:`Document`.</span>
 <span class="sd">        :param backend: if to use multi-`process` or multi-`thread` as the parallelization backend. In general, if your</span>
@@ -796,16 +799,18 @@
         <span class="n">new_da</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
         <span class="k">for</span> <span class="n">_b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_batch</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">new_da</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_b</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_da</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_da</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ParallelMixin.map_batch"><a class="viewcode-back" href="../../../../../../api/jina.types.arrays.mixins.parallel/#jina.types.arrays.mixins.parallel.ParallelMixin.map_batch">[docs]</a>    <span class="k">def</span> <span class="nf">map_batch</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s1">'T_DA'</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'DocumentArray'</span><span class="p">],</span> <span class="s1">'T'</span><span class="p">],</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'process'</span><span class="p">,</span>
         <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'T'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="sd">"""Return an iterator that applies function to every **minibatch** of iterable in parallel, yielding the results.</span>
 <span class="sd">        Each element in the returned iterator is :class:`DocumentArray`.</span>
 
@@ -830,6 +835,9 @@
 <span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
 <span class="sd">        :yield: anything return from ``func``</span>
 <span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="n">_is_lambda_or_local_function</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">'process'</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">_globalize_lambda_function</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">_get_pool</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">num_worker</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)):</span>
                 <span class="k">yield</span> <span class="n">x</span></div></div>
@@ -848,6 +856,23 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'`backend` must be either `process` or `thread`, receiving </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_is_lambda_or_local_function</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">LambdaType</span><span class="p">)</span> <span class="ow">and</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'&lt;lambda&gt;'</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="s1">'&lt;locals&gt;'</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="vm">__qualname__</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_globalize_lambda_function</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="vm">__module__</span><span class="p">],</span> <span class="n">result</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
 </pre></div>
             </article>
             <footer>

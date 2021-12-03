@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.document.mixins.sugar - Jina 2.5.1 documentation</title>
+        <title>jina.types.document.mixins.sugar - Jina 2.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 2.5.1 documentation</div>
+                <div class="brand">Jina 2.5.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -185,18 +185,13 @@
     
         
           
-            <option value="../../../../../../master/index.html" >master</option>
+          
+            <option value="sugar.html" selected="selected" >latest (v2.5.2)</option>
           
         
         
           
-          
-            <option value="sugar.html" selected="selected" >latest (v2.5.1)</option>
-          
-        
-        
-          
-            <option value="../../../../../../v2.5.0/index.html" >v2.5.0</option>
+            <option value="../../../../../../v2.5.1/index.html" >v2.5.1</option>
           
         
     
@@ -688,6 +683,7 @@
     <span class="kn">from</span> <span class="nn">...arrays.memmap</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
     <span class="kn">from</span> <span class="nn">...ndarray</span> <span class="kn">import</span> <span class="n">ArrayType</span>
     <span class="kn">from</span> <span class="nn">...arrays.mixins.embed</span> <span class="kn">import</span> <span class="n">AnyDNN</span>
+    <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
 
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -697,7 +693,7 @@
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
         <span class="n">darray</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="s1">'DocumentArrayMemmap'</span><span class="p">],</span>
         <span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'ArrayType'</span><span class="p">],</span> <span class="s1">'np.ndarray'</span><span class="p">]</span>
@@ -709,7 +705,8 @@
         <span class="n">exclude_self</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">only_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">num_worker</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""Matching the current Document against a set of Documents.</span>
 
 <span class="sd">        The result will be stored in :attr:`.matches`.</span>
@@ -726,34 +723,39 @@
 <span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
 <span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
 <span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
-<span class="sd">        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option</span>
-<span class="sd">                           will be slower but more memory efficient. Specialy indicated if `darray` is a big</span>
-<span class="sd">                           DocumentArrayMemmap.</span>
+<span class="sd">        :param batch_size: if provided, then ``darray`` is loaded in batches, where each of them is at most ``batch_size``</span>
+<span class="sd">            elements. When `darray` is big, this can significantly speedup the computation.</span>
 <span class="sd">        :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be</span>
 <span class="sd">                        considered as matches.</span>
 <span class="sd">        :param only_id: if set, then returning matches will only contain ``id``</span>
 <span class="sd">        :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance</span>
 <span class="sd">            on sparse matrix.</span>
+<span class="sd">        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.</span>
+
+<span class="sd">                .. note::</span>
+<span class="sd">                    This argument is only effective when ``batch_size`` is set.</span>
 <span class="sd">        """</span>
         <span class="o">...</span>
 
-<div class="viewcode-block" id="SingletonSugarMixin.match"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SingletonSugarMixin.match"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: D102</span>
 <span class="sd">        # noqa: DAR101</span>
+<span class="sd">        :return: itself after modified</span>
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">...arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
         <span class="n">_tmp</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
-        <span class="n">_tmp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">_tmp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span>
         <span class="n">embed_model</span><span class="p">:</span> <span class="s1">'AnyDNN'</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cpu'</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""Fill the embedding of Documents inplace by using `embed_model`</span>
 
 <span class="sd">        :param embed_model: the embedding model written in Keras/Pytorch/Paddle</span>
@@ -762,15 +764,17 @@
 <span class="sd">        :param batch_size: number of Documents in a batch for embedding</span>
 <span class="sd">        """</span>
 
-<div class="viewcode-block" id="SingletonSugarMixin.embed"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.embed">[docs]</a>    <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SingletonSugarMixin.embed"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.sugar/#jina.types.document.mixins.sugar.SingletonSugarMixin.embed">[docs]</a>    <span class="k">def</span> <span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s1">'T'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: D102</span>
 <span class="sd">        # noqa: DAR101</span>
+<span class="sd">        :return: itself after modified.</span>
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">...arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
         <span class="n">_tmp</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
-        <span class="n">_tmp</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="n">_tmp</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
             </article>
             <footer>
