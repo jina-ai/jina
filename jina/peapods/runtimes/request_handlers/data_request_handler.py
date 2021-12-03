@@ -81,7 +81,7 @@ class DataRequestHandler:
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
         try:
-            self._executor = BaseExecutor.load_config(
+            self._executor: BaseExecutor = BaseExecutor.load_config(
                 self.args.uses,
                 override_with=self.args.uses_with,
                 override_metas=self.args.uses_metas,
@@ -110,7 +110,7 @@ class DataRequestHandler:
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def handle(self, messages: 'List[Message]') -> Message:
+    async def handle(self, messages: 'List[Message]') -> Message:
         """Initialize private parameters and execute private loading functions.
 
         :param messages: The messages to handle containing a DataRequest
@@ -139,7 +139,7 @@ class DataRequestHandler:
             field='docs',
         )
         # executor logic
-        r_docs = self._executor(
+        r_docs = await self._executor.__acall__(
             req_endpoint=messages[0].envelope.header.exec_endpoint,
             docs=docs,
             parameters=params,
@@ -204,7 +204,7 @@ class DataRequestHandler:
                     existing_pod_routes.append(route.pod)
 
     def close(self):
-        """ Close the data request handler, by closing the executor """
+        """Close the data request handler, by closing the executor"""
         if not self._is_closed:
             self._executor.close()
             self._is_closed = True

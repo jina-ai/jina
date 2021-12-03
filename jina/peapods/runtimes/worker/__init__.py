@@ -55,7 +55,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         await self._grpc_server.start()
 
     async def async_run_forever(self):
-        """Block until the GRPC server is terminated """
+        """Block until the GRPC server is terminated"""
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
@@ -81,7 +81,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response message
         """
         try:
-            return self._handle(messages)
+            return await self._handle(messages)
         except RuntimeTerminated:
             self._cancel()
         except (RuntimeError, Exception) as ex:
@@ -95,7 +95,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             messages[0].add_exception(ex, self._data_request_handler._executor)
             return messages[0]
 
-    def _handle(self, messages: List[Message]) -> Message:
+    async def _handle(self, messages: List[Message]) -> Message:
         """Process the given message, data requests are passed to the DataRequestHandler
 
         :param messages: received messages
@@ -112,7 +112,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 self._log_info_messages(messages)
 
             self._data_request_handler.merge_routes(messages)
-            return self._data_request_handler.handle(messages=messages)
+            return await self._data_request_handler.handle(messages=messages)
 
     def _handle_control_requests(self, messages):
         # responses for ControlRequests dont matter, just return the last ControlRequest back to the caller

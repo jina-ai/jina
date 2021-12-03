@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import inspect
 import json
 import math
 import os
@@ -15,6 +16,7 @@ from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
 from typing import (
+    Callable,
     Tuple,
     Optional,
     Iterator,
@@ -1165,6 +1167,16 @@ def is_jupyter() -> bool:  # pragma: no cover
         return False  # Terminal running IPython
     else:
         return False  # Other type (?)
+
+
+def iscoroutinefunction(func: Callable):
+    return inspect.iscoroutinefunction(func)
+
+
+async def run_in_threadpool(func: Callable, *args, **kwargs):
+    return await get_or_reuse_loop().run_in_executor(
+        None, functools.partial(func, *args, **kwargs)
+    )
 
 
 def run_async(func, *args, **kwargs):
