@@ -123,6 +123,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11764,4 +11765,36 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```99b1e1db```](https://github.com/jina-ai/jina/commit/99b1e1dba1562659be679735912564150c08fe3b)] __-__ fix readme (*Han Xiao*)
  - [[```eb6c921a```](https://github.com/jina-ai/jina/commit/eb6c921ae5db273bb027a2fa5bc51da70c49c0b7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```263dcc83```](https://github.com/jina-ai/jina/commit/263dcc835bb2f96f202e90baaed8036d31bb0214)] __-__ __version__: the next version will be 2.5.1 (*Jina Dev Bot*)
+
+<a name=release-note-2-5-2></a>
+## Release Note (`2.5.2`)
+
+> Release time: 2021-12-03 13:18:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```01151e3e```](https://github.com/jina-ai/jina/commit/01151e3e9628fe3b318c00ef66b16e640071afe9)] __-__ __types__: support lambda function in parallel mixin (#4022) (*Han Xiao*)
+ - [[```6ad6b8d5```](https://github.com/jina-ai/jina/commit/6ad6b8d516a3c87c6456bc7753c6941e30325f42)] __-__ __types__: make apply and apply_batch self-returning (#4018) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```b5014043```](https://github.com/jina-ai/jina/commit/b5014043edcf34bd47360ed48a907a914b8d6974)] __-__ __types__: fix returning types and doc bot check (#4019) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```721b179b```](https://github.com/jina-ai/jina/commit/721b179bf30bc2cc03e2f7a61243663e92e7439e)] __-__ deduplicate test name (#4020) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```48a7a10b```](https://github.com/jina-ai/jina/commit/48a7a10b59238d85c9045f1f5f5b9575304561cb)] __-__ fix readme (*Han Xiao*)
+ - [[```f714db09```](https://github.com/jina-ai/jina/commit/f714db09b9fa92aaa92b760c586c1a3577c8f6c8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0d0c6de4```](https://github.com/jina-ai/jina/commit/0d0c6de4dbe86e7ceaeaed3e6818795d3b6ba956)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b0393792```](https://github.com/jina-ai/jina/commit/b03937927b266b74f7e1e84e9a211866831a59d7)] __-__ __types__: fix type hints (*Han Xiao*)
+ - [[```fc8b43b0```](https://github.com/jina-ai/jina/commit/fc8b43b00f68873abdfb00cd2e29a1cb032fe297)] __-__ __version__: the next version will be 2.5.2 (*Jina Dev Bot*)
 
