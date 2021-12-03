@@ -109,10 +109,10 @@ class ImageDataMixin:
         :return: itself after processed
         """
         fp = _get_file_context(file)
-        with fp:
+        with fp as fpx_ctx:
             blob = _move_channel_axis(self.blob, channel_axis, -1)
             buffer = _to_png_buffer(blob)
-            fp.write(buffer)
+            fpx_ctx.write(buffer)
         return self
 
     def load_uri_to_image_blob(

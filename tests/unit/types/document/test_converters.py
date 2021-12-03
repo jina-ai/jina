@@ -1,4 +1,5 @@
 import os
+import io
 
 import numpy as np
 import pytest
@@ -81,6 +82,18 @@ def test_buffer_to_blob():
     assert isinstance(doc.blob, np.ndarray)
     assert doc.mime_type == 'image/png'
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
+
+
+def test_image_blob_to_file_with_buffer():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+
+    output = io.BytesIO()
+
+    (doc.load_uri_to_image_blob().dump_image_blob_to_file(output))
+
+    output.seek(0)
+
+    assert output.read() != b''
 
 
 def test_convert_buffer_to_blob():
