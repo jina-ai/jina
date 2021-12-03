@@ -28,6 +28,7 @@ class SingletonSugarMixin:
         exclude_self: bool = False,
         only_id: bool = False,
         use_scipy: bool = False,
+        num_worker: Optional[int] = None,
     ) -> 'T':
         """Matching the current Document against a set of Documents.
 
@@ -45,14 +46,17 @@ class SingletonSugarMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param metric_name: if provided, then match result will be marked with this string.
-        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
-                           will be slower but more memory efficient. Specialy indicated if `darray` is a big
-                           DocumentArrayMemmap.
+        :param batch_size: if provided, then ``darray`` is loaded in batches, where each of them is at most ``batch_size``
+            elements. When `darray` is big, this can significantly speedup the computation.
         :param exclude_self: if set, Documents in ``darray`` with same ``id`` as the left-hand values will not be
                         considered as matches.
         :param only_id: if set, then returning matches will only contain ``id``
         :param use_scipy: if set, use ``scipy`` as the computation backend. Note, ``scipy`` does not support distance
             on sparse matrix.
+        :param num_worker: the number of parallel workers. If not given, then the number of CPUs in the system will be used.
+
+                .. note::
+                    This argument is only effective when ``batch_size`` is set.
         """
         ...
 
