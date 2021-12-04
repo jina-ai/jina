@@ -124,11 +124,9 @@ With an extremely trivial refactoring and 10 extra lines of code, you can make t
     class PreprocImg(Executor):
         @requests
         def foo(self, docs: DocumentArray, **kwargs):
-            return docs.apply(preproc)
-    
-    def preproc(d: Document):
-        return (d.load_uri_to_image_blob()  # load
-                 .set_image_blob_normalization()  # normalize color 
+            for d in docs:
+                (d.load_uri_to_image_blob()  # load
+                 .set_image_blob_normalization()  # normalize color
                  .set_image_blob_channel_axis(-1, 0))  # switch color axis
     ```
 3. Copy-paste the embedding step and wrap it via `Executor`:
