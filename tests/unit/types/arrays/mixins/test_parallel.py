@@ -43,7 +43,7 @@ def test_parallel_map(pytestconfig, da_cls, backend, num_worker):
 
 
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
-@pytest.mark.parametrize('backend', ['process', 'thread'])
+@pytest.mark.parametrize('backend', ['thread'])
 @pytest.mark.parametrize('num_worker', [1, 2, None])
 @pytest.mark.parametrize('b_size', [1, 2, 256])
 def test_parallel_map_batch(pytestconfig, da_cls, backend, num_worker, b_size):
