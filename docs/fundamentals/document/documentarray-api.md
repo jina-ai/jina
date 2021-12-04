@@ -1,6 +1,12 @@
 (documentarray)=
 # DocumentArray
 
+```{toctree}
+:hidden:
+
+documentarraymemmap-api
+```
+
 A {class}`~jina.types.arrays.document.DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort and traverse
 a `DocumentArray` like a Python `list`. It implements all Python List interface. 
 
@@ -262,9 +268,13 @@ model = torchvision.models.resnet50(pretrained=True)
 docs.embed(model)
 ```
 
+You can also visualize `.embeddings` using Embedding Projector, {ref}`find more details here<visualize-embeddings>`.
+
+
 ```{hint}
 On large `DocumentArray`, you can set `batch_size` via `.embed(..., batch_size=128)`
 ```
+
 
 (match-documentarray)=
 ## Find nearest neighbours
@@ -764,67 +774,44 @@ DocumentArray([
 
 If you simply want to traverse **all** chunks and matches regardless their levels. You can simply use {meth}`~jina.types.arrays.mixins.traverse.TraverseMixin.flatten`. It will return a `DocumentArray` with all chunks and matches flattened into the top-level, no more nested structure.
 
-## Visualization
+## Batching
 
-`DocumentArray` provides the `.plot_embeddings` function to plot Document embeddings in a 2D graph. `visualize` supports two methods
-to project in 2D space: `pca` and `tsne`.
-
-In the following example, we add three different distributions of embeddings and see three kinds of point clouds in the graph.
-
-```{code-block} python
----
-emphasize-lines: 13
----
-import numpy as np
-from jina import Document, DocumentArray
-
-da = DocumentArray(
-    [
-        Document(embedding=np.random.normal(0, 1, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(5, 2, 50)) for _ in range(500)
-    ] + [
-        Document(embedding=np.random.normal(2, 5, 50)) for _ in range(500)
-    ]
-)
-da.plot_embeddings()
-
-```
-
-```{figure} document-array-visualize.png
-:align: center
-```
-
-## Persistence
-
-To save all elements in a `DocumentArray` in a JSON line format:
+One can batch a large `DocumentArray` into small ones via {func}`~jina.types.arrays.mixins.group.GroupMixin.batch`. This is useful when a `DocumentArray` is too big to process at once. It is particular useful on `DocumentArrayMemmap`, which ensures the data gets loaded on-demand and in a conservative manner.
 
 ```python
-from jina import DocumentArray, Document
+from jina import DocumentArray
 
-da = DocumentArray([Document(), Document()])
+da = DocumentArray.empty(1000)
 
-da.save('data.json')
-da1 = DocumentArray.load('data.json')
+for b_da in da.batch(batch_size=256):
+    print(len(b_da))
 ```
 
-`DocumentArray` can be also stored in binary format, which is much faster and yields a smaller file:
+```text
+256
+256
+256
+232
+```
 
-```python
-from jina import DocumentArray, Document
-
-da = DocumentArray([Document(), Document()])
-
-da.save('data.bin', file_format='binary')
-da1 = DocumentArray.load('data.bin', file_format='binary')
+```{tip}
+For processing batches in parallel, please refer to {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch`.
 ```
 
 ## Parallel processing
 
-Working with large `DocumentArray` element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all `Document` one by one. Jina provides {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. It is like Python 
-built-in `map()` function but mapping the function to every element of the `DocumentArray` in parallel. 
+```{seealso}
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map`: to parallel process element by element, return an interator of elements;
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch`: to parallel process batch by batch, return an iterator of batches;
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.apply`: like `.map()`, but return a `DocumentArray`;
+- {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.apply_batch`: like `.map_batch()`, but return a `DocumentArray`;
+```
 
-Let's see an example, where we want to preprocess ~6000 image Documents. First we fill the URI of each Document.
+Working with large `DocumentArray` element-wise can be time-consuming. The naive way is to run a for-loop and enumerate all `Document` one by one. Jina provides {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. It is like Python 
+built-in `map()` function but mapping the function to every element of the `DocumentArray` in parallel. There is also {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map_batch` that works on the minibatch level.
+
+
+Let's see an example, where we want to preprocess ~6000 image Documents. First we fill the URI to each Document.
 
 ```python
 from jina import DocumentArray
@@ -873,7 +860,7 @@ map-thread ...	map-thread takes 10 seconds (10.28s)
 foo-loop ...	foo-loop takes 18 seconds (18.52s)
 ```
 
-One can see big improvement with `.map()`.
+One can see a significant speedup with `.map()`.
 
 ```{admonition} When to choose process or thread backend?
 :class: important
@@ -888,32 +875,10 @@ If you only modify elements in-place, and do not need return values, you can wri
 
 ```python
 da = DocumentArray(...)
-list(da.map(func))
+da.apply(func)
 ```
-
-This follows the same convention as you using Python built-in `map()`.
-
 ````
 
-## Batching
-
-One can batch a large `DocumentArray` into small ones via {func}`~jina.types.arrays.mixins.group.GroupMixin.batch`. This is useful when a `DocumentArray` is too big to process at once. It is particular useful on `DocumentArrayMemmap`, which ensures the data gets loaded on-demand and in a conservative manner.
-
-```python
-from jina import DocumentArray
-
-da = DocumentArray.empty(1000)
-
-for b_da in da.batch(batch_size=256):
-    print(len(b_da))
-```
-
-```text
-256
-256
-256
-232
-```
 
 
 ## Sampling
@@ -1125,4 +1090,75 @@ np.stack(da.get_attributes('embedding'))
 [[1 2 3]
  [4 5 6]
  [7 8 9]]
+```
+
+
+## Persistence
+
+To save all elements in a `DocumentArray` in a JSON line format:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.json')
+da1 = DocumentArray.load('data.json')
+```
+
+`DocumentArray` can be also stored in binary format, which is much faster and yields a smaller file:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.bin', file_format='binary')
+da1 = DocumentArray.load('data.bin', file_format='binary')
+```
+
+```{hint}
+For writing to disk on-the-fly, please use {ref}`documentarraymemmap-api`.
+```
+
+
+## Visualization
+
+If a `DocumentArray` contains all image `Document`, you can plot all images in one sprite image using {meth}`~jina.types.arrays.mixins.plot.PlotMixin.plot_image_sprites`.
+
+```python
+from jina import DocumentArray
+docs = DocumentArray.from_files('*.jpg')
+docs.plot_image_sprites()
+```
+
+```{figure} sprite-image.png
+:width: 60%
+```
+
+(visualize-embeddings)=
+If a `DocumentArray` has valid `.embeddings`, you can visualize the embeddings interactively using {meth}`~jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings`.
+
+````{hint}
+Note that `.plot_embeddings()` applies to any `DocumentArray` not just image ones. For image `DocumentArray`, you can do one step more to attach the image sprite on to the visualization points.
+
+```python
+da.plot_embeddings(image_sprites=True)
+```
+ 
+````
+
+```python
+import numpy as np
+from jina import DocumentArray
+
+docs = DocumentArray.from_files('*.jpg')
+docs.embeddings = np.random.random([len(docs), 256])  # some random embeddings
+
+docs.plot_embeddings(image_sprites=True)
+```
+
+
+```{figure} embedding-projector.gif
+:align: center
 ```

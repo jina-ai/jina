@@ -10,13 +10,16 @@ from typing import (
     Dict,
     Callable,
     List,
+    TYPE_CHECKING,
 )
 
 from .mixins import AllMixins
-from .types import DocumentArraySourceType
 from ..document import Document
 from ...helper import typename
 from ...proto import jina_pb2
+
+if TYPE_CHECKING:
+    from .types import DocumentArraySourceType
 
 try:
     # when protobuf using Cpp backend
@@ -48,7 +51,7 @@ class DocumentArray(
                 it builds a view or a copy from it. It also can accept a List
     """
 
-    def __init__(self, docs: Optional[DocumentArraySourceType] = None):
+    def __init__(self, docs: Optional['DocumentArraySourceType'] = None):
         super().__init__()
         self._pb_body = []
         if docs is not None:

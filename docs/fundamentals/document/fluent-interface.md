@@ -142,6 +142,12 @@ Provide helper functions for {class}`Document` to support video data.
 - {meth}`~jina.types.document.mixins.video.VideoDataMixin.load_uri_to_video_blob`
 
 
+### SingletonSugar
+Provide sugary syntax for {class}`Document` by inheriting methods from {class}`DocumentArray`
+- {meth}`~jina.types.document.mixins.sugar.SingletonSugarMixin.embed`
+- {meth}`~jina.types.document.mixins.sugar.SingletonSugarMixin.match`
+
+
 ### MeshData
 Provide helper functions for {class}`Document` to support 3D mesh data and point cloud.
 - {meth}`~jina.types.document.mixins.mesh.MeshDataMixin.load_uri_to_point_cloud_blob`

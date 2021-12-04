@@ -1,29 +1,160 @@
-from contextlib import nullcontext
+import json
+import os.path
+import shutil
+import tempfile
+import threading
+import warnings
 from math import sqrt, ceil, floor
 from typing import Optional
 
 import numpy as np
 
-from .... import Document
-from ....helper import deprecated_method
-from ....logging.profile import ProgressBar
+from .... import Document, __resources_path__
+from ....helper import random_port
 
 
 class PlotMixin:
     """Helper functions for plotting the arrays. """
 
-    @deprecated_method(new_function_name='plot_embeddings')
-    def visualize(self, *args, **kwargs):
-        """Deprecated! Please use :meth:`.plot_embeddings` instead.
-
-        Plot embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
-
-        :param args: extra args
-        :param kwargs: extra kwargs
-        """
-        self.plot_embeddings(*args, **kwargs)
-
     def plot_embeddings(
+        self,
+        title: str = 'MyDocumentArray',
+        path: Optional[str] = None,
+        image_sprites: bool = False,
+        min_image_size: int = 16,
+        channel_axis: int = -1,
+        start_server: bool = True,
+        port: Optional[int] = None,
+    ) -> str:
+        """Interactively visualize :attr:`.embeddings` using the Embedding Projector.
+
+        :param title: the title of this visualization. If you want to compare multiple embeddings at the same time,
+                make sure to give different names each time and set ``path`` to the same value.
+        :param port: if set, run the embedding-projector frontend at given port. Otherwise a random port is used.
+        :param image_sprites: if set, visualize the dots using :attr:`.uri` and :attr:`.blob`.
+        :param path: if set, then append the visualization to an existing folder, where you can compare multiple
+            embeddings at the same time. Make sure to use a different ``title`` each time .
+        :param min_image_size: only used when `image_sprites=True`. the minimum size of the image
+        :param channel_axis: only used when `image_sprites=True`. the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param start_server: if set, start a HTTP server and open the frontend directly. Otherwise, you need to rely on ``return`` path and serve by yourself.
+        :return: the path to the embeddings visualization info.
+        """
+        path = path or tempfile.mkdtemp()
+        emb_fn = f'{title}.tsv'
+        meta_fn = f'{title}.metas.tsv'
+        config_fn = f'config.json'
+        sprite_fn = f'{title}.png'
+
+        if image_sprites:
+            img_per_row = ceil(sqrt(len(self)))
+            canvas_size = min(img_per_row * min_image_size, 8192)
+            img_size = max(int(canvas_size / img_per_row), min_image_size)
+
+            max_docs = ceil(canvas_size / img_size) ** 2
+            if len(self) > max_docs:
+                warnings.warn(
+                    f'''
+                    {self!r} has more than {max_docs} elements, which is the maximum number of image sprites can support. 
+                    The resulting visualization may not be correct. You can do the following:
+                    
+                    - use fewer images: `da[:10000].plot_embeddings()`
+                    - reduce the `min_image_size` to a smaller number, say 8 or 4 (but bear in mind you can hardly recognize anything with a 4x4 image)
+                    - turn off `image_sprites` via `da.plot_embeddings(image_sprites=False)`
+                    '''
+                )
+
+            self.plot_image_sprites(
+                os.path.join(path, sprite_fn),
+                canvas_size=canvas_size,
+                min_size=min_image_size,
+                channel_axis=channel_axis,
+            )
+
+        self.save_embeddings_csv(os.path.join(path, emb_fn), delimiter='\t')
+        self.save_csv(
+            os.path.join(path, meta_fn),
+            exclude_fields=('embedding', 'blob'),
+            dialect='excel-tab',
+        )
+
+        _epj_config = {
+            'embeddings': [
+                {
+                    'tensorName': title,
+                    'tensorShape': list(self.embeddings.shape),
+                    'tensorPath': f'/static/{emb_fn}',
+                    'metadataPath': f'/static/{meta_fn}',
+                    'sprite': {
+                        'imagePath': f'/static/{sprite_fn}',
+                        'singleImageDim': (img_size,) * 2,
+                    }
+                    if image_sprites
+                    else {},
+                }
+            ]
+        }
+
+        if os.path.exists(os.path.join(path, config_fn)):
+            with open(os.path.join(path, config_fn)) as fp:
+                old_config = json.load(fp)
+                _epj_config['embeddings'].extend(old_config.get('embeddings', []))
+
+        with open(os.path.join(path, config_fn), 'w') as fp:
+            json.dump(_epj_config, fp)
+
+        shutil.copyfile(
+            os.path.join(__resources_path__, 'embedding-projector/index.html'),
+            os.path.join(path, 'index.html'),
+        )
+
+        if start_server:
+
+            def _get_fastapi_app():
+                from fastapi import FastAPI
+                from starlette.middleware.cors import CORSMiddleware
+                from starlette.staticfiles import StaticFiles
+
+                app = FastAPI()
+                app.add_middleware(
+                    CORSMiddleware,
+                    allow_origins=['*'],
+                    allow_credentials=True,
+                    allow_methods=['*'],
+                    allow_headers=['*'],
+                )
+                app.mount('/static', StaticFiles(directory=path), name='static')
+                return app
+
+            import uvicorn
+
+            app = _get_fastapi_app()
+            port = port or random_port()
+            t_m = threading.Thread(
+                target=uvicorn.run,
+                kwargs=dict(app=app, port=port, log_level='error'),
+                daemon=True,
+            )
+            t_m.start()
+            url_html_path = (
+                f'http://localhost:{port}/static/index.html?config={config_fn}'
+            )
+            try:
+                import webbrowser
+
+                webbrowser.open(url_html_path, new=2)
+            except:
+                pass  # intentional pass, browser support isn't cross-platform
+            finally:
+                from ....logging.predefined import default_logger
+
+                default_logger.info(
+                    f'You should see a webpage opened in your browser, '
+                    f'if not, you may open {url_html_path} manually'
+                )
+            t_m.join()
+        return path
+
+    def plot_embeddings_legacy(
         self,
         output: Optional[str] = None,
         title: Optional[str] = None,
@@ -161,14 +292,18 @@ class PlotMixin:
             if img_id >= max_num_img:
                 break
 
-        plt.gca().set_axis_off()
-        plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
-        plt.margins(0, 0)
-        plt.gca().xaxis.set_major_locator(plt.NullLocator())
-        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        from PIL import Image
 
-        plt.imshow(sprite_img)
+        im = Image.fromarray(sprite_img)
+
         if output:
-            plt.savefig(output, bbox_inches='tight', pad_inches=0.1, transparent=True)
+            with open(output, 'wb') as fp:
+                im.save(fp)
         else:
+            plt.gca().set_axis_off()
+            plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+            plt.margins(0, 0)
+            plt.gca().xaxis.set_major_locator(plt.NullLocator())
+            plt.gca().yaxis.set_major_locator(plt.NullLocator())
+            plt.imshow(im)
             plt.show()

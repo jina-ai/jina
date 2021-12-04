@@ -122,6 +122,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -372,6 +374,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.4.9`)](#release-note-249)
 - [Release Note (`2.4.10`)](#release-note-2410)
 - [Release Note (`2.5.0`)](#release-note-250)
+- [Release Note (`2.5.1`)](#release-note-251)
+- [Release Note (`2.5.2`)](#release-note-252)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -11725,4 +11729,73 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```1d321ebb```](https://github.com/jina-ai/jina/commit/1d321ebb373475206427f7e741d49c2dbe8aae12)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```c9c6e4d4```](https://github.com/jina-ai/jina/commit/c9c6e4d470f9d093cbb6eb477000078055c3b119)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```3d5df405```](https://github.com/jina-ai/jina/commit/3d5df405277a1b6e47314a2d8f1e6e293cddb645)] __-__ __version__: the next version will be 2.4.11 (*Jina Dev Bot*)
+
+<a name=release-note-2-5-1></a>
+## Release Note (`2.5.1`)
+
+> Release time: 2021-12-02 13:51:25
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  cristian,  Joan Fontanals,  Wang Bo,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e5326e67```](https://github.com/jina-ai/jina/commit/e5326e673922cf1d781ab7ed690519d97d860343)] __-__ __types__: add apply and apply_batch to parallel mixin (#4017) (*Han Xiao*)
+ - [[```db53ecc6```](https://github.com/jina-ai/jina/commit/db53ecc6a91835e23d00f6da3b74e333c229c981)] __-__ __types__: use embedding projector in plot_embeddings (#4016) (*Han Xiao*)
+ - [[```c7b0c01a```](https://github.com/jina-ai/jina/commit/c7b0c01a69a62f9190f95ef6d2f8a8e02547671f)] __-__ __types__: add support of ONNX runtime to .embed() (#4007) (*Han Xiao*)
+ - [[```2cd9f315```](https://github.com/jina-ai/jina/commit/2cd9f31594e97b34974f59c088a4f69bdcb22039)] __-__ __daemon__: add env to partial daemon (#3996) (*Wang Bo*)
+
+### 🐞 Bug fixes
+
+ - [[```80ad71ac```](https://github.com/jina-ai/jina/commit/80ad71ac35541633d437985921afdc75e3cf974a)] __-__ improve docs (#4009) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```faaacf16```](https://github.com/jina-ai/jina/commit/faaacf1679cd44e5283377b35c10503f68a6b7d7)] __-__ indexers benchmark (#4003) (*cristian*)
+ - [[```86908bda```](https://github.com/jina-ai/jina/commit/86908bda23a049e1209b38d0f1d05c9a0ce1f153)] __-__ fix docs structure (*Han Xiao*)
+ - [[```aa488e79```](https://github.com/jina-ai/jina/commit/aa488e794fa92291237d58e43cee296249e99a58)] __-__ __types__: add parallel map_batch to documentarray-like objects (#4012) (*Han Xiao*)
+ - [[```74a2e84c```](https://github.com/jina-ai/jina/commit/74a2e84cf44e10086eb7b89cf108b0110f6bc1d6)] __-__ __types__: add parallel map to documentarray-like objects (#4010) (*Han Xiao*)
+ - [[```f6b5b5bd```](https://github.com/jina-ai/jina/commit/f6b5b5bd27969da9a7d9792b3238d1599ae62ac7)] __-__ refactor indexers page (#4002) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```81f037d7```](https://github.com/jina-ai/jina/commit/81f037d78edb73af8b7328ba7d777af6a2535020)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```99b1e1db```](https://github.com/jina-ai/jina/commit/99b1e1dba1562659be679735912564150c08fe3b)] __-__ fix readme (*Han Xiao*)
+ - [[```eb6c921a```](https://github.com/jina-ai/jina/commit/eb6c921ae5db273bb027a2fa5bc51da70c49c0b7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```263dcc83```](https://github.com/jina-ai/jina/commit/263dcc835bb2f96f202e90baaed8036d31bb0214)] __-__ __version__: the next version will be 2.5.1 (*Jina Dev Bot*)
+
+<a name=release-note-2-5-2></a>
+## Release Note (`2.5.2`)
+
+> Release time: 2021-12-03 13:18:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```01151e3e```](https://github.com/jina-ai/jina/commit/01151e3e9628fe3b318c00ef66b16e640071afe9)] __-__ __types__: support lambda function in parallel mixin (#4022) (*Han Xiao*)
+ - [[```6ad6b8d5```](https://github.com/jina-ai/jina/commit/6ad6b8d516a3c87c6456bc7753c6941e30325f42)] __-__ __types__: make apply and apply_batch self-returning (#4018) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```b5014043```](https://github.com/jina-ai/jina/commit/b5014043edcf34bd47360ed48a907a914b8d6974)] __-__ __types__: fix returning types and doc bot check (#4019) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```721b179b```](https://github.com/jina-ai/jina/commit/721b179bf30bc2cc03e2f7a61243663e92e7439e)] __-__ deduplicate test name (#4020) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```48a7a10b```](https://github.com/jina-ai/jina/commit/48a7a10b59238d85c9045f1f5f5b9575304561cb)] __-__ fix readme (*Han Xiao*)
+ - [[```f714db09```](https://github.com/jina-ai/jina/commit/f714db09b9fa92aaa92b760c586c1a3577c8f6c8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0d0c6de4```](https://github.com/jina-ai/jina/commit/0d0c6de4dbe86e7ceaeaed3e6818795d3b6ba956)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b0393792```](https://github.com/jina-ai/jina/commit/b03937927b266b74f7e1e84e9a211866831a59d7)] __-__ __types__: fix type hints (*Han Xiao*)
+ - [[```fc8b43b0```](https://github.com/jina-ai/jina/commit/fc8b43b00f68873abdfb00cd2e29a1cb032fe297)] __-__ __version__: the next version will be 2.5.2 (*Jina Dev Bot*)
 

@@ -53,6 +53,5 @@ class BinaryIOMixin:
 
         with file_ctx as fp:
             dap = jina_pb2.DocumentArrayProto()
-            if self._pb_body:
-                dap.docs.extend(self._pb_body)
+            dap.docs.extend(self._pb_body)
             fp.write(dap.SerializePartialToString())

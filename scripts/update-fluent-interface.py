@@ -12,10 +12,9 @@ for f in inspect.getmembers(Document):
         and not f[1].__name__.startswith('_')
         and not f[0].startswith('_')
     ):
-        if (
-            'return' in inspect.getfullargspec(f[1]).annotations
-            and str(inspect.getfullargspec(f[1]).annotations['return']) == '~T'
-        ):
+        if 'return' in inspect.getfullargspec(f[1]).annotations and str(
+            inspect.getfullargspec(f[1]).annotations['return']
+        ) in ('~T', 'T'):
             module_name = f[1].__qualname__.split('.')[0].replace('Mixin', '')
             desc = inspect.getdoc(
                 vars(sys.modules[f[1].__module__])[f[1].__qualname__.split('.')[0]]
