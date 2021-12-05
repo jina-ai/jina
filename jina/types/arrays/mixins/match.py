@@ -32,7 +32,7 @@ class MatchMixin:
         only_id: bool = False,
         use_scipy: bool = False,
         device: str = 'cpu',
-        num_worker: Optional[int] = None,
+        num_worker: Optional[int] = 1,
         **kwargs,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
