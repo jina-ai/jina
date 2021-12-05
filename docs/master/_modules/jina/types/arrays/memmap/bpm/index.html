@@ -719,22 +719,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
         <span class="c1"># else, if len is less than the size, append to buffer</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_size</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">),</span> <span class="n">doc</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">),</span> <span class="n">doc</span><span class="o">.</span><span class="n">_version</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="c1"># else, if buffer has empty spots, allocate them</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
             <span class="n">empty_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">empty_idx</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">empty_idx</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">_version</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">empty_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
         <span class="c1"># else, choose a spot to free and use it with LRU strategy</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># the least recently used item is the first item in doc_map</span>
             <span class="n">dam_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">buffer_idx</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">version</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">buffer_idx</span><span class="p">]</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">version</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">buffer_idx</span><span class="p">]</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">dam_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">buffer_idx</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">buffer_idx</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">buffer_idx</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">_version</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">buffer_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
 
@@ -758,7 +758,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">dam_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">buffer_idx</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">buffer_idx</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">version</span> <span class="o">!=</span> <span class="n">doc</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">version</span> <span class="o">!=</span> <span class="n">doc</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dam_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">buffer_idx</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -794,7 +794,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 04, 2021.
+                    Last updated on Dec 05, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

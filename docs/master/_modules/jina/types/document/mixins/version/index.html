@@ -688,10 +688,11 @@
 <span class="sd">    Helper class to add versioning to an object. The version number is incremented each time an attribute is set.</span>
 <span class="sd">    """</span>
 
-    <span class="n">version</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_version</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_ON_GETATTR</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'matches'</span><span class="p">,</span> <span class="s1">'chunks'</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_increase_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">'version'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">'_version'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -727,7 +728,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 04, 2021.
+                    Last updated on Dec 05, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
