@@ -18,6 +18,7 @@ from ...enums import (
     PeaRoleType,
     PollingType,
 )
+from ...executors import ReducerExecutor
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
 
@@ -278,6 +279,9 @@ class BasePod(ExitFIFO):
                 _tail_args.name = f'tail'
             _tail_args.pea_role = PeaRoleType.TAIL
             _tail_args.num_part = 1 if polling_type.is_push else args.shards
+
+        if polling_type == PollingType.ALL and args.shards and args.shards > 1:
+            _tail_args.uses = ReducerExecutor.__name__
 
         Pod._set_dynamic_routing_out(_tail_args)
 
