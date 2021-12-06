@@ -73,7 +73,7 @@ class PlotMixin:
         self.save_embeddings_csv(os.path.join(path, emb_fn), delimiter='\t')
         self.save_csv(
             os.path.join(path, meta_fn),
-            exclude_fields=('embedding', 'blob'),
+            exclude_fields=('embedding', 'blob', 'scores'),
             dialect='excel-tab',
         )
 
