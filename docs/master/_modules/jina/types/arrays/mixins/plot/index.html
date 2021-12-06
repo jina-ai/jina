@@ -755,7 +755,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save_embeddings_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">emb_fn</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_csv</span><span class="p">(</span>
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">meta_fn</span><span class="p">),</span>
-            <span class="n">exclude_fields</span><span class="o">=</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">),</span>
+            <span class="n">exclude_fields</span><span class="o">=</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">,</span> <span class="s1">'scores'</span><span class="p">),</span>
             <span class="n">dialect</span><span class="o">=</span><span class="s1">'excel-tab'</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1000,7 +1000,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 05, 2021.
+                    Last updated on Dec 06, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
