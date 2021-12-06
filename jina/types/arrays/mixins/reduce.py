@@ -7,6 +7,22 @@ if TYPE_CHECKING:
     from ....helper import T
 
 
+def _reduce_doc_props(doc1: 'Document', doc2: 'Document'):
+    doc1_fields = set(
+        field_descriptor.name for field_descriptor, _ in doc1._pb_body.ListFields()
+    )
+    doc2_fields = set(
+        field_descriptor.name for field_descriptor, _ in doc2._pb_body.ListFields()
+    )
+
+    # update only fields that are set in doc2 and not set in doc1
+    fields = doc2_fields - doc1_fields
+
+    fields = fields - {'matches', 'chunks', 'id', 'parent_id'}
+    for field in fields:
+        setattr(doc1, field, getattr(doc2, field))
+
+
 class ReduceMixin:
     """A mixing that provides reducing logic for :class:`DocumentArray` or :class:`DocumentArrayMemmap`"""
 
@@ -32,7 +48,7 @@ class ReduceMixin:
         :param doc1: first Document
         :param doc2: second Document
         """
-        doc1.update(doc2, exclude_fields=['id', 'parent_id', 'matches', 'chunks'])
+        _reduce_doc_props(doc1, doc2)
         if len(doc2.matches) > 0:
             doc1.matches.reduce(doc2.matches)
 

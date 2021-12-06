@@ -21,7 +21,7 @@ def test_reduce_doc():
 
     DocumentArray._reduce_doc(doc1, doc2)
 
-    assert doc1.text == 'doc2'
+    assert doc1.text == 'doc1'
     assert (doc1.embedding == np.zeros(3)).all()
     for i in range(3):
         assert f'c{i}' in doc1.chunks
@@ -88,9 +88,12 @@ def test_reduce():
 
     for i in range(3):
         assert f'r{i}' in da1
-        assert da1[i].text == 'da2'
         for j in range(4):
             assert f'r{i}m{j}' in da1[f'r{i}'].matches
+
+    assert da1['r0'].text == 'da1'
+    assert da1['r1'].text == 'da2'
+    assert da1['r2'].text == 'da1'
 
 
 def test_reduce_nested():
@@ -169,3 +172,38 @@ def test_reduce_mat():
     for doc in reduced_da:
         for i in range(10):
             assert str(i) in doc.matches
+
+
+def test_reduce_data_props():
+    da1, da2, da3 = (
+        DocumentArray([Document(id='r', text='doc1', chunks=[Document(id='c1')])]),
+        DocumentArray(
+            [
+                Document(
+                    id='r',
+                    text='doc2',
+                    embedding=np.zeros(3),
+                    chunks=[Document(id='c2')],
+                )
+            ]
+        ),
+        DocumentArray(
+            [
+                Document(
+                    id='c',
+                    text='doc3',
+                    blob=np.ones(3),
+                    tags={'a': 'b'},
+                    matches=[Document(id='m3')],
+                )
+            ]
+        ),
+    )
+    da1.reduce_all([da2, da3])
+    assert da1[0].text == 'doc1'
+    assert da1[0].id == 'r'
+
+    # chunks and matches merged, not overridden
+    assert da1[0].chunks[0].id == 'c1'
+    assert da1[0].chunks[1].id == 'c2'
+    assert da1[0].matches[0].id == 'm3'
