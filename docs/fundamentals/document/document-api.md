@@ -65,7 +65,7 @@ To make a deep copy, use `copy=True`:
 ```python
 d1 = Document(d, copy=True)
 
-assert id(d) == id(d1)  # False
+assert id(d) != id(d1)  # False
 ```
 
 ````
