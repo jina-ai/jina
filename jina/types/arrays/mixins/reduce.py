@@ -32,6 +32,7 @@ class ReduceMixin:
         :param doc1: first Document
         :param doc2: second Document
         """
+        doc1.update(doc2, exclude_fields=['id', 'parent_id', 'matches', 'chunks'])
         if len(doc2.matches) > 0:
             doc1.matches.reduce(doc2.matches)
 

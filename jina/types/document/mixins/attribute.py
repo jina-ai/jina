@@ -137,6 +137,7 @@ class GetSetAttributeMixin:
         self: T,
         source: T,
         fields: Optional[List[str]] = None,
+        exclude_fields: Optional[List[str]] = None,
     ) -> None:
         """Updates fields specified in ``fields`` from the source to current Document.
 
@@ -144,6 +145,7 @@ class GetSetAttributeMixin:
             :class:`Document` is referred as destination.
         :param fields: a list of field names that we want to update, if not specified,
             use all present fields in source.
+        :param exclude_fields: a list of field names to be excluded when updating.
 
         .. note::
             *. if ``fields`` are empty, then all present fields in source will be merged into current document.
@@ -158,7 +160,12 @@ class GetSetAttributeMixin:
         ]
         if not fields:
             fields = present_fields  # if `fields` empty, update all present fields.
+        if not exclude_fields:
+            exclude_fields = []
         for field in fields:
+            if field in exclude_fields:
+                continue
+
             if (
                 field == 'tags'
             ):  # For the tags, stay consistent with the python update method.
