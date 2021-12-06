@@ -1,12 +1,18 @@
+from typing import TYPE_CHECKING, Dict, Optional, Type, List
 import inspect
 import os
 from types import SimpleNamespace
-from typing import Dict, Optional, Type
+from typing import Dict, Optional, Type, List
 
 from .decorators import store_init_kwargs, wrap_func, requests
 from .. import __default_endpoint__, __args_executor_init__
 from ..helper import typename, ArgNamespace, T
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
+
+
+if TYPE_CHECKING:
+    from jina import DocumentArray
+
 
 __all__ = ['BaseExecutor', 'ReducerExecutor']
 
