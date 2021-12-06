@@ -15,12 +15,15 @@ class ReduceMixin:
         Reduces other and the current DocumentArray into one DocumentArray in-place. Changes are applied to the current
         DocumentArray
         :param other: DocumentArray
+        :return: DocumentArray
         """
         for doc in other:
             if doc.id in self:
                 self._reduce_doc(self[doc.id], doc)
             else:
                 self.append(doc)
+
+        return self
 
     @staticmethod
     def _reduce_doc(doc1: 'Document', doc2: 'Document'):
