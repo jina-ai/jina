@@ -1,3 +1,5 @@
+import multiprocessing
+
 import pytest
 
 from jina import DocumentArray, Document, DocumentArrayMemmap
@@ -18,6 +20,10 @@ def foo_batch(da: DocumentArray):
     return da
 
 
+@pytest.mark.skipif(
+    multiprocessing.get_start_method() != 'fork',
+    reason=('multiprocessing with spawn method is not' ' compatible with pytest.'),
+)
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 @pytest.mark.parametrize('backend', ['process', 'thread'])
 @pytest.mark.parametrize('num_worker', [1, 2, None])
@@ -42,6 +48,10 @@ def test_parallel_map(pytestconfig, da_cls, backend, num_worker):
     assert da_new.blobs.shape == (len(da_new), 3, 222, 222)
 
 
+@pytest.mark.skipif(
+    multiprocessing.get_start_method() != 'fork',
+    reason=('multiprocessing with spawn method is not' ' compatible with pytest.'),
+)
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 @pytest.mark.parametrize('backend', ['thread'])
 @pytest.mark.parametrize('num_worker', [1, 2, None])
