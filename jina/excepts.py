@@ -123,3 +123,11 @@ class DockerVersionError(SystemError, BaseJinaExeception):
 
 class DaemonInvalidDockerfile(FileNotFoundError, BaseJinaExeception):
     """Raised when invalid dockerfile is passed to JinaD"""
+
+
+class InvalidS3URL(Exception, BaseJinaExeception):
+    """Raised when S3 url is invalid"""
+
+
+class InvalidAWSCredentials(Exception, BaseJinaExeception):
+    """Raised when environments for aws are not set during upload/download via s3"""

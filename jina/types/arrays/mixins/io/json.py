@@ -2,6 +2,8 @@ import json
 from contextlib import nullcontext
 from typing import Union, TextIO, TYPE_CHECKING, Type
 
+from .s3 import S3URL
+
 if TYPE_CHECKING:
     from .....helper import T
 
@@ -9,7 +11,7 @@ if TYPE_CHECKING:
 class JsonIOMixin:
     """Save/load a array into a JSON file."""
 
-    def save_json(self, file: Union[str, TextIO]) -> None:
+    def save_json(self, file: Union[str, TextIO, S3URL]) -> None:
         """Save array elements into a JSON file.
 
         Comparing to :meth:`save_binary`, it is human-readable but slower to save/load and the file size larger.
@@ -22,12 +24,19 @@ class JsonIOMixin:
             file_ctx = open(file, 'w')
 
         with file_ctx as fp:
-            for d in self:
-                json.dump(d.dict(), fp)
-                fp.write('\n')
+            if isinstance(file, S3URL):
+                tmp = []
+                for d in self:
+                    tmp.append(json.dumps(d.dict()))
+                    tmp.append('\n')
+                fp.write(''.join(tmp))
+            else:
+                for d in self:
+                    json.dump(d.dict(), fp)
+                    fp.write('\n')
 
     @classmethod
-    def load_json(cls: Type['T'], file: Union[str, TextIO]) -> 'T':
+    def load_json(cls: Type['T'], file: Union[str, TextIO, S3URL]) -> 'T':
         """Load array elements from a JSON file.
 
         :param file: File or filename to which the data is saved.
@@ -44,5 +53,8 @@ class JsonIOMixin:
 
         with file_ctx as fp:
             da = cls()
-            da.extend(Document(v) for v in fp)
+            if isinstance(file, S3URL):
+                da.extend(Document(v) for v in fp.read().decode().splitlines())
+            else:
+                da.extend(Document(v) for v in fp)
             return da

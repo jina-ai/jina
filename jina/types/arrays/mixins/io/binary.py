@@ -1,6 +1,7 @@
 from contextlib import nullcontext
 from typing import Union, BinaryIO, TYPE_CHECKING, Type
 
+from .s3 import S3URL
 from ..... import __windows__
 from .....proto import jina_pb2
 
@@ -10,10 +11,10 @@ if TYPE_CHECKING:
 
 
 class BinaryIOMixin:
-    """Save/load an array to a binary file. """
+    """Save/load an array to a binary file."""
 
     @classmethod
-    def load_binary(cls: Type['T'], file: Union[str, BinaryIO]) -> 'T':
+    def load_binary(cls: Type['T'], file: Union[str, BinaryIO, S3URL]) -> 'T':
         """Load array elements from a binary file.
 
         :param file: File or filename to which the data is saved.
@@ -36,7 +37,7 @@ class BinaryIOMixin:
             da.extend(DocumentArray(dap.docs))
             return da
 
-    def save_binary(self, file: Union[str, BinaryIO]) -> None:
+    def save_binary(self, file: Union[str, BinaryIO, S3URL]) -> None:
         """Save array elements into a binary file.
 
         Comparing to :meth:`save_json`, it is faster and the file is smaller, but not human-readable.
