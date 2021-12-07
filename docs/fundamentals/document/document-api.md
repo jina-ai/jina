@@ -552,21 +552,26 @@ with Flow().add(uses=MyExecutor) as f:
 
 ## Serialization
 
-You can serialize a `Document` into JSON string or Python dict or binary string:
+You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.dict` or binary string via {meth}`~bytes`:
 ````{tab} JSON
 ```python
 from jina import Document
 
-d = Document(content='hello, world')
-d.json()
+Document(content='hello, world', embedding=[1, 2, 3]).json()
 ```
 
 ```json
 {
-  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
-  "mimeType": "text/plain",
-  "text": "hello world"
+  "embedding": [
+    1,
+    2,
+    3
+  ],
+  "id": "9e36927e576b11ec81971e008a366d48",
+  "mime_type": "text/plain",
+  "text": "hello, world"
 }
+
 ```
 ````
 
@@ -574,12 +579,11 @@ d.json()
 ```python
 from jina import Document
 
-d = Document(content='hello, world')
-d.binary_str()
+bytes(Document(content='hello, world', embedding=[1, 2, 3]))
 ```
 
 ```
-b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
+b'\n aad94436576b11ec81551e008a366d48R\ntext/plainj\x0chello, world\x9a\x01+\n"\n\x18\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x12\x01\x03\x1a\x03<i8\x1a\x05numpy'
 ```
 ````
 
@@ -587,12 +591,11 @@ b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 ```python
 from jina import Document
 
-d = Document(content='hello, world')
-d.dict()
+Document(content='hello, world', embedding=[1, 2, 3]).dict()
 ```
 
 ```
-{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
+{'id': 'c742f7f2576b11ec89aa1e008a366d48', 'mime_type': 'text/plain', 'text': 'hello, world', 'embedding': [1, 2, 3]}
 ```
 ````
 

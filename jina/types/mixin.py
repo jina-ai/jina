@@ -121,3 +121,6 @@ class ProtoTypeMixin:
 
     def __eq__(self, other):
         return self.proto == other.proto
+
+    def __bytes__(self):
+        return self.binary_str()

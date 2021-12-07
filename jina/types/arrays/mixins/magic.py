@@ -38,7 +38,7 @@ class MagicMixin:
         dap.docs.extend(self._pb_body)
         r = dict(serialized=dap.SerializePartialToString())
         if hasattr(self, '_ref_doc'):
-            r['ref_doc'] = self._ref_doc.binary_str()
+            r['ref_doc'] = bytes(self._ref_doc)
         return r
 
     def __setstate__(self, state):

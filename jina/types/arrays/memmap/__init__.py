@@ -180,7 +180,7 @@ class DocumentArrayMemmap(
         flush: bool = True,
         update_buffer: bool = True,
     ) -> None:
-        value = doc.binary_str()
+        value = bytes(doc)
         l = len(value)  #: the length
         p = int(self._start / _PAGE_SIZE) * _PAGE_SIZE  #: offset of the page
         r = (
