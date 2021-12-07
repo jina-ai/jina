@@ -8,9 +8,9 @@ from jina import DocumentArray, Document, DocumentArrayMemmap
 def foo(d: Document):
     return (
         d.load_uri_to_image_blob()
-            .set_image_blob_normalization()
-            .set_image_blob_channel_axis(-1, 0)
-            .set_image_blob_shape((222, 222), 0)
+        .set_image_blob_normalization()
+        .set_image_blob_channel_axis(-1, 0)
+        .set_image_blob_shape((222, 222), 0)
     )
 
 
@@ -61,7 +61,7 @@ def test_parallel_map_batch(pytestconfig, da_cls, backend, num_worker, b_size):
 
     # use a generator
     for _da in da.map_batch(
-            foo_batch, batch_size=b_size, backend=backend, num_worker=num_worker
+        foo_batch, batch_size=b_size, backend=backend, num_worker=num_worker
     ):
         for d in _da:
             assert d.blob.shape == (3, 222, 222)
@@ -92,6 +92,7 @@ def test_map_lambda(pytestconfig, da_cls):
 
     for d in da.map(lambda x: x.load_uri_to_image_blob()):
         assert d.blob is not None
+
 
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 def test_map_nested(da_cls):
