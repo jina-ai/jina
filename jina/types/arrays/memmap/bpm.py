@@ -37,22 +37,22 @@ class BufferPoolManager:
             self.doc_map.move_to_end(idx)
         # else, if len is less than the size, append to buffer
         elif len(self.buffer) < self.pool_size:
-            self.doc_map[idx] = (len(self.buffer), doc.version)
+            self.doc_map[idx] = (len(self.buffer), doc._version)
             self.doc_map.move_to_end(idx)
             self.buffer.append(doc)
         # else, if buffer has empty spots, allocate them
         elif self._empty:
             empty_idx = self._empty.pop()
-            self.doc_map[idx] = (empty_idx, doc.version)
+            self.doc_map[idx] = (empty_idx, doc._version)
             self.buffer[empty_idx] = doc
             self.doc_map.move_to_end(idx)
         # else, choose a spot to free and use it with LRU strategy
         else:
             # the least recently used item is the first item in doc_map
             dam_idx, (buffer_idx, version) = self.doc_map.popitem(last=False)
-            if version != self.buffer[buffer_idx].version:
+            if version != self.buffer[buffer_idx]._version:
                 result = dam_idx, self.buffer[buffer_idx]
-            self.doc_map[idx] = (buffer_idx, doc.version)
+            self.doc_map[idx] = (buffer_idx, doc._version)
             self.doc_map.move_to_end(idx)
             self.buffer[buffer_idx] = doc
 
@@ -76,7 +76,7 @@ class BufferPoolManager:
         result = []
         for dam_idx, (buffer_idx, version) in self.doc_map.items():
             doc = self.buffer[buffer_idx]
-            if version != doc.version:
+            if version != doc._version:
                 result.append((dam_idx, self.buffer[buffer_idx]))
         return result
 

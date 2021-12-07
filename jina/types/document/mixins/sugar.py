@@ -28,7 +28,7 @@ class SingletonSugarMixin:
         exclude_self: bool = False,
         only_id: bool = False,
         use_scipy: bool = False,
-        num_worker: Optional[int] = None,
+        num_worker: Optional[int] = 1,
     ) -> 'T':
         """Matching the current Document against a set of Documents.
 

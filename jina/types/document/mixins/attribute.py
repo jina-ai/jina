@@ -12,6 +12,8 @@ class GetSetAttributeMixin:
     _special_mapped_keys = ('scores', 'evaluations')
 
     def __getattr__(self, item):
+        if item in self._ON_GETATTR:
+            self._increaseVersion()
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
         elif '__' in item:
