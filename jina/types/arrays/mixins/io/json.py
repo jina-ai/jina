@@ -50,16 +50,19 @@ class JsonIOMixin:
             da.extend(Document(v) for v in fp)
             return da
 
-    def list(self) -> List:
+    def to_list(self) -> List:
         """Convert the object into a Python list.
+
+        .. note::
+            Array like object such as :class:`numpy.ndarray` will be converted to Python list.
 
         :return: a Python list
         """
         return [d.dict() for d in self]
 
-    def json(self) -> str:
+    def to_json(self) -> str:
         """Convert the object into a JSON string. Can be loaded via :meth:`.load_json`.
 
         :return: a Python list
         """
-        return json.dumps(self.list())
+        return json.dumps(self.to_list())

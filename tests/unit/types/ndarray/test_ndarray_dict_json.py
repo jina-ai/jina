@@ -22,10 +22,10 @@ def test_docarray_list():
     da = DocumentArray.empty(10)
     da.embeddings = np.random.random([10, 3])
     da.blobs = np.random.random([10, 24, 24, 3])
-    dal = da.list()
+    dal = da.to_list()
     assert len(dal) == 10
     assert isinstance(dal[0]['embedding'], list)
-    da2 = DocumentArray.load_json(da.json())
+    da2 = DocumentArray.load_json(da.to_json())
     assert len(da2) == 10
     assert da2.embeddings.shape == (10, 3)
     assert da2.blobs.shape == (10, 24, 24, 3)

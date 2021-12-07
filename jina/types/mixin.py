@@ -1,6 +1,6 @@
 from typing import Dict, Tuple
 
-from ..helper import typename, T, TYPE_CHECKING
+from ..helper import typename, T, TYPE_CHECKING, deprecate_by
 
 if TYPE_CHECKING:
     from ..proto import jina_pb2
@@ -24,7 +24,7 @@ class ProtoTypeMixin:
 
     """
 
-    def json(self) -> str:
+    def to_json(self) -> str:
         """Return the object in JSON string
 
         :return: JSON string of the object
@@ -35,8 +35,12 @@ class ProtoTypeMixin:
             self._pb_body, preserving_proto_field_name=True, sort_keys=True
         )
 
-    def dict(self) -> Dict:
-        """Return the object in Python dictionary
+    def to_dict(self) -> Dict:
+        """Return the object in Python dictionary.
+
+        .. note::
+            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
+            will be converted to Python list.
 
         :return: dict representation of the object
         """
@@ -55,7 +59,7 @@ class ProtoTypeMixin:
         """
         return self._pb_body
 
-    def binary_str(self) -> bytes:
+    def to_bytes(self) -> bytes:
         """Return the serialized the message to a string.
 
         :return: binary string representation of the object
@@ -124,3 +128,7 @@ class ProtoTypeMixin:
 
     def __bytes__(self):
         return self.binary_str()
+
+    dict = deprecate_by(to_dict)
+    json = deprecate_by(to_json)
+    binary_str = deprecate_by(to_bytes)

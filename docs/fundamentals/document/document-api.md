@@ -552,12 +552,12 @@ with Flow().add(uses=MyExecutor) as f:
 
 ## Serialization
 
-You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.dict` or binary string via {meth}`~bytes`:
+You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.to_dict` or binary string via {meth}`bytes`:
 ````{tab} JSON
 ```python
 from jina import Document
 
-Document(content='hello, world', embedding=[1, 2, 3]).json()
+Document(content='hello, world', embedding=[1, 2, 3]).to_json()
 ```
 
 ```json
@@ -591,7 +591,7 @@ b'\n aad94436576b11ec81551e008a366d48R\ntext/plainj\x0chello, world\x9a\x01+\n"\
 ```python
 from jina import Document
 
-Document(content='hello, world', embedding=[1, 2, 3]).dict()
+Document(content='hello, world', embedding=[1, 2, 3]).to_dict()
 ```
 
 ```

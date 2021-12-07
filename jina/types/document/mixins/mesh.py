@@ -1,7 +1,6 @@
 import numpy as np
 
-from .helper import _deprecate_by
-from ....helper import T
+from ....helper import T, deprecate_by
 
 
 class MeshDataMixin:
@@ -36,4 +35,4 @@ class MeshDataMixin:
             self.blob = np.stack(pcs).squeeze()
         return self
 
-    convert_uri_to_point_cloud_blob = _deprecate_by(load_uri_to_point_cloud_blob)
+    convert_uri_to_point_cloud_blob = deprecate_by(load_uri_to_point_cloud_blob)
