@@ -18,8 +18,8 @@
 </a>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  {% if versions %}
   <select onChange="window.location.href=this.value" class="version-select">
-    {% if versions %}
       {%- for item in versions|reverse %}
         {% if item.name == latest_jina_version %}
           {% set new_url = item.url if current_version.name == latest_jina_version else item.url | replace('/' + latest_jina_version, "") %}
@@ -36,6 +36,6 @@
           {% endif %}
         {% endif %}
       {%- endfor %}
-    {% endif %}
   </select>
+  {% endif %}
 </div>
