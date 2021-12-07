@@ -57,7 +57,7 @@ class HTTPBaseClient(BaseClient):
                 streamer = HTTPClientStreamer(self.args, iolet=iolet)
                 async for response in streamer.stream(request_iterator):
                     r_status = response.status
-                    r_str = await response.json()
+                    r_str = await response.to_json()
                     if r_status == 404:
                         raise BadClient(f'no such endpoint {url}')
                     elif r_status < 200 or r_status > 300:

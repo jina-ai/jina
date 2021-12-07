@@ -52,13 +52,13 @@ class CsvIOMixin:
 
         with file_ctx as fp:
             if flatten_tags and self[0].tags:
-                keys = list(self[0].dict().keys()) + list(
+                keys = list(self[0].to_dict().keys()) + list(
                     f'tag__{k}' for k in self[0].tags
                 )
                 keys.remove('tags')
             else:
                 flatten_tags = False
-                keys = list(self[0].dict().keys())
+                keys = list(self[0].to_dict().keys())
 
             if exclude_fields:
                 for k in exclude_fields:
@@ -76,7 +76,7 @@ class CsvIOMixin:
                     _d = Document(d, copy=True)
                     _d.pop(*exclude_fields)
 
-                pd = _d.dict()
+                pd = _d.to_dict()
                 if flatten_tags:
                     t = pd.pop('tags')
                     pd.update({f'tag__{k}': v for k, v in t.items()})

@@ -79,7 +79,7 @@ class ProtoTypeMixin:
 
         :return: number of bytes
         """
-        return len(self.binary_str())
+        return len(bytes(self))
 
     def __getattr__(self, name: str):
         return getattr(self._pb_body, name)
@@ -127,7 +127,7 @@ class ProtoTypeMixin:
         return self.proto == other.proto
 
     def __bytes__(self):
-        return self.binary_str()
+        return self.to_bytes()
 
     dict = deprecate_by(to_dict)
     json = deprecate_by(to_json)

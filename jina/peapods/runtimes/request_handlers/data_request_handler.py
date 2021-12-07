@@ -137,7 +137,7 @@ class DataRequestHandler:
             return
 
         params = self._parse_params(
-            msg.request.parameters.dict(), self._executor.metas.name
+            msg.request.parameters.to_dict(), self._executor.metas.name
         )
         docs = _get_docs_from_msg(
             msg,

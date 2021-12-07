@@ -24,7 +24,7 @@ class JsonIOMixin:
 
         with file_ctx as fp:
             for d in self:
-                json.dump(d.dict(), fp)
+                json.dump(d.to_dict(), fp)
                 fp.write('\n')
 
     @classmethod
@@ -58,7 +58,7 @@ class JsonIOMixin:
 
         :return: a Python list
         """
-        return [d.dict() for d in self]
+        return [d.to_dict() for d in self]
 
     def to_json(self) -> str:
         """Convert the object into a JSON string. Can be loaded via :meth:`.load_json`.
