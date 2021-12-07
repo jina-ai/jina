@@ -1,0 +1,10 @@
+c98fa1861725b4044aad79d510438348462b1532
+========================================
+
+.. toctree::
+   :maxdepth: 4
+
+   cli
+   daemon
+   fastentrypoints
+   jina
