@@ -5,7 +5,7 @@ import tempfile
 import threading
 import warnings
 from math import sqrt, ceil, floor
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -241,6 +241,9 @@ class PlotMixin:
         canvas_size: int = 512,
         min_size: int = 16,
         channel_axis: int = -1,
+        inverse_normalize: bool = False,
+        img_mean: Tuple[float] = (0.485, 0.456, 0.406),
+        img_std: Tuple[float] = (0.229, 0.224, 0.225),
     ) -> None:
         """Generate a sprite image for all image blobs in this DocumentArray-like object.
 
@@ -251,6 +254,10 @@ class PlotMixin:
         :param canvas_size: the size of the canvas
         :param min_size: the minimum size of the image
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param inverse_normalize: if set, then inverse the normalization of a float32 image :attr:`.blob` into a uint8
+            image :attr:`.blob`.
+        :param img_mean: the mean of all images
+        :param img_std: the standard deviation of all images
         """
         if not self:
             raise ValueError(f'{self!r} is empty')
@@ -276,6 +283,11 @@ class PlotMixin:
             if _d.content_type != 'blob':
                 _d.load_uri_to_image_blob()
                 channel_axis = -1
+
+            if inverse_normalize:
+                _d.set_image_blob_inv_normalization(
+                    channel_axis=channel_axis, img_mean=img_mean, img_std=img_std
+                )
 
             _d.set_image_blob_channel_axis(channel_axis, -1).set_image_blob_shape(
                 shape=(img_size, img_size)

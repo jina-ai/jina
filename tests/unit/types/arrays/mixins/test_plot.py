@@ -9,7 +9,8 @@ from jina import DocumentArray, Document, DocumentArrayMemmap
 from jina.types.document.generators import from_files
 
 
-def test_sprite_image_generator(pytestconfig, tmpdir):
+@pytest.mark.parametrize('inverse_normalize', [True, False])
+def test_sprite_image_generator(pytestconfig, tmpdir, inverse_normalize):
     da = DocumentArray(
         from_files(
             [
@@ -18,11 +19,15 @@ def test_sprite_image_generator(pytestconfig, tmpdir):
             ]
         )
     )
-    da.plot_image_sprites(tmpdir / 'sprint_da.png')
+    if inverse_normalize:
+        da.apply(lambda d: d.load_uri_to_image_blob().set_image_blob_normalization())
+    da.plot_image_sprites(tmpdir / 'sprint_da.png', inverse_normalize=inverse_normalize)
     assert os.path.exists(tmpdir / 'sprint_da.png')
     dam = DocumentArrayMemmap()
     dam.extend(da)
-    dam.plot_image_sprites(tmpdir / 'sprint_dam.png')
+    dam.plot_image_sprites(
+        tmpdir / 'sprint_dam.png', inverse_normalize=inverse_normalize
+    )
     assert os.path.exists(tmpdir / 'sprint_dam.png')
 
 
