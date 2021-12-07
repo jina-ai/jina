@@ -1,9 +1,9 @@
 from typing import Dict, Tuple
 
-from google.protobuf.json_format import MessageToJson, MessageToDict
+from ..helper import typename, T, TYPE_CHECKING
 
-from ..helper import typename, T
-from ..proto import jina_pb2
+if TYPE_CHECKING:
+    from ..proto import jina_pb2
 
 
 class ProtoTypeMixin:
@@ -29,6 +29,8 @@ class ProtoTypeMixin:
 
         :return: JSON string of the object
         """
+        from google.protobuf.json_format import MessageToJson
+
         return MessageToJson(
             self._pb_body, preserving_proto_field_name=True, sort_keys=True
         )
@@ -38,9 +40,8 @@ class ProtoTypeMixin:
 
         :return: dict representation of the object
         """
+        from google.protobuf.json_format import MessageToDict
 
-        # NOTE: PLEASE DO NOT ADD `including_default_value_fields`,
-        # it makes the output very verbose!
         return MessageToDict(
             self._pb_body,
             preserving_proto_field_name=True,
@@ -62,11 +63,11 @@ class ProtoTypeMixin:
         return self._pb_body.SerializePartialToString()
 
     def __getstate__(self):
-        return dict(serialized=self.binary_str())
+        return self._pb_body.__getstate__()
 
     def __setstate__(self, state):
         self.__init__()
-        self._pb_body.ParseFromString(state['serialized'])
+        self._pb_body.__setstate__()
 
     @property
     def nbytes(self) -> int:
@@ -104,7 +105,7 @@ class ProtoTypeMixin:
 
         :param other: the document to copy from
         """
-        self._pb_body.MergeFrom(other._pb_body)
+        self._pb_body.CopyFrom(other._pb_body)
 
     def clear(self) -> None:
         """Remove all values from all fields of this Document."""

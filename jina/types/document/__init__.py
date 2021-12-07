@@ -40,7 +40,6 @@ __all__ = ['Document']
 
 _all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
-_all_doc_array_keys = ('blob', 'embedding')
 
 
 class Document(AllMixins, ProtoTypeMixin):
@@ -186,24 +185,14 @@ class Document(AllMixins, ProtoTypeMixin):
             elif isinstance(document, bytes):
                 self._pb_body = jina_pb2.DocumentProto()
                 self._pb_body.ParseFromString(document)
-            elif isinstance(document, (dict, str)):
+            elif isinstance(document, (dict, str)) or (document is None and kwargs):
                 if isinstance(document, str):
                     document = json.loads(document)
 
-                def _update_doc(d: Dict):
-                    for key in _all_doc_array_keys:
-                        if key in d:
-                            value = d[key]
-                            if isinstance(value, list):
-                                d[key] = np.array(d[key])
-                        if 'chunks' in d:
-                            for chunk in d['chunks']:
-                                _update_doc(chunk)
-                        if 'matches' in d:
-                            for match in d['matches']:
-                                _update_doc(match)
-
-                _update_doc(document)
+                clear_kwargs = False
+                if document is None and kwargs:
+                    document = kwargs
+                    clear_kwargs = True
 
                 if field_resolver:
                     document = {
@@ -246,6 +235,9 @@ class Document(AllMixins, ProtoTypeMixin):
                             self._pb_body.tags.update(
                                 {k: document[k] for k in _remainder}
                             )
+
+                if clear_kwargs:
+                    kwargs = None
             elif isinstance(document, Document):
                 if copy:
                     self._pb_body = jina_pb2.DocumentProto()
