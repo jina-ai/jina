@@ -250,12 +250,12 @@ class Document(AllMixins, ProtoTypeMixin):
             else:
                 # create an empty document
                 self._pb_body = jina_pb2.DocumentProto()
+        except json_format.ParseError:
+            # append everything to kwargs that is more powerful in setting attributes
+            if isinstance(document, dict):
+                kwargs.update(document)
         except Exception as ex:
-            raise BadDocType(
-                f'fail to construct a document from {document}, '
-                f'if you are trying to set the content '
-                f'you may use "Document(content=your_content)"'
-            ) from ex
+            raise BadDocType(f'Fail to construct Document from {document!r}') from ex
 
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = uuid.uuid1().hex
