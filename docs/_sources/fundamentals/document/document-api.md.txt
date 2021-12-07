@@ -166,11 +166,11 @@ d.pop('text', 'id', 'mime_type')
 
 {attr}`~jina.Document.text`, {attr}`~jina.Document.blob`, and {attr}`~jina.Document.buffer` are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
-| Attribute | Accept type | Use case |
-| --- | --- | --- |
-| `doc.text` | Python string | Contain text |
-| `doc.blob` | Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense & sparse tensor, PyTorch dense & sparse tensor, PaddlePaddle dense tensor | Contain image/video/audio |
-| `doc.buffer` | 	Binary string | Contain intermediate IO buffer |
+| Attribute | Accept type                                                                                                                                                                            | Use case |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| `doc.text` | Python string                                                                                                                                                                          | Contain text |
+| `doc.blob` | A Python (nested) list/tuple of numbers, Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense & sparse tensor, PyTorch dense & sparse tensor, PaddlePaddle dense tensor | Contain image/video/audio |
+| `doc.buffer` | 	Binary string                                                                                                                                                                         | Contain intermediate IO buffer |
 
 ````{admonition} Exclusivity of the content
 :class: important
@@ -292,7 +292,7 @@ Embedding is a multi-dimensional representation of a `Document` (often a `[1, D]
 
 Document has an attribute {attr}`~jina.Document.embedding` to contain the embedding information.
 
-Like `.blob`, you can assign it with Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.
+Like `.blob`, you can assign it with a Python (nested) List/Tuple, Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.
 
 ```python
 import numpy as np
@@ -301,6 +301,7 @@ import torch
 import tensorflow as tf
 from jina import Document
 
+d0 = Document(embedding=[1, 2, 3])
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 d3 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
@@ -551,21 +552,26 @@ with Flow().add(uses=MyExecutor) as f:
 
 ## Serialization
 
-You can serialize a `Document` into JSON string or Python dict or binary string:
+You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.to_dict` or binary string via {meth}`bytes`:
 ````{tab} JSON
 ```python
 from jina import Document
 
-d = Document(content='hello, world')
-d.json()
+Document(content='hello, world', embedding=[1, 2, 3]).to_json()
 ```
 
 ```json
 {
-  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
-  "mimeType": "text/plain",
-  "text": "hello world"
+  "embedding": [
+    1,
+    2,
+    3
+  ],
+  "id": "9e36927e576b11ec81971e008a366d48",
+  "mime_type": "text/plain",
+  "text": "hello, world"
 }
+
 ```
 ````
 
@@ -573,12 +579,11 @@ d.json()
 ```python
 from jina import Document
 
-d = Document(content='hello, world')
-d.binary_str()
+bytes(Document(content='hello, world', embedding=[1, 2, 3]))
 ```
 
 ```
-b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
+b'\n aad94436576b11ec81551e008a366d48R\ntext/plainj\x0chello, world\x9a\x01+\n"\n\x18\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x12\x01\x03\x1a\x03<i8\x1a\x05numpy'
 ```
 ````
 
@@ -586,12 +591,11 @@ b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 ```python
 from jina import Document
 
-d = Document(content='hello, world')
-d.dict()
+Document(content='hello, world', embedding=[1, 2, 3]).to_dict()
 ```
 
 ```
-{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
+{'id': 'c742f7f2576b11ec89aa1e008a366d48', 'mime_type': 'text/plain', 'text': 'hello, world', 'embedding': [1, 2, 3]}
 ```
 ````
 

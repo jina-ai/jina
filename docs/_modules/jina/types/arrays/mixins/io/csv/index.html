@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.arrays.mixins.io.csv - Jina 2.5.3 documentation</title>
+        <title>jina.types.arrays.mixins.io.csv - Jina 2.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 2.5.3 documentation</div>
+                <div class="brand">Jina 2.5.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -181,26 +181,7 @@
 </a>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  <select onChange="window.location.href=this.value" class="version-select">
-    
-        
-          
-            <option value="../../../../../../../master/index.html" >master</option>
-          
-        
-        
-          
-          
-            <option value="csv.html" selected="selected" >latest (v2.5.3)</option>
-          
-        
-        
-          
-            <option value="../../../../../../../v2.5.2/index.html" >v2.5.2</option>
-          
-        
-    
-  </select>
+  
 </div><form class="sidebar-search-container" method="get" action="../../../../../../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -624,7 +605,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -734,13 +716,13 @@
 
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">flatten_tags</span> <span class="ow">and</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'tag__</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tags</span>
                 <span class="p">)</span>
                 <span class="n">keys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">flatten_tags</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="n">exclude_fields</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_fields</span><span class="p">:</span>
@@ -758,7 +740,7 @@
                     <span class="n">_d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">_d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">*</span><span class="n">exclude_fields</span><span class="p">)</span>
 
-                <span class="n">pd</span> <span class="o">=</span> <span class="n">_d</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                <span class="n">pd</span> <span class="o">=</span> <span class="n">_d</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">flatten_tags</span><span class="p">:</span>
                     <span class="n">t</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">)</span>
                     <span class="n">pd</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s1">'tag__</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>

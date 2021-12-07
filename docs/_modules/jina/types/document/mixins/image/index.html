@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.document.mixins.image - Jina 2.5.3 documentation</title>
+        <title>jina.types.document.mixins.image - Jina 2.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 2.5.3 documentation</div>
+                <div class="brand">Jina 2.5.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -181,26 +181,7 @@
 </a>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  <select onChange="window.location.href=this.value" class="version-select">
-    
-        
-          
-            <option value="../../../../../../master/index.html" >master</option>
-          
-        
-        
-          
-          
-            <option value="image.html" selected="selected" >latest (v2.5.3)</option>
-          
-        
-        
-          
-            <option value="../../../../../../v2.5.2/index.html" >v2.5.2</option>
-          
-        
-    
-  </select>
+  
 </div><form class="sidebar-search-container" method="get" action="../../../../../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -624,7 +605,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -687,8 +669,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_file_context</span><span class="p">,</span> <span class="n">_uri_to_buffer</span><span class="p">,</span> <span class="n">_deprecate_by</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_file_context</span><span class="p">,</span> <span class="n">_uri_to_buffer</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span><span class="p">,</span> <span class="n">deprecate_by</span>
 
 
 <div class="viewcode-block" id="ImageDataMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin">[docs]</a><span class="k">class</span> <span class="nc">ImageDataMixin</span><span class="p">:</span>
@@ -962,7 +944,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">expanded_img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="n">convert_uri_to_image_blob</span> <span class="o">=</span> <span class="n">_deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_image_blob</span><span class="p">)</span>  <span class="c1">#: Deprecated!</span></div>
+    <span class="n">convert_uri_to_image_blob</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_image_blob</span><span class="p">)</span>  <span class="c1">#: Deprecated!</span></div>
 
 
 <span class="k">def</span> <span class="nf">_move_channel_axis</span><span class="p">(</span>

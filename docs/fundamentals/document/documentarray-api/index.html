@@ -7,10 +7,10 @@
   <meta property="og:title" content="DocumentArray" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/document/documentarray-api.html" />
-  <meta property="og:site_name" content="Jina 2.5.3 Documentation" />
+  <meta property="og:site_name" content="Jina 2.5.4 Documentation" />
   <meta property="og:description" content="A DocumentArray is a list of Document objects. You can construct, delete, insert, sort and traverse a DocumentArray like a Python list. It implements all Python List interface. Construct: You can construct a DocumentArray in different ways: From empty Documents From list of Documents From generat..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  <meta property="og:image:alt" content="Jina 2.5.3 Documentation" />
+  <meta property="og:image:alt" content="Jina 2.5.4 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="DocumentArrayMemmap" href="../documentarraymemmap-api/" /><link rel="prev" title="Fluent Interface" href="../fluent-interface/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>DocumentArray - Jina 2.5.3 documentation</title>
+        <title>DocumentArray - Jina 2.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 2.5.3 documentation</div>
+                <div class="brand">Jina 2.5.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -207,26 +207,7 @@
 </a>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  <select onChange="window.location.href=this.value" class="version-select">
-    
-        
-          
-            <option value="../../../master/fundamentals/document/documentarray-api.html" >master</option>
-          
-        
-        
-          
-          
-            <option value="documentarray-api.html" selected="selected" >latest (v2.5.3)</option>
-          
-        
-        
-          
-            <option value="../../../v2.5.2/fundamentals/document/documentarray-api.html" >v2.5.2</option>
-          
-        
-    
-  </select>
+  
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -650,7 +631,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -830,6 +812,25 @@ d.embedding.shape= (1, 256)
 d.embedding.shape= (1, 256)
 </pre></div>
 </div>
+<section id="bulk-access-to-attributes">
+<h3>Bulk access to attributes<a class="headerlink" href="#bulk-access-to-attributes" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="../../../api/jina.types.arrays.mixins.getattr/#jina.types.arrays.mixins.getattr.GetAttributeMixin.get_attributes" title="jina.types.arrays.mixins.getattr.GetAttributeMixin.get_attributes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_attributes()</span></code></a> let you fetch multiple attributes from the <code class="docutils literal notranslate"><span class="pre">Document</span></code>s in
+one shot:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])),</span>
+                    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'goodbye'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])),</span>
+                    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]))])</span>
+
+<span class="hll"><span class="n">da</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">,</span> <span class="s1">'embedding'</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[('1', '2', '3'), ('hello', 'goodbye', 'world'), (array([1, 2, 3]), array([4, 5, 6]), array([7, 8, 9]))]
+</pre></div>
+</div>
+</section>
 </section>
 <section id="embed-via-model">
 <span id="id2"></span><h2>Embed via model<a class="headerlink" href="#embed-via-model" title="Permalink to this headline">¶</a></h2>
@@ -1526,118 +1527,6 @@ It returns a Python <code class="docutils literal notranslate"><span class="pre"
 </pre></div>
 </div>
 </section>
-<section id="iterate-via-itertools">
-<h2>Iterate via <code class="docutils literal notranslate"><span class="pre">itertools</span></code><a class="headerlink" href="#iterate-via-itertools" title="Permalink to this headline">¶</a></h2>
-<p>As <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is an <code class="docutils literal notranslate"><span class="pre">Iterable</span></code>, you can also
-use <a class="reference external" href="https://docs.python.org/3/library/itertools.html">Python’s built-in <code class="docutils literal notranslate"><span class="pre">itertools</span></code> module</a> on it. This enables
-advanced “iterator algebra” on the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
-<p>For instance, you can group a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> by <code class="docutils literal notranslate"><span class="pre">parent_id</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">groupby</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">parent_id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span>
-<span class="hll"><span class="n">groups</span> <span class="o">=</span> <span class="n">groupby</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">parent_id</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">parent_id</span><span class="p">)</span>
-</span><span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-    <span class="n">key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">group</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>('0', 3)
-('1', 3)
-</pre></div>
-</div>
-</section>
-<section id="sort">
-<h2>Sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code>, therefore you can use Python’s built-in <code class="docutils literal notranslate"><span class="pre">sort</span></code> to sort elements in
-a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
-        <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
-        <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-
-<span class="hll"><span class="n">da</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>To sort elements in <code class="docutils literal notranslate"><span class="pre">da</span></code> in-place, using <code class="docutils literal notranslate"><span class="pre">tags[id]</span></code> value in a descending manner:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.arrays.document.DocumentArray length=3 at 5701440528&gt;
-
-{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
-{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
-{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
-</pre></div>
-</div>
-</section>
-<section id="filter">
-<h2>Filter<a class="headerlink" href="#filter" title="Permalink to this headline">¶</a></h2>
-<p>You can use Python’s <a class="reference external" href="https://docs.python.org/3/library/functions.html#filter">built-in <code class="docutils literal notranslate"><span class="pre">filter()</span></code></a> to filter elements
-in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span>
-
-<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
-    <span class="n">da</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'metric'</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
-
-<span class="hll"><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'metric'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">da</span><span class="p">):</span>
-</span>    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
-{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
-{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
-</pre></div>
-</div>
-<p>You can build a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object from the filtered results:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span>
-<span class="n">da2</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">da</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">weight</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">da2</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DocumentArray has 3 items:
-{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
-{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
-{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
-</pre></div>
-</div>
-</section>
-<section id="get-bulk-attributes">
-<h2>Get bulk attributes<a class="headerlink" href="#get-bulk-attributes" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> implements powerful getters that let you fetch multiple attributes from the <code class="docutils literal notranslate"><span class="pre">Document</span></code>s it contains in
-one shot:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])),</span>
-                    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'goodbye'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])),</span>
-                    <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'world'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]))])</span>
-
-<span class="hll"><span class="n">da</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">,</span> <span class="s1">'embedding'</span><span class="p">)</span>
-</span></pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[('1', '2', '3'), ('hello', 'goodbye', 'world'), (array([1, 2, 3]), array([4, 5, 6]), array([7, 8, 9]))]
-</pre></div>
-</div>
-<p>This can be very useful when extracting a batch of embeddings:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[[1 2 3]
- [4 5 6]
- [7 8 9]]
-</pre></div>
-</div>
-</section>
 <section id="persistence">
 <h2>Persistence<a class="headerlink" href="#persistence" title="Permalink to this headline">¶</a></h2>
 <p>To save all elements in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in a JSON line format:</p>
@@ -1694,6 +1583,93 @@ one shot:</p>
 <figure class="align-center">
 <img alt="../../../_images/embedding-projector.gif" src="../../../_images/embedding-projector.gif"/>
 </figure>
+</section>
+<section id="pythonic-list-interface">
+<h2>Pythonic list interface<a class="headerlink" href="#pythonic-list-interface" title="Permalink to this headline">¶</a></h2>
+<p>One can see <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> as a Python list. Hence, many Python high-level iterator functions/tools can be used on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> as well.</p>
+<section id="iterate-via-itertools">
+<h3>Iterate via <code class="docutils literal notranslate"><span class="pre">itertools</span></code><a class="headerlink" href="#iterate-via-itertools" title="Permalink to this headline">¶</a></h3>
+<p>As <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is an <code class="docutils literal notranslate"><span class="pre">Iterable</span></code>, you can also
+use <a class="reference external" href="https://docs.python.org/3/library/itertools.html">Python’s built-in <code class="docutils literal notranslate"><span class="pre">itertools</span></code> module</a> on it. This enables
+advanced “iterator algebra” on the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
+<p>For instance, you can group a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> by <code class="docutils literal notranslate"><span class="pre">parent_id</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">groupby</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">parent_id</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span>
+<span class="hll"><span class="n">groups</span> <span class="o">=</span> <span class="n">groupby</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">parent_id</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">parent_id</span><span class="p">)</span>
+</span><span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+    <span class="n">key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">group</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>('0', 3)
+('1', 3)
+</pre></div>
+</div>
+</section>
+<section id="filter">
+<h3>Filter<a class="headerlink" href="#filter" title="Permalink to this headline">¶</a></h3>
+<p>You can use Python’s <a class="reference external" href="https://docs.python.org/3/library/functions.html#filter">built-in <code class="docutils literal notranslate"><span class="pre">filter()</span></code></a> to filter elements
+in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">da</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'metric'</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+
+<span class="hll"><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'metric'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">da</span><span class="p">):</span>
+</span>    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
+{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
+{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
+</pre></div>
+</div>
+<p>You can build a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object from the filtered results:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span>
+<span class="n">da2</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">da</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">weight</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">da2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DocumentArray has 3 items:
+{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
+{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
+{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
+</pre></div>
+</div>
+</section>
+<section id="sort">
+<h3>Sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">MutableSequence</span></code>, therefore you can use Python’s built-in <code class="docutils literal notranslate"><span class="pre">sort</span></code> to sort elements in
+a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+        <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+        <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="hll"><span class="n">da</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To sort elements in <code class="docutils literal notranslate"><span class="pre">da</span></code> in-place, using <code class="docutils literal notranslate"><span class="pre">tags[id]</span></code> value in a descending manner:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.arrays.document.DocumentArray length=3 at 5701440528&gt;
+
+{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
+{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
+{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -1757,7 +1733,10 @@ one shot:</p>
 <li><a class="reference internal" href="#">DocumentArray</a><ul>
 <li><a class="reference internal" href="#construct">Construct</a></li>
 <li><a class="reference internal" href="#access-elements">Access elements</a></li>
-<li><a class="reference internal" href="#bulk-access-contents">Bulk access contents</a></li>
+<li><a class="reference internal" href="#bulk-access-contents">Bulk access contents</a><ul>
+<li><a class="reference internal" href="#bulk-access-to-attributes">Bulk access to attributes</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#embed-via-model">Embed via model</a></li>
 <li><a class="reference internal" href="#find-nearest-neighbours">Find nearest neighbours</a><ul>
 <li><a class="reference internal" href="#keep-only-id">Keep only ID</a></li>
@@ -1776,12 +1755,14 @@ one shot:</p>
 <li><a class="reference internal" href="#sampling">Sampling</a></li>
 <li><a class="reference internal" href="#shuffle">Shuffle</a></li>
 <li><a class="reference internal" href="#split-by-tags">Split by <code class="docutils literal notranslate"><span class="pre">.tags</span></code></a></li>
-<li><a class="reference internal" href="#iterate-via-itertools">Iterate via <code class="docutils literal notranslate"><span class="pre">itertools</span></code></a></li>
-<li><a class="reference internal" href="#sort">Sort</a></li>
-<li><a class="reference internal" href="#filter">Filter</a></li>
-<li><a class="reference internal" href="#get-bulk-attributes">Get bulk attributes</a></li>
 <li><a class="reference internal" href="#persistence">Persistence</a></li>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
+<li><a class="reference internal" href="#pythonic-list-interface">Pythonic list interface</a><ul>
+<li><a class="reference internal" href="#iterate-via-itertools">Iterate via <code class="docutils literal notranslate"><span class="pre">itertools</span></code></a></li>
+<li><a class="reference internal" href="#filter">Filter</a></li>
+<li><a class="reference internal" href="#sort">Sort</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
