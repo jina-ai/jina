@@ -166,11 +166,11 @@ d.pop('text', 'id', 'mime_type')
 
 {attr}`~jina.Document.text`, {attr}`~jina.Document.blob`, and {attr}`~jina.Document.buffer` are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
-| Attribute | Accept type | Use case |
-| --- | --- | --- |
-| `doc.text` | Python string | Contain text |
-| `doc.blob` | Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense & sparse tensor, PyTorch dense & sparse tensor, PaddlePaddle dense tensor | Contain image/video/audio |
-| `doc.buffer` | 	Binary string | Contain intermediate IO buffer |
+| Attribute | Accept type                                                                                                                                                                            | Use case |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| `doc.text` | Python string                                                                                                                                                                          | Contain text |
+| `doc.blob` | A Python (nested) list/tuple of numbers, Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense & sparse tensor, PyTorch dense & sparse tensor, PaddlePaddle dense tensor | Contain image/video/audio |
+| `doc.buffer` | 	Binary string                                                                                                                                                                         | Contain intermediate IO buffer |
 
 ````{admonition} Exclusivity of the content
 :class: important
@@ -292,7 +292,7 @@ Embedding is a multi-dimensional representation of a `Document` (often a `[1, D]
 
 Document has an attribute {attr}`~jina.Document.embedding` to contain the embedding information.
 
-Like `.blob`, you can assign it with Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.
+Like `.blob`, you can assign it with a Python (nested) List/Tuple, Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.
 
 ```python
 import numpy as np
@@ -301,6 +301,7 @@ import torch
 import tensorflow as tf
 from jina import Document
 
+d0 = Document(embedding=[1, 2, 3])
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 d3 = Document(embedding=sp.coo_matrix([0, 0, 0, 1, 0]))
