@@ -5,8 +5,8 @@ from typing import Optional, Tuple, Union, BinaryIO
 
 import numpy as np
 
-from .helper import _get_file_context, _uri_to_buffer, _deprecate_by
-from ....helper import T
+from .helper import _get_file_context, _uri_to_buffer
+from ....helper import T, deprecate_by
 
 
 class ImageDataMixin:
@@ -280,7 +280,7 @@ class ImageDataMixin:
             self.blob = _move_channel_axis(expanded_img, -1, channel_axis)
         return self
 
-    convert_uri_to_image_blob = _deprecate_by(load_uri_to_image_blob)  #: Deprecated!
+    convert_uri_to_image_blob = deprecate_by(load_uri_to_image_blob)  #: Deprecated!
 
 
 def _move_channel_axis(

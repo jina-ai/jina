@@ -3,8 +3,8 @@ from typing import Tuple, Dict, Union, Optional
 
 import numpy as np
 
-from .helper import _uri_to_buffer, _deprecate_by, _to_datauri
-from ....helper import T
+from .helper import _uri_to_buffer, _to_datauri
+from ....helper import T, deprecate_by
 
 
 class TextDataMixin:
@@ -98,8 +98,8 @@ class TextDataMixin:
         self.uri = _to_datauri(self.mime_type, self.text, charset, base64, binary=False)
         return self
 
-    convert_uri_to_text = _deprecate_by(load_uri_to_text)
-    convert_text_to_uri = _deprecate_by(dump_text_to_datauri)
+    convert_uri_to_text = deprecate_by(load_uri_to_text)
+    convert_text_to_uri = deprecate_by(dump_text_to_datauri)
 
 
 def _text_to_word_sequence(

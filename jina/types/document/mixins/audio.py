@@ -3,8 +3,7 @@ from typing import Union, BinaryIO
 
 import numpy as np
 
-from .helper import _deprecate_by
-from ....helper import T
+from ....helper import T, deprecate_by
 
 
 class AudioDataMixin:
@@ -69,4 +68,4 @@ class AudioDataMixin:
             self.blob = audio_normalised
         return self
 
-    convert_uri_to_audio_blob = _deprecate_by(load_uri_to_audio_blob)
+    convert_uri_to_audio_blob = deprecate_by(load_uri_to_audio_blob)

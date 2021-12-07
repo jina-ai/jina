@@ -17,9 +17,6 @@ def test_schema_invocation():
 def test_existing_definitions():
     """This tests: all internal schema definitions are part of parent"""
     for i in [
-        'DenseNdArrayProto',
-        'SparseNdArrayProto',
-        'NdArrayProto',
         'NamedScoreProto',
         'DocumentProto',
     ]:
@@ -94,10 +91,8 @@ def test_oneof_buffer():
 def test_oneof_blob():
     """This tests: oneof field is correctly represented as `anyOf`"""
 
-    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
-        blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
-    )
-    assert doc.blob == PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(blob=[1, 2, 3])
+    assert doc.blob
     assert 'text' not in doc.dict()
     assert 'buffer' not in doc.dict()
 
@@ -211,16 +206,10 @@ def test_jina_document_to_pydantic_document():
         jina_doc = jina_doc.dict()
         pydantic_doc = document_proto_model(**jina_doc)
 
+        print(jina_doc['embedding'])
         assert jina_doc['text'] == pydantic_doc.text
         assert jina_doc['mime_type'] == pydantic_doc.mime_type
-        assert (
-            jina_doc['embedding']['dense']['shape']
-            == pydantic_doc.embedding.dense.shape
-        )
-        assert (
-            jina_doc['embedding']['dense']['dtype']
-            == pydantic_doc.embedding.dense.dtype
-        )
+        assert jina_doc['embedding'] == pydantic_doc.embedding
 
         for jina_doc_chunk, pydantic_doc_chunk in zip(
             jina_doc['chunks'], pydantic_doc.chunks
@@ -242,30 +231,7 @@ def test_jina_document_to_pydantic_document_sparse():
 
         assert jina_doc['text'] == pydantic_doc.text
         assert jina_doc['mime_type'] == pydantic_doc.mime_type
-        assert (
-            jina_doc['embedding']['sparse']['indices']['buffer']
-            == pydantic_doc.embedding.sparse.indices.buffer.decode()
-        )
-        assert (
-            jina_doc['embedding']['sparse']['indices']['shape']
-            == pydantic_doc.embedding.sparse.indices.shape
-        )
-        assert (
-            jina_doc['embedding']['sparse']['indices']['dtype']
-            == pydantic_doc.embedding.sparse.indices.dtype
-        )
-        assert (
-            jina_doc['embedding']['sparse']['values']['buffer']
-            == pydantic_doc.embedding.sparse.values.buffer.decode()
-        )
-        assert (
-            jina_doc['embedding']['sparse']['values']['shape']
-            == pydantic_doc.embedding.sparse.values.shape
-        )
-        assert (
-            jina_doc['embedding']['sparse']['values']['dtype']
-            == pydantic_doc.embedding.sparse.values.dtype
-        )
+        assert jina_doc['embedding'] == pydantic_doc.embedding
 
         for jina_doc_chunk, pydantic_doc_chunk in zip(
             jina_doc['chunks'], pydantic_doc.chunks

@@ -1,25 +1,9 @@
 import os
 import urllib.parse
 import urllib.request
-import warnings
 from contextlib import nullcontext
 
 from .... import __windows__
-
-
-def _deprecate_by(new_fn):
-    def _f(*args, **kwargs):
-        import inspect
-
-        old_fn_name = inspect.stack()[1][4][0].strip().split("=")[0].strip()
-        warnings.warn(
-            f'`{old_fn_name}` is renamed to `{new_fn.__name__}` with the same usage, please use the latter instead. '
-            f'The old function will be removed soon.',
-            DeprecationWarning,
-        )
-        return new_fn(*args, **kwargs)
-
-    return _f
 
 
 def _uri_to_buffer(uri: str) -> bytes:

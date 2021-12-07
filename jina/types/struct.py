@@ -55,9 +55,9 @@ class StructView(ProtoTypeMixin, MutableMapping):
 
     def __eq__(self, other: Union['StructView', Dict]):
         if isinstance(other, StructView):
-            return self.dict() == other.dict()
+            return self.to_dict() == other.to_dict()
         elif isinstance(other, Dict):
-            return self.dict() == other
+            return self.to_dict() == other
         else:
             return False
 

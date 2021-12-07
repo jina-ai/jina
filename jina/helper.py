@@ -1382,3 +1382,18 @@ def get_ci_vendor() -> Optional[str]:
                 for k in c['env']:
                     if k in os.environ:
                         return c['constant']
+
+
+def deprecate_by(new_fn):
+    def _f(*args, **kwargs):
+        import inspect
+
+        old_fn_name = inspect.stack()[1][4][0].strip().split("=")[0].strip()
+        warnings.warn(
+            f'`{old_fn_name}` is renamed to `{new_fn.__name__}` with the same usage, please use the latter instead. '
+            f'The old function will be removed soon.',
+            DeprecationWarning,
+        )
+        return new_fn(*args, **kwargs)
+
+    return _f

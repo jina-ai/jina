@@ -114,6 +114,10 @@ class GetSetAttributeMixin:
                     self.chunks.extend(v)
                 elif k == 'matches':
                     self.matches.extend(v)
+                elif k == 'embedding':
+                    self.embedding = v
+                elif k == 'blob':
+                    self.blob = v
                 else:
                     self._pb_body.ClearField(k)
                     getattr(self._pb_body, k).extend(v)

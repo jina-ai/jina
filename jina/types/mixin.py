@@ -1,9 +1,9 @@
 from typing import Dict, Tuple
 
-from google.protobuf.json_format import MessageToJson, MessageToDict
+from ..helper import typename, T, TYPE_CHECKING, deprecate_by
 
-from ..helper import typename, T
-from ..proto import jina_pb2
+if TYPE_CHECKING:
+    from ..proto import jina_pb2
 
 
 class ProtoTypeMixin:
@@ -24,23 +24,28 @@ class ProtoTypeMixin:
 
     """
 
-    def json(self) -> str:
+    def to_json(self) -> str:
         """Return the object in JSON string
 
         :return: JSON string of the object
         """
+        from google.protobuf.json_format import MessageToJson
+
         return MessageToJson(
             self._pb_body, preserving_proto_field_name=True, sort_keys=True
         )
 
-    def dict(self) -> Dict:
-        """Return the object in Python dictionary
+    def to_dict(self) -> Dict:
+        """Return the object in Python dictionary.
+
+        .. note::
+            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
+            will be converted to Python list.
 
         :return: dict representation of the object
         """
+        from google.protobuf.json_format import MessageToDict
 
-        # NOTE: PLEASE DO NOT ADD `including_default_value_fields`,
-        # it makes the output very verbose!
         return MessageToDict(
             self._pb_body,
             preserving_proto_field_name=True,
@@ -54,7 +59,7 @@ class ProtoTypeMixin:
         """
         return self._pb_body
 
-    def binary_str(self) -> bytes:
+    def to_bytes(self) -> bytes:
         """Return the serialized the message to a string.
 
         :return: binary string representation of the object
@@ -62,11 +67,11 @@ class ProtoTypeMixin:
         return self._pb_body.SerializePartialToString()
 
     def __getstate__(self):
-        return dict(serialized=self.binary_str())
+        return self._pb_body.__getstate__()
 
     def __setstate__(self, state):
         self.__init__()
-        self._pb_body.ParseFromString(state['serialized'])
+        self._pb_body.__setstate__(state)
 
     @property
     def nbytes(self) -> int:
@@ -74,7 +79,7 @@ class ProtoTypeMixin:
 
         :return: number of bytes
         """
-        return len(self.binary_str())
+        return len(bytes(self))
 
     def __getattr__(self, name: str):
         return getattr(self._pb_body, name)
@@ -104,7 +109,7 @@ class ProtoTypeMixin:
 
         :param other: the document to copy from
         """
-        self._pb_body.MergeFrom(other._pb_body)
+        self._pb_body.CopyFrom(other._pb_body)
 
     def clear(self) -> None:
         """Remove all values from all fields of this Document."""
@@ -120,3 +125,10 @@ class ProtoTypeMixin:
 
     def __eq__(self, other):
         return self.proto == other.proto
+
+    def __bytes__(self):
+        return self.to_bytes()
+
+    dict = deprecate_by(to_dict)
+    json = deprecate_by(to_json)
+    binary_str = deprecate_by(to_bytes)
