@@ -890,7 +890,8 @@ different purposes.</p>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">.metas</span></code> are statically defined.</strong> “Static” means, e.g. from hard-coded value in the code, from a YAML file.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">.runtime_args</span></code> are dynamically determined during runtime.</strong> Means that you don’t know the value before running
 the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">pea_id</span></code>, <code class="docutils literal notranslate"><span class="pre">replicas</span></code>, <code class="docutils literal notranslate"><span class="pre">replica_id</span></code>. Those values are often related to the system/network
-environment around the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, and less about the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> itself.</p></li>
+environment around the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, and less about the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> itself. They are usually set with the <a class="reference internal" href="../../../api/jina.flow.base/#jina.flow.base.Flow.add" title="jina.flow.base.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a>
+method. See the list of options <a class="reference external" href="https://docs.jina.ai/cli/#executor">here</a>.</p></li>
 </ul>
 <p>The following fields are valid for <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>:</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -966,7 +967,7 @@ then second):</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 06, 2021.
+                    Last updated on Dec 07, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
