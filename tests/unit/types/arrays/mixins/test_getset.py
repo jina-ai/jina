@@ -21,7 +21,6 @@ def da_and_dam():
     return da, dam
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     'array',
     [
