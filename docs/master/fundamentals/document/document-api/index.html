@@ -849,7 +849,7 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 </tr>
 <tr>
 <td><code>doc.blob</code></td>
-<td>Numpy <code>ndarray</code>, SciPy sparse matrix (<code>spmatrix</code>), TensorFlow dense &amp; sparse tensor, PyTorch dense &amp; sparse tensor, PaddlePaddle dense tensor</td>
+<td>A Python (nested) list/tuple of numbers, Numpy <code>ndarray</code>, SciPy sparse matrix (<code>spmatrix</code>), TensorFlow dense &amp; sparse tensor, PyTorch dense &amp; sparse tensor, PaddlePaddle dense tensor</td>
 <td>Contain image/video/audio</td>
 </tr>
 <tr>
@@ -951,13 +951,14 @@ all <code class="docutils literal notranslate"><span class="pre">Document</span>
 <h2>Embedding<a class="headerlink" href="#embedding" title="Permalink to this headline">¶</a></h2>
 <p>Embedding is a multi-dimensional representation of a <code class="docutils literal notranslate"><span class="pre">Document</span></code> (often a <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">D]</span></code> vector). It serves as a very important piece in the neural search.</p>
 <p>Document has an attribute <a class="reference internal" href="../../../api/jina/#jina.Document.embedding" title="jina.Document.embedding"><code class="xref py py-attr docutils literal notranslate"><span class="pre">embedding</span></code></a> to contain the embedding information.</p>
-<p>Like <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, you can assign it with Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, SciPy sparse matrix (<code class="docutils literal notranslate"><span class="pre">spmatrix</span></code>), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.</p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">.blob</span></code>, you can assign it with a Python (nested) List/Tuple, Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, SciPy sparse matrix (<code class="docutils literal notranslate"><span class="pre">spmatrix</span></code>), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
+<span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]))</span>
 <span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
@@ -1182,19 +1183,23 @@ sent to an Executor.</p>
 </section>
 <section id="serialization">
 <h2>Serialization<a class="headerlink" href="#serialization" title="Permalink to this headline">¶</a></h2>
-<p>You can serialize a <code class="docutils literal notranslate"><span class="pre">Document</span></code> into JSON string or Python dict or binary string:</p>
+<p>You can serialize a <code class="docutils literal notranslate"><span class="pre">Document</span></code> into JSON string via <a class="reference internal" href="../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_json" title="jina.types.mixin.ProtoTypeMixin.to_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code></a> or Python dict via <a class="reference internal" href="../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_dict" title="jina.types.mixin.ProtoTypeMixin.to_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code></a> or binary string via <code class="xref py py-meth docutils literal notranslate"><span class="pre">bytes()</span></code>:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">JSON</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"6a1c7f34-aef7-11eb-b075-1e008a366d48"</span><span class="p">,</span>
-  <span class="nt">"mimeType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">,</span>
-  <span class="nt">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span>
+  <span class="nt">"embedding"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">3</span>
+  <span class="p">],</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"9e36927e576b11ec81971e008a366d48"</span><span class="p">,</span>
+  <span class="nt">"mime_type"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">,</span>
+  <span class="nt">"text"</span><span class="p">:</span> <span class="s2">"hello, world"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1202,22 +1207,20 @@ sent to an Executor.</p>
 <input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">Binary</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">binary_str</span><span class="p">()</span>
+<span class="nb">bytes</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">$6a1c7f34-aef7-11eb-b075-1e008a366d48R</span><span class="se">\n</span><span class="s1">text/plainj</span><span class="se">\x0b</span><span class="s1">hello world'</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> aad94436576b11ec81551e008a366d48R</span><span class="se">\n</span><span class="s1">text/plainj</span><span class="se">\x0c</span><span class="s1">hello, world</span><span class="se">\x9a\x01</span><span class="s1">+</span><span class="se">\n</span><span class="s1">"</span><span class="se">\n\x18\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x12\x01\x03\x1a\x03</span><span class="s1">&lt;i8</span><span class="se">\x1a\x05</span><span class="s1">numpy'</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--5-input--3" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--3">Dict</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello, world'</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'6a1c7f34-aef7-11eb-b075-1e008a366d48'</span><span class="p">,</span> <span class="s1">'mimeType'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'hello world'</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="s1">'c742f7f2576b11ec89aa1e008a366d48'</span><span class="p">,</span> <span class="s1">'mime_type'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'hello, world'</span><span class="p">,</span> <span class="s1">'embedding'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
 </pre></div>
 </div>
 </div>

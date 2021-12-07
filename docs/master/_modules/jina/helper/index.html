@@ -2064,6 +2064,21 @@
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">c</span><span class="p">[</span><span class="s1">'constant'</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">deprecate_by</span><span class="p">(</span><span class="n">new_fn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">inspect</span>
+
+        <span class="n">old_fn_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'`</span><span class="si">{</span><span class="n">old_fn_name</span><span class="si">}</span><span class="s1">` is renamed to `</span><span class="si">{</span><span class="n">new_fn</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">` with the same usage, please use the latter instead. '</span>
+            <span class="sa">f</span><span class="s1">'The old function will be removed soon.'</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_f</span>
 </pre></div>
             </article>
             <footer>

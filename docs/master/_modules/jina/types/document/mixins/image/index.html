@@ -687,8 +687,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_file_context</span><span class="p">,</span> <span class="n">_uri_to_buffer</span><span class="p">,</span> <span class="n">_deprecate_by</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_file_context</span><span class="p">,</span> <span class="n">_uri_to_buffer</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span><span class="p">,</span> <span class="n">deprecate_by</span>
 
 
 <div class="viewcode-block" id="ImageDataMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.image/#jina.types.document.mixins.image.ImageDataMixin">[docs]</a><span class="k">class</span> <span class="nc">ImageDataMixin</span><span class="p">:</span>
@@ -962,7 +962,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">_move_channel_axis</span><span class="p">(</span><span class="n">expanded_img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">channel_axis</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="n">convert_uri_to_image_blob</span> <span class="o">=</span> <span class="n">_deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_image_blob</span><span class="p">)</span>  <span class="c1">#: Deprecated!</span></div>
+    <span class="n">convert_uri_to_image_blob</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_image_blob</span><span class="p">)</span>  <span class="c1">#: Deprecated!</span></div>
 
 
 <span class="k">def</span> <span class="nf">_move_channel_axis</span><span class="p">(</span>

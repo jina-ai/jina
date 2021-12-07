@@ -681,8 +681,9 @@
                 </div>
                 <h1>Source code for jina.types.arrays.mixins.io.json</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">T</span>
@@ -705,29 +706,48 @@
 
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="n">fp</span><span class="p">)</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">fp</span><span class="p">)</span>
                 <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JsonIOMixin.load_json"><a class="viewcode-back" href="../../../../../../../api/jina.types.arrays.mixins.io.json/#jina.types.arrays.mixins.io.json.JsonIOMixin.load_json">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'T'</span><span class="p">],</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'T'</span><span class="p">:</span>
         <span class="sd">"""Load array elements from a JSON file.</span>
 
-<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        :param file: File or filename or a JSON string to which the data is saved.</span>
 
-<span class="sd">        :return: a DocumentArray object</span>
+<span class="sd">        :return: a DocumentArrayLike object</span>
 <span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'read'</span><span class="p">):</span>
             <span class="n">file_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
             <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
 
         <span class="kn">from</span> <span class="nn">....document</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">da</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
             <span class="n">da</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">da</span></div></div>
+            <span class="k">return</span> <span class="n">da</span></div>
+
+<div class="viewcode-block" id="JsonIOMixin.to_list"><a class="viewcode-back" href="../../../../../../../api/jina.types.arrays.mixins.io.json/#jina.types.arrays.mixins.io.json.JsonIOMixin.to_list">[docs]</a>    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="sd">"""Convert the object into a Python list.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Array like object such as :class:`numpy.ndarray` will be converted to Python list.</span>
+
+<span class="sd">        :return: a Python list</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="JsonIOMixin.to_json"><a class="viewcode-back" href="../../../../../../../api/jina.types.arrays.mixins.io.json/#jina.types.arrays.mixins.io.json.JsonIOMixin.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Convert the object into a JSON string. Can be loaded via :meth:`.load_json`.</span>
+
+<span class="sd">        :return: a Python list</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span></div></div>
 </pre></div>
             </article>
             <footer>

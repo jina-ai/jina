@@ -819,7 +819,7 @@
             <span class="k">return</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span>
-            <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
         <span class="p">)</span>
         <span class="n">docs</span> <span class="o">=</span> <span class="n">_get_docs_from_msg</span><span class="p">(</span>
             <span class="n">msg</span><span class="p">,</span>

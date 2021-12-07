@@ -680,8 +680,8 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.document.mixins.buffer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_deprecate_by</span><span class="p">,</span> <span class="n">_uri_to_buffer</span><span class="p">,</span> <span class="n">_to_datauri</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
+<span></span><span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_uri_to_buffer</span><span class="p">,</span> <span class="n">_to_datauri</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span><span class="p">,</span> <span class="n">deprecate_by</span>
 
 
 <div class="viewcode-block" id="BufferDataMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.buffer/#jina.types.document.mixins.buffer.BufferDataMixin">[docs]</a><span class="k">class</span> <span class="nc">BufferDataMixin</span><span class="p">:</span>
@@ -720,8 +720,8 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="n">convert_buffer_to_uri</span> <span class="o">=</span> <span class="n">_deprecate_by</span><span class="p">(</span><span class="n">dump_buffer_to_datauri</span><span class="p">)</span>
-    <span class="n">convert_uri_to_buffer</span> <span class="o">=</span> <span class="n">_deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_buffer</span><span class="p">)</span></div>
+    <span class="n">convert_buffer_to_uri</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">dump_buffer_to_datauri</span><span class="p">)</span>
+    <span class="n">convert_uri_to_buffer</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_buffer</span><span class="p">)</span></div>
 </pre></div>
             </article>
             <footer>

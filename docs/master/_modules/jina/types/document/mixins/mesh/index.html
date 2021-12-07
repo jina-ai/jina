@@ -682,8 +682,7 @@
                 <h1>Source code for jina.types.document.mixins.mesh</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_deprecate_by</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">T</span><span class="p">,</span> <span class="n">deprecate_by</span>
 
 
 <div class="viewcode-block" id="MeshDataMixin"><a class="viewcode-back" href="../../../../../../api/jina.types.document.mixins.mesh/#jina.types.document.mixins.mesh.MeshDataMixin">[docs]</a><span class="k">class</span> <span class="nc">MeshDataMixin</span><span class="p">:</span>
@@ -718,7 +717,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">pcs</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="n">convert_uri_to_point_cloud_blob</span> <span class="o">=</span> <span class="n">_deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_point_cloud_blob</span><span class="p">)</span></div>
+    <span class="n">convert_uri_to_point_cloud_blob</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">load_uri_to_point_cloud_blob</span><span class="p">)</span></div>
 </pre></div>
             </article>
             <footer>

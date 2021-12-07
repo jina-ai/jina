@@ -684,14 +684,13 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
-<span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">.....</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">.....proto.jina_pb2</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DenseNdArrayProto</span><span class="p">,</span>
     <span class="n">NdArrayProto</span><span class="p">,</span>
@@ -857,6 +856,9 @@
                 <span class="c1"># Proto Field Type: google.protobuf.Timestamp</span>
                 <span class="n">field_type</span> <span class="o">=</span> <span class="n">datetime</span>
                 <span class="n">default_factory</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span>
+            <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'NdArrayProto'</span><span class="p">:</span>
+                <span class="n">field_type</span> <span class="o">=</span> <span class="n">List</span>
+                <span class="n">default_factory</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Proto field type: Proto message defined in jina.proto</span>
                 <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_name</span><span class="p">:</span>
@@ -943,19 +945,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_example_data</span><span class="p">():</span>
-    <span class="n">_example</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentArrayProto</span><span class="p">()</span>
-    <span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐲'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'Azure Dragon'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'East'</span><span class="p">})</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐦'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'Vermilion Bird'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'South'</span><span class="p">})</span>
-    <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐢'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'Black Tortoise'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'North'</span><span class="p">})</span>
-    <span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐯'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'White Tiger'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'West'</span><span class="p">})</span>
-    <span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
-    <span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
-    <span class="n">d0</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d3</span><span class="p">)</span>
-    <span class="n">_example</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d0</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">d2</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">d3</span><span class="o">.</span><span class="n">proto</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
-        <span class="n">_example</span><span class="p">,</span>
-        <span class="n">including_default_value_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)[</span><span class="s1">'docs'</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'hello, world!'</span><span class="p">)])</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="JinaRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaRequestModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -977,12 +967,12 @@
     <span class="p">)</span>
     <span class="n">target_peapod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="s1">'executor0/*'</span><span class="p">,</span>
+        <span class="n">example</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">'A regex string represent the certain peas/pods request targeted.'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="p">{</span><span class="s1">'top_k'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'model'</span><span class="p">:</span> <span class="s1">'bert'</span><span class="p">},</span>
+        <span class="n">example</span><span class="o">=</span><span class="p">{},</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">'A dictionary of parameters to be sent to the executor.'</span><span class="p">,</span>
     <span class="p">)</span>
 

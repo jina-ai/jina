@@ -700,6 +700,7 @@
         <span class="n">tensorflow</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
         <span class="n">tensorflow</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
     <span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -719,15 +720,35 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">proto</span> <span class="k">if</span> <span class="n">proto</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NdArrayProto</span><span class="p">()</span>
 
+<div class="viewcode-block" id="NdArray.numpy"><a class="viewcode-back" href="../../../../api/jina.types.ndarray/#jina.types.ndarray.NdArray.numpy">[docs]</a>    <span class="k">def</span> <span class="nf">numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'np.ndarray'</span><span class="p">:</span>
+        <span class="sd">"""Return the value always in :class:`numpy.ndarray` regardless the framework type.</span>
+
+<span class="sd">        :return: the value in :class:`numpy.ndarray`.</span>
+<span class="sd">        """</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'todense'</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'to_dense'</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">to_dense</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">==</span> <span class="s1">'tensorflow'</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">):</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'numpy'</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return the value in original framework type</span>
 
 <span class="sd">        :return: the value of in numpy, scipy, tensorflow, pytorch type."""</span>
-        <span class="n">framework</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">cls_name</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'scipy'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">==</span> <span class="s1">'scipy'</span><span class="p">:</span>
                 <span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_raw_sparse_array</span><span class="p">()</span>
                 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
@@ -741,20 +762,20 @@
                     <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
                 <span class="k">elif</span> <span class="n">sp_format</span> <span class="o">==</span> <span class="s1">'coo'</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">x</span>
-            <span class="k">elif</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'tensorflow'</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">==</span> <span class="s1">'tensorflow'</span><span class="p">:</span>
                 <span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_raw_sparse_array</span><span class="p">()</span>
                 <span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">SparseTensor</span>
 
                 <span class="k">return</span> <span class="n">SparseTensor</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'torch'</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">==</span> <span class="s1">'torch'</span><span class="p">:</span>
                 <span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_raw_sparse_array</span><span class="p">()</span>
                 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">sparse_coo_tensor</span>
 
                 <span class="k">return</span> <span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">framework</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'numpy'</span><span class="p">,</span> <span class="s1">'torch'</span><span class="p">,</span> <span class="s1">'paddle'</span><span class="p">,</span> <span class="s1">'tensorflow'</span><span class="p">}:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'numpy'</span><span class="p">,</span> <span class="s1">'torch'</span><span class="p">,</span> <span class="s1">'paddle'</span><span class="p">,</span> <span class="s1">'tensorflow'</span><span class="p">}:</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">_get_dense_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">dense</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">_to_framework_array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">framework</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_to_framework_array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NdArray.ravel"><a class="viewcode-back" href="../../../../api/jina.types.ndarray/#jina.types.ndarray.NdArray.ravel">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ravel</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s1">'ArrayType'</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">],</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -794,7 +815,7 @@
 <span class="sd">        :return: a framework ndarray</span>
 <span class="sd">        """</span>
         <span class="n">first</span> <span class="o">=</span> <span class="n">NdArray</span><span class="p">(</span><span class="n">protos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">framework</span><span class="p">,</span> <span class="n">is_sparse</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">is_sparse</span>
+        <span class="n">framework</span><span class="p">,</span> <span class="n">is_sparse</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">framework</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">is_sparse</span>
 
         <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">framework</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'tensorflow'</span><span class="p">}:</span>
@@ -886,6 +907,9 @@
                 <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'numpy'</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">'numpy'</span>
                     <span class="n">_set_dense_array</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">dense</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'python'</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">'numpy'</span>
+                    <span class="n">_set_dense_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">dense</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">'tensorflow'</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">cls_name</span> <span class="o">=</span> <span class="s1">'tensorflow'</span>
                     <span class="n">_set_dense_array</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">dense</span><span class="p">)</span>
@@ -903,6 +927,14 @@
 <span class="sd">        :return: True if the underlying ndarray is sparse</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s1">'content'</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'sparse'</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">framework</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Return the framework name of this ndarray object</span>
+
+<span class="sd">        :return: the framework name</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">cls_name</span>
 
     <span class="k">def</span> <span class="nf">_set_scipy_sparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'scipy.sparse.spmatrix'</span><span class="p">):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -960,6 +992,9 @@
     <span class="n">module_tags</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
     <span class="n">class_name</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
 
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s1">'python'</span><span class="p">,</span> <span class="kc">False</span>
+
     <span class="k">if</span> <span class="s1">'numpy'</span> <span class="ow">in</span> <span class="n">module_tags</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">'numpy'</span><span class="p">,</span> <span class="kc">False</span>
 
@@ -1012,6 +1047,37 @@
     <span class="n">x_mat</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">shape</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+
+<span class="kn">import</span> <span class="nn">google.protobuf.json_format</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">_Printer</span><span class="p">,</span> <span class="n">_Parser</span>
+
+
+<span class="k">class</span> <span class="nc">_PrinterWithNdArraySupport</span><span class="p">(</span><span class="n">_Printer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_MessageToJsonObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="n">message_descriptor</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">DESCRIPTOR</span>
+        <span class="n">full_name</span> <span class="o">=</span> <span class="n">message_descriptor</span><span class="o">.</span><span class="n">full_name</span>
+        <span class="k">if</span> <span class="n">full_name</span> <span class="o">==</span> <span class="s1">'jina.NdArrayProto'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_MessageToJsonObject</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_ParseWithNdArraySupport</span><span class="p">(</span><span class="n">_Parser</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ConvertMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="n">message_descriptor</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">DESCRIPTOR</span>
+        <span class="n">full_name</span> <span class="o">=</span> <span class="n">message_descriptor</span><span class="o">.</span><span class="n">full_name</span>
+        <span class="k">if</span> <span class="n">full_name</span> <span class="o">==</span> <span class="s1">'jina.NdArrayProto'</span><span class="p">:</span>
+            <span class="n">na</span> <span class="o">=</span> <span class="n">NdArray</span><span class="p">()</span>
+            <span class="n">na</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">message</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">ConvertMessage</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
+
+<span class="n">google</span><span class="o">.</span><span class="n">protobuf</span><span class="o">.</span><span class="n">json_format</span><span class="o">.</span><span class="n">_Printer</span> <span class="o">=</span> <span class="n">_PrinterWithNdArraySupport</span>
+<span class="n">google</span><span class="o">.</span><span class="n">protobuf</span><span class="o">.</span><span class="n">json_format</span><span class="o">.</span><span class="n">_Parser</span> <span class="o">=</span> <span class="n">_ParseWithNdArraySupport</span>
 </pre></div>
             </article>
             <footer>

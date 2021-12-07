@@ -731,13 +731,43 @@
 <dd><p>Load array elements from a JSON file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>]) – File or filename to which the data is saved.</p>
+<dd class="field-odd"><p><strong>file</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TextIO</span></code>]) – File or filename or a JSON string to which the data is saved.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>T</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a DocumentArray object</p>
+<dd class="field-odd"><p>a DocumentArrayLike object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.arrays.mixins.io.json.JsonIOMixin.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/io/json/#JsonIOMixin.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.io.json.JsonIOMixin.to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the object into a Python list.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> will be converted to Python list.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a Python list</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.arrays.mixins.io.json.JsonIOMixin.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/io/json/#JsonIOMixin.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.io.json.JsonIOMixin.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the object into a JSON string. Can be loaded via <a class="reference internal" href="#jina.types.arrays.mixins.io.json.JsonIOMixin.load_json" title="jina.types.arrays.mixins.io.json.JsonIOMixin.load_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_json()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a Python list</p>
 </dd>
 </dl>
 </dd></dl>

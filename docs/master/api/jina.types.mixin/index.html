@@ -729,8 +729,8 @@
 </ul>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.json">
-<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.json" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.to_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the object in JSON string</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -742,9 +742,14 @@
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.dict">
-<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the object in Python dictionary</p>
+<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the object in Python dictionary.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (i.e. anything described as <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.NdArrayProto</span></code>)
+will be converted to Python list.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
@@ -756,11 +761,11 @@
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">google.protobuf.pyext.cpp_message.GeneratedProtocolMessageType</span></em><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.proto" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina_pb2._reflection.GeneratedProtocolMessageType</span></em><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.proto" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the underlying Protobuf object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratedProtocolMessageType</span></code></p>
+<dd class="field-odd"><p>jina_pb2._reflection.GeneratedProtocolMessageType</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Protobuf representation of the object</p>
@@ -768,8 +773,8 @@
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.binary_str">
-<span class="sig-name descname"><span class="pre">binary_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.binary_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.binary_str" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.to_bytes">
+<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/mixin/#ProtoTypeMixin.to_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the serialized the message to a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -855,6 +860,18 @@
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.dict">
+<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.json">
+<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.mixin.ProtoTypeMixin.binary_str">
+<span class="sig-name descname"><span class="pre">binary_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.mixin.ProtoTypeMixin.binary_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 
