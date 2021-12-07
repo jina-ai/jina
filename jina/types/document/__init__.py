@@ -185,14 +185,17 @@ class Document(AllMixins, ProtoTypeMixin):
             elif isinstance(document, bytes):
                 self._pb_body = jina_pb2.DocumentProto()
                 self._pb_body.ParseFromString(document)
-            elif isinstance(document, (dict, str)) or (document is None and kwargs):
+            elif isinstance(document, (dict, str)):
+                # note that not any dict can be parsed in this branch. As later we use Protobuf JSON parser, this
+                # dict must be a valid JSON. The next lines make sure the dict is a valid json.
+                if isinstance(document, dict):
+                    try:
+                        json.dumps(document)
+                    except:
+                        raise json_format.ParseError
+
                 if isinstance(document, str):
                     document = json.loads(document)
-
-                clear_kwargs = False
-                if document is None and kwargs:
-                    document = kwargs
-                    clear_kwargs = True
 
                 if field_resolver:
                     document = {
@@ -236,8 +239,6 @@ class Document(AllMixins, ProtoTypeMixin):
                                 {k: document[k] for k in _remainder}
                             )
 
-                if clear_kwargs:
-                    kwargs = None
             elif isinstance(document, Document):
                 if copy:
                     self._pb_body = jina_pb2.DocumentProto()
@@ -252,6 +253,7 @@ class Document(AllMixins, ProtoTypeMixin):
                 self._pb_body = jina_pb2.DocumentProto()
         except json_format.ParseError:
             # append everything to kwargs that is more powerful in setting attributes
+            self._pb_body = jina_pb2.DocumentProto()
             if isinstance(document, dict):
                 kwargs.update(document)
         except Exception as ex:

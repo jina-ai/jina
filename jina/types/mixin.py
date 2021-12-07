@@ -71,7 +71,7 @@ class ProtoTypeMixin:
 
     def __setstate__(self, state):
         self.__init__()
-        self._pb_body.__setstate__()
+        self._pb_body.__setstate__(state)
 
     @property
     def nbytes(self) -> int:
