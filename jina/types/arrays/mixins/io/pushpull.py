@@ -13,17 +13,17 @@ class PushPullMixin:
 
     _service_url = 'http://apihubble.staging.jina.ai/v2/rpc/da.'
 
-    def push(self, keyphrase: str, show_progress: bool = False) -> None:
+    def push(self, token: str, show_progress: bool = False) -> None:
         """Push this DocumentArray object to Jina Cloud which can be later retrieved via :meth:`.push`
 
         .. note::
-            - Push with the same ``keyphrase`` will override the existing content.
+            - Push with the same ``token`` will override the existing content.
             - Kinda like a public clipboard where everyone can override anyone's content.
-              So to make your content survive longer, you may want to use longer & more complicated keyphrase.
+              So to make your content survive longer, you may want to use longer & more complicated token.
             - The lifetime of the content is not promised atm, could be a day, could be a week. Do not use it for
               persistence. Only use this full temporary transmission/storage/clipboard.
 
-        :param keyphrase: a key that later can be used for retrieve this :class:`DocumentArray`.
+        :param token: a key that later can be used for retrieve this :class:`DocumentArray`.
         :param show_progress: if to show a progress bar on pulling
         """
         import requests
@@ -50,7 +50,7 @@ class PushPullMixin:
                     self._p_bar.update(self._task_id, advance=len(chunk))
                 return chunk
 
-        dict_data = {'file': ('DocumentArray', bytes(self)), 'token': keyphrase}
+        dict_data = {'file': ('DocumentArray', bytes(self)), 'token': token}
 
         (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
             dict_data
@@ -63,16 +63,16 @@ class PushPullMixin:
             requests.post(self._service_url + 'push', data=body, headers=headers)
 
     @classmethod
-    def pull(cls: Type['T'], keyphrase: str, show_progress: bool = False) -> 'T':
+    def pull(cls: Type['T'], token: str, show_progress: bool = False) -> 'T':
         """Pulling a :class:`DocumentArray` from Jina Cloud Service to local.
 
-        :param keyphrase: the upload token set during :meth:`.push`
+        :param token: the upload token set during :meth:`.push`
         :param show_progress: if to show a progress bar on pulling
         :return: a :class:`DocumentArray` object
         """
         import requests
 
-        url = f'{cls._service_url}pull?token={keyphrase}'
+        url = f'{cls._service_url}pull?token={token}'
         response = requests.get(url)
 
         progress = _get_progressbar(show_progress)
