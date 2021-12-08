@@ -169,6 +169,7 @@ class DataRequestHandler:
             ),
         )
 
+        # set the pod_name of the sender
         msg.request.pod_name = peapod_name
 
         # assigning result back to request

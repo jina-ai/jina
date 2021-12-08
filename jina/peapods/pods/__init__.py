@@ -8,7 +8,7 @@ from typing import Dict, Union, Set, List, Optional
 
 from ..networking import get_connect_host
 from ..peas import BasePea
-from ... import __default_executor__
+from ... import __default_executor__, __default_reducer_executor__
 from ... import helper
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...enums import (
@@ -18,7 +18,6 @@ from ...enums import (
     PeaRoleType,
     PollingType,
 )
-from ...executors import ReducerExecutor
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
 
@@ -284,9 +283,9 @@ class BasePod(ExitFIFO):
             polling_type == PollingType.ALL
             and args.shards
             and args.shards > 1
-            and not args.uses_after
+            and not getattr(args, 'uses_after', None)
         ):
-            _tail_args.uses = ReducerExecutor.__name__
+            _tail_args.uses = __default_reducer_executor__
 
         Pod._set_dynamic_routing_out(_tail_args)
 
