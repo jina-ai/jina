@@ -48,12 +48,15 @@ def docs(document_factory):
 
 
 @pytest.fixture
-def docarray(docker_compose, docs):
+def docarray(docs):
     docs_redis = DocumentArrayRedis()
     docs_redis.clear()
     assert len(docs_redis) == 0
+    print(f'creating docs_redis')
     docs_redis = DocumentArrayRedis(docs)
+    print(f'checking len docs_redis')
     assert len(docs_redis) == 3
+    print(f'returning docs_redis')
     return docs_redis
 
 
@@ -71,8 +74,7 @@ def docarray_with_scipy_sparse_embedding(docs):
     return DocumentArrayRedis(docs)
 
 
-@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_length(docarray, docs, docker_compose):
+def test_length(docarray, docs):
     assert len(docs) == len(docarray) == 3
 
 

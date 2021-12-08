@@ -25,9 +25,10 @@ class DocumentArrayRedis(
         # hash has faster access
         # but no int index access?
         self.docs = self._db.Array(name)
+        print(f'end of constructor')
         if docs:
-            for d in docs:
-                self.append(d)
+            print(f'extending with {len(docs)}')
+            self.extend(docs)
 
     def insert(self, index: int, doc: 'Document') -> None:
         """Insert `doc` at `index`.
@@ -40,6 +41,9 @@ class DocumentArrayRedis(
         raise NotImplementedError
 
     def __len__(self):
+        print(f'calling __len__')
+        print(self.docs.__len__())
+        print(self.docs)
         return len(self.docs)
 
     def extend(self, docs: Iterable['Document']) -> None:
@@ -56,7 +60,9 @@ class DocumentArrayRedis(
         :param doc: The doc needs to be appended.
         """
         # TODO check if id exists?
+        print(f'appending one doc {doc.id}')
         self.docs.append(doc.to_bytes())
+        print(f'appended. len = {len(self), len(self.docs)}')
 
     def __getitem__(
         self, key: Union[int, str, slice, List]
@@ -124,6 +130,7 @@ class DocumentArrayRedis(
         return self[item] is not None
 
     def __del__(self):
+        print(f'calling del..', flush=True)
         self.docs.clear()
         self.docs = self._db.Array(self.name)
 
