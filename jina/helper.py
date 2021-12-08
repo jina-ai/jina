@@ -1397,3 +1397,17 @@ def deprecate_by(new_fn):
         return new_fn(*args, **kwargs)
 
     return _f
+
+
+def get_request_header() -> Dict:
+    """Return the header of request.
+
+    :return: request header
+    """
+    metas, envs = get_full_version()
+
+    header = {
+        **{f'jinameta-{k}': str(v) for k, v in metas.items()},
+        **envs,
+    }
+    return header
