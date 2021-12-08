@@ -12,7 +12,7 @@ from typing import Union, Iterable, Iterator, Optional, TYPE_CHECKING, List
 import numpy as np
 
 from .bpm import BufferPoolManager
-from ..mixins import AllMixins, ContentPropertyMixin
+from ..mixins import AllMixins
 from .... import __windows__
 
 _HEADER_NONE_ENTRY = (-1, -1, -1)
@@ -21,7 +21,6 @@ _PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 if TYPE_CHECKING:
     from ...document import Document
     from ..document import DocumentArray
-    from ...ndarray import ArrayType
 
 __all__ = ['DocumentArrayMemmap']
 
