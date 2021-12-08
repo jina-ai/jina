@@ -100,15 +100,16 @@ def test_from_to_bytes(da_cls):
 
 
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
-def test_push_pull_io(da_cls):
+@pytest.mark.parametrize('show_progress', [True, False])
+def test_push_pull_io(da_cls, show_progress):
     da1 = da_cls.empty(10)
     da1.embeddings = np.random.random([len(da1), 256])
     random_texts = [random_name() for _ in da1]
     da1.texts = random_texts
 
-    da1.push('myda')
+    da1.push('myda', show_progress=show_progress)
 
-    da2 = da_cls.pull('myda', show_progress=True)
+    da2 = da_cls.pull('myda', show_progress=show_progress)
 
     assert len(da1) == len(da2) == 10
     assert da1.texts == da2.texts == random_texts

@@ -2,8 +2,6 @@ import io
 from contextlib import nullcontext
 from typing import Type, TYPE_CHECKING
 
-import requests
-
 from .....helper import get_request_header
 
 if TYPE_CHECKING:
@@ -15,21 +13,54 @@ class PushPullMixin:
 
     _service_url = 'http://apihubble.staging.jina.ai/v2/rpc/da.'
 
-    def push(self, keyphrase: str) -> None:
+    def push(self, keyphrase: str, show_progress: bool = False) -> None:
         """Push this DocumentArray object to Jina Cloud which can be later retrieved via :meth:`.push`
 
+        .. note::
+            - Push with the same ``keyphrase`` will override the existing content.
+            - Kinda like a public clipboard where everyone can override anyone's content.
+              So to make your content survive longer, you may want to use longer & more complicated keyphrase.
+            - The lifetime of the content is not promised atm, could be a day, could be a week. Do not use it for
+              persistence. Only use this full temporary transmission/storage/clipboard.
+
         :param keyphrase: a key that later can be used for retrieve this :class:`DocumentArray`.
+        :param show_progress: if to show a progress bar on pulling
         """
-        payload = {'token': keyphrase}
+        import requests
 
-        files = [('file', ('DocumentArray', bytes(self)))]
+        progress = _get_progressbar(show_progress)
+        task_id = progress.add_task('upload', start=False) if show_progress else None
 
-        requests.post(
-            self._service_url + 'push',
-            data=payload,
-            files=files,
-            headers=get_request_header(),
+        class BufferReader(io.BytesIO):
+            def __init__(self, buf=b'', p_bar=None, task_id=None):
+                super().__init__(buf)
+                self._len = len(buf)
+                self._p_bar = p_bar
+                self._task_id = task_id
+                if show_progress:
+                    progress.update(task_id, total=self._len)
+                    progress.start_task(task_id)
+
+            def __len__(self):
+                return self._len
+
+            def read(self, n=-1):
+                chunk = io.BytesIO.read(self, n)
+                if self._p_bar:
+                    self._p_bar.update(self._task_id, advance=len(chunk))
+                return chunk
+
+        dict_data = {'file': ('DocumentArray', bytes(self)), 'token': keyphrase}
+
+        (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
+            dict_data
         )
+
+        headers = {'Content-Type': ctype, **get_request_header()}
+
+        with progress as p_bar:
+            body = BufferReader(data, p_bar, task_id)
+            requests.post(self._service_url + 'push', data=body, headers=headers)
 
     @classmethod
     def pull(cls: Type['T'], keyphrase: str, show_progress: bool = False) -> 'T':
@@ -39,32 +70,12 @@ class PushPullMixin:
         :param show_progress: if to show a progress bar on pulling
         :return: a :class:`DocumentArray` object
         """
+        import requests
 
         url = f'{cls._service_url}pull?token={keyphrase}'
         response = requests.get(url)
 
-        if show_progress:
-            from rich.progress import (
-                BarColumn,
-                DownloadColumn,
-                Progress,
-                TimeRemainingColumn,
-                TransferSpeedColumn,
-            )
-
-            progress = Progress(
-                BarColumn(bar_width=None),
-                "[progress.percentage]{task.percentage:>3.1f}%",
-                "•",
-                DownloadColumn(),
-                "•",
-                TransferSpeedColumn(),
-                "•",
-                TimeRemainingColumn(),
-                transient=True,
-            )
-        else:
-            progress = nullcontext()
+        progress = _get_progressbar(show_progress)
 
         url = response.json()['data']['download']
 
@@ -87,3 +98,28 @@ class PushPullMixin:
                         progress.update(task_id, advance=len(chunk))
 
                 return cls.load_binary(f.getvalue())
+
+
+def _get_progressbar(show_progress):
+    if show_progress:
+        from rich.progress import (
+            BarColumn,
+            DownloadColumn,
+            Progress,
+            TimeRemainingColumn,
+            TransferSpeedColumn,
+        )
+
+        return Progress(
+            BarColumn(bar_width=None),
+            "[progress.percentage]{task.percentage:>3.1f}%",
+            "•",
+            DownloadColumn(),
+            "•",
+            TransferSpeedColumn(),
+            "•",
+            TimeRemainingColumn(),
+            transient=True,
+        )
+    else:
+        return nullcontext()
