@@ -103,7 +103,6 @@ class NdArray(ProtoTypeMixin):
         :param field: the field of the doc to set
         :param value: the value to be set on ``doc.field``
         """
-        emb_shape0 = value.shape[0]
 
         use_get_row = False
         if hasattr(value, 'getformat'):
@@ -117,10 +116,15 @@ class NdArray(ProtoTypeMixin):
                 use_get_row = True
 
         if use_get_row:
+            emb_shape0 = value.shape[0]
             for d, j in zip(docs, range(emb_shape0)):
                 row = getattr(value.getrow(j), f'to{sp_format}')()
                 setattr(d, field, row)
+        elif isinstance(value, (list, tuple)):
+            for d, j in zip(docs, value):
+                setattr(d, field, j)
         else:
+            emb_shape0 = value.shape[0]
             for d, j in zip(docs, range(emb_shape0)):
                 setattr(d, field, value[j, ...])
 
