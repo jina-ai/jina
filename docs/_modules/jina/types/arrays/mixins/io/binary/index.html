@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina.types.arrays.mixins.io.binary - Jina 2.5.4 documentation</title>
+        <title>jina.types.arrays.mixins.io.binary - Jina 2.5.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 2.5.4 documentation</div>
+                <div class="brand">Jina 2.5.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -665,15 +665,15 @@
                     </label>
                 </div>
                 <h1>Source code for jina.types.arrays.mixins.io.binary</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os.path</span>
+<span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">from</span> <span class="nn">.....</span> <span class="kn">import</span> <span class="n">__windows__</span>
-<span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">random_uuid</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">...document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
     <span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">T</span>
 
 
@@ -698,16 +698,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'unsupported input </span><span class="si">{</span><span class="n">file</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
 
-        <span class="n">dap</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentArrayProto</span><span class="p">()</span>
-
-        <span class="kn">from</span> <span class="nn">...document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+        <span class="kn">from</span> <span class="nn">...document</span> <span class="kn">import</span> <span class="n">Document</span>
         <span class="kn">import</span> <span class="nn">lz4.frame</span>
 
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s1">'read'</span><span class="p">)</span> <span class="k">else</span> <span class="n">fp</span>
-            <span class="n">dap</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">lz4</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">lz4</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_uuid</span><span class="p">()</span><span class="o">.</span><span class="n">bytes</span><span class="p">)</span>
+            <span class="n">_binary_delimiter</span> <span class="o">=</span> <span class="n">d</span><span class="p">[:</span><span class="n">_len</span><span class="p">]</span>  <span class="c1"># first get delimiter</span>
             <span class="n">da</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-            <span class="n">da</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">DocumentArray</span><span class="p">(</span><span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="p">))</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">od</span><span class="p">)</span> <span class="k">for</span> <span class="n">od</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="n">_len</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_binary_delimiter</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">da</span></div>
 
 <div class="viewcode-block" id="BinaryIOMixin.save_binary"><a class="viewcode-back" href="../../../../../../../api/jina.types.arrays.mixins.io.binary/#jina.types.arrays.mixins.io.binary.BinaryIOMixin.save_binary">[docs]</a>    <span class="k">def</span> <span class="nf">save_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -738,11 +738,15 @@
 
 <span class="sd">        :return: the binary serialization in bytes</span>
 <span class="sd">        """</span>
-        <span class="n">dap</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentArrayProto</span><span class="p">()</span>
-        <span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
         <span class="kn">import</span> <span class="nn">lz4.frame</span>
 
-        <span class="k">return</span> <span class="n">lz4</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">dap</span><span class="o">.</span><span class="n">SerializePartialToString</span><span class="p">())</span></div>
+        <span class="n">_binary_delimiter</span> <span class="o">=</span> <span class="n">random_uuid</span><span class="p">()</span><span class="o">.</span><span class="n">bytes</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">bf</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">lz4</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">LZ4FrameFile</span><span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">_binary_delimiter</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">bf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__bytes__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">()</span></div>
