@@ -24,7 +24,7 @@ def _reduce_doc_props(doc1: 'Document', doc2: 'Document'):
 
 
 class ReduceMixin:
-    """A mixing that provides reducing logic for :class:`DocumentArray` or :class:`DocumentArrayMemmap`"""
+    """A mixin that provides reducing logic for :class:`DocumentArray` or :class:`DocumentArrayMemmap`"""
 
     def reduce(self: 'T', other: 'T') -> 'T':
         """
@@ -33,7 +33,7 @@ class ReduceMixin:
         Reducing 2 DocumentArrays consists in adding Documents in the second DocumentArray to the first DocumentArray
         if they do not exist. If a Document exists in both DocumentArrays, the data properties are merged with priority
         to the first Document (that is, to the current DocumentArray's Document). The matches and chunks are also
-        reduced.
+        reduced in the same way.
         :param other: DocumentArray
         :return: DocumentArray
         """
@@ -67,14 +67,14 @@ class ReduceMixin:
         Reduces a list of DocumentArrays and this DocumentArray into one DocumentArray. Changes are applied to this
         DocumentArray in-place.
 
-        Reduction consists in reducing this DocumentArray with every DocumentArray in others sequentially using
+        Reduction consists in reducing this DocumentArray with every DocumentArray in `others` sequentially using
         :class:`DocumentArray`.:method:`reduce`.
         The resulting DocumentArray contains Documents of all DocumentArrays.
         If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
         DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
         attribute value of the left-most DocumentArray is kept.
-        Non-data properties are ignored.
         Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
+        Other non-data properties are ignored.
 
         .. note::
             - Matches are not kept in a sorted order when they are reduced. You might want to re-sort them in a later
