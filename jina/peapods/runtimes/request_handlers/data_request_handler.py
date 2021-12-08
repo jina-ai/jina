@@ -1,4 +1,5 @@
 import re
+from operator import itemgetter
 from typing import Dict, List, Optional, TYPE_CHECKING
 
 from .... import __default_endpoint__
@@ -22,7 +23,9 @@ def _get_docs_matrix_from_message(
     field: str,
 ) -> List['DocumentArray']:
     if partial_request is not None:
-        result = [getattr(r, field) for r in reversed(partial_request)]
+        result = [(r.pod_name, getattr(r, field)) for r in reversed(partial_request)]
+        result.sort(key=itemgetter(0))
+        result = list(map(itemgetter(1), result))
     else:
         result = [getattr(msg.request, field)]
 
@@ -165,6 +168,8 @@ class DataRequestHandler:
                 field='groundtruths',
             ),
         )
+
+        msg.request.pod_name = peapod_name
 
         # assigning result back to request
         # 1. Return none: do nothing
