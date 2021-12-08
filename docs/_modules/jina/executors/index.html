@@ -666,7 +666,7 @@
 <span></span><span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span><span class="p">,</span> <span class="n">__args_executor_init__</span>
@@ -896,10 +896,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BaseExecutor.from_hub"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.BaseExecutor.from_hub">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_hub</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">from_hub</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
         <span class="sd">"""Construct an Executor from Hub.</span>
 
 <span class="sd">        :param uri: a hub Executor scheme starts with `jinahub://`</span>
+<span class="sd">        :param context: context replacement variables in a dict, the value of the dict is the replacement.</span>
+<span class="sd">        :param uses_with: dictionary of parameters to overwrite from the default config's with field</span>
+<span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field</span>
+<span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field</span>
 <span class="sd">        :param kwargs: other kwargs accepted by the CLI ``jina hub pull``</span>
 <span class="sd">        :return: the Hub Executor object.</span>
 <span class="sd">        """</span>
@@ -922,7 +934,13 @@
                 <span class="sa">f</span><span class="s1">'Can not construct a native Executor from </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">. Looks like you want to use it as a '</span>
                 <span class="sa">f</span><span class="s1">'Docker container, you may want to use it in the Flow via `.add(uses=</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">)` instead.'</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">_source</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+            <span class="n">_source</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
+            <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 </pre></div>
             </article>
             <footer>
