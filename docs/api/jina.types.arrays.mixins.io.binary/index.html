@@ -550,6 +550,7 @@
 <li class="toctree-l6 current current-page"><a class="current reference internal" href="#">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
@@ -696,10 +697,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.io.binary.BinaryIOMixin.load_binary">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/io/binary/#BinaryIOMixin.load_binary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.io.binary.BinaryIOMixin.load_binary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load array elements from a binary file.</p>
+<dd><p>Load array elements from a LZ4-compressed binary file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code>]) – File or filename to which the data is saved.</p>
+<dd class="field-odd"><p><strong>file</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – File or filename or serialized bytes where the data is stored.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>T</p>
@@ -712,14 +713,32 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.arrays.mixins.io.binary.BinaryIOMixin.save_binary">
 <span class="sig-name descname"><span class="pre">save_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/io/binary/#BinaryIOMixin.save_binary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.io.binary.BinaryIOMixin.save_binary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save array elements into a binary file.</p>
+<dd><p>Save array elements into a LZ4 compressed binary file.</p>
 <p>Comparing to <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_json()</span></code>, it is faster and the file is smaller, but not human-readable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To get a binary presentation in memory, use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code>]) – File or filename to which the data is saved.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.arrays.mixins.io.binary.BinaryIOMixin.to_bytes">
+<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/mixins/io/binary/#BinaryIOMixin.to_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.mixins.io.binary.BinaryIOMixin.to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize itself into bytes with LZ4 compression.</p>
+<p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the binary serialization in bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -758,7 +777,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 07, 2021.
+                    Last updated on Dec 08, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -525,6 +525,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
@@ -767,7 +768,6 @@
 <span class="sd">        :param field: the field of the doc to set</span>
 <span class="sd">        :param value: the value to be set on ``doc.field``</span>
 <span class="sd">        """</span>
-        <span class="n">emb_shape0</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">use_get_row</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">'getformat'</span><span class="p">):</span>
@@ -781,10 +781,15 @@
                 <span class="n">use_get_row</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">use_get_row</span><span class="p">:</span>
+            <span class="n">emb_shape0</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">emb_shape0</span><span class="p">)):</span>
                 <span class="n">row</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">getrow</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="sa">f</span><span class="s1">'to</span><span class="si">{</span><span class="n">sp_format</span><span class="si">}</span><span class="s1">'</span><span class="p">)()</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">emb_shape0</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">emb_shape0</span><span class="p">)):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span></div>
 
@@ -1071,7 +1076,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 07, 2021.
+                    Last updated on Dec 08, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

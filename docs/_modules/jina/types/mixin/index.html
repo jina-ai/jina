@@ -525,6 +525,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
@@ -726,6 +727,8 @@
 <div class="viewcode-block" id="ProtoTypeMixin.to_bytes"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_bytes">[docs]</a>    <span class="k">def</span> <span class="nf">to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="sd">"""Return the serialized the message to a string.</span>
 
+<span class="sd">        For more Pythonic code, please use ``bytes(...)``.</span>
+
 <span class="sd">        :return: binary string representation of the object</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">SerializePartialToString</span><span class="p">()</span></div>
@@ -807,7 +810,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 07, 2021.
+                    Last updated on Dec 08, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

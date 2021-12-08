@@ -524,6 +524,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
@@ -1792,6 +1793,8 @@
           <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaResponseModel.data">(jina.peapods.runtimes.gateway.http.models.JinaResponseModel attribute)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.mixins.io.dataframe/#jina.types.arrays.mixins.io.dataframe.DataframeIOMixin">DataframeIOMixin (class in jina.types.arrays.mixins.io.dataframe)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType">DataInputType (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest">DataRequest (class in jina.types.request.data)</a>
@@ -2237,6 +2240,8 @@
           <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin.from_csv">(jina.types.arrays.mixins.io.from_gen.FromGeneratorMixin class method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.mixins.io.dataframe/#jina.types.arrays.mixins.io.dataframe.DataframeIOMixin.from_dataframe">from_dataframe() (jina.types.arrays.mixins.io.dataframe.DataframeIOMixin class method)</a>
+</li>
         <li><a href="../api/jina.types.document.generators/#jina.types.document.generators.from_files">from_files() (in module jina.types.document.generators)</a>
 
         <ul>
@@ -3895,6 +3900,13 @@
 </li>
         </ul></li>
         <li>
+    jina.types.arrays.mixins.io.dataframe
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.mixins.io.dataframe/#module-jina.types.arrays.mixins.io.dataframe">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.types.arrays.mixins.io.from_gen
 
         <ul>
@@ -4972,6 +4984,8 @@
           <li><a href="../api/jina.types.arrays.mixins.io.common/#module-jina.types.arrays.mixins.io.common">jina.types.arrays.mixins.io.common</a>
 </li>
           <li><a href="../api/jina.types.arrays.mixins.io.csv/#module-jina.types.arrays.mixins.io.csv">jina.types.arrays.mixins.io.csv</a>
+</li>
+          <li><a href="../api/jina.types.arrays.mixins.io.dataframe/#module-jina.types.arrays.mixins.io.dataframe">jina.types.arrays.mixins.io.dataframe</a>
 </li>
           <li><a href="../api/jina.types.arrays.mixins.io.from_gen/#module-jina.types.arrays.mixins.io.from_gen">jina.types.arrays.mixins.io.from_gen</a>
 </li>
@@ -6200,10 +6214,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.TF">TF (jina.enums.EmbeddingClsType attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType.THREAD">THREAD (jina.enums.RuntimeBackendType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.THROW_EARLY">THROW_EARLY (jina.enums.OnErrorStrategy attribute)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext.time_attrs">time_attrs (jina.logging.profile.TimeContext attribute)</a>
@@ -6220,7 +6234,13 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeDict">TimeDict (class in jina.logging.profile)</a>
 </li>
-        <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_bytes">to_bytes() (jina.types.mixin.ProtoTypeMixin method)</a>
+        <li><a href="../api/jina.types.arrays.mixins.io.binary/#jina.types.arrays.mixins.io.binary.BinaryIOMixin.to_bytes">to_bytes() (jina.types.arrays.mixins.io.binary.BinaryIOMixin method)</a>
+
+        <ul>
+          <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_bytes">(jina.types.mixin.ProtoTypeMixin method)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/jina.types.arrays.mixins.io.dataframe/#jina.types.arrays.mixins.io.dataframe.DataframeIOMixin.to_dataframe">to_dataframe() (jina.types.arrays.mixins.io.dataframe.DataframeIOMixin method)</a>
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.to_dgl_graph">to_dgl_graph() (jina.types.document.graph.GraphDocument method)</a>
 </li>
@@ -6561,7 +6581,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 07, 2021.
+                    Last updated on Dec 08, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -551,6 +551,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
@@ -744,19 +745,19 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 </section>
 <section id="access-elements">
 <h2>Access elements<a class="headerlink" href="#access-elements" title="Permalink to this headline">¶</a></h2>
-<p>You can access a <code class="docutils literal notranslate"><span class="pre">Document</span></code> element in the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> via integer index, string <code class="docutils literal notranslate"><span class="pre">id</span></code> or <code class="docutils literal notranslate"><span class="pre">slice</span></code> indices:</p>
+<p>Like a <code class="docutils literal notranslate"><span class="pre">List</span></code> <em>and</em> a <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, elements in <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> can be accessed via integer index, string <code class="docutils literal notranslate"><span class="pre">id</span></code> or <code class="docutils literal notranslate"><span class="pre">slice</span></code> indices:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'world'</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'goodbye'</span><span class="p">)])</span>
 
 <span class="n">da</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">da</span><span class="p">[</span><span class="s1">'world'</span><span class="p">]</span>
 <span class="n">da</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">da</span><span class="p">[</span><span class="s1">'world'</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;jina.types.document.Document id=hello at 5699749904&gt;
-&lt;jina.types.document.Document id=world at 5736614992&gt;
 &lt;jina.types.arrays.document.DocumentArray length=1 at 5705863632&gt;
+&lt;jina.types.document.Document id=world at 5736614992&gt;
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -831,6 +832,55 @@ one shot:</p>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="import-export">
+<h2>Import/Export<a class="headerlink" href="#import-export" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides the following methods for importing from/exporting to different formats.</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Description</th>
+<th>Export Method</th>
+<th>Import Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LZ4-compressed binary string/file</td>
+<td><code>.to_bytes()</code> (or <code>bytes(...)</code> for more Pythonic), <code>.save_binary()</code></td>
+<td><code>.load_binary()</code></td>
+</tr>
+<tr>
+<td>JSON string/file</td>
+<td><code>.to_json()</code>, <code>.save_json()</code></td>
+<td><code>.load_json()</code>, <code>.from_ndjson()</code></td>
+</tr>
+<tr>
+<td>CSV file</td>
+<td><code>.save_csv()</code></td>
+<td><code>.load_csv()</code>, <code>.from_lines()</code>, <code>.from_csv()</code></td>
+</tr>
+<tr>
+<td><code>pandas.Dataframe</code> object</td>
+<td><code>.to_dataframe()</code></td>
+<td><code>.from_dataframe()</code></td>
+</tr>
+<tr>
+<td>Local files</td>
+<td></td>
+<td><code>.from_files()</code></td>
+</tr>
+<tr>
+<td><code>numpy.ndarray</code> object</td>
+<td></td>
+<td><code>.from_ndarray()</code></td>
+</tr>
+</tbody>
+</table></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">.from_*()</span></code> functions often utlizes generators. When using independently, can be more memory-efficient. See <a class="reference internal" href="../../../api/jina.types.document.generators/#module-jina.types.document.generators" title="jina.types.document.generators"><code class="xref py py-mod docutils literal notranslate"><span class="pre">generators</span></code></a>.</p>
+</div>
 </section>
 <section id="embed-via-model">
 <span id="id2"></span><h2>Embed via model<a class="headerlink" href="#embed-via-model" title="Permalink to this headline">¶</a></h2>
@@ -1476,6 +1526,38 @@ foo-loop ...	foo-loop takes 18 seconds (18.52s)
 </div>
 </div>
 </section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
+<p>If a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> contains all image <code class="docutils literal notranslate"><span class="pre">Document</span></code>, you can plot all images in one sprite image using <a class="reference internal" href="../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin.plot_image_sprites" title="jina.types.arrays.mixins.plot.PlotMixin.plot_image_sprites"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_image_sprites()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>
+<span class="n">docs</span><span class="o">.</span><span class="n">plot_image_sprites</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/sprite-image.png"><img alt="../../../_images/sprite-image.png" src="../../../_images/sprite-image.png" style="width: 60%;"/></a>
+</figure>
+<p id="visualize-embeddings">If a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> has valid <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>, you can visualize the embeddings interactively using <a class="reference internal" href="../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings" title="jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_embeddings()</span></code></a>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">.plot_embeddings()</span></code> applies to any <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> not just image ones. For image <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, you can do one step more to attach the image sprite on to the visualization points.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">(</span><span class="n">image_sprites</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>
+<span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">),</span> <span class="mi">256</span><span class="p">])</span>  <span class="c1"># some random embeddings</span>
+
+<span class="n">docs</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">(</span><span class="n">image_sprites</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/embedding-projector.gif" src="../../../_images/embedding-projector.gif"/>
+</figure>
+</section>
 <section id="sampling">
 <h2>Sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> provides a <code class="docutils literal notranslate"><span class="pre">.sample</span></code> function that samples <code class="docutils literal notranslate"><span class="pre">k</span></code> elements without replacement. It accepts two parameters, <code class="docutils literal notranslate"><span class="pre">k</span></code>
@@ -1526,63 +1608,6 @@ It returns a Python <code class="docutils literal notranslate"><span class="pre"
 </span><span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rv</span><span class="p">[</span><span class="s1">'c'</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># category `c` is a DocumentArray has 2 Documents</span>
 </pre></div>
 </div>
-</section>
-<section id="persistence">
-<h2>Persistence<a class="headerlink" href="#persistence" title="Permalink to this headline">¶</a></h2>
-<p>To save all elements in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> in a JSON line format:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
-
-<span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
-<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.json'</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> can be also stored in binary format, which is much faster and yields a smaller file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
-
-<span class="n">da</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
-<span class="n">da1</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'data.bin'</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>For writing to disk on-the-fly, please use <a class="reference internal" href="../documentarraymemmap-api/#documentarraymemmap-api"><span class="std std-ref">DocumentArrayMemmap</span></a>.</p>
-</div>
-</section>
-<section id="visualization">
-<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
-<p>If a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> contains all image <code class="docutils literal notranslate"><span class="pre">Document</span></code>, you can plot all images in one sprite image using <a class="reference internal" href="../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin.plot_image_sprites" title="jina.types.arrays.mixins.plot.PlotMixin.plot_image_sprites"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_image_sprites()</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>
-<span class="n">docs</span><span class="o">.</span><span class="n">plot_image_sprites</span><span class="p">()</span>
-</pre></div>
-</div>
-<figure class="align-default">
-<a class="reference internal image-reference" href="../../../_images/sprite-image.png"><img alt="../../../_images/sprite-image.png" src="../../../_images/sprite-image.png" style="width: 60%;"/></a>
-</figure>
-<p id="visualize-embeddings">If a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> has valid <code class="docutils literal notranslate"><span class="pre">.embeddings</span></code>, you can visualize the embeddings interactively using <a class="reference internal" href="../../../api/jina.types.arrays.mixins.plot/#jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings" title="jina.types.arrays.mixins.plot.PlotMixin.plot_embeddings"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_embeddings()</span></code></a>.</p>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">.plot_embeddings()</span></code> applies to any <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> not just image ones. For image <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, you can do one step more to attach the image sprite on to the visualization points.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">da</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">(</span><span class="n">image_sprites</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'*.jpg'</span><span class="p">)</span>
-<span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">),</span> <span class="mi">256</span><span class="p">])</span>  <span class="c1"># some random embeddings</span>
-
-<span class="n">docs</span><span class="o">.</span><span class="n">plot_embeddings</span><span class="p">(</span><span class="n">image_sprites</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<figure class="align-center">
-<img alt="../../../_images/embedding-projector.gif" src="../../../_images/embedding-projector.gif"/>
-</figure>
 </section>
 <section id="pythonic-list-interface">
 <h2>Pythonic list interface<a class="headerlink" href="#pythonic-list-interface" title="Permalink to this headline">¶</a></h2>
@@ -1705,7 +1730,7 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 07, 2021.
+                    Last updated on Dec 08, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1737,6 +1762,7 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 <li><a class="reference internal" href="#bulk-access-to-attributes">Bulk access to attributes</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#import-export">Import/Export</a></li>
 <li><a class="reference internal" href="#embed-via-model">Embed via model</a></li>
 <li><a class="reference internal" href="#find-nearest-neighbours">Find nearest neighbours</a><ul>
 <li><a class="reference internal" href="#keep-only-id">Keep only ID</a></li>
@@ -1752,11 +1778,10 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 </li>
 <li><a class="reference internal" href="#batching">Batching</a></li>
 <li><a class="reference internal" href="#parallel-processing">Parallel processing</a></li>
+<li><a class="reference internal" href="#visualization">Visualization</a></li>
 <li><a class="reference internal" href="#sampling">Sampling</a></li>
 <li><a class="reference internal" href="#shuffle">Shuffle</a></li>
 <li><a class="reference internal" href="#split-by-tags">Split by <code class="docutils literal notranslate"><span class="pre">.tags</span></code></a></li>
-<li><a class="reference internal" href="#persistence">Persistence</a></li>
-<li><a class="reference internal" href="#visualization">Visualization</a></li>
 <li><a class="reference internal" href="#pythonic-list-interface">Pythonic list interface</a><ul>
 <li><a class="reference internal" href="#iterate-via-itertools">Iterate via <code class="docutils literal notranslate"><span class="pre">itertools</span></code></a></li>
 <li><a class="reference internal" href="#filter">Filter</a></li>

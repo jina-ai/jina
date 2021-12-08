@@ -525,6 +525,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
 </ul>
@@ -682,6 +683,7 @@
 <span class="kn">from</span> <span class="nn">.traverse</span> <span class="kn">import</span> <span class="n">TraverseMixin</span>
 <span class="kn">from</span> <span class="nn">.embed</span> <span class="kn">import</span> <span class="n">EmbedMixin</span>
 <span class="kn">from</span> <span class="nn">.parallel</span> <span class="kn">import</span> <span class="n">ParallelMixin</span>
+<span class="kn">from</span> <span class="nn">.io.dataframe</span> <span class="kn">import</span> <span class="n">DataframeIOMixin</span>
 
 
 <div class="viewcode-block" id="AllMixins"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.mixins/#jina.types.arrays.mixins.AllMixins">[docs]</a><span class="k">class</span> <span class="nc">AllMixins</span><span class="p">(</span>
@@ -703,6 +705,7 @@
     <span class="n">TextToolsMixin</span><span class="p">,</span>
     <span class="n">EvaluationMixin</span><span class="p">,</span>
     <span class="n">ParallelMixin</span><span class="p">,</span>
+    <span class="n">DataframeIOMixin</span><span class="p">,</span>
     <span class="n">ABC</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """</span>
@@ -719,7 +722,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 07, 2021.
+                    Last updated on Dec 08, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
