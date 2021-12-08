@@ -651,16 +651,6 @@ def test_doc_update_given_fields_and_source_has_more_attributes(test_docs):
     assert doc1.chunks != doc2.chunks
 
 
-def test_doc_update_exclude_fields(test_docs):
-    doc1, doc2 = test_docs
-    doc1.update(source=doc2, exclude_fields=['id', 'chunks'])
-    assert doc1.id != doc2.id
-    assert doc1.content == doc2.content
-    assert doc1.tags == {'a': 'b', 'c': 'd'}  # tags will be merged.
-    assert (doc1.embedding == doc2.embedding).all()
-    assert doc1.chunks != doc2.chunks
-
-
 def test_document_init_with_scores_and_evaluations():
     d = Document(
         scores={
