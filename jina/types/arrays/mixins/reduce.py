@@ -2,7 +2,6 @@ from typing import List, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from ..document import DocumentArray
     from ...document import Document
     from ....helper import T
 
@@ -24,7 +23,14 @@ def _reduce_doc_props(doc1: 'Document', doc2: 'Document'):
 
 
 class ReduceMixin:
-    """A mixin that provides reducing logic for :class:`DocumentArray` or :class:`DocumentArrayMemmap`"""
+    """
+    A mixin that provides reducing logic for :class:`DocumentArray` or :class:`DocumentArrayMemmap`
+    Reducing 2 or more DocumentArrays consists in merging all Documents into the same DocumentArray.
+    If a Document belongs to 2 or more DocumentArrays, it is added once and data attributes are merged with priority to
+    the Document belonging to the left-most DocumentArray. Matches and chunks are also reduced in the same way.
+    Reduction is applied to all levels of DocumentArrays, that is, from root Documents to all their chunk and match
+    children.
+    """
 
     def reduce(self: 'T', other: 'T') -> 'T':
         """
@@ -50,7 +56,9 @@ class ReduceMixin:
         """
         Reduces doc1 and doc2 into one Document in-place. Changes are applied to doc1.
         Reducing 2 Documents consists in setting data properties of the second Document to the first Document if they
-        are empty and reducing the matches and the chunks of both documents.
+        are empty (that is, priority to the left-most Document) and reducing the matches and the chunks of both
+        documents.
+        Non-data properties are ignored.
         Reduction of matches and chunks relies on :class:`DocumentArray`.:method:`reduce`.
         :param doc1: first Document
         :param doc2: second Document
@@ -72,7 +80,7 @@ class ReduceMixin:
         The resulting DocumentArray contains Documents of all DocumentArrays.
         If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
         DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
-        attribute value of the left-most DocumentArray is kept.
+        attribute value of the left-most DocumentArray is kept).
         Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
         Other non-data properties are ignored.
 
@@ -81,7 +89,7 @@ class ReduceMixin:
                 step.
             - The final result depends on the order of DocumentArrays when applying reduction.
 
-        :param others: List of DocumentArray to be reduced
+        :param others: List of DocumentArrays to be reduced
         :return: the resulting DocumentArray
         """
         for da in others:
