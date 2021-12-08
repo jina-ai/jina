@@ -17,16 +17,16 @@
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.0k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
+<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.2k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
 <!-- start elevator-pitch -->
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Native support on PyTorch/Keras/ONNX/Paddle, solution building in just minutes.
+⏱️ **Save time** - *The* design pattern of neural search systems. Native support for PyTorch/Keras/ONNX/Paddle,. Build solutions in just minutes.
 
-🌌 **All data types** - Processing, indexing, querying, understanding of video, image, long/short text, music, source code, PDF, etc.
+🌌 **All data types** - Process, index, query, and understand videos, images, long/short text, audio, source code, PDFs, etc.
 
 🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
 
@@ -39,7 +39,7 @@ fragmented, multi-vendor, generic legacy tools.
 ```
 pip install -U jina
 ```
-More install options including Conda, Docker, on Windows [can be found here](https://docs.jina.ai/get-started/install/). 
+More install options including Conda, Docker, Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
 ## [Documentation](https://docs.jina.ai)
 
@@ -49,7 +49,7 @@ More install options including Conda, Docker, on Windows [can be found here](htt
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-get-started.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
 </p>
 
-We promise you to build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
+We promise you can build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
 
 
 ### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
@@ -90,13 +90,13 @@ q.embed(model)  # embed
 q.match(docs)  # find top-20 nearest neighbours, done!
 ```
 
-Done! Now print `q.matches` and you will see most-similar images URIs.
+Done! Now print `q.matches` and you'll see the URIs of the most similar images.
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.png?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
-Add 3 lines of code to visualize them:
+Add three lines of code to visualize them:
 
 ```python
 for m in q.matches:
@@ -108,11 +108,11 @@ q.matches.plot_image_sprites()
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
-Sweet! FYI, one can use Keras, ONNX, PaddlePaddle for the embedding model. Jina supports them well.
+Sweet! FYI, you can use Keras, ONNX, or PaddlePaddle for the embedding model. Jina supports them well.
 
 ### As-a-Service in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
-With an extremely trivial refactoring and 10 extra lines of code, you can make the local script as a ready-to-serve service:
+With an extremely trivial refactoring and ten extra lines of code, you can make the local script a ready-to-serve service:
 
 1. Import what we need.
     ```python
@@ -141,7 +141,7 @@ With an extremely trivial refactoring and 10 extra lines of code, you can make t
         def foo(self, docs: DocumentArray, **kwargs):
             docs.embed(self.model)
     ```
-4. Wrap the matching step into `Executor`:
+4. Wrap the matching step into an `Executor`:
     ```python
     class MatchImg(Executor):
         _da = DocumentArray()
@@ -164,20 +164,20 @@ With an extremely trivial refactoring and 10 extra lines of code, you can make t
     Plot it via `f.plot('flow.svg')` and you get:
     ![](.github/images/readme-flow-plot.svg)
 
-6. Index image data and serve REST query from public:
+6. Index image data and serve REST query publicly:
     ```python
     with f:
         f.post('/index', DocumentArray.from_files('img/*.jpg'), show_progress=True, request_size=8)
         f.block()
     ```
 
-Done! Now query it via `curl` you can get most-similar images:
+Done! Now query it via `curl` and you get the most similar images:
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
 </p>
 
-Or go to `http://0.0.0.0:12345/docs` and test requests via Swagger UI:
+Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
@@ -210,14 +210,14 @@ At this point, you probably have taken 15 minutes but here we are: an image sear
 
 ### Deploy to Kubernetes in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
-Have another 7 minutes? We can show you how to bring your service to the next level by deploying it to Kubernetes.
+Have another seven minutes? We'll show you how to bring your service to the next level by deploying it to Kubernetes.
 
 1. Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
    ```bash
    gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
    gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
    ```
-2. Move each `Executor` class to a separate folder with one Python file:
+2. Move each `Executor` class to a separate folder with one Python file in each:
    - `PreprocImg` -> 📁 `preproc_img/exec.py`
    - `EmbedImg` -> 📁 `embed_img/exec.py`
    - `MatchImg` -> 📁 `match_img/exec.py`
@@ -235,7 +235,7 @@ Have another 7 minutes? We can show you how to bring your service to the next le
         f.block()
     ```
 
-Intrigued? Then [find more about Jina from our docs](https://docs.jina.ai).
+Intrigued? [Find more about Jina from our docs](https://docs.jina.ai).
 
 ## Run Quick Demo
 
