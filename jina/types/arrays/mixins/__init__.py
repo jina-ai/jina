@@ -18,6 +18,7 @@ from .text import TextToolsMixin
 from .traverse import TraverseMixin
 from .embed import EmbedMixin
 from .parallel import ParallelMixin
+from .io.dataframe import DataframeIOMixin
 
 
 class AllMixins(
@@ -39,6 +40,7 @@ class AllMixins(
     TextToolsMixin,
     EvaluationMixin,
     ParallelMixin,
+    DataframeIOMixin,
     ABC,
 ):
     """All plugins that can be used in :class:`DocumentArray` or :class:`DocumentArrayMemmap`. """

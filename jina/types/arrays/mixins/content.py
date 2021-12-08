@@ -42,7 +42,7 @@ class ContentPropertyMixin:
             for d in self._pb_body:
                 d.ClearField('embedding')
         else:
-            emb_shape0 = value.shape[0]
+            emb_shape0 = _get_len(value)
             self._check_length(emb_shape0)
             NdArray.ravel(value, self, 'embedding')
 
@@ -73,7 +73,7 @@ class ContentPropertyMixin:
             for d in self._pb_body:
                 d.ClearField('blob')
         else:
-            blobs_shape0 = value.shape[0]
+            blobs_shape0 = _get_len(value)
             self._check_length(blobs_shape0)
 
             NdArray.ravel(value, self, 'blob')
@@ -152,3 +152,7 @@ class ContentPropertyMixin:
             content_type = self[0].content_type
             if content_type:
                 setattr(self, f'{self[0].content_type}s', value)
+
+
+def _get_len(value):
+    return len(value) if isinstance(value, (list, tuple)) else value.shape[0]

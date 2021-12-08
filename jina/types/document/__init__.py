@@ -331,7 +331,7 @@ class Document(AllMixins, ProtoTypeMixin):
             self._pb_body.tags.Clear()
             self._pb_body.tags.update(value)
         else:
-            raise TypeError(f'{value!r} is not supported.')
+            raise TypeError(f'{typename(value)} {value!r} is not supported.')
 
     @property
     def id(self) -> str:

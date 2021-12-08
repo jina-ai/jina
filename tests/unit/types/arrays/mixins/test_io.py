@@ -62,3 +62,37 @@ def test_from_ndjson(da):
     with open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
         _da = da.from_ndjson(fp)
         assert len(_da) == 2
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+def test_from_to_pd_dataframe(da_cls):
+    # simple
+    assert len(da_cls.from_dataframe(da_cls.empty(2).to_dataframe())) == 2
+
+    # more complicated
+    da = da_cls.empty(2)
+    da.embeddings = [[1, 2, 3], [4, 5, 6]]
+    da.blobs = [[1, 2], [2, 1]]
+    da[0].tags = {'hello': 'world'}
+    da2 = da_cls.from_dataframe(da.to_dataframe())
+    assert da2.blobs.tolist() == [[1, 2], [2, 1]]
+    assert da2.embeddings.tolist() == [[1, 2, 3], [4, 5, 6]]
+    assert da2[0].tags == {'hello': 'world'}
+    assert da2[1].tags == {}
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+def test_from_to_bytes(da_cls):
+    # simple
+    assert len(da_cls.load_binary(bytes(da_cls.empty(2)))) == 2
+
+    # more complicated
+    da = da_cls.empty(2)
+    da.embeddings = [[1, 2, 3], [4, 5, 6]]
+    da.blobs = [[1, 2], [2, 1]]
+    da[0].tags = {'hello': 'world'}
+    da2 = da_cls.load_binary(bytes(da))
+    assert da2.blobs.tolist() == [[1, 2], [2, 1]]
+    assert da2.embeddings.tolist() == [[1, 2, 3], [4, 5, 6]]
+    assert da2[0].tags == {'hello': 'world'}
+    assert da2[1].tags == {}

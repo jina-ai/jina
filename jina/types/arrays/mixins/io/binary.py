@@ -1,3 +1,4 @@
+import os.path
 from contextlib import nullcontext
 from typing import Union, BinaryIO, TYPE_CHECKING, Type
 
@@ -13,25 +14,30 @@ class BinaryIOMixin:
     """Save/load an array to a binary file. """
 
     @classmethod
-    def load_binary(cls: Type['T'], file: Union[str, BinaryIO]) -> 'T':
+    def load_binary(cls: Type['T'], file: Union[str, BinaryIO, bytes]) -> 'T':
         """Load array elements from a binary file.
 
-        :param file: File or filename to which the data is saved.
+        :param file: File or filename or serialized bytes where the data is stored.
 
         :return: a DocumentArray object
         """
 
         if hasattr(file, 'read'):
             file_ctx = nullcontext(file)
-        else:
+        elif isinstance(file, bytes):
+            file_ctx = nullcontext(file)
+        elif os.path.exists(file):
             file_ctx = open(file, 'rb')
+        else:
+            raise ValueError(f'unsupported input {file!r}')
 
         dap = jina_pb2.DocumentArrayProto()
 
         from ...document import DocumentArray
 
         with file_ctx as fp:
-            dap.ParseFromString(fp.read())
+            d = fp.read() if hasattr(fp, 'read') else fp
+            dap.ParseFromString(d)
             da = cls()
             da.extend(DocumentArray(dap.docs))
             return da
@@ -52,6 +58,18 @@ class BinaryIOMixin:
                 file_ctx = open(file, 'wb')
 
         with file_ctx as fp:
-            dap = jina_pb2.DocumentArrayProto()
-            dap.docs.extend(self._pb_body)
-            fp.write(dap.SerializePartialToString())
+            fp.write(bytes(self))
+
+    def to_bytes(self) -> bytes:
+        """Serialize itself into bytes.
+
+        For more Pythonic code, please use ``bytes(...)``.
+
+        :return: the binary serialization in bytes
+        """
+        dap = jina_pb2.DocumentArrayProto()
+        dap.docs.extend(self._pb_body)
+        return dap.SerializePartialToString()
+
+    def __bytes__(self):
+        return self.to_bytes()

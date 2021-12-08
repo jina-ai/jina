@@ -62,6 +62,8 @@ class ProtoTypeMixin:
     def to_bytes(self) -> bytes:
         """Return the serialized the message to a string.
 
+        For more Pythonic code, please use ``bytes(...)``.
+
         :return: binary string representation of the object
         """
         return self._pb_body.SerializePartialToString()
