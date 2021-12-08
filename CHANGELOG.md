@@ -126,6 +126,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11867,4 +11868,23 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b4725a69```](https://github.com/jina-ai/jina/commit/b4725a694418d7b4c5f65e2082155d0ab2a2a47a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1d324c05```](https://github.com/jina-ai/jina/commit/1d324c054bdc4a59df0b01b692b89029bf53235e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```d9f60129```](https://github.com/jina-ai/jina/commit/d9f601293b586aaa02e5b5a43aab6723f4a94bad)] __-__ __version__: the next version will be 2.5.4 (*Jina Dev Bot*)
+
+<a name=release-note-2-5-5></a>
+## Release Note (`2.5.5`)
+
+> Release time: 2021-12-08 18:11:17
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```223aa20b```](https://github.com/jina-ai/jina/commit/223aa20be2154d7ec58c093f7af1ac26e72906c7)] __-__ __docarray__: waive 2GB size restriction on large docarray (#4048) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```17fdb58f```](https://github.com/jina-ai/jina/commit/17fdb58f2c58253c17e1d25f4c414b4f7b45c2d9)] __-__ __version__: the next version will be 2.5.5 (*Jina Dev Bot*)
 
