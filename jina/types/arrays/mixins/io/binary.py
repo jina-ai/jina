@@ -1,12 +1,12 @@
+import io
 import os.path
 from contextlib import nullcontext
 from typing import Union, BinaryIO, TYPE_CHECKING, Type
 
 from ..... import __windows__
-from .....proto import jina_pb2
+from .....helper import random_uuid
 
 if TYPE_CHECKING:
-    from ...document import DocumentArray
     from .....helper import T
 
 
@@ -31,16 +31,16 @@ class BinaryIOMixin:
         else:
             raise ValueError(f'unsupported input {file!r}')
 
-        dap = jina_pb2.DocumentArrayProto()
-
-        from ...document import DocumentArray
+        from ...document import Document
         import lz4.frame
 
         with file_ctx as fp:
             d = fp.read() if hasattr(fp, 'read') else fp
-            dap.ParseFromString(lz4.frame.decompress(d))
+            d = lz4.frame.decompress(d)
+            _len = len(random_uuid().bytes)
+            _binary_delimiter = d[:_len]  # first get delimiter
             da = cls()
-            da.extend(DocumentArray(dap.docs))
+            da.extend(Document(od) for od in d[_len:].split(_binary_delimiter))
             return da
 
     def save_binary(self, file: Union[str, BinaryIO]) -> None:
@@ -71,11 +71,15 @@ class BinaryIOMixin:
 
         :return: the binary serialization in bytes
         """
-        dap = jina_pb2.DocumentArrayProto()
-        dap.docs.extend(self._pb_body)
         import lz4.frame
 
-        return lz4.frame.compress(dap.SerializePartialToString())
+        _binary_delimiter = random_uuid().bytes
+        with io.BytesIO() as bf:
+            with lz4.frame.LZ4FrameFile(bf, 'wb') as f:
+                for d in self:
+                    f.write(_binary_delimiter)
+                    f.write(bytes(d))
+            return bf.getvalue()
 
     def __bytes__(self):
         return self.to_bytes()
