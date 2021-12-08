@@ -44,6 +44,8 @@ def test_reduce_shards(n_shards, n_docs):
     for doc in resp[0].docs:
         matches = set([doc.id for doc in doc.matches])
         chunks = set([doc.id for doc in doc.chunks])
+        assert len(matches) == n_docs * n_shards
+        assert len(chunks) == n_docs * n_shards
         for shard in range(n_shards):
             for match in range(n_docs):
                 assert f'm-{shard}-{match}' in matches
@@ -57,7 +59,7 @@ def test_uses_after_no_reduce(n_shards, n_docs):
     search_flow = Flow().add(
         uses=MyExecutor,
         shards=n_shards,
-        uses_after='Executor',
+        uses_after='BaseExecutor',
         polling='all',
         uses_with={'n_docs': n_docs},
     )
@@ -67,10 +69,5 @@ def test_uses_after_no_reduce(n_shards, n_docs):
         resp = f.post('/search', inputs=da, return_results=True)
 
     for doc in resp[0].docs:
-        matches = set([doc.id for doc in doc.matches])
-        chunks = set([doc.id for doc in doc.chunks])
-        for shard in range(n_shards):
-            for match in range(n_docs):
-                assert f'm-{shard}-{match}' in matches
-            for chunk in range(n_docs):
-                assert f'c-{shard}-{chunk}' in chunks
+        assert len(doc.matches) != n_docs * n_shards
+        assert len(doc.chunks) != n_docs * n_shards
