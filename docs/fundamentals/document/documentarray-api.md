@@ -180,7 +180,7 @@ da.get_attributes('id', 'text', 'embedding')
 | `numpy.ndarray` object            |                                                                     | `.from_ndarray()`                             |
 
 ```{seealso}
-`.from_*()` functions often utlizes generators. When using independently, can be more memory-efficient. See {module}`~jina.types.document.generators`.   
+`.from_*()` functions often utlizes generators. When using independently, can be more memory-efficient. See {mod}`~jina.types.document.generators`.   
 ```
 
 (embed-via-model)=
