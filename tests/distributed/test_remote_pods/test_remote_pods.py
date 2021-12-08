@@ -88,3 +88,10 @@ async def test_jinad_pod_create_async_given_unprocessable_entity(
     )
     assert not success
     assert 'validation error in the payload' in resp
+
+
+@pytest.mark.asyncio
+async def test_jinad_pod_arguments(pod_args, async_jinad_client):
+    resp = await async_jinad_client.pods.arguments()
+    assert resp
+    assert resp['name']['title'] == 'Name'
