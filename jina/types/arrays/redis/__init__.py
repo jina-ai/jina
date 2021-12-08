@@ -25,9 +25,9 @@ class DocumentArrayRedis(
         # hash has faster access
         # but no int index access?
         self.docs = self._db.Array(name)
-        print(f'end of constructor')
+        # print(f'end of constructor')
         if docs:
-            print(f'extending with {len(docs)}')
+            # print(f'extending with {len(docs)}')
             self.extend(docs)
 
     def insert(self, index: int, doc: 'Document') -> None:
@@ -41,9 +41,9 @@ class DocumentArrayRedis(
         raise NotImplementedError
 
     def __len__(self):
-        print(f'calling __len__')
-        print(self.docs.__len__())
-        print(self.docs)
+        # print(f'calling __len__')
+        # print(self.docs.__len__())
+        # print(self.docs)
         return len(self.docs)
 
     def extend(self, docs: Iterable['Document']) -> None:
@@ -60,9 +60,9 @@ class DocumentArrayRedis(
         :param doc: The doc needs to be appended.
         """
         # TODO check if id exists?
-        print(f'appending one doc {doc.id}')
+        # print(f'appending one doc {doc.id}')
         self.docs.append(doc.to_bytes())
-        print(f'appended. len = {len(self), len(self.docs)}')
+        # print(f'appended. len = {len(self), len(self.docs)}')
 
     def __getitem__(
         self, key: Union[int, str, slice, List]
@@ -77,7 +77,8 @@ class DocumentArrayRedis(
                 res.append(self[k])
             return DocumentArray(res)
         elif isinstance(key, str):
-            for d in self:
+            for doc_bytes in self:
+                d = Document(doc_bytes)
                 if d.id == key:
                     return Document(d)
         else:
@@ -100,7 +101,8 @@ class DocumentArrayRedis(
 
     def _index(self, key):
         idx_del = None
-        for idx, d in enumerate(self.docs):
+        for idx, d_bytes in enumerate(self.docs):
+            d = Document(d_bytes)
             if d.id == key:
                 idx_del = idx
                 break
@@ -112,13 +114,15 @@ class DocumentArrayRedis(
 
     def __setitem__(self, key: Union[int, str], value: 'Document') -> None:
         if isinstance(value, Document):
+            value_doc = value
             value = value.to_bytes()
         if isinstance(key, int):
             self.docs.__setitem__(key, value)
         elif isinstance(key, str):
             idx_set = self._index(key)
-            if idx_set:
-                self[idx_set] = value
+            if idx_set is not None:
+                value_doc.id = key
+                self[idx_set] = value_doc.to_bytes()
             else:
                 # TODO error msg
                 print(f'Document with id {key} was not found')
@@ -129,10 +133,7 @@ class DocumentArrayRedis(
     def __contains__(self, item: str) -> bool:
         return self[item] is not None
 
-    def __del__(self):
-        print(f'calling del..', flush=True)
+    def clear(self) -> None:
+        # print(f'calling clear..', flush=True)
         self.docs.clear()
         self.docs = self._db.Array(self.name)
-
-    def clear(self) -> None:
-        del self
