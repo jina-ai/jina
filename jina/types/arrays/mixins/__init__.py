@@ -13,6 +13,7 @@ from .io.from_gen import FromGeneratorMixin
 from .magic import MagicMixin
 from .match import MatchMixin
 from .plot import PlotMixin
+from .reduce import ReduceMixin
 from .sample import SampleMixin
 from .text import TextToolsMixin
 from .traverse import TraverseMixin
@@ -39,6 +40,7 @@ class AllMixins(
     SampleMixin,
     TextToolsMixin,
     EvaluationMixin,
+    ReduceMixin,
     ParallelMixin,
     DataframeIOMixin,
     ABC,
