@@ -554,6 +554,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.pushpull/">jina.types.arrays.mixins.io.pushpull module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
@@ -876,12 +877,45 @@ one shot:</p>
 <td></td>
 <td><code>.from_ndarray()</code></td>
 </tr>
+<tr>
+<td>Jina Cloud Storage (experimental)</td>
+<td><code>.push()</code></td>
+<td><code>.pull()</code></td>
+</tr>
 </tbody>
 </table></div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="docutils literal notranslate"><span class="pre">.from_*()</span></code> functions often utlizes generators. When using independently, can be more memory-efficient. See <a class="reference internal" href="../../../api/jina.types.document.generators/#module-jina.types.document.generators" title="jina.types.document.generators"><code class="xref py py-mod docutils literal notranslate"><span class="pre">generators</span></code></a>.</p>
 </div>
+<section id="sharing-documentarray-across-machines">
+<h3>Sharing DocumentArray across machines<a class="headerlink" href="#sharing-documentarray-across-machines" title="Permalink to this headline">¶</a></h3>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This is an experimental feature introduced in Jina <code class="docutils literal notranslate"><span class="pre">2.5.4</span></code>. The behavior of this feature might change in the future.</p>
+</div>
+<p>Since Jina <code class="docutils literal notranslate"><span class="pre">2.5.4</span></code> we introduce a new IO feature: <a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.pushpull/#jina.types.arrays.mixins.io.pushpull.PushPullMixin.push" title="jina.types.arrays.mixins.io.pushpull.PushPullMixin.push"><code class="xref py py-meth docutils literal notranslate"><span class="pre">push()</span></code></a> and <a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.pushpull/#jina.types.arrays.mixins.io.pushpull.PushPullMixin.pull" title="jina.types.arrays.mixins.io.pushpull.PushPullMixin.pull"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pull()</span></code></a>,
+which allows you to share a DocumentArray object across machines.</p>
+<p>Considering you are working on a GPU machine via Google Colab/Jupyter. After preprocessing and embedding, you got everything you need in a DocumentArray. You can easily transfer it to the local laptop via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># heavylifting, processing, GPU task, ...</span>
+<span class="n">da</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="s1">'myda123'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then on your local laptop, simply</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="s1">'myda123'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you can continue the work at local, analyzing <code class="docutils literal notranslate"><span class="pre">da</span></code> or visualizing it. Your friends &amp; colleagues who know the token <code class="docutils literal notranslate"><span class="pre">myda123</span></code> can also pull that DocumentArray. It’s useful when you want to quickly share the results with your colleagues &amp; friends.</p>
+<p>For more information of this feature, please refer to <a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.pushpull/#jina.types.arrays.mixins.io.pushpull.PushPullMixin" title="jina.types.arrays.mixins.io.pushpull.PushPullMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PushPullMixin</span></code></a>.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>The lifetime of the storage is not promised at the momennt: could be a day, could be a week. Do not use it for persistence in production. Only consider this as temporary transmission or a clipboard.</p>
+</div>
+</section>
 </section>
 <section id="embed-via-model">
 <span id="id2"></span><h2>Embed via model<a class="headerlink" href="#embed-via-model" title="Permalink to this headline">¶</a></h2>
@@ -1763,7 +1797,10 @@ a <code class="docutils literal notranslate"><span class="pre">DocumentArray</sp
 <li><a class="reference internal" href="#bulk-access-to-attributes">Bulk access to attributes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#import-export">Import/Export</a></li>
+<li><a class="reference internal" href="#import-export">Import/Export</a><ul>
+<li><a class="reference internal" href="#sharing-documentarray-across-machines">Sharing DocumentArray across machines</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#embed-via-model">Embed via model</a></li>
 <li><a class="reference internal" href="#find-nearest-neighbours">Find nearest neighbours</a><ul>
 <li><a class="reference internal" href="#keep-only-id">Keep only ID</a></li>

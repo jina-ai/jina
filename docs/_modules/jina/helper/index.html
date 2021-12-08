@@ -528,6 +528,7 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.io.pushpull/">jina.types.arrays.mixins.io.pushpull module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
@@ -2063,6 +2064,20 @@
         <span class="k">return</span> <span class="n">new_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_f</span>
+
+
+<span class="k">def</span> <span class="nf">get_request_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">"""Return the header of request.</span>
+
+<span class="sd">    :return: request header</span>
+<span class="sd">    """</span>
+    <span class="n">metas</span><span class="p">,</span> <span class="n">envs</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s1">'jinameta-</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metas</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="o">**</span><span class="n">envs</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">header</span>
 </pre></div>
             </article>
             <footer>
