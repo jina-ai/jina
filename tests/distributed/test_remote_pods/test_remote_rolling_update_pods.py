@@ -9,7 +9,7 @@ from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
 from jina.enums import replace_enum_to_str
 
-HOST = '54.93.57.58'
+HOST = __default_host__
 PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
