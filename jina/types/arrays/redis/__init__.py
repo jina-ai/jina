@@ -1,0 +1,131 @@
+from collections import MutableSequence
+from typing import Optional, Union, List, Iterator, Iterable
+
+from jina import DocumentArray
+from jina.importer import ImportExtensions
+from jina.types.document import AllMixins, Document
+
+__all__ = ['DocumentArrayRedis']
+SIZE_KEY = '__size__'
+
+
+class DocumentArrayRedis(
+    AllMixins,
+    MutableSequence,
+):
+    def __init__(
+        self, docs=None, host='localhost', port=6379, db=0, name='jina_document_array'
+    ):
+        with ImportExtensions(required=True):
+            import walrus
+
+        self.name = name
+        self._db = walrus.Database(host=host, port=port, db=db)
+        # to investigate: Hash or List
+        # hash has faster access
+        # but no int index access?
+        self.docs = self._db.Array(name)
+        if docs:
+            for d in docs:
+                self.append(d)
+
+    def insert(self, index: int, doc: 'Document') -> None:
+        """Insert `doc` at `index`.
+
+        :param index: the offset index of the insertion.
+        :param doc: the doc needs to be inserted.
+        """
+        # This however must be here as inheriting from MutableSequence requires
+        # cannot do this with Redis hash
+        raise NotImplementedError
+
+    def __len__(self):
+        return len(self.docs)
+
+    def extend(self, docs: Iterable['Document']) -> None:
+        if not docs:
+            return
+
+        for d in docs:
+            self.append(d)
+
+    def append(self, doc: 'Document') -> None:
+        """
+        Append `doc` in :class:`DocumentArrayRedis`.
+
+        :param doc: The doc needs to be appended.
+        """
+        # TODO check if id exists?
+        self.docs.append(doc.to_bytes())
+
+    def __getitem__(
+        self, key: Union[int, str, slice, List]
+    ) -> Optional[Union['Document', 'DocumentArray']]:
+        if isinstance(key, int):
+            return Document(self.docs[key])
+        elif isinstance(key, slice):
+            pass
+        elif isinstance(key, List):
+            res = []
+            for k in key:
+                res.append(self[k])
+            return DocumentArray(res)
+        elif isinstance(key, str):
+            for d in self:
+                if d.id == key:
+                    return Document(d)
+        else:
+            # raise unsupp type
+            print(f'unsupported type {type(key)}')
+
+    def __delitem__(self, key: Union[int, str, slice]):
+        if isinstance(key, int):
+            del self.docs[key]
+        elif isinstance(key, (slice, List)):
+            for k in list(key):
+                del self[k]
+        elif isinstance(key, str):
+            idx_del = self._index(key)
+            if idx_del:
+                del self[idx_del]
+        else:
+            # raise unsupp type
+            print(f'unsupported type {type(key)}')
+
+    def _index(self, key):
+        idx_del = None
+        for idx, d in enumerate(self.docs):
+            if d.id == key:
+                idx_del = idx
+                break
+        return idx_del
+
+    def __iter__(self) -> Iterator['Document']:
+        for doc in self.docs:
+            yield doc
+
+    def __setitem__(self, key: Union[int, str], value: 'Document') -> None:
+        if isinstance(value, Document):
+            value = value.to_bytes()
+        if isinstance(key, int):
+            self.docs.__setitem__(key, value)
+        elif isinstance(key, str):
+            idx_set = self._index(key)
+            if idx_set:
+                self[idx_set] = value
+            else:
+                # TODO error msg
+                print(f'Document with id {key} was not found')
+        else:
+            # TODO raise
+            print(f'unsupported type: {type(key)}')
+
+    def __contains__(self, item: str) -> bool:
+        return self[item] is not None
+
+    def __del__(self):
+        self.docs.clear()
+        self.docs = self._db.Array(self.name)
+
+    def clear(self) -> None:
+        del self
