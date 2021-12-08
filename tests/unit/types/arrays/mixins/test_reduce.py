@@ -190,9 +190,8 @@ def test_reduce_data_props():
         DocumentArray(
             [
                 Document(
-                    id='c',
+                    id='r',
                     text='doc3',
-                    blob=np.ones(3),
                     tags={'a': 'b'},
                     matches=[Document(id='m3')],
                 )
@@ -207,3 +206,4 @@ def test_reduce_data_props():
     assert da1[0].chunks[0].id == 'c1'
     assert da1[0].chunks[1].id == 'c2'
     assert da1[0].matches[0].id == 'm3'
+    assert da1[0].tags == {'a': 'b'}
