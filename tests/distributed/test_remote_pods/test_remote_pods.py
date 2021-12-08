@@ -4,13 +4,14 @@ import pytest
 
 from daemon.clients import JinaDClient, AsyncJinaDClient
 
+from jina import __default_host__
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
 from jina.enums import replace_enum_to_str
 
 
-HOST = '127.0.0.1'
-PORT_JINAD = 8000
+HOST = __default_host__
+PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -21,12 +22,12 @@ def pod_args():
 
 @pytest.fixture
 def jinad_client():
-    return JinaDClient(host=HOST, port=PORT_JINAD)
+    return JinaDClient(host=HOST, port=PORT)
 
 
 @pytest.fixture
 def async_jinad_client():
-    return AsyncJinaDClient(host=HOST, port=PORT_JINAD)
+    return AsyncJinaDClient(host=HOST, port=PORT)
 
 
 def test_remote_jinad_pod(pod_args, jinad_client):
