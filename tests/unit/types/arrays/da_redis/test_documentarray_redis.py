@@ -49,14 +49,8 @@ def docs(document_factory):
 
 @pytest.fixture
 def docarray(docs):
-    docs_redis = DocumentArrayRedis()
-    docs_redis.clear()
-    assert len(docs_redis) == 0
-    print(f'creating docs_redis')
-    docs_redis = DocumentArrayRedis(docs)
-    print(f'checking len docs_redis')
+    docs_redis = DocumentArrayRedis(docs, clear=True)
     assert len(docs_redis) == 3
-    print(f'returning docs_redis')
     return docs_redis
 
 
@@ -299,16 +293,18 @@ def test_da_sort_topk_tie():
 def test_da_reverse():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArrayRedis(
-        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))],
+        clear=True,
     )
     assert len(da) == 10
     assert da[0].embedding.shape == (10,)
     da0_id = da[0].id
-    da.reverse()
-    assert da[0].id != da0_id
-    assert da[da0_id].id == da0_id
-    assert da[-1].id == da0_id
-    assert da[0].embedding.shape == (1,)
+    with pytest.raises(NotImplementedError):
+        da.reverse()
+        assert da[0].id != da0_id
+        assert da[da0_id].id == da0_id
+        assert da[-1].id == da0_id
+        assert da[0].embedding.shape == (1,)
 
 
 def test_da_sort_by_score():
@@ -324,13 +320,15 @@ def test_da_sort_by_score():
 
 def test_da_sort_by_score():
     da = DocumentArrayRedis(
-        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)]
+        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)],
+        clear=True,
     )
     assert da[0].id == '0'
     assert da[0].scores['euclid'].value == 10
-    da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
-    assert da[0].id == '9'
-    assert da[0].scores['euclid'].value == 1
+    with pytest.raises(NotImplementedError):
+        da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
+        assert da[0].id == '9'
+        assert da[0].scores['euclid'].value == 1
 
 
 def test_cache_invalidation_clear(docarray_for_cache):
@@ -366,18 +364,19 @@ def test_cache_invalidation_sort_reverse(docarray_for_cache):
 
 
 def test_none_extend():
-    da = DocumentArrayRedis([Document() for _ in range(100)])
+    da = DocumentArrayRedis([Document() for _ in range(100)], clear=True)
     da.extend(None)
     assert len(da) == 100
 
 
-def test_lazy_index_map():
-    da = DocumentArrayRedis(
-        [Document(id=str(i), text=f'document_{i}') for i in range(100)]
-    )
-    assert da._id_to_index is None
-
-    # build index map
-    assert da['0'].text == 'document_0'
-    assert da._id_to_index is not None
-    assert len(da._index_map.keys()) == 100
+# TODO
+# def test_lazy_index_map():
+#     da = DocumentArrayRedis(
+#         [Document(id=str(i), text=f'document_{i}') for i in range(100)]
+#     )
+#     assert da._id_to_index is None
+#
+#     # build index map
+#     assert da['0'].text == 'document_0'
+#     assert da._id_to_index is not None
+#     assert len(da._index_map.keys()) == 100

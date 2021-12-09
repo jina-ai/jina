@@ -3,6 +3,8 @@ from typing import Optional, Union, List, Iterator, Iterable
 
 from jina import DocumentArray
 from jina.importer import ImportExtensions
+from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2
 from jina.types.document import AllMixins, Document
 
 __all__ = ['DocumentArrayRedis']
@@ -14,18 +16,37 @@ class DocumentArrayRedis(
     MutableSequence,
 ):
     def __init__(
-        self, docs=None, host='localhost', port=6379, db=0, name='jina_document_array'
+        self,
+        docs=None,
+        host='localhost',
+        port=6379,
+        db=0,
+        name='doc_array',
+        clear=False,
     ):
+        """
+        :param docs:
+        :param host:
+        :param port:
+        :param db:
+        :param name:
+        :param clear: whether to clear the key beforehand
+        """
         with ImportExtensions(required=True):
             import walrus
 
         self.name = name
+        self.logger = JinaLogger(f'docs-{name}')
         self._db = walrus.Database(host=host, port=port, db=db)
         # to investigate: Hash or List
         # hash has faster access
         # but no int index access?
         self.docs = self._db.Array(name)
-        # print(f'end of constructor')
+        # if the user wants to clear they don't care if there was data there before
+        if clear:
+            self.clear()
+        if len(self.docs):
+            self.logger.info(f'Key at {name} already has {len(self.docs)} Documents')
         if docs:
             # print(f'extending with {len(docs)}')
             self.extend(docs)
@@ -59,10 +80,13 @@ class DocumentArrayRedis(
 
         :param doc: The doc needs to be appended.
         """
-        # TODO check if id exists?
-        # print(f'appending one doc {doc.id}')
-        self.docs.append(doc.to_bytes())
-        # print(f'appended. len = {len(self), len(self.docs)}')
+        # TODO check if id exists so as not to create two Docs with same id
+        if isinstance(doc, Document):
+            self.docs.append(doc.to_bytes())
+        elif isinstance(doc, jina_pb2.DocumentProto):
+            self.docs.append(Document(doc).to_bytes())
+        else:
+            raise ValueError(f'not supported type for doc: {type(doc)}')
 
     def __getitem__(
         self, key: Union[int, str, slice, List]
@@ -143,6 +167,15 @@ class DocumentArrayRedis(
         return self[item] is not None
 
     def clear(self) -> None:
-        # print(f'calling clear..', flush=True)
         self.docs.clear()
         self.docs = self._db.Array(self.name)
+
+    def sort(self, **kwargs):
+        # TODO not trivial. would need to change to List type
+        # and would be v slow because you can't sort directly on the
+        # bytes. you need to deserialize and then sort
+        raise NotImplementedError
+
+    def reverse(self) -> None:
+        # TODO not clear if possible
+        raise NotImplementedError
