@@ -94,8 +94,7 @@ class DocumentArrayRedis(
                 if d.id == key:
                     return Document(d)
         else:
-            # raise unsupp type
-            print(f'unsupported type {type(key)}')
+            raise IndexError(f'unsupported type {type(key)}')
 
     def __delitem__(self, key: Union[int, str, slice]):
         if isinstance(key, int):
@@ -108,8 +107,7 @@ class DocumentArrayRedis(
             if idx_del:
                 del self[idx_del]
         else:
-            # raise unsupp type
-            print(f'unsupported type {type(key)}')
+            raise IndexError(f'unsupported type {type(key)}')
 
     def _index(self, key):
         idx_del = None
@@ -139,8 +137,7 @@ class DocumentArrayRedis(
                 # TODO error msg
                 print(f'Document with id {key} was not found')
         else:
-            # TODO raise
-            print(f'unsupported type: {type(key)}')
+            raise IndexError(f'unsupported type {type(key)}')
 
     def __contains__(self, item: str) -> bool:
         return self[item] is not None
