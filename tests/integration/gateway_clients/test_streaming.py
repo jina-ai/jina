@@ -65,8 +65,8 @@ class DummyMockConnectionPool:
                     time.sleep(0.1)
                     self._docs.extend(request.docs)
                 else:
-                    response_msg.request.docs.clear()
-                    response_msg.request.docs.extend(
+                    response_msg.docs.clear()
+                    response_msg.docs.extend(
                         DocumentArray(
                             Document(tags={'ids': self._docs.get_attributes('id')})
                         )
