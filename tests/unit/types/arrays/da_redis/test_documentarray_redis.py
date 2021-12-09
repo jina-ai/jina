@@ -125,6 +125,7 @@ def test_array_get_success(docarray, document_factory):
 
 
 def test_array_get_from_slice_success(docs, document_factory):
+    DocumentArrayRedis().clear()
     docarray = DocumentArrayRedis(docs)
     assert len(docarray[:1]) == 1
     assert len(docarray[:2]) == 2

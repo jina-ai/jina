@@ -70,7 +70,19 @@ class DocumentArrayRedis(
         if isinstance(key, int):
             return Document(self.docs[key])
         elif isinstance(key, slice):
-            pass
+            indices = list(
+                range(
+                    key.start or 0,
+                    min(key.stop or len(self.docs), len(self.docs)),
+                    key.step or 1,
+                )
+            )
+            return_da = DocumentArray.empty(len(indices))
+            for enumerate_idx, idx in enumerate(indices):
+                doc_bytes = self.docs[idx]
+                doc = Document(doc_bytes)
+                return_da[enumerate_idx] = doc
+            return return_da
         elif isinstance(key, List):
             res = []
             for k in key:
