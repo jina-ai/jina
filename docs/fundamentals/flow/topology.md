@@ -51,6 +51,52 @@ f = (Flow()
      .add(name='p3', needs='gateway')
      .needs_all())
 ```
+### Merging results
+In the previous Flow, each of the Executors `p1`, `p2` and `p3` work in parallel and generate one set of results.
+If you have an Executor that depends on all of them like `r1`, you might need to have all 3 results combined into one 
+DocumentArray in the next steps. Let's suppose the following concrete example:
+* The Documents you sent are images containing some text.
+* `p1` fills the `embedding` attribute of Documents using an embedding model.
+* `p2` segments further the image into smaller chunks of images.
+* `p3` extracts the text and adds them as chunks.
+
+We need to end up with Documents that contain all this new data. Well, by default, if you have a pod that needs all 3 
+Executors (`p1`, `p2` and `p3`), this happens with our default `Reduce` logic.
+
+````{admonition} See Also
+:class: seealso
+
+Read more about {ref}`how Reducing works`.
+````
+
+If you don't want to use the default `Reduce` logic, you can implement a custom reducing logic in an Executor and 
+specify it with `uses_before`:
+
+```python
+import itertools
+from jina import Executor, requests, Flow, DocumentArray
+from typing import List
+
+
+class CustomReducerExecutor(Executor):
+    @requests
+    def reduce(self, docs_matrix: List['DocumentArray'] = [], **kwargs):
+        # simply chain all DocumentArrays
+        return DocumentArray(itertools.chain.from_iterable(docs_matrix))
+
+f = (Flow()
+     .add(name='p1', needs='gateway')
+     .add(name='p2', needs='gateway')
+     .add(name='p3', needs='gateway')
+     .needs(['p1', 'p2', 'p3'], name='r1', uses_before=CustomReducerExecutor))
+```
+
+````{admonition} Note
+:class: note
+If there is no pod that needs all 3 pods `p1`, `p2` and `p3`, there will be no reduce logic.
+If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses_before='BaseExecutor`.
+````
+
 
 ## Scale Executors by using Replicas
 
@@ -241,3 +287,6 @@ On the other hand, when your data  is too large to fit in one machine or if the 
 :class: warning
 Sometimes you'll also encouter `parallel`, this is equivalent to `shards` and is only kept for backwards compatibility.
 ````
+
+(reduce)=
+## Reducing
