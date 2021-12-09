@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class PushPullMixin:
     """Transmitting :class:`DocumentArray` via Jina Cloud Service"""
 
-    _service_url = 'http://apihubble.staging.jina.ai/v2/rpc/da.'
+    _service_url = 'https://apihubble.jina.ai/v2/rpc/da.'
 
     def push(self, token: str, show_progress: bool = False) -> None:
         """Push this DocumentArray object to Jina Cloud which can be later retrieved via :meth:`.push`
