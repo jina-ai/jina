@@ -77,18 +77,20 @@ def docarray_with_scipy_sparse_embedding(docs):
     return DocumentArrayRedis(docs)
 
 
-def test_length(docarray, docs):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_length(docarray, docs, docker_compose):
     assert len(docs) == len(docarray) == 3
 
 
-# using hash we don't have an order?
-def test_append(docarray, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_append(docarray, document_factory, docker_compose):
     doc = document_factory.create(4, 'test 4')
     docarray.append(doc)
     assert docarray[-1].id == doc.id
 
 
-def test_extend(docarray, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_extend(docarray, document_factory, docker_compose):
     docs = [document_factory.create(4, 'test 4'), document_factory.create(5, 'test 5')]
     docarray.extend(docs)
     assert len(docarray) == 5
@@ -96,12 +98,14 @@ def test_extend(docarray, document_factory):
     assert docarray[-1].text == 'test 5'
 
 
-def test_clear(docarray):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_clear(docarray, docker_compose):
     docarray.clear()
     assert len(docarray) == 0
 
 
-def test_delete_by_index(docarray, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_delete_by_index(docarray, document_factory, docker_compose):
     doc = document_factory.create(4, 'test 4')
     docarray.append(doc)
     del docarray[-1]
@@ -109,7 +113,8 @@ def test_delete_by_index(docarray, document_factory):
     assert docarray == docarray
 
 
-def test_delete_by_id(docarray: DocumentArrayRedis, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_delete_by_id(docarray: DocumentArrayRedis, document_factory, docker_compose):
     doc = document_factory.create(4, 'test 4')
     docarray.append(doc)
     del docarray[doc.id]
@@ -117,7 +122,8 @@ def test_delete_by_id(docarray: DocumentArrayRedis, document_factory):
     assert docarray == docarray
 
 
-def test_array_get_success(docarray, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_array_get_success(docarray, document_factory, docker_compose):
     doc = document_factory.create(4, 'test 4')
     doc_id = 2
     docarray[doc_id] = doc
@@ -127,7 +133,8 @@ def test_array_get_success(docarray, document_factory):
     assert docarray[doc_0_id].text == 'test 4'
 
 
-def test_array_get_from_slice_success(docs, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_array_get_from_slice_success(docs, document_factory, docker_compose):
     DocumentArrayRedis().clear()
     docarray = DocumentArrayRedis(docs)
     assert len(docarray[:1]) == 1
@@ -141,14 +148,16 @@ def test_array_get_from_slice_success(docs, document_factory):
     assert len(docarray[100:]) == 0
 
 
-def test_array_get_fail(docarray, document_factory):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_array_get_fail(docarray, document_factory, docker_compose):
     with pytest.raises(IndexError):
         docarray[0.1] = 1  # Set fail, not a supported type
     with pytest.raises(IndexError):
         docarray[0.1]  # Get fail, not a supported type
 
 
-def test_docarray_init(docs, docarray):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_docarray_init(docs, docarray, docker_compose):
     # we need low-level protobuf generation for testing
     assert len(docs) == len(docarray)
     for d, od in zip(docs, docarray):
@@ -157,7 +166,8 @@ def test_docarray_init(docs, docarray):
         assert d.text == od.text
 
 
-def test_docarray_iterate_twice(docarray):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_docarray_iterate_twice(docarray, docker_compose):
     j = 0
     for _ in docarray:
         for _ in docarray:
@@ -165,7 +175,8 @@ def test_docarray_iterate_twice(docarray):
     assert j == len(docarray) ** 2
 
 
-def test_match_chunk_array():
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_match_chunk_array(docker_compose):
     d = Document(content='hello world')
 
     m = Document()
@@ -199,7 +210,8 @@ def add_match(doc):
     return match
 
 
-def test_doc_array_from_generator():
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_doc_array_from_generator(docker_compose):
     NUM_DOCS = 100
 
     def generate():
@@ -210,7 +222,8 @@ def test_doc_array_from_generator():
     assert len(doc_array) == NUM_DOCS
 
 
-def test_documentarray_filter():
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_documentarray_filter(docker_compose):
     da = DocumentArrayRedis([Document() for _ in range(6)], clear=True)
 
     for j in range(6):
@@ -226,7 +239,8 @@ def test_documentarray_filter():
         assert d.scores['score'].value > 2
 
 
-def test_da_with_different_inputs():
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_da_with_different_inputs(docker_compose):
     docs = [Document() for _ in range(10)]
     da = DocumentArrayRedis(
         [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))],
@@ -237,7 +251,8 @@ def test_da_with_different_inputs():
         assert isinstance(d, Document)
 
 
-def test_da_document_interface_not_in_proto():
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_da_document_interface_not_in_proto(docker_compose):
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArrayRedis(
         [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))],
@@ -247,7 +262,8 @@ def test_da_document_interface_not_in_proto():
     assert da[0].embedding.shape == (10,)
 
 
-def test_cache_invalidation_clear(docarray_for_cache):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_cache_invalidation_clear(docarray_for_cache, docker_compose):
     assert '1' in docarray_for_cache
     assert '2' in docarray_for_cache
     docarray_for_cache.clear()
@@ -255,14 +271,16 @@ def test_cache_invalidation_clear(docarray_for_cache):
     assert '2' not in docarray_for_cache
 
 
-def test_cache_invalidation_insert(docarray_for_cache):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_cache_invalidation_insert(docarray_for_cache, docker_compose):
     """Test insert doc at certain idx."""
     docarray_for_cache.insert(0, Document(id='test_id'))
     assert 'test_id' in docarray_for_cache
     assert docarray_for_cache[0].id == 'test_id'
 
 
-def test_cache_invalidation_set_del(docarray_for_cache):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_cache_invalidation_set_del(docarray_for_cache, docker_compose):
     docarray_for_cache[0] = Document(id='test_id')
     docarray_for_cache[1] = Document(id='test_id2')
     assert 'test_id' in docarray_for_cache
@@ -271,7 +289,8 @@ def test_cache_invalidation_set_del(docarray_for_cache):
     assert 'test_id' not in docarray_for_cache
 
 
-def test_none_extend():
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_none_extend(docker_compose):
     da = DocumentArrayRedis([Document() for _ in range(100)], clear=True)
     da.extend(None)
     assert len(da) == 100

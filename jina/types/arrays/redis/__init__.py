@@ -15,21 +15,27 @@ class DocumentArrayRedis(
     AllMixins,
     MutableSequence,
 ):
+    """
+    Provides a wrapper around a Redis server for DocumentArray
+
+    REQUIRES redis to be already running and available
+    """
+
     def __init__(
         self,
-        docs=None,
-        host='localhost',
-        port=6379,
-        db=0,
-        name='doc_array',
-        clear=False,
+        docs: DocumentArray = None,
+        host: str = 'localhost',
+        port: int = 6379,
+        db: int = 0,
+        name: str = 'doc_array',
+        clear: bool = False,
     ):
         """
-        :param docs:
-        :param host:
-        :param port:
-        :param db:
-        :param name:
+        :param docs: the DocumentArray to initialize with
+        :param host: host of redis server
+        :param port: port of redis server
+        :param db: the db to use in the redis server
+        :param name: the name of the key to be used
         :param clear: whether to clear the key beforehand
         """
         with ImportExtensions(required=True):
@@ -48,7 +54,6 @@ class DocumentArrayRedis(
         if len(self.docs):
             self.logger.info(f'Key at {name} already has {len(self.docs)} Documents')
         if docs:
-            # print(f'extending with {len(docs)}')
             self.extend(docs)
 
     def insert(self, index: int, doc: 'Document') -> None:
@@ -61,9 +66,6 @@ class DocumentArrayRedis(
         self.docs[index] = doc.to_bytes()
 
     def __len__(self):
-        # print(f'calling __len__')
-        # print(self.docs.__len__())
-        # print(self.docs)
         return len(self.docs)
 
     def extend(self, docs: Iterable['Document']) -> None:
@@ -157,8 +159,7 @@ class DocumentArrayRedis(
                 value_doc.id = key
                 self[idx_set] = value_doc.to_bytes()
             else:
-                # TODO error msg
-                print(f'Document with id {key} was not found')
+                self.logger.warning(f'Document with id {key} was not found')
         else:
             raise IndexError(f'unsupported type {type(key)}')
 
