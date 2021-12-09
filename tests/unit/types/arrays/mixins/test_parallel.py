@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina import DocumentArray, Document, DocumentArrayMemmap
+from jina import DocumentArray, Document, DocumentArrayMemmap, Executor, requests
 
 
 def foo(d: Document):
@@ -98,14 +98,15 @@ def test_map_lambda(pytestconfig, da_cls):
         assert d.blob is not None
 
 
-@pytest.mark.skipif(
-    'GITHUB_WORKFLOW' in os.environ,
-    reason='this test somehow fail on Github CI, but it MUST run successfully on local',
-)
+# @pytest.mark.skipif(
+#     'GITHUB_WORKFLOW' in os.environ,
+#     reason='this test somehow fail on Github CI, but it MUST run successfully on local',
+# )
 @pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
 def test_map_nested(da_cls):
-    class Executor:
-        def foo(self, docs: DocumentArray):
+    class NestedExecutor(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
             def bar(d: Document):
                 d.text = 'hello'
                 return d
@@ -115,6 +116,6 @@ def test_map_nested(da_cls):
 
     N = 2
     da = DocumentArray.empty(N)
-    exec = Executor()
+    exec = NestedExecutor()
     da1 = exec.foo(da)
     assert da1.texts == ['hello'] * N
