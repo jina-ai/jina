@@ -38,8 +38,8 @@ def send_requests(
             self.response_arrival_times = response_arrival_times
 
         def process_response(self, req):
-            logger.debug(f'Received response {req.data.docs[0].text}')
-            self.received_resposes.put(req.data.docs[0].text)
+            logger.debug(f'Received response {req.docs[0].text}')
+            self.received_resposes.put(req.docs[0].text)
             if self.prev_time is not None:
                 self.response_arrival_times.put(time.time() - self.prev_time)
             self.prev_time = time.time()

@@ -7,7 +7,6 @@ from jina.peapods.networking import GrpcConnectionPool, K8sGrpcConnectionPool
 from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib import kubernetes_tools
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
-from jina.types.message import Message
 
 
 @pytest.mark.parametrize('docker_images', [['test-executor']], indirect=True)
@@ -83,8 +82,8 @@ def test_regular_pod(docker_images):
         with kubernetes_tools.get_port_forward_contextmanager(
             namespace='default', pod_name=head_name, port_expose=8081
         ):
-            response = GrpcConnectionPool.send_messages_sync(
-                [_create_test_data_message()],
+            response = GrpcConnectionPool.send_request_sync(
+                _create_test_data_message(),
                 f'localhost:8081',
             )
             assert len(response.response.docs) == 1
@@ -172,6 +171,6 @@ def test_gateway_pod(docker_images, k8s_disable_connection_pool):
 
 
 def _create_test_data_message():
-    req = list(request_generator('/index', DocumentArray([Document(text='client')])))[0]
-    msg = Message(None, req)
-    return msg
+    return list(request_generator('/index', DocumentArray([Document(text='client')])))[
+        0
+    ]

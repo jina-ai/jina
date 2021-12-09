@@ -11,8 +11,8 @@ def test_docs():
 
 def test_different_responses(test_docs, mocker):
     def assert_response(response):
-        assert len(response.data.docs) == 1
-        assert response.data.docs[0].id == '1'
+        assert len(response.docs) == 1
+        assert response.docs[0].id == '1'
 
     class MyExecutor(Executor):
         @requests(on='/return_docs')

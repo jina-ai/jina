@@ -117,7 +117,7 @@ def test_mime_type(protocol):
     f = Flow(protocol=protocol).add(uses=MimeExec)
 
     def validate_mime_type(req):
-        for d in req.data.docs:
+        for d in req.docs:
             assert d.mime_type == 'text/x-python'
 
     with f:

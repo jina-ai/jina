@@ -251,7 +251,7 @@ def test_peapod_create(monkeypatch, identity, client_cls):
         aiohttp,
         'request',
         lambda **kwargs: MockAiohttpResponse(
-            {'detail': [{'msg': 'abcd'}], 'body': ['empty', 'data']}, 404
+            {'detail': [{'msg': 'abcd'}], 'body': ['empty', 'docs']}, 404
         ),
     )
     status, response = client.create(identity, payload)

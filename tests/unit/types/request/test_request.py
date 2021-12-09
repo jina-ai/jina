@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
@@ -59,11 +61,27 @@ def test_docs_operations():
     assert len(req.docs) == 2
 
 
+def test_copy(req):
+    request = DataRequest(req)
+    copied_req = copy.deepcopy(request)
+    assert type(request) == type(copied_req)
+    assert request == copied_req
+    assert len(request.docs) == len(copied_req.docs)
+    request.docs.append(Document())
+    assert len(request.docs) != len(copied_req.docs)
+
+
 def test_groundtruth(req):
     request = DataRequest(request=req)
     groundtruths = request.groundtruths
     assert isinstance(groundtruths, DocumentArray)
     assert len(groundtruths) == 0
+
+
+def test_data_backwards_compatibility(req):
+    req = DataRequest(request=req)
+    assert len(req.data.docs) == 1
+    assert len(req.data.groundtruths) == 0
 
 
 def test_command(control_req):

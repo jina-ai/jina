@@ -1,3 +1,4 @@
+import copy
 from typing import Optional, List, Dict, TypeVar
 
 from google.protobuf import json_format
@@ -114,6 +115,12 @@ class DataRequest(Request):
         :return: the new message object
         """
         return cls(request=request)
+
+    def __copy__(self, _):
+        return DataRequest(request=self.proto)
+
+    def __deepcopy__(self, _):
+        return DataRequest(request=copy.deepcopy(self.proto))
 
 
 class Response(DataRequest):

@@ -28,8 +28,8 @@ def test_chatbot_helloworld(helloworld_args):
 def test_chatbot(tmpdir, mocker, helloworld_args):
     #  test the index and query flow.
     def validate_response(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
+        assert len(resp.docs) == 1
+        for doc in resp.docs:
             assert len(doc.matches) == 1
             assert (
                 'testing positive means that you have the virus'

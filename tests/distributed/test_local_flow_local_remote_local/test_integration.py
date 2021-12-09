@@ -24,8 +24,8 @@ def test_flow(
     text = 'cats rules'
 
     def validate_output(resp):
-        assert len(resp.data.docs) == 1
-        assert resp.data.docs[0].text == text
+        assert len(resp.docs) == 1
+        assert resp.docs[0].text == text
 
     os.environ['JINA_INTERNAL_HOST'] = get_internal_ip()
     os.environ['JINA_ENCODER_HOST'] = '172.28.1.1'

@@ -83,8 +83,8 @@ def test_multimodal(helloworld_args, query_document, mocker):
     """Regression test for multimodal example."""
 
     def validate_response(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
+        assert len(resp.docs) == 1
+        for doc in resp.docs:
             assert len(doc.matches) == 10
 
     hello_world(helloworld_args)

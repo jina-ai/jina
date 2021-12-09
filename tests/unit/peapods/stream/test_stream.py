@@ -19,7 +19,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
         async def task():
             await asyncio.sleep(0.5)
-            request.data.docs[0].tags['request_handled'] = True
+            request.docs[0].tags['request_handled'] = True
             return request
 
         future = asyncio.ensure_future(task())
@@ -28,7 +28,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
     def result_handle_fn(result):
         results_handled.append(result)
         assert isinstance(result, jina_pb2.RequestProto)
-        result.data.docs[0].tags['result_handled'] = True
+        result.docs[0].tags['result_handled'] = True
         return result
 
     def end_of_iter_fn():
@@ -40,14 +40,14 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
         for i in range(num_requests):
             req = jina_pb2.RequestProto()
             req.request_id = random_identity()
-            req.data.docs.add()
+            req.docs.add()
             yield req
 
     async def _get_async_requests_iterator(num_requests):
         for i in range(num_requests):
             req = jina_pb2.RequestProto()
             req.request_id = random_identity()
-            req.data.docs.add()
+            req.docs.add()
             yield req
             await asyncio.sleep(0.1)
 
@@ -71,7 +71,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     async for r in response:
         num_responses += 1
-        assert r.data.docs[0].tags['request_handled']
-        assert r.data.docs[0].tags['result_handled']
+        assert r.docs[0].tags['request_handled']
+        assert r.docs[0].tags['result_handled']
 
     assert num_responses == num_requests

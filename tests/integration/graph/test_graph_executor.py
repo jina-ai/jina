@@ -60,8 +60,8 @@ def graph():
 
 def test_flow_with_graph_executor(graph, mocker):
     def validate_resp(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
+        assert len(resp.docs) == 1
+        for doc in resp.docs:
             graph = GraphDocument(doc)
             assert graph.embedding[0] == 64
             assert len(graph.nodes) == 4

@@ -346,8 +346,8 @@ def test_return_results_sync_flow(return_results, protocol):
             for doc in r[0].docs:
                 assert isinstance(doc, Document)
 
-            assert len(r[0].data.docs) == 10
-            for doc in r[0].data.docs:
+            assert len(r[0].docs) == 10
+            for doc in r[0].docs:
                 assert isinstance(doc, jina_pb2.DocumentProto)
 
         else:

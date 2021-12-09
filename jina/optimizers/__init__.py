@@ -17,7 +17,7 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
 from ..logging.predefined import default_logger as logger
-from ..types.request import Response
+from ..types.request.data import Response
 from ..types.score.map import NamedScoreMapping
 
 if TYPE_CHECKING:
@@ -119,9 +119,9 @@ class EvaluationCallback(OptimizerCallback):
 
         :param response: response message
         """
-        self._n_docs += len(response.data.docs)
+        self._n_docs += len(response.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
-        for doc in response.data.docs:
+        for doc in response.docs:
             for key, evaluation in NamedScoreMapping(doc.evaluations).items():
                 self._evaluation_values[key].append(evaluation.value)
 

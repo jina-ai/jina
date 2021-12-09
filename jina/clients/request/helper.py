@@ -13,12 +13,7 @@ def _new_data_request_from_batch(
     req = _new_data_request(endpoint, target, parameters)
 
     # add docs, groundtruths fields
-    try:
-        _add_docs_groundtruths(req, batch, data_type, _kwargs)
-    except Exception as ex:
-        raise BadRequestType(
-            f'error when building {req.request_type} from {batch}'
-        ) from ex
+    _add_docs_groundtruths(req, batch, data_type, _kwargs)
 
     return req
 

@@ -44,7 +44,7 @@ def test_remote_flow_local_executors(replicas):
             inputs=[Document(id=idx) for idx in range(NUM_DOCS)],
             return_results=True,
         )
-        for doc in resp[0].data.docs:
+        for doc in resp[0].docs:
             assert doc.tags['key1'] == 'val1'
             assert doc.tags['key2'] == 'val2'
             assert doc.tags['replicas'] == replicas

@@ -81,7 +81,7 @@ class HTTPBaseClient(BaseClient):
                     elif r_status < 200 or r_status > 300:
                         raise ValueError(r_str)
 
-                    r_str['docs'] = [r_str['docs']]
+                    r_str['docs'] = r_str['docs']
                     resp = DataRequest(r_str)
                     callback_exec(
                         response=resp,

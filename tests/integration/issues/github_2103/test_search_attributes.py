@@ -33,7 +33,7 @@ def docs():
 
 def test_no_matches_grpc(mocker, docs):
     def validate_response(resp):
-        for doc in resp.data.docs:
+        for doc in resp.docs:
             assert len(doc.matches) == 0
 
     mock_on_done = mocker.Mock()
