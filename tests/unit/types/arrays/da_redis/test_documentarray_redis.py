@@ -11,6 +11,15 @@ from jina import Document, DocumentArrayRedis
 DOCUMENTS_PER_LEVEL = 1
 
 
+@pytest.fixture
+def docarray_for_cache():
+    da = DocumentArrayRedis(clear=True)
+    d1 = Document(id=1)
+    d2 = Document(id='2')
+    da.extend([d1, d2])
+    return da
+
+
 @pytest.fixture()
 def docker_compose(request):
     os.system(
@@ -156,13 +165,6 @@ def test_docarray_iterate_twice(docarray):
     assert j == len(docarray) ** 2
 
 
-def test_docarray_reverse(docs, docarray):
-    ids = [d.id for d in docs]
-    docarray.reverse()
-    ids2 = [d.id for d in docarray]
-    assert list(reversed(ids)) == ids2
-
-
 def test_match_chunk_array():
     d = Document(content='hello world')
 
@@ -204,93 +206,38 @@ def test_doc_array_from_generator():
         for _ in range(NUM_DOCS):
             yield Document()
 
-    doc_array = DocumentArrayRedis(generate())
+    doc_array = DocumentArrayRedis(generate(), clear=True)
     assert len(doc_array) == NUM_DOCS
 
 
 def test_documentarray_filter():
-    da = DocumentArrayRedis([Document() for _ in range(6)])
+    da = DocumentArrayRedis([Document() for _ in range(6)], clear=True)
 
     for j in range(6):
-        da[j].scores['score'].value = j
+        # no retrieving by reference
+        d = da[j]
+        d.scores['score'].value = j
+        da[j] = d
 
-    da = [d for d in da if d.scores['score'].value > 2]
-    assert len(DocumentArrayRedis(da)) == 3
+    da2 = [d for d in da if d.scores['score'].value > 2]
+    assert len(DocumentArrayRedis(da2, name='another', clear=True)) == 3
 
-    for d in da:
+    for d in da2:
         assert d.scores['score'].value > 2
 
 
 def test_da_with_different_inputs():
     docs = [Document() for _ in range(10)]
     da = DocumentArrayRedis(
-        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))],
+        clear=True,
     )
     assert len(da) == 10
     for d in da:
         assert isinstance(d, Document)
 
 
-def test_da_sort_by_document_interface_not_in_proto():
-    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
-    da = DocumentArrayRedis(
-        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
-    )
-    assert len(da) == 10
-    assert da[0].embedding.shape == (10,)
-
-    da.sort(key=lambda d: d.embedding.shape[0])
-    assert da[0].embedding.shape == (1,)
-
-
-def test_da_sort_by_document_interface_in_proto():
-    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
-    da = DocumentArrayRedis(
-        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
-    )
-    assert len(da) == 10
-    assert da[0].embedding.shape == (10,)
-
-    da.sort(key=lambda d: d.embedding.dense.shape[0])
-    assert da[0].embedding.shape == (1,)
-
-
-def test_da_sort_topk():
-    da = DocumentArrayRedis(
-        [Document(id=i, scores={'euclid': 10 - i}) for i in range(10)]
-    )
-    original = deepcopy(da)
-
-    da.sort(top_k=3, key=lambda d: d.scores['euclid'].value)
-    top = [da[i].scores['euclid'].value for i in range(3)]
-    rest = [da[i].scores['euclid'].value for i in range(3, 10)]
-    assert top[0] == 1 and top[1] == 2 and top[2] == 3
-    assert rest != sorted(rest)
-    assert len(da) == len(original)
-    assert all([d.id in original for d in da])
-
-    da.sort(top_k=3, key=lambda d: d.scores['euclid'].value, reverse=True)
-    top = [da[i].scores['euclid'].value for i in range(3)]
-    rest = [da[i].scores['euclid'].value for i in range(3, 10)]
-    assert top[0] == 10 and top[1] == 9 and top[2] == 8
-    assert rest != sorted(rest, reverse=True)
-    assert len(da) == len(original)
-    assert all([d.id in original for d in da])
-
-
-def test_da_sort_topk_tie():
-    da = DocumentArrayRedis(
-        [Document(id=i, tags={'order': i % 10}) for i in range(100)]
-    )
-    da.sort(top_k=10, key=lambda doc: doc.tags['order'])
-
-    top_k_ids = [doc.id for doc in da[0:10]]
-    assert top_k_ids == ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90']
-    for i in range(10):
-        assert da[i].tags['order'] == 0
-
-
-def test_da_reverse():
+def test_da_document_interface_not_in_proto():
     docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
     da = DocumentArrayRedis(
         [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))],
@@ -298,37 +245,6 @@ def test_da_reverse():
     )
     assert len(da) == 10
     assert da[0].embedding.shape == (10,)
-    da0_id = da[0].id
-    with pytest.raises(NotImplementedError):
-        da.reverse()
-        assert da[0].id != da0_id
-        assert da[da0_id].id == da0_id
-        assert da[-1].id == da0_id
-        assert da[0].embedding.shape == (1,)
-
-
-def test_da_sort_by_score():
-    da = DocumentArrayRedis(
-        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)]
-    )
-    assert da[0].id == '0'
-    assert da[0].scores['euclid'].value == 10
-    da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
-    assert da[0].id == '9'
-    assert da[0].scores['euclid'].value == 1
-
-
-def test_da_sort_by_score():
-    da = DocumentArrayRedis(
-        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)],
-        clear=True,
-    )
-    assert da[0].id == '0'
-    assert da[0].scores['euclid'].value == 10
-    with pytest.raises(NotImplementedError):
-        da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
-        assert da[0].id == '9'
-        assert da[0].scores['euclid'].value == 1
 
 
 def test_cache_invalidation_clear(docarray_for_cache):
@@ -355,28 +271,7 @@ def test_cache_invalidation_set_del(docarray_for_cache):
     assert 'test_id' not in docarray_for_cache
 
 
-def test_cache_invalidation_sort_reverse(docarray_for_cache):
-    assert docarray_for_cache[0].id == '1'
-    assert docarray_for_cache[1].id == '2'
-    docarray_for_cache.reverse()
-    assert docarray_for_cache[0].id == '2'
-    assert docarray_for_cache[1].id == '1'
-
-
 def test_none_extend():
     da = DocumentArrayRedis([Document() for _ in range(100)], clear=True)
     da.extend(None)
     assert len(da) == 100
-
-
-# TODO
-# def test_lazy_index_map():
-#     da = DocumentArrayRedis(
-#         [Document(id=str(i), text=f'document_{i}') for i in range(100)]
-#     )
-#     assert da._id_to_index is None
-#
-#     # build index map
-#     assert da['0'].text == 'document_0'
-#     assert da._id_to_index is not None
-#     assert len(da._index_map.keys()) == 100

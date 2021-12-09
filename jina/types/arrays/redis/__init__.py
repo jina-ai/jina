@@ -58,8 +58,7 @@ class DocumentArrayRedis(
         :param doc: the doc needs to be inserted.
         """
         # This however must be here as inheriting from MutableSequence requires
-        # cannot do this with Redis hash
-        raise NotImplementedError
+        self.docs[index] = doc.to_bytes()
 
     def __len__(self):
         # print(f'calling __len__')
@@ -128,7 +127,7 @@ class DocumentArrayRedis(
                 del self[k]
         elif isinstance(key, str):
             idx_del = self._index(key)
-            if idx_del:
+            if idx_del is not None:
                 del self[idx_del]
         else:
             raise IndexError(f'unsupported type {type(key)}')
@@ -144,7 +143,7 @@ class DocumentArrayRedis(
 
     def __iter__(self) -> Iterator['Document']:
         for doc in self.docs:
-            yield doc
+            yield Document(doc)
 
     def __setitem__(self, key: Union[int, str], value: 'Document') -> None:
         if isinstance(value, Document):
@@ -174,8 +173,10 @@ class DocumentArrayRedis(
         # TODO not trivial. would need to change to List type
         # and would be v slow because you can't sort directly on the
         # bytes. you need to deserialize and then sort
+        # refer to tests of DA or DAMM when implementing
         raise NotImplementedError
 
     def reverse(self) -> None:
         # TODO not clear if possible
+        # refer to tests of DA or DAMM when implementing
         raise NotImplementedError
