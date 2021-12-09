@@ -52,11 +52,11 @@ def test_index():
 
         node = f._pod_nodes['join_all']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
-        assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
-        assert node.tail_args.socket_in == node.head_args.socket_in
-        assert node.tail_args.socket_out == node.head_args.socket_out
+        assert node.head_args.socket_out == SocketType.PUSH_BIND
+        assert node.peas_args['peas'][0].socket_in == SocketType.PULL_CONNECT
+        assert node.peas_args['peas'][0].socket_out == SocketType.ROUTER_BIND
+        assert node.tail_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
 
 def test_query():
