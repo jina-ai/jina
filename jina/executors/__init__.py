@@ -300,6 +300,7 @@ class ReducerExecutor(BaseExecutor):
         :param kwargs: extra keyword arguments
         :return: the reduced DocumentArray
         """
-        da = docs_matrix[0]
-        da.reduce_all(docs_matrix[1:])
-        return da
+        if docs_matrix:
+            da = docs_matrix[0]
+            da.reduce_all(docs_matrix[1:])
+            return da
