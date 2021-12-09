@@ -11,9 +11,10 @@ from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
-from ....excepts import RuntimeTerminated
 from ....proto import jina_pb2_grpc
-from ....types.message import Message
+from ....proto.jina_pb2 import ControlRequestProto
+from ....types.request.control import ControlRequest
+from ....types.request.data import DataRequest
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
@@ -49,6 +50,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
+        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
+            self, self._grpc_server
+        )
         bind_addr = f'0.0.0.0:{self.args.port_in}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'Start listening on {bind_addr}')
@@ -72,18 +76,19 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         await self.async_cancel()
         self._data_request_handler.close()
 
-    async def Call(self, messages: List[Message], *args) -> Message:
+    async def process_data(self, requests: List[DataRequest], *args) -> DataRequest:
         """
         Process they received message and return the result as a new message
 
-        :param messages: the messages to process
+        :param requests: the data request to process
         :param args: additional arguments in the grpc call, ignored
         :returns: the response message
         """
         try:
-            return self._handle(messages)
-        except RuntimeTerminated:
-            self._cancel()
+            if self.logger.debug_enabled:
+                self._log_data_request(requests[0])
+
+            return self._data_request_handler.handle(requests=requests)
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
@@ -92,53 +97,34 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 exc_info=not self.args.quiet_error,
             )
 
-            messages[0].add_exception(ex, self._data_request_handler._executor)
-            return messages[0]
+            requests[0].add_exception(ex, self._data_request_handler._executor)
+            return requests[0]
 
-    def _handle(self, messages: List[Message]) -> Message:
-        """Process the given message, data requests are passed to the DataRequestHandler
-
-        :param messages: received messages
-        :return: the transformed message.
+    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """
+        Process they received message and return the result as a new message
 
-        # messages have to all be of the same type (DataRequest/ControlRequest)
-        # we can check the first to find their type
-        # DataRequests are handled en bloc, ControlRequests one by one
-        if messages[0].envelope.request_type != 'DataRequest':
-            return self._handle_control_requests(messages)
-        else:
+        :param request: the data request to process
+        :param args: additional arguments in the grpc call, ignored
+        :returns: the response message
+        """
+        try:
             if self.logger.debug_enabled:
-                self._log_info_messages(messages)
+                self._log_control_request(request)
 
-            self._data_request_handler.merge_routes(messages)
-            return self._data_request_handler.handle(messages=messages)
-
-    def _handle_control_requests(self, messages):
-        # responses for ControlRequests dont matter, just return the last ControlRequest back to the caller
-        last_message = None
-        for msg in messages:
-            if self.logger.debug_enabled:
-                self._log_info_msg(msg)
-
-            if msg.request.command == 'TERMINATE':
-                raise RuntimeTerminated()
-            elif msg.request.command == 'STATUS':
+            if request.command == 'STATUS':
                 pass
             else:
                 raise RuntimeError(
-                    f'WorkerRuntime received unsupported ControlRequest command {msg.request.command}'
+                    f'WorkerRuntime received unsupported ControlRequest command {request.command}'
                 )
-            last_message = msg
-        return last_message
-
-    def _log_info_msg(self, msg):
-        info_msg = f'recv {msg.envelope.request_type} '
-        req_type = msg.envelope.request_type
-        if req_type == 'DataRequest':
-            info_msg += (
-                f'({msg.envelope.header.exec_endpoint}) - ({msg.envelope.request_id}) '
+        except (RuntimeError, Exception) as ex:
+            self.logger.error(
+                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
             )
-        elif req_type == 'ControlRequest':
-            info_msg += f'({msg.request.command}) '
-        self.logger.debug(info_msg)
+
+            request.add_exception(ex, self._data_request_handler._executor)
+        return request

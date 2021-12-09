@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 async def request_generator(
     exec_endpoint: str,
-    data: 'GeneratorSourceType',
+    docs: 'GeneratorSourceType',
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_peapod: Optional[str] = None,
@@ -24,7 +24,7 @@ async def request_generator(
     """An async :function:`request_generator`.
 
     :param exec_endpoint: the endpoint string, by convention starts with `/`
-    :param data: the data to use in the request
+    :param docs: the data to use in the request
     :param request_size: the number of Documents per request
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
@@ -37,7 +37,7 @@ async def request_generator(
     _kwargs = dict(extra_kwargs=kwargs)
 
     try:
-        if data is None:
+        if docs is None:
             # this allows empty inputs, i.e. a data request with only parameters
             yield _new_data_request(
                 endpoint=exec_endpoint, target=target_peapod, parameters=parameters
@@ -46,7 +46,7 @@ async def request_generator(
             with ImportExtensions(required=True):
                 import aiostream
 
-            async for batch in aiostream.stream.chunks(data, request_size):
+            async for batch in aiostream.stream.chunks(docs, request_size):
                 yield _new_data_request_from_batch(
                     _kwargs=kwargs,
                     batch=batch,

@@ -13,7 +13,6 @@ from typing import (
 
 from .helper import AsyncRequestsIterator
 from ...logging.logger import JinaLogger
-from ...types.message import Message
 
 __all__ = ['RequestStreamer']
 
@@ -35,12 +34,8 @@ class RequestStreamer:
     def __init__(
         self,
         args: argparse.Namespace,
-        request_handler: Callable[
-            ['Request'], 'Awaitable[Union[Request, Message, List[Message]]]'
-        ],
-        result_handler: Callable[
-            [Union['Request', 'Message', List['Message']]], Optional['Request']
-        ],
+        request_handler: Callable[['Request'], 'Awaitable[Request]'],
+        result_handler: Callable[['Request'], Optional['Request']],
         end_of_iter_handler: Optional[Callable[[], None]] = None,
         logger: Optional['JinaLogger'] = None,
     ):

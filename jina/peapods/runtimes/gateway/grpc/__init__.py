@@ -11,6 +11,8 @@ from ..request_handling import handle_request, handle_result
 
 __all__ = ['GRPCGatewayRuntime']
 
+from .....types.request.control import ControlRequest
+
 
 class GRPCGatewayRuntime(GatewayRuntime):
     """Gateway Runtime for gRPC."""
@@ -45,6 +47,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self.streamer.Call = self.streamer.stream
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
+        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
         self.logger.debug(f' Start server bound to {bind_addr}')
@@ -65,3 +68,19 @@ class GRPCGatewayRuntime(GatewayRuntime):
         """The async running of server."""
         self._connection_pool.start()
         await self.server.wait_for_termination()
+
+    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
+        """
+        Should be used to check readiness by sending STATUS ControlRequests.
+        Throws for any other command than STATUS.
+
+        :param request: the ControlRequest, should have command 'STATUS'
+        :param args: additional arguments in the grpc call, ignored
+        :returns: will be the original request
+        """
+
+        if self.logger.debug_enabled:
+            self._log_control_request(request)
+        if request.command != 'STATUS':
+            raise ValueError('Gateway only support STATUS ControlRequests')
+        return request

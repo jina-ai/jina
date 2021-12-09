@@ -11,7 +11,6 @@ from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
-from jina.types.request import Request
 from jina import Document, DocumentArray
 from jina.peapods import networking
 from jina.helper import random_port

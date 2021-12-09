@@ -61,7 +61,7 @@ class BaseClient(ABC):
             # it is a function
             inputs = inputs()
 
-        kwargs['data'] = inputs
+        kwargs['docs'] = inputs
         kwargs['exec_endpoint'] = '/'
 
         if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
@@ -91,7 +91,7 @@ class BaseClient(ABC):
         :return: Iterator of request.
         """
         _kwargs = vars(self.args)
-        _kwargs['data'] = self.inputs
+        _kwargs['docs'] = self.inputs
         # override by the caller-specific kwargs
         _kwargs.update(kwargs)
 

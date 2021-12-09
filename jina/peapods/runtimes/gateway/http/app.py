@@ -116,7 +116,7 @@ def get_fastapi_app(
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
-            response_model=PROTO_TO_PYDANTIC_MODELS.RequestProto,
+            response_model=PROTO_TO_PYDANTIC_MODELS.DataRequestProto,
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
@@ -161,7 +161,7 @@ def get_fastapi_app(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
         )
         async def foo(body: JinaRequestModel):
-            bd = body.dict() if body else {'data': None}
+            bd = body.dict() if body else {'docs': None}
             bd['exec_endpoint'] = exec_endpoint
             return await _get_singleton_result(request_generator(**bd))
 

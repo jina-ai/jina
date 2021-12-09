@@ -2,7 +2,7 @@ import pytest
 
 from jina.types.arrays.chunk import ChunkArray
 from jina.types.document import Document
-from jina.types.request import Request
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture(scope='function')
@@ -22,7 +22,7 @@ def reference_doc(document_factory):
 
 @pytest.fixture
 def chunks(document_factory):
-    req = Request().as_typed_request('data')
+    req = DataRequest()
     req.docs.extend(
         [
             document_factory.create(1, 'test 1'),
@@ -30,7 +30,7 @@ def chunks(document_factory):
             document_factory.create(3, 'test 3'),
         ]
     )
-    return req.proto.data.docs
+    return req.proto.docs[0]
 
 
 @pytest.fixture

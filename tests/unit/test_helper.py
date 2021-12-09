@@ -26,7 +26,7 @@ from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.arrays.memmap import DocumentArrayMemmap
-from jina.types.request import Request
+from jina.types.request.data import DataRequest
 from tests import random_docs
 
 
@@ -125,7 +125,7 @@ def test_pprint_routes(capfd):
     r = jina_pb2.RouteProto()
     r.status.code = jina_pb2.StatusProto.SUCCESS
     result.append(r)
-    rr = Request()
+    rr = DataRequest()
     rr.routes.extend(result)
     pprint_routes(rr)
     out, err = capfd.readouterr()

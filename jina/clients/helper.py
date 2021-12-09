@@ -8,7 +8,7 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..proto import jina_pb2
-from ..types.request import Response
+from ..types.request.data import Response
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
@@ -77,9 +77,9 @@ def callback_exec(
     :param continue_on_error: whether to continue on error
     :param logger: a logger instance
     """
-    if on_error and response.status.code >= jina_pb2.StatusProto.ERROR:
+    if on_error and response.header.status.code >= jina_pb2.StatusProto.ERROR:
         _safe_callback(on_error, continue_on_error, logger)(response)
-    elif on_done and response.status.code == jina_pb2.StatusProto.SUCCESS:
+    elif on_done and response.header.status.code == jina_pb2.StatusProto.SUCCESS:
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
         _safe_callback(on_always, continue_on_error, logger)(response)

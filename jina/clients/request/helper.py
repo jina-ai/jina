@@ -4,7 +4,7 @@ from typing import Tuple
 from ...enums import DataInputType
 from ...excepts import BadDocType, BadRequestType
 from ...types.document import Document
-from ...types.request import Request
+from ...types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
@@ -24,8 +24,7 @@ def _new_data_request_from_batch(
 
 
 def _new_data_request(endpoint, target, parameters):
-    req = Request()
-    req = req.as_typed_request('data')
+    req = DataRequest()
 
     # set up header
     if endpoint:
@@ -39,17 +38,17 @@ def _new_data_request(endpoint, target, parameters):
 
 
 def _new_doc_from_data(
-    data, data_type: DataInputType, **kwargs
+    docs, data_type: DataInputType, **kwargs
 ) -> Tuple['Document', 'DataInputType']:
     def _build_doc_from_content():
-        return Document(content=data, **kwargs), DataInputType.CONTENT
+        return Document(content=docs, **kwargs), DataInputType.CONTENT
 
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
-        if isinstance(data, Document):
+        if isinstance(docs, Document):
             # if incoming is already primitive type Document, then all good, best practice!
-            return data, DataInputType.DOCUMENT
+            return docs, DataInputType.DOCUMENT
         try:
-            d = Document(data, **kwargs)
+            d = Document(docs, **kwargs)
             return d, DataInputType.DOCUMENT
         except BadDocType:
             # AUTO has a fallback, now reconsider it as content

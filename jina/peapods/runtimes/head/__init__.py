@@ -10,13 +10,15 @@ from typing import Optional, Union, List
 import grpc
 
 from ..asyncio import AsyncNewLoopRuntime
-from ..request_handlers.data_request_handler import DataRequestHandler
+from ..request_handlers.data_request_handler import (
+    DataRequestHandler,
+    get_docs_from_request,
+)
 from ...networking import create_connection_pool, K8sGrpcConnectionPool
-from .... import DocumentArray
 from ....enums import PollingType
-from ....excepts import RuntimeTerminated
 from ....proto import jina_pb2_grpc
-from ....types.message import Message
+from ....types.request.control import ControlRequest
+from ....types.request.data import DataRequest
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -91,6 +93,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
+        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
+            self, self._grpc_server
+        )
         bind_addr = f'0.0.0.0:{self.args.port_in}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'Start listening on {bind_addr}')
@@ -112,29 +117,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         await self.async_cancel()
         await self.connection_pool.close()
 
-    async def _handle_messages(self, messages: List[Message]) -> Message:
-        # we assume that all messages have the same type, so we need to check only the first
-        if messages[0].envelope.request_type != 'DataRequest':
-            # ControlRequest messages need to be processed one by one
-            # Responses should not matter, so just the last message is returned
-            last_response = None
-            for message in messages:
-                last_response = await self._handle_control_request(message)
-            return last_response
-        else:
-            return await self._handle_data_requests(messages)
+    async def process_data(self, request: DataRequest, *args) -> DataRequest:
+        """
+        Process they received message and return the result as a new message
 
-    async def Call(self, messages: List[Message], *args) -> Message:
-        """Process they received messages and return the result as a new message
-
-        :param messages: the messages to process
+        :param request: the data request to process
         :param args: additional arguments in the grpc call, ignored
         :returns: the response message
         """
         try:
-            return await self._handle_messages(messages)
-        except RuntimeTerminated:
-            self._cancel()
+            return await self._handle_data_request(request)
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
@@ -144,72 +136,79 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
             raise
 
-    async def _handle_control_request(self, msg: Message) -> Message:
+    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
+        """
+        Process the received message and return the result as a new message
+
+        :param request: the data request to process
+        :param args: additional arguments in the grpc call, ignored
+        :returns: the response message
+        """
+        try:
+            if self.logger.debug_enabled:
+                self._log_control_request(request)
+
+            if request.command == 'ACTIVATE':
+
+                for relatedEntity in request.relatedEntities:
+                    connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
+
+                    self.connection_pool.add_connection(
+                        pod=self._pod_name,
+                        address=connection_string,
+                        shard_id=relatedEntity.shard_id
+                        if relatedEntity.HasField('shard_id')
+                        else None,
+                    )
+            elif request.command == 'DEACTIVATE':
+                for relatedEntity in request.relatedEntities:
+                    connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
+                    await self.connection_pool.remove_connection(
+                        pod=self._pod_name,
+                        address=connection_string,
+                        shard_id=relatedEntity.shard_id,
+                    )
+            return request
+        except (RuntimeError, Exception) as ex:
+            self.logger.error(
+                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
+            raise
+
+    async def _handle_data_request(self, requests: List[DataRequest]) -> DataRequest:
         if self.logger.debug_enabled:
-            self._log_info_msg(msg)
-
-        if msg.request.command == 'TERMINATE':
-            raise RuntimeTerminated()
-        elif msg.request.command == 'ACTIVATE':
-
-            for relatedEntity in msg.request.relatedEntities:
-                connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-
-                self.connection_pool.add_connection(
-                    pod=self._pod_name,
-                    address=connection_string,
-                    shard_id=relatedEntity.shard_id
-                    if relatedEntity.HasField('shard_id')
-                    else None,
-                )
-        elif msg.request.command == 'DEACTIVATE':
-            for relatedEntity in msg.request.relatedEntities:
-                connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-                await self.connection_pool.remove_connection(
-                    pod=self._pod_name,
-                    address=connection_string,
-                    shard_id=relatedEntity.shard_id,
-                )
-        return msg
-
-    async def _handle_data_requests(self, messages: List[Message]) -> Message:
-        if self.logger.debug_enabled:
-            self._log_info_messages(messages)
+            self._log_data_request(requests[0])
 
         if self.uses_before_address:
-            messages = [
-                await self.connection_pool.send_messages_once(
-                    messages, pod='uses_before'
+            requests = [
+                await self.connection_pool.send_requests_once(
+                    requests, pod='uses_before'
                 )
             ]
 
-        worker_send_tasks = self.connection_pool.send_messages(
-            messages=messages, pod=self._pod_name, polling_type=self.polling
+        worker_send_tasks = self.connection_pool.send_requests(
+            requests=requests, pod=self._pod_name, polling_type=self.polling
         )
-        worker_results = [
-            await result for result in asyncio.as_completed(worker_send_tasks)
-        ]
 
-        # If there is no uses_after, the head needs to concatenate the documents returned from the workers
-        if self.uses_after_address and len(worker_results) > 0:
-            response_message = await self.connection_pool.send_messages_once(
-                worker_results, pod='uses_after'
-            )
-        elif len(worker_results) > 1:
-            # TODO: this logic should not be here, also this should change once List[Message] is replaced with requests in proto
-            partial_requests = [message.request for message in worker_results]
-            result = DocumentArray(
-                [d for r in reversed(partial_requests) for d in getattr(r, 'docs')]
-            )
-            # the docs needs to be stored in the message returned to the caller, artifically choose the first one here
-            response_message = worker_results[0]
-            DataRequestHandler.replace_docs(response_message, result)
-        elif len(worker_results) == 1:
-            # there are not multiple messages as input, just return the single one in the list
-            response_message = worker_results[0]
-        else:
+        worker_results = await asyncio.gather(*worker_send_tasks)
+
+        if len(worker_results) == 0:
             raise RuntimeError(
                 f'Head {self.name} did not receive a response when sending message to worker peas'
             )
 
-        return response_message
+        response_request = worker_results[0]
+        if self.uses_after_address:
+            response_request = await self.connection_pool.send_requests_once(
+                worker_results, pod='uses_after'
+            )
+        elif len(worker_results) > 1:
+            DataRequestHandler.replace_docs(
+                response_request,
+                docs=get_docs_from_request(worker_results, field='docs'),
+            )
+
+        return response_request

@@ -148,51 +148,6 @@ message RouteProto {
     StatusProto status = 4; // the status of the execution
 }
 
-/**
- * Represents a Envelope, a part of the ``Message``.
- */
-message EnvelopeProto {
-    // unique id of the request
-    string request_id = 1;
-
-    // timeout in second until this message is dropped
-    uint32 timeout = 2;
-
-    /**
-     * Represents a the version information
-     */
-    message VersionProto {
-        string jina = 1; // jina's version
-        string proto = 2; // protobuf's version
-        string vcs = 3; // vcs's version
-    }
-
-    VersionProto version = 3; // version info
-
-    string request_type = 4; // type of the request: DataRequest, ControlRequest
-
-    bool check_version = 5; // check local Protobuf version on every Pod that this message flows to
-
-    /**
-     * Represents a config for the compression algorithm
-     */
-    message CompressConfigProto {
-        string algorithm = 1;  // compress algorithm used for request
-
-        uint64 min_bytes = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
-
-        float min_ratio = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
-
-        google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
-    }
-
-
-    CompressConfigProto compression = 6; // compress configuration used for request
-
-    StatusProto status = 7; // status info
-
-    HeaderProto header = 8; // header contains meta info defined by the user, copied from Request, for lazy serialization
-}
 
 /**
  * Represents a Header.
@@ -202,12 +157,15 @@ message EnvelopeProto {
  * - While returning, copy envelope.header back to request.header
  */
 message HeaderProto {
-    string exec_endpoint = 1;  // the endpoint specified by `@requests(on='/abc')`
+    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
 
-    string target_peapod = 2; // if set, the request is targeted to certain peas/pods, regex strings
+    StatusProto status = 2; // status info
 
-    bool no_propagate = 3; // if set, then this request is not propagate over the Flow topology
+    optional string exec_endpoint = 3;  // the endpoint specified by `@requests(on='/abc')`
 
+    optional string target_peapod = 4; // if set, the request is targeted to certain peas/pods, regex strings
+
+    optional uint32 timeout = 5; // epoch time in seconds after which the request should be dropped
 }
 
 
@@ -252,21 +210,6 @@ message StatusProto {
     ExceptionProto exception = 3;
 }
 
-/**
- * Represents a Message
- */
-message MessageProto {
-    EnvelopeProto envelope = 1; // the envelope of the message, used internally in jina, dropped when returning to client
-    RequestProto request = 2; // the request body
-}
-
-/**
- * Represents a list of Messages
- */
-message MessageListProto {
-    repeated MessageProto messages = 1; // messages in this lis
-}
-
 message DocumentArrayProto {
     repeated DocumentProto docs = 1; // a list of Documents
 }
@@ -281,59 +224,56 @@ message RelatedEntity {
     optional uint32 shard_id = 4; // the id of the shard it belongs to, if it is a shard
 }
 
+
 /**
- * Represents a Request
+ * Represents a ControlRequestProto
  */
-message RequestProto {
+message ControlRequestProto {
 
-    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
+    HeaderProto header = 1; // header contains meta info defined by the user
 
-    oneof body {
-        ControlRequestProto control = 2; // a control request
-        DataRequestProto data = 3; // a data request
+    enum Command {
+            STATUS = 0; // check the status of the BasePod
+            ACTIVATE = 1; // used to add Peas to a Pod
+            DEACTIVATE = 2; // used to remove Peas from a Pod
     }
 
-    /**
-     * Represents a general data request
-     */
-    message DataRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to query
-        repeated DocumentProto groundtruths = 2; // a list of groundtruth Document you want to evaluate it with
-    }
+    Command command = 2; // the control command
 
-    /**
-     * Represents a control request used to control the BasePod
-     */
-    message ControlRequestProto {
-        enum Command {
-            TERMINATE = 0; // shutdown the BasePod
-            STATUS = 1; // check the status of the BasePod
-            ACTIVATE = 2; // used to add Peas to a Pod
-            DEACTIVATE = 3; // used to remove Peas from a Pod
-        }
-        Command command = 1; // the control command
-
-        repeated RelatedEntity relatedEntities = 2; // list of entities this ControlMessage is related to
-    }
-
-    HeaderProto header = 4; // header contains meta info defined by the user
-
-    google.protobuf.Struct parameters = 5; // extra kwargs that will be used in executor
-
-    repeated RouteProto routes = 6; // status info on every routes
-
-    StatusProto status = 7; // status info
-
-
+    repeated RelatedEntity relatedEntities = 3; // list of entities this ControlMessage is related to
 }
 
 
 /**
- * jina gRPC service.
+ * Represents a DataRequestProto
  */
-service JinaRPC {
-    // Pass in a Request and a filled Request with matches will be returned.
-    rpc Call (stream RequestProto) returns (stream RequestProto) {
+message DataRequestProto {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+    repeated DocumentProto docs = 4; // the docs in this request
+
+    repeated DocumentProto groundtruths = 5; // a list of groundtruth Documents
+}
+
+/**
+ * Represents a list of Messages
+ * This should be replaced by streaming
+ */
+message DataRequestListProto {
+    repeated DataRequestProto requests = 1; // requests in this list
+}
+
+/**
+ * jina gRPC service for ControlRequests.
+ */
+service JinaControlRequestRPC {
+    // Used for passing ControlRequests to the Executors
+    rpc process_control (ControlRequestProto) returns (ControlRequestProto) {
     }
 }
 
@@ -341,8 +281,17 @@ service JinaRPC {
  * jina gRPC service for DataRequests.
  */
 service JinaDataRequestRPC {
-    // Pass in a Message, wrapping a DataRequest
-    rpc Call (MessageListProto) returns (MessageProto) {
+    // Used for passing DataRequests to the Gateway and Executors
+    rpc process_data (DataRequestListProto) returns (DataRequestProto) {
+    }
+}
+
+/**
+ * jina Gateway gRPC service.
+ */
+service JinaRPC {
+    // Pass in a Request and a filled Request with matches will be returned.
+    rpc Call (stream DataRequestProto) returns (stream DataRequestProto) {
     }
 }
 

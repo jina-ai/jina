@@ -4,7 +4,7 @@ import numpy as np
 
 from jina.types.arrays.match import MatchArray
 from jina.types.document import Document
-from jina.types.request import Request
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture(scope='function')
@@ -23,7 +23,7 @@ def reference_doc(document_factory):
 
 @pytest.fixture
 def matches(document_factory):
-    req = Request().as_typed_request('data')
+    req = DataRequest()
     req.docs.extend(
         [
             document_factory.create(1, 'test 1'),

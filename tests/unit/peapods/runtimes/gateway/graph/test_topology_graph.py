@@ -7,9 +7,9 @@ import asyncio
 from collections import defaultdict
 
 from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.types.message import Message
 from jina.types.request import Request
 from jina import DocumentArray, Document
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture
@@ -471,23 +471,21 @@ class DummyMockConnectionPool:
         self.sent_msg = defaultdict(dict)
         self.responded_messages = defaultdict(dict)
 
-    def send_messages_once(
-        self, messages: List[Message], pod: str, head: bool
+    def send_requests_once(
+        self, requests: List[Request], pod: str, head: bool
     ) -> asyncio.Task:
         assert head
-        response_msg = copy.deepcopy(messages[0])
-        response_msg.request = Request(messages[0].request.proto, copy=True)
-        request = messages[0].request
+        response_msg = DataRequest(copy.deepcopy(requests[0]))
         new_docs = DocumentArray()
-        for doc in request.docs:
+        for doc in requests[0].docs:
             clientid = doc.text[0:7]
             self.sent_msg[clientid][pod] = doc.text
             new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
             new_docs.append(new_doc)
             self.responded_messages[clientid][pod] = new_doc.text
 
-        response_msg.request.docs.clear()
-        response_msg.request.docs.extend(new_docs)
+        response_msg.docs.clear()
+        response_msg.docs.extend(new_docs)
 
         async def task_wrapper():
             import random
@@ -519,35 +517,33 @@ class DummyMockGatewayRuntime:
         return client_id, resp
 
 
-def create_msg_from_text(text: str):
-    from jina.clients.request import request_generator
-
-    req = list(request_generator('/', DocumentArray([Document(text=text)])))[0]
-    msg = Message(None, req)
-    return msg
+def create_req_from_text(text: str):
+    req = DataRequest()
+    req.docs.append(Document(text=text))
+    return req
 
 
 @pytest.mark.asyncio
 async def test_message_ordering_linear_graph(linear_graph_dict):
     runtime = DummyMockGatewayRuntime(linear_graph_dict)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     for client_id, client_resps in resps:
         assert len(client_resps) == 1
         assert (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-pod2-client{client_id}-pod3'
-            == client_resps[0].request.docs[0].text
+            == client_resps[0].docs[0].text
         )
 
 
@@ -555,32 +551,32 @@ async def test_message_ordering_linear_graph(linear_graph_dict):
 async def test_message_ordering_bifurcation_graph(bifurcation_graph_dict):
     runtime = DummyMockGatewayRuntime(bifurcation_graph_dict)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 2
         sorted_clients_resps = list(
-            sorted(client_resps, key=lambda msg: msg.request.docs[0].text)
+            sorted(client_resps, key=lambda msg: msg.docs[0].text)
         )
 
         assert (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
-            == sorted_clients_resps[0].request.docs[0].text
+            == sorted_clients_resps[0].docs[0].text
         )
         assert (
             f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
-            == sorted_clients_resps[1].request.docs[0].text
+            == sorted_clients_resps[1].docs[0].text
         )
 
         # assert the hanging pod was sent message
@@ -609,16 +605,16 @@ async def test_message_ordering_merge_in_gateway_graph(
 ):
     runtime = DummyMockGatewayRuntime(merge_graph_dict_directly_merge_in_gateway)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     for client_id, client_resps in resps:
@@ -629,11 +625,11 @@ async def test_message_ordering_merge_in_gateway_graph(
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
         pod2_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger'
-            in list(map(lambda resp: resp.request.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
         )
         pod1_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger'
-            in list(map(lambda resp: resp.request.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
         )
         # TODO: need to add logic to merge messages
         assert pod1_path or pod2_path
@@ -645,16 +641,16 @@ async def test_message_ordering_merge_in_last_pod_graph(
 ):
     runtime = DummyMockGatewayRuntime(merge_graph_dict_directly_merge_in_last_pod)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     for client_id, client_resps in resps:
@@ -665,11 +661,11 @@ async def test_message_ordering_merge_in_last_pod_graph(
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
         pod2_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger-client{client_id}-pod_last'
-            in list(map(lambda resp: resp.request.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
         )
         pod1_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
-            in list(map(lambda resp: resp.request.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
         )
         # TODO: need to add logic to merge messages
         assert pod1_path or pod2_path
@@ -679,16 +675,16 @@ async def test_message_ordering_merge_in_last_pod_graph(
 async def test_message_ordering_complete_graph(complete_graph_dict):
     runtime = DummyMockGatewayRuntime(complete_graph_dict)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
@@ -700,20 +696,20 @@ async def test_message_ordering_complete_graph(complete_graph_dict):
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
         assert len(filtered_client_resps) == 2
         sorted_filtered_client_resps = list(
-            sorted(filtered_client_resps, key=lambda msg: msg.request.docs[0].text)
+            sorted(filtered_client_resps, key=lambda msg: msg.docs[0].text)
         )
         assert (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
-            == sorted_filtered_client_resps[0].request.docs[0].text
+            == sorted_filtered_client_resps[0].docs[0].text
         )
 
         pod2_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
-            == sorted_filtered_client_resps[1].request.docs[0].text
+            == sorted_filtered_client_resps[1].docs[0].text
         )
         pod4_path = (
             f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
-            == sorted_filtered_client_resps[1].request.docs[0].text
+            == sorted_filtered_client_resps[1].docs[0].text
         )
 
         assert pod2_path or pod4_path
@@ -735,16 +731,16 @@ async def test_message_ordering_hanging_after_merge_graph(
 ):
     runtime = DummyMockGatewayRuntime(graph_hanging_pod_after_merge)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
@@ -752,11 +748,11 @@ async def test_message_ordering_hanging_after_merge_graph(
         assert len(client_resps) == 2
         assert (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
-            == client_resps[0].request.docs[0].text
+            == client_resps[0].docs[0].text
         )
         assert (
             f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
-            == client_resps[1].request.docs[0].text
+            == client_resps[1].docs[0].text
         )
 
         # assert the hanging pod was sent message
@@ -797,16 +793,16 @@ async def test_message_ordering_two_joins_graph(
 ):
     runtime = DummyMockGatewayRuntime(two_joins_graph)
     resps = await asyncio.gather(
-        runtime.receive_from_client(0, create_msg_from_text('client0-Request')),
-        runtime.receive_from_client(1, create_msg_from_text('client1-Request')),
-        runtime.receive_from_client(2, create_msg_from_text('client2-Request')),
-        runtime.receive_from_client(3, create_msg_from_text('client3-Request')),
-        runtime.receive_from_client(4, create_msg_from_text('client4-Request')),
-        runtime.receive_from_client(5, create_msg_from_text('client5-Request')),
-        runtime.receive_from_client(6, create_msg_from_text('client6-Request')),
-        runtime.receive_from_client(7, create_msg_from_text('client7-Request')),
-        runtime.receive_from_client(8, create_msg_from_text('client8-Request')),
-        runtime.receive_from_client(9, create_msg_from_text('client9-Request')),
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
     await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
@@ -816,19 +812,19 @@ async def test_message_ordering_two_joins_graph(
         assert len(filtered_client_resps) == 1
         path12 = (
             f'client{client_id}-Request-client{client_id}-p1-client{client_id}-joiner_1-client{client_id}-p2-client{client_id}-p4'
-            == filtered_client_resps[0].request.docs[0].text
+            == filtered_client_resps[0].docs[0].text
         )
         path13 = (
             f'client{client_id}-Request-client{client_id}-p1-client{client_id}-joiner_1-client{client_id}-p3-client{client_id}-p4'
-            == filtered_client_resps[0].request.docs[0].text
+            == filtered_client_resps[0].docs[0].text
         )
         path02 = (
             f'client{client_id}-Request-client{client_id}-p0-client{client_id}-joiner_1-client{client_id}-p2-client{client_id}-p4'
-            == filtered_client_resps[0].request.docs[0].text
+            == filtered_client_resps[0].docs[0].text
         )
         path03 = (
             f'client{client_id}-Request-client{client_id}-p0-client{client_id}-joiner_1-client{client_id}-p3-client{client_id}-p4'
-            == filtered_client_resps[0].request.docs[0].text
+            == filtered_client_resps[0].docs[0].text
         )
         assert path02 or path03 or path12 or path13
 

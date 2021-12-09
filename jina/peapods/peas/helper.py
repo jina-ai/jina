@@ -11,7 +11,7 @@ from ...hubble.hubio import HubIO
 from grpc import RpcError
 
 from ..networking import GrpcConnectionPool
-from ...types.message.common import ControlMessage
+from ...types.request.control import ControlRequest
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -126,7 +126,7 @@ def is_ready(address: str) -> bool:
     """
 
     try:
-        GrpcConnectionPool.send_message_sync(ControlMessage('STATUS'), address)
+        GrpcConnectionPool.send_request_sync(ControlRequest('STATUS'), address)
     except RpcError:
         return False
     return True

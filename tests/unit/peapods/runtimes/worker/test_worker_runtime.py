@@ -13,8 +13,9 @@ from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
+from jina.proto.jina_pb2 import DocumentArrayProto
 from jina.types.document import Document
-from jina.types.message import Message
+from jina.types.request.data import DataRequest
 
 
 @pytest.mark.slow
@@ -41,7 +42,7 @@ def test_worker_runtime():
         ready_or_shutdown_event=Event(),
     )
 
-    response = GrpcConnectionPool.send_message_sync(
+    response = GrpcConnectionPool.send_request_sync(
         _create_test_data_message(),
         f'{args.host}:{args.port_in}',
     )
@@ -52,45 +53,6 @@ def test_worker_runtime():
     assert response
 
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
-
-
-@pytest.mark.slow
-@pytest.mark.timeout(5)
-def test_worker_runtime_docs_merging():
-    args = set_pea_parser().parse_args([])
-
-    cancel_event = multiprocessing.Event()
-
-    def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
-            runtime.run_forever()
-
-    runtime_thread = Process(
-        target=start_runtime,
-        args=(args, cancel_event),
-        daemon=True,
-    )
-    runtime_thread.start()
-
-    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port_in}',
-        ready_or_shutdown_event=Event(),
-    )
-
-    response = GrpcConnectionPool.send_messages_sync(
-        [_create_test_data_message(), _create_test_data_message()],
-        f'{args.host}:{args.port_in}',
-    )
-
-    cancel_event.set()
-    runtime_thread.join()
-
-    assert response
-    # we send two messages, its documents should be merged by concatinating
-    assert len(response.response.docs) == 2
-
-    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
 
 
 @pytest.mark.slow
@@ -135,11 +97,13 @@ async def test_worker_runtime_graceful_shutdown():
     request_start_time = time.time()
 
     async def task_wrapper(adress, messages_received):
-        msg = _create_test_data_message(len(messages_received))
-        stub, channel = GrpcConnectionPool.create_async_channel_stub(adress)
-        await stub.Call(msg)
+        request = _create_test_data_message(len(messages_received))
+        data_stub, control_stub, channel = GrpcConnectionPool.create_async_channel_stub(
+            adress
+        )
+        await data_stub.process_data(request)
         await channel.close()
-        messages_received.append(msg)
+        messages_received.append(request)
 
     sent_requests = 0
     messages_received = []
@@ -173,6 +137,4 @@ async def test_worker_runtime_graceful_shutdown():
 
 
 def _create_test_data_message(counter=0):
-    req = list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
-    msg = Message(None, req)
-    return msg
+    return list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]

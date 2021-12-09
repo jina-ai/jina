@@ -17,10 +17,8 @@ from .....proto.jina_pb2 import (
     NamedScoreProto,
     DocumentProto,
     RouteProto,
-    EnvelopeProto,
     StatusProto,
-    MessageProto,
-    RequestProto,
+    DataRequestProto,
 )
 from .....types.document import Document
 
@@ -233,10 +231,8 @@ for proto in (
     SparseNdArrayProto,
     DocumentProto,
     RouteProto,
-    EnvelopeProto,
     StatusProto,
-    MessageProto,
-    RequestProto,
+    DataRequestProto,
 ):
     protobuf_to_pydantic_model(proto)
 
@@ -281,7 +277,7 @@ class JinaRequestModel(BaseModel):
     Jina HTTP request model.
     """
 
-    data: Optional[
+    docs: Optional[
         Union[
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
             List[Dict[str, Any]],
@@ -299,7 +295,7 @@ class JinaRequestModel(BaseModel):
         description='A regex string represent the certain peas/pods request targeted.',
     )
     parameters: Optional[Dict] = Field(
-        None,
+        default_factory=dict,
         example={'top_k': 3, 'model': 'bert'},
         description='A dictionary of parameters to be sent to the executor.',
     )
@@ -314,16 +310,20 @@ class JinaResponseModel(BaseModel):
     Jina HTTP Response model. Only `request_id` and `data` are preserved.
     """
 
-    class DataRequestModel(BaseModel):
-        docs: Optional[List[Dict[str, Any]]] = None
-        groundtruths: Optional[List[Dict[str, Any]]] = None
+    class HeaderModel(BaseModel):
+        request_id: str = Field(
+            ...,
+            example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
+            description='The ID given by Jina service',
+        )
 
-    request_id: str = Field(
-        ...,
-        example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
-        description='The ID given by Jina service',
-    )
-    data: Optional[DataRequestModel] = Field(None, description='Returned Documents')
+        class Config:
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
+
+    header: HeaderModel = None
+    docs: Optional[List[Dict[str, Any]]] = None
+    groundtruths: Optional[List[Dict[str, Any]]] = None
 
     class Config:
         alias_generator = _to_camel_case

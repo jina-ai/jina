@@ -3,7 +3,7 @@ import pytest
 from jina import Document
 from jina.types.arrays.chunk import ChunkArray
 from jina.types.arrays.match import MatchArray
-from jina.types.request import Request
+from jina.types.request.data import DataRequest
 from jina.types.score import NamedScore
 
 
@@ -11,7 +11,7 @@ from jina.types.score import NamedScore
     'obj',
     [
         Document(),
-        Request(),
+        DataRequest(),
         NamedScore(),
         MatchArray([Document()], Document()),
         ChunkArray([Document()], Document()),

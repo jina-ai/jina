@@ -11,7 +11,6 @@ from functools import partial
 
 from jina.parsers import set_gateway_parser
 from jina import Document, DocumentArray
-from jina.types.request import Request
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
