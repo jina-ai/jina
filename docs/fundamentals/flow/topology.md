@@ -232,14 +232,22 @@ For searching, you probably need to send the search request to all Shards, becau
 from jina import Flow
 
 index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='MatchMerger')
+search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all')
 ```
 
-### Merging search results via `uses_after`
+### Merging search results
 
 Each shard of a search Flow returns one set of results for each query Document.
-A merger Executor combines them afterwards.
-You can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your merger.
+By default, these different results will be combined into one DocumentArray using our default `Reduce` logic.
+
+````{admonition} See Also
+:class: seealso
+
+Read more about {ref}`how Reducing works`.
+````
+
+You can customize the reduce logic and specify a different Reducer Executor with parameter `uses_after`.
+For example, you can use the pre-built [MatchMerger](https://hub.jina.ai/executor/mruax3k7) or define your merger.
 
 ```{admonition} Example
 :class: example
@@ -247,6 +255,26 @@ A search Flow has 10 Shards for an Indexer.
 Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.
 ```
+
+````{tab} Default Reduce
+```{code-block} python
+from jina import Flow
+search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all')
+```
+````
+
+````{tab} Custom Reduce with MatchMerger
+```{code-block} python
+from jina import Flow
+search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all', uses_after='jinahub://MatchMerger')
+```
+````
+
+````{admonition} Warning
+:class: warning
+The default Reduce logic does not keep the matches sorted when combining them. If you wish to have sorted matches, you 
+should add an Executor to sort the matches.
+````
 
 
 ## Combining Replicas & Shards
