@@ -7,10 +7,13 @@ from jina.executors.metas import get_default_metas
 
 
 def test_executor_load_from_hub():
-    exec = Executor.from_hub('jinahub://DummyHubExecutor')
+    exec = Executor.from_hub(
+        'jinahub://DummyHubExecutor', uses_metas={'name': 'hello123'}
+    )
     da = DocumentArray([Document()])
     exec.foo(da)
     assert da.texts == ['hello']
+    assert exec.metas.name == 'hello123'
 
 
 def test_executor_import_with_external_dependencies(capsys):

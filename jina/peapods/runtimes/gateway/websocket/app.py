@@ -74,7 +74,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):
-                await websocket.send_bytes(msg.binary_str())
+                await websocket.send_bytes(bytes(msg))
         except WebSocketDisconnect:
             logger.debug('Client successfully disconnected from server')
             manager.disconnect(websocket)

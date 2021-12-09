@@ -41,6 +41,41 @@ d = Document(uri='apple.png')
 ```
 ````
 
+## Parallelization
+
+Fluent interface is super useful when processing a large {class}`~jina.DocumentArray` or {class}`~jina.DocumentArrayMemmap`. One can leverage {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. 
+
+The following example shows the time difference on preprocessing ~6000 image Documents.
+
+```python
+from jina import DocumentArray
+from jina.logging.profile import TimeContext
+
+docs = DocumentArray.from_files('*.jpg')
+
+def foo(d):
+    return (d.load_uri_to_image_blob()
+            .set_image_blob_normalization()
+            .set_image_blob_channel_axis(-1, 0))
+
+with TimeContext('map-process'):
+    for d in docs.map(foo, backend='process'):
+        pass
+
+with TimeContext('map-thread'):
+    for d in docs.map(foo, backend='thread'):
+        pass
+
+with TimeContext('for-loop'):
+    for d in docs:
+        foo(d)
+```
+
+```text
+map-process ...	map-process takes 5 seconds (5.55s)
+map-thread ...	map-thread takes 10 seconds (10.28s)
+for-loop ...	for-loop takes 18 seconds (18.52s)
+```
 
 ## Methods
 
@@ -67,11 +102,13 @@ Provide helper functions for {class}`Document` to support text data.
 ### ImageData
 Provide helper functions for {class}`Document` to support image data.
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_buffer_to_image_blob`
+- {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_buffer`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_sliding_windows`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.convert_image_blob_to_uri`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.dump_image_blob_to_file`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.load_uri_to_image_blob`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_channel_axis`
+- {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_inv_normalization`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_normalization`
 - {meth}`~jina.types.document.mixins.image.ImageDataMixin.set_image_blob_shape`
 
@@ -103,6 +140,12 @@ Provide helper functions for {class}`Document` to allow universal content proper
 Provide helper functions for {class}`Document` to support video data.
 - {meth}`~jina.types.document.mixins.video.VideoDataMixin.dump_video_blob_to_file`
 - {meth}`~jina.types.document.mixins.video.VideoDataMixin.load_uri_to_video_blob`
+
+
+### SingletonSugar
+Provide sugary syntax for {class}`Document` by inheriting methods from {class}`DocumentArray`
+- {meth}`~jina.types.document.mixins.sugar.SingletonSugarMixin.embed`
+- {meth}`~jina.types.document.mixins.sugar.SingletonSugarMixin.match`
 
 
 ### MeshData

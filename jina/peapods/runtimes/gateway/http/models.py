@@ -2,14 +2,13 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Any, Optional, List, Union, Tuple
+from typing import Callable, Dict, Any, Optional, List, Union
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
-from google.protobuf.json_format import MessageToDict
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
-from .....proto import jina_pb2
+from ..... import DocumentArray
 from .....proto.jina_pb2 import (
     DenseNdArrayProto,
     NdArrayProto,
@@ -175,6 +174,9 @@ def protobuf_to_pydantic_model(
                 # Proto Field Type: google.protobuf.Timestamp
                 field_type = datetime
                 default_factory = datetime.now
+            elif f.message_type.name == 'NdArrayProto':
+                field_type = List
+                default_factory = None
             else:
                 # Proto field type: Proto message defined in jina.proto
                 if f.message_type.name == model_name:
@@ -261,19 +263,7 @@ class JinaStatusModel(BaseModel):
 
 
 def _get_example_data():
-    _example = jina_pb2.DocumentArrayProto()
-    d0 = Document(id='🐲', tags={'guardian': 'Azure Dragon', 'position': 'East'})
-    d1 = Document(id='🐦', tags={'guardian': 'Vermilion Bird', 'position': 'South'})
-    d2 = Document(id='🐢', tags={'guardian': 'Black Tortoise', 'position': 'North'})
-    d3 = Document(id='🐯', tags={'guardian': 'White Tiger', 'position': 'West'})
-    d0.chunks.append(d1)
-    d0.chunks[0].chunks.append(d2)
-    d0.matches.append(d3)
-    _example.docs.extend([d0.proto, d1.proto, d2.proto, d3.proto])
-    return MessageToDict(
-        _example,
-        including_default_value_fields=True,
-    )['docs']
+    return DocumentArray([Document(text='hello, world!')]).to_list()
 
 
 class JinaRequestModel(BaseModel):
@@ -295,12 +285,12 @@ class JinaRequestModel(BaseModel):
     )
     target_peapod: Optional[str] = Field(
         None,
-        example='executor0/*',
+        example='',
         description='A regex string represent the certain peas/pods request targeted.',
     )
     parameters: Optional[Dict] = Field(
         None,
-        example={'top_k': 3, 'model': 'bert'},
+        example={},
         description='A dictionary of parameters to be sent to the executor.',
     )
 

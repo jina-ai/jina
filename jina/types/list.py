@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, List, Any
+from typing import Union, List, Any, Optional
 
 from google.protobuf import struct_pb2
 
@@ -14,12 +14,12 @@ class ListView(ProtoTypeMixin, MutableSequence):
     Used inside `StructView` when the inner element is a `ListValue`
     """
 
-    def __init__(self, list: struct_pb2.ListValue):
+    def __init__(self, list: Optional[struct_pb2.ListValue] = None):
         """Create a Python list view of Protobuf ListValue.
 
         :param list: the protobuf ListValue object
         """
-        self._pb_body = list
+        self._pb_body = list if list is not None else struct_pb2.ListValue()
 
     def insert(self, index: int, object: Any) -> None:
         """

@@ -6,6 +6,7 @@ import torch
 from scipy.sparse import csr_matrix, coo_matrix, bsr_matrix, csc_matrix
 
 from jina import Document, DocumentArray
+from jina.types.ndarray import NdArray
 
 
 def get_ndarrays():
@@ -114,3 +115,13 @@ def test_bsr_coo_unravel(sparse_cls):
         d.embedding = sparse_cls(a_row)
 
     np.testing.assert_almost_equal(a, da.embeddings.todense())
+
+
+@pytest.mark.parametrize('ndarray_val, is_sparse', get_ndarrays())
+@pytest.mark.parametrize('attr', ['embedding', 'blob'])
+def test_ndarray_force_numpy(ndarray_val, attr, is_sparse):
+    d = Document()
+    setattr(d, attr, ndarray_val)
+    ndav = NdArray(getattr(d._pb_body, attr)).numpy()
+    assert isinstance(ndav, np.ndarray)
+    assert ndav.shape == (10, 3)

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypeVar, Tuple, Sequence, Iterator
+from typing import TYPE_CHECKING, TypeVar, Tuple, Sequence, Iterator, Optional
 
 import numpy as np
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
         tensorflow.SparseTensor,
         tensorflow.Tensor,
         torch.Tensor,
-        jina_pb2.NdArrayProto,
+        Sequence[float],
     )
 
     from ... import Document
@@ -35,18 +35,38 @@ class NdArray(ProtoTypeMixin):
     :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
     """
 
-    def __init__(self, proto: jina_pb2.NdArrayProto):
-        self._pb_body = proto
+    def __init__(self, proto: Optional[jina_pb2.NdArrayProto] = None):
+        self._pb_body = proto if proto is not None else jina_pb2.NdArrayProto()
+
+    def numpy(self) -> 'np.ndarray':
+        """Return the value always in :class:`numpy.ndarray` regardless the framework type.
+
+        :return: the value in :class:`numpy.ndarray`.
+        """
+        v = self.value
+        if self.is_sparse:
+            if hasattr(v, 'todense'):
+                v = v.todense()
+            elif hasattr(v, 'to_dense'):
+                v = v.to_dense()
+            elif self.framework == 'tensorflow':
+                import tensorflow as tf
+
+                if isinstance(v, tf.SparseTensor):
+                    v = tf.sparse.to_dense(v)
+
+        if hasattr(v, 'numpy'):
+            v = v.numpy()
+        return v
 
     @property
     def value(self) -> 'ArrayType':
         """Return the value in original framework type
 
         :return: the value of in numpy, scipy, tensorflow, pytorch type."""
-        framework = self._pb_body.cls_name
 
         if self.is_sparse:
-            if framework == 'scipy':
+            if self.framework == 'scipy':
                 idx, val, shape = self._get_raw_sparse_array()
                 from scipy.sparse import coo_matrix
 
@@ -60,20 +80,20 @@ class NdArray(ProtoTypeMixin):
                     return x.tocsr()
                 elif sp_format == 'coo':
                     return x
-            elif framework == 'tensorflow':
+            elif self.framework == 'tensorflow':
                 idx, val, shape = self._get_raw_sparse_array()
                 from tensorflow import SparseTensor
 
                 return SparseTensor(idx, val, shape)
-            elif framework == 'torch':
+            elif self.framework == 'torch':
                 idx, val, shape = self._get_raw_sparse_array()
                 from torch import sparse_coo_tensor
 
                 return sparse_coo_tensor(idx, val, shape)
         else:
-            if framework in {'numpy', 'torch', 'paddle', 'tensorflow'}:
+            if self.framework in {'numpy', 'torch', 'paddle', 'tensorflow'}:
                 x = _get_dense_array(self._pb_body.dense)
-                return _to_framework_array(x, framework)
+                return _to_framework_array(x, self.framework)
 
     @staticmethod
     def ravel(value: 'ArrayType', docs: Iterator['Document'], field: str) -> None:
@@ -83,7 +103,6 @@ class NdArray(ProtoTypeMixin):
         :param field: the field of the doc to set
         :param value: the value to be set on ``doc.field``
         """
-        emb_shape0 = value.shape[0]
 
         use_get_row = False
         if hasattr(value, 'getformat'):
@@ -97,10 +116,15 @@ class NdArray(ProtoTypeMixin):
                 use_get_row = True
 
         if use_get_row:
+            emb_shape0 = value.shape[0]
             for d, j in zip(docs, range(emb_shape0)):
                 row = getattr(value.getrow(j), f'to{sp_format}')()
                 setattr(d, field, row)
+        elif isinstance(value, (list, tuple)):
+            for d, j in zip(docs, value):
+                setattr(d, field, j)
         else:
+            emb_shape0 = value.shape[0]
             for d, j in zip(docs, range(emb_shape0)):
                 setattr(d, field, value[j, ...])
 
@@ -113,7 +137,7 @@ class NdArray(ProtoTypeMixin):
         :return: a framework ndarray
         """
         first = NdArray(protos[0])
-        framework, is_sparse = first._pb_body.cls_name, first.is_sparse
+        framework, is_sparse = first.framework, first.is_sparse
 
         if is_sparse:
             if framework in {'tensorflow'}:
@@ -205,6 +229,9 @@ class NdArray(ProtoTypeMixin):
                 if framework == 'numpy':
                     self._pb_body.cls_name = 'numpy'
                     _set_dense_array(value, self._pb_body.dense)
+                if framework == 'python':
+                    self._pb_body.cls_name = 'numpy'
+                    _set_dense_array(np.array(value), self._pb_body.dense)
                 if framework == 'tensorflow':
                     self._pb_body.cls_name = 'tensorflow'
                     _set_dense_array(value.numpy(), self._pb_body.dense)
@@ -222,6 +249,14 @@ class NdArray(ProtoTypeMixin):
         :return: True if the underlying ndarray is sparse
         """
         return self._pb_body.WhichOneof('content') == 'sparse'
+
+    @property
+    def framework(self) -> str:
+        """Return the framework name of this ndarray object
+
+        :return: the framework name
+        """
+        return self._pb_body.cls_name
 
     def _set_scipy_sparse(self, value: 'scipy.sparse.spmatrix'):
         v = value.tocoo(copy=True)
@@ -279,6 +314,9 @@ def get_array_type(array: 'ArrayType') -> Tuple[str, bool]:
     module_tags = array.__class__.__module__.split('.')
     class_name = array.__class__.__name__
 
+    if isinstance(array, (list, tuple)):
+        return 'python', False
+
     if 'numpy' in module_tags:
         return 'numpy', False
 
@@ -331,3 +369,34 @@ def _unravel_dense_array(source, shape, dtype):
     x_mat = b''.join(source)
     shape = [-1] + shape
     return np.frombuffer(x_mat, dtype=dtype).reshape(shape)
+
+
+import google.protobuf.json_format
+from google.protobuf.json_format import _Printer, _Parser
+
+
+class _PrinterWithNdArraySupport(_Printer):
+    def _MessageToJsonObject(self, message):
+        message_descriptor = message.DESCRIPTOR
+        full_name = message_descriptor.full_name
+        if full_name == 'jina.NdArrayProto':
+            return NdArray(message).numpy().tolist()
+        else:
+            return super()._MessageToJsonObject(message)
+
+
+class _ParseWithNdArraySupport(_Parser):
+    def ConvertMessage(self, value, message):
+        message_descriptor = message.DESCRIPTOR
+        full_name = message_descriptor.full_name
+        if full_name == 'jina.NdArrayProto':
+            na = NdArray()
+            na.value = value
+            message.CopyFrom(na._pb_body)
+            return message
+        else:
+            return super().ConvertMessage(value, message)
+
+
+google.protobuf.json_format._Printer = _PrinterWithNdArraySupport
+google.protobuf.json_format._Parser = _ParseWithNdArraySupport

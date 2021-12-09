@@ -9,7 +9,6 @@ from ....proto import jina_pb2
 class GetSetAttributeMixin:
     """Provide helper functions for :class:`Document` to allow advanced set and get attributes """
 
-    _ON_GETATTR = ['matches', 'chunks']
     _special_mapped_keys = ('scores', 'evaluations')
 
     def __getattr__(self, item):
@@ -115,6 +114,10 @@ class GetSetAttributeMixin:
                     self.chunks.extend(v)
                 elif k == 'matches':
                     self.matches.extend(v)
+                elif k == 'embedding':
+                    self.embedding = v
+                elif k == 'blob':
+                    self.blob = v
                 else:
                     self._pb_body.ClearField(k)
                     getattr(self._pb_body, k).extend(v)

@@ -2,8 +2,7 @@ from typing import Union, BinaryIO
 
 import numpy as np
 
-from .helper import _deprecate_by
-from ....helper import T
+from ....helper import T, deprecate_by
 
 
 class VideoDataMixin:
@@ -69,4 +68,4 @@ class VideoDataMixin:
                 container.mux(packet)
         return self
 
-    convert_uri_to_video_blob = _deprecate_by(load_uri_to_video_blob)
+    convert_uri_to_video_blob = deprecate_by(load_uri_to_video_blob)

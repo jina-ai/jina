@@ -1,5 +1,5 @@
-from .helper import _deprecate_by, _uri_to_buffer, _to_datauri
-from ....helper import T
+from .helper import _uri_to_buffer, _to_datauri
+from ....helper import T, deprecate_by
 
 
 class BufferDataMixin:
@@ -38,5 +38,5 @@ class BufferDataMixin:
         )
         return self
 
-    convert_buffer_to_uri = _deprecate_by(dump_buffer_to_datauri)
-    convert_uri_to_buffer = _deprecate_by(load_uri_to_buffer)
+    convert_buffer_to_uri = deprecate_by(dump_buffer_to_datauri)
+    convert_uri_to_buffer = deprecate_by(load_uri_to_buffer)

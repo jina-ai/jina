@@ -53,21 +53,24 @@ class NamedScore(ProtoTypeMixin):
         copy: bool = False,
         **kwargs,
     ):
-        self._pb_body = jina_pb2.NamedScoreProto()
         try:
             if isinstance(score, jina_pb2.NamedScoreProto):
                 if copy:
+                    self._pb_body = jina_pb2.NamedScoreProto()
                     self._pb_body.CopyFrom(score)
                 else:
                     self._pb_body = score
             elif isinstance(score, NamedScore):
                 if copy:
+                    self._pb_body = jina_pb2.NamedScoreProto()
                     self._pb_body.CopyFrom(score._pb_body)
                 else:
                     self._pb_body = score._pb_body
             elif score is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(score)} is not recognizable')
+            elif score is None:
+                self._pb_body = jina_pb2.NamedScoreProto()
         except Exception as ex:
             raise BadNamedScoreType(
                 f'fail to construct a NamedScore from {score}'

@@ -201,8 +201,8 @@ def smv_config(string: str):
 html_context = {
     'latest_jina_version': os.environ.get('LATEST_JINA_VERSION', 'master')
 }
-smv_tag_whitelist = smv_config(os.environ.get('SMV_TAG_WHITELIST', 'v2.4.7'))
-smv_branch_whitelist = smv_config(os.environ.get('SMV_BRANCH_WHITELIST', 'master'))
+smv_tag_whitelist = smv_config(os.environ.get('SMV_TAG_WHITELIST', ''))
+smv_branch_whitelist = smv_config(os.environ.get('SMV_BRANCH_WHITELIST', ''))
 smv_remote_whitelist = None
 
 

@@ -1,0 +1,10 @@
+jtype: Flow
+with:
+  port_expose: 12345
+  envs:
+    key1: ${{ context_var_1 }}
+    key2: ${{ context_var_2 }}
+executors:
+  - name: env_executor
+    uses: config.yml
+    replicas: ${{ num_replicas }}

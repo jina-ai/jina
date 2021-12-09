@@ -477,9 +477,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         allow_py_modules: bool = True,
         substitute: bool = True,
         context: Optional[Dict[str, Any]] = None,
-        override_with: Optional[Dict] = None,
-        override_metas: Optional[Dict] = None,
-        override_requests: Optional[Dict] = None,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
         extra_search_paths: Optional[List[str]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
@@ -527,9 +527,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
-        :param override_with: dictionary of parameters to overwrite from the default config's with field
-        :param override_metas: dictionary of parameters to overwrite from the default config's metas field
-        :param override_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param extra_search_paths: extra paths used when looking for executor yaml files
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
@@ -560,15 +560,15 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                         if isinstance(v, dict):
                             _delitem(v, key)
 
-                if override_with is not None:
+                if uses_with is not None:
                     _delitem(no_tag_yml, key='uses_with')
-                if override_metas is not None:
+                if uses_metas is not None:
                     _delitem(no_tag_yml, key='uses_metas')
-                if override_requests is not None:
+                if uses_requests is not None:
                     _delitem(no_tag_yml, key='uses_requests')
-                cls._override_yml_params(no_tag_yml, 'with', override_with)
-                cls._override_yml_params(no_tag_yml, 'metas', override_metas)
-                cls._override_yml_params(no_tag_yml, 'requests', override_requests)
+                cls._override_yml_params(no_tag_yml, 'with', uses_with)
+                cls._override_yml_params(no_tag_yml, 'metas', uses_metas)
+                cls._override_yml_params(no_tag_yml, 'requests', uses_requests)
 
             else:
                 raise BadConfigSource(

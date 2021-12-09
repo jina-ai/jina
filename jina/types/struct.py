@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 from google.protobuf import struct_pb2
 
@@ -15,12 +15,12 @@ class StructView(ProtoTypeMixin, MutableMapping):
         This class behaves like :class:`defaultdict`.
     """
 
-    def __init__(self, struct: struct_pb2.Struct):
+    def __init__(self, struct: Optional[struct_pb2.Struct] = None):
         """Create a Python dict view of Protobuf Struct.
 
         :param struct: the protobuf Struct object
         """
-        self._pb_body = struct
+        self._pb_body = struct if struct is not None else struct_pb2.Struct()
 
     def __setitem__(self, key, value):
         self._pb_body[key] = value
@@ -55,9 +55,9 @@ class StructView(ProtoTypeMixin, MutableMapping):
 
     def __eq__(self, other: Union['StructView', Dict]):
         if isinstance(other, StructView):
-            return self.dict() == other.dict()
+            return self.to_dict() == other.to_dict()
         elif isinstance(other, Dict):
-            return self.dict() == other
+            return self.to_dict() == other
         else:
             return False
 

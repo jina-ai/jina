@@ -40,7 +40,6 @@ __all__ = ['Document']
 
 _all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer', 'graph'}
-_all_doc_array_keys = ('blob', 'embedding')
 
 
 class Document(AllMixins, ProtoTypeMixin):
@@ -94,8 +93,6 @@ class Document(AllMixins, ProtoTypeMixin):
     You can leverage the :meth:`convert_a_to_b` interface to convert between content forms.
 
     """
-
-    _ON_GETATTR = ['matches', 'chunks']
 
     # overload_inject_start_document
     @overload
@@ -189,23 +186,16 @@ class Document(AllMixins, ProtoTypeMixin):
                 self._pb_body = jina_pb2.DocumentProto()
                 self._pb_body.ParseFromString(document)
             elif isinstance(document, (dict, str)):
+                # note that not any dict can be parsed in this branch. As later we use Protobuf JSON parser, this
+                # dict must be a valid JSON. The next lines make sure the dict is a valid json.
+                if isinstance(document, dict):
+                    try:
+                        json.dumps(document)
+                    except:
+                        raise json_format.ParseError
+
                 if isinstance(document, str):
                     document = json.loads(document)
-
-                def _update_doc(d: Dict):
-                    for key in _all_doc_array_keys:
-                        if key in d:
-                            value = d[key]
-                            if isinstance(value, list):
-                                d[key] = np.array(d[key])
-                        if 'chunks' in d:
-                            for chunk in d['chunks']:
-                                _update_doc(chunk)
-                        if 'matches' in d:
-                            for match in d['matches']:
-                                _update_doc(match)
-
-                _update_doc(document)
 
                 if field_resolver:
                     document = {
@@ -248,6 +238,7 @@ class Document(AllMixins, ProtoTypeMixin):
                             self._pb_body.tags.update(
                                 {k: document[k] for k in _remainder}
                             )
+
             elif isinstance(document, Document):
                 if copy:
                     self._pb_body = jina_pb2.DocumentProto()
@@ -260,12 +251,13 @@ class Document(AllMixins, ProtoTypeMixin):
             else:
                 # create an empty document
                 self._pb_body = jina_pb2.DocumentProto()
+        except json_format.ParseError:
+            # append everything to kwargs that is more powerful in setting attributes
+            self._pb_body = jina_pb2.DocumentProto()
+            if isinstance(document, dict):
+                kwargs.update(document)
         except Exception as ex:
-            raise BadDocType(
-                f'fail to construct a document from {document}, '
-                f'if you are trying to set the content '
-                f'you may use "Document(content=your_content)"'
-            ) from ex
+            raise BadDocType(f'Fail to construct Document from {document!r}') from ex
 
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = uuid.uuid1().hex
@@ -339,7 +331,7 @@ class Document(AllMixins, ProtoTypeMixin):
             self._pb_body.tags.Clear()
             self._pb_body.tags.update(value)
         else:
-            raise TypeError(f'{value!r} is not supported.')
+            raise TypeError(f'{typename(value)} {value!r} is not supported.')
 
     @property
     def id(self) -> str:

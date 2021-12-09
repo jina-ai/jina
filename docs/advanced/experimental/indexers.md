@@ -1,5 +1,11 @@
 # Indexers on Jina Hub
 
+```{toctree}
+:hidden:
+
+indexers-benchmark
+```
+
 Indexers are a subtype of Hub Executors that store or retrieve data. They are designed to replace `DocumentArray` and `DocumentArrayMemmap` in large-scale applications.
 
 They are split by usage and interface. These types are:
@@ -18,22 +24,25 @@ Example Hub Executors:
 These usually implement a form of similarity search, based on the embeddings created by the encoders you have chosen in your Flow.
 
 Example Hub Executors:
+ - [HnswlibSearcher](https://hub.jina.ai/executor/jdb3vkgo) 
  - [FaissSearcher](https://hub.jina.ai/executor/gilkzt3f)
  - [AnnoySearcher](https://hub.jina.ai/executor/wiu040h9) 
 ```
 ```{tab} Compound Indexer
-Compound indexer usually made up of a vector-based searcher, for computing the most similar matches, and a storage, for retrieving the match's original metadata.
+Compound indexers are composed of a Searcher, for storing vectors and computing matches, and a Storage, for retrieving the document's original metadata.
 
 Example Hub Executors:
- - [FaissLMDBSearcher](https://hub.jina.ai/executor/g57rla9l)
+ - [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a)
+ - [FaissLMDBIndexer](https://hub.jina.ai/executor/g57rla9l)
  - [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8)
  
- If you want to develop one like these, check the guide {ref}`here <compound-executor>`.
+ If you want to develop a composite like these, check the guide {ref}`here <compound-executor>`.
 ```
 
 ```{tip}
-Besides, there are two types of special indexer,
+Besides, there are other special indexers,
 
+- [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4). This uses the Jina built-in `DocumentArrayMemmap` class to store data on disk and read it into RAM as needed. 
 - [DocCache](https://hub.jina.ai/executor/3klmcx6r). It is not used for storing and retrieving data directly, but for caching and avoiding duplicating of data during the indexing process.
 - [MatchMerger](https://hub.jina.ai/executor/mruax3k7). It is used for merging the results retrieved from sharding. It merges the results of shards by aggregating all matches by the corresponding Document in the original search request. 
 
@@ -55,11 +64,23 @@ The `/search` endpoints do not correspond perfectly with the Read operation, as 
 Some Indexers do implement a `/fill_embedding` endpoint, which functions as a Read by id.
 Please refer to the specific documentation or implementation of the Executor for details.
 
-## Indexing vs Searching Operations
+## Recommended All-in-one Indexers
 
+We recommend you use one of our pre-built full solution Indexers.
+These support both CRUD and Search operations without the need for any manual configuration or further operations.
+They are: 
+
+- [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4). This works well with small amounts of data, <200k. Recommended usage is for experimentation and early prototyping. It uses exhaustive search.
+- [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a). This is a robust, scalable Indexer that support replication and sharding, and uses the powerful [HNSWlib](https://github.com/nmslib/hnswlib) approximate nearest neighbor algorithm.
+
+Check their respective documentation pages for more information. 
+
+## Your Custom Solution
+
+If, on the other hand, you want to use another combination of Storage Indexer and Search Indexer, you will need to do some manual patching.
 The recommended usage of these Executors is to split them into Indexing vs Search Flows.
-In the Indexing Flow, you perform write, update, and delete. 
-In order to search them, you need to start a Search Flow, dump the data from the Index Flow, and load it into the Query Flow.
+In the Indexing Flow, you perform write, update, and delete.
+In order to search them, you need to start a Search Flow, dump the data from the Index Flow, and load it into the Search Flow.
 
 See below figure for how this would look like:
 
@@ -68,7 +89,7 @@ See below figure for how this would look like:
 :align: center
 ```
 
-In the above case, the Storage could be the [PostgreSQL](https://hub.jina.ai/executor/d45rawx6)-based Storage, while the Query Flow could be based on [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8).
+In the above case, the Storage could be the [MongoDBStorage](https://hub.jina.ai/executor/3e1sp6fp)-based Storage, while the Search Flow could be based on [HnswlibSearcher](https://hub.jina.ai/executor/jdb3vkgo) .
 
 ```{tip}
 For a showcase code, check our [integration tests](https://github.com/jina-ai/executors/tree/main/tests/integration/psql_dump_reload).
@@ -77,7 +98,7 @@ For a showcase code, check our [integration tests](https://github.com/jina-ai/ex
 The split between indexing and search Flows allows you to continuously serve requests in your application (in the search Flow), while still being able to write or modify the underlying data. Then when you want to update the state of the searchable data for your users, you perform a dump and rolling update.
 
 (dump-rolling-restart)=
-## Dump and Rolling Update
+### Synchronizing State via Rolling Update
 
 The communication between index and search Flows is done via this pair of actions.
 The **dump** action tells the indexer to export its internal data (from whatever format it stores it in) to a disk location, optimized to be read by the shards in your search Flow.
@@ -127,10 +148,10 @@ where
 | Index Size | RPS | Latency p95 | Best Indexer + configuration |
 | --- | --- | --- | --- |
 | fit into memory | < 20 | any | [SimpleIndexer](https://hub.jina.ai/executor/zb38xlt4) + use default |
-| any | > 20 | any | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use k8s & replicas |
-| not fit into memory | any | any | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use shards |
-| not fit into memory | > 20 | any | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use k8s & shards & replicas|
-| any | any | small | [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) + use k8s & shards & replicas|
+| any | > 20 | any | [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a) + use k8s & replicas |
+| not fit into memory | any | any | [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a) + use shards |
+| not fit into memory | > 20 | any | [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a) + use k8s & shards & replicas|
+| any | any | small | [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a) + use k8s & shards & replicas|
 
 
 The [Jina Hub](http://hub.jina.ai) offers multiple Indexers for different use-cases.
@@ -167,6 +188,4 @@ When running any service in the cloud, an underlying machine could die at any ti
 Usually, a new machine will spawn and take over.
 Anyhow, this might take some minutes.
 If you need instant failure recovery, you need to use replicas.
-Jina provides this via the [FaissPostgresIndexer](https://hub.jina.ai/executor/ugatwtp8) in combination with {ref}`replicas <replicas>` inside {ref}`kubernetes (k8s) <kubernetes>`.
-
-
+Jina provides this via the [HNSWPostgresIndexer](https://hub.jina.ai/executor/dvp0845a) in combination with {ref}`replicas <replicas>` inside {ref}`kubernetes (k8s) <kubernetes>`.

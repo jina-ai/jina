@@ -39,8 +39,8 @@ jobs:
           cd docs
           pip install -r requirements.txt
           pip install furo==2021.10.9
-          export NUM_RELEASES=10
-          bash makedoc.sh
+          export NUM_RELEASES=2
+          bash makedoc.sh local-only
           cd ./_build/dirhtml/
           cp -r ./ ../../../gen-html
           cd -  # back to ./docs

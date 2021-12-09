@@ -78,4 +78,6 @@ pytest-lazy-fixture:        test
 datasets:                   cicd
 av:                         cicd
 trimesh:                    cicd
-paddlepaddle:               cicd
+paddlepaddle==2.2.0:        cicd
+onnx:                       cicd
+onnxruntime:                cicd

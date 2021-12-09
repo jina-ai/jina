@@ -31,3 +31,22 @@ class MagicMixin:
         for doc in other:
             self.append(doc)
         return self
+
+    def __getstate__(self):
+        r = dict(serialized=bytes(self))
+        if hasattr(self, '_ref_doc'):
+            r['ref_doc'] = bytes(self._ref_doc)
+        return r
+
+    def __setstate__(self, state):
+        from ..document import DocumentArray
+
+        da = DocumentArray.load_binary(state['serialized'])
+        if 'ref_doc' in state:
+            from ...document import Document
+
+            ref_doc = Document(state['ref_doc'])
+            self.__init__(da, ref_doc)
+        else:
+            self.__init__()
+            self.extend(da)

@@ -19,8 +19,8 @@ class TargetPod(ProtoTypeMixin):
     :param target: the protobuf object of the TargetPod
     """
 
-    def __init__(self, target: 'jina_pb2.TargetPodProto') -> None:
-        self._pb_body = target
+    def __init__(self, target: Optional['jina_pb2.TargetPodProto'] = None) -> None:
+        self._pb_body = target if target is not None else jina_pb2.TargetPodProto()
 
     @property
     def port(self) -> int:
@@ -113,27 +113,33 @@ class RoutingTable(ProtoTypeMixin):
         ] = None,
         copy: bool = False,
     ) -> None:
-        self._pb_body = jina_pb2.RoutingTableProto()
         try:
             if isinstance(graph, RoutingTable):
                 if copy:
+                    self._pb_body = jina_pb2.RoutingTableProto()
                     self._pb_body.CopyFrom(graph._pb_body)
                 else:
                     self._pb_body = graph._pb_body
             elif isinstance(graph, jina_pb2.RoutingTableProto):
                 if copy:
+                    self._pb_body = jina_pb2.RoutingTableProto()
                     self._pb_body.CopyFrom(graph)
                 else:
                     self._pb_body = graph
             elif isinstance(graph, dict):
+                self._pb_body = jina_pb2.RoutingTableProto()
                 json_format.ParseDict(graph, self._pb_body)
             elif isinstance(graph, str):
+                self._pb_body = jina_pb2.RoutingTableProto()
                 json_format.Parse(graph, self._pb_body)
             elif isinstance(graph, bytes):
+                self._pb_body = jina_pb2.RoutingTableProto()
                 self._pb_body.ParseFromString(graph)
             elif graph is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(graph)} is not recognizable')
+            elif graph is None:
+                self._pb_body = jina_pb2.RoutingTableProto()
         except Exception as ex:
             raise BadRequestType(
                 f'fail to construct a {self.__class__} object from {graph}'

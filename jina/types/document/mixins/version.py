@@ -6,10 +6,11 @@ class VersionedMixin:
     Helper class to add versioning to an object. The version number is incremented each time an attribute is set.
     """
 
-    version = 0
+    _version = 0
+    _ON_GETATTR = ['matches', 'chunks']
 
     def _increase_version(self):
-        super().__setattr__('version', self.version + 1)
+        super().__setattr__('_version', self._version + 1)
 
     def __setattr__(self, attr, value):
         super().__setattr__(attr, value)
