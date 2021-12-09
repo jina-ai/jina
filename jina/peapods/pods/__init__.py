@@ -865,6 +865,10 @@ class Pod(BasePod):
 
     def _parse_base_pod_args(self, args):
         parsed_args = {'head': None, 'tail': None, 'peas': []}
+
+        if not getattr(args, 'uses_before', None) and len(self.needs) > 1:
+            args.uses_before = __default_reducer_executor__
+
         if getattr(args, 'replicas', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
