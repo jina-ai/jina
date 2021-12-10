@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from ....helper import typename
+from ...helper import typename
 
 if TYPE_CHECKING:
     from ..types import DocumentArraySourceType

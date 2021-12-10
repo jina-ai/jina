@@ -1,7 +1,7 @@
 from typing import Type
 
 from ...document import Document
-from ....helper import T
+from ...helper import T
 
 
 class EmptyMixin:

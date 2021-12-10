@@ -3,9 +3,8 @@ from types import LambdaType
 from typing import Callable, TYPE_CHECKING, Generator, Optional, overload, TypeVar
 
 if TYPE_CHECKING:
-    from ....helper import T, random_identity
-    from ...document import Document
-    from .... import DocumentArray
+    from ...helper import T, random_identity
+    from ... import Document, DocumentArray
 
 T_DA = TypeVar('T_DA')
 
@@ -191,7 +190,7 @@ def _globalize_lambda_function(func):
     def result(*args, **kwargs):
         return func(*args, **kwargs)
 
-    from ....helper import random_identity
+    from ...helper import random_identity
 
     result.__name__ = result.__qualname__ = random_identity()
     setattr(sys.modules[result.__module__], result.__name__, result)

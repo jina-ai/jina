@@ -11,6 +11,7 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
+from collections import MutableMapping
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
@@ -1324,12 +1325,10 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     from google.protobuf.struct_pb2 import ListValue
     from google.protobuf.struct_pb2 import Struct
-    from google.protobuf.pyext._message import MessageMapContainer
-    from jina.docarray.simple import StructView
 
     if isinstance(part1, int):
         result = _dict[part1]
-    elif isinstance(_dict, (dict, Struct, MessageMapContainer, StructView)):
+    elif isinstance(_dict, (dict, Struct, MutableMapping)):
         if part1 in _dict:
             result = _dict[part1]
         else:

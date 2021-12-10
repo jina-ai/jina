@@ -130,3 +130,7 @@ message DocumentProto {
   // Evaluations performed on the document, each element corresponds to a metric
   map<string, NamedScoreProto> evaluations = 29;
 }
+
+message DocumentArrayProto {
+    repeated DocumentProto docs = 1; // a list of Documents
+}

@@ -2,7 +2,7 @@ import warnings
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
-    from ....helper import T
+    from ...helper import T
 
     AnyDNN = TypeVar(
         'AnyDNN'

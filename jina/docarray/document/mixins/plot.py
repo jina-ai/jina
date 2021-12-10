@@ -107,6 +107,4 @@ class PlotMixin:
         if output:
             download_mermaid_url(url, output)
         elif not showed:
-            from ....logging.predefined import default_logger
-
-            default_logger.info(f'Document visualization: {url}')
+            print(f'Document visualization: {url}')

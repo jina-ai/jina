@@ -126,7 +126,7 @@ class MatchMixin:
             if use_scipy:
                 from scipy.spatial.distance import cdist as cdist
             else:
-                from ....math.distance import cdist as _cdist
+                from ...math.distance import cdist as _cdist
 
                 cdist = lambda *x: _cdist(*x, device=device)
         else:

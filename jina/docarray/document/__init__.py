@@ -44,7 +44,7 @@ class Document(AllMixins, BaseProtoType):
     :class:`Document` is one of the **primitive data type** in Jina.
 
     It offers a Pythonic interface to allow users access and manipulate
-    :class:`jina.jina_pb2.DocumentProto` object without working with Protobuf itself.
+    :class:`jina.docarray_pb2.DocumentProto` object without working with Protobuf itself.
 
     To create a :class:`Document` object, simply:
 
@@ -76,8 +76,8 @@ class Document(AllMixins, BaseProtoType):
     MIME type is auto set/guessed when setting :attr:`content` and :attr:`uri`
 
     :class:`Document` also provides multiple way to build from existing Document. You can build :class:`Document`
-    from ``jina_pb2.DocumentProto``, ``bytes``, ``str``, and ``Dict``. You can also use it as view (i.e.
-    weak reference when building from an existing ``jina_pb2.DocumentProto``). For example,
+    from ``docarray_pb2.DocumentProto``, ``bytes``, ``str``, and ``Dict``. You can also use it as view (i.e.
+    weak reference when building from an existing ``docarray_pb2.DocumentProto``). For example,
 
         .. highlight:: python
         .. code-block:: python

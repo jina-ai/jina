@@ -6,7 +6,7 @@ from typing import Union, BinaryIO, TYPE_CHECKING, Type
 from ....helper import random_uuid, __windows__
 
 if TYPE_CHECKING:
-    from .....helper import T
+    from ....helper import T
 
 
 class BinaryIOMixin:

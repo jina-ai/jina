@@ -4,12 +4,12 @@ from typing import (
 )
 
 from ..document import Document
-from ...proto import jina_pb2
+from ..proto import docarray_pb2
 
 DocumentArraySourceType = TypeVar(
     'DocumentArraySourceType',
-    jina_pb2.DocumentArrayProto,
+    docarray_pb2.DocumentArrayProto,
     Sequence[Document],
-    Sequence[jina_pb2.DocumentProto],
+    Sequence[docarray_pb2.DocumentProto],
     Document,
 )

@@ -2,10 +2,10 @@ import io
 from contextlib import nullcontext
 from typing import Type, TYPE_CHECKING
 
-from .....helper import get_request_header
+from ....helper import get_request_header
 
 if TYPE_CHECKING:
-    from .....helper import T
+    from ....helper import T
 
 
 class PushPullMixin:

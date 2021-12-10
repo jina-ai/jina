@@ -322,7 +322,7 @@ def get_array_type(array: 'ArrayType') -> Tuple[str, bool]:
         if class_name == 'NdArray':
             return 'jina', False  # sparse or not is irrelevant
 
-    if 'jina_pb2' in module_tags:
+    if 'docarray_pb2' in module_tags:
         if class_name == 'NdArrayProto':
             return 'jina_proto', False  # sparse or not is irrelevant
 

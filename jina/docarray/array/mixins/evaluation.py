@@ -46,7 +46,7 @@ class EvaluationMixin:
         if callable(metric):
             metric_fn = metric
         elif isinstance(metric, str):
-            from ....math import evaluation
+            from ...math import evaluation
 
             metric_fn = getattr(evaluation, metric)
 

@@ -19,8 +19,8 @@ class BaseProtoType:
 
                 class MyJinaType(ProtoTypeMixin):
 
-                    def __init__(self, proto: Optional[jina_pb2.SomePbMsg] = None):
-                        self._pb_body = proto or jina_pb2.SomePbMsg()
+                    def __init__(self, proto: Optional[docarray_pb2.SomePbMsg] = None):
+                        self._pb_body = proto or docarray_pb2.SomePbMsg()
 
     """
 
@@ -66,7 +66,7 @@ class BaseProtoType:
         """Return the object in Python dictionary.
 
         .. note::
-            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
+            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`docarray_pb2.NdArrayProto`)
             will be converted to Python list.
 
         :return: dict representation of the object

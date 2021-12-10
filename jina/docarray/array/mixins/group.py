@@ -24,7 +24,7 @@ class GroupMixin:
             return an empty dict.
         """
         from ..document import DocumentArray
-        from ....helper import dunder_get
+        from ...helper import dunder_get
 
         rv = defaultdict(DocumentArray)
         for doc in self:

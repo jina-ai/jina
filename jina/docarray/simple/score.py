@@ -8,7 +8,7 @@ class ScoreView(BaseProtoType):
     :class:`NamedScore` is one of the **primitive data type** in Jina.
 
     It offers a Pythonic interface to allow users access and manipulate
-    :class:`jina.jina_pb2.NamedScoreProto` object without working with Protobuf itself.
+    :class:`jina.docarray_pb2.NamedScoreProto` object without working with Protobuf itself.
 
     To create a :class:`NamedScore` object, simply:
 
@@ -19,13 +19,13 @@ class ScoreView(BaseProtoType):
             score = NamedScore()
             score.value = 10.0
 
-    :class:`NamedScore` can be built from ``jina_pb2.NamedScoreProto`` (as a weak reference or a deep copy)
-    or from a set of `attributes` from ``jina_pb2.NamedScoreProto`` passed to the constructor.
+    :class:`NamedScore` can be built from ``docarray_pb2.NamedScoreProto`` (as a weak reference or a deep copy)
+    or from a set of `attributes` from ``docarray_pb2.NamedScoreProto`` passed to the constructor.
          .. highlight:: python
          .. code-block:: python
 
              from jina.types.score import NamedScore
-             from jina_pb2 import NamedScoreProto
+             from docarray_pb2 import NamedScoreProto
              score = NamedScore(value=10.0, op_name='ranker', description='score computed by ranker')
 
              score_proto = NamedScoreProto()
@@ -34,7 +34,7 @@ class ScoreView(BaseProtoType):
 
     :param score: The score to construct from, depending on the ``copy``,
         it builds a view or a copy from it.
-    :type score: Optional[jina_pb2.NamedScoreProto]
+    :type score: Optional[docarray_pb2.NamedScoreProto]
     :param copy: When ``score`` is given as a :class:`NamedScoreProto` object, build a
         view (i.e. weak reference) from it or a deep copy from it.
     :type copy: bool

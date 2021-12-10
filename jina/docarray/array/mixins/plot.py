@@ -146,9 +146,7 @@ class PlotMixin:
             except:
                 pass  # intentional pass, browser support isn't cross-platform
             finally:
-                from ....logging.predefined import default_logger
-
-                default_logger.info(
+                print(
                     f'You should see a webpage opened in your browser, '
                     f'if not, you may open {url_html_path} manually'
                 )
@@ -192,7 +190,7 @@ class PlotMixin:
 
             x_mat_2d = TSNE(n_components=2).fit_transform(x_mat)
         else:
-            from ....math.dimensionality_reduction import PCA
+            from ...math.dimensionality_reduction import PCA
 
             x_mat_2d = PCA(n_components=2).fit_transform(x_mat)
 

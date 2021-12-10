@@ -2,7 +2,7 @@ from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ...document import Document
-    from ....helper import T
+    from ...helper import T
 
 
 def _reduce_doc_props(doc1: 'Document', doc2: 'Document'):
