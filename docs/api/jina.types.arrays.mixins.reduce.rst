@@ -1,7 +1,7 @@
-jina.types.document.mixins.dump module
+jina.types.arrays.mixins.reduce module
 ======================================
 
-.. automodule:: jina.types.document.mixins.dump
+.. automodule:: jina.types.arrays.mixins.reduce
    :members:
    :undoc-members:
    :show-inheritance:
