@@ -8,7 +8,7 @@ from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
 from ...proto import jina_pb2
-from ...types.struct import StructView
+from ...docarray.simple import StructView
 
 _body_type = set(str(v).lower() for v in RequestType)
 _trigger_body_fields = set(

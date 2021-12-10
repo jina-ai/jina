@@ -62,7 +62,7 @@ __version__ = '2.5.6'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.86'
+__proto_version__ = '0.0.92'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -193,9 +193,7 @@ _set_nofile()
 from jina.clients import Client
 
 # Document
-from jina.types.document import Document
-from jina.types.arrays.document import DocumentArray
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.docarray import Document, DocumentArray, DocumentArrayMemmap
 
 # Executor
 from jina.executors import BaseExecutor as Executor

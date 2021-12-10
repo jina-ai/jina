@@ -1325,7 +1325,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
     from google.protobuf.struct_pb2 import ListValue
     from google.protobuf.struct_pb2 import Struct
     from google.protobuf.pyext._message import MessageMapContainer
-    from .types.struct import StructView
+    from jina.docarray.simple import StructView
 
     if isinstance(part1, int):
         result = _dict[part1]

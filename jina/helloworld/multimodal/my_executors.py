@@ -7,7 +7,7 @@ import torchvision.models as models
 from transformers import AutoModel, AutoTokenizer
 
 from jina import Executor, DocumentArray, requests, Document
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 
 
 class Segmenter(Executor):
