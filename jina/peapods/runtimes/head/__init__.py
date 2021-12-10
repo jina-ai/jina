@@ -182,6 +182,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if self.logger.debug_enabled:
             self._log_data_request(requests[0])
 
+        DataRequestHandler.merge_routes(requests)
+
         if self.uses_before_address:
             requests = [
                 await self.connection_pool.send_requests_once(
