@@ -318,3 +318,19 @@ Sometimes you'll also encouter `parallel`, this is equivalent to `shards` and is
 
 (reduce)=
 ## Reducing
+Reducing is a mechanism that applies by default to DocumentArrays resulted by instances of Executors running in 
+parallel in a Flow. It combines the multiple DocumentArrays into one DocumentArray when you have one of these 2 cases:
+* Your Flow contains 2 or more shards of the same Executor with `polling='all'`
+* Your Flow contains 2 or more different Executors running in parallel and you have another Executor that needs 2 or 
+more of them.
+Reducing is necessary if your Flow needs the combined DocumentArray in later steps.
+
+Reduction consists in reducing all DocumentArrays sequentially using [DocumentArray.reduce](https://docs.jina.ai/api/jina.types.arrays.mixins.reduce/?highlight=reduce#jina.types.arrays.mixins.reduce.ReduceMixin.reduce).
+The resulting DocumentArray contains Documents of all DocumentArrays.
+If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
+DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
+attribute value of the left-most DocumentArray is kept).
+Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
+Other non-data properties are ignored.
+DocumentArrays coming from shards are ordered according to the shard number. On the other hand, DocumentArrays coming 
+from different pods, are ordered according to the pods' name (ascending alphabetical order).
