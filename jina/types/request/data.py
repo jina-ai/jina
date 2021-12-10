@@ -108,6 +108,15 @@ class DataRequest(Request):
         """
         return Response(request=self.proto)
 
+    @property
+    def status(self):
+        """
+        Returns the status from the header field
+
+        :return: the status object of this request
+        """
+        return self.proto.header.status
+
     @classmethod
     def from_proto(cls, request: 'jina_pb2.DataRequestProto'):
         """Creates a new DataRequest object from a given :class:`DataRequestProto` object.

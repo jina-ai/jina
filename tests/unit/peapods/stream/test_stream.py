@@ -27,7 +27,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     def result_handle_fn(result):
         results_handled.append(result)
-        assert isinstance(result, jina_pb2.RequestProto)
+        assert isinstance(result, jina_pb2.DataRequestProto)
         result.docs[0].tags['result_handled'] = True
         return result
 
@@ -38,14 +38,14 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     def _get_sync_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = jina_pb2.RequestProto()
+            req = jina_pb2.DataRequestProto()
             req.request_id = random_identity()
             req.docs.add()
             yield req
 
     async def _get_async_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = jina_pb2.RequestProto()
+            req = jina_pb2.DataRequestProto()
             req.request_id = random_identity()
             req.docs.add()
             yield req
