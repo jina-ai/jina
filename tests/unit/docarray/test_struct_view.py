@@ -2,7 +2,7 @@ import pytest
 
 from google.protobuf.struct_pb2 import Struct
 
-from jina.types.struct import StructView
+from jina.docarray.simple import StructView
 
 
 def test_empty_struct_view():

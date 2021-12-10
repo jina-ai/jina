@@ -51,7 +51,7 @@ class ScoreMapView(BaseProtoType, MutableMapping):
             self._pb_body[key].CopyFrom(value)
         elif isinstance(value, ScoreView):
             self._pb_body[key].CopyFrom(value._pb_body)
-        elif isinstance(value, (np.generic, float)):
+        elif isinstance(value, (np.generic, float, int)):
             self._pb_body[key].value = float(value)
         else:
             raise TypeError(f'value is in unsupported type {typename(value)}')

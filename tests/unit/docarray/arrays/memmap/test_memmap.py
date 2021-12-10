@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from jina import Document, DocumentArray, __windows__
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 from tests import random_docs
 
 

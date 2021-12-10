@@ -6,7 +6,7 @@ import torch
 from scipy.sparse import csr_matrix, coo_matrix, bsr_matrix, csc_matrix
 
 from jina import Document, DocumentArray
-from jina.types.ndarray import NdArray
+from jina.docarray.ndarray import NdArray
 
 
 def get_ndarrays():

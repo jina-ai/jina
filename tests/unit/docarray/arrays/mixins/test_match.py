@@ -9,9 +9,8 @@ import torch
 from scipy.sparse import csr_matrix, bsr_matrix, coo_matrix, csc_matrix
 from scipy.spatial.distance import cdist as scipy_cdist
 
-from jina import Document, DocumentArray
-from jina.math.dimensionality_reduction import PCA
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, DocumentArray, DocumentArrayMemmap
+from jina.docarray.math.dimensionality_reduction import PCA
 
 
 @pytest.fixture()

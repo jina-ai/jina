@@ -17,9 +17,9 @@ from ...helper import batch_iterator
 from ...logging.predefined import default_logger
 
 if TYPE_CHECKING:
-
-    from ...types.document import DocumentSourceType, Document
-    from ...types.document.mixins.content import DocumentContentType
+    from ... import Document
+    from ...docarray.document import DocumentSourceType
+    from ...docarray.document.mixins.content import DocumentContentType
     from ...types.request import Request
 
     SingletonDataType = Union[

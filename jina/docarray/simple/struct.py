@@ -51,8 +51,10 @@ class StructView(BaseProtoType, MutableMapping):
     def __eq__(self, other: Union['StructView', Dict]):
         if isinstance(other, dict):
             return self.to_dict() == other
-        else:
+        elif isinstance(other, StructView):
             return self.proto == other.proto
+        else:
+            return False
 
     def update(
         self, d: Union['StructView', struct_pb2.Struct], **kwargs

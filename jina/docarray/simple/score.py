@@ -42,6 +42,9 @@ class ScoreView(BaseProtoType):
 
     """
 
+    def __init__(self, obj):
+        self._pb_body = obj
+
     @property
     def value(self) -> float:
         """Return the ``value`` of this NamedScore, the `id` of which this NamedScore is a score.

@@ -1,7 +1,7 @@
 import pytest
 
-from jina.types.arrays.chunk import ChunkArray
-from jina.types.document import Document
+from jina.docarray.array.chunk import ChunkArray
+from jina import Document
 from jina.types.request import Request
 
 

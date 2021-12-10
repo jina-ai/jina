@@ -57,8 +57,10 @@ class ListView(BaseProtoType, MutableSequence):
     def __eq__(self, other: Union['ListView', List]):
         if isinstance(other, List):
             return list(self) == other
-        else:
+        elif isinstance(other, ListView):
             return self.proto == other.proto
+        else:
+            return False
 
     def __contains__(self, object: Any):
         for element in self:

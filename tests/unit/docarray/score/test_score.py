@@ -1,12 +1,12 @@
 import pytest
 
 from jina.excepts import BadNamedScoreType
-from jina.proto import jina_pb2
-from jina.types.score import NamedScore
+from jina.docarray.proto import docarray_pb2
+from jina.docarray.simple import ScoreView
 
 
 def test_named_score():
-    score = NamedScore(
+    score = ScoreView(
         op_name='operation',
         value=10.0,
         ref_id='10' * 16,
@@ -21,14 +21,13 @@ def test_named_score():
 
 @pytest.mark.parametrize('copy', [True, False])
 def test_named_score_from_proto(copy):
-    from jina.proto.jina_pb2 import NamedScoreProto
 
-    proto = NamedScoreProto()
+    proto = docarray_pb2.NamedScoreProto()
     proto.op_name = 'operation'
     proto.value = 10.0
     proto.ref_id = '10' * 16
     proto.description = 'score description'
-    score = NamedScore(score=proto, copy=copy)
+    score = ScoreView(score=proto, copy=copy)
 
     assert score.op_name == 'operation'
     assert score.value == 10.0
@@ -37,7 +36,7 @@ def test_named_score_from_proto(copy):
 
 
 def test_named_score_setters():
-    score = NamedScore()
+    score = ScoreView()
     score.op_name = 'operation'
     score.value = 10.0
     score.ref_id = '10' * 16
@@ -49,37 +48,37 @@ def test_named_score_setters():
     assert score.description == 'score description'
 
 
-score_proto_1 = jina_pb2.NamedScoreProto()
+score_proto_1 = docarray_pb2.NamedScoreProto()
 score_proto_1.op_name = 'operation1'
-score_proto_2 = jina_pb2.NamedScoreProto()
+score_proto_2 = docarray_pb2.NamedScoreProto()
 score_proto_2.op_name = 'operation2'
 
 
 @pytest.mark.parametrize(
     'operands',
     [
-        [NamedScore(op_name='operation1'), NamedScore(op_name='operation2')],
+        [ScoreView(op_name='operation1'), ScoreView(op_name='operation2')],
         [score_proto_1, score_proto_2],
         [{'op_name': 'operation1'}, {'op_name': 'operation2'}],
     ],
 )
 def test_named_operands_nested_score(operands):
-    score = NamedScore(operands=operands)
+    score = ScoreView(operands=operands)
     assert len(score.operands) == 2
     for i, operand in enumerate(score.operands):
-        assert isinstance(operand, NamedScore)
+        assert isinstance(operand, ScoreView)
         assert operand.op_name == f'operation{i + 1}'
 
 
 def test_named_score_wrong():
     with pytest.raises(BadNamedScoreType):
-        NamedScore('wrong_input_type')
+        ScoreView('wrong_input_type')
 
     with pytest.raises(AttributeError):
-        NamedScore(invalid='hey')
+        ScoreView(invalid='hey')
 
     with pytest.raises(AttributeError):
-        NamedScore(op_name=['hey'])
+        ScoreView(op_name=['hey'])
 
     with pytest.raises(AttributeError):
-        NamedScore(operands=['hey'])
+        ScoreView(operands=['hey'])

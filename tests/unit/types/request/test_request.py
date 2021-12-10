@@ -4,7 +4,7 @@ from google.protobuf.json_format import MessageToDict, MessageToJson
 from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
-from jina.types.arrays.document import DocumentArray
+from jina import DocumentArray
 from jina.types.request import Request, Response
 
 

@@ -4,8 +4,8 @@ import numpy as np
 
 from jina import Document
 
-from jina.types.score import NamedScore
-from jina.types.score.map import NamedScoreMapping
+from jina.docarray.simple import ScoreView
+from jina.docarray.simple import ScoreMapView
 
 
 def test_mapped_named_score():
@@ -57,7 +57,7 @@ def test_mapped_named_score_from_proto():
     assert 'operation' in scores
     assert 'operation2' in scores
 
-    scores2 = NamedScoreMapping(scores)
+    scores2 = ScoreMapView(scores)
 
     assert 'operation' in scores2._pb_body
     assert 'operation2' in scores2._pb_body
@@ -76,7 +76,7 @@ def test_mapped_named_score_from_proto():
 
 @pytest.mark.parametrize(
     'value',
-    [5, 5.0, np.int(5), np.float(5.0), NamedScore(value=5), NamedScore(value=5).proto],
+    [5, 5.0, np.int(5), np.float(5.0), ScoreView(value=5), ScoreView(value=5).proto],
 )
 def test_mapped_set_item(value):
     scores = Document().scores
@@ -87,8 +87,8 @@ def test_mapped_set_item(value):
 @pytest.mark.parametrize(
     'value',
     [
-        NamedScore(value=5, op_name='op', description='desc'),
-        NamedScore(value=5, op_name='op', description='desc').proto,
+        ScoreView(value=5, op_name='op', description='desc'),
+        ScoreView(value=5, op_name='op', description='desc').proto,
     ],
 )
 def test_mapped_set_item_from_named_score(value):

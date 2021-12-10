@@ -159,10 +159,10 @@ class BaseProtoType:
         return self.to_bytes()
 
     def __copy__(self):
-        return self.__init__(self)
+        return type(self)(self)
 
     def __deepcopy__(self, memodict={}):
-        return self.__init__(self, copy=True)
+        return type(self)(self, copy=True)
 
     @classmethod
     def attributes(

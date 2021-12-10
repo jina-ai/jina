@@ -3,7 +3,7 @@ from typing import Tuple
 
 from ...enums import DataInputType
 from ...excepts import BadDocType, BadRequestType
-from ...types.document import Document
+from ... import Document
 from ...types.request import Request
 
 

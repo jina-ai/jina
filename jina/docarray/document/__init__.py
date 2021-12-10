@@ -33,7 +33,6 @@ if TYPE_CHECKING:
 
     DocumentSourceType = TypeVar('DocumentSourceType', bytes, str, Dict)
 
-__all__ = ['Document']
 
 _all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = {'content', 'blob', 'text', 'buffer'}

@@ -19,7 +19,7 @@ class EmbedMixin:
         batch_size: int = 256,
         to_numpy: bool = False,
     ) -> 'T':
-        """Fill the embedding of Documents inplace by using `embed_model`
+        """Fill :attr:`.embedding` of Documents inplace by using `embed_model`
 
         :param embed_model: the embedding model written in Keras/Pytorch/Paddle
         :param device: the computational device for `embed_model`, can be either

@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from jina import DocumentArray, Document, DocumentArrayMemmap
-from jina.types.document.generators import from_files
+from jina.docarray.document.generators import from_files
 
 
 def test_sprite_image_generator(pytestconfig, tmpdir):

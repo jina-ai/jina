@@ -11,7 +11,7 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
-from collections import MutableMapping
+from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace

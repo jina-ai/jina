@@ -8,10 +8,13 @@ from typing import TypeVar, Iterable, Any, Dict, Optional
 T = TypeVar('T')
 
 __windows__ = sys.platform == 'win32'
-__resources_path__ = '.'
-# __resources_path__ = os.path.join(
-#     os.path.dirname(sys.modules['docarray'].__file__), 'resources'
-# )
+
+__resources_path__ = os.path.join(
+    os.path.dirname(
+        sys.modules.get('docarray').__file__ if 'docarray' in sys.modules else __file__
+    ),
+    'resources',
+)
 
 
 def typename(obj):
@@ -146,7 +149,7 @@ def get_request_header() -> Dict:
 
     :return: request header
     """
-    return get_full_version()
+    return {k: str(v) for k, v in get_full_version().items()}
 
 
 def get_full_version() -> Dict:

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Document, __windows__
-from jina.types.document.generators import from_files
+from jina.docarray.document.generators import from_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

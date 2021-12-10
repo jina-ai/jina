@@ -10,10 +10,10 @@ from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
 from jina import DocumentArray
 from jina.logging.profile import TimeContext
-from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document import Document
+from jina.docarray.proto.docarray_pb2 import DocumentProto
+from jina import Document
 from jina.types.request import Request
-from jina.types.score import NamedScore
+from jina.docarray.simple.score import ScoreView
 from tests import random_docs
 
 
@@ -249,11 +249,10 @@ def test_doc_setattr():
 
 
 def test_doc_score():
-    from jina.types.score import NamedScore
 
     doc = Document(text='text')
 
-    score = NamedScore(op_name='operation', value=10.0, ref_id=doc.id)
+    score = ScoreView(op_name='operation', value=10.0, ref_id=doc.id)
     doc.score = score
 
     assert doc.score.op_name == 'operation'
@@ -435,7 +434,7 @@ def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
 
 
 def test_non_empty_fields():
-    d_score = Document(scores={'score': NamedScore(value=42)})
+    d_score = Document(scores={'score': ScoreView(value=42)})
     assert d_score.non_empty_fields == (
         'id',
         'scores',
@@ -458,7 +457,7 @@ def test_get_attr_values():
             'tags': {'id': 'identity', 'a': 'b', 'c': 'd', 'e': [0, 1, {'f': 'g'}]},
         }
     )
-    d.scores['metric'] = NamedScore(value=42)
+    d.scores['metric'] = ScoreView(value=42)
 
     required_keys = [
         'id',
@@ -655,14 +654,14 @@ def test_document_init_with_scores_and_evaluations():
     d = Document(
         scores={
             'euclidean': 50,
-            'cosine': NamedScore(value=1.0),
-            'score1': NamedScore(value=2.0).proto,
+            'cosine': ScoreView(value=1.0),
+            'score1': ScoreView(value=2.0).proto,
             'score2': np.int(5),
         },
         evaluations={
             'precision': 50,
-            'recall': NamedScore(value=1.0),
-            'eval1': NamedScore(value=2.0).proto,
+            'recall': ScoreView(value=1.0),
+            'eval1': ScoreView(value=2.0).proto,
             'eval2': np.int(5),
         },
     )
@@ -681,14 +680,14 @@ def test_document_scores_delete():
     d = Document(
         scores={
             'euclidean': 50,
-            'cosine': NamedScore(value=1.0),
-            'score1': NamedScore(value=2.0).proto,
+            'cosine': ScoreView(value=1.0),
+            'score1': ScoreView(value=2.0).proto,
             'score2': np.int(5),
         },
         evaluations={
             'precision': 50,
-            'recall': NamedScore(value=1.0),
-            'eval1': NamedScore(value=2.0).proto,
+            'recall': ScoreView(value=1.0),
+            'eval1': ScoreView(value=2.0).proto,
             'eval2': np.int(5),
         },
     )
@@ -848,8 +847,8 @@ def test_content_hash():
 
 def test_tags_update_nested_lists():
     from jina import Document
-    from jina.types.list import ListView
-    from jina.types.struct import StructView
+    from jina.docarray.simple import ListView
+    from jina.docarray.simple import StructView
 
     d = Document()
     d.tags = {
