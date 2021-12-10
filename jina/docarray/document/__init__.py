@@ -95,6 +95,7 @@ class Document(AllMixins, BaseProtoType):
     @overload
     def __init__(
         self,
+        *,
         adjacency: Optional[int] = None,
         blob: Optional['ArrayType'] = None,
         buffer: Optional[bytes] = None,
