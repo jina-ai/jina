@@ -3,11 +3,10 @@ from typing import Optional, Union, Callable, Tuple, Sequence, TYPE_CHECKING
 
 import numpy as np
 
-from ....math.helper import top_k, minmax_normalize, update_rows_x_mat_best
+from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
 if TYPE_CHECKING:
-    from ..document import DocumentArray
-    from ...memmap import DocumentArrayMemmap
+    from ... import DocumentArray, Document, DocumentArrayMemmap
     from ...ndarray import ArrayType
 
 
