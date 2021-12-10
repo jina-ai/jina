@@ -1,7 +1,7 @@
-jina.types.arrays.mixins.io.dataframe module
+jina.helloworld.fashion.my\_executors module
 ============================================
 
-.. automodule:: jina.types.arrays.mixins.io.dataframe
+.. automodule:: jina.helloworld.fashion.my_executors
    :members:
    :undoc-members:
    :show-inheritance:
