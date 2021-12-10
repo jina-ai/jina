@@ -1,9 +1,11 @@
 import asyncio
 import pytest
 
+from jina import Document
 from jina.helper import Namespace, random_identity
 from jina.peapods.stream import RequestStreamer
 from jina.proto import jina_pb2
+from jina.types.request.data import DataRequest
 
 
 @pytest.mark.asyncio
@@ -27,7 +29,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     def result_handle_fn(result):
         results_handled.append(result)
-        assert isinstance(result, jina_pb2.DataRequestProto)
+        assert isinstance(result, DataRequest)
         result.docs[0].tags['result_handled'] = True
         return result
 
@@ -38,16 +40,16 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     def _get_sync_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = jina_pb2.DataRequestProto()
-            req.request_id = random_identity()
-            req.docs.add()
+            req = DataRequest()
+            req.header.request_id = random_identity()
+            req.docs.append(Document())
             yield req
 
     async def _get_async_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = jina_pb2.DataRequestProto()
-            req.request_id = random_identity()
-            req.docs.add()
+            req = DataRequest()
+            req.header.request_id = random_identity()
+            req.docs.append(Document())
             yield req
             await asyncio.sleep(0.1)
 
