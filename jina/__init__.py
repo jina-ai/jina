@@ -14,6 +14,7 @@ import signal as _signal
 import sys as _sys
 import types as _types
 import warnings as _warnings
+import docarray as _docarray
 
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
@@ -58,11 +59,12 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.5.6'
+__version__ = '2.6.0'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.95'
+__proto_version__ = '0.1.0'
+__docarray_version__ = _docarray.__version__
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
