@@ -5,13 +5,11 @@ import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
+from docarray.proto.docarray_pb2 import DocumentProto
 from jina import Document, Flow
 from jina.clients.request import request_generator
 from jina.clients.request.helper import _new_doc_from_data
 from jina.enums import DataInputType
-from jina.excepts import BadDocType
-from jina.proto import jina_pb2
-from jina.proto.jina_pb2 import DocumentProto
 
 
 @pytest.mark.skipif(
@@ -46,10 +44,10 @@ def test_data_type_builder_doc(builder):
 def test_data_type_builder_doc_bad():
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
-    with pytest.raises(BadDocType):
+    with pytest.raises(ValueError):
         _new_doc_from_data(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
 
-    with pytest.raises(BadDocType):
+    with pytest.raises(ValueError):
         _new_doc_from_data(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
 
 
@@ -116,7 +114,7 @@ def test_request_generate_bytes():
 def test_request_generate_docs():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
-            doc = jina_pb2.DocumentProto()
+            doc = DocumentProto()
             doc.text = f'i\'m dummy doc {j}'
             doc.offset = 1000
             doc.tags['id'] = 1000  # this will be ignored

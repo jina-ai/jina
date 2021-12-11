@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from ..arrays import DocumentArray
+from jina import DocumentArray
 from ...proto import jina_pb2
 
 

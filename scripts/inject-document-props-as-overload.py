@@ -56,7 +56,7 @@ def get_overload_signature(
         ]
     )
 
-    signature = f'def __init__(\n{indent}{indent}self,*,\n{args_str}\n{indent}):'
+    signature = f'def __init__(\n{indent}{indent}self,\n{args_str}\n{indent}):'
     final_str = f'@overload\n{indent}{signature}\n{indent}{indent}"""\n{doc_str}\n{indent}{indent}"""'
 
     return final_str

@@ -18,7 +18,7 @@ from jina.helloworld.fashion.helper import (
 )
 from jina.logging.logger import JinaLogger
 from jina.parsers.helloworld import set_hw_parser
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 from packaging import version
 from pkg_resources import resource_filename
 

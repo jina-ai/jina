@@ -1,0 +1,136 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+
+package docarray;
+
+/**
+ * Represents a (quantized) dense n-dim array
+ */
+message DenseNdArrayProto {
+  // the actual array data, in bytes
+  bytes buffer = 1;
+
+  // the shape (dimensions) of the array
+  repeated uint32 shape = 2;
+
+  // the data type of the array
+  string dtype = 3;
+}
+
+/**
+ * Represents a general n-dim array, can be either dense or sparse
+ */
+message NdArrayProto {
+  oneof content {
+    DenseNdArrayProto dense = 1; // dense representation of the ndarray
+    SparseNdArrayProto sparse = 2; // sparse representation of the ndarray
+  }
+
+  // the name of the ndarray class
+  string cls_name = 3;
+
+  google.protobuf.Struct parameters = 4;
+}
+
+/**
+ * Represents a sparse ndarray
+ */
+message SparseNdArrayProto {
+  // A 2-D int64 tensor of shape [N, ndims], which specifies the indices of the elements in the sparse tensor that contain nonzero values (elements are zero-indexed)
+  DenseNdArrayProto indices = 1;
+
+  // A 1-D tensor of any type and shape [N], which supplies the values for each element in indices.
+  DenseNdArrayProto values = 2;
+
+  // A 1-D int64 tensor of shape [ndims], which specifies the shape of the sparse tensor.
+  repeated uint32 shape = 3;
+}
+
+/**
+ * Represents the relevance model to `ref_id`
+ */
+message NamedScoreProto {
+  float value = 1; // value
+  string op_name = 2; // the name of the operator/score function
+  string description = 3; // text description of the score
+  repeated NamedScoreProto operands = 4; // the score can be nested
+  string ref_id = 5; // the score is computed between doc `id` and `ref_id`
+}
+
+
+/**
+ * Represents a Graph
+ */
+message GraphProto {
+  NdArrayProto adjacency = 1; // adjacency list
+  google.protobuf.Struct edge_features = 2; // Container structure to store edge features
+  bool undirected = 3; //Flag indicating if the graph is to be interpreted as an undirected graph
+}
+
+/**
+ * Represents a Document
+ */
+message DocumentProto {
+  // A hexdigest that represents a unique document ID
+  string id = 1;
+
+  // the depth of the recursive chunk structure
+  uint32 granularity = 14;
+
+  // the width of the recursive match structure
+  uint32 adjacency = 22;
+
+  // the parent id from the previous granularity
+  string parent_id = 16;
+
+  oneof content {
+    // the raw binary content of this document, which often represents the original document when comes into jina
+    bytes buffer = 3;
+
+    // the ndarray of the image/audio/video document
+    NdArrayProto blob = 12;
+
+    // a text document
+    string text = 13;
+  }
+
+  // list of the sub-documents of this document (recursive structure)
+  repeated DocumentProto chunks = 4;
+
+  // The weight of this document
+  float weight = 5;
+
+  // the matched documents on the same level (recursive structure)
+  repeated DocumentProto matches = 8;
+
+  // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
+  string uri = 9;
+
+  // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
+  string mime_type = 10;
+
+  // a structured data value, consisting of field which map to dynamically typed values.
+  google.protobuf.Struct tags = 11;
+
+  // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
+  repeated float location = 17;
+
+  // the offset of this doc in the previous granularity document
+  float offset = 18;
+
+  // the embedding `ndarray` of this document
+  NdArrayProto embedding = 19;
+
+  // Scores performed on the document, each element corresponds to a metric
+  map<string, NamedScoreProto> scores = 28;
+
+  // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
+  string modality = 21;
+
+  // Evaluations performed on the document, each element corresponds to a metric
+  map<string, NamedScoreProto> evaluations = 29;
+}
+
+message DocumentArrayProto {
+    repeated DocumentProto docs = 1; // a list of Documents
+}

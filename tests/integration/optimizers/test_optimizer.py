@@ -46,6 +46,7 @@ def document_generator(num_doc):
         yield doc, groundtruth_doc
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 def test_optimizer_search_space(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
         flow_yaml=os.path.join(cur_dir, "flow.yml"),
@@ -104,6 +105,7 @@ def test_optimizer_search_space(tmpdir, config):
     assert _raised
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 @pytest.mark.parametrize('sampler', ['TPESampler', 'GridSampler', 'RandomSampler'])
 def test_optimizer_single_flow(tmpdir, config, sampler):
     eval_flow_runner = SingleFlowRunner(
@@ -124,6 +126,7 @@ def test_optimizer_single_flow(tmpdir, config, sampler):
     validate_result(result, tmpdir)
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 def test_optimizer_multi_flow(tmpdir, config):
     multi_flow_runner = MultiFlowRunner(
         [
@@ -152,6 +155,7 @@ def test_optimizer_multi_flow(tmpdir, config):
     validate_result(result, tmpdir)
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 def test_yaml_multi_flow(tmpdir, config):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
     optimizer_yaml = f'''!FlowOptimizer
@@ -199,6 +203,7 @@ index'
     validate_result(result, tmpdir)
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 def test_yaml_single_flow(tmpdir, config):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
     optimizer_yaml = f'''!FlowOptimizer
@@ -236,6 +241,7 @@ with:
     validate_result(result, tmpdir)
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 @pytest.mark.parametrize('uses_output_dir', (True, False))
 def test_cli(tmpdir, config, uses_output_dir):
     print(os.environ['JINA_OPTIMIZER_PARAMETER_FILE'])
