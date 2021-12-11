@@ -1,11 +1,13 @@
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
+from docarray.proto.docarray_pb2 import DocumentProto
 from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
-from jina import DocumentArray
+from jina import DocumentArray, Document
 from jina.types.request import Request, Response
+from tests import random_docs
 
 
 @pytest.fixture(scope='function')
@@ -90,3 +92,77 @@ def test_as_response(req):
     assert isinstance(response, Response)
     assert isinstance(response, Request)
     assert response._pb_body == request._pb_body
+
+
+def test_request_docs_mutable_iterator():
+    """To test the weak reference work in docs"""
+    r = Request().as_typed_request('data')
+    for d in random_docs(10):
+        r.docs.append(d)
+
+    for idx, d in enumerate(r.docs):
+        assert isinstance(d, Document)
+        d.text = f'look I changed it! {idx}'
+
+    # iterate it again should see the change
+    doc_pointers = []
+    for idx, d in enumerate(r.docs):
+        assert isinstance(d, Document)
+        assert d.text == f'look I changed it! {idx}'
+        doc_pointers.append(d)
+
+    # pb-lize it should see the change
+    rpb = r.proto
+
+    for idx, d in enumerate(rpb.data.docs):
+        assert isinstance(d, DocumentProto)
+        assert d.text == f'look I changed it! {idx}'
+
+    # change again by following the pointers
+    for d in doc_pointers:
+        d.text = 'now i change it back'
+
+    # iterate it again should see the change
+    for idx, d in enumerate(rpb.data.docs):
+        assert isinstance(d, DocumentProto)
+        assert d.text == 'now i change it back'
+
+
+def test_request_docs_chunks_mutable_iterator():
+    """Test if weak reference work in nested docs"""
+    r = Request().as_typed_request('data')
+    for d in random_docs(10):
+        r.docs.append(d)
+
+    for d in r.docs:
+        assert isinstance(d, Document)
+        for idx, c in enumerate(d.chunks):
+            assert isinstance(d, Document)
+            c.text = f'look I changed it! {idx}'
+
+    # iterate it again should see the change
+    doc_pointers = []
+    for d in r.docs:
+        assert isinstance(d, Document)
+        for idx, c in enumerate(d.chunks):
+            assert c.text == f'look I changed it! {idx}'
+            doc_pointers.append(c)
+
+    # pb-lize it should see the change
+    rpb = r.proto
+
+    for d in rpb.data.docs:
+        assert isinstance(d, DocumentProto)
+        for idx, c in enumerate(d.chunks):
+            assert isinstance(c, DocumentProto)
+            assert c.text == f'look I changed it! {idx}'
+
+    # change again by following the pointers
+    for d in doc_pointers:
+        d.text = 'now i change it back'
+
+    # iterate it again should see the change
+    for d in rpb.data.docs:
+        assert isinstance(d, DocumentProto)
+        for c in d.chunks:
+            assert c.text == 'now i change it back'
