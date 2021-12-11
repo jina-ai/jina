@@ -172,8 +172,9 @@ class Document(AllMixins, BaseProtoView):
                 assert d.tags['hello'] == 'world'  # true
                 assert d.tags['good'] == 'bye'  # true
         """
-        super().__init__(obj, copy=copy)
         try:
+            super().__init__(obj, copy=copy)
+
             if self._pb_body is None and isinstance(obj, (dict, str)):
                 # note that not any dict can be parsed in this branch. As later we use Protobuf JSON parser, this
                 # dict must be a valid JSON. The next lines make sure the dict is a valid json.
@@ -221,11 +222,16 @@ class Document(AllMixins, BaseProtoView):
 
                         if _remainder2:
                             self._pb_body.tags.update({k: obj[k] for k in _remainder})
+
+            if self._pb_body is None and obj is not None:
+                raise ValueError
         except json_format.ParseError:
             # append everything to kwargs that is more powerful in setting attributes
             self._pb_body = self._PbMsg()
             if isinstance(obj, dict):
                 kwargs.update(obj)
+        except Exception as ex:
+            raise ValueError(f'Fail to construct Document from {obj!r}') from ex
 
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = uuid.uuid1().hex

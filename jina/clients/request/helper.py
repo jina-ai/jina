@@ -2,7 +2,7 @@
 from typing import Tuple
 
 from ...enums import DataInputType
-from ...excepts import BadDocType, BadRequestType
+from ...excepts import BadRequestType
 from ... import Document
 from ...types.request import Request
 
@@ -51,7 +51,7 @@ def _new_doc_from_data(
         try:
             d = Document(data, **kwargs)
             return d, DataInputType.DOCUMENT
-        except BadDocType:
+        except ValueError:
             # AUTO has a fallback, now reconsider it as content
             if data_type == DataInputType.AUTO:
                 return _build_doc_from_content()

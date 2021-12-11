@@ -10,7 +10,6 @@ from jina import Document, Flow
 from jina.clients.request import request_generator
 from jina.clients.request.helper import _new_doc_from_data
 from jina.enums import DataInputType
-from jina.excepts import BadDocType
 
 
 @pytest.mark.skipif(
@@ -45,10 +44,10 @@ def test_data_type_builder_doc(builder):
 def test_data_type_builder_doc_bad():
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
-    with pytest.raises(BadDocType):
+    with pytest.raises(ValueError):
         _new_doc_from_data(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
 
-    with pytest.raises(BadDocType):
+    with pytest.raises(ValueError):
         _new_doc_from_data(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
 
 

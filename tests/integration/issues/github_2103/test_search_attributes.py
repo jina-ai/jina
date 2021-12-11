@@ -7,7 +7,7 @@ from urllib import request
 
 from jina import Flow
 from jina.peapods.runtimes.gateway.http.models import _to_camel_case
-from jina.proto import jina_pb2
+from docarray.proto import docarray_pb2
 from jina import Document
 from jina import helper
 from jina import Executor, requests
@@ -18,7 +18,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 _document_fields = sorted(
     set(
         _to_camel_case(k)
-        for k in list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+        for k in list(docarray_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
     )
 )
 
