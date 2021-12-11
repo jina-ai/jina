@@ -2,7 +2,7 @@
 # the original code is licensed under Apache-2.0
 
 
-from jina.math.evaluation import (
+from docarray.math.evaluation import (
     hit_at_k,
     r_precision,
     precision_at_k,

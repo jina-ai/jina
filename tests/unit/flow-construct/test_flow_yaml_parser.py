@@ -11,7 +11,7 @@ from jina.jaml import JAML
 from jina.enums import GatewayProtocolType
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
-from jina.types.document.generators import from_ndarray
+from docarray.document.generators import from_ndarray
 
 cur_dir = Path(__file__).parent
 

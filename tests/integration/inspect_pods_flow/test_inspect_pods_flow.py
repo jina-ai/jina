@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from jina.types.score.map import NamedScoreMapping
+from docarray.simple import NamedScoreMap
 from jina import Flow, Executor, DocumentArray, requests
-from tests import random_docs, validate_callback
+from tests import random_docs
 
 
 class DummyEvaluator1(Executor):
@@ -152,8 +152,8 @@ def test_flow_returned_collect(protocol, grpc_data_requests):
         num_evaluations = 0
         scores = set()
         for doc in resp.data.docs:
-            num_evaluations += len(NamedScoreMapping(doc.evaluations))
-            scores.add(NamedScoreMapping(doc.evaluations)['evaluate'].value)
+            num_evaluations += len(NamedScoreMap(doc.evaluations))
+            scores.add(NamedScoreMap(doc.evaluations)['evaluate'].value)
         assert num_evaluations == 1
         assert 10.0 in scores
 
@@ -179,7 +179,7 @@ def test_flow_returned_collect(protocol, grpc_data_requests):
 def test_flow_not_returned(inspect, protocol, grpc_data_requests):
     def validate_func(resp):
         for doc in resp.data.docs:
-            assert len(NamedScoreMapping(doc.evaluations)) == 0
+            assert len(NamedScoreMap(doc.evaluations)) == 0
 
     f = (
         Flow(protocol=protocol, inspect=inspect, grpc_data_requests=grpc_data_requests)

@@ -4,7 +4,7 @@ from jina.peapods.runtimes.gateway.http.models import (
     PROTO_TO_PYDANTIC_MODELS,
     JinaRequestModel,
 )
-from jina.types.document import Document
+from jina import Document
 from tests import random_docs
 
 

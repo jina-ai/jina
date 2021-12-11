@@ -2,7 +2,7 @@ import pytest
 from google.protobuf.json_format import MessageToJson, Parse
 from jina import Document
 
-from jina.proto.jina_pb2 import DocumentProto
+from docarray.proto.docarray_pb2 import DocumentProto
 
 
 @pytest.fixture(scope='function')

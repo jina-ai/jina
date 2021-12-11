@@ -18,8 +18,8 @@ from ...logging.predefined import default_logger
 
 if TYPE_CHECKING:
     from ... import Document
-    from ...docarray.document import DocumentSourceType
-    from ...docarray.document.mixins.content import DocumentContentType
+    from docarray.document import DocumentSourceType
+    from docarray.document.mixins.content import DocumentContentType
     from ...types.request import Request
 
     SingletonDataType = Union[

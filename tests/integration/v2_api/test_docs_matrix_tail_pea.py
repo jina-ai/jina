@@ -1,7 +1,7 @@
 import pytest
 from collections import OrderedDict
 from jina import Document, DocumentArray, Executor, Flow, requests
-from jina.types.arrays.chunk import ChunkArray
+from docarray.array.chunk import ChunkArray
 
 
 class DummyExecutor(Executor):

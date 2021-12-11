@@ -15,7 +15,7 @@ from .....proto.jina_pb2 import (
     MessageProto,
     RequestProto,
 )
-from jina.docarray.proto.docarray_pb2 import (
+from docarray.proto.docarray_pb2 import (
     DenseNdArrayProto,
     NdArrayProto,
     SparseNdArrayProto,

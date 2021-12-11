@@ -3,9 +3,9 @@ import pytest
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist
 
-from jina.math.distance import cdist as jina_cdist
-from jina.math.distance import pdist as jina_pdist
-from jina.math.distance.numpy import (
+from docarray.math.distance import cdist as jina_cdist
+from docarray.math.distance import pdist as jina_pdist
+from docarray.math.distance.numpy import (
     cosine,
     sqeuclidean,
     sparse_cosine,

@@ -30,7 +30,7 @@ RequestSourceType = TypeVar(
 )
 
 if TYPE_CHECKING:
-    from ...docarray.simple import StructView
+    from docarray.simple import StructView
 
 
 class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
@@ -242,7 +242,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         :return: a Python dict view of the tags.
         """
         # if u get this u need to have it decompressed
-        from ...docarray.simple import StructView
+        from docarray.simple import StructView
 
         return StructView(self.proto.parameters)
 

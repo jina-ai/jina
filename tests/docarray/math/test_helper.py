@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sp
 
-from jina.math.helper import minmax_normalize, update_rows_x_mat_best
+from docarray.math.helper import minmax_normalize, update_rows_x_mat_best
 
 
 def test_minmax_normalization_1d():

@@ -2,9 +2,12 @@ import numpy as np
 import pytest
 import paddle
 
-from jina.math.distance.numpy import cosine as cosine_numpy, sqeuclidean as sqe_numpy
-from jina.math.distance.paddle import cosine as cosine_paddle
-from jina.math.distance.paddle import sqeuclidean as sqe_paddle
+from docarray.math.distance.numpy import (
+    cosine as cosine_numpy,
+    sqeuclidean as sqe_numpy,
+)
+from docarray.math.distance.paddle import cosine as cosine_paddle
+from docarray.math.distance.paddle import sqeuclidean as sqe_paddle
 
 
 @pytest.fixture
