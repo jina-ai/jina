@@ -164,7 +164,7 @@ d.pop('text', 'id', 'mime_type')
 
 ## Content 
 
-{attr}`~jina.Document.text`, {attr}`~jina.Document.blob`, and {attr}`~jina.Document.buffer` are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
+{attr}`~docarray.Document.text`, {attr}`~docarray.Document.blob`, and {attr}`~docarray.Document.buffer` are the three content attributes of a Document. They correspond to string-like data (e.g. for natural language), `ndarray`-like data (e.g. for image/audio/video data), and binary data for general purpose, respectively. Each Document can contain only one type of content.
 
 | Attribute | Accept type                                                                                                                                                                            | Use case |
 | --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
@@ -209,7 +209,7 @@ There is also a `doc.content` sugar getter/setter of the above non-empty field. 
 
 ### Load content from URI
 
-Often, you need to load data from a URI instead of assigning them directly in your code, {attr}`~jina.Document.uri` is the attribute you must learn. 
+Often, you need to load data from a URI instead of assigning them directly in your code, {attr}`~docarray.Document.uri` is the attribute you must learn. 
 
 After setting `.uri`, you can load data into `.text`/`.buffer`/`.blob` as follows.
 
@@ -290,7 +290,7 @@ You can convert a URI to a data URI using `doc.load_uri_to_datauri()`. This will
 
 Embedding is a multi-dimensional representation of a `Document` (often a `[1, D]` vector). It serves as a very important piece in the neural search. 
 
-Document has an attribute {attr}`~jina.Document.embedding` to contain the embedding information.
+Document has an attribute {attr}`~docarray.Document.embedding` to contain the embedding information.
 
 Like `.blob`, you can assign it with a Python (nested) List/Tuple, Numpy `ndarray`, SciPy sparse matrix (`spmatrix`), TensorFlow dense and sparse tensor, PyTorch dense and sparse tensor, or PaddlePaddle dense tensor.
 
@@ -448,7 +448,7 @@ root_document = Document(
 
 ## Tags
 
-`Document` contains the {attr}`~jina.Document.tags` attribute that can hold a map-like structure that can map arbitrary values. 
+`Document` contains the {attr}`~docarray.Document.tags` attribute that can hold a map-like structure that can map arbitrary values. 
 In practice, you can store meta information in `tags`.
 
 ```python

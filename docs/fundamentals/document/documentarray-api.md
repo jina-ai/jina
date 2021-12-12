@@ -11,7 +11,7 @@ A {class}`~jina.types.arrays.document.DocumentArray` is a list of `Document` obj
 a `DocumentArray` like a Python `list`. It implements all Python List interface. 
 
 ```{hint}
-We also provide a memory-efficient version of `DocumentArray` coined as {class}`~jina.DocumentArrayMemmap`. It shares *almost* the same API as `DocumentArray`, which means you can easily use it as a drop-in replacement when your data is big. You can {ref}`can find more about here<documentarraymemmap-api>`.
+We also provide a memory-efficient version of `DocumentArray` coined as {class}`~docarray.DocumentArrayMemmap`. It shares *almost* the same API as `DocumentArray`, which means you can easily use it as a drop-in replacement when your data is big. You can {ref}`can find more about here<documentarraymemmap-api>`.
 ```
 
 ## Construct
@@ -479,7 +479,7 @@ match emb =   (0, 0)	1.0
 
 ### Keep only ID
 
-Default `A.match(B)` will copy the top-K matched Documents from B to `A.matches`. When these matches are big, copying them can be time-consuming. In this case, one can leverage `.match(..., only_id=True)` to keep only {attr}`~jina.Document.id`:
+Default `A.match(B)` will copy the top-K matched Documents from B to `A.matches`. When these matches are big, copying them can be time-consuming. In this case, one can leverage `.match(..., only_id=True)` to keep only {attr}`~docarray.Document.id`:
 
 ```python
 from jina import DocumentArray
@@ -673,7 +673,7 @@ Now we should have the average Precision@10 close to 0.5.
 0.5399999999999999
 ```
 
-Note that this value is an average number over all Documents of `da2`. If you want to look at the individual evaluation, you can check {attr}`~jina.Document.evaluations` attribute, e.g.
+Note that this value is an average number over all Documents of `da2`. If you want to look at the individual evaluation, you can check {attr}`~docarray.Document.evaluations` attribute, e.g.
 
 ```python
 for d in da2:
@@ -693,7 +693,7 @@ for d in da2:
 0.30000001192092896
 ```
 
-Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~jina.Document.id`. You can specify your own hash function.
+Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~docarray.Document.id`. You can specify your own hash function.
 
 (traverse-doc)=
 ## Traverse nested elements

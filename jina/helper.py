@@ -831,6 +831,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         __uptime__,
         __unset_msg__,
     )
+    from docarray import __version__ as __docarray_version__
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
     from jina.logging.predefined import default_logger
@@ -840,6 +841,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
         info = {
             'jina': __version__,
+            'docarray': __docarray_version__,
             'jina-proto': __proto_version__,
             'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'libzmq': zmq.zmq_version(),

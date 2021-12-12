@@ -43,7 +43,7 @@ d = Document(uri='apple.png')
 
 ## Parallelization
 
-Fluent interface is super useful when processing a large {class}`~jina.DocumentArray` or {class}`~jina.DocumentArrayMemmap`. One can leverage {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. 
+Fluent interface is super useful when processing a large {class}`~docarray.DocumentArray` or {class}`~docarray.DocumentArrayMemmap`. One can leverage {meth}`~jina.types.arrays.mixins.parallel.ParallelMixin.map` to speed up things quite a lot. 
 
 The following example shows the time difference on preprocessing ~6000 image Documents.
 
