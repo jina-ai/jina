@@ -7,7 +7,7 @@
 
 set -ex
 
-INIT_FILE='docarray/__init__.py'
+INIT_FILE='../../docarray/__init__.py'
 VER_TAG='__version__ = '
 
 function escape_slashes {
