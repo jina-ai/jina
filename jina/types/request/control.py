@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 
 from . import Request
 from ...helper import typename, random_identity
@@ -12,14 +12,15 @@ class ControlRequest(Request):
     :class:`ControlRequest` is one of the **primitive data type** in Jina.
 
     It offers a Pythonic interface to allow users access and manipulate
-    :class:`jina.jina_pb2.RequestProto` object without working with Protobuf itself.
+    :class:`jina.jina_pb2.ControlRequestProto` object without working with Protobuf itself.
 
-    A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
+    A container for serialized :class:`jina_pb2.ControlRequestProto` that only triggers deserialization
     and decompression when receives the first read access to its member.
 
     It overrides :meth:`__getattr__` to provide the same get/set interface as an
-    :class:`jina_pb2.RequestProto` object.
+    :class:`jina_pb2.ControlRequestProtoProto` object.
 
+    :param command: the command for this request, can be STATUS, ACTIVATE or DEACTIVATE
     :param request: The request.
     """
 

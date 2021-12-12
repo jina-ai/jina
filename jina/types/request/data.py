@@ -24,14 +24,14 @@ class DataRequest(Request):
 
         @property
         def docs(self) -> 'DocumentArray':
-            """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
             return DocumentArray(self._content.docs)
 
         @property
         def groundtruths(self) -> 'DocumentArray':
-            """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
             return DocumentArray(self._content.groundtruths)
@@ -40,13 +40,13 @@ class DataRequest(Request):
     :class:`DataRequest` is one of the **primitive data type** in Jina.
 
     It offers a Pythonic interface to allow users access and manipulate
-    :class:`jina.jina_pb2.RequestProto` object without working with Protobuf itself.
+    :class:`jina.jina_pb2.DataRequestProto` object without working with Protobuf itself.
 
-    A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
+    A container for serialized :class:`jina_pb2.DataRequestProto` that only triggers deserialization
     and decompression when receives the first read access to its member.
 
     It overrides :meth:`__getattr__` to provide the same get/set interface as an
-    :class:`jina_pb2.RequestProto` object.
+    :class:`jina_pb2.DataRequestProto` object.
 
     :param request: The request.
     """
@@ -90,29 +90,30 @@ class DataRequest(Request):
 
     @property
     def docs(self) -> 'DocumentArray':
-        """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+        """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
         .. # noqa: DAR201"""
         return DocumentArray(self.proto.data.docs)
 
     @property
     def groundtruths(self) -> 'DocumentArray':
-        """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+        """Get the :class: `DocumentArray` with sequence `data.groundtruths` as content.
 
         .. # noqa: DAR201"""
         return DocumentArray(self.proto.data.groundtruths)
 
     @property
     def data(self) -> 'DataRequest._DataContent':
-        """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+        """Get the data contaned in this data request
 
-        .. # noqa: DAR201"""
+        :return: the data content as an instance of _DataContent wrapping docs and groundtruths
+        """
         return DataRequest._DataContent(self.proto.data)
 
     @property
     def parameters(self) -> StructView:
-        """Return the `tags` field of this Document as a Python dict
-        :return: a Python dict view of the tags.
+        """Return the `parameters` field of this DataRequest as a Python dict
+        :return: a Python dict view of the parameters.
         """
         # if u get this u need to have it decompressed
         return StructView(self.proto.parameters)

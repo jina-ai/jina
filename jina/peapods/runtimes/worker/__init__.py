@@ -12,7 +12,6 @@ from ..request_handlers.data_request_handler import (
     DataRequestHandler,
 )
 from ....proto import jina_pb2_grpc
-from ....proto.jina_pb2 import ControlRequestProto
 from ....types.request.control import ControlRequest
 from ....types.request.data import DataRequest
 
@@ -78,11 +77,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def process_data(self, requests: List[DataRequest], *args) -> DataRequest:
         """
-        Process they received message and return the result as a new message
+        Process the received requests and return the result as a new request
 
         :param requests: the data request to process
         :param args: additional arguments in the grpc call, ignored
-        :returns: the response message
+        :returns: the response request
         """
         try:
             if self.logger.debug_enabled:
@@ -102,11 +101,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """
-        Process they received message and return the result as a new message
+        Process the received control request and return the same request
 
-        :param request: the data request to process
+        :param request: the control request to process
         :param args: additional arguments in the grpc call, ignored
-        :returns: the response message
+        :returns: the input request
         """
         try:
             if self.logger.debug_enabled:

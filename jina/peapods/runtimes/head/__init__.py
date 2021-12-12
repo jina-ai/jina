@@ -117,16 +117,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         await self.async_cancel()
         await self.connection_pool.close()
 
-    async def process_data(self, request: DataRequest, *args) -> DataRequest:
+    async def process_data(self, requests: List[DataRequest], *args) -> DataRequest:
         """
-        Process they received message and return the result as a new message
+        Process the received data request and return the result as a new request
 
-        :param request: the data request to process
+        :param requests: the data requests to process
         :param args: additional arguments in the grpc call, ignored
-        :returns: the response message
+        :returns: the response request
         """
         try:
-            return await self._handle_data_request(request)
+            return await self._handle_data_request(requests)
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
@@ -138,11 +138,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """
-        Process the received message and return the result as a new message
+        Process the received control request and return the input request
 
         :param request: the data request to process
         :param args: additional arguments in the grpc call, ignored
-        :returns: the response message
+        :returns: the input request
         """
         try:
             if self.logger.debug_enabled:

@@ -226,7 +226,7 @@ message RelatedEntity {
 
 
 /**
- * Represents a ControlRequestProto
+ * Represents a ControlRequest
  */
 message ControlRequestProto {
 
@@ -245,7 +245,7 @@ message ControlRequestProto {
 
 
 /**
- * Represents a DataRequestProto
+ * Represents a DataRequest
  */
 message DataRequestProto {
 
@@ -264,7 +264,7 @@ message DataRequestProto {
 }
 
 /**
- * Represents a list of Messages
+ * Represents a list of data requests
  * This should be replaced by streaming
  */
 message DataRequestListProto {
@@ -284,7 +284,7 @@ service JinaControlRequestRPC {
  * jina gRPC service for DataRequests.
  */
 service JinaDataRequestRPC {
-    // Used for passing DataRequests to the Gateway and Executors
+    // Used for passing DataRequests to the Executors
     rpc process_data (DataRequestListProto) returns (DataRequestProto) {
     }
 }
