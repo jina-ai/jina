@@ -45,9 +45,9 @@ def test_tag_update():
         d1 = {"data": [{"id": "1", "prop1": "val"}]}
         d2 = {"data": [{"id": "2", "prop2": "val"}]}
         r1 = req.post(f'http://localhost:{PORT_EXPOSE}/index', json=d1)
-        assert r1.json()['data'][0]['tags'] == {'prop1': 'val'}
+        assert r1.json()['data']['docs'][0]['tags'] == {'prop1': 'val'}
         r2 = req.post(f'http://localhost:{PORT_EXPOSE}/index', json=d2)
-        assert r2.json()['data'][0]['tags'] == {'prop2': 'val'}
+        assert r2.json()['data']['docs'][0]['tags'] == {'prop2': 'val'}
 
 
 @pytest.fixture

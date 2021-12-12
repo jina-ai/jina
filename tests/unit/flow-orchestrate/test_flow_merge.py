@@ -53,7 +53,7 @@ def test_this_will_fail(protocol):
     validate(results[0])
 
 
-@pytest.mark.timeout(1800)
+@pytest.mark.timeout(180)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_this_should_work(protocol):
     f = (

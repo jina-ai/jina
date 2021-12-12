@@ -70,7 +70,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
         inputs=[doc for doc in docs[:nr_search]], return_results=True
     )
-    assert r[0].docs[0].matches is None or len(r[0].docs[0].matches) == 0
+    assert r[0].data.docs[0].matches is None or len(r[0].data.docs[0].matches) == 0
 
     # index on DBMS flow
     Client(host=HOST, port=REST_PORT_DBMS, protocol='http').index(
@@ -102,7 +102,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
         return_results=True,
         parameters={'top_k': 10},
     )
-    for doc in r[0].docs:
+    for doc in r[0].data.docs:
         assert len(doc.matches) == 10
 
     assert client.flows.delete(dbms_flow_id)

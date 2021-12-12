@@ -167,7 +167,7 @@ def test_gateway_pod(docker_images, k8s_disable_connection_pool):
                 )
 
                 assert len(response[0].docs) == 1
-                assert response[0].docs[0].text == '0'
+                assert response[0].data.docs[0].text == '0'
 
 
 def _create_test_data_message():

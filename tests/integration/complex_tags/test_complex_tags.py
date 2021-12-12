@@ -38,7 +38,7 @@ def executor_class():
 
 def test_send_complex_document(docs, executor_class, mocker):
     def validate(resp):
-        doc = resp.data.docs[0]
+        doc = resp.docs[0]
         assert doc.tags == EXPECTED_TAGS
 
     mock = mocker.Mock()

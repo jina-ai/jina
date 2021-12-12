@@ -93,14 +93,14 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         time.sleep(0.5)
         r = requests.post(
             f'http://localhost:{flow_with_http.port_expose}/index',
-            json={'docs': [test_img_1, test_img_2]},
+            json={'data': [test_img_1, test_img_2]},
         )
 
         assert r.status_code == 200
         resp = r.json()
-        assert 'docs' in resp
-        assert len(resp['docs']) == 2
-        assert resp['docs'][0]['text'] == test_img_1
+        assert 'data' in resp
+        assert len(resp['data']['docs']) == 2
+        assert resp['data']['docs'][0]['text'] == test_img_1
 
 
 class MimeExec(Executor):
@@ -117,7 +117,7 @@ def test_mime_type(protocol):
     f = Flow(protocol=protocol).add(uses=MimeExec)
 
     def validate_mime_type(req):
-        for d in req.docs:
+        for d in req.data.docs:
             assert d.mime_type == 'text/x-python'
 
     with f:

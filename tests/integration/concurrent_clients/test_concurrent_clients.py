@@ -23,7 +23,7 @@ class MyExecutor(Executor):
 def test_concurrent_clients(concurrent, protocal, shards, polling, prefetch, reraise):
     def pong(peer_hash, resp: Response):
         with reraise:
-            for d in resp.data.docs:
+            for d in resp.docs:
                 assert d.text == peer_hash
 
     def peer_client(port, protocal, peer_hash):

@@ -23,7 +23,7 @@ def test_func_simple_routing():
             return_results=True,
         )
         assert results[0].header.status.code == 0
-        assert results[0].docs[0].tags['hello'] == 'world'
+        assert results[0].data.docs[0].tags['hello'] == 'world'
 
     with f:
         results = f.post(
@@ -221,7 +221,7 @@ def test_target_peapod_with_one_pathways():
             return_results=True,
             target_peapod='my_target',
         )
-        assert len(results[0].docs) == 1
+        assert len(results[0].data.docs) == 1
 
 
 def test_target_peapod_with_two_pathways():
@@ -233,7 +233,7 @@ def test_target_peapod_with_two_pathways():
             return_results=True,
             target_peapod='my_target',
         )
-        assert len(results[0].docs) == 1
+        assert len(results[0].data.docs) == 1
 
 
 def test_target_peapod_with_two_pathways_one_skip():
@@ -245,7 +245,7 @@ def test_target_peapod_with_two_pathways_one_skip():
             return_results=True,
             target_peapod='my_target',
         )
-        assert len(results[0].docs) == 1
+        assert len(results[0].data.docs) == 1
 
 
 def test_target_peapod_with_shards():
@@ -257,4 +257,4 @@ def test_target_peapod_with_shards():
             return_results=True,
             target_peapod='my_target',
         )
-        assert len(results[0].docs) == 1
+        assert len(results[0].data.docs) == 1

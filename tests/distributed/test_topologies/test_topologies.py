@@ -205,7 +205,7 @@ def test_remote_workspace_value():
     ).post(on='/', inputs=[Document()], show_progress=True, return_results=True)
     assert (
         response[0]
-        .docs[0]
+        .data.docs[0]
         .text.startswith(f'{__partial_workspace__}/WorkspaceValidator/0')
     )
     assert client.flows.delete(flow_id)

@@ -34,12 +34,12 @@ def test_cache_validate_remote_flow():
     with RemoteFlow(workspace_id) as response:
         # 1st Flow in remote workspace should download the file.
         # hence `exists` should be False
-        assert not response[0].docs[0].tags['exists']
+        assert not response[0].data.docs[0].tags['exists']
 
     with RemoteFlow(workspace_id) as response:
         # 2nd Flow in remote workspace should be able to access the file.
         # hence `exists` should be True.
-        assert response[0].docs[0].tags['exists']
+        assert response[0].data.docs[0].tags['exists']
 
     new_workspace_id = client.workspaces.create(
         paths=[
@@ -51,7 +51,7 @@ def test_cache_validate_remote_flow():
     with RemoteFlow(new_workspace_id) as response:
         # 1st Flow in a new workspace shouldn't be able to access the file.
         # hence `exists` should be False
-        assert not response[0].docs[0].tags['exists']
+        assert not response[0].data.docs[0].tags['exists']
 
 
 def test_cache_validate_remote_executor():
@@ -70,7 +70,7 @@ def test_cache_validate_remote_executor():
         response = f.post(
             on='/', inputs=[Document()], show_progress=True, return_results=True
         )
-        assert not response[0].docs[0].tags['exists']
+        assert not response[0].data.docs[0].tags['exists']
 
     # 2nd Executor in remote workspace should be able to access the file.
     f = Flow().add(
@@ -84,4 +84,4 @@ def test_cache_validate_remote_executor():
         response = f.post(
             on='/', inputs=[Document()], show_progress=True, return_results=True
         )
-        assert response[0].docs[0].tags['exists']
+        assert response[0].data.docs[0].tags['exists']
