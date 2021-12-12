@@ -21,3 +21,13 @@ Jina already contains the latest `docarray`. If you have installed `jina`, then 
 
 
 ## [Documentation](https://docs.jina.ai/fundamentals/document/)
+
+All APIs can be used, just change the namespace:
+
+```diff
+- from jina import Document, DocumentArray
++ from docarray import Document, DocumentArray
+
+d = Document()
+da = DocumentArray.empty(10)
+```
