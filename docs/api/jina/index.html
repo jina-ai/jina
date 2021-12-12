@@ -7,10 +7,10 @@
   <meta property="og:title" content="jina package" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/jina.html" />
-  <meta property="og:site_name" content="Jina 2.5.6 Documentation" />
+  <meta property="og:site_name" content="Jina 2.6.0 Documentation" />
   <meta property="og:description" content="Subpackages: jina.clients package- Subpackages- jina.clients.base package- Submodules, Module contents., jina.clients.request package- Submodules, Module contents.., Submodules- jina.clients.grpc module, jina.clients.helper module, jina.clients.http module, jina.clients.mixin module, jina.clients..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  <meta property="og:image:alt" content="Jina 2.5.6 Documentation" />
+  <meta property="og:image:alt" content="Jina 2.6.0 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -28,10 +28,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients package" href="../jina.clients/" /><link rel="prev" title="Indexers Benchmark" href="../../advanced/experimental/indexers-benchmark/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients package" href="../jina.clients/" /><link rel="prev" title="Python API" href="../" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.3.1, furo 2021.10.09"/>
-        <title>jina package - Jina 2.5.6 documentation</title>
+        <title>jina package - Jina 2.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -171,7 +171,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 2.5.6 documentation</div>
+                <div class="brand">Jina 2.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -334,316 +334,389 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Python API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.clients.request.helper/">jina.clients.request.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/">jina.clients.http module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.http/">jina.clients.http module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.executors.decorators/">jina.executors.decorators module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.executors.metas/">jina.executors.metas module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.executors.decorators/">jina.executors.decorators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.executors.metas/">jina.executors.metas module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.flow.asyncio/">jina.flow.asyncio module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.flow.base/">jina.flow.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.flow.builder/">jina.flow.builder module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.flow.asyncio/">jina.flow.asyncio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.flow.base/">jina.flow.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.flow.builder/">jina.flow.builder module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fork/">jina.helloworld.fork module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/">jina.jaml.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.helper/">jina.jaml.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.logging.formatter/">jina.logging.formatter module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.logging.logger/">jina.logging.logger module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.logging.predefined/">jina.logging.predefined module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.logging.profile/">jina.logging.profile module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.logging.predefined/">jina.logging.predefined module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.math.distance/">jina.math.distance package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.math.distance.numpy/">jina.math.distance.numpy module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.math.distance.paddle/">jina.math.distance.paddle module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.math.distance.tensorflow/">jina.math.distance.tensorflow module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.math.distance.torch/">jina.math.distance.torch module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.evaluation/">jina.math.evaluation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.helper/">jina.math.helper module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.parsers.peapods.runtimes.zed/">jina.parsers.peapods.runtimes.zed module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.parsers.peapods.runtimes.zmq/">jina.parsers.peapods.runtimes.zmq module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.base/">jina.parsers.peapods.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.pea/">jina.parsers.peapods.pea module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.pod/">jina.parsers.peapods.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.zed/">jina.parsers.peapods.runtimes.zed module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.zmq/">jina.parsers.peapods.runtimes.zmq module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.optimizer/">jina.parsers.optimizer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.ping/">jina.parsers.ping module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.peapods.base/">jina.parsers.peapods.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.peapods.pea/">jina.parsers.peapods.pea module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.peapods.pod/">jina.parsers.peapods.pod module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.grpc/">jina.peapods.grpc package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.client/">jina.parsers.client module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.export_api/">jina.parsers.export_api module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.flow/">jina.parsers.flow module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.helper/">jina.parsers.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.optimizer/">jina.parsers.optimizer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.ping/">jina.parsers.ping module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_client/">jina.peapods.pods.k8slib.kubernetes_client module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_deployment/">jina.peapods.pods.k8slib.kubernetes_deployment module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_tools/">jina.peapods.pods.k8slib.kubernetes_tools module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.grpc/">jina.peapods.grpc package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.k8s/">jina.peapods.pods.k8s module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_client/">jina.peapods.pods.k8slib.kubernetes_client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_deployment/">jina.peapods.pods.k8slib.kubernetes_deployment module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.pods.k8slib.kubernetes_tools/">jina.peapods.pods.k8slib.kubernetes_tools module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.container.helper/">jina.peapods.runtimes.container.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.pods.k8s/">jina.peapods.pods.k8s module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.gateway.grpc/">jina.peapods.runtimes.gateway.grpc package</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../jina.peapods.runtimes.gateway.http.app/">jina.peapods.runtimes.gateway.http.app module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../jina.peapods.runtimes.gateway.http.models/">jina.peapods.runtimes.gateway.http.models module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.container.helper/">jina.peapods.runtimes.container.helper module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.gateway.grpc/">jina.peapods.runtimes.gateway.grpc package</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.gateway.http.app/">jina.peapods.runtimes.gateway.http.app module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.gateway.http.models/">jina.peapods.runtimes.gateway.http.models module</a></li>
-</ul>
-</li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.gateway.websocket.app/">jina.peapods.runtimes.gateway.websocket.app module</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../jina.peapods.runtimes.gateway.websocket.app/">jina.peapods.runtimes.gateway.websocket.app module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.networking/">jina.peapods.networking module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/">jina.proto.serializer module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" role="switch" type="checkbox"/><label for="toctree-checkbox-55"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.executor/">jina.schemas.executor module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.flow/">jina.schemas.flow module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.helper/">jina.schemas.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.meta/">jina.schemas.meta module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.pod/">jina.schemas.pod module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.schemas.meta/">jina.schemas.meta module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" role="switch" type="checkbox"/><label for="toctree-checkbox-56"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.arrays.memmap/">jina.types.arrays.memmap package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.memmap.bpm/">jina.types.arrays.memmap.bpm module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" role="switch" type="checkbox"/><label for="toctree-checkbox-55"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" role="switch" type="checkbox"/><label for="toctree-checkbox-56"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.arrays.mixins/">jina.types.arrays.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.types.arrays.mixins.io/">jina.types.arrays.mixins.io package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.binary/">jina.types.arrays.mixins.io.binary module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.common/">jina.types.arrays.mixins.io.common module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.csv/">jina.types.arrays.mixins.io.csv module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.dataframe/">jina.types.arrays.mixins.io.dataframe module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.from_gen/">jina.types.arrays.mixins.io.from_gen module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.json/">jina.types.arrays.mixins.io.json module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../jina.types.arrays.mixins.io.pushpull/">jina.types.arrays.mixins.io.pushpull module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.content/">jina.types.arrays.mixins.content module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.embed/">jina.types.arrays.mixins.embed module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.empty/">jina.types.arrays.mixins.empty module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.evaluation/">jina.types.arrays.mixins.evaluation module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.getattr/">jina.types.arrays.mixins.getattr module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.group/">jina.types.arrays.mixins.group module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.magic/">jina.types.arrays.mixins.magic module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.match/">jina.types.arrays.mixins.match module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.parallel/">jina.types.arrays.mixins.parallel module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.plot/">jina.types.arrays.mixins.plot module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.reduce/">jina.types.arrays.mixins.reduce module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.sample/">jina.types.arrays.mixins.sample module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.text/">jina.types.arrays.mixins.text module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.arrays.mixins.traverse/">jina.types.arrays.mixins.traverse module</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.match/">jina.types.arrays.match module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.types/">jina.types.arrays.types module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.document.mixins/">jina.types.document.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.attribute/">jina.types.document.mixins.attribute module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.audio/">jina.types.document.mixins.audio module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.buffer/">jina.types.document.mixins.buffer module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.content/">jina.types.document.mixins.content module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.convert/">jina.types.document.mixins.convert module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.dump/">jina.types.document.mixins.dump module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.helper/">jina.types.document.mixins.helper module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.image/">jina.types.document.mixins.image module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.mesh/">jina.types.document.mixins.mesh module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.plot/">jina.types.document.mixins.plot module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.sugar/">jina.types.document.mixins.sugar module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.text/">jina.types.document.mixins.text module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.version/">jina.types.document.mixins.version module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.document.mixins.video/">jina.types.document.mixins.video module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.checker/">jina.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.enums/">jina.enums module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.helper/">jina.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.generators/">jina.types.document.generators module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.graph/">jina.types.document.graph module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.helper/">jina.types.document.helper module</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../docarray/">docarray package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../docarray.array/">docarray.array package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../docarray.array.mixins/">docarray.array.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../docarray.array.mixins.io/">docarray.array.mixins.io package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.binary/">docarray.array.mixins.io.binary module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.common/">docarray.array.mixins.io.common module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.csv/">docarray.array.mixins.io.csv module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.dataframe/">docarray.array.mixins.io.dataframe module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.from_gen/">docarray.array.mixins.io.from_gen module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.json/">docarray.array.mixins.io.json module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../docarray.array.mixins.io.pushpull/">docarray.array.mixins.io.pushpull module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.message.common/">jina.types.message.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.content/">docarray.array.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.embed/">docarray.array.mixins.embed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.empty/">docarray.array.mixins.empty module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.evaluation/">docarray.array.mixins.evaluation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.getattr/">docarray.array.mixins.getattr module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.group/">docarray.array.mixins.group module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.magic/">docarray.array.mixins.magic module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.match/">docarray.array.mixins.match module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.parallel/">docarray.array.mixins.parallel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.plot/">docarray.array.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.reduce/">docarray.array.mixins.reduce module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.sample/">docarray.array.mixins.sample module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.text/">docarray.array.mixins.text module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.array.mixins.traverse/">docarray.array.mixins.traverse module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" role="switch" type="checkbox"/><label for="toctree-checkbox-64"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.array.chunk/">docarray.array.chunk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.array.document/">docarray.array.document module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.array.match/">docarray.array.match module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.array.types/">docarray.array.types module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" role="switch" type="checkbox"/><label for="toctree-checkbox-65"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.routing.table/">jina.types.routing.table module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../docarray.document/">docarray.document package</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../docarray.document.mixins/">docarray.document.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" role="switch" type="checkbox"/><label for="toctree-checkbox-64"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.attribute/">docarray.document.mixins.attribute module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.audio/">docarray.document.mixins.audio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.buffer/">docarray.document.mixins.buffer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.content/">docarray.document.mixins.content module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.convert/">docarray.document.mixins.convert module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.dump/">docarray.document.mixins.dump module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.helper/">docarray.document.mixins.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.image/">docarray.document.mixins.image module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.mesh/">docarray.document.mixins.mesh module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.plot/">docarray.document.mixins.plot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.sugar/">docarray.document.mixins.sugar module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.text/">docarray.document.mixins.text module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.version/">docarray.document.mixins.version module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.document.mixins.video/">docarray.document.mixins.video module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" role="switch" type="checkbox"/><label for="toctree-checkbox-66"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.document.generators/">docarray.document.generators module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.list/">jina.types.list module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.struct/">jina.types.struct module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../docarray.math/">docarray.math package</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" role="switch" type="checkbox"/><label for="toctree-checkbox-65"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../docarray.math.distance/">docarray.math.distance package</a><input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" role="switch" type="checkbox"/><label for="toctree-checkbox-66"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.math.distance.numpy/">docarray.math.distance.numpy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.math.distance.paddle/">docarray.math.distance.paddle module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.math.distance.tensorflow/">docarray.math.distance.tensorflow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../docarray.math.distance.torch/">docarray.math.distance.torch module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.checker/">jina.checker module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.enums/">jina.enums module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.excepts/">jina.excepts module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.helper/">jina.helper module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.importer/">jina.importer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.math.dimensionality_reduction/">docarray.math.dimensionality_reduction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.math.evaluation/">docarray.math.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.math.helper/">docarray.math.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../docarray.memmap/">docarray.memmap package</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.memmap.bpm/">docarray.memmap.bpm module</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../docarray.ndarray/">docarray.ndarray package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../docarray.proto/">docarray.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-68" name="toctree-checkbox-68" role="switch" type="checkbox"/><label for="toctree-checkbox-68"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.proto.docarray_pb2/">docarray.proto.docarray_pb2 module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../docarray.simple/">docarray.simple package</a><input class="toctree-checkbox" id="toctree-checkbox-69" name="toctree-checkbox-69" role="switch" type="checkbox"/><label for="toctree-checkbox-69"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.simple.list/">docarray.simple.list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.simple.map/">docarray.simple.map module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.simple.score/">docarray.simple.score module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../docarray.simple.struct/">docarray.simple.struct module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../docarray.base/">docarray.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docarray.helper/">docarray.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../daemon/">daemon package</a><input class="toctree-checkbox" id="toctree-checkbox-70" name="toctree-checkbox-70" role="switch" type="checkbox"/><label for="toctree-checkbox-70"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../daemon.api/">daemon.api package</a><input class="toctree-checkbox" id="toctree-checkbox-71" name="toctree-checkbox-71" role="switch" type="checkbox"/><label for="toctree-checkbox-71"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../daemon.api.endpoints/">daemon.api.endpoints package</a><input class="toctree-checkbox" id="toctree-checkbox-72" name="toctree-checkbox-72" role="switch" type="checkbox"/><label for="toctree-checkbox-72"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><input class="toctree-checkbox" id="toctree-checkbox-73" name="toctree-checkbox-73" role="switch" type="checkbox"/><label for="toctree-checkbox-73"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../daemon.api.endpoints.partial.flow/">daemon.api.endpoints.partial.flow module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../daemon.api.endpoints.partial.pea/">daemon.api.endpoints.partial.pea module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../daemon.api.endpoints.partial.pod/">daemon.api.endpoints.partial.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../daemon.api.endpoints.flows/">daemon.api.endpoints.flows module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../daemon.api.endpoints.peas/">daemon.api.endpoints.peas module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../daemon.api.endpoints.pods/">daemon.api.endpoints.pods module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../daemon.api.endpoints.workspaces/">daemon.api.endpoints.workspaces module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.api.dependencies/">daemon.api.dependencies module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../daemon.clients/">daemon.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-74" name="toctree-checkbox-74" role="switch" type="checkbox"/><label for="toctree-checkbox-74"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.clients.base/">daemon.clients.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.clients.flows/">daemon.clients.flows module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.clients.mixin/">daemon.clients.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.clients.peas/">daemon.clients.peas module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.clients.pods/">daemon.clients.pods module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.clients.workspaces/">daemon.clients.workspaces module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../daemon.models/">daemon.models package</a><input class="toctree-checkbox" id="toctree-checkbox-75" name="toctree-checkbox-75" role="switch" type="checkbox"/><label for="toctree-checkbox-75"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.base/">daemon.models.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.containers/">daemon.models.containers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.custom/">daemon.models.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.enums/">daemon.models.enums module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.id/">daemon.models.id module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.partial/">daemon.models.partial module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.ports/">daemon.models.ports module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.models.workspaces/">daemon.models.workspaces module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../daemon.stores/">daemon.stores package</a><input class="toctree-checkbox" id="toctree-checkbox-76" name="toctree-checkbox-76" role="switch" type="checkbox"/><label for="toctree-checkbox-76"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.base/">daemon.stores.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.containers/">daemon.stores.containers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.flows/">daemon.stores.flows module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.mixin/">daemon.stores.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.partial/">daemon.stores.partial module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.peas/">daemon.stores.peas module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.pods/">daemon.stores.pods module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.stores.workspaces/">daemon.stores.workspaces module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.dockerize/">daemon.dockerize module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.excepts/">daemon.excepts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.files/">daemon.files module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.helper/">daemon.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.parser/">daemon.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.tasks/">daemon.tasks module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-77" name="toctree-checkbox-77" role="switch" type="checkbox"/><label for="toctree-checkbox-77"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cli.api/">cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.autocomplete/">cli.autocomplete module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.lookup/">cli.lookup module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/">Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/">Protocol Documentation</a></li>
 </ul>
 
     <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
@@ -810,24 +883,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../jina.logging/#module-jina.logging">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.math/">jina.math package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina.math/#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.distance/">jina.math.distance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.math.distance/#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.math.distance/#module-jina.math.distance">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.math/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.evaluation/">jina.math.evaluation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.math.helper/">jina.math.helper module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.math/#module-jina.math">Module contents</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.optimizers/">jina.optimizers package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.optimizers/#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
@@ -933,25 +988,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.types/">jina.types package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.types/#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays/#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays/#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays/#module-jina.types.arrays">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document/#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document/#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.document/#module-jina.types.document">Module contents</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.message/#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.message/#module-jina.types.message">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.ndarray/#module-jina.types.ndarray">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><ul>
@@ -964,17 +1003,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.routing/#module-jina.types.routing">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.score/#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.score/#module-jina.types.score">Module contents</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.types/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.list/">jina.types.list module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.struct/">jina.types.struct module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.types/#module-jina.types">Module contents</a></li>
@@ -1060,11 +1092,11 @@ can use this feature to schedule Jina <code class="docutils literal notranslate"
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.Document">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.Document" title="jina.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.Document" title="jina.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Document" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.document.mixins/#jina.types.document.mixins.AllMixins" title="jina.types.document.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.document.mixins.AllMixins</span></code></a>, <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjacency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.Document" title="jina.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.Document" title="jina.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../docarray.simple.struct/#docarray.simple.struct.StructView" title="docarray.simple.struct.StructView"><span class="pre">docarray.simple.struct.StructView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/document/#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../docarray.document.mixins/#docarray.document.mixins.AllMixins" title="docarray.document.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.document.mixins.AllMixins</span></code></a>, <a class="reference internal" href="../docarray.base/#docarray.base.BaseProtoView" title="docarray.base.BaseProtoView"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.base.BaseProtoView</span></code></a></p>
 <p><a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is one of the <strong>primitive data type</strong> in Jina.</p>
 <p>It offers a Pythonic interface to allow users access and manipulate
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.DocumentProto</span></code> object without working with Protobuf itself.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.docarray_pb2.DocumentProto</span></code> object without working with Protobuf itself.</p>
 <p>To create a <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> object, simply:</p>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
@@ -1091,8 +1123,8 @@ assigning <code class="docutils literal notranslate"><span class="pre">doc.blob<
 </div></blockquote>
 <p>MIME type is auto set/guessed when setting <code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code> and <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a></p>
 <p><a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> also provides multiple way to build from existing Document. You can build <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>
-from <code class="docutils literal notranslate"><span class="pre">jina_pb2.DocumentProto</span></code>, <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, and <code class="docutils literal notranslate"><span class="pre">Dict</span></code>. You can also use it as view (i.e.
-weak reference when building from an existing <code class="docutils literal notranslate"><span class="pre">jina_pb2.DocumentProto</span></code>). For example,</p>
+from <code class="docutils literal notranslate"><span class="pre">docarray_pb2.DocumentProto</span></code>, <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, and <code class="docutils literal notranslate"><span class="pre">Dict</span></code>. You can also use it as view (i.e.
+weak reference when building from an existing <code class="docutils literal notranslate"><span class="pre">docarray_pb2.DocumentProto</span></code>). For example,</p>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">DocumentProto</span><span class="p">()</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1105,7 +1137,7 @@ weak reference when building from an existing <code class="docutils literal notr
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the document to construct from. If <code class="docutils literal notranslate"><span class="pre">bytes</span></code> is given
+<li><p><strong>obj</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the document to construct from. If <code class="docutils literal notranslate"><span class="pre">bytes</span></code> is given
 then deserialize a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code>; <code class="docutils literal notranslate"><span class="pre">dict</span></code> is given then
 parse a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code> from it; <code class="docutils literal notranslate"><span class="pre">str</span></code> is given, then consider
 it as a JSON string and parse a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code> from it; finally,
@@ -1157,11 +1189,11 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.Document.tags">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><span class="pre">jina.types.struct.StructView</span></a></em><a class="headerlink" href="#jina.Document.tags" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../docarray.simple.struct/#docarray.simple.struct.StructView" title="docarray.simple.struct.StructView"><span class="pre">docarray.simple.struct.StructView</span></a></em><a class="headerlink" href="#jina.Document.tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the <cite>tags</cite> field of this Document as a Python dict</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructView</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../docarray.simple.struct/#docarray.simple.struct.StructView" title="docarray.simple.struct.StructView"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructView</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a Python dict view of the tags.</p>
@@ -1239,7 +1271,7 @@ proto instance stored. In the case where the <cite>embedding</cite> stored is sp
 <dd><p>Get all matches of the current document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.match/#jina.types.arrays.match.MatchArray" title="jina.types.arrays.match.MatchArray">MatchArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../docarray.array.match/#docarray.array.match.MatchArray" title="docarray.array.match.MatchArray">MatchArray</a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the array of matches attached to this document</p>
@@ -1252,7 +1284,7 @@ proto instance stored. In the case where the <cite>embedding</cite> stored is sp
 <dd><p>Get all chunks of the current document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray" title="jina.types.arrays.chunk.ChunkArray">ChunkArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../docarray.array.chunk/#docarray.array.chunk.ChunkArray" title="docarray.array.chunk.ChunkArray">ChunkArray</a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the array of chunks of this document</p>
@@ -1357,11 +1389,11 @@ proto instance stored. In the case where the <cite>embedding</cite> stored is sp
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.Document.evaluations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.types.score.map/#jina.types.score.map.NamedScoreMapping" title="jina.types.score.map.NamedScoreMapping"><span class="pre">jina.types.score.map.NamedScoreMapping</span></a></em><a class="headerlink" href="#jina.Document.evaluations" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../docarray.simple.map/#docarray.simple.map.NamedScoreMap" title="docarray.simple.map.NamedScoreMap"><span class="pre">docarray.simple.map.NamedScoreMap</span></a></em><a class="headerlink" href="#jina.Document.evaluations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the evaluations of the document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.types.score.map/#jina.types.score.map.NamedScoreMapping" title="jina.types.score.map.NamedScoreMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedScoreMapping</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../docarray.simple.map/#docarray.simple.map.NamedScoreMap" title="docarray.simple.map.NamedScoreMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedScoreMap</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the evaluations attached to this document as <cite>:class:NamedScoreMapping</cite></p>
@@ -1397,8 +1429,8 @@ proto instance stored. In the case where the <cite>embedding</cite> stored is sp
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.DocumentArray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.mixins/#jina.types.arrays.mixins.AllMixins" title="jina.types.arrays.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.AllMixins</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../docarray.array.mixins/#docarray.array.mixins.AllMixins" title="docarray.array.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.array.mixins.AllMixins</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code></p>
 <p><a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> is a mutable sequence of <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.
 It gives an efficient view of a list of Document. One can iterate over it like
 a generator but ALSO modify it, count it, get item, or union two ‘DocumentArray’s using the ‘+’ and ‘+=’ operators.</p>
@@ -1412,13 +1444,13 @@ it builds a view or a copy from it. It also can accept a List</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.insert">
-<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.insert" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert <cite>doc</cite> at <cite>index</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Position of the insertion.</p></li>
-<li><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be inserted.</p></li>
+<li><p><strong>doc</strong> (<a class="reference internal" href="../docarray.document/#docarray.document.Document" title="docarray.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be inserted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -1428,21 +1460,21 @@ it builds a view or a copy from it. It also can accept a List</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.append" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append <cite>doc</cite> in <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be appended.</p>
+<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="../docarray.document/#docarray.document.Document" title="docarray.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be appended.</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.extend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extend the <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> by appending all the items from the iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
+<dd class="field-odd"><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../docarray.document/#docarray.document.Document" title="docarray.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -1451,17 +1483,17 @@ it builds a view or a copy from it. It also can accept a List</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.clear" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear the data of <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.reverse">
-<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.reverse" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.reverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>In-place reverse the sequence.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.sort" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the items of the <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> in place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1477,8 +1509,8 @@ sorting the entire list</p></li>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.mixins/#jina.types.arrays.mixins.AllMixins" title="jina.types.arrays.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.mixins.AllMixins</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArrayMemmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">36</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_pool_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../docarray.array.mixins/#docarray.array.mixins.AllMixins" title="docarray.array.mixins.AllMixins"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.array.mixins.AllMixins</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code></p>
 <p>Create a memory-map to an <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> stored in binary files on disk.</p>
 <p>Memory-mapped files are used for accessing <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> of large <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> on disk,
 without reading the entire file into memory.</p>
@@ -1524,7 +1556,7 @@ The best practice is to always reference documents using DAM.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.insert">
-<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.insert" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert <cite>doc</cite> at <cite>index</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1540,7 +1572,7 @@ The best practice is to always reference documents using DAM.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.reload">
-<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.reload" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.reload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reload header of this object from the disk.</p>
 <p>This function is useful when another thread/process modify the on-disk storage and
 the change has not been reflected in this <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> object.</p>
@@ -1548,11 +1580,11 @@ the change has not been reflected in this <a class="reference internal" href="#j
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.extend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extend the <a class="reference internal" href="#jina.DocumentArrayMemmap" title="jina.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a> by appending all the items from the iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
+<dd class="field-odd"><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../docarray.document/#docarray.document.Document" title="docarray.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -1561,7 +1593,7 @@ the change has not been reflected in this <a class="reference internal" href="#j
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.clear" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear the on-disk data of <a class="reference internal" href="#jina.DocumentArrayMemmap" title="jina.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -1571,7 +1603,7 @@ the change has not been reflected in this <a class="reference internal" href="#j
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flush</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.append" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flush</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append <cite>doc</cite> in <a class="reference internal" href="#jina.DocumentArrayMemmap" title="jina.DocumentArrayMemmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1588,7 +1620,7 @@ the change has not been reflected in this <a class="reference internal" href="#j
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.flush">
-<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.flush" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.flush" title="Permalink to this definition">¶</a></dt>
 <dd><p>Persists memory loaded documents to disk</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -1598,7 +1630,7 @@ the change has not been reflected in this <a class="reference internal" href="#j
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArrayMemmap.prune">
-<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/memmap/#DocumentArrayMemmap.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.prune" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/memmap/#DocumentArrayMemmap.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArrayMemmap.prune" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prune deleted Documents from this object, this yields a smaller on-disk storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -2131,7 +2163,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../../advanced/experimental/indexers-benchmark/">
+                    <a class="prev-page" href="../">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -2140,7 +2172,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Indexers Benchmark</div>
+                            <div class="title">Python API</div>
                             
                         </div>
                     </a>
@@ -2148,7 +2180,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 10, 2021.
+                    Last updated on Dec 12, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -2307,6 +2339,5 @@ That means, it is the fallback handler for endpoints that are not found.</p>
     <script>var server_address = 'https://docsbot.jina.ai';</script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>
     <script src="../../_static/docbot.js"></script>
-    <script src="../../_static/iframe.js"></script>
     </body>
 </html>
