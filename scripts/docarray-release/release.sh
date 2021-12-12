@@ -54,14 +54,6 @@ if [[ "$BRANCH" != "master" ]]; then
   exit 1;
 fi
 
-LAST_UPDATE=`git show --no-notes --format=format:"%H" $BRANCH | head -n 1`
-LAST_COMMIT=`git show --no-notes --format=format:"%H" origin/$BRANCH | head -n 1`
-
-if [ $LAST_COMMIT != $LAST_UPDATE ]; then
-    printf "Your local $BRANCH is behind the remote master, exit\n"
-    exit 1;
-fi
-
 # release the current version
 export RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
 LAST_VER=$(git tag -l | sort -V | tail -n1)

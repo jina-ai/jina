@@ -827,11 +827,11 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from . import (
         __version__,
         __proto_version__,
+        __docarray_version__,
         __jina_env__,
         __uptime__,
         __unset_msg__,
     )
-    from docarray import __version__ as __docarray_version__
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
     from jina.logging.predefined import default_logger
