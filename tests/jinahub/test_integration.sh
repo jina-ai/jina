@@ -18,7 +18,7 @@ RESPONSE=$(curl --request POST -d '{"data": ["text:hey, dude"]}' -H 'Content-Typ
 
 echo "Response is: ${RESPONSE}"
 
-TEXT_RESPONSE=$(echo $RESPONSE | jq -e ".data[] | .text")
+TEXT_RESPONSE=$(echo $RESPONSE | jq -e ".data.docs[] | .text")
 
 echo "Text Response is: ${TEXT_RESPONSE}"
 
