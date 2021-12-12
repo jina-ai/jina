@@ -769,7 +769,19 @@
                         </i>
                     </label>
                 </div>
-                <section class="tex2jax_ignore mathjax_ignore" id="protocol-documentation">
+                <div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To update <code class="docutils literal notranslate"><span class="pre">docarray</span></code> Protobuf:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docarrat
+docker run -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/proto:/jina/proto jinaai/protogen
+</pre></div>
+</div>
+<p>To update <code class="docutils literal notranslate"><span class="pre">jina</span></code> Protobuf:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/jina/:/jina/ -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/docarray/:/docarray/ jinaai/protogen
+</pre></div>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="protocol-documentation">
 <h1>Protocol Documentation<a class="headerlink" href="#protocol-documentation" title="Permalink to this headline">¶</a></h1>
 <p><a name="top"></a></p>
 <section id="table-of-contents">
