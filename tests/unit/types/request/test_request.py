@@ -17,7 +17,7 @@ from jina.types.request.data import DataRequest, Response
 def req():
     r = jina_pb2.DataRequestProto()
     r.header.request_id = random_identity()
-    r.docs.add()
+    r.data.docs.add()
     return r
 
 
@@ -82,6 +82,8 @@ def test_data_backwards_compatibility(req):
     req = DataRequest(request=req)
     assert len(req.data.docs) == 1
     assert len(req.data.groundtruths) == 0
+    assert len(req.data.docs) == len(req.docs)
+    assert len(req.data.groundtruths) == len(req.groundtruths)
 
 
 def test_command(control_req):

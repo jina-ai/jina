@@ -13,7 +13,7 @@ PARAMS = {'top_k': 10}
 
 
 def rest_post(f, endpoint, documents):
-    docs = [d.dict() for d in documents]
+    data = [d.dict() for d in documents]
     if endpoint == 'delete':
         method = 'delete'
     elif endpoint == 'update':
@@ -22,7 +22,7 @@ def rest_post(f, endpoint, documents):
         method = 'post'
     response = getattr(requests, method)(
         f'http://localhost:{f.port_expose}/{endpoint}',
-        json={'docs': docs, 'parameters': PARAMS},
+        json={'data': data, 'parameters': PARAMS},
     )
     if response.status_code != 200:
         raise Exception(f'exception in status code {response.status_code}')
@@ -49,7 +49,7 @@ def test_crud(tmpdir, rest):
         inputs = list(random_docs(1))
         if rest:
             results = rest_post(f, 'search', inputs)
-            matches = results['docs'][0]['matches']
+            matches = results['data']['docs'][0]['matches']
         else:
             results = f.post(
                 on='/search', inputs=inputs, parameters=PARAMS, return_results=True
@@ -72,7 +72,7 @@ def test_crud(tmpdir, rest):
 
         if rest:
             results = rest_post(f, 'search', inputs)
-            matches = results['docs'][0]['matches']
+            matches = results['data']['docs'][0]['matches']
 
         else:
             results = f.post(
@@ -97,7 +97,7 @@ def test_crud(tmpdir, rest):
         if rest:
             results = rest_post(f, 'search', inputs)
             matches = sorted(
-                results['docs'][0]['matches'], key=lambda match: match['id']
+                results['data']['docs'][0]['matches'], key=lambda match: match['id']
             )
         else:
             results = f.post(

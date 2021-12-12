@@ -161,7 +161,7 @@ def get_fastapi_app(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
         )
         async def foo(body: JinaRequestModel):
-            bd = body.dict() if body else {'docs': None}
+            bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
             return await _get_singleton_result(request_generator(**bd))
 

@@ -119,9 +119,9 @@ class EvaluationCallback(OptimizerCallback):
 
         :param response: response message
         """
-        self._n_docs += len(response.docs)
+        self._n_docs += len(response.data.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
-        for doc in response.docs:
+        for doc in response.data.docs:
             for key, evaluation in NamedScoreMapping(doc.evaluations).items():
                 self._evaluation_values[key].append(evaluation.value)
 

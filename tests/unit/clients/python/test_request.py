@@ -78,7 +78,7 @@ def test_request_generate_lines():
         for j in range(1, num_lines + 1):
             yield f'i\'m dummy doc {j}'
 
-    req = request_generator('', docs=random_lines(100), request_size=100)
+    req = request_generator('', data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.docs) == 100
@@ -90,7 +90,7 @@ def test_request_generate_lines_from_list():
     def random_lines(num_lines):
         return [f'i\'m dummy doc {j}' for j in range(1, num_lines + 1)]
 
-    req = request_generator('', docs=random_lines(100), request_size=100)
+    req = request_generator('', data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.docs) == 100
@@ -104,7 +104,7 @@ def test_request_generate_bytes():
         for j in range(1, num_lines + 1):
             yield f'i\'m dummy doc {j}'
 
-    req = request_generator('', docs=random_lines(100), request_size=100)
+    req = request_generator('', data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.docs) == 100
@@ -123,7 +123,7 @@ def test_request_generate_docs():
             doc.mime_type = 'mime_type'
             yield doc
 
-    req = request_generator('', docs=random_docs(100), request_size=100)
+    req = request_generator('', data=random_docs(100), request_size=100)
 
     request = next(req)
     assert len(request.docs) == 100
@@ -147,7 +147,7 @@ def test_request_generate_dict():
             }
             yield doc
 
-    req = request_generator('', docs=random_docs(100), request_size=100)
+    req = request_generator('', data=random_docs(100), request_size=100)
 
     request = next(req)
     assert len(request.docs) == 100
@@ -178,7 +178,7 @@ def test_request_generate_dict_str():
             }
             yield json.dumps(doc)
 
-    req = request_generator('', docs=random_docs(100), request_size=100)
+    req = request_generator('', data=random_docs(100), request_size=100)
 
     request = next(req)
     assert len(request.docs) == 100
@@ -196,7 +196,7 @@ def test_request_generate_dict_str():
 def test_request_generate_numpy_arrays():
     input_array = np.random.random([10, 10])
 
-    req = request_generator('', docs=input_array, request_size=5)
+    req = request_generator('', data=input_array, request_size=5)
 
     request = next(req)
     assert len(request.docs) == 5
@@ -216,7 +216,7 @@ def test_request_generate_numpy_arrays_iterator():
         for array in input_array:
             yield array
 
-    req = request_generator('', docs=generator(), request_size=5)
+    req = request_generator('', data=generator(), request_size=5)
 
     request = next(req)
     assert len(request.docs) == 5

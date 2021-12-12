@@ -23,12 +23,7 @@ class Request(ProtoTypeMixin):
     :param request: The request.
     """
 
-    _Data = namedtuple('data', 'docs groundtruths')
-
     def __getattr__(self, name: str):
-        # BACKWARDS COMPATIBILITY
-        if name == 'data':
-            return Request._Data(self.docs, self.groundtruths)
         return getattr(self._pb_body, name)
 
     def add_exception(

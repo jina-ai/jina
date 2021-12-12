@@ -9,8 +9,8 @@ from jina.helper import random_port
 
 
 def validate_response(resp, expected_docs=50):
-    assert len(resp.docs) == expected_docs
-    for doc in resp.docs:
+    assert len(resp.data.docs) == expected_docs
+    for doc in resp.data.docs:
         assert 'external_real' in doc.tags['name']
 
 

@@ -44,7 +44,7 @@ def test_no_matches_grpc(mocker, docs):
 
 @pytest.fixture
 def query_dict():
-    return {'top_k': 3, 'mode': 'search', 'docs': [f'text:query']}
+    return {'top_k': 3, 'mode': 'search', 'data': [f'text:query']}
 
 
 class MockExecutor(Executor):
@@ -70,7 +70,7 @@ def test_no_matches_rest(query_dict):
             headers={'content-type': 'application/json'},
         )
         resp = request.urlopen(req).read().decode('utf8')
-        doc = json.loads(resp)['docs'][0]
+        doc = json.loads(resp)['data']['docs'][0]
         present_keys = sorted(doc.keys())
 
         for field in _document_fields:

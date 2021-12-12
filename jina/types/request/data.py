@@ -1,5 +1,5 @@
 import copy
-from typing import Optional, List, Dict, TypeVar
+from typing import Optional, Dict, TypeVar
 
 from google.protobuf import json_format
 
@@ -9,7 +9,6 @@ from ... import DocumentArray
 from ...excepts import BadRequestType
 from ...helper import typename, random_identity
 from ...proto import jina_pb2
-from ...proto.jina_pb2 import DocumentArrayProto
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes
@@ -74,14 +73,21 @@ class DataRequest(Request):
         """Get the :class: `DocumentArray` with sequence `body.docs` as content.
 
         .. # noqa: DAR201"""
-        return DocumentArray(self.proto.docs)
+        return DocumentArray(self.proto.data.docs)
 
     @property
     def groundtruths(self) -> 'DocumentArray':
         """Get the :class: `DocumentArray` with sequence `body.docs` as content.
 
         .. # noqa: DAR201"""
-        return DocumentArray(self.proto.groundtruths)
+        return DocumentArray(self.proto.data.groundtruths)
+
+    @property
+    def data(self) -> 'jina_pb2.DataRequestProto.DataContentProto':
+        """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+
+        .. # noqa: DAR201"""
+        return self.proto.data
 
     @property
     def parameters(self) -> StructView:

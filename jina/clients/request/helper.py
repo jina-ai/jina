@@ -33,17 +33,17 @@ def _new_data_request(endpoint, target, parameters):
 
 
 def _new_doc_from_data(
-    docs, data_type: DataInputType, **kwargs
+    data, data_type: DataInputType, **kwargs
 ) -> Tuple['Document', 'DataInputType']:
     def _build_doc_from_content():
-        return Document(content=docs, **kwargs), DataInputType.CONTENT
+        return Document(content=data, **kwargs), DataInputType.CONTENT
 
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
-        if isinstance(docs, Document):
+        if isinstance(data, Document):
             # if incoming is already primitive type Document, then all good, best practice!
-            return docs, DataInputType.DOCUMENT
+            return data, DataInputType.DOCUMENT
         try:
-            d = Document(docs, **kwargs)
+            d = Document(data, **kwargs)
             return d, DataInputType.DOCUMENT
         except BadDocType:
             # AUTO has a fallback, now reconsider it as content

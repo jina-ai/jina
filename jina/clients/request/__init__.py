@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 def request_generator(
     exec_endpoint: str,
-    docs: 'GeneratorSourceType',
+    data: 'GeneratorSourceType',
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_peapod: Optional[str] = None,
@@ -47,7 +47,7 @@ def request_generator(
     """Generate a request iterator.
 
     :param exec_endpoint: the endpoint string, by convention starts with `/`
-    :param docs: data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects
+    :param data: data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects
     :param request_size: the number of the `Documents` in each request
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
@@ -60,15 +60,15 @@ def request_generator(
     _kwargs = dict(extra_kwargs=kwargs)
 
     try:
-        if docs is None:
+        if data is None:
             # this allows empty inputs, i.e. a data request with only parameters
             yield _new_data_request(
                 endpoint=exec_endpoint, target=target_peapod, parameters=parameters
             )
         else:
-            if not isinstance(docs, Iterable):
-                docs = [docs]
-            for batch in batch_iterator(docs, request_size):
+            if not isinstance(data, Iterable):
+                data = [data]
+            for batch in batch_iterator(data, request_size):
                 yield _new_data_request_from_batch(
                     _kwargs=kwargs,
                     batch=batch,

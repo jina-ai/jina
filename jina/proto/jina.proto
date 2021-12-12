@@ -255,9 +255,12 @@ message DataRequestProto {
 
     repeated RouteProto routes = 3; // status info on every routes
 
-    repeated DocumentProto docs = 4; // the docs in this request
+    message DataContentProto {
+        repeated DocumentProto docs = 1; // the docs in this request
+        repeated DocumentProto groundtruths = 2; // a list of groundtruth Documents
+    }
 
-    repeated DocumentProto groundtruths = 5; // a list of groundtruth Documents
+    DataContentProto data = 4; // container for docs and groundtruths
 }
 
 /**

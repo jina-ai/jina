@@ -277,7 +277,7 @@ class JinaRequestModel(BaseModel):
     Jina HTTP request model.
     """
 
-    docs: Optional[
+    data: Optional[
         Union[
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
             List[Dict[str, Any]],
@@ -310,6 +310,14 @@ class JinaResponseModel(BaseModel):
     Jina HTTP Response model. Only `request_id` and `data` are preserved.
     """
 
+    class DataContentModel(BaseModel):
+        docs: Optional[List[Dict[str, Any]]] = None
+        groundtruths: Optional[List[Dict[str, Any]]] = None
+
+        class Config:
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
+
     class HeaderModel(BaseModel):
         request_id: str = Field(
             ...,
@@ -322,8 +330,7 @@ class JinaResponseModel(BaseModel):
             allow_population_by_field_name = True
 
     header: HeaderModel = None
-    docs: Optional[List[Dict[str, Any]]] = None
-    groundtruths: Optional[List[Dict[str, Any]]] = None
+    data: DataContentModel = None
 
     class Config:
         alias_generator = _to_camel_case
