@@ -1,9 +1,10 @@
 # DocArray
 
+## Install
+
 ## Update Protobuf
 
-Run the following command under `docarray/`:
-
 ```bash
+cd docarray/
 docker run -v $(pwd)/proto:/jina/proto jinaai/protogen
 ```
