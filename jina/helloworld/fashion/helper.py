@@ -95,7 +95,7 @@ def print_result(resp):
     """
     global top_k
     global evaluation_value
-    for d in resp.docs:
+    for d in resp.data.docs:
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
         top_k = len(d.matches)

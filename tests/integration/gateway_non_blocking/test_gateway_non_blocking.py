@@ -23,8 +23,8 @@ def test_non_blocking_gateway(shards, expected_response):
     response = []
 
     def fill_responses(resp):
-        assert len(resp.docs) == 1
-        response.append(resp.docs[0].text)
+        assert len(resp.data.docs) == 1
+        response.append(resp.data.docs[0].text)
 
     data = DocumentArray([Document(text='slow'), Document(text='fast')])
 

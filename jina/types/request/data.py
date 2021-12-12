@@ -16,6 +16,26 @@ RequestSourceType = TypeVar(
 
 
 class DataRequest(Request):
+    """ Represents a DataRequest used for exchanging DocumentArrays to and within a Flow"""
+
+    class _DataContent:
+        def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
+            self._content = content
+
+        @property
+        def docs(self) -> 'DocumentArray':
+            """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+
+            .. # noqa: DAR201"""
+            return DocumentArray(self._content.docs)
+
+        @property
+        def groundtruths(self) -> 'DocumentArray':
+            """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+
+            .. # noqa: DAR201"""
+            return DocumentArray(self._content.groundtruths)
+
     """
     :class:`DataRequest` is one of the **primitive data type** in Jina.
 
@@ -83,11 +103,11 @@ class DataRequest(Request):
         return DocumentArray(self.proto.data.groundtruths)
 
     @property
-    def data(self) -> 'jina_pb2.DataRequestProto.DataContentProto':
+    def data(self) -> 'DataRequest._DataContent':
         """Get the :class: `DocumentArray` with sequence `body.docs` as content.
 
         .. # noqa: DAR201"""
-        return self.proto.data
+        return DataRequest._DataContent(self.proto.data)
 
     @property
     def parameters(self) -> StructView:

@@ -26,7 +26,7 @@ def test_port_expose_env_var(port_expose, func):
         inputs=(Document(text=f'text {i}') for i in range(2)),
         return_results=True,
     )
-    for d in r[0].docs:
+    for d in r[0].data.docs:
         assert d.text.endswith(func)
     r = requests.get(f'http://localhost:{port_expose}/status')
     assert r.status_code == 200

@@ -330,7 +330,7 @@ class JinaResponseModel(BaseModel):
             allow_population_by_field_name = True
 
     header: HeaderModel = None
-    data: DataContentModel = None
+    data: Optional[DataContentModel] = Field(None, description='Returned Documents')
 
     class Config:
         alias_generator = _to_camel_case

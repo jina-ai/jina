@@ -625,11 +625,11 @@ async def test_message_ordering_merge_in_gateway_graph(
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
         pod2_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger'
-            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
         pod1_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger'
-            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
         # TODO: need to add logic to merge messages
         assert pod1_path or pod2_path
@@ -661,11 +661,11 @@ async def test_message_ordering_merge_in_last_pod_graph(
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
         pod2_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger-client{client_id}-pod_last'
-            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
         pod1_path = (
             f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
-            in list(map(lambda resp: resp.docs[0].text, filtered_client_resps))
+            in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
         # TODO: need to add logic to merge messages
         assert pod1_path or pod2_path

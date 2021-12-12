@@ -50,7 +50,7 @@ def test_normal(docs):
     doc_id_path = collections.OrderedDict()
 
     def handle_search_result(resp):
-        for doc in resp.docs:
+        for doc in resp.data.docs:
             if int(doc.id) not in doc_id_path:
                 doc_id_path[int(doc.id)] = []
             doc_id_path[int(doc.id)].append((doc.tags['replica'], doc.tags['shard']))

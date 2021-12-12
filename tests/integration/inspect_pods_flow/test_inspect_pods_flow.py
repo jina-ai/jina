@@ -144,7 +144,7 @@ def test_flow_returned_collect(protocol):
     def validate_func(resp):
         num_evaluations = 0
         scores = set()
-        for doc in resp.docs:
+        for doc in resp.data.docs:
             num_evaluations += len(NamedScoreMapping(doc.evaluations))
             scores.add(NamedScoreMapping(doc.evaluations)['evaluate'].value)
         assert num_evaluations == 1
@@ -168,7 +168,7 @@ def test_flow_returned_collect(protocol):
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow_not_returned(inspect, protocol):
     def validate_func(resp):
-        for doc in resp.docs:
+        for doc in resp.data.docs:
             assert len(NamedScoreMapping(doc.evaluations)) == 0
 
     f = (

@@ -190,7 +190,7 @@ async def test_custom_project():
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
     ):
-        fields = resp.docs[0].matches[0].tags.fields
+        fields = resp.data.docs[0].matches[0].tags.fields
         assert fields['first'].string_value == 's'
         assert fields['second'].string_value == 't'
     print(f'Deleting workspace {workspace_id}')

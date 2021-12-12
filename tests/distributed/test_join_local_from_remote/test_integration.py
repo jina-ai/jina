@@ -52,9 +52,9 @@ def client_instance(request):
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose, doc_to_index, client_instance, mocker):
     def validate_resp(resp):
-        assert len(resp.docs) == 2
-        assert resp.docs[0].text == 'test'
-        assert resp.docs[1].text == 'test'
+        assert len(resp.data.docs) == 2
+        assert resp.data.docs[0].text == 'test'
+        assert resp.data.docs[1].text == 'test'
 
     mock = mocker.Mock()
     workspace_id = create_workspace(filepaths=[flow_yaml], dirpath=pod_dir)

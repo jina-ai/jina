@@ -61,8 +61,8 @@ def test_segmenter(segmenter_doc_array, tmpdir):
     """
 
     def validate(resp):
-        assert len(resp.docs) == 2
-        for doc in resp.docs:
+        assert len(resp.data.docs) == 2
+        for doc in resp.data.docs:
             assert len(doc.chunks) == 2
             assert doc.chunks[0].mime_type == 'text/plain'
             assert doc.chunks[1].mime_type == 'image/jpeg'
@@ -76,8 +76,8 @@ def test_segmenter(segmenter_doc_array, tmpdir):
 
 def test_text_crafter(encoder_doc_array, tmpdir):
     def validate(resp):
-        assert len(resp.docs) == 1
-        doc = resp.docs[0]
+        assert len(resp.data.docs) == 1
+        doc = resp.data.docs[0]
         assert doc.mime_type == 'text/plain'
         assert doc.text
 
@@ -96,8 +96,8 @@ def test_text_encoder(encoder_doc_array, tmpdir):
     """
 
     def validate(resp):
-        assert len(resp.docs) == 1
-        doc = resp.docs[0]
+        assert len(resp.data.docs) == 1
+        doc = resp.data.docs[0]
         assert doc.mime_type == 'text/plain'
         assert doc.embedding is not None
 
@@ -116,8 +116,8 @@ def test_image_crafter_index(encoder_doc_array, tmpdir):
     """
 
     def validate(resp):
-        assert len(resp.docs) == 1
-        doc = resp.docs[0]
+        assert len(resp.data.docs) == 1
+        doc = resp.data.docs[0]
         assert doc.mime_type == 'image/jpeg'
         assert doc.blob is not None
 
@@ -128,8 +128,8 @@ def test_image_crafter_index(encoder_doc_array, tmpdir):
 
 def test_image_crafter_search(encoder_doc_array_for_search, tmpdir):
     def validate(resp):
-        assert len(resp.docs) == 1
-        chunk = resp.docs[0]
+        assert len(resp.data.docs) == 1
+        chunk = resp.data.docs[0]
         assert chunk.mime_type == 'image/jpeg'
         assert chunk.blob is not None
         assert chunk.uri.startswith('data')
@@ -144,8 +144,8 @@ def test_image_encoder_index(encoder_doc_array, tmpdir):
     """
 
     def validate(resp):
-        assert len(resp.docs) == 1
-        for doc in resp.docs:
+        assert len(resp.data.docs) == 1
+        for doc in resp.data.docs:
             assert doc.mime_type == 'image/jpeg'
             assert doc.embedding is not None
             assert doc.embedding.shape[0] == 1280
@@ -161,8 +161,8 @@ def test_image_encoder_search(encoder_doc_array_for_search, tmpdir):
     """
 
     def validate(resp):
-        assert len(resp.docs) == 1
-        for doc in resp.docs:
+        assert len(resp.data.docs) == 1
+        for doc in resp.data.docs:
             assert doc.mime_type == 'image/jpeg'
             assert doc.embedding is not None
             assert doc.embedding.shape[0] == 1280
