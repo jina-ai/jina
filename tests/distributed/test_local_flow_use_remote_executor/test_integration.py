@@ -60,4 +60,4 @@ def test_local_flow_use_external_executor(
         )
         assert len(responses) == 2
         for resp in responses:
-            assert len(resp.data.docs) == 100
+            assert len(resp.docs) == 100
