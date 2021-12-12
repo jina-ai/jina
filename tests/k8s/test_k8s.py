@@ -354,8 +354,8 @@ def test_rolling_update_simple(
                     port_expose=9090,
                 )
                 assert len(r) > 0
-                assert len(r[0].data.docs) > 0
-                for doc in r[0].data.docs:
+                assert len(r[0].docs) > 0
+                for doc in r[0].docs:
                     assert doc.tags['argument'] in ['value1', 'value2']
                     time.sleep(0.1)
                 _logger.debug(f' event is unset')
