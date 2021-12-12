@@ -3,7 +3,7 @@ set -ex
 
 # Do NOT use this directly, use jinaai/protogen image
 #
-# current dir: jina root (the one with README.md)
+# current dir: docarray root (the one with README.md)
 # run the following in bash:
 # docker run -v $(pwd)/proto:/jina/proto jinaai/protogen
 
