@@ -38,7 +38,7 @@ setup(
     author='Jina AI',
     author_email='hello@jina.ai',
     license='Apache 2.0',
-    url='https://github.com/jina-ai/jina/docarray',
+    url='https://github.com/jina-ai/jina/tree/master/docarray',
     download_url='https://github.com/jina-ai/jina/tags',
     long_description=_long_description,
     long_description_content_type='text/markdown',
@@ -70,7 +70,7 @@ setup(
     ],
     project_urls={
         'Documentation': 'https://docs.jina.ai',
-        'Source': 'https://github.com/jina-ai/jina/docarray',
+        'Source': 'https://github.com/jina-ai/jina/tree/master/docarray',
         'Tracker': 'https://github.com/jina-ai/jina/issues',
     },
     keywords='jina cloud-native neural-search query search index elastic neural-network encoding '
