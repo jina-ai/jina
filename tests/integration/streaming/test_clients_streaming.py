@@ -79,7 +79,7 @@ class SlowExecutor(Executor):
 
 
 def on_done(response, final_da: DocumentArray):
-    print(f' receiving response {response._pb_body.request_id}')
+    print(f' receiving response {response._pb_body.header.request_id}')
     for doc in response.docs:
         doc.tags['on_done'] = time.time()
         print(

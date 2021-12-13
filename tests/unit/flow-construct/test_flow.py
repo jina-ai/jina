@@ -13,7 +13,7 @@ from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.peapods.pods import BasePod
 from docarray.document.generators import from_ndarray
-from jina.types.request import Response
+from jina.types.request.data import Response
 from docarray.proto import docarray_pb2
 from tests import random_docs
 
@@ -341,14 +341,10 @@ def test_return_results_sync_flow(return_results, protocol):
         )
         if return_results:
             assert isinstance(r, list)
-            assert isinstance(r[0], Response)
-            assert len(r[0].docs) == 10
-            for doc in r[0].docs:
-                assert isinstance(doc, Document)
-
+            assert isinstance(r[0].response, Response)
             assert len(r[0].data.docs) == 10
             for doc in r[0].data.docs:
-                assert isinstance(doc, docarray_pb2.DocumentProto)
+                assert isinstance(doc, Document)
 
         else:
             assert r is None
@@ -657,14 +653,14 @@ def test_flow_load_executor_yaml_extra_search_paths():
     )
     with f:
         r = f.post('/', inputs=Document(), return_results=True)
-    assert r[0].docs[0].text == 'done'
+    assert r[0].data.docs[0].text == 'done'
 
 
 def test_flow_load_yaml_extra_search_paths():
     f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
     with f:
         r = f.post('/', inputs=Document(), return_results=True)
-    assert r[0].docs[0].text == 'done'
+    assert r[0].data.docs[0].text == 'done'
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])

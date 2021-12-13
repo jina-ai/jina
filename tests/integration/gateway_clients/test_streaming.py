@@ -11,7 +11,6 @@ from functools import partial
 
 from jina.parsers import set_gateway_parser
 from jina import Document, DocumentArray
-from jina.types.request import Request
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
@@ -49,18 +48,16 @@ def simple_graph_dict_indexer():
 
 
 class DummyMockConnectionPool:
-    def send_messages_once(self, messages, pod: str, head: bool) -> asyncio.Task:
+    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
         assert head
-        msg = messages[0]
+        request = requests[0]
 
         if not hasattr(self, '_docs'):
             self._docs = DocumentArray()
 
         async def _compute_response():
-            response_msg = copy.deepcopy(msg)
-            exec_endpoint = msg.proto.envelope.header.exec_endpoint
-            response_msg.request = Request(msg.request.proto, copy=True)
-            request = msg.request
+            response_msg = copy.deepcopy(request)
+            exec_endpoint = request.header.exec_endpoint
             new_docs = DocumentArray()
             await asyncio.sleep(0.1)
             if pod == 'indexer-executor':
@@ -68,8 +65,8 @@ class DummyMockConnectionPool:
                     time.sleep(0.1)
                     self._docs.extend(request.docs)
                 else:
-                    response_msg.request.docs.clear()
-                    response_msg.request.docs.extend(
+                    response_msg.docs.clear()
+                    response_msg.docs.extend(
                         DocumentArray(
                             Document(tags={'ids': self._docs.get_attributes('id')})
                         )
@@ -87,8 +84,8 @@ class DummyMockConnectionPool:
                     )
                     new_docs.append(new_doc)
 
-                response_msg.request.docs.clear()
-                response_msg.request.docs.extend(new_docs)
+                response_msg.docs.clear()
+                response_msg.docs.extend(new_docs)
                 return response_msg
 
         async def task_wrapper():
@@ -195,8 +192,8 @@ def test_disable_prefetch_slow_client_fast_executor(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 
@@ -253,8 +250,8 @@ def test_disable_prefetch_fast_client_slow_executor(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
     final_da = DocumentArray()
@@ -329,8 +326,8 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 

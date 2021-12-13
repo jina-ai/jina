@@ -4,17 +4,17 @@ from collections import defaultdict
 from typing import List, Optional, Dict, Tuple
 
 from .....proto import jina_pb2
-from .....types.message import Message
 from ....networking import GrpcConnectionPool
+from .....types.request.data import DataRequest
 
 
 class TopologyGraph:
     """
     :class TopologyGraph is a class that describes a computational graph of nodes, where each node represents
-        a Pod that needs to be sent messages in the order respecting the path traversal.
+        a Pod that needs to be sent requests in the order respecting the path traversal.
 
     :param graph_description: A dictionary describing the topology of the Pods. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
-        determine the nodes that receive the very first message and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
+        determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
         will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.
     """
 
@@ -32,37 +32,37 @@ class TopologyGraph:
 
         async def _wait_previous_and_send(
             self,
-            msg: Message,
+            request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
         ):
             if previous_task is not None:
-                msg = await previous_task
+                request = await previous_task
             if (
-                msg is not None
-                and msg.request.status.code == jina_pb2.StatusProto.ERROR
+                request is not None
+                and request.header.status.code == jina_pb2.StatusProto.ERROR
             ):
-                if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
-                    msg.request.routes[-1].end_time.GetCurrentTime()
-                    msg.request.routes[-1].status.CopyFrom(msg.request.status)
-                return msg
-            elif msg is not None:
-                self.parts_to_send.append(msg)
-                if msg.request.routes and msg.request.routes[-1].pod != 'gateway':
-                    msg.request.routes[-1].end_time.GetCurrentTime()
+                if request.routes and request.routes[-1].pod != 'gateway':
+                    request.routes[-1].end_time.GetCurrentTime()
+                    request.routes[-1].status.CopyFrom(request.header.status)
+                return request
+            elif request is not None:
+                self.parts_to_send.append(request)
+                if request.routes and request.routes[-1].pod != 'gateway':
+                    request.routes[-1].end_time.GetCurrentTime()
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
-                    for part in self.parts_to_send:
-                        r = part.request.routes.add()
+                    for request in self.parts_to_send:
+                        r = request.routes.add()
                         r.pod = self.name
                         r.start_time.GetCurrentTime()
-                    resp = await connection_pool.send_messages_once(
-                        messages=self.parts_to_send, pod=self.name, head=True
+                    resp = await connection_pool.send_requests_once(
+                        requests=self.parts_to_send, pod=self.name, head=True
                     )
                     for route in resp.response.routes:
                         if route.pod == self.name:
-                            if resp.request.status.code == jina_pb2.StatusProto.ERROR:
-                                route.status.CopyFrom(resp.request.status)
+                            if resp.header.status.code == jina_pb2.StatusProto.ERROR:
+                                route.status.CopyFrom(resp.header.status)
                             route.end_time.GetCurrentTime()
                             break
                     return resp
@@ -71,14 +71,14 @@ class TopologyGraph:
         def get_leaf_tasks(
             self,
             connection_pool: GrpcConnectionPool,
-            msg_to_send: Optional[Message],
+            request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
 
-            :param connection_pool: The connection_pool need to actually send the messages
-            :param msg_to_send: Optional message to be sent when the node is an origin of a graph
+            :param connection_pool: The connection_pool need to actually send the requests
+            :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
 
             .. note:
@@ -100,12 +100,12 @@ class TopologyGraph:
                 When the caller of these methods await them, they will fire the logic of sending requests and responses from and to every pod
 
             :return: Return a list of tuples, where tasks corresponding to the leafs of all the subgraphs born from this node are in each tuple.
-                These tasks will be based on awaiting for the task from previous_node and sending a message to the corresponding node. The other member of the pair
+                These tasks will be based on awaiting for the task from previous_node and sending a request to the corresponding node. The other member of the pair
                 is a flag indicating if the task is to be awaited by the gateway or not.
             """
             wait_previous_and_send_task = asyncio.create_task(
                 self._wait_previous_and_send(
-                    msg_to_send, previous_task, connection_pool
+                    request_to_send, previous_task, connection_pool
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -162,7 +162,7 @@ class TopologyGraph:
     def origin_nodes(self):
         """
         The list of origin nodes, the one that depend only on the gateway, so all the subgraphs will be born from them and they will
-        send to their pods the message as received by the client.
+        send to their pods the request as received by the client.
 
         :return: A list of nodes
         """

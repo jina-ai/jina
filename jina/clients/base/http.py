@@ -10,6 +10,7 @@ from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
 from ...types.request import Request
 from ...peapods.stream import RequestStreamer
+from ...types.request.data import DataRequest
 
 if TYPE_CHECKING:
     from ..base import InputType, CallbackFnType
@@ -80,8 +81,7 @@ class HTTPBaseClient(BaseClient):
                     elif r_status < 200 or r_status > 300:
                         raise ValueError(r_str)
 
-                    resp = Request(r_str)
-                    resp = resp.as_typed_request(resp.request_type).as_response()
+                    resp = DataRequest(r_str)
                     callback_exec(
                         response=resp,
                         on_error=on_error,

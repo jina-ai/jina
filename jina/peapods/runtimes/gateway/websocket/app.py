@@ -3,7 +3,7 @@ from typing import List, TYPE_CHECKING
 
 from .....importer import ImportExtensions
 from .....logging.logger import JinaLogger
-from .....types.request import Request
+from .....types.request.data import DataRequest
 
 if TYPE_CHECKING:
     from ..graph.topology_graph import TopologyGraph
@@ -72,7 +72,7 @@ def get_fastapi_app(
             async for request_bytes in websocket.iter_bytes():
                 if request_bytes == bytes(True):
                     break
-                yield Request(request_bytes)
+                yield DataRequest(request_bytes)
 
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):

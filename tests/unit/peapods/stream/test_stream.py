@@ -1,9 +1,11 @@
 import asyncio
 import pytest
 
+from jina import Document
 from jina.helper import Namespace, random_identity
 from jina.peapods.stream import RequestStreamer
 from jina.proto import jina_pb2
+from jina.types.request.data import DataRequest
 
 
 @pytest.mark.asyncio
@@ -19,7 +21,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
         async def task():
             await asyncio.sleep(0.5)
-            request.data.docs[0].tags['request_handled'] = True
+            request.docs[0].tags['request_handled'] = True
             return request
 
         future = asyncio.ensure_future(task())
@@ -27,8 +29,8 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     def result_handle_fn(result):
         results_handled.append(result)
-        assert isinstance(result, jina_pb2.RequestProto)
-        result.data.docs[0].tags['result_handled'] = True
+        assert isinstance(result, DataRequest)
+        result.docs[0].tags['result_handled'] = True
         return result
 
     def end_of_iter_fn():
@@ -38,16 +40,16 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     def _get_sync_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = jina_pb2.RequestProto()
-            req.request_id = random_identity()
-            req.data.docs.add()
+            req = DataRequest()
+            req.header.request_id = random_identity()
+            req.docs.append(Document())
             yield req
 
     async def _get_async_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = jina_pb2.RequestProto()
-            req.request_id = random_identity()
-            req.data.docs.add()
+            req = DataRequest()
+            req.header.request_id = random_identity()
+            req.docs.append(Document())
             yield req
             await asyncio.sleep(0.1)
 
@@ -71,7 +73,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
     async for r in response:
         num_responses += 1
-        assert r.data.docs[0].tags['request_handled']
-        assert r.data.docs[0].tags['result_handled']
+        assert r.docs[0].tags['request_handled']
+        assert r.docs[0].tags['result_handled']
 
     assert num_responses == num_requests

@@ -12,8 +12,7 @@ from jina.enums import PollingType
 from jina.helper import random_port
 from jina.peapods.networking import ReplicaList, GrpcConnectionPool
 from jina.proto import jina_pb2_grpc
-from jina.types.message import Message
-from jina.types.message.common import ControlMessage
+from jina.types.request.control import ControlRequest
 
 
 @pytest.mark.asyncio
@@ -56,27 +55,27 @@ async def test_connection_pool(mocker, monkeypatch):
 
     pool = GrpcConnectionPool()
     send_mock = mocker.Mock()
-    pool._send_messages = lambda messages, connection: mock_send(send_mock)
+    pool._send_requests = lambda messages, connection: mock_send(send_mock)
 
     pool.add_connection(pod='encoder', head=False, address='1.1.1.1:53')
     pool.add_connection(pod='encoder', head=False, address='1.1.1.2:53')
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='encoder', head=False
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='encoder', head=False
     )
     assert len(results) == 1
     assert send_mock.call_count == 1
     assert create_mock.call_count == 2
 
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='encoder', head=False
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='encoder', head=False
     )
     assert len(results) == 1
     assert send_mock.call_count == 2
     assert create_mock.call_count == 2
 
     # indexer was not added yet, so there isnt anything being sent
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='indexer', head=False
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='indexer', head=False
     )
     assert len(results) == 0
     assert send_mock.call_count == 2
@@ -84,8 +83,8 @@ async def test_connection_pool(mocker, monkeypatch):
 
     # add indexer now so it can be send
     pool.add_connection(pod='indexer', head=False, address='2.1.1.1:53')
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='indexer', head=False
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='indexer', head=False
     )
     assert len(results) == 1
     assert send_mock.call_count == 3
@@ -93,8 +92,8 @@ async def test_connection_pool(mocker, monkeypatch):
 
     # polling only applies to shards, there are no shards here, so it only sends one message
     pool.add_connection(pod='encoder', head=False, address='1.1.1.3:53')
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'),
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'),
         pod='encoder',
         head=False,
         polling_type=PollingType.ALL,
@@ -107,8 +106,8 @@ async def test_connection_pool(mocker, monkeypatch):
     pool.add_connection(pod='encoder', head=False, address='1.1.1.3:53', shard_id=1)
     # adding the same connection again is a noop
     pool.add_connection(pod='encoder', head=False, address='1.1.1.3:53', shard_id=1)
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'),
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'),
         pod='encoder',
         head=False,
         polling_type=PollingType.ALL,
@@ -118,8 +117,8 @@ async def test_connection_pool(mocker, monkeypatch):
     assert create_mock.call_count == 5
 
     # sending to one specific shard should only send one message
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'),
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'),
         pod='encoder',
         head=False,
         polling_type=PollingType.ANY,
@@ -129,8 +128,8 @@ async def test_connection_pool(mocker, monkeypatch):
     assert send_mock.call_count == 7
 
     # doing the same with polling ALL ignores the shard id
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'),
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'),
         pod='encoder',
         head=False,
         polling_type=PollingType.ALL,
@@ -144,8 +143,8 @@ async def test_connection_pool(mocker, monkeypatch):
         pod='encoder', head=False, address='1.1.1.2:53', shard_id=0
     )
     assert close_mock_object.call_count == 1
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'),
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'),
         pod='encoder',
         head=False,
         polling_type=PollingType.ANY,
@@ -155,16 +154,16 @@ async def test_connection_pool(mocker, monkeypatch):
     assert send_mock.call_count == 10
 
     # encoder pod has no head registered yet so sending to the head will not work
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='encoder', head=True
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='encoder', head=True
     )
     assert len(results) == 0
     assert send_mock.call_count == 10
 
     # after registering a head for encoder, sending to head should work
     pool.add_connection(pod='encoder', head=True, address='1.1.1.10:53')
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='encoder', head=True
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='encoder', head=True
     )
     assert len(results) == 1
     assert send_mock.call_count == 11
@@ -172,8 +171,8 @@ async def test_connection_pool(mocker, monkeypatch):
     # after remove the head again, sending will not work
     assert await pool.remove_connection(pod='encoder', head=True, address='1.1.1.10:53')
     assert close_mock_object.call_count == 2
-    results = pool.send_message(
-        msg=ControlMessage(command='STATUS'), pod='encoder', head=True
+    results = pool.send_request(
+        request=ControlRequest(command='STATUS'), pod='encoder', head=True
     )
     assert len(results) == 0
     assert send_mock.call_count == 11
@@ -194,7 +193,8 @@ async def _mock_grpc(mocker, monkeypatch):
     create_mock = mocker.Mock()
     close_mock_object = mocker.Mock()
     channel_mock = mocker.Mock()
-    stub_mock = mocker.Mock()
+    data_stub_mock = mocker.Mock()
+    control_stub_mock = mocker.Mock()
 
     async def close_mock(*args):
         close_mock_object()
@@ -202,7 +202,7 @@ async def _mock_grpc(mocker, monkeypatch):
     def create_async_channel_mock(*args):
         create_mock()
         channel_mock.close = close_mock
-        return stub_mock, channel_mock
+        return data_stub_mock, control_stub_mock, channel_mock
 
     monkeypatch.setattr(
         GrpcConnectionPool, 'create_async_channel_stub', create_async_channel_mock
@@ -219,19 +219,19 @@ async def test_grpc_connection_pool_real_sending():
 
     def listen(port, event: multiprocessing.Event):
         class DummyServer:
-            async def Call(self, msg, *args):
-                returned_msg = ControlMessage(command='DEACTIVATE', identity=str(port))
+            async def process_control(self, request, *args):
+                returned_msg = ControlRequest(command='DEACTIVATE')
                 return returned_msg
 
         async def start_grpc_server():
             grpc_server = grpc.aio.server(
                 options=[
-                    ('grpc.max_send_message_length', -1),
+                    ('grpc.max_send_request_length', -1),
                     ('grpc.max_receive_message_length', -1),
                 ]
             )
 
-            jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(
+            jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
                 DummyServer(), grpc_server
             )
             grpc_server.add_insecure_port(f'localhost:{port}')
@@ -270,18 +270,18 @@ async def test_grpc_connection_pool_real_sending():
 
     pool.add_connection(pod='encoder', head=False, address=f'localhost:{port1}')
     pool.add_connection(pod='encoder', head=False, address=f'localhost:{port2}')
-    sent_msg = ControlMessage(command='STATUS')
+    sent_msg = ControlRequest(command='STATUS')
 
-    results_call_1 = pool.send_message(msg=sent_msg, pod='encoder', head=False)
-    results_call_2 = pool.send_message(msg=sent_msg, pod='encoder', head=False)
+    results_call_1 = pool.send_request(request=sent_msg, pod='encoder', head=False)
+    results_call_2 = pool.send_request(request=sent_msg, pod='encoder', head=False)
     assert len(results_call_1) == 1
     assert len(results_call_2) == 1
 
     response1 = await results_call_1[0]
-    assert response1.request.command == 'DEACTIVATE'
+    assert response1.command == 'DEACTIVATE'
 
     response2 = await results_call_2[0]
-    assert response2.request.command == 'DEACTIVATE'
+    assert response2.command == 'DEACTIVATE'
 
     await pool.close()
     server_process1.kill()
@@ -291,10 +291,8 @@ async def test_grpc_connection_pool_real_sending():
 
 
 def _create_test_data_message():
-    req = list(
+    return list(
         request_generator(
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
         )
     )[0]
-    msg = Message(None, req, 'test', '123')
-    return msg

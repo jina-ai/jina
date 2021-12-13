@@ -1,11 +1,12 @@
 import pytest
 
 from jina import Flow, Executor, Client, requests, DocumentArray, Document
-from jina.types.request import Response
 import threading
 import random
 import time
 from functools import partial
+
+from jina.types.request.data import Response
 
 
 class MyExecutor(Executor):
