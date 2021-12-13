@@ -68,7 +68,7 @@ html_theme_options = {
     # start-announce
 
     "announcement": '''
-    <a href="https://www.meetup.com/jina-community-meetup/events/279857960/">Learn more about Jina and Bing He at our Engineering All Hands on December 14, 2021</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/279857960/">Learn more about our Learning Bootcamp at Engineering All Hands on December 14, 2021</a>
     ''',
         
     # end-announce
