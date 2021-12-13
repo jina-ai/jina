@@ -2,8 +2,8 @@
 from typing import Tuple
 
 from ...enums import DataInputType
-from ...excepts import BadDocType, BadRequestType
-from ...document import Document
+from ...excepts import BadRequestType
+from docarray.document import Document
 from ...types.request.data import DataRequest
 
 

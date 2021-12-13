@@ -4,7 +4,7 @@ from typing import Optional, Dict, TypeVar
 from google.protobuf import json_format
 
 from . import Request
-from ..struct import StructView
+from docarray.simple import StructView
 from ... import DocumentArray
 from ...excepts import BadRequestType
 from ...helper import typename, random_identity
