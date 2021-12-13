@@ -26,16 +26,13 @@ class ShardsExecutor(Executor):
                     for i in range(self.n_docs)
                 ]
             )
-            doc.text = f'{self.runtime_args.pea_id}'
+            doc.text = 'hey'
             if self.runtime_args.pea_id == 0:
                 doc.scores['cosine'].value = 0
             elif self.runtime_args.pea_id == 1:
-                doc.embedding = np.zeros(3)
-                doc.scores['cosine'].value = 1
                 doc.modality = 'image'
             elif self.runtime_args.pea_id == 2:
                 doc.tags = {'a': 'b'}
-                doc.modality = 'text'
 
 
 @pytest.mark.parametrize('n_docs', [3, 5])
@@ -65,9 +62,8 @@ def test_reduce_shards(n_docs):
                 assert f'c-{shard}-{chunk}' in chunks
 
         # assert data properties are reduced with priority to the first shards
-        assert doc.text == '0'
+        assert doc.text == 'hey'
         assert doc.scores['cosine'].value == 0
-        assert (doc.embedding == np.zeros(3)).all()
         assert doc.modality == 'image'
         assert doc.tags == {'a': 'b'}
 
@@ -96,15 +92,13 @@ class Executor1(Executor):
     @requests
     def endpoint(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.text = 'exec1'
-            doc.embedding = np.zeros(3)
+            doc.text = 'hey'
 
 
 class Executor2(Executor):
     @requests
     def endpoint(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.text = 'exec2'
             doc.tags = {'a': 'b'}
 
 
@@ -112,7 +106,6 @@ class Executor3(Executor):
     @requests
     def endpoint(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.tags = {'a': 'c'}
             doc.modality = 'text'
 
 
@@ -131,7 +124,7 @@ def test_reduce_needs():
 
     assert len(resp[0].docs) == 5
     for doc in resp[0].docs:
-        assert doc.text == 'exec1'
+        assert doc.text == 'hey'
         assert doc.tags == {'a': 'b'}
         assert doc.modality == 'text'
 
