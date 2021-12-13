@@ -63,12 +63,12 @@ class WebSocketBaseClient(BaseClient):
 
                 async def _receive():
                     def _response_handler(response):
-                        if response.request_id in request_buffer:
-                            future = request_buffer.pop(response.request_id)
+                        if response.header.request_id in request_buffer:
+                            future = request_buffer.pop(response.header.request_id)
                             future.set_result(response)
                         else:
                             self.logger.warning(
-                                f'discarding unexpected response with request id {response.request_id}'
+                                f'discarding unexpected response with request id {response.header.request_id}'
                             )
 
                     """Await messages from WebsocketGateway and process them in the request buffer"""
@@ -99,7 +99,7 @@ class WebSocketBaseClient(BaseClient):
                     :return: asyncio Future for sending message
                     """
                     future = get_or_reuse_loop().create_future()
-                    request_buffer[request.request_id] = future
+                    request_buffer[request.header.request_id] = future
                     asyncio.create_task(iolet.send_message(request))
                     return future
 

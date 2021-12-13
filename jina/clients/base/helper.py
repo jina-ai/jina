@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 
 from ...types.request import Request
 from ...importer import ImportExtensions
+from ...types.request.data import DataRequest
 
 if TYPE_CHECKING:
     from ...types.request import Response
@@ -76,7 +77,9 @@ class HTTPClientlet(AioHttpClientlet):
         """
         req_dict = request.to_dict()
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
-        req_dict['data'] = req_dict['data'].get('docs', None)
+        req_dict['data'] = (
+            req_dict['data'].get('docs', None) if 'data' in req_dict else None
+        )
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
     async def recv_message(self):
@@ -128,8 +131,8 @@ class WebsocketClientlet(AioHttpClientlet):
         """
         async for response in self.websocket:
             response_bytes = response.data
-            resp = Request(response_bytes)
-            yield resp.as_typed_request(resp.request_type).as_response()
+            resp = DataRequest(response_bytes)
+            yield resp
 
     async def __aenter__(self):
         await super().__aenter__()

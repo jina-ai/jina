@@ -22,7 +22,7 @@ def test_func_simple_routing():
             parameters={'hello': 'world', 'topk': 10},
             return_results=True,
         )
-        assert results[0].status.code == 0
+        assert results[0].header.status.code == 0
         assert results[0].data.docs[0].tags['hello'] == 'world'
 
     with f:
@@ -32,7 +32,7 @@ def test_func_simple_routing():
             parameters={'hello': 'world', 'topk': 10},
             return_results=True,
         )
-        assert results[0].status.code == 0
+        assert results[0].header.status.code == 0
 
 
 def test_func_failure():
@@ -49,7 +49,7 @@ def test_func_failure():
             inputs=[(Document(), Document()) for _ in range(3)],
             return_results=True,
         )
-        assert results[0].status.code == 3
+        assert results[0].header.status.code == 3
 
 
 def test_func_default_routing():

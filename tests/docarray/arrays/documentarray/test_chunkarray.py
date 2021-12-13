@@ -3,6 +3,7 @@ import pytest
 from docarray.array.chunk import ChunkArray
 from docarray import Document
 from docarray.proto.docarray_pb2 import DocumentArrayProto
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture(scope='function')
@@ -22,15 +23,15 @@ def reference_doc(document_factory):
 
 @pytest.fixture
 def chunks(document_factory):
-    req = DocumentArrayProto()
+    req = DataRequest()
     req.docs.extend(
         [
-            document_factory.create(1, 'test 1').proto,
-            document_factory.create(2, 'test 1').proto,
-            document_factory.create(3, 'test 3').proto,
+            document_factory.create(1, 'test 1'),
+            document_factory.create(2, 'test 1'),
+            document_factory.create(3, 'test 3'),
         ]
     )
-    return req.docs
+    return req.proto.docs[0]
 
 
 @pytest.fixture

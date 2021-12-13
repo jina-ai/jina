@@ -12,18 +12,22 @@ from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.peapods import networking
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.types.request import Request
+from jina.types.request.data import DataRequest
 
 
 def test_grpc_gateway_runtime_init_close():
     pod0_port = random_port()
     pod1_port = random_port()
+    port_expose = random_port()
 
     def _create_runtime():
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
+                    '--port-expose',
+                    str(port_expose),
                     '--graph-description',
                     '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
                     '--pods-addresses',
@@ -40,6 +44,7 @@ def test_grpc_gateway_runtime_init_close():
     p = multiprocessing.Process(target=_create_runtime)
     p.start()
     time.sleep(1.0)
+    assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port_expose}')
     p.terminate()
     p.join()
 
@@ -111,19 +116,17 @@ def complete_graph_dict():
 
 
 class DummyMockConnectionPool:
-    def send_messages_once(self, messages, pod: str, head: bool) -> asyncio.Task:
+    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
         assert head
-        response_msg = copy.deepcopy(messages[0])
-        response_msg.request = Request(messages[0].request.proto, copy=True)
-        request = messages[0].request
+        response_msg = copy.deepcopy(requests[0])
         new_docs = DocumentArray()
-        for doc in request.docs:
+        for doc in requests[0].docs:
             clientid = doc.text[0:7]
             new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
             new_docs.append(new_doc)
 
-        response_msg.request.docs.clear()
-        response_msg.request.docs.extend(new_docs)
+        response_msg.docs.clear()
+        response_msg.docs.extend(new_docs)
 
         async def task_wrapper():
             import random
@@ -138,8 +141,8 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
-            'send_messages_once',
-            DummyMockConnectionPool.send_messages_once,
+            'send_requests_once',
+            DummyMockConnectionPool.send_requests_once,
         )
         port_in = random_port()
 
@@ -185,8 +188,8 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
-            'send_messages_once',
-            DummyMockConnectionPool.send_messages_once,
+            'send_requests_once',
+            DummyMockConnectionPool.send_requests_once,
         )
         port_in = random_port()
 
@@ -233,8 +236,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
-            'send_messages_once',
-            DummyMockConnectionPool.send_messages_once,
+            'send_requests_once',
+            DummyMockConnectionPool.send_requests_once,
         )
         port_in = random_port()
 
@@ -285,8 +288,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
-            'send_messages_once',
-            DummyMockConnectionPool.send_messages_once,
+            'send_requests_once',
+            DummyMockConnectionPool.send_requests_once,
         )
         port_in = random_port()
 
@@ -337,8 +340,8 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
-            'send_messages_once',
-            DummyMockConnectionPool.send_messages_once,
+            'send_requests_once',
+            DummyMockConnectionPool.send_requests_once,
         )
         port_in = random_port()
 

@@ -1,8 +1,8 @@
 import pytest
 
 from jina.optimizers import EvaluationCallback
-from jina.types.request import Request
 from jina import Document
+from jina.types.request.data import DataRequest
 
 EVAL_NAME = 'evaluation'
 NUM_REQUESTS = 3
@@ -37,7 +37,7 @@ def responses():
         return [d1, d2, d3, d4]
 
     def create_request(multiplier):
-        req = Request().as_typed_request('data')
+        req = DataRequest()
         for doc in create_documents(multiplier):
             req.docs.append(doc)
         return req

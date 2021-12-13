@@ -11,7 +11,6 @@ from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
-from jina.types.request import Request
 from jina import Document, DocumentArray
 from jina.peapods import networking
 from jina.helper import random_port
@@ -82,20 +81,18 @@ def complete_graph_dict():
 
 
 class DummyMockConnectionPool:
-    def send_messages_once(self, messages, pod: str, head: bool) -> asyncio.Task:
+    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
         assert head
-        msg = messages[0]
-        response_msg = copy.deepcopy(msg)
-        response_msg.request = Request(msg.request.proto, copy=True)
-        request = msg.request
+        request = requests[0]
+        response_msg = copy.deepcopy(request)
         new_docs = DocumentArray()
         for doc in request.docs:
             clientid = doc.text[0:7]
             new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
             new_docs.append(new_doc)
 
-        response_msg.request.docs.clear()
-        response_msg.request.docs.extend(new_docs)
+        response_msg.docs.clear()
+        response_msg.docs.extend(new_docs)
 
         async def task_wrapper():
             import random
@@ -154,8 +151,8 @@ def test_grpc_gateway_runtime_handle_messages_linear(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 
@@ -198,8 +195,8 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
 ):
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 
@@ -247,8 +244,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 
@@ -297,8 +294,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
     # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 
@@ -347,8 +344,8 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
-        'send_messages_once',
-        DummyMockConnectionPool.send_messages_once,
+        'send_requests_once',
+        DummyMockConnectionPool.send_requests_once,
     )
     port_in = random_port()
 

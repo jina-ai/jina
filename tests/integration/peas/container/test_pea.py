@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from jina import Document, Executor, Client, requests
+from jina import Document, Client
 from jina.enums import PollingType, PeaRoleType
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
@@ -14,7 +14,7 @@ from jina.peapods.peas.container import ContainerPea
 from jina.peapods.peas import Pea
 from jina.peapods.runtimes.head import HeadRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
-from jina.types.message.common import ControlMessage
+from jina.types.request.control import ControlRequest
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -83,10 +83,10 @@ async def test_peas_trivial_topology(
         )
 
         # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg = ControlRequest(command='ACTIVATE')
         worker_host, worker_port = worker_pea.runtime_ctrl_address.split(':')
         activate_msg.add_related_entity('worker', worker_host, int(worker_port))
-        assert GrpcConnectionPool.send_message_sync(
+        assert GrpcConnectionPool.send_request_sync(
             activate_msg, head_pea.runtime_ctrl_address
         )
 
