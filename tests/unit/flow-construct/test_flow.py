@@ -12,10 +12,10 @@ from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.peapods.pods import BasePod
-from jina.types.document.generators import from_ndarray
+from docarray.document.generators import from_ndarray
 from jina.types.request import Response
-from jina.proto import jina_pb2
-from tests import random_docs, validate_callback
+from docarray.proto import docarray_pb2
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -524,7 +524,7 @@ def test_return_results_sync_flow(return_results, protocol):
 
             assert len(r[0].data.docs) == 10
             for doc in r[0].data.docs:
-                assert isinstance(doc, jina_pb2.DocumentProto)
+                assert isinstance(doc, docarray_pb2.DocumentProto)
 
         else:
             assert r is None

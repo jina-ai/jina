@@ -1,5 +1,4 @@
-from jina.types.arrays.document import DocumentArray
-from jina import Executor, requests
+from jina import Executor, requests, DocumentArray
 
 
 class MyExecutor(Executor):

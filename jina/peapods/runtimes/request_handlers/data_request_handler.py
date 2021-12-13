@@ -8,8 +8,7 @@ from ....excepts import (
     BadConfigSource,
 )
 from ....executors import BaseExecutor
-from ....types.arrays.document import DocumentArray
-from ....types.arrays.memmap import DocumentArrayMemmap
+from .... import DocumentArray, DocumentArrayMemmap
 from ....types.message import Message, Request
 
 if TYPE_CHECKING:

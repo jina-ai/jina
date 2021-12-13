@@ -5,11 +5,13 @@ set -ex
 if [[ $1 == "local-only" ]]; then 
   rm -rf api && make clean
 
+  cp $(pwd)/../docarray/proto/docarray.proto $(pwd)/../jina/proto
   docker run --rm \
     -v $(pwd)/proto:/out \
     -v $(pwd)/../jina/proto:/protos \
     pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
 
+  rm $(pwd)/../jina/proto/docarray.proto
   make dirhtml
 else
   export NUM_RELEASES=${NUM_RELEASES:-10}

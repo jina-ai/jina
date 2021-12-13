@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import pytest
 
-from jina import Executor, requests, DocumentArray, Document
+from jina import Executor, requests, DocumentArray, Document, DocumentArrayMemmap
 from jina.executors import ReducerExecutor
 from jina.executors.metas import get_default_metas
 
@@ -236,6 +236,25 @@ def test_override_requests(uses_requests, expected):
 
     exec = OverrideExec(requests=uses_requests)
     assert expected == set(exec.requests.keys())
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+def test_map_nested(da_cls):
+    class NestedExecutor(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            def bar(d: Document):
+                d.text = 'hello'
+                return d
+
+            docs.apply(bar)
+            return docs
+
+    N = 2
+    da = DocumentArray.empty(N)
+    exec = NestedExecutor()
+    da1 = exec.foo(da)
+    assert da1.texts == ['hello'] * N
 
 
 @pytest.mark.parametrize('n_shards', [3, 5])

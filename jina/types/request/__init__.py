@@ -1,4 +1,4 @@
-from typing import Union, Optional, TypeVar, Dict
+from typing import Union, Optional, TypeVar, Dict, TYPE_CHECKING
 
 from google.protobuf import json_format
 
@@ -8,7 +8,6 @@ from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
 from ...proto import jina_pb2
-from ...types.struct import StructView
 
 _body_type = set(str(v).lower() for v in RequestType)
 _trigger_body_fields = set(
@@ -29,6 +28,9 @@ __all__ = ['Request', 'Response']
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.RequestProto, bytes, str, Dict
 )
+
+if TYPE_CHECKING:
+    from docarray.simple import StructView
 
 
 class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
@@ -234,12 +236,14 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         return Response._from_request(self)
 
     @property
-    def parameters(self) -> StructView:
+    def parameters(self) -> 'StructView':
         """Return the `tags` field of this Document as a Python dict
 
         :return: a Python dict view of the tags.
         """
         # if u get this u need to have it decompressed
+        from docarray.simple import StructView
+
         return StructView(self.proto.parameters)
 
     @parameters.setter

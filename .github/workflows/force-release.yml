@@ -37,6 +37,8 @@ jobs:
           npm install git-release-notes
           pip install twine wheel
           ./scripts/release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
+          cd ./scripts/docarray-release/
+          ./release.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}

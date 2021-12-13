@@ -11,7 +11,7 @@ A {class}`~jina.types.arrays.document.DocumentArray` is a list of `Document` obj
 a `DocumentArray` like a Python `list`. It implements all Python List interface. 
 
 ```{hint}
-We also provide a memory-efficient version of `DocumentArray` coined as {class}`~jina.DocumentArrayMemmap`. It shares *almost* the same API as `DocumentArray`, which means you can easily use it as a drop-in replacement when your data is big. You can {ref}`can find more about here<documentarraymemmap-api>`.
+We also provide a memory-efficient version of `DocumentArray` coined as {class}`~docarray.DocumentArrayMemmap`. It shares *almost* the same API as `DocumentArray`, which means you can easily use it as a drop-in replacement when your data is big. You can {ref}`can find more about here<documentarraymemmap-api>`.
 ```
 
 ## Construct
@@ -178,10 +178,46 @@ da.get_attributes('id', 'text', 'embedding')
 | `pandas.Dataframe` object         | `.to_dataframe()`                                                   | `.from_dataframe()`                           |
 | Local files                       |                                                                     | `.from_files()`                               |
 | `numpy.ndarray` object            |                                                                     | `.from_ndarray()`                             |
+| Jina Cloud Storage (experimental) | `.push()`                                                           | `.pull()`                                     |
 
 ```{seealso}
 `.from_*()` functions often utlizes generators. When using independently, can be more memory-efficient. See {mod}`~jina.types.document.generators`.   
 ```
+
+### Sharing DocumentArray across machines
+
+```{caution}
+This is an experimental feature introduced in Jina `2.5.4`. The behavior of this feature might change in the future. 
+```
+
+Since Jina `2.5.4` we introduce a new IO feature: {meth}`~jina.types.arrays.mixins.io.pushpull.PushPullMixin.push` and {meth}`~jina.types.arrays.mixins.io.pushpull.PushPullMixin.pull`, 
+which allows you to share a DocumentArray object across machines.
+
+Considering you are working on a GPU machine via Google Colab/Jupyter. After preprocessing and embedding, you got everything you need in a DocumentArray. You can easily transfer it to the local laptop via:
+
+```python
+from jina import DocumentArray
+
+da = DocumentArray(...)  # heavylifting, processing, GPU task, ...
+da.push(token='myda123')
+```
+
+Then on your local laptop, simply
+
+```python
+from jina import DocumentArray
+
+da = DocumentArray.pull(token='myda123')
+```
+
+Now you can continue the work at local, analyzing `da` or visualizing it. Your friends & colleagues who know the token `myda123` can also pull that DocumentArray. It's useful when you want to quickly share the results with your colleagues & friends.
+
+For more information of this feature, please refer to {class}`~jina.types.arrays.mixins.io.pushpull.PushPullMixin`.
+
+```{danger}
+The lifetime of the storage is not promised at the momennt: could be a day, could be a week. Do not use it for persistence in production. Only consider this as temporary transmission or a clipboard.
+```
+
 
 (embed-via-model)=
 ## Embed via model
@@ -443,7 +479,7 @@ match emb =   (0, 0)	1.0
 
 ### Keep only ID
 
-Default `A.match(B)` will copy the top-K matched Documents from B to `A.matches`. When these matches are big, copying them can be time-consuming. In this case, one can leverage `.match(..., only_id=True)` to keep only {attr}`~jina.Document.id`:
+Default `A.match(B)` will copy the top-K matched Documents from B to `A.matches`. When these matches are big, copying them can be time-consuming. In this case, one can leverage `.match(..., only_id=True)` to keep only {attr}`~docarray.Document.id`:
 
 ```python
 from jina import DocumentArray
@@ -637,7 +673,7 @@ Now we should have the average Precision@10 close to 0.5.
 0.5399999999999999
 ```
 
-Note that this value is an average number over all Documents of `da2`. If you want to look at the individual evaluation, you can check {attr}`~jina.Document.evaluations` attribute, e.g.
+Note that this value is an average number over all Documents of `da2`. If you want to look at the individual evaluation, you can check {attr}`~docarray.Document.evaluations` attribute, e.g.
 
 ```python
 for d in da2:
@@ -657,7 +693,7 @@ for d in da2:
 0.30000001192092896
 ```
 
-Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~jina.Document.id`. You can specify your own hash function.
+Note that `evaluate()` works only when two `DocumentArray` have the same length and their Documents are aligned by a hash function. The default hash function simply uses {attr}`~docarray.Document.id`. You can specify your own hash function.
 
 (traverse-doc)=
 ## Traverse nested elements

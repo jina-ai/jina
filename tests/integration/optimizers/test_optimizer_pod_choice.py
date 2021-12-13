@@ -34,6 +34,7 @@ def document_generator_option2(num_doc):
         yield doc, groundtruth_doc
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 def test_optimizer_single_flow_option1(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
         flow_yaml=os.path.join(cur_dir, 'flow_pod_choice.yml'),
@@ -57,6 +58,7 @@ def test_optimizer_single_flow_option1(tmpdir, config):
     assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM3'] == 1
 
 
+@pytest.mark.skip('Outdated design, optimizer to be removed in 3.0')
 def test_optimizer_single_flow_option2(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
         flow_yaml=os.path.join(cur_dir, 'flow_pod_choice.yml'),
