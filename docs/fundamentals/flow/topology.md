@@ -327,10 +327,17 @@ Reducing is necessary if your Flow needs the combined DocumentArray in later ste
 
 Reduction consists in reducing all DocumentArrays sequentially using [DocumentArray.reduce](https://docs.jina.ai/api/jina.types.arrays.mixins.reduce/?highlight=reduce#jina.types.arrays.mixins.reduce.ReduceMixin.reduce).
 The resulting DocumentArray contains Documents of all DocumentArrays.
-If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
-DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
-attribute value of the left-most DocumentArray is kept).
+
+If a Document exists in many DocumentArrays, data properties are merged.
+
 Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
 Other non-data properties are ignored.
-DocumentArrays coming from shards are ordered according to the shard number. On the other hand, DocumentArrays coming 
-from different pods, are ordered according to the pods' name (ascending alphabetical order).
+
+````{admonition} Warning
+:class: warning
+If a data property is set on many Documents with the same ID, only one value is kept in the final Document. This value 
+can be belong to any of these Documents. This also means, if you make the same request, with such conflicting data 
+properties, you can end up with undeterministic results.
+When you use shards or parallel branches, you should always make sure that all data properties of the same Documents 
+either do not conflict or have the same value.
+````
