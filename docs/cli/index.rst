@@ -1,5 +1,5 @@
-Jina Command-Line Interface
-===========================
+Command-Line Interface
+======================
 
 .. argparse::
    :noepilog:

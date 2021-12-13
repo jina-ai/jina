@@ -11,6 +11,7 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
+from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
@@ -826,6 +827,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from . import (
         __version__,
         __proto_version__,
+        __docarray_version__,
         __jina_env__,
         __uptime__,
         __unset_msg__,
@@ -839,6 +841,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
         info = {
             'jina': __version__,
+            'docarray': __docarray_version__,
             'jina-proto': __proto_version__,
             'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'libzmq': zmq.zmq_version(),
@@ -1324,12 +1327,10 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     from google.protobuf.struct_pb2 import ListValue
     from google.protobuf.struct_pb2 import Struct
-    from google.protobuf.pyext._message import MessageMapContainer
-    from .types.struct import StructView
 
     if isinstance(part1, int):
         result = _dict[part1]
-    elif isinstance(_dict, (dict, Struct, MessageMapContainer, StructView)):
+    elif isinstance(_dict, (dict, Struct, MutableMapping)):
         if part1 in _dict:
             result = _dict[part1]
         else:

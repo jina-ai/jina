@@ -7,7 +7,7 @@ import pytest
 from jina import Document, DocumentArrayMemmap, DocumentArray
 from jina.clients import Client
 from jina.excepts import BadClientInput
-from jina.types.document.generators import (
+from docarray.document.generators import (
     from_files,
     from_ndarray,
     from_lines,

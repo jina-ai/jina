@@ -9,7 +9,7 @@ from .metas import get_default_metas
 from ..helper import convert_tuple_to_list
 
 if TYPE_CHECKING:
-    from ..types.arrays import DocumentArray
+    from jina import DocumentArray
 
 
 def wrap_func(cls, func_lst, wrapper):

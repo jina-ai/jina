@@ -1,5 +1,4 @@
-from jina import Document, Flow
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document, Flow, DocumentArrayMemmap
 
 
 def test_dam_flow(tmpdir):

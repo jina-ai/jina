@@ -1,0 +1,2 @@
+recursive-include docarray/resources *
+include LICENSE

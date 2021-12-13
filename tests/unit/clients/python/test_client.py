@@ -11,8 +11,8 @@ from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
-from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document.generators import (
+from docarray.proto.docarray_pb2 import DocumentProto
+from docarray.document.generators import (
     from_csv,
     from_ndjson,
     from_files,

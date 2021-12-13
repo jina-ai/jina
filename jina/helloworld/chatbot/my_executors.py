@@ -5,7 +5,7 @@ import torch
 from transformers import AutoModel, AutoTokenizer
 
 from jina import Executor, DocumentArray, requests
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 
 
 class MyTransformer(Executor):
