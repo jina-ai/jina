@@ -4,14 +4,12 @@ from docarray import Document
 from docarray.array.chunk import ChunkArray
 from docarray.array.match import MatchArray
 from docarray.simple import NamedScore
-from jina.types.request.data import DataRequest
 
 
 @pytest.mark.parametrize(
     'obj',
     [
         Document(),
-        DataRequest(),
         NamedScore(),
         MatchArray([Document()], Document()),
         ChunkArray([Document()], Document()),
