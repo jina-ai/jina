@@ -109,7 +109,7 @@ class JinaDataRequestRPCServicer(object):
     """
 
     def process_data(self, request, context):
-        """Used for passing DataRequests to the Gateway and Executors"""
+        """Used for passing DataRequests to the Executors"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
