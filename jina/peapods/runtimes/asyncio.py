@@ -12,7 +12,8 @@ from ... import __windows__
 from ...importer import ImportExtensions
 
 from ..networking import GrpcConnectionPool
-from ...types.message.common import ControlMessage
+from ...types.request.control import ControlRequest
+from ...types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import multiprocessing
@@ -139,15 +140,15 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         """
         Check if status is ready.
 
-        :param ctrl_address: the address where the control message needs to be sent
+        :param ctrl_address: the address where the control request needs to be sent
         :param kwargs: extra keyword arguments
 
         :return: True if status is ready else False.
         """
 
         try:
-            GrpcConnectionPool.send_message_sync(ControlMessage('STATUS'), ctrl_address)
-        except RpcError:
+            GrpcConnectionPool.send_request_sync(ControlRequest('STATUS'), ctrl_address)
+        except RpcError as e:
             return False
         return True
 
@@ -177,23 +178,18 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
             time.sleep(0.1)
         return False
 
-    def _log_info_msg(self, msg):
-        info_msg = self._get_info_string(msg)
-        self.logger.debug(info_msg)
+    def _log_info_msg(self, request: Union[ControlRequest, DataRequest]):
+        if type(request) == DataRequest:
+            self._log_data_request(request)
+        elif type(request) == ControlRequest:
+            self._log_control_request(request)
 
-    def _get_info_string(self, msg):
-        info_msg = f'recv {msg.envelope.request_type} '
-        req_type = msg.envelope.request_type
-        if req_type == 'DataRequest':
-            info_msg += (
-                f'({msg.envelope.header.exec_endpoint}) - ({msg.envelope.request_id}) '
-            )
-        elif req_type == 'ControlRequest':
-            info_msg += f'({msg.request.command}) '
-        return info_msg
+    def _log_control_request(self, request: ControlRequest):
+        self.logger.debug(
+            f'recv ControlRequest {request.header.request_id} {request.command}'
+        )
 
-    def _log_info_messages(self, messages):
-        # just use the first message for logging
-        info_msg = self._get_info_string(messages[0])
-        info_msg += f' with {len(messages)} message parts'
+    def _log_data_request(self, request: DataRequest):
+        info_msg = f'recv DataRequest '
+        info_msg += f'({request.header.exec_endpoint}) - ({request.header.request_id}) '
         self.logger.debug(info_msg)

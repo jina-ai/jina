@@ -18,7 +18,6 @@ from jina import (
     DocumentArray,
 )
 from jina.peapods.networking import GrpcConnectionPool
-from jina.types.message import Message
 from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -170,8 +169,8 @@ def test_pod_activates_replicas():
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
         for _ in range(3):
-            response = GrpcConnectionPool.send_messages_sync(
-                [_create_test_data_message()],
+            response = GrpcConnectionPool.send_request_sync(
+                _create_test_data_message(),
                 f'{pod.head_args.host}:{pod.head_args.port_in}',
             )
             response_texts.update(response.response.docs.texts)
@@ -224,8 +223,8 @@ def test_pod_rolling_update(shards):
 async def _send_requests(pod):
     response_texts = set()
     for _ in range(3):
-        response = GrpcConnectionPool.send_messages_sync(
-            [_create_test_data_message()],
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(),
             f'{pod.head_args.host}:{pod.head_args.port_in}',
         )
         response_texts.update(response.response.docs.texts)
@@ -277,8 +276,8 @@ def test_pod_activates_shards():
         assert pod.num_peas == 3 * 3 + 1
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
-        response = GrpcConnectionPool.send_messages_sync(
-            [_create_test_data_message()],
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(),
             f'{pod.head_args.host}:{pod.head_args.port_in}',
         )
         response_texts.update(response.response.docs.texts)
@@ -511,6 +510,4 @@ def test_pod_upload_files(
 
 
 def _create_test_data_message():
-    req = list(request_generator('/', DocumentArray([Document(text='client')])))[0]
-    msg = Message(None, req)
-    return msg
+    return list(request_generator('/', DocumentArray([Document(text='client')])))[0]

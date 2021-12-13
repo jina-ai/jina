@@ -7,54 +7,51 @@ from ....excepts import (
 )
 from ....executors import BaseExecutor
 from .... import DocumentArray, DocumentArrayMemmap
-from ....types.message import Message
+from ....types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import argparse
     from ....logging.logger import JinaLogger
 
 
-def _get_docs_matrix_from_message(
-    messages: List['Message'],
+def _get_docs_matrix_from_request(
+    requests: List['DataRequest'],
     field: str,
 ) -> List['DocumentArray']:
-    if len(messages) > 1:
-        result = [
-            getattr(r, field)
-            for r in reversed([message.request for message in messages])
-        ]
+    if len(requests) > 1:
+        result = [getattr(request, field) for request in reversed(requests)]
     else:
-        result = [getattr(messages[0].request, field)]
+        result = [getattr(requests[0], field)]
 
-        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+    # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
     len_r = sum(len(r) for r in result)
     if len_r:
         return result
 
 
-def get_docs_from_messages(
-    messages: List['Message'],
+def get_docs_from_request(
+    requests: List['DataRequest'],
     field: str,
 ) -> 'DocumentArray':
     """
     Gets a field from the message
 
-    :param messages: messages to get the field from
+    :param requests: requests to get the field from
     :param field: field name to access
 
     :returns: DocumentArray extraced from the field from all messages
     """
-    if len(messages) > 1:
+    if len(requests) > 1:
         result = DocumentArray(
             [
                 d
-                for r in reversed([message.request for message in messages])
+                for r in reversed([request for request in requests])
                 for d in getattr(r, field)
             ]
         )
     else:
-        result = getattr(messages[0].request, field)
+        result = getattr(requests[0], field)
 
     return result
 
@@ -109,49 +106,49 @@ class DataRequestHandler:
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def handle(self, messages: 'List[Message]') -> Message:
+    def handle(self, requests: List['DataRequest']) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
-        :param messages: The messages to handle containing a DataRequest
+        :param requests: The messages to handle containing a DataRequest
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
         if (
-            messages[0].envelope.header.exec_endpoint not in self._executor.requests
+            requests[0].header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {messages[0].envelope.header.exec_endpoint}, requests: {self._executor.requests}'
+                f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            if len(messages) > 1:
+            if len(requests) > 1:
                 DataRequestHandler.replace_docs(
-                    messages[0],
-                    docs=get_docs_from_messages(messages, field='docs'),
+                    requests[0],
+                    docs=get_docs_from_request(requests, field='docs'),
                 )
-            return messages[0]
+            return requests[0]
 
         params = self._parse_params(
-            messages[0].request.parameters.to_dict(), self._executor.metas.name
+            requests[0].parameters.to_dict(), self._executor.metas.name
         )
-        docs = get_docs_from_messages(
-            messages,
+        docs = get_docs_from_request(
+            requests,
             field='docs',
         )
         # executor logic
         r_docs = self._executor(
-            req_endpoint=messages[0].envelope.header.exec_endpoint,
+            req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=_get_docs_matrix_from_message(
-                messages,
+            docs_matrix=_get_docs_matrix_from_request(
+                requests,
                 field='docs',
             ),
-            groundtruths=get_docs_from_messages(
-                messages,
+            groundtruths=get_docs_from_request(
+                requests,
                 field='groundtruths',
             ),
-            groundtruths_matrix=_get_docs_matrix_from_message(
-                messages,
+            groundtruths_matrix=_get_docs_matrix_from_request(
+                requests,
                 field='groundtruths',
             ),
         )
@@ -162,44 +159,44 @@ class DataRequestHandler:
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
             if isinstance(r_docs, (DocumentArray, DocumentArrayMemmap)):
-                if r_docs != messages[0].request.docs:
+                if r_docs != requests[0].docs:
                     # this means the returned DocArray is a completely new one
-                    DataRequestHandler.replace_docs(messages[0], r_docs)
+                    DataRequestHandler.replace_docs(requests[0], r_docs)
             elif isinstance(r_docs, dict):
-                messages[0].request.parameters.update(r_docs)
+                requests[0].parameters.update(r_docs)
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / DocumentArrayMemmap / Dict / `None`, '
                     f'but getting {r_docs!r}'
                 )
-        elif len(messages) > 1:
-            DataRequestHandler.replace_docs(messages[0], docs)
+        elif len(requests) > 1:
+            DataRequestHandler.replace_docs(requests[0], docs)
 
-        return messages[0]
+        return requests[0]
 
     @staticmethod
-    def replace_docs(msg, docs):
+    def replace_docs(request, docs):
         """Replaces the docs in a message with new Documents.
 
-        :param msg: The message object
+        :param request: The request object
         :param docs: the new docs to be used
         """
-        msg.request.docs.clear()
-        msg.request.docs.extend(docs)
+        request.docs.clear()
+        request.docs.extend(docs)
 
     @staticmethod
-    def merge_routes(messages):
-        """Merges all routes found in messages into the first message
+    def merge_routes(requests):
+        """Merges all routes found in requests into the first message
 
-        :param messages: The messages containing the requests with the routes to merge
+        :param requests: The messages containing the requests with the routes to merge
         """
-        if len(messages) <= 1:
+        if len(requests) <= 1:
             return
-        existing_pod_routes = [r.pod for r in messages[0].request.routes]
-        for message in messages[1:]:
-            for route in message.request.routes:
+        existing_pod_routes = [r.pod for r in requests[0].routes]
+        for request in requests[1:]:
+            for route in request.routes:
                 if route.pod not in existing_pod_routes:
-                    messages[0].request.routes.append(route)
+                    requests[0].routes.append(route)
                     existing_pod_routes.append(route.pod)
 
     def close(self):

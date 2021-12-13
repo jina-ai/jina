@@ -9,7 +9,7 @@ from jina.enums import PollingType, PeaRoleType
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.peas import Pea
-from jina.types.message.common import ControlMessage
+from jina.types.request.control import ControlRequest
 
 
 @pytest.mark.asyncio
@@ -32,9 +32,9 @@ async def test_peas_trivial_topology(port_generator):
 
     with gateway_pea, head_pea, worker_pea:
         # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-        assert GrpcConnectionPool.send_message_sync(
+        assert GrpcConnectionPool.send_request_sync(
             activate_msg, f'127.0.0.1:{head_port}'
         )
 
@@ -173,11 +173,11 @@ async def test_peas_shards(polling, port_generator):
 
     for i, pea in enumerate(shard_peas):
         # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity(
             'worker', '127.0.0.1', pea.args.port_in, shard_id=i
         )
-        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+        GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
@@ -227,9 +227,9 @@ async def test_peas_replicas(port_generator):
 
     # this would be done by the Pod, its adding the worker to the head
     for worker_pea in replica_peas:
-        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_pea.args.port_in)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+        GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
@@ -382,9 +382,9 @@ async def test_peas_with_replicas_advance_faster(port_generator):
 
     for pea in peas:
         # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlMessage(command='ACTIVATE')
+        activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', pea.args.port_in)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+        GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
@@ -435,11 +435,11 @@ class FastSlowExecutor(Executor):
 
 async def _activate_worker(head_port, worker_port, shard_id=None):
     # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlMessage(command='ACTIVATE')
+    activate_msg = ControlRequest(command='ACTIVATE')
     activate_msg.add_related_entity(
         'worker', '127.0.0.1', worker_port, shard_id=shard_id
     )
-    GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
 
 async def _start_create_pea(pod, port_generator, type='worker', executor=None):

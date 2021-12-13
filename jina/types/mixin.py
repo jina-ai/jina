@@ -126,6 +126,8 @@ class ProtoTypeMixin:
             self._pb_body.ClearField(k)
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.proto == other.proto
 
     def __bytes__(self):
