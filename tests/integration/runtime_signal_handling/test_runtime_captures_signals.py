@@ -10,7 +10,6 @@ from jina import Executor, DocumentArray, Document, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
-from jina.types.message import Message
 
 
 class DummyExecutor(Executor):
@@ -36,8 +35,7 @@ def _create_test_data_message():
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
         )
     )[0]
-    msg = Message(None, req)
-    return msg
+    return req
 
 
 @pytest.mark.parametrize('signal', [signal.SIGTERM, signal.SIGINT])
@@ -59,7 +57,7 @@ def test_executor_runtimes(signal, tmpdir):
     process.start()
     time.sleep(0.5)
 
-    GrpcConnectionPool.send_message_sync(
+    GrpcConnectionPool.send_request_sync(
         _create_test_data_message(), target=f'{args.host}:{args.port_in}'
     )
 

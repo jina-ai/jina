@@ -49,8 +49,6 @@ class GRPCBaseClient(BaseClient):
 
                 with cm1 as p_bar:
                     async for resp in stub.Call(req_iter):
-                        resp.as_typed_request(resp.request_type)
-                        resp = resp.as_response()
                         callback_exec(
                             response=resp,
                             on_error=on_error,

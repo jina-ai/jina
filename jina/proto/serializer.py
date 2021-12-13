@@ -1,11 +1,11 @@
 from typing import List, Union, Iterable
 
 from . import jina_pb2
-from ..types.message import Message
-from ..types.request import Request
+from ..types.request.control import ControlRequest
+from ..types.request.data import DataRequest
 
 
-class RequestProto:
+class ControlRequestProto:
     """This class is a drop-in replacement for gRPC default serializer.
 
     It replace default serializer to make sure we always work with `Request`
@@ -13,7 +13,7 @@ class RequestProto:
     """
 
     @staticmethod
-    def SerializeToString(x: 'Request'):
+    def SerializeToString(x: 'ControlRequest'):
         """
         # noqa: DAR101
         # noqa: DAR102
@@ -28,22 +28,27 @@ class RequestProto:
         # noqa: DAR102
         # noqa: DAR201
         """
-        return Request(x)
+        proto = jina_pb2.ControlRequestProto()
+        proto.ParseFromString(x)
+
+        return ControlRequest(request=proto)
 
 
-class MessageProto:
+class DataRequestProto:
     """This class is a drop-in replacement for gRPC default serializer.
-    It replace default serializer to make sure we always work with `Message`
+
+    It replace default serializer to make sure we always work with `Request`
+
     """
 
     @staticmethod
-    def SerializeToString(x: 'Message'):
+    def SerializeToString(x: 'DataRequest'):
         """
         # noqa: DAR101
         # noqa: DAR102
         # noqa: DAR201
         """
-        return x.proto.SerializeToString()
+        return x.proto.SerializePartialToString()
 
     @staticmethod
     def FromString(x: bytes):
@@ -52,12 +57,14 @@ class MessageProto:
         # noqa: DAR102
         # noqa: DAR201
         """
-        mp = jina_pb2.MessageProto()
-        mp.ParseFromString(x)
-        return Message.from_proto(mp)
+
+        proto = jina_pb2.DataRequestProto()
+        proto.ParseFromString(x)
+
+        return DataRequest(proto)
 
 
-class MessageListProto:
+class DataRequestListProto:
     """This class is a drop-in replacement for gRPC default serializer.
     It replace default serializer to make sure the message sending interface is convenient.
     It can handle sending single messages or a list of messages. It also returns a list of messages.
@@ -65,7 +72,7 @@ class MessageListProto:
     """
 
     @staticmethod
-    def SerializeToString(x: 'Union[List[Message], Message]'):
+    def SerializeToString(x: 'Union[List[DataRequest], DataRequest]'):
         """
         # noqa: DAR101
         # noqa: DAR102
@@ -75,10 +82,10 @@ class MessageListProto:
         if not isinstance(x, Iterable):
             protos.append(x.proto)
         else:
-            for m in x:
-                protos.append(m.proto)
+            for r in x:
+                protos.append(r.proto)
 
-        return jina_pb2.MessageListProto(messages=protos).SerializeToString()
+        return jina_pb2.DataRequestListProto(requests=protos).SerializeToString()
 
     @staticmethod
     def FromString(x: bytes):
@@ -87,10 +94,10 @@ class MessageListProto:
         # noqa: DAR102
         # noqa: DAR201
         """
-        mlp = jina_pb2.MessageListProto()
-        mlp.ParseFromString(x)
-        messages = []
-        for message in mlp.messages:
-            messages.append(Message.from_proto(message))
+        rlp = jina_pb2.DataRequestListProto()
+        rlp.ParseFromString(x)
+        requests = []
+        for request in rlp.requests:
+            requests.append(DataRequest.from_proto(request))
 
-        return messages
+        return requests

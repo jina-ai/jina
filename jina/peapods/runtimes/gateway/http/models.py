@@ -10,10 +10,8 @@ from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 from .....proto.jina_pb2 import (
     RouteProto,
-    EnvelopeProto,
     StatusProto,
-    MessageProto,
-    RequestProto,
+    DataRequestProto,
 )
 from docarray.proto.docarray_pb2 import (
     DenseNdArrayProto,
@@ -235,10 +233,8 @@ for proto in (
     SparseNdArrayProto,
     DocumentProto,
     RouteProto,
-    EnvelopeProto,
     StatusProto,
-    MessageProto,
-    RequestProto,
+    DataRequestProto,
 ):
     protobuf_to_pydantic_model(proto)
 
@@ -306,16 +302,27 @@ class JinaResponseModel(BaseModel):
     Jina HTTP Response model. Only `request_id` and `data` are preserved.
     """
 
-    class DataRequestModel(BaseModel):
+    class DataContentModel(BaseModel):
         docs: Optional[List[Dict[str, Any]]] = None
         groundtruths: Optional[List[Dict[str, Any]]] = None
 
-    request_id: str = Field(
-        ...,
-        example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
-        description='The ID given by Jina service',
-    )
-    data: Optional[DataRequestModel] = Field(None, description='Returned Documents')
+        class Config:
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
+
+    class HeaderModel(BaseModel):
+        request_id: str = Field(
+            ...,
+            example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
+            description='The ID given by Jina service',
+        )
+
+        class Config:
+            alias_generator = _to_camel_case
+            allow_population_by_field_name = True
+
+    header: HeaderModel = None
+    data: Optional[DataContentModel] = Field(None, description='Returned Documents')
 
     class Config:
         alias_generator = _to_camel_case

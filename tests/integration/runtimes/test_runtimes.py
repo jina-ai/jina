@@ -14,7 +14,7 @@ from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.head import HeadRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
-from jina.types.message.common import ControlMessage
+from jina.types.request.control import ControlRequest
 
 
 @pytest.mark.asyncio
@@ -66,9 +66,9 @@ async def test_runtimes_trivial_topology(port_generator):
     )
 
     # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlMessage(command='ACTIVATE')
+    activate_msg = ControlRequest(command='ACTIVATE')
     activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-    GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # send requests to the gateway
     c = Client(host='localhost', port=port_expose, asyncio=True)
@@ -591,11 +591,11 @@ class FastSlowExecutor(Executor):
 
 async def _activate_worker(head_port, worker_port, shard_id=None):
     # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlMessage(command='ACTIVATE')
+    activate_msg = ControlRequest(command='ACTIVATE')
     activate_msg.add_related_entity(
         'worker', '127.0.0.1', worker_port, shard_id=shard_id
     )
-    GrpcConnectionPool.send_message_sync(activate_msg, f'127.0.0.1:{head_port}')
+    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
 
 async def _create_worker(pod, port_generator, type='worker', executor=None):

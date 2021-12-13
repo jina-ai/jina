@@ -8,7 +8,7 @@ from jina import Document, Flow, Executor, requests
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from docarray.document.generators import from_ndarray
-from jina.types.request import Response
+from jina.types.request.data import Response
 from tests import validate_callback
 
 num_docs = 5
@@ -42,7 +42,7 @@ async def test_run_async_flow(protocol, mocker, flow_cls):
         async for r in f.index(
             from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
         ):
-            assert isinstance(r, Response)
+            assert isinstance(r.response, Response)
     validate_callback(r_val, validate)
 
 
@@ -73,7 +73,7 @@ async def test_run_async_flow_async_input(inputs, mocker):
     r_val = mocker.Mock()
     with AsyncFlow(asyncio=True).add() as f:
         async for r in f.index(inputs, on_done=r_val):
-            assert isinstance(r, Response)
+            assert isinstance(r.response, Response)
     validate_callback(r_val, validate)
 
 
@@ -91,7 +91,7 @@ async def run_async_flow_5s(protocol):
             from_ndarray(np.random.random([num_docs, 4])),
             on_done=validate,
         ):
-            assert isinstance(r, Response)
+            assert isinstance(r.response, Response)
 
 
 async def sleep_print():
@@ -143,7 +143,7 @@ async def test_return_results_async_flow(return_results, protocol, flow_cls):
         protocol=protocol, asyncio=True, return_results=return_results
     ).add() as f:
         async for r in f.index(from_ndarray(np.random.random([10, 2]))):
-            assert isinstance(r, Response)
+            assert isinstance(r.response, Response)
 
 
 @pytest.mark.slow
@@ -159,7 +159,7 @@ async def test_return_results_async_flow_crud(
         protocol=protocol, asyncio=True, return_results=return_results
     ).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
-            assert isinstance(r, Response)
+            assert isinstance(r.response, Response)
 
 
 class MyExec(Executor):
@@ -173,4 +173,4 @@ class MyExec(Executor):
 async def test_async_flow_empty_data(flow_cls):
     with flow_cls(asyncio=True).add(uses=MyExec) as f:
         async for r in f.post('/hello', parameters={'hello': 'world'}):
-            assert isinstance(r, Response)
+            assert isinstance(r.response, Response)

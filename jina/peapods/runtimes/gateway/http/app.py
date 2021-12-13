@@ -116,7 +116,7 @@ def get_fastapi_app(
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
-            response_model=PROTO_TO_PYDANTIC_MODELS.RequestProto,
+            response_model=PROTO_TO_PYDANTIC_MODELS.DataRequestProto,
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )

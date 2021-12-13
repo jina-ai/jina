@@ -1,18 +1,18 @@
 import asyncio
 import ipaddress
-import random
 from threading import Thread
-from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
+from typing import Optional, List, Dict, TYPE_CHECKING, Tuple, Type
 
 import grpc
 from grpc.aio import AioRpcError
 
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
-from jina.types.message import Message
 from ..enums import PollingType
 from ..helper import get_or_reuse_loop
-from ..types.message.common import ControlMessage
+from ..types.request import Request
+from ..types.request.control import ControlRequest
+from ..types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import kubernetes
@@ -36,10 +36,14 @@ class ReplicaList:
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
-            stub, channel = GrpcConnectionPool.create_async_channel_stub(address)
+            (
+                data_stub,
+                control_stub,
+                channel,
+            ) = GrpcConnectionPool.create_async_channel_stub(address)
             self._address_to_channel[address] = channel
 
-            self._connections.append(stub)
+            self._connections.append((data_stub, control_stub))
 
     async def remove_connection(self, address: str):
         """
@@ -238,46 +242,45 @@ class GrpcConnectionPool:
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self._connections = self._ConnectionPoolMap(self._logger)
 
-    def send_message(
+    def send_request(
         self,
-        msg: Message,
+        request: Request,
         pod: str,
         head: bool = False,
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
     ) -> List[asyncio.Task]:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convinience function wrapper around send_messages
-
-        :param msg: a single message to send
+        :param request: a single request to send
         :param pod: name of the Jina pod to send the message to
         :param head: If True it is send to the head, otherwise to the worker peas
         :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :return: list of asyncio.Task items for each send call
         """
-        return self.send_messages(
-            messages=[msg],
+        return self.send_requests(
+            requests=[request],
             pod=pod,
             head=head,
             shard_id=shard_id,
             polling_type=polling_type,
         )
 
-    def send_messages(
+    def send_requests(
         self,
-        messages: List[Message],
+        requests: List[Request],
         pod: str,
         head: bool = False,
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
     ) -> List[asyncio.Task]:
-        """Send messages to target via one or all of the pooled connections, depending on polling_type
+        """Send a request to target via one or all of the pooled connections, depending on polling_type
 
-        :param messages: list of messages to send
-        :param pod: name of the Jina pod to send the message to
+        :param requests: request (DataRequest/ControlRequest) to send
+        :param pod: name of the Jina pod to send the request to
         :param head: If True it is send to the head, otherwise to the worker peas
         :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
-        :param polling_type: defines if the message should be send to any or all pooled connections for the target
+        :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :return: list of asyncio.Task items for each send call
         """
         results = []
@@ -294,39 +297,38 @@ class GrpcConnectionPool:
             raise ValueError(f'Unsupported polling type {polling_type}')
 
         for connection in connections:
-            task = self._send_messages(messages, connection)
+            task = self._send_requests(requests, connection)
             results.append(task)
 
         return results
 
-    def send_message_once(
+    def send_request_once(
         self,
-        msg: Message,
+        request: Request,
         pod: str,
         head: bool = False,
         shard_id: Optional[int] = None,
     ) -> asyncio.Task:
         """Send msg to target via only one of the pooled connections
-
-        :param msg: message to send
+        :param request: request to send
         :param pod: name of the Jina pod to send the message to
         :param head: If True it is send to the head, otherwise to the worker peas
         :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
         :return: asyncio.Task representing the send call
         """
-        return self.send_messages_once([msg], pod=pod, head=head, shard_id=shard_id)
+        return self.send_requests_once([request], pod=pod, head=head, shard_id=shard_id)
 
-    def send_messages_once(
+    def send_requests_once(
         self,
-        messages: List[Message],
+        requests: List[Request],
         pod: str,
         head: bool = False,
         shard_id: Optional[int] = None,
     ) -> asyncio.Task:
-        """Send messages to target via only one of the pooled connections
+        """Send a request to target via only one of the pooled connections
 
-        :param messages: list of messages to send
-        :param pod: name of the Jina pod to send the message to
+        :param requests: request to send
+        :param pod: name of the Jina pod to send the request to
         :param head: If True it is send to the head, otherwise to the worker peas
         :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
         :return: asyncio.Task representing the send call
@@ -334,7 +336,7 @@ class GrpcConnectionPool:
         replicas = self._connections.get_replicas(pod, head, shard_id)
         if replicas:
             connection = replicas.get_next_connection()
-            return self._send_messages(messages, connection)
+            return self._send_requests(requests, connection)
         else:
             self._logger.debug(
                 f'No available connections for pod {pod} and shard {shard_id}'
@@ -398,14 +400,21 @@ class GrpcConnectionPool:
         """
         await self._connections.close()
 
-    def _send_messages(self, messages: List[Message], connection) -> asyncio.Task:
+    def _send_requests(self, requests: List[Request], connection) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper(new_messages, stub):
+        async def task_wrapper(requests, stubs):
 
             for i in range(3):
                 try:
-                    return await stub.Call(new_messages)
+                    if type(requests[0]) == DataRequest:
+                        return await stubs[0].process_data(requests)
+                    elif type(requests[0]) == ControlRequest:
+                        return await stubs[1].process_control(requests[0])
+                    else:
+                        raise ValueError(
+                            f'Unsupported request type {type(requests[0])}'
+                        )
                 except AioRpcError as e:
                     if e.code() != grpc.StatusCode.UNAVAILABLE:
                         raise
@@ -417,7 +426,7 @@ class GrpcConnectionPool:
                             f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/3'
                         )
 
-        return asyncio.create_task(task_wrapper(messages, connection))
+        return asyncio.create_task(task_wrapper(requests, connection))
 
     @staticmethod
     def activate_worker_sync(
@@ -425,19 +434,21 @@ class GrpcConnectionPool:
         worker_port: int,
         target_head: str,
         shard_id: Optional[int] = None,
-    ) -> Message:
+    ) -> ControlRequest:
         """
-        Register a given worker to a head by sending an activate message
+        Register a given worker to a head by sending an activate request
 
         :param worker_host: the host address of the worker
         :param worker_port: the port of the worker
-        :param target_head: address of the head to send the activate message to
+        :param target_head: address of the head to send the activate request to
         :param shard_id: id of the shard the worker belongs to
-        :returns: the response message
+        :returns: the response request
         """
-        activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
-        return GrpcConnectionPool.send_message_sync(activate_msg, target_head)
+        activate_request = ControlRequest(command='ACTIVATE')
+        activate_request.add_related_entity(
+            'worker', worker_host, worker_port, shard_id
+        )
+        return GrpcConnectionPool.send_request_sync(activate_request, target_head)
 
     @staticmethod
     async def activate_worker(
@@ -445,19 +456,23 @@ class GrpcConnectionPool:
         worker_port: int,
         target_head: str,
         shard_id: Optional[int] = None,
-    ) -> Message:
+    ) -> ControlRequest:
         """
-        Register a given worker to a head by sending an activate message
+        Register a given worker to a head by sending an activate request
 
         :param worker_host: the host address of the worker
         :param worker_port: the port of the worker
-        :param target_head: address of the head to send the activate message to
+        :param target_head: address of the head to send the activate request to
         :param shard_id: id of the shard the worker belongs to
-        :returns: the response message
+        :returns: the response request
         """
-        activate_msg = ControlMessage(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
-        return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
+        activate_request = ControlRequest(command='ACTIVATE')
+        activate_request.add_related_entity(
+            'worker', worker_host, worker_port, shard_id
+        )
+        return await GrpcConnectionPool.send_request_async(
+            activate_request, target_head
+        )
 
     @staticmethod
     async def deactivate_worker(
@@ -465,29 +480,33 @@ class GrpcConnectionPool:
         worker_port: int,
         target_head: str,
         shard_id: Optional[int] = None,
-    ) -> Message:
+    ) -> ControlRequest:
         """
-        Remove a given worker to a head by sending a deactivate message
+        Remove a given worker to a head by sending a deactivate request
 
         :param worker_host: the host address of the worker
         :param worker_port: the port of the worker
-        :param target_head: address of the head to send the deactivate message to
+        :param target_head: address of the head to send the deactivate request to
         :param shard_id: id of the shard the worker belongs to
-        :returns: the response message
+        :returns: the response request
         """
-        activate_msg = ControlMessage(command='DEACTIVATE')
-        activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id)
-        return await GrpcConnectionPool.send_message_async(activate_msg, target_head)
+        activate_request = ControlRequest(command='DEACTIVATE')
+        activate_request.add_related_entity(
+            'worker', worker_host, worker_port, shard_id
+        )
+        return await GrpcConnectionPool.send_request_async(
+            activate_request, target_head
+        )
 
     @staticmethod
-    def send_message_sync(msg: Message, target: str, timeout=1.0) -> Message:
+    def send_request_sync(request: Request, target: str, timeout=100.0) -> Request:
         """
-        Sends a message synchronizly to the target via grpc
+        Sends a request synchronizly to the target via grpc
 
-        :param msg: the message to send
-        :param target: where to send the message to, like 127.0.0.1:8080
+        :param request: the request to send
+        :param target: where to send the request to, like 127.0.0.1:8080
         :param timeout: timeout for the send
-        :returns: the response message
+        :returns: the response request
         """
 
         for i in range(3):
@@ -496,8 +515,12 @@ class GrpcConnectionPool:
                     target,
                     options=GrpcConnectionPool.get_default_grpc_options(),
                 ) as channel:
-                    stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-                    response = stub.Call([msg], timeout=timeout)
+                    if type(request) == DataRequest:
+                        stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+                        response = stub.process_data([request], timeout=timeout)
+                    elif type(request) == ControlRequest:
+                        stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
+                        response = stub.process_control(request, timeout=timeout)
                     return response
             except grpc.RpcError as e:
                 if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
@@ -516,56 +539,50 @@ class GrpcConnectionPool:
         ]
 
     @staticmethod
-    async def send_message_async(msg: Message, target: str, timeout=1.0) -> Message:
+    async def send_request_async(request: Request, target: str, timeout=1.0) -> Request:
         """
-        Sends a message synchronizly to the target via grpc
+        Sends a request synchronizly to the target via grpc
 
-        :param msg: the message to send
-        :param target: where to send the message to, like 127.0.0.1:8080
+        :param request: the request to send
+        :param target: where to send the request to, like 127.0.0.1:8080
         :param timeout: timeout for the send
-        :returns: the response message
+        :returns: the response request
         """
 
         async with grpc.aio.insecure_channel(
             target, options=GrpcConnectionPool.get_default_grpc_options()
         ) as channel:
-            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-            return await stub.Call([msg], timeout=timeout)
-
-    @staticmethod
-    def send_messages_sync(
-        messages: List[Message], target: str, timeout=1.0
-    ) -> Message:
-        """
-        Sends messages synchronizly to the target via grpc
-
-        :param messages: the list of messages to send
-        :param target: where to send the message to, like 127.0.0.1:8080
-        :param timeout: timeout for the send
-        :returns: the response message
-        """
-        with grpc.insecure_channel(
-            target, options=GrpcConnectionPool.get_default_grpc_options()
-        ) as channel:
-            stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-            return stub.Call(messages, timeout=timeout)
+            if type(request) == DataRequest:
+                stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+                return await stub.process_data([request], timeout=timeout)
+            elif type(request) == ControlRequest:
+                stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
+                return await stub.process_control(request, timeout=timeout)
 
     @staticmethod
     def create_async_channel_stub(
         address,
-    ) -> Tuple[jina_pb2_grpc.JinaDataRequestRPCStub, grpc.aio.insecure_channel]:
+    ) -> Tuple[
+        jina_pb2_grpc.JinaDataRequestRPCStub,
+        jina_pb2_grpc.JinaControlRequestRPCStub,
+        grpc.aio.insecure_channel,
+    ]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
         :param address: the adress to create the connection to, like 127.0.0.0.1:8080
 
-        :returns: an async grpc channel
+        :returns: DataRequest/ControlRequest stubs and an async grpc channel
         """
         channel = grpc.aio.insecure_channel(
             address,
             options=GrpcConnectionPool.get_default_grpc_options(),
         )
-        return jina_pb2_grpc.JinaDataRequestRPCStub(channel), channel
+        return (
+            jina_pb2_grpc.JinaDataRequestRPCStub(channel),
+            jina_pb2_grpc.JinaControlRequestRPCStub(channel),
+            channel,
+        )
 
 
 class K8sGrpcConnectionPool(GrpcConnectionPool):
