@@ -13,7 +13,6 @@ from docarray.proto.docarray_pb2 import DocumentProto
 from docarray.simple import ListView, StructView
 from docarray.simple.score import NamedScore
 from jina.logging.profile import TimeContext
-from jina.types.request.data import DataRequest
 
 
 def scipy_sparse_list():
