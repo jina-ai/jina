@@ -5,7 +5,6 @@ import numpy as np
 from docarray.array.match import MatchArray
 from docarray import Document
 from docarray.proto.docarray_pb2 import DocumentArrayProto
-from jina.types.request.data import DataRequest
 
 
 @pytest.fixture(scope='function')
@@ -24,7 +23,7 @@ def reference_doc(document_factory):
 
 @pytest.fixture
 def matches(document_factory):
-    req = DataRequest()
+    req = DocumentArrayProto()
     req.docs.extend(
         [
             document_factory.create(1, 'test 1').proto,
