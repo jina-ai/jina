@@ -1,7 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
-import "google/protobuf/empty.proto";
 import "docarray.proto";
 
 package jina;
@@ -124,8 +123,8 @@ message DataRequestProto {
     repeated RouteProto routes = 3; // status info on every routes
 
     message DataContentProto {
-        repeated DocumentProto docs = 1; // the docs in this request
-        repeated DocumentProto groundtruths = 2; // a list of groundtruth Documents
+        repeated docarray.DocumentProto docs = 1; // the docs in this request
+        repeated docarray.DocumentProto groundtruths = 2; // a list of groundtruth Documents
     }
 
     DataContentProto data = 4; // container for docs and groundtruths
