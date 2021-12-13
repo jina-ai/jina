@@ -314,7 +314,6 @@ message RequestProto {
     message DataRequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to query
         repeated DocumentProto groundtruths = 2; // a list of groundtruth Document you want to evaluate it with
-        string pod_name = 3; // sender pod name
     }
 
     /**
