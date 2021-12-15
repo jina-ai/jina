@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/tutorials/question-answering-bot.html" />
   <meta property="og:site_name" content="Jina 2.6.3 Documentation" />
-  <meta property="og:description" content="This tutorial will take you through a solution of a question-answering on long document. This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask. One way to solve this is by predicting answers using a neural network that was ..." />
+  <meta property="og:description" content="The following tutorial will take you through a solution of to question-answering on long documents. This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask. One way to solve this is by predicting answers using a neural networ..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina 2.6.3 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -771,25 +771,27 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="open-domain-question-answering-on-long-document">
 <h1>Open-Domain Question-Answering on Long Document<a class="headerlink" href="#open-domain-question-answering-on-long-document" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will take you through a solution of a question-answering on long document.
+<p>The following tutorial will take you through a solution of to question-answering on long documents.
 This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask.</p>
 <p>One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let’s say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?</p>
 <p>How, you ask? <em>Let me explain!</em></p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Our approach to the problem leverages the <a class="reference external" href="https://arxiv.org/pdf/1904.08375.pdf">Doc2query method</a>, which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as <code class="docutils literal notranslate"><span class="pre">Jina</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">open</span> <span class="pre">source</span> <span class="pre">framework</span> <span class="pre">for</span> <span class="pre">neural</span> <span class="pre">search.</span></code>, the model predicts questions such as <code class="docutils literal notranslate"><span class="pre">What</span> <span class="pre">is</span> <span class="pre">Jina?</span></code> or <code class="docutils literal notranslate"><span class="pre">Is</span> <span class="pre">Jina</span> <span class="pre">open</span> <span class="pre">source?</span></code>.</p>
-<p>The idea here is to predict several questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user’s query is compared with the encodings in our index to find the closes match.</p>
-<p>Since we know what part of the original text was used to generate the question, that was most similar to the user’s query, we can return the original text as an answer to the user.</p>
+<p>The idea here is to predict several questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user’s query is compared with the encodings of generated questions, in our index to find the closes match.</p>
+<p>Once the matching answer is found, we can return it to the user.</p>
 <p>Now that you have a general idea of what we will be doing, the following section will show you how to define our <code class="docutils literal notranslate"><span class="pre">Flow</span></code>s in Jina. Then we will take a look at how to implement the necessary <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s for our search-based question-answering system.</p>
 </section>
 <section id="indexing-the-text-document">
 <h2>Indexing the text document<a class="headerlink" href="#indexing-the-text-document" title="Permalink to this headline">¶</a></h2>
 <p>Let’s imagine we extracted a bunch of sentences from Jina’s documentation and stored them in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, as shown below.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">example_sentences</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">"Document is the basic data type that Jina operates with"</span><span class="p">,</span>
-    <span class="s2">"Executor processes a DocumentArray in-place"</span><span class="p">,</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Flow</span>
+
+<span class="n">example_sentences</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'Document is the basic data type that Jina operates with'</span><span class="p">,</span>
+    <span class="s1">'Executor processes a DocumentArray in-place'</span><span class="p">,</span> 
     <span class="o">...</span><span class="p">,</span>
-    <span class="s2">"Jina uses the concept of a flow to tie different executors together"</span>
+    <span class="s1">'Jina uses the concept of a flow to tie different executors together'</span>
 <span class="p">]</span>
 
 <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">sentence</span><span class="p">)</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">example_sentences</span><span class="p">])</span>
@@ -798,23 +800,29 @@ This is an inherently difficult task, due to the fuzziness of human language and
 <p>As described in the last section, we first need to predict potential questions for each of the elements in the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. Then we have to use another model to create vector encodings from the predicted questions. Finally, we store them as the index.</p>
 <p>At this point we have enough information to start defining our <code class="docutils literal notranslate"><span class="pre">Flows</span></code>.</p>
 <p><em>Without further ado, let’s build!</em></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">indexing_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
-<span class="c1"># Generate potential questions using doc2query</span>
-<span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"question_transformer"</span><span class="p">,</span> 
-      <span class="n">uses</span><span class="o">=</span><span class="n">QuestionGenerator</span><span class="p">,</span> 
-      <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s2">"random_seed"</span><span class="p">:</span> <span class="mi">12345</span><span class="p">}</span>
-<span class="c1"># Create vector representations for generated questions </span>
-<span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"text_encoder"</span><span class="p">,</span> 
-      <span class="n">uses</span><span class="o">=</span><span class="n">TextEncoder</span><span class="p">,</span> 
-      <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s2">"parameters"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"traversal_paths"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"c"</span><span class="p">]}}</span>
-<span class="c1"># Store embeddings for all generated questions as index</span>
-<span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"my_indexer"</span><span class="p">,</span> 
-      <span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">indexing_flow</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+    <span class="c1"># Generate potential questions using doc2query</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'question_transformer'</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="n">QuestionGenerator</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Encode the generated questions</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'text_encoder'</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="n">TextEncoder</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'parameters'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'traversal_paths'</span><span class="p">:</span> <span class="s1">'c'</span><span class="p">}},</span>
+    <span class="p">)</span>
+    <span class="c1"># Index answers and generated questions</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'simple_indexer'</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="n">SimpleIndexer</span><span class="p">,</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 
-<span class="k">with</span> <span class="n">indexing_flow</span><span class="p">:</span> 
+<span class="k">with</span> <span class="n">indexing_flow</span><span class="p">:</span>
     <span class="c1"># Run the indexing on all extracted sentences</span>
-    <span class="n">indexing_flow</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s2">"/index"</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
+    <span class="n">indexing_flow</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -822,37 +830,47 @@ This is an inherently difficult task, due to the fuzziness of human language and
 <h2>Searching of the user’s query against the index<a class="headerlink" href="#searching-of-the-user-s-query-against-the-index" title="Permalink to this headline">¶</a></h2>
 <p>After having defined the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> for indexing our document, we are now ready to work on answering user queries. Incoming queries also need to be encoded. For that, we use the same encoder that we used for encoding our generated questions. Then we need <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code> to perform similarity search, in order to retrieve generated questions and eventually answers the query.</p>
 <p>The flow for searching is much simpler than the one for indexing and looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query_flow</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
     <span class="c1"># Create vector representations from query</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"query_transformer"</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">TextEncoder</span>
-    <span class="c1"># Search the index for matching generated questions</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"query_indexer"</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'query_transformer'</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">TextEncoder</span><span class="p">,)</span>
+    <span class="c1"># Use encoded question to search our index</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'simple_indexer'</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="n">SimpleIndexer</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 
-<span class="k">with</span> <span class="n">query_flow</span><span class="p">:</span> 
-    <span class="n">indexing_flow</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s2">"/query"</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">user_queries</span><span class="p">,</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">query_flow</span><span class="p">:</span>
+    <span class="c1"># Run question through the query flow and return answer</span>
+    <span class="n">search_results</span> <span class="o">=</span> <span class="n">query_flow</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">user_queries</span><span class="p">,</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 <p>Now that we have seen the overall structure of the approach and have defined our <code class="docutils literal notranslate"><span class="pre">Flows</span></code>, we can code up the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s.</p>
 </section>
 <section id="building-the-executor-to-generate-potential-questions">
 <h2>Building the Executor to Generate Potential Questions<a class="headerlink" href="#building-the-executor-to-generate-potential-questions" title="Permalink to this headline">¶</a></h2>
-<p>The first <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, thatÏ we implement, is the <code class="docutils literal notranslate"><span class="pre">QuestionGenerator</span></code>. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.</p>
+<p>The first <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, that we implement, is the <code class="docutils literal notranslate"><span class="pre">QuestionGenerator</span></code>. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.</p>
 <p>Apart from that, it just loops over all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as <code class="docutils literal notranslate"><span class="pre">chunks</span></code> alongside the original text.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">QuestionGenerator</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">T5Tokenizer</span><span class="p">,</span> <span class="n">T5ForConditionalGeneration</span>
 
+<span class="k">class</span> <span class="nc">QuestionGenerator</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">doc2query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Generates potential questions for each answer"""</span>
-        
+
         <span class="c1"># Load pretrained doc2query models</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span> <span class="o">=</span> <span class="n">T5Tokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-            <span class="s1">'castorini/doc2query-t5-base-msmarco'</span><span class="p">)</span>
+            <span class="s1">'castorini/doc2query-t5-base-msmarco'</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">T5ForConditionalGeneration</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-            <span class="s1">'castorini/doc2query-t5-base-msmarco'</span><span class="p">)</span>
+            <span class="s1">'castorini/doc2query-t5-base-msmarco'</span>
+        <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">input_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">'pt'</span><span class="p">)</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">'pt'</span><span class="p">)</span>
             <span class="c1"># Generte potential queries for each piece of text</span>
             <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
                 <span class="n">input_ids</span><span class="o">=</span><span class="n">input_ids</span><span class="p">,</span>
@@ -860,10 +878,11 @@ This is an inherently difficult task, due to the fuzziness of human language and
                 <span class="n">do_sample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">num_return_sequences</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="c1"># Decode the outputs ot text and store them </span>
+            <span class="c1"># Decode the outputs ot text and store them</span>
             <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
                 <span class="n">question</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
-                    <span class="n">output</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">output</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">question</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -872,18 +891,23 @@ This is an inherently difficult task, due to the fuzziness of human language and
 <section id="building-the-encoder">
 <h2>Building the Encoder<a class="headerlink" href="#building-the-encoder" title="Permalink to this headline">¶</a></h2>
 <p>The next step is to build the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, which we will use to create vector representations from human-readable text.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TextEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="k">class</span> <span class="nc">TextEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'traversal_paths'</span><span class="p">:</span> <span class="s1">'r'</span><span class="p">},</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span>
-            <span class="s1">'paraphrase-mpnet-base-v2'</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="n">cache_folder</span><span class="o">=</span><span class="s2">"."</span><span class="p">)</span>
+            <span class="s1">'paraphrase-mpnet-base-v2'</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">'cpu'</span><span class="p">,</span> <span class="n">cache_folder</span><span class="o">=</span><span class="s1">'.'</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
 
     <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">'/search'</span><span class="p">,</span> <span class="s1">'/index'</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> 
-               <span class="n">traversal_paths</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'r'</span><span class="p">,),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Wraps encoder from sentence-transformers package"""</span>   
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Wraps encoder from sentence-transformers package"""</span>
+        <span class="n">traversal_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'traversal_paths'</span><span class="p">)</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">docs</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="n">traversal_paths</span><span class="p">)</span>
- 
+
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
             <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
             <span class="n">target</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span>
@@ -898,7 +922,10 @@ This is an inherently difficult task, due to the fuzziness of human language and
 Namely, the indexing and the search.</p>
 <p>When it is used to perform indexing, <code class="docutils literal notranslate"><span class="pre">index()</span></code> is called. This stores all provided documents, together with their embeddings, as a <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>.</p>
 <p>However, when the <code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code> is used to handle an incoming query, the <code class="docutils literal notranslate"><span class="pre">search()</span></code> function is called, it performs similarity search and ranks the results.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SimpleIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArrayMemmap</span>
+
+<span class="k">class</span> <span class="nc">SimpleIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="sd">"""Simple indexer class"""</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -921,44 +948,35 @@ Namely, the indexing and the search.</p>
             <span class="n">metric</span><span class="o">=</span><span class="s1">'cosine'</span><span class="p">,</span>
             <span class="n">normalization</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
             <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-            <span class="n">traversal_rdarray</span><span class="o">=</span><span class="p">[</span><span class="s1">'c'</span><span class="p">],</span>
+            <span class="n">traversal_rdarray</span><span class="o">=</span><span class="s1">'c,'</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">match_similarity</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-            <span class="c1"># For each match </span>
+            <span class="c1"># For each match</span>
             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="p">:</span>
                 <span class="c1"># Get cosine similarity</span>
-                <span class="n">match_similarity</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">parent_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">match_similarity</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">parent_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">m</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine'</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
 
             <span class="n">sorted_similarities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-                <span class="n">match_similarity</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            
-            <span class="c1"># Rank the matches by similarity</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sorted_similarities</span><span class="p">:</span>
+                <span class="n">match_similarity</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Rank matches by similarity and collect them</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sorted_similarities</span><span class="p">:</span>
                 <span class="n">m</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+                <span class="c1"># Only return top 10 answers</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
                     <span class="k">break</span>
+            <span class="c1"># Remove embedding as it is not needed anymore</span>
             <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The ranking of the results is thereby represented in the order of the matches inside the <code class="docutils literal notranslate"><span class="pre">matches</span></code> object. Hence, to provide the answer to the user, we could use a little helper function that gets the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the best-fitting match and searches the index for the sentence with this <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">best_matching_id</span> <span class="o">=</span> <span class="n">user_queries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
-
-<span class="k">def</span> <span class="nf">get_answer</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">best_matching_id</span><span class="p">):</span> 
-    <span class="sd">"""Get the answer for most similar question"""</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-        <span class="c1"># Search all questions for each sentence</span>
-        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span> 
-            <span class="c1"># Get the question that fits best</span>
-            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">best_matching_id</span><span class="p">:</span>   
-                <span class="c1"># Return the answer to best fitting question</span>
-                <span class="n">ret</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">text</span>
-    <span class="k">return</span> <span class="n">ret</span>
-<span class="c1"># Prints the answer text to our question</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">get_answer</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">best_matching_id</span><span class="p">))</span>
+<p>The ranking of the results is thereby represented in the order of the matches inside the <code class="docutils literal notranslate"><span class="pre">matches</span></code> object. Hence, to show the correct answer to the user, we can simply print the first match from inside the <code class="docutils literal notranslate"><span class="pre">docs</span></code>, which are stored in the <code class="docutils literal notranslate"><span class="pre">search_results</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print the answer text to our question</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">search_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">texts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>We have now seen how to implement a question-answering bot using Jina without the need for a large dataset of matching questions and answers. In practice, we would need to experiment with several parameters, such as the initial extraction of answers from the original text. In this tutorial, we made the assumption that every sentence will be one potential answer. However, in reality, it is likely that some user queries will require multiple sentences or complete paragraphs to answer.</p>
