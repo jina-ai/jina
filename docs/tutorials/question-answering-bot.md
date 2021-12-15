@@ -1,6 +1,6 @@
 # Open-Domain Question-Answering on Long Document
 
-This tutorial will take you through a solution of a question-answering on long document. 
+The following tutorial will take you through a solution of to question-answering on long documents. 
 This is an inherently difficult task, due to the fuzziness of human language and the infinite number of questions one could ask.
 
 One way to solve this is by predicting answers using a neural network that was trained on pairs of questions and their corresponding answers. In many cases such a dataset is not available, like in the case of most software documentation. Let's say we want to build a chatbot to answer questions about the Jina documentation. What if I told you that there is a way to reframe this task as a search problem and that this would alleviate the need for a large dataset of matching questions and answers?
@@ -10,9 +10,9 @@ How, you ask? *Let me explain!*
 ## Overview 
 Our approach to the problem leverages the [Doc2query method](https://arxiv.org/pdf/1904.08375.pdf), which, form a piece of text, predicts different questions the text could potentially answer. For example, given a sentence such as `Jina is an open source framework for neural search.`, the model predicts questions such as `What is Jina?` or `Is Jina open source?`.
 
-The idea here is to predict several questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings in our index to find the closes match.
+The idea here is to predict several questions for every part of the original text document, in our case the Jina documentation. Then we use an encoder to create a vector representation for each of the predicted questions. These representations are stored and provide the index for our body of text. When a user prompts the bot with a question, we encode it in the same way we encoded our generated questions. Now we can run a similarity search on the encodings. The encoding of the user's query is compared with the encodings of generated questions, in our index to find the closes match. 
 
-Since we know what part of the original text was used to generate the question, that was most similar to the user's query, we can return the original text as an answer to the user.
+Once the matching answer is found, we can return it to the user. 
 
 Now that you have a general idea of what we will be doing, the following section will show you how to define our `Flow`s in Jina. Then we will take a look at how to implement the necessary `Executor`s for our search-based question-answering system.  
 
@@ -20,11 +20,13 @@ Now that you have a general idea of what we will be doing, the following section
 Let's imagine we extracted a bunch of sentences from Jina's documentation and stored them in a `DocumentArray`, as shown below. 
 
 ```python
+from jina import DocumentArray, Executor, requests, Document, Flow
+
 example_sentences = [
-    "Document is the basic data type that Jina operates with",
-    "Executor processes a DocumentArray in-place", 
+    'Document is the basic data type that Jina operates with',
+    'Executor processes a DocumentArray in-place', 
     ...,
-    "Jina uses the concept of a flow to tie different executors together"
+    'Jina uses the concept of a flow to tie different executors together'
 ]
 
 docs = DocumentArray([Document(content=sentence) for sentence in example_sentences])
@@ -37,23 +39,29 @@ At this point we have enough information to start defining our `Flows`.
 *Without further ado, let's build!*
 
 ``` python
-indexing_flow = Flow(
-# Generate potential questions using doc2query
-).add(name="question_transformer", 
-      uses=QuestionGenerator, 
-      uses_with={"random_seed": 12345}
-# Create vector representations for generated questions 
-).add(name="text_encoder", 
-      uses=TextEncoder, 
-      uses_with={"parameters": {"traversal_paths": ["c"]}}
-# Store embeddings for all generated questions as index
-).add(name="my_indexer", 
-      uses=MyIndexer
+indexing_flow = (
+    Flow()
+    # Generate potential questions using doc2query
+    .add(
+        name='question_transformer',
+        uses=QuestionGenerator,
+    )
+    # Encode the generated questions
+    .add(
+        name='text_encoder',
+        uses=TextEncoder,
+        uses_with={'parameters': {'traversal_paths': 'c'}},
+    )
+    # Index answers and generated questions
+    .add(
+        name='simple_indexer',
+        uses=SimpleIndexer,
+    )
 )
 
-with indexing_flow: 
+with indexing_flow:
     # Run the indexing on all extracted sentences
-    indexing_flow.post(on="/index", inputs=docs, on_done=print)
+    indexing_flow.post(on='/index', inputs=docs, on_done=print)
 ```
 
 ## Searching of the user's query against the index
@@ -63,40 +71,50 @@ After having defined the `Flow` for indexing our document, we are now ready to w
 The flow for searching is much simpler than the one for indexing and looks like this: 
 
 ``` python
-query_flow = Flow(
+query_flow = (
+    Flow()
     # Create vector representations from query
-    ).add(name="query_transformer", uses=TextEncoder
-    # Search the index for matching generated questions
-    ).add(name="query_indexer", uses=MyIndexer)
+    .add(name='query_transformer', uses=TextEncoder,)
+    # Use encoded question to search our index
+    .add(
+        name='simple_indexer',
+        uses=SimpleIndexer,
+    )
+)
 
-with query_flow: 
-    indexing_flow.post(on="/query", inputs=user_queries, on_done=print)
+with query_flow:
+    # Run question through the query flow and return answer
+    search_results = query_flow.post(
+        on='/search', inputs=user_queries, return_results=True, on_done=print
+    )
 ```
 
 Now that we have seen the overall structure of the approach and have defined our `Flows`, we can code up the `Executor`s.
 
 ## Building the Executor to Generate Potential Questions 
 
-The first `Executor`, thatÏ we implement, is the `QuestionGenerator`. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.
+The first `Executor`, that we implement, is the `QuestionGenerator`. It is a wrapper around the model that predicts potential questions, which a given piece of text can answer.
 
 Apart from that, it just loops over all provided parts of input text. After potential questions are predicted for each of the inputs, they are stored as `chunks` alongside the original text. 
 
 ``` python 
-class QuestionGenerator(Executor): 
+from transformers import T5Tokenizer, T5ForConditionalGeneration
 
+class QuestionGenerator(Executor):
     @requests
     def doc2query(self, docs: DocumentArray, **kwargs):
         """Generates potential questions for each answer"""
-        
+
         # Load pretrained doc2query models
         self._tokenizer = T5Tokenizer.from_pretrained(
-            'castorini/doc2query-t5-base-msmarco')
+            'castorini/doc2query-t5-base-msmarco'
+        )
         self._model = T5ForConditionalGeneration.from_pretrained(
-            'castorini/doc2query-t5-base-msmarco')
+            'castorini/doc2query-t5-base-msmarco'
+        )
 
         for d in docs:
-            input_ids = self._tokenizer.encode(
-                d.content, return_tensors='pt')
+            input_ids = self._tokenizer.encode(d.content, return_tensors='pt')
             # Generte potential queries for each piece of text
             outputs = self._model.generate(
                 input_ids=input_ids,
@@ -104,10 +122,11 @@ class QuestionGenerator(Executor):
                 do_sample=True,
                 num_return_sequences=10,
             )
-            # Decode the outputs ot text and store them 
+            # Decode the outputs ot text and store them
             for output in outputs:
                 question = self._tokenizer.decode(
-                    output, skip_special_tokens=True).strip()
+                    output, skip_special_tokens=True
+                ).strip()
                 d.chunks.append(Document(text=question))
 ```
 
@@ -117,18 +136,23 @@ We try to give credit where credit is due and want to mention the paper, that in
 The next step is to build the `Executor`, which we will use to create vector representations from human-readable text. 
 
 ```python 
-class TextEncoder(Executor):
+import torch
+from sentence_transformers import SentenceTransformer
 
-    def __init__(self): 
+class TextEncoder(Executor):
+    def __init__(self, parameters: dict = {'traversal_paths': 'r'}, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.model = SentenceTransformer(
-            'paraphrase-mpnet-base-v2', device="cpu", cache_folder=".")
+            'paraphrase-mpnet-base-v2', device='cpu', cache_folder='.'
+        )
+        self.parameters = parameters
 
     @requests(on=['/search', '/index'])
-    def encode(self, docs: DocumentArray, 
-               traversal_paths: Tuple[str] = ('r',), **kwargs):
-        """Wraps encoder from sentence-transformers package"""   
+    def encode(self, docs: DocumentArray, **kwargs):
+        """Wraps encoder from sentence-transformers package"""
+        traversal_paths = self.parameters.get('traversal_paths')
         target = docs.traverse_flat(traversal_paths)
- 
+
         with torch.inference_mode():
             embeddings = self.model.encode(target.texts)
             target.embeddings = embeddings
@@ -147,6 +171,9 @@ However, when the `SimpleIndexer` is used to handle an incoming query, the `sear
 
 
 ```python 
+from collections import defaultdict
+from jina import DocumentArrayMemmap
+
 class SimpleIndexer(Executor):
     """Simple indexer class"""
 
@@ -170,46 +197,37 @@ class SimpleIndexer(Executor):
             metric='cosine',
             normalization=(1, 0),
             limit=100,
-            traversal_rdarray=['c'],
+            traversal_rdarray='c,',
         )
 
         for d in docs:
             match_similarity = defaultdict(float)
-            # For each match 
+            # For each match
             for m in d.matches:
                 # Get cosine similarity
-                match_similarity[m.parent_id] = m.scores['cosine'].value
+                match_similarity[m.parent_id] += m.scores['cosine'].value
 
             sorted_similarities = sorted(
-                match_similarity.items(), key=lambda v: v[1], reverse=True)
-            
-            # Rank the matches by similarity
-            for k, v in sorted_similarities:
+                match_similarity.items(), key=lambda v: v[1], reverse=True
+            )
+
+            # Rank matches by similarity and collect them
+            d.matches.clear()
+            for k, _ in sorted_similarities:
                 m = Document(self._docs[k], copy=True)
                 d.matches.append(m)
+                # Only return top 10 answers
                 if len(d.matches) >= 10:
                     break
+            # Remove embedding as it is not needed anymore
             d.pop('embedding')
 ```
 
-The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to provide the answer to the user, we could use a little helper function that gets the `id` of the best-fitting match and searches the index for the sentence with this `id`. 
+The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to show the correct answer to the user, we can simply print the first match from inside the `docs`, which are stored in the `search_results`.
 
 ```python 
-best_matching_id = user_queries[0].matches[0].id
-
-def get_answer(docs, best_matching_id): 
-    """Get the answer for most similar question"""
-    ret = None
-    for doc in docs:
-        # Search all questions for each sentence
-        for c in doc.chunks: 
-            # Get the question that fits best
-            if c.id == best_matching_id:   
-                # Return the answer to best fitting question
-                ret = doc.text
-    return ret
-# Prints the answer text to our question
-print(get_answer(docs, best_matching_id))
+# Print the answer text to our question
+print(search_results[0].docs[0].matches.texts[0])
 ```
 
 We have now seen how to implement a question-answering bot using Jina without the need for a large dataset of matching questions and answers. In practice, we would need to experiment with several parameters, such as the initial extraction of answers from the original text. In this tutorial, we made the assumption that every sentence will be one potential answer. However, in reality, it is likely that some user queries will require multiple sentences or complete paragraphs to answer.
