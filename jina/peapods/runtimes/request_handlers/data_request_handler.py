@@ -2,7 +2,11 @@ import re
 from operator import itemgetter
 from typing import Dict, List, Optional, TYPE_CHECKING
 
-from .... import __default_endpoint__
+from .... import (
+    __default_endpoint__,
+    __default_executor__,
+    __default_reducer_executor__,
+)
 from ....excepts import (
     ExecutorFailToLoad,
     BadConfigSource,
@@ -68,6 +72,8 @@ class DataRequestHandler:
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
+        if self.args.reduce and self.args.uses == __default_executor__:
+            self.args.uses = __default_reducer_executor__
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
@@ -122,7 +128,7 @@ class DataRequestHandler:
             msg.envelope.header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
-            self.logger.debug(
+            self.logger.info(
                 f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
             if partial_requests:
