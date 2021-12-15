@@ -4,6 +4,8 @@ with:
   protocol: http
   port_expose: 9000
   cors: true
+  envs:
+    key: ${{ context_var_1 }}
 executors:
   - name: counter
     uses: executors/counter.yml
