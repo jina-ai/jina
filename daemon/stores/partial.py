@@ -38,9 +38,13 @@ class PartialStore(ABC):
         try:
             if hasattr(self.object, 'close'):
                 self.object.close()
-                self._logger.success(
-                    f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
-                )
+                self._logger.info(self.item.arguments)
+                if self.item.arguments.get('identity'):
+                    self._logger.success(
+                        f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
+                    )
+                else:
+                    self._logger.success('object is removed!')
             else:
                 self._logger.warning(f'nothing to close. exiting')
         except Exception as e:
