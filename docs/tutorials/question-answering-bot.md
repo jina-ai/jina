@@ -23,10 +23,10 @@ Let's imagine we extracted a bunch of sentences from Jina's documentation and st
 from jina import DocumentArray, Executor, requests, Document, Flow
 
 example_sentences = [
-    "Document is the basic data type that Jina operates with",
-    "Executor processes a DocumentArray in-place", 
+    'Document is the basic data type that Jina operates with',
+    'Executor processes a DocumentArray in-place', 
     ...,
-    "Jina uses the concept of a flow to tie different executors together"
+    'Jina uses the concept of a flow to tie different executors together'
 ]
 
 docs = DocumentArray([Document(content=sentence) for sentence in example_sentences])
@@ -43,12 +43,12 @@ indexing_flow = (
     Flow()
     # Generate potential questions using doc2query
     .add(
-        name="question_transformer",
+        name='question_transformer',
         uses=QuestionGenerator,
     )
     # Encode the generated questions
     .add(
-        name="text_encoder",
+        name='text_encoder',
         uses=TextEncoder,
         uses_with={'parameters': {'traversal_paths': 'c'}},
     )
@@ -61,7 +61,7 @@ indexing_flow = (
 
 with indexing_flow:
     # Run the indexing on all extracted sentences
-    indexing_flow.post(on="/index", inputs=docs, on_done=print)
+    indexing_flow.post(on='/index', inputs=docs, on_done=print)
 ```
 
 ## Searching of the user's query against the index
@@ -74,10 +74,10 @@ The flow for searching is much simpler than the one for indexing and looks like 
 query_flow = (
     Flow()
     # Create vector representations from query
-    .add(name="query_transformer", uses=TextEncoder,)
+    .add(name='query_transformer', uses=TextEncoder,)
     # Use encoded question to search our index
     .add(
-        name="simple_indexer",
+        name='simple_indexer',
         uses=SimpleIndexer,
     )
 )
@@ -85,7 +85,7 @@ query_flow = (
 with query_flow:
     # Run question through the query flow and return answer
     search_results = query_flow.post(
-        on="/search", inputs=user_queries, return_results=True, on_done=print
+        on='/search', inputs=user_queries, return_results=True, on_done=print
     )
 ```
 
@@ -143,14 +143,14 @@ class TextEncoder(Executor):
     def __init__(self, parameters: dict = {'traversal_paths': 'r'}, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model = SentenceTransformer(
-            'paraphrase-mpnet-base-v2', device="cpu", cache_folder="."
+            'paraphrase-mpnet-base-v2', device='cpu', cache_folder='.'
         )
         self.parameters = parameters
 
     @requests(on=['/search', '/index'])
     def encode(self, docs: DocumentArray, **kwargs):
         """Wraps encoder from sentence-transformers package"""
-        traversal_paths = self.parameters.get("traversal_paths")
+        traversal_paths = self.parameters.get('traversal_paths')
         target = docs.traverse_flat(traversal_paths)
 
         with torch.inference_mode():
