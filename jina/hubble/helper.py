@@ -218,7 +218,12 @@ def download_with_resume(
     _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
-        raise RuntimeError('MD5 checksum failed.')
+        raise RuntimeError(
+            'MD5 checksum failed.'
+            'Might happen when the network is unstable, please retry.'
+            'If still not work, feel free to raise an issue.'
+            'https://github.com/jina-ai/jina/issues/new'
+        )
 
     return filepath
 
