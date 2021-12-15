@@ -964,7 +964,12 @@
     <span class="n">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_resume_byte_pos</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">md5sum</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md5file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">md5sum</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'MD5 checksum failed.'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s1">'MD5 checksum failed.'</span>
+            <span class="s1">'Might happen when the network is unstable, please retry.'</span>
+            <span class="s1">'If still not work, feel free to raise an issue.'</span>
+            <span class="s1">'https://github.com/jina-ai/jina/issues/new'</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">filepath</span></div>
 
@@ -1164,7 +1169,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 13, 2021.
+                    Last updated on Dec 15, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
