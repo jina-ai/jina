@@ -223,7 +223,7 @@ class SimpleIndexer(Executor):
             d.pop('embedding')
 ```
 
-The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to show the correct answer to the user, we can simply print the first match from inside the `docs`, which are stored in the `search_results`
+The ranking of the results is thereby represented in the order of the matches inside the `matches` object. Hence, to show the correct answer to the user, we can simply print the first match from inside the `docs`, which are stored in the `search_results`.
 
 ```python 
 # Print the answer text to our question
