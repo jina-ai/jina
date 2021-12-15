@@ -18,13 +18,6 @@ def test_simple_routing():
         assert results[0].docs[0].text == 'Hello World!'
 
 
-class MergeExecutor(Executor):
-    @requests
-    def add_text(self, docs, docs_matrix, **kwargs):
-        if {docs[0].text, docs[1].text} == {'Hello World!', '1'}:
-            docs[0].text = str(len(docs_matrix))
-
-
 @pytest.mark.parametrize(
     'use_grpc',
     [True],
@@ -33,12 +26,12 @@ def test_expected_messages_routing(use_grpc):
     f = (
         Flow(grpc_data_requests=use_grpc)
         .add(name='foo', uses=SimplExecutor)
-        .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
+        .add(name='bar', needs=['foo', 'gateway'])
     )
 
     with f:
-        results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert results[0].docs[0].text == '2'
+        results = f.post(on='/index', inputs=[Document()], return_results=True)
+        assert results[0].docs[0].text == 'Hello World!'
 
 
 @pytest.mark.parametrize(
@@ -49,12 +42,12 @@ def test_static_routing_table_setup(use_grpc):
     f = (
         Flow(static_routing_table=True, grpc_data_requests=use_grpc)
         .add(name='foo', uses=SimplExecutor)
-        .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
+        .add(name='bar', needs=['foo', 'gateway'])
     )
 
     with f:
-        results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert results[0].docs[0].text == '2'
+        results = f.post(on='/index', inputs=[Document()], return_results=True)
+        assert results[0].docs[0].text == 'Hello World!'
 
 
 class SimplAddExecutor(Executor):
@@ -69,12 +62,6 @@ def test_static_routing_table_shards():
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
         assert len(results[0].docs) == 2
-
-
-class MergeDocsExecutor(Executor):
-    @requests
-    def add_doc(self, docs, **kwargs):
-        return docs
 
 
 def test_static_routing_table_complex_flow():
@@ -94,9 +81,9 @@ def test_static_routing_table_complex_flow():
             shards=3,
             needs=['second_shards_needs'],
         )
-        .add(name='merger', uses=MergeDocsExecutor, needs=['forth', 'third'])
+        .add(name='merger', needs=['forth', 'third'])
     )
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert len(results[0].docs) == 6
+    assert len(results[0].docs) == 5
