@@ -149,6 +149,7 @@ With an extremely trivial refactoring and ten extra lines of code, you can make 
         @requests(on='/index')
         def index(self, docs: DocumentArray, **kwargs):
             self._da.extend(docs)
+            docs.clear()  # clear content to save bandwidth
     
         @requests(on='/search')
         def foo(self, docs: DocumentArray, **kwargs):
