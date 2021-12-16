@@ -2,15 +2,18 @@ import os
 
 import pytest
 
-from jina import Executor, requests, DocumentArray, Document
+from jina import Executor, requests, DocumentArray, Document, DocumentArrayMemmap
 from jina.executors.metas import get_default_metas
 
 
 def test_executor_load_from_hub():
-    exec = Executor.from_hub('jinahub://DummyHubExecutor')
+    exec = Executor.from_hub(
+        'jinahub://DummyHubExecutor', uses_metas={'name': 'hello123'}
+    )
     da = DocumentArray([Document()])
     exec.foo(da)
     assert da.texts == ['hello']
+    assert exec.metas.name == 'hello123'
 
 
 def test_executor_import_with_external_dependencies(capsys):
@@ -231,3 +234,22 @@ def test_override_requests(uses_requests, expected):
 
     exec = OverrideExec(requests=uses_requests)
     assert expected == set(exec.requests.keys())
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+def test_map_nested(da_cls):
+    class NestedExecutor(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            def bar(d: Document):
+                d.text = 'hello'
+                return d
+
+            docs.apply(bar)
+            return docs
+
+    N = 2
+    da = DocumentArray.empty(N)
+    exec = NestedExecutor()
+    da1 = exec.foo(da)
+    assert da1.texts == ['hello'] * N

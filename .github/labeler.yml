@@ -43,6 +43,9 @@ area/docker:
 area/cli:
   - cli/**/*
 
+area/docarray:
+  - docarray/**/*
+
 area/daemon:
   - daemon/**/*
 

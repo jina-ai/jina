@@ -1030,11 +1030,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             ].args.static_routing_table = self.args.static_routing_table
             # The gateway always needs the routing table to be set
             if pod == GATEWAY_NAME:
-                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.to_json()
             # For other pods we only set it if we are told do so
             elif self.args.static_routing_table:
                 routing_table_copy.active_pod = pod
-                self._pod_nodes[pod].args.routing_table = routing_table_copy.json()
+                self._pod_nodes[pod].args.routing_table = routing_table_copy.to_json()
                 # dynamic routing does not apply to shards in a CompoundPod, only its tail
                 if not isinstance(self._pod_nodes[pod], CompoundPod):
                     self._pod_nodes[pod].update_pea_args()

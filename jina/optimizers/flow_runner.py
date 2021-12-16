@@ -3,11 +3,10 @@ import shutil
 from collections.abc import Iterable
 from typing import Union, List, Optional, Callable
 
-from ..types.document.generators import from_lines
 from ..helper import colored
 from ..logging.predefined import default_logger as logger
 from ..jaml import JAMLCompatible
-from .. import Flow
+from .. import Flow, DocumentArray
 
 
 class FlowRunner(JAMLCompatible):
@@ -62,9 +61,9 @@ class SingleFlowRunner(FlowRunner):
         self._flow_yaml = flow_yaml
 
         if type(documents) is str:
-            self._documents = list(from_lines(filepath=documents))
+            self._documents = DocumentArray.from_lines(filepath=documents)
         elif isinstance(documents, Iterable):
-            self._documents = list(documents)
+            self._documents = documents
         else:
             raise TypeError(f"documents is of wrong type: {type(documents)}")
 

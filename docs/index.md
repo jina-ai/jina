@@ -151,7 +151,7 @@ advanced/experimental/index
 :hidden:
 :maxdepth: 1
 
-api/jina
+api
 cli/index
 proto/index
 ```

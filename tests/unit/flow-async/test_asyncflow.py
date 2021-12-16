@@ -7,7 +7,7 @@ import pytest
 from jina import Document, Flow, Executor, requests
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
-from jina.types.document.generators import from_ndarray
+from docarray.document.generators import from_ndarray
 from jina.types.request import Response
 from tests import validate_callback
 

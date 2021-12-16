@@ -10,4 +10,5 @@
 !MANIFEST.in
 !cli/**
 !daemon/**
+!docarray/**
 !fastentrypoints.py

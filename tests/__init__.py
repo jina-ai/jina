@@ -1,10 +1,10 @@
 import os
 import sys
-from typing import Iterator
+from typing import Iterator, TYPE_CHECKING
 
 import numpy as np
 
-if False:
+if TYPE_CHECKING:
     from jina import Document
 
 file_dir = os.path.dirname(__file__)

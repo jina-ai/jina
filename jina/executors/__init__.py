@@ -1,7 +1,7 @@
 import inspect
 import os
 from types import SimpleNamespace
-from typing import Dict, Optional, Type
+from typing import Dict, Optional, Type, Any
 
 from .decorators import store_init_kwargs, wrap_func
 from .. import __default_endpoint__, __args_executor_init__
@@ -231,10 +231,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self.close()
 
     @classmethod
-    def from_hub(cls: Type[T], uri: str, **kwargs) -> T:
+    def from_hub(
+        cls: Type[T],
+        uri: str,
+        context: Optional[Dict[str, Any]] = None,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        **kwargs,
+    ) -> T:
         """Construct an Executor from Hub.
 
         :param uri: a hub Executor scheme starts with `jinahub://`
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param kwargs: other kwargs accepted by the CLI ``jina hub pull``
         :return: the Hub Executor object.
         """
@@ -257,4 +269,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 f'Can not construct a native Executor from {uri}. Looks like you want to use it as a '
                 f'Docker container, you may want to use it in the Flow via `.add(uses={uri})` instead.'
             )
-        return cls.load_config(_source)
+        return cls.load_config(
+            _source,
+            context=context,
+            uses_with=uses_with,
+            uses_metas=uses_metas,
+            uses_requests=uses_requests,
+        )

@@ -12,7 +12,7 @@ from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
 from jina.peapods.grpc import Grpclet
 from jina.peapods.runtimes.grpc import GRPCDataRuntime
-from jina.types.document import Document
+from jina import Document
 from jina.types.message import Message
 
 

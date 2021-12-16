@@ -255,7 +255,7 @@ cd docs
 pip install -r requirements.txt
 pip install furo==2021.10.9
 export NUM_RELEASES=10
-bash makedoc.sh
+bash makedoc.sh local-only
 ```
 
 Docs website will be generated in `_build/dirhtml`

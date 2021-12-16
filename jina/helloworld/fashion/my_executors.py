@@ -2,7 +2,7 @@ from typing import Dict
 
 import numpy as np
 from jina import Executor, DocumentArray, requests
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 
 
 class MyIndexer(Executor):

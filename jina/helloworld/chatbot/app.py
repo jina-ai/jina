@@ -8,7 +8,7 @@ from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_chatbot_parser
-from jina.types.document.generators import from_csv
+from jina import DocumentArray
 
 if __name__ == '__main__':
     from my_executors import MyTransformer, MyIndexer
@@ -60,7 +60,7 @@ def hello_world(args):
     # index it!
     with f:
         f.index(
-            from_csv(
+            DocumentArray.from_csv(
                 targets['covid-csv']['filename'], field_resolver={'question': 'text'}
             ),
             show_progress=True,

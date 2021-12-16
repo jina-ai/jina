@@ -7,8 +7,7 @@ from ....excepts import (
     BadConfigSource,
 )
 from ....executors import BaseExecutor
-from ....types.arrays.document import DocumentArray
-from ....types.arrays.memmap import DocumentArrayMemmap
+from .... import DocumentArray, DocumentArrayMemmap
 from ....types.message import Message, Request
 
 if TYPE_CHECKING:
@@ -71,9 +70,9 @@ class DataRequestHandler:
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
-                override_with=self.args.uses_with,
-                override_metas=self.args.uses_metas,
-                override_requests=self.args.uses_requests,
+                uses_with=self.args.uses_with,
+                uses_metas=self.args.uses_metas,
+                uses_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
                 extra_search_paths=self.args.extra_search_paths,
             )
@@ -137,7 +136,7 @@ class DataRequestHandler:
             return
 
         params = self._parse_params(
-            msg.request.parameters.dict(), self._executor.metas.name
+            msg.request.parameters.to_dict(), self._executor.metas.name
         )
         docs = _get_docs_from_msg(
             msg,

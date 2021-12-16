@@ -202,7 +202,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         else:
             sub_indent = indent
 
-        return (indent, sub_indent)
+        return indent, sub_indent
 
     def _split_paragraphs(self, text):
         """Split text into paragraphs of like-indented lines.

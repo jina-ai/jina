@@ -6,7 +6,7 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional
 from urllib.parse import urlencode
 
 from . import HubExecutor
@@ -27,7 +27,7 @@ from .hubapi import (
     install_package_dependencies,
 )
 from .. import __resources_path__
-from ..helper import get_full_version, ArgNamespace, colored
+from ..helper import ArgNamespace, colored, get_request_header
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..parsers.hubble import set_hub_parser
@@ -66,20 +66,6 @@ class HubIO:
             assert rich  #: prevent pycharm auto remove the above line
             assert cryptography
             assert filelock
-
-    @staticmethod
-    def _get_request_header() -> Dict:
-        """Return the header of request.
-
-        :return: request header
-        """
-        metas, envs = get_full_version()
-
-        header = {
-            **{f'jinameta-{k}': str(v) for k, v in metas.items()},
-            **envs,
-        }
-        return header
 
     def new(self) -> None:
         """Create a new executor folder interactively."""
@@ -360,7 +346,7 @@ metas:
 
         console = Console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
-            req_header = self._get_request_header()
+            req_header = get_request_header()
             try:
                 st.update(f'Packaging {self.args.path} ...')
                 md5_hash = hashlib.md5()
@@ -585,7 +571,7 @@ with f:
         if path_params:
             pull_url += urlencode(path_params)
 
-        resp = requests.get(pull_url, headers=HubIO._get_request_header())
+        resp = requests.get(pull_url, headers=get_request_header())
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
@@ -683,7 +669,9 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor = HubIO.fetch_meta(name, tag, secret=secret, force=need_pull)
+                executor, from_cache = HubIO.fetch_meta(
+                    name, tag, secret=secret, force=need_pull
+                )
 
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
@@ -742,9 +730,10 @@ with f:
 
                         if need_pull:
                             # pull the latest executor meta, as the cached data would expire
-                            executor = HubIO.fetch_meta(
-                                name, tag, secret=secret, force=True
-                            )
+                            if from_cache:
+                                executor, _ = HubIO.fetch_meta(
+                                    name, tag, secret=secret, force=True
+                                )
 
                             cache_dir = Path(
                                 os.environ.get(

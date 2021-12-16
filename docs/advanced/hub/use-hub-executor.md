@@ -2,7 +2,7 @@
 # Use Hub Executor
 
 ```{tip}
-Starting from Jina version 2.25, you can directly use a Hub Executor as a native Python object *without* putting it into a Flow.  
+Starting from Jina `2.2.5`, you can directly use a Hub Executor as a native Python object *without* putting it into a Flow.  
 ```
 
 We provide three ways of using Hub Executors in your project. Each has its own use case and benefit.

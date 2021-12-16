@@ -25,7 +25,7 @@ from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import DocumentArrayMemmap
 from jina.types.request import Request
 from tests import random_docs
 
