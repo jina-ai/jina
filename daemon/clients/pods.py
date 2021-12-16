@@ -61,7 +61,7 @@ class AsyncPodClient(AsyncPeaClient):
         async with aiohttp.request(
             method='PUT',
             url=f'{self.store_api}/scale/{daemonize(id, self._kind)}',
-            params={'replicas': replicas},
+            params={'replicas': str(replicas)},
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()
