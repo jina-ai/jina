@@ -313,12 +313,12 @@ def disk_cache_offline(
 
             if cache_db is None:
                 # if we failed to load cache, do not raise, it is only an optimization thing
-                return func(*args, **kwargs)
+                return func(*args, **kwargs), False
             else:
                 with cache_db as dict_db:
                     try:
                         if call_hash in dict_db and not kwargs.get('force', False):
-                            return dict_db[call_hash]
+                            return dict_db[call_hash], True
 
                         result = func(*args, **kwargs)
                         dict_db[call_hash] = result
@@ -327,10 +327,10 @@ def disk_cache_offline(
                             default_logger.warning(
                                 message.format(func_name=func.__name__)
                             )
-                            return dict_db[call_hash]
+                            return dict_db[call_hash], True
                         else:
                             raise
-                return result
+                return result, False
 
         return wrapper
 
