@@ -3,6 +3,8 @@ from typing import List, Union, Iterable
 from . import jina_pb2
 from ..types.request.control import ControlRequest
 from ..types.request.data import DataRequest
+from ..types.request.data_hack import DataRequestHac
+from ..types.request.data_old import DataRequestOld
 
 
 class ControlRequestProto:
@@ -34,6 +36,35 @@ class ControlRequestProto:
         return ControlRequest(request=proto)
 
 
+class DataRequestProtoHac:
+    """This class is a drop-in replacement for gRPC default serializer.
+
+    It replace default serializer to make sure we always work with `Request`
+
+    """
+
+    @staticmethod
+    def SerializeToString(x: 'DataRequest'):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        if x._buffer is not None:
+            return x._buffer
+        return x.proto.SerializePartialToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+
+        return DataRequestHac(x)
+
+
 class DataRequestProto:
     """This class is a drop-in replacement for gRPC default serializer.
 
@@ -43,6 +74,41 @@ class DataRequestProto:
 
     @staticmethod
     def SerializeToString(x: 'DataRequest'):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        if x.is_decompressed:
+            print('serialize to bytes')
+            x.proto.docs = x.docs.to_bytes()
+        return x.proto.SerializePartialToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+
+        proto = jina_pb2.DataRequestProto()
+        proto.ParseFromString(x)
+
+        print(f'deserialize {id(x[0])} ')
+
+        return DataRequest(proto)
+
+
+class DataRequestProtoOld:
+    """This class is a drop-in replacement for gRPC default serializer.
+
+    It replace default serializer to make sure we always work with `Request`
+
+    """
+
+    @staticmethod
+    def SerializeToString(x: 'DataRequestOld'):
         """
         # noqa: DAR101
         # noqa: DAR102
@@ -58,10 +124,10 @@ class DataRequestProto:
         # noqa: DAR201
         """
 
-        proto = jina_pb2.DataRequestProto()
+        proto = jina_pb2.DataRequestProtoOld()
         proto.ParseFromString(x)
 
-        return DataRequest(proto)
+        return DataRequestOld(proto)
 
 
 class DataRequestListProto:

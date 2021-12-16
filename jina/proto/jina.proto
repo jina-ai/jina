@@ -114,20 +114,18 @@ message ControlRequestProto {
 /**
  * Represents a DataRequest
  */
+message DataRequestProtoOld {
+
+
+    repeated docarray.DocumentProto docs = 4; // the docs in this request
+}
+
+/**
+ * Represents a DataRequest
+ */
 message DataRequestProto {
 
-    HeaderProto header = 1; // header contains meta info defined by the user
-
-    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
-
-    repeated RouteProto routes = 3; // status info on every routes
-
-    message DataContentProto {
-        repeated docarray.DocumentProto docs = 1; // the docs in this request
-        repeated docarray.DocumentProto groundtruths = 2; // a list of groundtruth Documents
-    }
-
-    DataContentProto data = 4; // container for docs and groundtruths
+    bytes docs = 4; // the docs in this request
 }
 
 /**

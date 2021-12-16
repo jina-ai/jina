@@ -1,8 +1,9 @@
 import copy
-from typing import Optional, Dict, TypeVar
+from typing import Optional, Dict, TypeVar, Union
 
 from google.protobuf import json_format
 
+from docarray.proto.docarray_pb2 import DocumentArrayProto
 from . import Request
 from docarray.simple import StructView
 from ... import DocumentArray
@@ -16,26 +17,6 @@ RequestSourceType = TypeVar(
 
 
 class DataRequest(Request):
-    """ Represents a DataRequest used for exchanging DocumentArrays to and within a Flow"""
-
-    class _DataContent:
-        def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
-            self._content = content
-
-        @property
-        def docs(self) -> 'DocumentArray':
-            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
-
-            .. # noqa: DAR201"""
-            return DocumentArray(self._content.docs)
-
-        @property
-        def groundtruths(self) -> 'DocumentArray':
-            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
-
-            .. # noqa: DAR201"""
-            return DocumentArray(self._content.groundtruths)
-
     """
     :class:`DataRequest` is one of the **primitive data type** in Jina.
 
@@ -55,6 +36,7 @@ class DataRequest(Request):
         self,
         request: Optional[RequestSourceType] = None,
     ):
+        self._docs = None
         try:
             if isinstance(request, jina_pb2.DataRequestProto):
                 self._pb_body = request
@@ -65,15 +47,12 @@ class DataRequest(Request):
                 self._pb_body = jina_pb2.DataRequestProto()
                 json_format.Parse(request, self._pb_body)
             elif isinstance(request, bytes):
-                r = jina_pb2.DataRequestProto()
-                r.ParseFromString(request)
-                self._pb_body = r
+                self._buffer = request
             elif request is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(request)} is not recognizable')
             else:
                 self._pb_body = jina_pb2.DataRequestProto()
-                self._pb_body.header.request_id = random_identity()
         except Exception as ex:
             raise BadRequestType(
                 f'fail to construct a {self.__class__} object from {request}'
@@ -89,26 +68,21 @@ class DataRequest(Request):
         return self._pb_body
 
     @property
+    def is_decompressed(self):
+        return self._docs is not None
+
+    @property
     def docs(self) -> 'DocumentArray':
         """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
         .. # noqa: DAR201"""
-        return DocumentArray(self.proto.data.docs)
-
-    @property
-    def groundtruths(self) -> 'DocumentArray':
-        """Get the :class: `DocumentArray` with sequence `data.groundtruths` as content.
-
-        .. # noqa: DAR201"""
-        return DocumentArray(self.proto.data.groundtruths)
-
-    @property
-    def data(self) -> 'DataRequest._DataContent':
-        """Get the data contaned in this data request
-
-        :return: the data content as an instance of _DataContent wrapping docs and groundtruths
-        """
-        return DataRequest._DataContent(self.proto.data)
+        if not self._docs:
+            if self.proto.docs:
+                print('access docs from bytes')
+                self._docs = DocumentArray.load_binary(self.proto.docs)
+            else:
+                self._docs = DocumentArray()
+        return self._docs
 
     @property
     def parameters(self) -> StructView:

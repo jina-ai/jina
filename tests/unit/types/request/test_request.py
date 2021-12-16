@@ -1,5 +1,9 @@
 import copy
+import os
+import sys
+import time
 
+import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
@@ -8,7 +12,12 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina import DocumentArray, Document
+from jina.proto.serializer import DataRequestProtoOld, DataRequestProtoHac
+from jina.proto.serializer import DataRequestProto
+from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest, Response
+from jina.types.request.data_hack import DataRequestHac
+from jina.types.request.data_old import DataRequestOld
 from jina.types.request.data import DataRequest, Response
 from tests import random_docs
 
@@ -120,7 +129,7 @@ def test_as_response(req):
 
 def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
-    r = Request().as_typed_request('data')
+    r = DataRequest()
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -154,7 +163,7 @@ def test_request_docs_mutable_iterator():
 
 def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
-    r = Request().as_typed_request('data')
+    r = DataRequest()
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -190,3 +199,43 @@ def test_request_docs_chunks_mutable_iterator():
         assert isinstance(d, DocumentProto)
         for c in d.chunks:
             assert c.text == 'now i change it back'
+
+
+@pytest.mark.parametrize(
+    'cls',
+    [
+        (DataRequest, DataRequestProto),
+        (DataRequestOld, DataRequestProtoOld),
+        (DataRequestHac, DataRequestProtoHac),
+    ],
+)
+def test_lazy_data_serialization(cls):
+    req = cls[0]()
+    req.docs.extend(
+        DocumentArray([Document(embedding=np.random.rand(100, 100, 10))] * 1000)
+    )
+    bla = cls[1].SerializeToString(req)
+
+    print('start measuring')
+    start = time.time()
+    deserialized_request = cls[1].FromString(bla)
+    end = time.time() - start
+
+    start_s = time.time()
+    bla2 = cls[1].SerializeToString(deserialized_request)
+    end_s = time.time() - start_s
+    print('end measuring')
+
+    print(
+        f'{cls} serialized size {sys.getsizeof(bla)} serialized size {sys.getsizeof(bla2)} deserialization took {end*1000} ms serilization took {end_s*1000} ms'
+    )
+
+    print('do access docs')
+    # assert not deserialized_request.is_decompressed
+    # assert not deserialized_request._docs
+    start_doc = time.time()
+    assert len(deserialized_request.docs) == 1000
+    end = time.time() - start_doc
+    print(f'{cls} took {end*1000} ms')
+    # assert deserialized_request._docs
+    # assert deserialized_request.is_decompressed
