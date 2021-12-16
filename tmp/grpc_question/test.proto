@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package test;
+
+message unitProto {
+    string a = 1;
+    uint32 b = 2;
+}
+
+message populatedProto {
+    repeated unitProto units = 1;
+}
+
+message skipProto {
+    bytes units = 1;
+}
