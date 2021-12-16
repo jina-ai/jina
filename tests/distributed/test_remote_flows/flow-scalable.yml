@@ -1,0 +1,9 @@
+jtype: Flow
+version: '1'
+with:
+  protocol: http
+  port_expose: 9002
+  cors: true
+executors:
+  - name: counter
+    uses: executors/scalable_executor/config.yml
