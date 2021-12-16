@@ -121,3 +121,10 @@ When not given, then the default naming strategy will apply.
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    parser.add_argument(
+        '--reduce',
+        action='store_true',
+        default=False,
+        help='If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod',
+    )
