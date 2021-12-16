@@ -48,6 +48,8 @@ class DataRequestProto:
         # noqa: DAR102
         # noqa: DAR201
         """
+        if not x.is_decompressed:
+            return x.buffer
         return x.proto.SerializePartialToString()
 
     @staticmethod
@@ -58,10 +60,7 @@ class DataRequestProto:
         # noqa: DAR201
         """
 
-        proto = jina_pb2.DataRequestProto()
-        proto.ParseFromString(x)
-
-        return DataRequest(proto)
+        return DataRequest(x)
 
 
 class DataRequestListProto:

@@ -55,6 +55,7 @@ class DataRequest(Request):
         self,
         request: Optional[RequestSourceType] = None,
     ):
+        self.buffer = None
         try:
             if isinstance(request, jina_pb2.DataRequestProto):
                 self._pb_body = request
@@ -65,9 +66,7 @@ class DataRequest(Request):
                 self._pb_body = jina_pb2.DataRequestProto()
                 json_format.Parse(request, self._pb_body)
             elif isinstance(request, bytes):
-                r = jina_pb2.DataRequestProto()
-                r.ParseFromString(request)
-                self._pb_body = r
+                self.buffer = request
             elif request is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(request)} is not recognizable')
@@ -80,12 +79,20 @@ class DataRequest(Request):
             ) from ex
 
     @property
+    def is_decompressed(self) -> bool:
+        return self.buffer is None
+
+    @property
     def proto(self) -> 'jina_pb2.DataRequestProto':
         """
         Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling
         :meth:`SerializeToString`.
         :return: protobuf instance
         """
+        if not self.is_decompressed:
+            self._pb_body = jina_pb2.DataRequestProto()
+            self._pb_body.ParseFromString(self.buffer)
+            self.buffer = None
         return self._pb_body
 
     @property

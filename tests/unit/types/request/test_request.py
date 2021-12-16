@@ -1,4 +1,5 @@
 import copy
+import os
 
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
@@ -8,7 +9,8 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina import DocumentArray, Document
-from jina.types.request.data import DataRequest, Response
+from jina.proto.serializer import DataRequestProto
+from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest, Response
 from tests import random_docs
 
@@ -120,7 +122,7 @@ def test_as_response(req):
 
 def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
-    r = Request().as_typed_request('data')
+    r = DataRequest()
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -154,7 +156,7 @@ def test_request_docs_mutable_iterator():
 
 def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
-    r = Request().as_typed_request('data')
+    r = DataRequest()
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -190,3 +192,18 @@ def test_request_docs_chunks_mutable_iterator():
         assert isinstance(d, DocumentProto)
         for c in d.chunks:
             assert c.text == 'now i change it back'
+
+
+def test_lazy_serialization():
+    doc_count = 1000
+    r = DataRequest()
+    r.docs.extend(
+        [Document(buffer=bytes(bytearray(os.urandom(1024 * 100))))] * doc_count
+    )
+    byte_array = DataRequestProto.SerializeToString(r)
+
+    deserialized_request = DataRequestProto.FromString(byte_array)
+    assert not deserialized_request.is_decompressed
+    assert len(deserialized_request.docs) == doc_count
+    assert deserialized_request.docs == r.docs
+    assert deserialized_request.is_decompressed
