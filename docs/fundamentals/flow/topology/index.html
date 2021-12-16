@@ -808,6 +808,49 @@ until they finish their work.</p>
      <span class="o">.</span><span class="n">needs_all</span><span class="p">())</span>
 </pre></div>
 </div>
+<section id="merging-results">
+<h3>Merging results<a class="headerlink" href="#merging-results" title="Permalink to this headline">¶</a></h3>
+<p>In the previous Flow, each of the Executors <code class="docutils literal notranslate"><span class="pre">p1</span></code>, <code class="docutils literal notranslate"><span class="pre">p2</span></code> and <code class="docutils literal notranslate"><span class="pre">p3</span></code> work in parallel and generate one set of results.
+If you have an Executor that depends on all of them like <code class="docutils literal notranslate"><span class="pre">r1</span></code>, you might need to have all 3 results combined into one
+DocumentArray in the next steps. Let’s suppose the following concrete example:</p>
+<ul class="simple">
+<li><p>The Documents you sent are images containing some text.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p1</span></code> fills the <code class="docutils literal notranslate"><span class="pre">embedding</span></code> attribute of Documents using an encoder model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p2</span></code> segments further the image into smaller chunks of images.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p3</span></code> extracts the text and adds them as chunks.</p></li>
+</ul>
+<p>We need to end up with Documents that contain all this new data. Well, by default, if you have a pod that needs all 3
+Executors (<code class="docutils literal notranslate"><span class="pre">p1</span></code>, <code class="docutils literal notranslate"><span class="pre">p2</span></code> and <code class="docutils literal notranslate"><span class="pre">p3</span></code>), this happens with our default <code class="docutils literal notranslate"><span class="pre">Reduce</span></code> logic.</p>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>Read more about <a class="reference internal" href="#reduce"><span class="std std-ref">how Reducing works</span></a>.</p>
+</div>
+<p>If you don’t want to use the default <code class="docutils literal notranslate"><span class="pre">Reduce</span></code> logic, you can implement a custom reducing logic in an Executor and
+specify it with <code class="docutils literal notranslate"><span class="pre">uses_before</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+
+<span class="k">class</span> <span class="nc">CustomReducerExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># simply chain all DocumentArrays</span>
+        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">))</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">Flow</span><span class="p">()</span>
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'p1'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'p2'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'p3'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span>
+     <span class="o">.</span><span class="n">needs</span><span class="p">([</span><span class="s1">'p1'</span><span class="p">,</span> <span class="s1">'p2'</span><span class="p">,</span> <span class="s1">'p3'</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">'r1'</span><span class="p">,</span> <span class="n">uses_before</span><span class="o">=</span><span class="n">CustomReducerExecutor</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>If there is no pod that needs all 3 pods <code class="docutils literal notranslate"><span class="pre">p1</span></code>, <code class="docutils literal notranslate"><span class="pre">p2</span></code> and <code class="docutils literal notranslate"><span class="pre">p3</span></code>, there will be no reduce logic.
+If you want to add a pod that needs all of them but you don’t want to have any reducing, use <code class="docutils literal notranslate"><span class="pre">uses_before='BaseExecutor'</span></code>.</p>
+</div>
+</section>
 </section>
 <section id="scale-executors-by-using-replicas">
 <h2>Scale Executors by using Replicas<a class="headerlink" href="#scale-executors-by-using-replicas" title="Permalink to this headline">¶</a></h2>
@@ -930,19 +973,43 @@ For searching, you probably need to send the search request to all Shards, becau
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">index_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'any'</span><span class="p">)</span>
-<span class="n">search_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'all'</span><span class="p">,</span> <span class="n">uses_after</span><span class="o">=</span><span class="s1">'MatchMerger'</span><span class="p">)</span>
+<span class="n">search_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'all'</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="merging-search-results-via-uses-after">
-<h3>Merging search results via <code class="docutils literal notranslate"><span class="pre">uses_after</span></code><a class="headerlink" href="#merging-search-results-via-uses-after" title="Permalink to this headline">¶</a></h3>
+<section id="merging-search-results">
+<h3>Merging search results<a class="headerlink" href="#merging-search-results" title="Permalink to this headline">¶</a></h3>
 <p>Each shard of a search Flow returns one set of results for each query Document.
-A merger Executor combines them afterwards.
-You can use the pre-built <a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a> or define your merger.</p>
+By default, these different results will be combined into one DocumentArray using our default <code class="docutils literal notranslate"><span class="pre">Reduce</span></code> logic.</p>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>Read more about <span class="xref std std-ref">how Reducing works</span>.</p>
+</div>
+<p>You can customize the reduce logic and specify a different Reducer Executor with parameter <code class="docutils literal notranslate"><span class="pre">uses_after</span></code>.
+For example, you can use the pre-built <a class="reference external" href="https://hub.jina.ai/executor/mruax3k7">MatchMerger</a> or define your merger.</p>
 <div class="example admonition">
 <p class="admonition-title">Example</p>
 <p>A search Flow has 10 Shards for an Indexer.
 Each shard returns the top 20 results.
 After the merger there will be 200 results per query Document.</p>
+</div>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Default Reduce</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="n">search_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'all'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Custom Reduce with MatchMerger</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="n">search_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ExecutorWithShards'</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="s1">'all'</span><span class="p">,</span> <span class="n">uses_after</span><span class="o">=</span><span class="s1">'jinahub://MatchMerger'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">Warning</p>
+<p>The default Reduce logic does not keep the matches sorted when combining them. If you wish to have sorted matches, you
+should add an Executor to sort the matches.</p>
 </div>
 </section>
 </section>
@@ -1000,6 +1067,30 @@ Also replicas provide high availability in case some executors are taken down (f
 <div class="warning admonition">
 <p class="admonition-title">Warning</p>
 <p>Sometimes you’ll also encouter <code class="docutils literal notranslate"><span class="pre">parallel</span></code>, this is equivalent to <code class="docutils literal notranslate"><span class="pre">shards</span></code> and is only kept for backwards compatibility.</p>
+</div>
+</section>
+<section id="reducing">
+<span id="reduce"></span><h2>Reducing<a class="headerlink" href="#reducing" title="Permalink to this headline">¶</a></h2>
+<p>Reducing is a mechanism that applies by default to DocumentArrays resulted by instances of Executors running in
+parallel in a Flow. It combines the multiple DocumentArrays into one DocumentArray when you have one of these 2 cases:</p>
+<ul class="simple">
+<li><p>Your Flow contains 2 or more shards of the same Executor with <code class="docutils literal notranslate"><span class="pre">polling='all'</span></code></p></li>
+<li><p>Your Flow contains 2 or more different Executors running in parallel and you have another Executor that needs 2 or
+more of them.
+Reducing is necessary if your Flow needs the combined DocumentArray in later steps.</p></li>
+</ul>
+<p>Reduction consists in reducing all DocumentArrays sequentially using <a class="reference external" href="https://docs.jina.ai/api/jina.types.arrays.mixins.reduce/?highlight=reduce#jina.types.arrays.mixins.reduce.ReduceMixin.reduce">DocumentArray.reduce</a>.
+The resulting DocumentArray contains Documents of all DocumentArrays.</p>
+<p>If a Document exists in many DocumentArrays, data properties are merged.</p>
+<p>Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
+Other non-data properties are ignored.</p>
+<div class="warning admonition">
+<p class="admonition-title">Warning</p>
+<p>If a data property is set on many Documents with the same ID, only one value is kept in the final Document. This value
+can be belong to any of these Documents. This also means, if you make the same request, with such conflicting data
+properties, you can end up with undeterministic results.
+When you use shards or parallel branches, you should always make sure that all data properties of the same Documents
+either do not conflict or have the same value.</p>
 </div>
 </section>
 </section>
@@ -1062,17 +1153,21 @@ Also replicas provide high availability in case some executors are taken down (f
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Distributed &amp; Parallel Execution</a><ul>
-<li><a class="reference internal" href="#define-predecessors-via-needs">Define predecessors via <code class="docutils literal notranslate"><span class="pre">needs</span></code></a></li>
+<li><a class="reference internal" href="#define-predecessors-via-needs">Define predecessors via <code class="docutils literal notranslate"><span class="pre">needs</span></code></a><ul>
+<li><a class="reference internal" href="#merging-results">Merging results</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#scale-executors-by-using-replicas">Scale Executors by using Replicas</a><ul>
 <li><a class="reference internal" href="#avoiding-bottlenecks-on-executors-with-replicas">Avoiding Bottlenecks on Executors with <code class="docutils literal notranslate"><span class="pre">replicas</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#partition-data-by-using-shards">Partition data by using Shards</a><ul>
-<li><a class="reference internal" href="#merging-search-results-via-uses-after">Merging search results via <code class="docutils literal notranslate"><span class="pre">uses_after</span></code></a></li>
+<li><a class="reference internal" href="#merging-search-results">Merging search results</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#combining-replicas-shards">Combining Replicas &amp; Shards</a></li>
 <li><a class="reference internal" href="#replicas-vs-shards">Replicas vs Shards</a></li>
+<li><a class="reference internal" href="#reducing">Reducing</a></li>
 </ul>
 </li>
 </ul>

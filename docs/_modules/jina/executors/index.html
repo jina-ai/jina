@@ -744,17 +744,23 @@
                     </label>
                 </div>
                 <h1>Source code for jina.executors</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">inspect</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span><span class="p">,</span> <span class="n">__args_executor_init__</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">T</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">subvar_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">,</span> <span class="s1">'ReducerExecutor'</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">ExecutorType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">),</span> <span class="nb">type</span><span class="p">):</span>
@@ -1022,6 +1028,28 @@
             <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
             <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
         <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ReducerExecutor"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.ReducerExecutor">[docs]</a><span class="k">class</span> <span class="nc">ReducerExecutor</span><span class="p">(</span><span class="n">BaseExecutor</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.</span>
+<span class="sd">    ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be</span>
+<span class="sd">    sent to the next pod.</span>
+
+<span class="sd">    This Executor only adds a reduce endpoint to the BaseExecutor.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ReducerExecutor.reduce"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.ReducerExecutor.reduce">[docs]</a>    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Reduce docs_matrix into one `DocumentArray` using `DocumentArray.reduce_all`</span>
+<span class="sd">        :param docs_matrix: a List of DocumentArrays to be reduced</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        :return: the reduced DocumentArray</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">docs_matrix</span><span class="p">:</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="n">docs_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">reduce_all</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">return</span> <span class="n">da</span></div></div>
 </pre></div>
             </article>
             <footer>

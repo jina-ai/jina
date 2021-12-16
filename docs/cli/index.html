@@ -830,7 +830,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “20c4a3829c564701bd6ffb66d0348178”</p>
+<p>Default: “28d96232f239494fa61c5cf83d97bd07”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -901,7 +901,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “f24e814d93aa400d841402c634647f7f”</p>
+<p>Default: “5844175b8c1c45b3b89ff1e563cb087d”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -934,7 +934,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “93ac5fcbe6a4431a882ca739cc61dbd8”</p>
+<p>Default: “ba8e7dc75fb941a2bc55e317e502051a”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -967,10 +967,10 @@
 <h3>executor<a class="headerlink" href="#executor" title="Permalink to this headline">¶</a></h3>
 <p>Start an Executor. Executor is how Jina processes Document.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reduce</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
@@ -989,6 +989,15 @@
               <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
 </pre></div>
 </div>
+<section id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--reduce</kbd></dt>
+<dd><p>If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
 <section id="Essential arguments">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
@@ -1030,7 +1039,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 59541</p>
+<p>Default: 41247</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1092,11 +1101,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 44951</p>
+<p>Default: 56111</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 37487</p>
+<p>Default: 55743</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1267,11 +1276,20 @@ Python files, data files.</p>
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this headline">¶</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
 </div>
+<section id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--reduce</kbd></dt>
+<dd><p>If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
 <section id="Essential arguments_repeat1">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
@@ -1343,8 +1361,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat3">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat5">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -1366,9 +1384,9 @@ Python files, data files.</p>
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this headline">¶</a></h3>
 <p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reduce</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -1391,9 +1409,13 @@ Python files, data files.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat4">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat6">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--reduce</kbd></dt>
+<dd><p>If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod</p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--protocol</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
 <p>Communication protocol between server and client.</p>
@@ -1443,7 +1465,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45023</p>
+<p>Default: 53999</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1505,11 +1527,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 34941</p>
+<p>Default: 35147</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 38607</p>
+<p>Default: 48869</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1646,7 +1668,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 47097</p>
+<p>Default: 37945</p>
 </dd>
 </dl>
 </section>
@@ -1749,8 +1771,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
               <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat5">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h6>
+<section id="Named Arguments_repeat7">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1805,8 +1827,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat6">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
+<section id="Named Arguments_repeat8">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1849,7 +1871,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <h3>pea<a class="headerlink" href="#pea" title="Permalink to this headline">¶</a></h3>
 <p>Start a Pea. You should rarely use this directly unless you are doing low-level orchestration</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">pea</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -1870,6 +1892,15 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
          <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
 </pre></div>
 </div>
+<section id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--reduce</kbd></dt>
+<dd><p>If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
 <section id="Essential arguments_repeat3">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
@@ -1911,7 +1942,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 59923</p>
+<p>Default: 49723</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1973,11 +2004,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 46629</p>
+<p>Default: 59933</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 38587</p>
+<p>Default: 39989</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2148,7 +2179,7 @@ Python files, data files.</p>
 <h3>pod<a class="headerlink" href="#pod" title="Permalink to this headline">¶</a></h3>
 <p>Start a Pod. You should rarely use this directly unless you are doing low-level orchestration</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">pod</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">static</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">table</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -2173,9 +2204,13 @@ Python files, data files.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">connect</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">predecessor</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--reduce</kbd></dt>
+<dd><p>If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod</p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--no-dynamic-routing</kbd></dt>
 <dd><p>The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.</p>
 <p>Default: True</p>
@@ -2227,7 +2262,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 43309</p>
+<p>Default: 54421</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -2289,11 +2324,11 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 47557</p>
+<p>Default: 59997</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 44675</p>
+<p>Default: 50747</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -2501,8 +2536,8 @@ peas are running on host provided by the argument <code class="docutils literal 
             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat8">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2528,7 +2563,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 57685</p>
+<p>Default: 53449</p>
 </dd>
 <dt><kbd>--https</kbd></dt>
 <dd><p>If set, connect to gateway using https</p>
@@ -2545,8 +2580,8 @@ peas are running on host provided by the argument <code class="docutils literal 
                 <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat9">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -2652,6 +2687,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </ul>
 </li>
 <li><a class="reference internal" href="#executor">executor</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments">ZEDRuntime arguments</a></li>
@@ -2663,17 +2699,18 @@ peas are running on host provided by the argument <code class="docutils literal 
 </ul>
 </li>
 <li><a class="reference internal" href="#flow">flow</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
 <li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat1">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat1">ZEDRuntime arguments</a></li>
@@ -2692,14 +2729,14 @@ peas are running on host provided by the argument <code class="docutils literal 
 </ul>
 </li>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat2">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
 </ul>
 </li>
@@ -2712,6 +2749,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </ul>
 </li>
 <li><a class="reference internal" href="#pea">pea</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat2">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat2">ZEDRuntime arguments</a></li>
@@ -2723,7 +2761,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </ul>
 </li>
 <li><a class="reference internal" href="#pod">pod</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat4">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat3">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat3">ZEDRuntime arguments</a></li>
@@ -2736,12 +2774,12 @@ peas are running on host provided by the argument <code class="docutils literal 
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export-api">export-api</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
 </ul>
 </li>
 </ul>

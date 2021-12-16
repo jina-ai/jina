@@ -745,9 +745,14 @@
                 </div>
                 <h1>Source code for jina.peapods.runtimes.request_handlers.data_request_handler</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">__default_endpoint__</span><span class="p">,</span>
+    <span class="n">__default_executor__</span><span class="p">,</span>
+    <span class="n">__default_reducer_executor__</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ExecutorFailToLoad</span><span class="p">,</span>
     <span class="n">BadConfigSource</span><span class="p">,</span>
@@ -813,6 +818,8 @@
 
     <span class="k">def</span> <span class="nf">_load_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Load the executor to this runtime, specified by ``uses`` CLI argument."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">reduce</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">==</span> <span class="n">__default_executor__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">__default_reducer_executor__</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>

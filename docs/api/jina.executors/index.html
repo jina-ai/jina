@@ -859,6 +859,39 @@
 </dl>
 </dd></dl>
 </dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.executors.ReducerExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.executors.</span></span><span class="sig-name descname"><span class="pre">ReducerExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/executors/#ReducerExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.executors.ReducerExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.executors.BaseExecutor" title="jina.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.executors.BaseExecutor</span></code></a></p>
+<p>ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.
+ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be
+sent to the next pod.</p>
+<p>This Executor only adds a reduce endpoint to the BaseExecutor.</p>
+<p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metas</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of metas fields</p></li>
+<li><p><strong>requests</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of endpoint-function mapping</p></li>
+<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
+<li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.executors.ReducerExecutor.requests">
+<span class="sig-name descname"><span class="pre">requests</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/default':</span> <span class="pre">&lt;function</span> <span class="pre">ReducerExecutor.reduce&gt;}</span></em><a class="headerlink" href="#jina.executors.ReducerExecutor.requests" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.executors.ReducerExecutor.reduce">
+<span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/executors/#ReducerExecutor.reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.executors.ReducerExecutor.reduce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce docs_matrix into one <cite>DocumentArray</cite> using <cite>DocumentArray.reduce_all</cite>
+:type docs_matrix: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param docs_matrix: a List of DocumentArrays to be reduced
+:param kwargs: extra keyword arguments
+:return: the reduced DocumentArray</p>
+</dd></dl>
+</dd></dl>
 </section>
 </section>
 

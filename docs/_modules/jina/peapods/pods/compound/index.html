@@ -753,7 +753,7 @@
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">Pea</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">Pod</span>
 <span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span><span class="p">,</span> <span class="n">__default_reducer_executor__</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">SchedulerType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 
@@ -785,6 +785,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_tail_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
+
+        <span class="c1"># Compound with needs &gt; 1 ==&gt; reduce in the head</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">needs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">__default_reducer_executor__</span>
+
         <span class="c1"># uses before with shards apply to shards and not to replicas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['Pod']</span>
         <span class="c1"># BACKWARDS COMPATIBILITY:</span>

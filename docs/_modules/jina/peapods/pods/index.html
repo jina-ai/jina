@@ -754,7 +754,7 @@
 
 <span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 <span class="kn">from</span> <span class="nn">..peas</span> <span class="kn">import</span> <span class="n">BasePea</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_reducer_executor__</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span> <span class="n">ScalingFails</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="p">(</span>
@@ -1024,6 +1024,14 @@
                 <span class="n">_tail_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'tail'</span>
             <span class="n">_tail_args</span><span class="o">.</span><span class="n">pea_role</span> <span class="o">=</span> <span class="n">PeaRoleType</span><span class="o">.</span><span class="n">TAIL</span>
             <span class="n">_tail_args</span><span class="o">.</span><span class="n">num_part</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">polling_type</span><span class="o">.</span><span class="n">is_push</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">polling_type</span> <span class="o">==</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ALL</span>
+            <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span>
+            <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">_tail_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">__default_reducer_executor__</span>
 
         <span class="n">Pod</span><span class="o">.</span><span class="n">_set_dynamic_routing_out</span><span class="p">(</span><span class="n">_tail_args</span><span class="p">)</span>
 
@@ -1603,6 +1611,10 @@
 
     <span class="k">def</span> <span class="nf">_parse_base_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="n">parsed_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'head'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'tail'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'peas'</span><span class="p">:</span> <span class="p">[]}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">needs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">reduce</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'replicas'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># reasons to separate head and tail from peas is that they</span>
             <span class="c1"># can be deducted based on the previous and next pods</span>
