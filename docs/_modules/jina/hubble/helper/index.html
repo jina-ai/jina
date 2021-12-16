@@ -1059,12 +1059,12 @@
 
             <span class="k">if</span> <span class="n">cache_db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># if we failed to load cache, do not raise, it is only an optimization thing</span>
-                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">cache_db</span> <span class="k">as</span> <span class="n">dict_db</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">call_hash</span> <span class="ow">in</span> <span class="n">dict_db</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'force'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+                            <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">],</span> <span class="kc">True</span>
 
                         <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                         <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
@@ -1073,10 +1073,10 @@
                             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                                 <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                             <span class="p">)</span>
-                            <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">]</span>
+                            <span class="k">return</span> <span class="n">dict_db</span><span class="p">[</span><span class="n">call_hash</span><span class="p">],</span> <span class="kc">True</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span>
-                <span class="k">return</span> <span class="n">result</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="n">wrapper</span>
 
@@ -1169,7 +1169,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 15, 2021.
+                    Last updated on Dec 16, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

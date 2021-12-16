@@ -1415,7 +1415,9 @@
                 <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Fetching [bold]</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[/bold] from Jina Hub ...'</span><span class="p">)</span>
-                <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">need_pull</span><span class="p">)</span>
+                <span class="n">executor</span><span class="p">,</span> <span class="n">from_cache</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">need_pull</span>
+                <span class="p">)</span>
 
                 <span class="n">presented_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
                 <span class="n">executor_name</span> <span class="o">=</span> <span class="p">(</span>
@@ -1474,9 +1476,10 @@
 
                         <span class="k">if</span> <span class="n">need_pull</span><span class="p">:</span>
                             <span class="c1"># pull the latest executor meta, as the cached data would expire</span>
-                            <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
-                                <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span>
-                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="n">from_cache</span><span class="p">:</span>
+                                <span class="n">executor</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
+                                    <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span>
+                                <span class="p">)</span>
 
                             <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
                                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1530,7 +1533,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 15, 2021.
+                    Last updated on Dec 16, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
