@@ -9,7 +9,7 @@ from jina import __default_host__
 from jina.parsers.flow import set_flow_parser
 
 
-HOST = '54.93.57.58'
+HOST = __default_host__
 PORT = 8000
 PROTOCOL = 'HTTP'
 MINI_FLOW1_PORT = 9000
