@@ -8,4 +8,4 @@ with:
     key: ${{ context_var_1 }}
 executors:
   - name: counter
-    uses: executors/counter.yml
+    uses: executors/simple_executor/config.yml

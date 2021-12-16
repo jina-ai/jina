@@ -1,0 +1,5 @@
+jtype: ScalableExecutor
+metas:
+  name: scalable
+  py_modules:
+   - executors.py
