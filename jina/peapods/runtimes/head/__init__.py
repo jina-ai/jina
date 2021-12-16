@@ -13,9 +13,11 @@ from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import (
     DataRequestHandler,
     get_docs_from_request,
+    _get_docs_matrix_from_request,
 )
 from ...networking import create_connection_pool, K8sGrpcConnectionPool
 from ....enums import PollingType
+from ....helper import reduce
 from ....proto import jina_pb2_grpc
 from ....types.request.control import ControlRequest
 from ....types.request.data import DataRequest
@@ -202,6 +204,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 f'Head {self.name} did not receive a response when sending message to worker peas'
             )
 
+        if (
+            self.polling == PollingType.ALL
+            and len(worker_results) > 1
+            and not self.args.uses_after
+        ):
+            docs_matrix = _get_docs_matrix_from_request(worker_results, field='docs')
+            docs = reduce(docs_matrix)
+        else:
+            docs = get_docs_from_request(worker_results, field='docs')
+
         response_request = worker_results[0]
         if self.uses_after_address:
             response_request = await self.connection_pool.send_requests_once(
@@ -210,7 +222,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         elif len(worker_results) > 1:
             DataRequestHandler.replace_docs(
                 response_request,
-                docs=get_docs_from_request(worker_results, field='docs'),
+                docs=docs,
             )
 
         return response_request
