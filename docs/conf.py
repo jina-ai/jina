@@ -183,17 +183,17 @@ ogp_custom_meta_tags = [
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-<script async defer src="https://cdn.jsdelivr.net/npm/@jina-ai/jina-qa-bot@0.1.1"></script>
+<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.1.1"></script>
     ''',
 ]
 
 
 def set_qa_server_address(app):
-    # This sets the server address to <jina-qa-bot>
+    # This sets the server address to <qa-bot>
     server_address = app.config['server_address']
     js_text = """
         document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("jina-qa-bot").setAttribute("server", "%s");
+            document.querySelector("qa-bot").setAttribute("server", "%s");
         });
         """ % server_address
     app.add_js_file(None, body=js_text)
