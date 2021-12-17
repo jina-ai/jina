@@ -1,7 +1,7 @@
 import asyncio
 import ipaddress
 from threading import Thread
-from typing import Optional, List, Dict, TYPE_CHECKING, Tuple, Type
+from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
 
 import grpc
 from grpc.aio import AioRpcError
@@ -44,7 +44,7 @@ class ReplicaList:
             ) = GrpcConnectionPool.create_async_channel_stub(address)
             self._address_to_channel[address] = channel
 
-            self._connections.append((data_stub, control_stub))
+            self._connections.append((single_data_stub, data_stub, control_stub))
 
     async def remove_connection(self, address: str):
         """
@@ -410,11 +410,26 @@ class GrpcConnectionPool:
                 try:
                     request_type = type(requests[0])
                     if request_type == DataRequest and len(requests) == 1:
-                        return await stubs[0].process_single_data(requests[0])
+                        call_result = stubs[0].process_single_data(requests[0])
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                        return response, dict(metadata)
                     if request_type == DataRequest and len(requests) > 1:
-                        return await stubs[1].process_data(requests)
+                        call_result = stubs[1].process_data(requests)
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                        return response, dict(metadata)
                     elif request_type == ControlRequest:
-                        return await stubs[2].process_control(requests[0])
+                        call_result = stubs[2].process_control(requests[0])
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                        return response, dict(metadata)
                     else:
                         raise ValueError(
                             f'Unsupported request type {type(requests[0])}'

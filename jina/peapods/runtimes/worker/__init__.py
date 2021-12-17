@@ -78,22 +78,22 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         await self.async_cancel()
         self._data_request_handler.close()
 
-    async def process_single_data(self, request: DataRequest, *args) -> DataRequest:
+    async def process_single_data(self, request: DataRequest, context) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
         :param request: the data request to process
-        :param args: additional arguments in the grpc call, ignored
+        :param context: grpc context
         :returns: the response request
         """
-        return await self.process_data([request], args)
+        return await self.process_data([request], context)
 
-    async def process_data(self, requests: List[DataRequest], *args) -> DataRequest:
+    async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
         :param requests: the data requests to process
-        :param args: additional arguments in the grpc call, ignored
+        :param context: grpc context
         :returns: the response request
         """
         try:
@@ -110,6 +110,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             )
 
             requests[0].add_exception(ex, self._data_request_handler._executor)
+            context.set_trailing_metadata((('is-error', 'true'),))
             return requests[0]
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:

@@ -36,16 +36,15 @@ class TopologyGraph:
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
         ):
+            metadata = {}
             if previous_task is not None:
-                request = await previous_task
-            if (
-                request is not None
-                and request.header.status.code == jina_pb2.StatusProto.ERROR
-            ):
+                result = await previous_task
+                request, metadata = result[0], result[1]
+            if 'is-error' in metadata:
                 if request.routes and request.routes[-1].pod != 'gateway':
                     request.routes[-1].end_time.GetCurrentTime()
                     request.routes[-1].status.CopyFrom(request.header.status)
-                return request
+                return request, {}
             elif request is not None:
                 self.parts_to_send.append(request)
                 if request.routes and request.routes[-1].pod != 'gateway':
@@ -56,7 +55,7 @@ class TopologyGraph:
                         r = request.routes.add()
                         r.pod = self.name
                         r.start_time.GetCurrentTime()
-                    resp = await connection_pool.send_requests_once(
+                    resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send, pod=self.name, head=True
                     )
                     for route in resp.response.routes:
@@ -65,8 +64,8 @@ class TopologyGraph:
                                 route.status.CopyFrom(resp.header.status)
                             route.end_time.GetCurrentTime()
                             break
-                    return resp
-            return None
+                    return resp, metadata
+            return None, {}
 
         def get_leaf_tasks(
             self,

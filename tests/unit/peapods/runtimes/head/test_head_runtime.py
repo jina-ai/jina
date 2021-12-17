@@ -3,6 +3,7 @@ import multiprocessing
 from multiprocessing import Process
 from typing import List
 
+import grpc
 import pytest
 from grpc import RpcError
 
@@ -13,6 +14,7 @@ from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.head import HeadRuntime
+from jina.proto import jina_pb2_grpc
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 
@@ -23,11 +25,17 @@ def test_regular_data_case():
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     _add_worker(args)
-    result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port_in}'
-    )
-    assert result
-    assert len(result.response.docs) == 1
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port_in}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(_create_test_data_message())
+
+    assert response
+    assert 'is-error' in dict(call.trailing_metadata())
+    assert len(response.docs) == 1
     assert not handle_queue.empty()
 
     _destroy_runtime(args, cancel_event, runtime_thread)
@@ -117,7 +125,7 @@ def _create_runtime(args):
             async def mock_task_wrapper(new_requests, *args, **kwargs):
                 handle_queue.put('mock_called')
                 await asyncio.sleep(0.1)
-                return new_requests[0]
+                return new_requests[0], {'is-error': 'true'}
 
             return asyncio.create_task(mock_task_wrapper(request, connection))
 
