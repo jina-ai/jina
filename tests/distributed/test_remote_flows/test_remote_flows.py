@@ -6,7 +6,6 @@ from daemon.clients import JinaDClient, AsyncJinaDClient
 from daemon.models import DaemonID
 
 from jina import __default_host__
-from jina.parsers.flow import set_flow_parser
 
 
 HOST = __default_host__
@@ -18,8 +17,13 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture
-def flow_args():
-    return set_flow_parser().parse_args([])
+def flow_envs(request):
+    shards, replicas = request.param
+    os.environ['num_shards'] = str(shards)
+    os.environ['num_replicas'] = str(replicas)
+    yield shards, replicas
+    del os.environ['num_shards']
+    del os.environ['num_replicas']
 
 
 @pytest.fixture
@@ -32,13 +36,19 @@ def async_jinad_client():
     return AsyncJinaDClient(host=HOST, port=PORT)
 
 
-def test_remote_jinad_flow(jinad_client):
+@pytest.mark.parametrize('flow_envs', [(1, 1), (2, 1), (2, 2), (1, 2)], indirect=True)
+def test_remote_jinad_flow(jinad_client, flow_envs):
+    shards, replicas = flow_envs
     workspace_id = jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
     assert jinad_client.flows.alive()
     # create flow
-    flow_id = jinad_client.flows.create(workspace_id=workspace_id, filename='flow1.yml')
+    flow_id = jinad_client.flows.create(
+        workspace_id=workspace_id,
+        filename='flow1.yml',
+        envs={'num_shards': shards, 'num_replicas': replicas},
+    )
     assert flow_id
     # get flow status
     remote_flow_args = jinad_client.flows.get(DaemonID(flow_id))
@@ -50,14 +60,18 @@ def test_remote_jinad_flow(jinad_client):
 
 
 @pytest.mark.asyncio
-async def test_remote_jinad_flow_async(async_jinad_client):
+@pytest.mark.parametrize('flow_envs', [(1, 1), (2, 1), (2, 2), (1, 2)], indirect=True)
+async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
+    replicas, shards = flow_envs
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
     assert await async_jinad_client.flows.alive()
     # create flow
     flow_id = await async_jinad_client.flows.create(
-        workspace_id=workspace_id, filename='flow1.yml'
+        workspace_id=workspace_id,
+        filename='flow1.yml',
+        envs={'num_shards': shards, 'num_replicas': replicas},
     )
     assert flow_id
     # get flow status
@@ -77,7 +91,9 @@ async def test_remote_jinad_flow_get_delete_all(async_jinad_client):
     assert await async_jinad_client.flows.alive()
     # create flow
     flow_id1 = await async_jinad_client.flows.create(
-        workspace_id=workspace_id, filename='flow1.yml'
+        workspace_id=workspace_id,
+        filename='flow1.yml',
+        envs={'num_shards': 1, 'num_replicas': 1},
     )
     assert flow_id1
     flow_id2 = await async_jinad_client.flows.create(

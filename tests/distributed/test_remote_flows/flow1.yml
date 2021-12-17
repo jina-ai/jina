@@ -7,3 +7,5 @@ with:
 executors:
   - name: counter
     uses: executors/simple_executor/config.yml
+    shards: ${{ num_shards }}
+    replicas: ${{ num_replicas }}
