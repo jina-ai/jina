@@ -226,7 +226,7 @@ Have another seven minutes? We'll show you how to bring your service to the next
     ```bash
     jina hub push preproc_img
     jina hub push embed_img
-    jina hub push embed_img
+    jina hub push match_img
     ```
    You will get three Hub Executors that can be used via Docker container. 
 4. Adjust `Flow` a bit and open it:
