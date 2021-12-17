@@ -1,8 +1,10 @@
 import os
+from copy import deepcopy
 
 import pytest
 
 from jina import Executor, requests, DocumentArray, Document, DocumentArrayMemmap
+from jina.executors import ReducerExecutor
 from jina.executors.metas import get_default_metas
 
 
@@ -253,3 +255,21 @@ def test_map_nested(da_cls):
     exec = NestedExecutor()
     da1 = exec.foo(da)
     assert da1.texts == ['hello'] * N
+
+
+@pytest.mark.parametrize('n_shards', [3, 5])
+@pytest.mark.parametrize('n_matches', [10, 11])
+@pytest.mark.parametrize('n_chunks', [10, 11])
+def test_reducer_executor(n_shards, n_matches, n_chunks):
+    reducer_executor = ReducerExecutor()
+    query = DocumentArray([Document() for _ in range(5)])
+    docs_matrix = [deepcopy(query) for _ in range(n_shards)]
+    for da in docs_matrix:
+        for doc in da:
+            doc.matches.extend([Document() for _ in range(n_matches)])
+            doc.chunks.extend([Document() for _ in range(n_chunks)])
+
+    reduced_da = reducer_executor.reduce(docs_matrix=docs_matrix)
+    for doc in reduced_da:
+        assert len(doc.matches) == n_shards * n_matches
+        assert len(doc.chunks) == n_shards * n_chunks

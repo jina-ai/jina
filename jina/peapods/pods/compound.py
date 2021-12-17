@@ -7,7 +7,7 @@ from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ..networking import get_connect_host
-from ... import helper
+from ... import helper, __default_reducer_executor__
 from ...enums import SocketType, SchedulerType
 from ...helper import random_identity
 
@@ -39,6 +39,11 @@ class CompoundPod(BasePod):
         self.is_tail_router = True
         self.head_args = BasePod._copy_to_head_args(args, args.polling)
         self.tail_args = BasePod._copy_to_tail_args(self.args, self.args.polling)
+
+        # Compound with needs > 1 ==> reduce in the head
+        if len(self.needs) > 1:
+            self.head_args.uses = __default_reducer_executor__
+
         # uses before with shards apply to shards and not to replicas
         self.shards = []  # type: List['Pod']
         # BACKWARDS COMPATIBILITY:

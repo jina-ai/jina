@@ -8,7 +8,7 @@ from typing import Dict, Union, Set, List, Optional
 
 from ..networking import get_connect_host
 from ..peas import BasePea
-from ... import __default_executor__
+from ... import __default_executor__, __default_reducer_executor__
 from ... import helper
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...enums import (
@@ -278,6 +278,14 @@ class BasePod(ExitFIFO):
                 _tail_args.name = f'tail'
             _tail_args.pea_role = PeaRoleType.TAIL
             _tail_args.num_part = 1 if polling_type.is_push else args.shards
+
+        if (
+            polling_type == PollingType.ALL
+            and args.shards
+            and args.shards > 1
+            and not getattr(args, 'uses_after', None)
+        ):
+            _tail_args.uses = __default_reducer_executor__
 
         Pod._set_dynamic_routing_out(_tail_args)
 
@@ -857,6 +865,10 @@ class Pod(BasePod):
 
     def _parse_base_pod_args(self, args):
         parsed_args = {'head': None, 'tail': None, 'peas': []}
+
+        if not getattr(args, 'uses_before', None) and len(self.needs) > 1:
+            args.reduce = True
+
         if getattr(args, 'replicas', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
