@@ -182,7 +182,17 @@
                     </div>
                 </div>
                 {% endif %}
-                {% include "docbot.html" %}
+                <jina-qa-bot
+                    site="/"
+                    style="position: fixed;"
+                    theme="follow"
+                    animate-by="position"
+                >
+                    <dt>You can ask questions about our docs. Try:</dt>
+                    <dd>Does Jina support Kubernetes?</dd>
+                    <dd>How can I traverse a nested DocumentArray?</dd>
+                    <dd>What are the basic concepts in Jina?</dd>
+                </jina-qa-bot>
             </div>
 
             {% endblock right_sidebar %}
