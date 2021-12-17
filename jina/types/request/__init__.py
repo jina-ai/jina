@@ -24,7 +24,7 @@ class Request(ProtoTypeMixin):
     """
 
     def __getattr__(self, name: str):
-        return getattr(self._pb_body, name)
+        return getattr(self.proto, name)
 
     def add_exception(
         self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None

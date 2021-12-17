@@ -80,6 +80,11 @@ class DataRequest(Request):
 
     @property
     def is_decompressed(self) -> bool:
+        """
+        Checks if the underlying proto object was already deserialized
+
+        :return: True if the proto was deserialized before
+        """
         return self.buffer is None
 
     @property
@@ -90,10 +95,13 @@ class DataRequest(Request):
         :return: protobuf instance
         """
         if not self.is_decompressed:
-            self._pb_body = jina_pb2.DataRequestProto()
-            self._pb_body.ParseFromString(self.buffer)
-            self.buffer = None
+            self._decompress()
         return self._pb_body
+
+    def _decompress(self):
+        self._pb_body = jina_pb2.DataRequestProto()
+        self._pb_body.ParseFromString(self.buffer)
+        self.buffer = None
 
     @property
     def docs(self) -> 'DocumentArray':

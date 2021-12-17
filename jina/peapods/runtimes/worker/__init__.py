@@ -48,6 +48,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             ]
         )
 
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self, self._grpc_server
+        )
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
@@ -75,11 +78,21 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         await self.async_cancel()
         self._data_request_handler.close()
 
+    async def process_single_data(self, request: DataRequest, *args) -> DataRequest:
+        """
+        Process the received requests and return the result as a new request
+
+        :param request: the data request to process
+        :param args: additional arguments in the grpc call, ignored
+        :returns: the response request
+        """
+        return await self.process_data([request], args)
+
     async def process_data(self, requests: List[DataRequest], *args) -> DataRequest:
         """
         Process the received requests and return the result as a new request
 
-        :param requests: the data request to process
+        :param requests: the data requests to process
         :param args: additional arguments in the grpc call, ignored
         :returns: the response request
         """

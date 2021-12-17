@@ -157,6 +157,16 @@ service JinaDataRequestRPC {
 }
 
 /**
+ * jina gRPC service for DataRequests.
+ * This is used to send requests to Executors when a list of requests is not needed
+ */
+service JinaSingleDataRequestRPC {
+    // Used for passing DataRequests to the Executors
+    rpc process_single_data (DataRequestProto) returns (DataRequestProto) {
+    }
+}
+
+/**
  * jina Gateway gRPC service.
  */
 service JinaRPC {

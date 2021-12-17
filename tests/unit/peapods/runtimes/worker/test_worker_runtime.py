@@ -7,15 +7,13 @@ from threading import Event
 
 import pytest
 
+from docarray import Document
 from jina import DocumentArray
 from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
-from jina.proto.jina_pb2 import DocumentArrayProto
-from jina.types.document import Document
-from jina.types.request.data import DataRequest
 
 
 @pytest.mark.slow
@@ -98,9 +96,12 @@ async def test_worker_runtime_graceful_shutdown():
 
     async def task_wrapper(adress, messages_received):
         request = _create_test_data_message(len(messages_received))
-        data_stub, control_stub, channel = GrpcConnectionPool.create_async_channel_stub(
-            adress
-        )
+        (
+            single_data_stub,
+            data_stub,
+            control_stub,
+            channel,
+        ) = GrpcConnectionPool.create_async_channel_stub(adress)
         await data_stub.process_data(request)
         await channel.close()
         messages_received.append(request)

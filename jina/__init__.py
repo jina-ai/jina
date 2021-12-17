@@ -63,7 +63,7 @@ __version__ = '2.6.3'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.1.4'
+__proto_version__ = '0.1.5'
 __docarray_version__ = _docarray.__version__
 
 __uptime__ = _datetime.datetime.now().isoformat()
