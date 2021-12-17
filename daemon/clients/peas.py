@@ -52,7 +52,7 @@ class AsyncPeaClient(AsyncBaseClient):
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
-            params={'workspace_id': daemonize(workspace_id)},
+            params=[('workspace_id', daemonize(workspace_id))] + envs,
             json=payload,
             timeout=self.timeout,
         ) as response:

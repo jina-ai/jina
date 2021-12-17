@@ -56,7 +56,7 @@ class AsyncFlowClient(AsyncBaseClient):
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
-            params={'workspace_id': workspace_id, 'filename': filename},
+            params=[('workspace_id', workspace_id), ('filename', filename)] + envs,
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()
