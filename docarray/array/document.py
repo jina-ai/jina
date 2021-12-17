@@ -18,6 +18,8 @@ from ..document import Document
 from ..helper import typename
 from ..proto import docarray_pb2
 
+import numpy as np
+
 if TYPE_CHECKING:
     from .types import DocumentArraySourceType
 
@@ -158,7 +160,7 @@ class DocumentArray(
     def __contains__(self, item: str):
         return item in self._index_map
 
-    def __getitem__(self, item: Union[int, str, slice, List]):
+    def __getitem__(self, item: Union[int, str, slice, List, np.ndarray]):
         if isinstance(item, int):
             return Document(self._pb_body[item])
         elif isinstance(item, str):
@@ -167,6 +169,13 @@ class DocumentArray(
             return DocumentArray(self._pb_body[item])
         elif isinstance(item, list):
             return DocumentArray(self._pb_body[t] for t in item)
+        elif isinstance(item, np.ndarray):
+            assert len(item) == len(
+                self
+            ), f'input array length should be the same as DocumentArray'
+            return DocumentArray(
+                _pb_body for _pb_body, b in zip(self._pb_body, item) if b
+            )
         else:
             raise IndexError(f'do not support this index type {typename(item)}: {item}')
 
