@@ -47,7 +47,9 @@ def docker_image_built():
 
 
 @pytest.mark.parametrize(
-    'pod_params', [(1, 2, 1)], indirect=True  # (replicas, scale_to, shards)
+    'pod_params',
+    [(1, 2, 1), (2, 3, 1), (3, 1, 1), (1, 2, 2), (2, 1, 2)],
+    indirect=True,  # (replicas, scale_to, shards)
 )
 def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
     replicas, scale_to, shards = pod_params
@@ -70,7 +72,6 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     replica_ids = set()
     for r in ret1:
-        assert len(r.docs) == 10
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
@@ -86,7 +87,6 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     replica_ids = set()
     for r in ret2:
-        assert len(r.docs) == 10
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
@@ -97,7 +97,9 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'pod_params', [(1, 2, 1)], indirect=True  # (replicas, scale_to, shards)
+    'pod_params',
+    [(1, 2, 1), (2, 3, 1), (3, 1, 1), (1, 2, 2), (2, 1, 2)],
+    indirect=True,  # (replicas, scale_to, shards)
 )
 async def test_scale_remote_flow_async(
     docker_image_built, async_jinad_client, pod_params
@@ -122,7 +124,6 @@ async def test_scale_remote_flow_async(
 
     replica_ids = set()
     async for r in ret1:
-        assert len(r.docs) == 10
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
@@ -140,7 +141,6 @@ async def test_scale_remote_flow_async(
 
     replica_ids = set()
     async for r in ret2:
-        assert len(r.docs) == 10
         for replica_id in r.docs.get_attributes('tags__replica_id'):
             replica_ids.add(replica_id)
 
