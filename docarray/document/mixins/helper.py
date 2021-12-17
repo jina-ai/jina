@@ -2,21 +2,32 @@ import os
 import urllib.parse
 import urllib.request
 from contextlib import nullcontext
+from http.client import RemoteDisconnected
+from time import sleep
 
 from ...helper import __windows__
 
 
-def _uri_to_buffer(uri: str) -> bytes:
+def _uri_to_buffer(uri: str, tries: int = 1, retry_sleep: int = 1) -> bytes:
     """Convert uri to buffer
     Internally it reads uri into buffer.
 
     :param uri: the uri of Document
+    :param tries: the number of retries
+    :param retry_sleep: seconds to wait before next retry
     :return: buffer bytes.
     """
     if urllib.parse.urlparse(uri).scheme in {'http', 'https', 'data'}:
-        req = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as fp:
-            return fp.read()
+        for i in range(tries):
+            try:
+                req = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req) as fp:
+                    return fp.read()
+            except RemoteDisconnected as e:
+                if i < tries - 1:
+                    sleep(retry_sleep)
+                else:
+                    raise Exception(f'failed after {tries} tries', e)
     elif os.path.exists(uri):
         with open(uri, 'rb') as fp:
             return fp.read()

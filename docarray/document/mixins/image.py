@@ -120,17 +120,21 @@ class ImageDataMixin:
         width: Optional[int] = None,
         height: Optional[int] = None,
         channel_axis: int = -1,
+        tries: int = 1,
+        retry_sleep: int = 1,
     ) -> T:
         """Convert the image-like :attr:`.uri` into :attr:`.blob`
 
         :param width: the width of the image blob.
         :param height: the height of the blob.
         :param channel_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param tries: the number of retries
+        :param retry_sleep: seconds to wait before next retry
 
         :return: itself after processed
         """
 
-        buffer = _uri_to_buffer(self.uri)
+        buffer = _uri_to_buffer(self.uri, tries, retry_sleep)
         blob = _to_image_blob(io.BytesIO(buffer), width=width, height=height)
         self.blob = _move_channel_axis(blob, original_channel_axis=channel_axis)
         return self
