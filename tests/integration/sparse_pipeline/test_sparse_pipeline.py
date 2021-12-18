@@ -34,7 +34,7 @@ class DummyCSRSparseIndexEncoder(Executor):
 
     @requests(on='/index')
     def encode(self, docs: 'DocumentArray', *args, **kwargs) -> Any:
-        for i, doc in enumerate(docs):
+        for doc in docs:
             doc.embedding = sparse.coo_matrix(doc.content)
         self.docs.extend(docs)
 

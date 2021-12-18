@@ -202,5 +202,4 @@ async def test_grpc_data_runtime_graceful_shutdown(close_method):
 
 def _create_test_data_message(counter=0):
     req = list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
-    msg = Message(None, req, 'test', '123')
-    return msg
+    return Message(None, req, 'test', '123')

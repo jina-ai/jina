@@ -118,10 +118,9 @@ class BasePea:
 
         if self.args.runtime_backend == RuntimeBackendType.THREAD:
             self.logger.warning(
-                f' Using Thread as runtime backend is not recommended for production purposes. It is '
-                f'just supposed to be used for easier debugging. Besides the performance considerations, it is'
-                f'specially dangerous to mix `Executors` running in different types of `RuntimeBackends`.'
+                ' Using Thread as runtime backend is not recommended for production purposes. It is just supposed to be used for easier debugging. Besides the performance considerations, it isspecially dangerous to mix `Executors` running in different types of `RuntimeBackends`.'
             )
+
 
         self._envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.identity}
         if self.args.quiet:
@@ -194,18 +193,18 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        self.logger.debug(f' Joining the process')
+        self.logger.debug(' Joining the process')
         self.worker.join(*args, **kwargs)
-        self.logger.debug(f' Successfully joined the process')
+        self.logger.debug(' Successfully joined the process')
 
     def terminate(self):
         """Terminate the Pea.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
-            self.logger.debug(f' terminating the runtime process')
+            self.logger.debug(' terminating the runtime process')
             self.worker.terminate()
-            self.logger.debug(f' runtime process properly terminated')
+            self.logger.debug(' runtime process properly terminated')
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -352,9 +351,9 @@ class BasePea:
         terminated = False
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self.logger.debug(f' Cancel runtime')
+                self.logger.debug(' Cancel runtime')
                 self._cancel_runtime()
-                self.logger.debug(f' Wait to shutdown')
+                self.logger.debug(' Wait to shutdown')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
                     terminated = True
@@ -364,12 +363,15 @@ class BasePea:
                     )
             except Exception as ex:
                 self.logger.error(
-                    f'{ex!r} during {self.close!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
+                    (
+                        f'{ex!r} during {self.close!r}'
+                        + '\n add "--quiet-error" to suppress the exception details'
+                    )
                     if not self.args.quiet_error
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+
                 if not terminated:
                     self.terminate()
 
@@ -381,7 +383,6 @@ class BasePea:
             self.logger.debug(
                 'shutdown is already set. Runtime will end gracefully on its own'
             )
-            pass
         else:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.
             # Observed with `gateway` when Pods fail to start

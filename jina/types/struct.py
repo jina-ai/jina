@@ -26,25 +26,23 @@ class StructView(ProtoTypeMixin, MutableMapping):
         del self._pb_body[key]
 
     def __getitem__(self, key):
-        if key in self._pb_body.keys():
-            value = self._pb_body[key]
-            if isinstance(value, struct_pb2.Struct):
-                return StructView(value)
-            elif isinstance(value, struct_pb2.ListValue):
-                from .list import ListView
-
-                return ListView(value)
-            else:
-                return value
-        else:
+        if key not in self._pb_body.keys():
             raise KeyError()
+        value = self._pb_body[key]
+        if isinstance(value, struct_pb2.Struct):
+            return StructView(value)
+        elif isinstance(value, struct_pb2.ListValue):
+            from .list import ListView
+
+            return ListView(value)
+        else:
+            return value
 
     def __len__(self) -> int:
         return len(self._pb_body.keys())
 
     def __iter__(self):
-        for key in self._pb_body.keys():
-            yield key
+        yield from self._pb_body.keys()
 
     def __eq__(self, other: Union['StructView', Dict]):
         if isinstance(other, StructView):

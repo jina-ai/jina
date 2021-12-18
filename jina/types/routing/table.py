@@ -225,10 +225,10 @@ class RoutingTable(ProtoTypeMixin):
 
         :return: list of addresses for next targets
         """
-        targets = []
-        for edge in self._get_out_edges(self.active_pod):
-            targets.append(self._get_target_pod(edge.pod).full_address)
-        return targets
+        return [
+            self._get_target_pod(edge.pod).full_address
+            for edge in self._get_out_edges(self.active_pod)
+        ]
 
     def is_acyclic(self) -> bool:
         """

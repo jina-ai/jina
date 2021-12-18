@@ -8,8 +8,8 @@ from daemon import __root_workspace__
 
 store_items = {
     DaemonID(f'jflow'): StoreItem(),
-    DaemonID(f'jflow'): StoreItem(),
-    DaemonID(f'jflow'): StoreItem(),
+    DaemonID('jflow'): StoreItem(),
+    DaemonID('jflow'): StoreItem(),
 }
 
 

@@ -376,24 +376,23 @@ class DocumentArrayMemmap(
 
     def __setitem__(self, key: Union[int, str], value: 'Document') -> None:
         if isinstance(key, int):
-            if 0 <= key < len(self):
-                str_key = self._int2str_id(key)
-                # override an existing entry
-                self._update(value, key)
-
-                # allows overwriting an existing document
-                if str_key != value.id:
-                    entry = self._header_map.pop(value.id)
-                    self._header_map = OrderedDict(
-                        [
-                            (value.id, entry) if k == str_key else (k, v)
-                            for k, v in self._header_map.items()
-                        ]
-                    )
-                    if str_key in self.buffer_pool.doc_map:
-                        self.buffer_pool.doc_map.pop(str_key)
-            else:
+            if not 0 <= key < len(self):
                 raise IndexError(f'`key`={key} is out of range')
+            str_key = self._int2str_id(key)
+            # override an existing entry
+            self._update(value, key)
+
+            # allows overwriting an existing document
+            if str_key != value.id:
+                entry = self._header_map.pop(value.id)
+                self._header_map = OrderedDict(
+                    [
+                        (value.id, entry) if k == str_key else (k, v)
+                        for k, v in self._header_map.items()
+                    ]
+                )
+                if str_key in self.buffer_pool.doc_map:
+                    self.buffer_pool.doc_map.pop(str_key)
         elif isinstance(key, str):
             if key != value.id:
                 raise ValueError('key must be equal to document id')
@@ -467,16 +466,15 @@ class DocumentArrayMemmap(
             embeddings = list(self.embeddings)  # type: List[np.ndarray]
             index = fields.index('embedding')
             fields.remove('embedding')
-        if fields:
-            contents = [doc.get_attributes(*fields) for doc in self]
-            if len(fields) > 1:
-                contents = list(map(list, zip(*contents)))
-            if index:
-                contents = [contents]
-                contents.insert(index, embeddings)
-            return contents
-        else:
+        if not fields:
             return embeddings
+        contents = [doc.get_attributes(*fields) for doc in self]
+        if len(fields) > 1:
+            contents = list(map(list, zip(*contents)))
+        if index:
+            contents = [contents]
+            contents.insert(index, embeddings)
+        return contents
 
     def get_attributes_with_docs(
         self,
@@ -615,8 +613,7 @@ class DocumentArrayMemmap(
         :return: blobs stacked per row as `np.ndarray`.
         """
 
-        blobs = np.stack(self.get_attributes('blob'))
-        return blobs
+        return np.stack(self.get_attributes('blob'))
 
     def _invalidate_embeddings_memmap(self):
         self._embeddings_memmap = None

@@ -161,9 +161,11 @@ def protobuf_to_pydantic_model(
 
         if field_type is Enum:
             # Proto Field Type: enum
-            enum_dict = {}
-            for enum_field in f.enum_type.values:
-                enum_dict[enum_field.name] = enum_field.number
+            enum_dict = {
+                enum_field.name: enum_field.number
+                for enum_field in f.enum_type.values
+            }
+
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:
@@ -175,15 +177,13 @@ def protobuf_to_pydantic_model(
                 # Proto Field Type: google.protobuf.Timestamp
                 field_type = datetime
                 default_factory = datetime.now
+            elif f.message_type.name == model_name:
+                # Self-referencing models
+                field_type = model_name
             else:
-                # Proto field type: Proto message defined in jina.proto
-                if f.message_type.name == model_name:
-                    # Self-referencing models
-                    field_type = model_name
-                else:
-                    # This field_type itself a Pydantic model
-                    field_type = protobuf_to_pydantic_model(f.message_type)
-                    PROTO_TO_PYDANTIC_MODELS.model_name = field_type
+                # This field_type itself a Pydantic model
+                field_type = protobuf_to_pydantic_model(f.message_type)
+                PROTO_TO_PYDANTIC_MODELS.model_name = field_type
 
         if f.label == FieldDescriptor.LABEL_REPEATED:
             field_type = List[field_type]

@@ -179,10 +179,8 @@ class BaseStreamer(ABC):
             :param fetch_to: the task list storing requests
             :return: False if append task to :param:`fetch_to` else False
             """
-            count = 0
-            async for request in AsyncRequestsIterator(iterator=request_iterator):
+            async for count, request in enumerate(AsyncRequestsIterator(iterator=request_iterator), start=1):
                 fetch_to.append(self._handle_request(request=request))
-                count += 1
                 if count == num_req:
                     return False
             return True

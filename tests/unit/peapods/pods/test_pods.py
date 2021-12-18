@@ -332,11 +332,7 @@ def test_pod_upload_files(
     )
     pod = Pod(args)
     for k, v in pod.peas_args.items():
-        if k in ['head', 'tail']:
-            if v:
-                pass
-                # assert sorted(v.upload_files) == sorted(expected)
-        else:
+        if k not in ['head', 'tail']:
             for pea in v:
                 print(sorted(pea.upload_files))
                 print(sorted(expected))

@@ -31,8 +31,7 @@ def _path_size_remote(this_dump_path, container_id):
         f'docker exec {container_id} /bin/bash -c "du -sh {this_dump_path}" > dump_size.txt'
     )
     contents = open('dump_size.txt').readline()
-    dir_size = float(contents.split('K')[0].split('M')[0])
-    return dir_size
+    return float(contents.split('K')[0].split('M')[0])
 
 
 def _create_flows():

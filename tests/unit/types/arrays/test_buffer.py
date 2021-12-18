@@ -108,7 +108,7 @@ def test_buffer_dam_getitem(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     docs = list(random_docs(10))
     dam.extend(docs)
-    for i, doc in enumerate(docs):
+    for doc in docs:
         # assert same doc when getting by key
         assert dam.buffer_pool[doc.id].content_hash == doc.content_hash
         assert dam.buffer_pool[doc.id].id == doc.id

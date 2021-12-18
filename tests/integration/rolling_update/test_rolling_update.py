@@ -95,7 +95,7 @@ def docker_image():
     os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
     time.sleep(3)
     yield
-    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+    os.system("docker rmi $(docker images | grep 'test_rolling_update_docker')")
 
 
 @pytest.mark.repeat(5)
@@ -173,14 +173,14 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
 
 def test_workspace(config, tmpdir, docs):
     with Flow().add(
-        name='executor1',
-        uses=DummyMarkExecutor,
-        workspace=str(tmpdir),
-        replicas=2,
-        shards=3,
-    ) as flow:
+            name='executor1',
+            uses=DummyMarkExecutor,
+            workspace=str(tmpdir),
+            replicas=2,
+            shards=3,
+        ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
-        for i in range(10):
+        for _ in range(10):
             flow.index(docs)
 
     # validate created workspaces

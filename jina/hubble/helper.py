@@ -253,9 +253,9 @@ def upload_file(
 
     headers.update({'Content-Type': ctype})
 
-    response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
-
-    return response
+    return getattr(requests, method)(
+        url, data=data, headers=headers, stream=stream
+    )
 
 
 def disk_cache_offline(
@@ -303,11 +303,10 @@ def disk_cache_offline(
                     result = func(*args, **kwargs)
                     dict_db[call_hash] = result
                 except urllib.error.URLError:
-                    if call_hash in dict_db:
-                        default_logger.warning(message.format(func_name=func.__name__))
-                        return dict_db[call_hash]
-                    else:
+                    if call_hash not in dict_db:
                         raise
+                    default_logger.warning(message.format(func_name=func.__name__))
+                    return dict_db[call_hash]
             return result
 
         return wrapper
@@ -367,7 +366,7 @@ def install_requirements(
                     ):
                         install_reqs.append(req)
 
-    if len(install_reqs) == 0:
+    if not install_reqs:
         return
 
     if is_requirements_installed(requirements_file):

@@ -26,8 +26,7 @@ def _build_lookup_table():
         noise2key = {}
         for k, z in d.items():
             for v in z:
-                noises = [k]
-                noises.append(v.get('name', []))
+                noises = [k, v.get('name', [])]
                 noises.extend(v.get('option_strings', []))
                 dash_to_space = [k.replace('-', ' ').replace('_', ' ') for k in noises]
                 no_dash = [k.replace('-', '').replace('_', '') for k in noises]
@@ -62,15 +61,16 @@ def _prettyprint_help(d, also_in=None):
     else:
         availables = '  '.join(
             colored(v, attrs='underline')
-            for v in (set(h['usage'] for h in also_in) if also_in else {d['usage']})
+            for v in (
+                {h['usage'] for h in also_in} if also_in else {d['usage']}
+            )
         )
+
         option_str = '  '.join(colored(v, attrs='bold') for v in d['option_strings'])
         if option_str:
             option_str = f'as {option_str}'
 
-        table = {}
-        table['Type'] = d['type']
-        table['Required'] = d['required']
+        table = {'Type': d['type'], 'Required': d['required']}
         if d['choices']:
             table['Choices'] = ' | '.join(d['choices'])
         if not d['default_random'] and d['default'] is not None:
@@ -117,7 +117,7 @@ def lookup_and_print(query: str):
         helps = kw2info[nkw2kw[query]]  # type: list
         if len(helps) == 1:
             _prettyprint_help(helps[0])
-        elif len(helps) > 1 and len(set(h['help'] for h in helps)) == 1:
+        elif len(helps) > 1 and len({h['help'] for h in helps}) == 1:
             _prettyprint_help(helps[0], also_in=helps)
         elif len(helps) > 1:
             from collections import defaultdict

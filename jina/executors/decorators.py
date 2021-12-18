@@ -62,8 +62,7 @@ def store_init_kwargs(func: Callable) -> Callable:
         else:
             self._init_kwargs_dict = tmp
         convert_tuple_to_list(self._init_kwargs_dict)
-        f = func(self, *args, **kwargs)
-        return f
+        return func(self, *args, **kwargs)
 
     return arg_wrapper
 

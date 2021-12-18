@@ -81,17 +81,12 @@ def _benchmark_dam_extend_qps() -> Dict[str, float]:
     Returns:
         A dict mapping of dam extend time in seconds as float number.
     """
-    dlist = []
     dam_size = 1000000
     dam = DocumentArrayMemmap(os.path.join(os.getcwd(), 'MyMemMap'))
 
-    for i in range(dam_size):
-        dlist.append(
-            Document(
+    dlist = [Document(
                 text=f'This is the document number: {i}',
-            )
-        )
-
+            ) for i in range(dam_size)]
     log.info('Benchmarking DAM extend')
     st = time.perf_counter()
     dam.extend(dlist)

@@ -56,8 +56,7 @@ def test_tags_property():
     assert not d.tags
     assert not d.proto.tags
 
-    # update
-    d.tags.update({'hello': 'world'})
+    d.tags['hello'] = 'world'
     assert d.tags['hello'] == 'world'
     assert d.proto.tags['hello'] == 'world'
 

@@ -15,9 +15,6 @@ from jina.types.message import Message
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
 
-if False:
-    import kubernetes
-
 
 class ConnectionList:
     """
@@ -77,16 +74,15 @@ class ConnectionList:
         Removes and returns a connection from the list. Strategy is round robin
         :returns: The connection removed from the pool
         """
-        if self._connections:
-            connection = self._connections.pop(self._rr_counter)
-            self._rr_counter = (
-                (self._rr_counter + 1) % len(self._connections)
-                if len(self._connections)
-                else 0
-            )
-            return connection
-        else:
+        if not self._connections:
             return None
+        connection = self._connections.pop(self._rr_counter)
+        self._rr_counter = (
+            (self._rr_counter + 1) % len(self._connections)
+            if len(self._connections)
+            else 0
+        )
+        return connection
 
     def has_connection(self, address: str) -> bool:
         """
@@ -371,19 +367,12 @@ def is_remote_local_connection(first: str, second: str):
         first_ip = ipaddress.ip_address(first)
         first_global = first_ip.is_global
     except ValueError:
-        if first == 'localhost':
-            first_global = False
-        else:
-            first_global = True
+        first_global = first != 'localhost'
     try:
         second_ip = ipaddress.ip_address(second)
         second_local = second_ip.is_private or second_ip.is_loopback
     except ValueError:
-        if second == 'localhost':
-            second_local = True
-        else:
-            second_local = False
-
+        second_local = second == 'localhost'
     return first_global and second_local
 
 
@@ -437,15 +426,14 @@ def get_connect_host(
     if bind_conn_same_remote:
         return __docker_host__ if conn_docker else __default_host__
 
-    if bind_local and not conn_local:
-        # in this case we are telling CONN (at remote) our local ip address
-        if connect_args.host.startswith('localhost'):
-            # this is for the "psuedo" remote tests to pass
-            return __docker_host__
-        return get_public_ip() if bind_expose_public else get_internal_ip()
-    else:
+    if not bind_local:
         # in this case we (at local) need to know about remote the BIND address
         return bind_host
+    # in this case we are telling CONN (at remote) our local ip address
+    if connect_args.host.startswith('localhost'):
+        # this is for the "psuedo" remote tests to pass
+        return __docker_host__
+    return get_public_ip() if bind_expose_public else get_internal_ip()
 
 
 def create_connection_pool(args: 'Namespace') -> ConnectionPool:

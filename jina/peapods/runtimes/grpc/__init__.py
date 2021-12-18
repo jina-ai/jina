@@ -157,12 +157,15 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
             else:
                 msg.add_exception(ex, executor=self._data_request_handler._executor)
                 self.logger.error(
-                    f'{ex!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
+                    (
+                        f'{ex!r}'
+                        + '\n add "--quiet-error" to suppress the exception details'
+                    )
                     if not self.args.quiet_error
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+
 
             if msg.is_data_request:
                 asyncio.create_task(self._grpclet.send_message(msg))
@@ -182,7 +185,7 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
         if msg.envelope.request_type != 'DataRequest':
             if msg.request.command == 'TERMINATE':
                 raise RuntimeTerminated()
-            self.logger.debug(f'skip executor: not data request')
+            self.logger.debug('skip executor: not data request')
             return msg
 
         req_id = msg.envelope.request_id
@@ -199,11 +202,10 @@ class GRPCDataRuntime(AsyncNewLoopRuntime, ABC):
 
     def _get_expected_parts(self, msg):
         if msg.is_data_request:
-            if not self._static_routing_table:
-                graph = RoutingTable(msg.envelope.routing_table)
-                return graph.active_target_pod.expected_parts
-            else:
+            if self._static_routing_table:
                 return self.args.num_part
+            graph = RoutingTable(msg.envelope.routing_table)
+            return graph.active_target_pod.expected_parts
         else:
             return 1
 

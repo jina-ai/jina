@@ -2,12 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Union, List, Tuple, Iterable, Iterator
 
 
-if False:
-    from .document import DocumentArray
-    from .traversable import TraversableSequence
-    from ..document import Document
-
-
 class AbstractDocumentArray(ABC):
     """ Abstract class that defines the public interface of DocumentArray classes """
 

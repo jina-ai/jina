@@ -26,8 +26,7 @@ class LegacyParser(VersionedYAMLParser):
             :return: a list containing the arguments from `class_`
             """
             signature = inspect.signature(class_.__init__)
-            class_arguments = [p.name for p in signature.parameters.values()]
-            return class_arguments
+            return [p.name for p in signature.parameters.values()]
 
         def accumulate_classes(cls) -> Set[Type]:
             """

@@ -1,19 +1,17 @@
 def _python_type_to_schema_type(p):
     if p == 'str':
-        dtype = 'string'
-    elif p == 'int' or p == 'float':
-        dtype = 'number'
+        return 'string'
+    elif p in ['int', 'float']:
+        return 'number'
     elif p in {'typing.List[str]', 'typing.Tuple[str]', 'list', 'tuple'}:
-        dtype = 'array'
+        return 'array'
     elif p == 'bool':
-        dtype = 'boolean'
+        return 'boolean'
     elif p == 'dict':
-        dtype = 'object'
+        return 'object'
     else:
-        dtype = None
-        # raise TypeError(f'{p} is not supported')
-
-    return dtype
+        return None
+            # raise TypeError(f'{p} is not supported')
 
 
 def _cli_to_schema(

@@ -29,8 +29,16 @@ dam_extend_qps = int(d[-1]['dam_extend_qps'])
 avg_flow_time = round(d[-1]['avg_flow_time'], 4)
 import_time = round(d[-1]['import_time'], 4)
 x.add_row(
-    [f'current', index_qps, query_qps, dam_extend_qps, avg_flow_time, import_time]
+    [
+        'current',
+        index_qps,
+        query_qps,
+        dam_extend_qps,
+        avg_flow_time,
+        import_time,
+    ]
 )
+
 for dd in d[:-1][::-1]:
     x.add_row(
         [

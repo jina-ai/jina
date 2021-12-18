@@ -177,9 +177,9 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
                 urllib.request.urlretrieve(
                     v['url'], v['filename'], reporthook=lambda *x: t.update(0.01)
                 )
-            if k == 'index-labels' or k == 'query-labels':
+            if k in ['index-labels', 'query-labels']:
                 v['data'] = load_labels(v['filename'])
-            if k == 'index' or k == 'query':
+            if k in ['index', 'query']:
                 v['data'] = load_mnist(v['filename'])
 
 

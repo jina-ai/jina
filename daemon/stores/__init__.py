@@ -22,11 +22,10 @@ def _get_store(cls: Type[BaseStore]) -> BaseStore:
 
     if jinad_args.no_store:
         return cls()
-    else:
-        try:
-            return cls.load()
-        except Exception:
-            return cls()
+    try:
+        return cls.load()
+    except Exception:
+        return cls()
 
 
 def _get_partial_store() -> Optional['PartialStore']:

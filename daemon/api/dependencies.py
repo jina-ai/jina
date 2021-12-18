@@ -146,14 +146,14 @@ class FlowDepends:
             f: Flow = Flow.load_config(str(self.localpath())).build()
 
             # get & set the ports mapping, set `runs_in_docker`
-            port_mapping = []
-            port_mapping.append(
+            port_mapping = [
                 PortMapping(
                     pod_name='gateway',
                     pea_name='gateway',
                     ports=Ports(port_expose=f.port_expose),
                 )
-            )
+            ]
+
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
                 if isinstance(pod, CompoundPod):
@@ -172,31 +172,30 @@ class FlowDepends:
                         for pea_args in [pod.head_args, pod.tail_args]:
                             pea_args.runs_in_docker = False
                             self._update_port_mapping(pea_args, pod_name, port_mapping)
-                else:
-                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
+                elif runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
                         GATEWAY_RUNTIME_DICT.values()
                     ):
-                        pod.args.runs_in_docker = True
-                        current_ports = Ports()
-                        for port_name in Ports.__fields__:
-                            setattr(
-                                current_ports,
-                                port_name,
-                                getattr(pod.args, port_name, None),
-                            )
-
-                        port_mapping.append(
-                            PortMapping(
-                                pod_name=pod_name, pea_name='', ports=current_ports
-                            )
+                    pod.args.runs_in_docker = True
+                    current_ports = Ports()
+                    for port_name in Ports.__fields__:
+                        setattr(
+                            current_ports,
+                            port_name,
+                            getattr(pod.args, port_name, None),
                         )
-                    elif (
-                        runtime_cls in ['ContainerRuntime']
-                        and hasattr(pod.args, 'replicas')
-                        and pod.args.replicas > 1
-                    ):
-                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
-                            self._update_port_mapping(pea_args, pod_name, port_mapping)
+
+                    port_mapping.append(
+                        PortMapping(
+                            pod_name=pod_name, pea_name='', ports=current_ports
+                        )
+                    )
+                elif (
+                    runtime_cls in ['ContainerRuntime']
+                    and hasattr(pod.args, 'replicas')
+                    and pod.args.replicas > 1
+                ):
+                    for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                        self._update_port_mapping(pea_args, pod_name, port_mapping)
 
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon
@@ -290,26 +289,25 @@ class PeaDepends:
 
         :return: dict of port mappings
         """
+        # Map only "bind" ports for HEAD, TAIL & SINGLETON
+        if self.params.runtime_cls == 'ContainerRuntime':
+            # For `ContainerRuntime`, port mapping gets handled internally
+            return {}
+        if PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL:
+            return {f'{self.params.port_ctrl}/tcp': self.params.port_ctrl}
         _mapping = {
             'port_in': 'socket_in',
             'port_out': 'socket_out',
             'port_ctrl': 'socket_ctrl',
         }
-        # Map only "bind" ports for HEAD, TAIL & SINGLETON
-        if self.params.runtime_cls == 'ContainerRuntime':
-            # For `ContainerRuntime`, port mapping gets handled internally
-            return {}
-        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
-            return {
-                f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
-                for i in self.params.__fields__
-                if i in _mapping
-                and SocketType.from_string(
-                    getattr(self.params, _mapping[i], 'PAIR_BIND')
-                ).is_bind
-            }
-        else:
-            return {f'{self.params.port_ctrl}/tcp': self.params.port_ctrl}
+        return {
+            f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
+            for i in self.params.__fields__
+            if i in _mapping
+            and SocketType.from_string(
+                getattr(self.params, _mapping[i], 'PAIR_BIND')
+            ).is_bind
+        }
 
     def validate(self):
         """
@@ -386,7 +384,7 @@ class WorkspaceDepends:
     def __init__(
         self, id: Optional[DaemonID] = None, files: List[UploadFile] = File(None)
     ) -> None:
-        self.id = id if id else DaemonID('jworkspace')
+        self.id = id or DaemonID('jworkspace')
         self.files = files
 
         from ..tasks import __task_queue__

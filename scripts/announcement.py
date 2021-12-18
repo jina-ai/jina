@@ -12,10 +12,11 @@ def rm_announce():
         _old = fp.read()
         _new = re.sub(
             r'(<!--startmsg-->\s*?\n).*(\n\s*?<!--endmsg-->)',
-            rf'\g<1>\g<2>',
+            '\\g<1>\\g<2>',
             _old,
             flags=re.DOTALL,
         )
+
 
     with open(readme_md, 'w') as fp:
         fp.write(_new)
@@ -24,10 +25,11 @@ def rm_announce():
         _old = fp.read()
         _new = re.sub(
             r'(# start-announce\s*?\n).*(\n\s*?# end-announce)',
-            rf'\g<1>\g<2>',
+            '\\g<1>\\g<2>',
             _old,
             flags=re.DOTALL,
         )
+
     with open(conf_py, 'w') as fp:
         fp.write(_new)
 

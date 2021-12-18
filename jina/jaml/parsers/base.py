@@ -1,9 +1,5 @@
 from typing import Dict, Union
 
-if False:
-    from ...flow.base import Flow
-    from ...executors import BaseExecutor
-
 
 class VersionedYAMLParser:
     """Flow YAML parser for specific version

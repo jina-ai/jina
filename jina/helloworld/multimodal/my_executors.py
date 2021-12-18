@@ -89,10 +89,9 @@ class TextCrafter(Executor):
 
     @requests()
     def filter(self, docs: DocumentArray, **kwargs):
-        filtered_docs = DocumentArray(
+        return DocumentArray(
             d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
         )
-        return filtered_docs
 
 
 class ImageCrafter(Executor):

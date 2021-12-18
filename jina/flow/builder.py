@@ -4,10 +4,6 @@ from typing import List
 from ..enums import FlowBuildLevel
 from ..excepts import FlowBuildLevelError
 
-# noinspection PyUnreachableCode
-if False:
-    from . import Flow
-
 
 def allowed_levels(levels: List['FlowBuildLevel']):
     """Annotate a function so that it requires certain build level to run.
@@ -49,6 +45,6 @@ def _hanging_pods(op_flow: 'Flow') -> List[str]:
     :return: names of hanging Pods (nobody recv from them) in the Flow.
     """
     all_needs = {v for p in op_flow._pod_nodes.values() for v in p.needs}
-    all_names = {p for p in op_flow._pod_nodes.keys()}
+    all_names = set(op_flow._pod_nodes.keys())
     # all_names is always a superset of all_needs
     return list(all_names.difference(all_needs))

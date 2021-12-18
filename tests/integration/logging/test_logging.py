@@ -26,9 +26,11 @@ def test_logging(monkeypatch, flow_log_id, test_logging_daemon):
     def mock_emit(obj, record):
         msg = obj.format(record)
         ct = msg['context']
-        if ct not in ['JINA', 'PROFILE', 'BaseExecutor']:
-            if msg['name'] != 'gateway':
-                assert msg['log_id'] == 'identity_flow'
+        if (
+            ct not in ['JINA', 'PROFILE', 'BaseExecutor']
+            and msg['name'] != 'gateway'
+        ):
+            assert msg['log_id'] == 'identity_flow'
         if msg['name'] == 'gateway':
             assert 'log_id' in msg
 

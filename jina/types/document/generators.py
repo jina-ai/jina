@@ -132,11 +132,7 @@ def from_csv(
     """
     from ..document import Document
 
-    if hasattr(file, 'read'):
-        file_ctx = nullcontext(file)
-    else:
-        file_ctx = open(file, 'r')
-
+    file_ctx = nullcontext(file) if hasattr(file, 'read') else open(file, 'r')
     with file_ctx as fp:
         # when set to auto, then sniff
         try:

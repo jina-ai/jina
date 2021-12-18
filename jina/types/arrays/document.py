@@ -264,21 +264,21 @@ class DocumentArray(
 
                 from .memmap import DocumentArrayMemmap
 
-                if isinstance(
-                    docs, (list, tuple, Generator, DocumentArrayMemmap, itertools.chain)
+                if not isinstance(
+                    docs,
+                    (list, tuple, Generator, DocumentArrayMemmap, itertools.chain),
                 ):
-                    # This would happen in the client
-                    for doc in docs:
-                        if isinstance(doc, Document):
-                            self._pb_body.append(doc.proto)
-                        elif isinstance(doc, jina_pb2.DocumentProto):
-                            self._pb_body.append(doc)
-                        else:
-                            raise ValueError(f'Unexpected element in an input list')
-                else:
                     raise ValueError(
                         f'DocumentArray got an unexpected input {type(docs)}'
                     )
+                    # This would happen in the client
+                for doc in docs:
+                    if isinstance(doc, Document):
+                        self._pb_body.append(doc.proto)
+                    elif isinstance(doc, jina_pb2.DocumentProto):
+                        self._pb_body.append(doc)
+                    else:
+                        raise ValueError('Unexpected element in an input list')
         self._update_id_to_index_map()
 
     def _update_id_to_index_map(self):
@@ -311,13 +311,15 @@ class DocumentArray(
             raise IndexError(f'do not support this index {key}')
 
     def __delitem__(self, index: Union[int, str, slice]):
-        if isinstance(index, int):
+        if (
+            isinstance(index, int)
+            or not isinstance(index, str)
+            and isinstance(index, slice)
+        ):
             del self._pb_body[index]
         elif isinstance(index, str):
             del self[self._id_to_index[index]]
             self._id_to_index.pop(index)
-        elif isinstance(index, slice):
-            del self._pb_body[index]
         else:
             raise IndexError(
                 f'do not support this index type {typename(index)}: {index}'
@@ -392,7 +394,7 @@ class DocumentArray(
         """In-place reverse the sequence."""
         size = len(self._pb_body)
         hi_idx = size - 1
-        for i in range(int(size / 2)):
+        for i in range(size // 2):
             tmp = jina_pb2.DocumentProto()
             tmp.CopyFrom(self._pb_body[hi_idx])
             self._pb_body[hi_idx].CopyFrom(self._pb_body[i])
@@ -541,11 +543,7 @@ class DocumentArray(
         if hasattr(file, 'write'):
             file_ctx = nullcontext(file)
         else:
-            if __windows__:
-                file_ctx = open(file, 'wb', newline='')
-            else:
-                file_ctx = open(file, 'wb')
-
+            file_ctx = open(file, 'wb', newline='') if __windows__ else open(file, 'wb')
         with file_ctx as fp:
             dap = jina_pb2.DocumentArrayProto()
             if self._pb_body:
@@ -559,11 +557,7 @@ class DocumentArray(
 
         :param file: File or filename to which the data is saved.
         """
-        if hasattr(file, 'write'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'w')
-
+        file_ctx = nullcontext(file) if hasattr(file, 'write') else open(file, 'w')
         with file_ctx as fp:
             for d in self:
                 json.dump(d.dict(), fp)
@@ -576,16 +570,10 @@ class DocumentArray(
         :param flatten_tags: if set, then all fields in ``Document.tags`` will be flattened into ``tag__fieldname`` and
             stored as separated columns. It is useful when ``tags`` contain a lot of information.
         """
-        if hasattr(file, 'write'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'w')
-
+        file_ctx = nullcontext(file) if hasattr(file, 'write') else open(file, 'w')
         with file_ctx as fp:
             if flatten_tags:
-                keys = list(self[0].dict().keys()) + list(
-                    f'tag__{k}' for k in self[0].tags
-                )
+                keys = (list(self[0].dict().keys()) + [f'tag__{k}' for k in self[0].tags])
                 keys.remove('tags')
             else:
                 keys = list(self[0].dict().keys())
@@ -609,11 +597,7 @@ class DocumentArray(
         :return: a DocumentArray object
         """
 
-        if hasattr(file, 'read'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file)
-
+        file_ctx = nullcontext(file) if hasattr(file, 'read') else open(file)
         with file_ctx as fp:
             da = DocumentArray()
             for v in fp:
@@ -629,17 +613,12 @@ class DocumentArray(
         :return: a DocumentArray object
         """
 
-        if hasattr(file, 'read'):
-            file_ctx = nullcontext(file)
-        else:
-            file_ctx = open(file, 'rb')
-
+        file_ctx = nullcontext(file) if hasattr(file, 'read') else open(file, 'rb')
         dap = jina_pb2.DocumentArrayProto()
 
         with file_ctx as fp:
             dap.ParseFromString(fp.read())
-            da = DocumentArray(dap.docs)
-            return da
+            return DocumentArray(dap.docs)
 
     @classmethod
     def load_csv(
@@ -701,8 +680,7 @@ class DocumentArray(
 
         :return: List of ``tags`` attributes for all Documents
         """
-        tags = [StructView(d.tags) for d in self._pb_body]
-        return tags
+        return [StructView(d.tags) for d in self._pb_body]
 
     @DocumentArrayGetAttrMixin.texts.getter
     def texts(self) -> List[str]:

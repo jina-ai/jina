@@ -17,7 +17,7 @@ def _update_autocomplete():
                         _result.update(_gaa(' '.join([key, kk]).strip(), vv))
         # filer out single dash, as they serve as abbrev
         _compl = [k for k in _compl if (not k.startswith('-') or k.startswith('--'))]
-        _result.update({key: _compl})
+        _result[key] = _compl
         return _result
 
     compl = _gaa('', get_main_parser())

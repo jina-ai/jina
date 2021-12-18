@@ -2,9 +2,6 @@ from typing import Any, Optional, Sequence, List, Dict, Union
 
 from ..jaml import JAML, JAMLCompatible
 
-if False:
-    from optuna.trial import Trial
-
 
 class OptimizationParameter(JAMLCompatible):
     """Base class for all optimization parameters."""

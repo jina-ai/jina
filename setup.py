@@ -109,7 +109,7 @@ def get_extra_requires(path, add_all=True):
 
             # add tag `all` at the end
             if add_all:
-                extra_deps['all'] = set(vv for v in extra_deps.values() for vv in v)
+                extra_deps['all'] = {vv for v in extra_deps.values() for vv in v}
 
         return extra_deps
     except FileNotFoundError:

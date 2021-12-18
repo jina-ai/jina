@@ -137,7 +137,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.debug(f'📝\tCreate ConfigMap for deployment.')
+    logger.debug('📝\tCreate ConfigMap for deployment.')
 
     kubernetes_tools.create(
         'configmap',
@@ -182,7 +182,7 @@ def deploy_service(
         custom_resource_dir=custom_resource_dir,
     )
 
-    logger.debug(f'🔑\tCreate necessary permissions"')
+    logger.debug('🔑\tCreate necessary permissions"')
 
     kubernetes_tools.create(
         'connection-pool-role',
@@ -240,18 +240,16 @@ def get_cli_params(arguments: Namespace, skip_list: Tuple[str] = ()) -> str:
             continue
         if type(value) == bool and value:
             cli_args.append(f'"--{cli_attribute}"')
-        else:
-            if value:
-                value = str(value)
-                value = value.replace('\'', '').replace('"', '\\"')
-                cli_args.append(f'"--{cli_attribute}", "{value}"')
+        elif value:
+            value = str(value)
+            value = value.replace('\'', '').replace('"', '\\"')
+            cli_args.append(f'"--{cli_attribute}", "{value}"')
 
     cli_args.append('"--port-in", "8081"')
     cli_args.append('"--port-out", "8082"')
     cli_args.append('"--port-ctrl", "8083"')
 
-    cli_string = ', '.join(cli_args)
-    return cli_string
+    return ', '.join(cli_args)
 
 
 def get_image_name(uses: str) -> str:
@@ -265,8 +263,7 @@ def get_image_name(uses: str) -> str:
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
         meta_data = HubIO.fetch_meta(name, tag, secret=secret, force=True)
-        image_name = meta_data.image_name
-        return image_name
+        return meta_data.image_name
     except Exception:
         return uses.replace('docker://', '')
 
@@ -286,13 +283,9 @@ def get_init_container_args(args) -> Optional[Dict]:
     :param args: args of the pod where the init container is used.
     :return: dictionary of init container arguments
     """
-    if args.k8s_uses_init:
-        init_container = {
+    return {
             'init-name': 'init',
             'init-image': args.k8s_uses_init,
             'init-command': f'{args.k8s_init_container_command}',
             'mount-path': args.k8s_mount_path,
-        }
-    else:
-        init_container = None
-    return init_container
+        } if args.k8s_uses_init else None

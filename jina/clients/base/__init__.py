@@ -74,7 +74,7 @@ class BaseClient(ABC):
             if not isinstance(r, Request):
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:
-            default_logger.error(f'inputs is not valid!')
+            default_logger.error('inputs is not valid!')
             raise BadClientInput from ex
 
     def _get_requests(
@@ -99,11 +99,11 @@ class BaseClient(ABC):
         if inspect.isasyncgen(self.inputs):
             from ..request.asyncio import request_generator
 
-            return request_generator(**_kwargs)
         else:
             from ..request import request_generator
 
-            return request_generator(**_kwargs)
+
+        return request_generator(**_kwargs)
 
     @property
     def inputs(self) -> InputType:
@@ -123,10 +123,7 @@ class BaseClient(ABC):
 
         :param bytes_gen: input type
         """
-        if hasattr(bytes_gen, '__call__'):
-            self._inputs = bytes_gen()
-        else:
-            self._inputs = bytes_gen
+        self._inputs = bytes_gen() if hasattr(bytes_gen, '__call__') else bytes_gen
 
     @abc.abstractmethod
     async def _get_results(

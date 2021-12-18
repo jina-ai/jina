@@ -118,7 +118,7 @@ def test_remote_flow():
     assert DaemonID(flow_id).type == 'flow'
     assert client.flows.get(flow_id)
     assert flow_id in client.flows.list()
-    assert_request('get', url=f'http://localhost:23456/status/', expect_rcode=200)
+    assert_request('get', url='http://localhost:23456/status/', expect_rcode=200)
     assert client.flows.delete(flow_id)
     assert client.workspaces.delete(workspace_id)
 
@@ -206,7 +206,7 @@ def docker_compose(request):
     os.system(
         f'docker-compose -f {request.param} --project-directory . down --remove-orphans'
     )
-    os.system(f'docker network prune -f ')
+    os.system('docker network prune -f ')
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])

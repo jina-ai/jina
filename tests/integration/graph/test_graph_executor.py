@@ -66,14 +66,10 @@ def test_flow_with_graph_executor(graph, mocker):
             assert graph.embedding[0] == 64
             assert len(graph.nodes) == 4
             for i, node in enumerate(graph.nodes):
-                if i == 0:
+                if i in [0, 3]:
                     assert node.embedding[0] == 2
-                if i == 1:
+                elif i in [1, 2]:
                     assert node.embedding[0] == 3
-                if i == 2:
-                    assert node.embedding[0] == 3
-                if i == 3:
-                    assert node.embedding[0] == 2
 
     mock = mocker.Mock()
 

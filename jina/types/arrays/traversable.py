@@ -156,15 +156,16 @@ class TraversableSequence:
         _batch = DocumentArray()
         for d in docs:
             # For array-valued attributes we need to compare to None
-            if require_attr in ['embedding', 'blob']:
-                if getattr(d, require_attr) is not None:
-                    _batch.append(d)
-            elif require_attr is not None:
-                if getattr(d, require_attr):
-                    _batch.append(d)
-            else:
+            if (
+                require_attr in ['embedding', 'blob']
+                and getattr(d, require_attr) is not None
+                or require_attr not in ['embedding', 'blob']
+                and require_attr is not None
+                and getattr(d, require_attr)
+                or require_attr not in ['embedding', 'blob']
+                and require_attr is None
+            ):
                 _batch.append(d)
-
             if len(_batch) == batch_size:
                 yield _batch
                 _batch = DocumentArray()

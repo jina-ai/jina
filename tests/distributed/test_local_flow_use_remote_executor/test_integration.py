@@ -36,10 +36,7 @@ def documents_to_index():
 @pytest.fixture
 def patched_remote_local_connection(monkeypatch):
     def alternative_remote_local_connection(first, second):
-        if first == '10.1.0.100':
-            return True
-        else:
-            return False
+        return first == '10.1.0.100'
 
     monkeypatch.setattr(
         'jina.flow.base.is_remote_local_connection',

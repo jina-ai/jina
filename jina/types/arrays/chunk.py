@@ -2,9 +2,6 @@ from typing import Iterable
 
 from .document import DocumentArray
 
-if False:
-    from ..document import Document
-
 
 class ChunkArray(DocumentArray):
     """

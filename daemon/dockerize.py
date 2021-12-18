@@ -233,7 +233,7 @@ class Dockerizer:
             return msg
 
         def _validate_device_request(error: str) -> bool:
-            return True if 'could not select device driver' in error else False
+            return 'could not select device driver' in error
 
         from .stores import workspace_store
 

@@ -21,20 +21,18 @@ def namespace_equal(
     """
     if n1 is None and n2 is None:
         return True
-    for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
-        if not getattr(n1, attr) == getattr(n2, attr):
-            return False
-    return True
+    return all(
+        getattr(n1, attr) == getattr(n2, attr)
+        for attr in filter(
+            lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)
+        )
+    )
 
 
 @pytest.mark.parametrize('is_master', (True, False))
 def test_version(is_master, requests_mock):
     args = set_pod_parser().parse_args(['--name', 'test-pod'])
-    if is_master:
-        version = 'v2'
-    else:
-        # current version is published already
-        version = jina.__version__
+    version = 'v2' if is_master else jina.__version__
     requests_mock.get(
         'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags',
         text='[{"name": "v1"}, {"name": "' + version + '"}]',
@@ -198,8 +196,7 @@ def get_k8s_pod(
     parameter_list.append('--noblock-on-start')
     parser = set_gateway_parser() if pod_name == 'gateway' else set_pod_parser()
     args = parser.parse_args(parameter_list)
-    pod = K8sPod(args, needs)
-    return pod
+    return K8sPod(args, needs)
 
 
 def test_start_creates_namespace():
@@ -489,8 +486,9 @@ def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
     args = set_pod_parser().parse_args(args_list)
     mocker.patch(
         'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
-        return_value=f'test-wait-success.test-namespace.svc',
+        return_value='test-wait-success.test-namespace.svc',
     )
+
     mocker.patch(
         'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
         return_value=client.V1Status(status=200),
@@ -533,8 +531,9 @@ def test_pod_with_gpus(mocker):
     )
     mocker.patch(
         'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
-        return_value=f'test-wait-success.test-namespace.svc',
+        return_value='test-wait-success.test-namespace.svc',
     )
+
     mocker.patch(
         'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
         return_value=client.V1Status(status=200),

@@ -87,8 +87,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
         :returns: Empty protobuf struct
         """
         stub = Grpclet._create_grpc_stub(pod_address, is_async=False)
-        response = stub.Call(ControlMessage(command), timeout=timeout)
-        return response
+        return stub.Call(ControlMessage(command), timeout=timeout)
 
     @staticmethod
     def _create_grpc_stub(pod_address, is_async=True):
@@ -109,20 +108,15 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                 ],
             )
 
-        stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-
-        return stub
+        return jina_pb2_grpc.JinaDataRequestRPCStub(channel)
 
     def _add_envelope(self, msg, routing_table):
-        if not self._static_routing_table:
-            new_envelope = jina_pb2.EnvelopeProto()
-            new_envelope.CopyFrom(msg.envelope)
-            new_envelope.routing_table.CopyFrom(routing_table.proto)
-            new_message = Message(request=msg.request, envelope=new_envelope)
-
-            return new_message
-        else:
+        if self._static_routing_table:
             return msg
+        new_envelope = jina_pb2.EnvelopeProto()
+        new_envelope.CopyFrom(msg.envelope)
+        new_envelope.routing_table.CopyFrom(routing_table.proto)
+        return Message(request=msg.request, envelope=new_envelope)
 
     async def stop_receiving(self, grace_period=None):
         """Stop accepting new messages

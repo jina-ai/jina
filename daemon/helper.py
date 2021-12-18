@@ -105,10 +105,11 @@ def error_msg_from(response: Dict) -> str:
         return response['body']
     if 'body' in response:
         return (
-            '\n'.join(j for j in response['body'])
+            '\n'.join(response['body'])
             if isinstance(response['body'], List)
             else response['body']
         )
+
     else:
         return response['detail']
 

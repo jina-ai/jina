@@ -1,9 +1,5 @@
 from .logging.predefined import default_logger
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    import argparse
-
 
 class NetworkChecker:
     """Check if a BasePod is running or not."""

@@ -90,8 +90,8 @@ async def test_no_message_lost_during_scaling(
 
     with flow:
         with kubernetes_tools.get_port_forward_contextmanager(
-            'test-flow-slow-process-executor', flow.port_expose
-        ):
+                    'test-flow-slow-process-executor', flow.port_expose
+                ):
             # sleep as the port forward setup can take some time
             time.sleep(0.1)
             client_kwargs = dict(
@@ -132,8 +132,9 @@ async def test_no_message_lost_during_scaling(
             while True:
                 pods = k8s_clients.core_v1.list_namespaced_pod(
                     namespace='test-flow-slow-process-executor',
-                    label_selector=f'app=slow-process-executor',
+                    label_selector='app=slow-process-executor',
                 )
+
                 if len(pods.items) == 1:
                     # still continue for a bit to hit the new replica only
                     logger.debug('Scale down complete')
@@ -185,8 +186,8 @@ async def test_no_message_lost_during_kill(
 
     with flow:
         with kubernetes_tools.get_port_forward_contextmanager(
-            'test-flow-slow-process-executor', flow.port_expose
-        ):
+                    'test-flow-slow-process-executor', flow.port_expose
+                ):
             client_kwargs = dict(
                 host='localhost',
                 port=flow.port_expose,
@@ -234,8 +235,9 @@ async def test_no_message_lost_during_kill(
             while True:
                 pods = k8s_clients.core_v1.list_namespaced_pod(
                     namespace='test-flow-slow-process-executor',
-                    label_selector=f'app=slow-process-executor',
+                    label_selector='app=slow-process-executor',
                 )
+
                 current_pod_names = [item.metadata.name for item in pods.items]
                 if (
                     names[0] not in current_pod_names

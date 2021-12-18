@@ -10,15 +10,11 @@ from ...helper import random_identity, typename
 from ...proto import jina_pb2
 from ...types.struct import StructView
 
-_body_type = set(str(v).lower() for v in RequestType)
-_trigger_body_fields = set(
-    kk
-    for v in [
+_body_type = {str(v).lower() for v in RequestType}
+_trigger_body_fields = {kk for v in [
         jina_pb2.RequestProto.ControlRequestProto,
         jina_pb2.RequestProto.DataRequestProto,
-    ]
-    for kk in v.DESCRIPTOR.fields_by_name.keys()
-)
+    ] for kk in v.DESCRIPTOR.fields_by_name.keys()}
 _trigger_req_fields = set(
     jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()
 ).difference(_body_type)
@@ -76,7 +72,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
             elif request is None:
                 # make sure every new request has a request id
                 self._pb_body.request_id = random_identity()
-            elif request is not None:
+            else:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(request)} is not recognizable')
         except Exception as ex:
@@ -116,7 +112,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         if self._request_type:
             return getattr(self.proto, self._request_type)
         else:
-            raise ValueError(f'"request_type" is not set yet')
+            raise ValueError('"request_type" is not set yet')
 
     @property
     def _request_type(self) -> str:
@@ -189,25 +185,24 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         """
         if self.is_decompressed:
             return self._pb_body
-        else:
-            # if not then build one from buffer
+        # if not then build one from buffer
 
-            r = jina_pb2.RequestProto()
-            _buffer = self._decompress(
-                self._buffer,
-                self._compression_algorithm,
-            )
-            r.ParseFromString(_buffer)
-            self._pb_body = r
-            self._buffer = None
-            # # Though I can modify back the envelope, not sure if it is a good design:
-            # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
-            # # then whatever writes on the envelope should be dropped
-            # # depreciated. The only reason to reuse the envelope is saving cost on Envelope(), which is
-            # # really a minor minor (and evil) optimization.
-            # if self._envelope:
-            #     self._envelope.request_type = getattr(r, r.WhichOneof('body')).__class__.__name__
-            return r
+        r = jina_pb2.RequestProto()
+        _buffer = self._decompress(
+            self._buffer,
+            self._compression_algorithm,
+        )
+        r.ParseFromString(_buffer)
+        self._pb_body = r
+        self._buffer = None
+        # # Though I can modify back the envelope, not sure if it is a good design:
+        # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
+        # # then whatever writes on the envelope should be dropped
+        # # depreciated. The only reason to reuse the envelope is saving cost on Envelope(), which is
+        # # really a minor minor (and evil) optimization.
+        # if self._envelope:
+        #     self._envelope.request_type = getattr(r, r.WhichOneof('body')).__class__.__name__
+        return r
 
     def SerializeToString(self) -> bytes:
         """

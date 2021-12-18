@@ -21,7 +21,7 @@ def test_compression(compress_algo, low_bytes, high_ratio):
         compress_min_ratio=10 if high_ratio else 1,
     )
 
-    with TimeContext(f'no compress'):
+    with TimeContext('no compress'):
         for r in request_generator('/', docs):
             m = Message(None, r, compress=CompressAlgo.NONE, **kwargs)
             m.dump()
@@ -33,7 +33,7 @@ def test_compression(compress_algo, low_bytes, high_ratio):
         compress_min_bytes=2 * sum(no_comp_sizes) if low_bytes else 0,
         compress_min_ratio=10 if high_ratio else 1,
     )
-    with TimeContext(f'compressing with {str(compress_algo)}') as tc:
+    with TimeContext(f'compressing with {compress_algo}') as tc:
         for r in request_generator('/', docs):
             m = Message(None, r, compress=compress_algo, **kwargs)
             m.dump()
@@ -44,5 +44,5 @@ def test_compression(compress_algo, low_bytes, high_ratio):
     else:
         assert sum(sizes) < sum(no_comp_sizes)
     print(
-        f'{str(compress_algo)}: size {sum(sizes) / len(sizes)} (ratio: {sum(no_comp_sizes) / sum(sizes):.2f}) with {tc.duration:.2f}s'
+        f'{compress_algo}: size {sum(sizes) / len(sizes)} (ratio: {sum(no_comp_sizes) / sum(sizes):.2f}) with {tc.duration:.2f}s'
     )

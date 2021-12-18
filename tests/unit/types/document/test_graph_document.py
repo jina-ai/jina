@@ -44,25 +44,25 @@ def validate_graph(graph):
             )
             assert d1.text == 'Document0'
             assert d2.text == 'Document1'
-        if i == 1:
+        elif i == 1:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc2'
             )
             assert d1.text == 'Document0'
             assert d2.text == 'Document2'
-        if i == 2:
+        elif i == 2:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc1'
             )
             assert d1.text == 'Document2'
             assert d2.text == 'Document1'
-        if i == 3:
+        elif i == 3:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc1 and Doc3'
             )
             assert d1.text == 'Document1'
             assert d2.text == 'Document3'
-        if i == 4:
+        elif i == 4:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc3'
             )
@@ -134,7 +134,7 @@ def test_remove_nodes(graph):
 
     nodes = copy.deepcopy(graph.nodes)
 
-    for i, node in enumerate(nodes):
+    for node in nodes:
         num_nodes = graph.num_nodes
         num_edges = graph.num_edges
         num_edges_to_remove = graph.get_in_degree(node) + graph.get_out_degree(node)
@@ -147,7 +147,7 @@ def test_remove_nodes(graph):
 
 
 def test_remove_edges(graph):
-    edges = list([pair for pair in graph])
+    edges = list(list(graph))
 
     num_edge_features = len(graph.edge_features.keys())
     for doc1, doc2 in edges:
@@ -192,7 +192,7 @@ def test_from_dgl_graph_without_edges():
 
 def test_validate_iteration_graph_without_edges():
     graph = GraphDocument()
-    assert len([x for x in graph]) == 0
+    assert not list(graph)
 
 
 def test_edge_features_getter(graph):
@@ -330,8 +330,8 @@ def test_edge_update_nested_lists():
     graph.edge_features[edge_key]['hey']['list'][2]['inlist'] = 'not here'
     graph.edge_features[edge_key]['hoy'][0] = 1
 
-    assert graph.edge_features[edge_key]['hey']['nested'] is False
-    assert graph.edge_features[edge_key]['hey']['list'][1] is True
+    assert not graph.edge_features[edge_key]['hey']['nested']
+    assert graph.edge_features[edge_key]['hey']['list'][1]
     assert graph.edge_features[edge_key]['hey']['list'][2]['inlist'] == 'not here'
     assert graph.edge_features[edge_key]['hoy'][0] == 1
 
@@ -378,25 +378,25 @@ def test_graph_add_multiple_edges():
             )
             assert d1.text == 'Document0'
             assert d2.text == 'Document1'
-        if i == 1:
+        elif i == 1:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc2'
             )
             assert d1.text == 'Document0'
             assert d2.text == 'Document2'
-        if i == 2:
+        elif i == 2:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc1'
             )
             assert d1.text == 'Document2'
             assert d2.text == 'Document1'
-        if i == 3:
+        elif i == 3:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc1 and Doc3'
             )
             assert d1.text == 'Document1'
             assert d2.text == 'Document3'
-        if i == 4:
+        elif i == 4:
             assert (
                 edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc3'
             )

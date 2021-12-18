@@ -3,9 +3,6 @@ import random
 from collections import defaultdict
 from typing import Dict, Optional, Any
 
-if False:
-    from .document import DocumentArray
-
 
 class DocumentArraySearchOpsMixin:
     """ A mixin that provides search functionality to DocumentArrays"""
@@ -58,11 +55,7 @@ class DocumentArraySearchOpsMixin:
 
         rv = defaultdict(DocumentArray)
         for doc in self:
-            if '__' in tag:
-                value = dunder_get(doc.tags, tag)
-            else:
-                value = doc.tags.get(tag, None)
-
+            value = dunder_get(doc.tags, tag) if '__' in tag else doc.tags.get(tag, None)
             if value is None:
                 continue
             rv[value].append(doc)

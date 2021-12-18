@@ -46,22 +46,18 @@ def cdist(
     :return: np.ndarray of ndim 2
     """
     if metric == 'cosine':
+        dists = sparse_cosine(x_mat, y_mat) if is_sparse else cosine(x_mat, y_mat)
+    elif metric == 'euclidean':
         if is_sparse:
-            dists = sparse_cosine(x_mat, y_mat)
+            dists = np.sqrt(sparse_sqeuclidean(x_mat, y_mat))
         else:
-            dists = cosine(x_mat, y_mat)
-
+            dists = np.sqrt(sqeuclidean(x_mat, y_mat))
     elif metric == 'sqeuclidean':
         if is_sparse:
             dists = sparse_sqeuclidean(x_mat, y_mat)
         else:
             dists = sqeuclidean(x_mat, y_mat)
 
-    elif metric == 'euclidean':
-        if is_sparse:
-            dists = np.sqrt(sparse_sqeuclidean(x_mat, y_mat))
-        else:
-            dists = np.sqrt(sqeuclidean(x_mat, y_mat))
     else:
         raise ValueError(f'Input metric={metric} not valid')
     return dists

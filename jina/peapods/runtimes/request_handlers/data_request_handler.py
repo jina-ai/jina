@@ -38,14 +38,9 @@ def _get_docs_from_msg(
     partial_request: Optional[List[Request]],
     field: str,
 ) -> 'DocumentArray':
-    if partial_request is not None:
-        result = DocumentArray(
+    return DocumentArray(
             [d for r in reversed(partial_request) for d in getattr(r, field)]
-        )
-    else:
-        result = getattr(msg.request, field)
-
-    return result
+        ) if partial_request is not None else getattr(msg.request, field)
 
 
 class DataRequestHandler:
@@ -84,7 +79,7 @@ class DataRequestHandler:
             )
             raise ExecutorFailToLoad from ex
         except FileNotFoundError as ex:
-            self.logger.error(f'fail to load file dependency')
+            self.logger.error('fail to load file dependency')
             raise ExecutorFailToLoad from ex
         except Exception as ex:
             self.logger.critical(f'can not load the executor from {self.args.uses}')

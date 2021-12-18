@@ -35,7 +35,9 @@ def create(
     clients = K8sClients()
     if template == 'configmap':
         yaml = _patch_configmap_yaml(template, params)
-    elif template in ['deployment', 'deployment-init'] and params.get('device_plugins'):
+    elif template in {'deployment', 'deployment-init'} and params.get(
+        'device_plugins'
+    ):
         yaml = _get_yaml(template, params, custom_resource_dir)
         yaml = _patch_deployment_with_device_plugins(yaml, params)
     else:
@@ -48,14 +50,13 @@ def create(
             utils.create_from_yaml(clients.k8s_client, path)
         except FailToCreateError as e:
             for api_exception in e.api_exceptions:
-                if api_exception.status == 409:
-                    # The exception's body is the error response from the
-                    # Kubernetes apiserver, it looks like:
-                    # {..."message": "<resource> <name> already exists"...}
-                    resp = json.loads(api_exception.body)
-                    logger.warning(f'🔁\t{resp["message"]}')
-                else:
+                if api_exception.status != 409:
                     raise e
+                # The exception's body is the error response from the
+                # Kubernetes apiserver, it looks like:
+                # {..."message": "<resource> <name> already exists"...}
+                resp = json.loads(api_exception.body)
+                logger.warning(f'🔁\t{resp["message"]}')
         except Exception as e2:
             raise e2
     finally:

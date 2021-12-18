@@ -32,38 +32,6 @@ from ..struct import StructView
 from .converters import ContentConversionMixin
 from .helper import VersionedMixin, versioned
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    import scipy
-    import tensorflow as tf
-    import torch
-    from scipy.sparse import coo_matrix
-
-    from ..arrays.chunk import ChunkArray
-    from ..arrays.match import MatchArray
-
-    ArrayType = TypeVar(
-        'ArrayType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
-
-    SparseArrayType = TypeVar(
-        'SparseArrayType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
-
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
 
@@ -711,19 +679,18 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
             elif isinstance(v, dict) and k not in _special_mapped_keys:
                 self._pb_body.ClearField(k)
                 getattr(self._pb_body, k).update(v)
-            else:
-                if (
+            elif (
                     hasattr(Document, k)
                     and isinstance(getattr(Document, k), property)
                     and getattr(Document, k).fset
                 ):
-                    # if class property has a setter
-                    setattr(self, k, v)
-                elif hasattr(self._pb_body, k):
-                    # no property setter, but proto has this attribute so fallback to proto
-                    setattr(self._pb_body, k, v)
-                else:
-                    raise AttributeError(f'{k} is not recognized')
+                # if class property has a setter
+                setattr(self, k, v)
+            elif hasattr(self._pb_body, k):
+                # no property setter, but proto has this attribute so fallback to proto
+                setattr(self._pb_body, k, v)
+            else:
+                raise AttributeError(f'{k} is not recognized')
 
     def get_attributes(self, *fields: str) -> Union[Any, List[Any]]:
         """Bulk fetch Document fields and return a list of the values of these fields
@@ -850,10 +817,7 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         elif value:
             # given but not recognizable, do best guess
             r = mimetypes.guess_type(f'*.{value}')[0]
-            if r:
-                self._pb_body.mime_type = r
-            else:
-                self._pb_body.mime_type = value
+            self._pb_body.mime_type = r or value
 
     def __eq__(self, other):
         return self.proto == other.proto
@@ -1141,14 +1105,13 @@ class Document(ProtoTypeMixin, VersionedMixin, ContentConversionMixin):
         :param kwargs: Extra keyword arguments
         :return: JSON string of the object
         """
-        if prettify_ndarrays:
-            import json
-
-            d = super().dict(*args, **kwargs)
-            self._prettify_doc_dict(d)
-            return json.dumps(d, sort_keys=True, **kwargs)
-        else:
+        if not prettify_ndarrays:
             return super().json(*args, **kwargs)
+        import json
+
+        d = super().dict(*args, **kwargs)
+        self._prettify_doc_dict(d)
+        return json.dumps(d, sort_keys=True, **kwargs)
 
     @property
     def non_empty_fields(self) -> Tuple[str]:

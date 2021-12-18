@@ -20,7 +20,7 @@ def validate(req):
 
 
 def documents(start_index, end_index):
-    for i in range(start_index, end_index):
+    for _ in range(start_index, end_index):
         doc = Document()
         doc.text = 'this is text'
         doc.tags['id'] = 'id in tags'

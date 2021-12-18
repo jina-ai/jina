@@ -6,9 +6,6 @@ from ....proto import jina_pb2
 
 AnySparseNdArray = TypeVar('AnySparseNdArray')
 
-if False:
-    import numpy as np
-
 __all__ = ['BaseSparseNdArray']
 
 

@@ -39,10 +39,10 @@ class CrudIndexer(Executor):
         # TODO we can do del _docs[d.id] once
         # tests.unit.types.arrays.test_documentarray.test_delete_by_id is fixed
         ids_to_delete = [d.id for d in docs]
-        idx_to_delete = []
-        for i, doc in enumerate(self._docs):
-            if doc.id in ids_to_delete:
-                idx_to_delete.append(i)
+        idx_to_delete = [
+            i for i, doc in enumerate(self._docs) if doc.id in ids_to_delete
+        ]
+
         for i in sorted(idx_to_delete, reverse=True):
             del self._docs[i]
 

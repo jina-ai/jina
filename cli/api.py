@@ -1,5 +1,4 @@
-if False:
-    from argparse import Namespace
+pass
 
 
 def pod(args: 'Namespace'):
@@ -196,7 +195,7 @@ def hello(args: 'Namespace'):
 
         fork_hello(args)
     else:
-        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]')
+        raise ValueError('must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]')
 
 
 def flow(args: 'Namespace'):

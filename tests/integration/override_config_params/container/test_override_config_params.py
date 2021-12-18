@@ -13,7 +13,7 @@ def docker_image():
     os.system(f"docker build -f {docker_file} -t override-config-test {cur_dir}")
     time.sleep(3)
     yield
-    os.system(f"docker rmi $(docker images | grep 'override-config-test')")
+    os.system("docker rmi $(docker images | grep 'override-config-test')")
 
 
 @pytest.fixture()

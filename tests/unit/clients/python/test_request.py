@@ -142,10 +142,11 @@ def test_request_generate_dict():
                 'offset': 1000,
                 'tags': {'id': 1000},
                 'chunks': [
-                    {'text': f'i\'m chunk 1', 'modality': 'text'},
-                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                    {'text': "i'm chunk 1", 'modality': 'text'},
+                    {'text': "i'm chunk 2", 'modality': 'image'},
                 ],
             }
+
             yield doc
 
     req = request_generator('', data=random_docs(100), request_size=100)
@@ -173,10 +174,11 @@ def test_request_generate_dict_str():
                 'offset': 1000,
                 'tags': {'id': 1000},
                 'chunks': [
-                    {'text': f'i\'m chunk 1', 'modality': 'text'},
-                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                    {'text': "i'm chunk 1", 'modality': 'text'},
+                    {'text': "i'm chunk 2", 'modality': 'image'},
                 ],
             }
+
             yield json.dumps(doc)
 
     req = request_generator('', data=random_docs(100), request_size=100)
@@ -214,8 +216,7 @@ def test_request_generate_numpy_arrays_iterator():
     input_array = np.random.random([10, 10])
 
     def generator():
-        for array in input_array:
-            yield array
+        yield from input_array
 
     req = request_generator('', data=generator(), request_size=5)
 

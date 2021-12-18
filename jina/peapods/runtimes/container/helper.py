@@ -61,12 +61,12 @@ def get_gpu_device_requests(gpu_args):
             _gpus['count'] = int(gpu_arg)
         if '=' in gpu_arg:
             gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
-            if gpu_arg_key in _gpus.keys():
+            if gpu_arg_key in _gpus:
                 if isinstance(_gpus[gpu_arg_key], list):
                     _gpus[gpu_arg_key].append(gpu_arg_value)
                 else:
                     _gpus[gpu_arg_key] = gpu_arg_value
-    device_requests = [
+    return [
         docker.types.DeviceRequest(
             count=_gpus['count'],
             driver=_gpus['driver'],
@@ -74,4 +74,3 @@ def get_gpu_device_requests(gpu_args):
             capabilities=[_gpus['capabilities']],
         )
     ]
-    return device_requests

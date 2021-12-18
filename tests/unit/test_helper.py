@@ -113,8 +113,7 @@ def test_wrap_func():
             getattr(cls, method) == getattr(i, method, None) for i in cls.mro()[1:]
         )
         is_parent_method = any(hasattr(i, method) for i in cls.mro()[1:])
-        is_override = not is_inherit and is_parent_method
-        return is_override
+        return not is_inherit and is_parent_method
 
     assert check_override(DummyEncoder, '__init__')
     assert not check_override(MockEnc, '__init__')
@@ -324,7 +323,7 @@ def test_ci_vendor():
 
 
 def test_get_hubble_url():
-    for j in range(2):
+    for _ in range(2):
         assert get_hubble_url().startswith('http')
 
 

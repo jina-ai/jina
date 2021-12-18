@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
     if isinstance(obj, threading.Thread):
         return threading.Event()
-    elif isinstance(obj, multiprocessing.Process) or isinstance(
-        obj, multiprocessing.context.ForkProcess
+    elif isinstance(
+        obj, (multiprocessing.Process, multiprocessing.context.ForkProcess)
     ):
         return multiprocessing.Event()
     elif isinstance(obj, multiprocessing.context.SpawnProcess):

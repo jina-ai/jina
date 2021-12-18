@@ -127,11 +127,8 @@ class WorkspaceStore(BaseStore):
                 self[id].metadata.container_id = None
         except AttributeError as e:
             self._logger.error(f'there\'s no containers to remove {e!r}')
-        except AssertionError as e:
-            self._logger.error(f'something went wrong while removing the container')
-            raise
-        except Exception as e:
-            self._logger.error(f'something went wrong while removing the container')
+        except (AssertionError, Exception) as e:
+            self._logger.error('something went wrong while removing the container')
             raise
 
     @BaseStore.dump

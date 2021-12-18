@@ -17,7 +17,7 @@ class QueryExecutor(Executor):
             self.logger.success(f'loading Executor from dump path: {self._dump_path}')
             self._docs = DocumentArray.load(self._dump_path)
         else:
-            self.logger.warning(f'no dump path passed. Loading an empty index')
+            self.logger.warning('no dump path passed. Loading an empty index')
             self._docs = DocumentArray()
 
     @requests(on='/search')

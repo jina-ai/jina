@@ -108,9 +108,9 @@ def test_union(docarray, document_factory):
         doc = document_factory.create(idx, f'test {idx}')
         additional_docarray.append(doc)
     union = docarray + additional_docarray
-    for idx in range(0, 3):
+    for idx in range(3):
         assert union[idx].id == docarray[idx].id
-    for idx in range(0, 6):
+    for idx in range(6):
         assert union[idx + 3].id == additional_docarray[idx].id
 
 
@@ -121,9 +121,9 @@ def test_union_inplace(docarray, document_factory):
         additional_docarray.append(doc)
     union = deepcopy(docarray)
     union += additional_docarray
-    for idx in range(0, 3):
+    for idx in range(3):
         assert union[idx].id == docarray[idx].id
-    for idx in range(0, 6):
+    for idx in range(6):
         assert union[idx + 3].id == additional_docarray[idx].id
 
 
@@ -281,7 +281,7 @@ def test_da_csv_write(flatten_tags, tmp_path):
     tmpfile = os.path.join(tmp_path, 'test.csv')
     da1.save_csv(tmpfile, flatten_tags)
     with open(tmpfile) as fp:
-        assert len([v for v in fp]) == len(da1) + 1
+        assert len(list(fp)) == len(da1) + 1
 
 
 def test_documentarray_filter():
@@ -349,14 +349,14 @@ def test_da_sort_topk():
     assert top[0] == 10 and top[1] == 9 and top[2] == 8
     assert rest != sorted(rest, reverse=True)
     assert len(da) == len(original)
-    assert all([d.id in original for d in da])
+    assert all(d.id in original for d in da)
 
 
 def test_da_sort_topk_tie():
     da = DocumentArray([Document(id=i, tags={'order': i % 10}) for i in range(100)])
     da.sort(top_k=10, key=lambda doc: doc.tags['order'])
 
-    top_k_ids = [doc.id for doc in da[0:10]]
+    top_k_ids = [doc.id for doc in da[:10]]
     assert top_k_ids == ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90']
     for i in range(10):
         assert da[i].tags['order'] == 0

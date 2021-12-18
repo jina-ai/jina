@@ -140,7 +140,7 @@ def install_local(
     pkg_path, pkg_dist_path = get_dist_path(executor.uuid, executor.tag)
 
     # clean the existed dist_path
-    for dist in pkg_path.glob(f'*.dist-info'):
+    for dist in pkg_path.glob('*.dist-info'):
         shutil.rmtree(dist)
 
     # unpack the zip package to the root pkg_path
@@ -204,11 +204,7 @@ def list_local():
 
     :return: the list of local executors (if found)
     """
-    result = []
-    for dist_name in _hub_root.glob(r'*/v*.dist-info'):
-        result.append(dist_name)
-
-    return result
+    return list(_hub_root.glob(r'*/v*.dist-info'))
 
 
 def exist_local(uuid: str, tag: str = None) -> bool:

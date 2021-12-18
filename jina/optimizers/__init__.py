@@ -20,12 +20,6 @@ from ..logging.predefined import default_logger as logger
 from ..types.request import Response
 from ..types.score.map import NamedScoreMapping
 
-if False:
-    from .flow_runner import FlowRunner
-    import optuna
-    from optuna.trial import Trial
-    from argparse import Namespace
-
 
 class OptimizerCallback(JAMLCompatible):
     """
@@ -251,8 +245,7 @@ class FlowOptimizer(JAMLCompatible):
             sampler = getattr(optuna.samplers, self._sampler)(seed=self._seed, **kwargs)
         study = optuna.create_study(direction=self._direction, sampler=sampler)
         study.optimize(self._objective, n_trials=self._n_trials)
-        result_processor = ResultProcessor(study)
-        return result_processor
+        return ResultProcessor(study)
 
 
 def run_optimizer_cli(args: 'Namespace'):

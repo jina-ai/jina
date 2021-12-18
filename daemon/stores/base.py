@@ -154,11 +154,10 @@ class BaseStore(MutableMapping):
         """
 
         filepath = os.path.join(__root_workspace__, f'{cls._kind}.store')
-        if Path(filepath).is_file() and os.path.getsize(filepath) > 0:
-            with open(filepath, 'rb') as f:
-                return pickle.load(f)
-        else:
+        if not Path(filepath).is_file() or os.path.getsize(filepath) <= 0:
             return cls()
+        with open(filepath, 'rb') as f:
+            return pickle.load(f)
 
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """

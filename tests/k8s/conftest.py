@@ -31,8 +31,7 @@ class KindClusterWrapper:
 
 @pytest.fixture()
 def logger():
-    logger = JinaLogger('kubernetes-testing')
-    return logger
+    return JinaLogger('kubernetes-testing')
 
 
 @pytest.fixture()
@@ -130,7 +129,7 @@ def load_images_in_kind(
     slow_init_executor_image,
     k8s_cluster,
 ):
-    logger.debug(f'Loading docker image into kind cluster...')
+    logger.debug('Loading docker image into kind cluster...')
     for image in [
         test_executor_image,
         executor_merger_image,
@@ -141,7 +140,7 @@ def load_images_in_kind(
         'jinaai/jina:test-pip',
     ]:
         k8s_cluster.load_docker_image(image)
-    logger.debug(f'Done loading docker image into kind cluster...')
+    logger.debug('Done loading docker image into kind cluster...')
 
 
 @pytest.fixture()

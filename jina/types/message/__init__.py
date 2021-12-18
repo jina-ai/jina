@@ -14,9 +14,6 @@ from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 from ...types.routing.table import RoutingTable
 
-if False:
-    from ...executors import BaseExecutor
-
 __all__ = ['Message']
 
 
@@ -318,8 +315,9 @@ class Message:
                 self.envelope.compression.algorithm = 'NONE'
         except Exception as ex:
             default_logger.debug(
-                f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {ex!r}'
+                f'compression={ctag} failed, fallback to compression="NONE". reason: {ex!r}'
             )
+
             self.envelope.compression.algorithm = 'NONE'
 
         return data
@@ -377,55 +375,53 @@ class Message:
         return self._size
 
     def _check_version(self):
-        if hasattr(self.envelope, 'version'):
-            if not self.envelope.version.jina:
-                # only happen in unittest
-                default_logger.warning(
-                    'incoming message contains empty "version.jina", '
-                    'you may ignore it in debug/unittest mode. '
-                    'otherwise please check if gateway service set correct version'
-                )
-            elif __version__ != self.envelope.version.jina:
-                raise MismatchedVersion(
-                    'mismatched JINA version! '
-                    f'incoming message has JINA version {self.envelope.version.jina}, '
-                    f'whereas local JINA version {__version__}'
-                )
-
-            if not self.envelope.version.proto:
-                # only happen in unittest
-                default_logger.warning(
-                    'incoming message contains empty "version.proto", '
-                    'you may ignore it in debug/unittest mode. '
-                    'otherwise please check if gateway service set correct version'
-                )
-            elif __proto_version__ != self.envelope.version.proto:
-                raise MismatchedVersion(
-                    'mismatched protobuf version! '
-                    f'incoming message has protobuf version {self.envelope.version.proto}, '
-                    f'whereas local protobuf version {__proto_version__}'
-                )
-
-            if not self.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
-                default_logger.warning(
-                    'incoming message contains empty "version.vcs", '
-                    'you may ignore it in debug/unittest mode, '
-                    'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
-                    'otherwise please check if gateway service set correct version'
-                )
-            elif os.environ.get('JINA_VCS_VERSION') != self.envelope.version.vcs:
-                raise MismatchedVersion(
-                    'mismatched vcs version! '
-                    f'incoming message has vcs_version {self.envelope.version.vcs}, '
-                    f'whereas local environment vcs_version is '
-                    f'{os.environ.get("JINA_VCS_VERSION")}'
-                )
-
-        else:
+        if not hasattr(self.envelope, 'version'):
             raise MismatchedVersion(
                 'version_check=True locally, '
                 'but incoming message contains no version info in its envelope. '
                 'the message is probably sent from a very outdated JINA version'
+            )
+        if not self.envelope.version.jina:
+            # only happen in unittest
+            default_logger.warning(
+                'incoming message contains empty "version.jina", '
+                'you may ignore it in debug/unittest mode. '
+                'otherwise please check if gateway service set correct version'
+            )
+        elif __version__ != self.envelope.version.jina:
+            raise MismatchedVersion(
+                'mismatched JINA version! '
+                f'incoming message has JINA version {self.envelope.version.jina}, '
+                f'whereas local JINA version {__version__}'
+            )
+
+        if not self.envelope.version.proto:
+            # only happen in unittest
+            default_logger.warning(
+                'incoming message contains empty "version.proto", '
+                'you may ignore it in debug/unittest mode. '
+                'otherwise please check if gateway service set correct version'
+            )
+        elif __proto_version__ != self.envelope.version.proto:
+            raise MismatchedVersion(
+                'mismatched protobuf version! '
+                f'incoming message has protobuf version {self.envelope.version.proto}, '
+                f'whereas local protobuf version {__proto_version__}'
+            )
+
+        if not self.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
+            default_logger.warning(
+                'incoming message contains empty "version.vcs", '
+                'you may ignore it in debug/unittest mode, '
+                'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
+                'otherwise please check if gateway service set correct version'
+            )
+        elif os.environ.get('JINA_VCS_VERSION') != self.envelope.version.vcs:
+            raise MismatchedVersion(
+                'mismatched vcs version! '
+                f'incoming message has vcs_version {self.envelope.version.vcs}, '
+                f'whereas local environment vcs_version is '
+                f'{os.environ.get("JINA_VCS_VERSION")}'
             )
 
     def _add_version(self, envelope):

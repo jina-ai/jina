@@ -23,7 +23,7 @@ def run_test(flow, endpoint, port_expose):
 def k8s_flow_with_init_container(
     test_executor_image: str, dummy_dumper_image: str
 ) -> Flow:
-    flow = Flow(
+    return Flow(
         name='test-flow-with-init-container',
         port_expose=9090,
         infrastructure='K8S',
@@ -37,14 +37,13 @@ def k8s_flow_with_init_container(
         k8s_mount_path='/shared',
         timeout_ready=120000,
     )
-    return flow
 
 
 @pytest.fixture()
 def k8s_flow_with_sharding(
     test_executor_image: str, executor_merger_image: str
 ) -> Flow:
-    flow = Flow(
+    return Flow(
         name='test-flow-with-sharding',
         port_expose=9090,
         infrastructure='K8S',
@@ -58,12 +57,11 @@ def k8s_flow_with_sharding(
         uses_after=executor_merger_image,
         timeout_ready=360000,
     )
-    return flow
 
 
 @pytest.fixture()
 def k8s_flow_configmap(test_executor_image: str) -> Flow:
-    flow = Flow(
+    return Flow(
         name='k8s-flow-configmap',
         port_expose=9090,
         infrastructure='K8S',
@@ -75,12 +73,11 @@ def k8s_flow_configmap(test_executor_image: str) -> Flow:
         timeout_ready=12000,
         env={'k1': 'v1', 'k2': 'v2'},
     )
-    return flow
 
 
 @pytest.fixture
 def k8s_flow_gpu(test_executor_image: str) -> Flow:
-    flow = Flow(
+    return Flow(
         name='k8s-flow-gpu',
         port_expose=9090,
         infrastructure='K8S',
@@ -92,7 +89,6 @@ def k8s_flow_gpu(test_executor_image: str) -> Flow:
         timeout_ready=12000,
         gpus=1,
     )
-    return flow
 
 
 @pytest.mark.timeout(3600)
@@ -261,7 +257,7 @@ def test_flow_with_gpu(
 def k8s_flow_with_reload_executor(
     reload_executor_image: str,
 ) -> Flow:
-    flow = Flow(
+    return Flow(
         name='test-flow-with-reload',
         port_expose=9090,
         infrastructure='K8S',
@@ -274,7 +270,6 @@ def k8s_flow_with_reload_executor(
         uses=reload_executor_image,
         timeout_ready=120000,
     )
-    return flow
 
 
 def test_rolling_update_simple(
@@ -299,15 +294,15 @@ def test_rolling_update_simple(
         from jina.clients import Client
 
         _logger = JinaLogger('test_send_requests')
-        _logger.debug(f' send request start')
+        _logger.debug(' send request start')
         try:
             client = Client(**client_kwargs)
             client.show_progress = True
             _logger.debug(f' Client instantiated with {client_kwargs}')
-            _logger.debug(f' Set client_ready_to_send_event event')
+            _logger.debug(' Set client_ready_to_send_event event')
             client_ready_to_send_event.set()
             while not rolling_event.is_set():
-                _logger.debug(f' event is not set')
+                _logger.debug(' event is not set')
                 r = client.post(
                     '/exec',
                     [Document() for _ in range(10)],
@@ -319,11 +314,11 @@ def test_rolling_update_simple(
                 for doc in r[0].docs:
                     assert doc.tags['argument'] in ['value1', 'value2']
                     time.sleep(0.1)
-                _logger.debug(f' event is unset')
+                _logger.debug(' event is unset')
         except:
-            _logger.error(f' Some error happened while sending requests')
+            _logger.error(' Some error happened while sending requests')
             exception_to_raise_event.set()
-        _logger.debug(f' send requests finished')
+        _logger.debug(' send requests finished')
 
     with k8s_flow_with_reload_executor as flow:
         with kubernetes_tools.get_port_forward_contextmanager(

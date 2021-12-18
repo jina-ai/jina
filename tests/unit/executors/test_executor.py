@@ -53,8 +53,7 @@ def test_metas_workspace_simple(tmpdir):
 
 @pytest.fixture
 def test_bad_metas_workspace(tmpdir):
-    metas = get_default_metas()
-    return metas
+    return get_default_metas()
 
 
 @pytest.fixture

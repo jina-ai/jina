@@ -20,7 +20,7 @@ class MatchAdder(Executor):
     def index(self, docs, **kwargs):
         for path_docs in docs.traverse(self._traversal_paths):
             for doc in path_docs:
-                for i in range(5):
+                for _ in range(5):
                     doc.matches.append(Document())
 
 

@@ -9,9 +9,6 @@ from ...proto import jina_pb2
 
 __all__ = ['NamedScoreMapping']
 
-if False:
-    from google.protobuf.pyext._message import MessageMapContainer
-
 
 class NamedScoreMapping(MutableMapping):
     """
@@ -81,8 +78,7 @@ class NamedScoreMapping(MutableMapping):
         return key in self._pb_body
 
     def __iter__(self):
-        for key in self._pb_body:
-            yield key
+        yield from self._pb_body
 
     def __len__(self):
         return len(self._pb_body)

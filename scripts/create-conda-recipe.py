@@ -72,11 +72,8 @@ class RecipeDumper(yaml.SafeDumper):
 #######################################################
 
 extra_deps = get_extra_requires('extra-requirements.txt')
-reqs = {}
+reqs = {'core': extra_deps['core']}
 
-# core < perf < standard < daemon
-# standard < demo
-reqs['core'] = extra_deps['core']
 reqs['perf'] = reqs['core'].union(extra_deps['perf'])
 reqs['standard'] = reqs['perf'].union(extra_deps['standard'])
 

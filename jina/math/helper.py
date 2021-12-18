@@ -38,12 +38,10 @@ def minmax_normalize(
     if isinstance(x, np.ndarray):
         min_d = x_range[0] if x_range else np.min(x, axis=-1, keepdims=True)
         max_d = x_range[1] if x_range else np.max(x, axis=-1, keepdims=True)
-        r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
     else:
         min_d = x_range[0] if x_range else x.min(axis=-1).toarray()
         max_d = x_range[1] if x_range else x.max(axis=-1).toarray()
-        r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
-
+    r = (b - a) * (x - min_d) / (max_d - min_d + eps) + a
     return np.clip(r, *((a, b) if a < b else (b, a)))
 
 

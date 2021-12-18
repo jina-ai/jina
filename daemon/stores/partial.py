@@ -42,7 +42,7 @@ class PartialStore:
             if hasattr(self, 'object'):
                 self.object.close()
             else:
-                self._logger.warning(f'nothing to close. exiting')
+                self._logger.warning('nothing to close. exiting')
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
@@ -180,7 +180,7 @@ class PartialFlowStore(PartialStore):
                 },
                 yaml_source=yaml_source,
             )
-            self._logger.success(f'Flow is created')
+            self._logger.success('Flow is created')
             return self.item
 
     def _set_pea_ports(self, pea_args, port_mapping, port_name):

@@ -99,11 +99,8 @@ class V1Parser(VersionedYAMLParser):
 
         last_name = 'gateway'
         for k, v in data._pod_nodes.items():
-            kwargs = {}
             # only add "needs" when the value is not the last pod name
-            if list(v.needs) != [last_name]:
-                kwargs = {'needs': list(v.needs)}
-
+            kwargs = {'needs': list(v.needs)} if list(v.needs) != [last_name] else {}
             # get nondefault kwargs
             parser = set_pod_parser()
             if v.role == PodRoleType.GATEWAY:

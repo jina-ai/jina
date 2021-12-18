@@ -56,8 +56,6 @@ def test_init(document, groundtruth):
 def test_matches_success(document, groundtruth):
     pair = DocGroundtruthPair(doc=document, groundtruth=groundtruth)
     assert isinstance(pair.matches, types.GeneratorType)
-    for _ in pair.matches:
-        pass
 
 
 def test_matches_fail(document_factory, document, groundtruth):
@@ -72,8 +70,6 @@ def test_matches_fail(document_factory, document, groundtruth):
 def test_chunks_success(document, groundtruth):
     pair = DocGroundtruthPair(doc=document, groundtruth=groundtruth)
     assert isinstance(pair.chunks, types.GeneratorType)
-    for _ in pair.chunks:
-        pass
 
 
 def test_chunks_fail(document_factory, document, groundtruth):

@@ -9,7 +9,7 @@ from tests import random_docs
 
 
 def test_schema_invocation():
-    for k, v in vars(PROTO_TO_PYDANTIC_MODELS).items():
+    for v in vars(PROTO_TO_PYDANTIC_MODELS).values():
         v.schema()
         v.schema_json()
 

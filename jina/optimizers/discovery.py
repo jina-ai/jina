@@ -27,11 +27,12 @@ def _extract_executor_files(flows):
 def _extract_parameters(executor_yml):
     try:
         with BaseExecutor.load_config(executor_yml) as executor:
-            if hasattr(executor, "DEFAULT_OPTIMIZATION_PARAMETER"):
-                default_config = executor.DEFAULT_OPTIMIZATION_PARAMETER
-            else:
-                default_config = {}
-            return default_config
+            return (
+                executor.DEFAULT_OPTIMIZATION_PARAMETER
+                if hasattr(executor, "DEFAULT_OPTIMIZATION_PARAMETER")
+                else {}
+            )
+
     except TypeError:
         logger.warning(
             f"Failing building from {executor_yml}. All environment variables in {executor_yml} must be defined!"

@@ -34,8 +34,8 @@ def executor_images():
     os.system(f"docker build -f {query_docker_file} -t query-executor {query_dir}")
     time.sleep(3)
     yield
-    os.system(f"docker rmi $(docker images | grep 'dbms-executor')")
-    os.system(f"docker rmi $(docker images | grep 'query-executor')")
+    os.system("docker rmi $(docker images | grep 'dbms-executor')")
+    os.system("docker rmi $(docker images | grep 'query-executor')")
 
 
 def _create_flows():
@@ -63,8 +63,9 @@ def test_dump_dbms_remote(executor_images, docker_compose):
 
     # check that there are no matches in Query Flow
     r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
-        inputs=[doc for doc in docs[:nr_search]], return_results=True
+        inputs=list(docs[:nr_search]), return_results=True
     )
+
     assert r[0].data.docs[0].matches is None or len(r[0].data.docs[0].matches) == 0
 
     # index on DBMS flow
@@ -89,10 +90,11 @@ def test_dump_dbms_remote(executor_images, docker_compose):
 
     # validate that there are matches now
     r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
-        inputs=[doc for doc in docs[:nr_search]],
+        inputs=list(docs[:nr_search]),
         return_results=True,
         parameters={'top_k': 10},
     )
+
     for doc in r[0].data.docs:
         assert len(doc.matches) == 10
 

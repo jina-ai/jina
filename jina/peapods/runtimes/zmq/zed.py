@@ -200,7 +200,7 @@ class ZEDRuntime(BaseRuntime):
         """
         # skip executor for non-DataRequest
         if msg.envelope.request_type != 'DataRequest':
-            self.logger.debug(f'skip executor: not data request')
+            self.logger.debug('skip executor: not data request')
             return msg
 
         # migrated from the previously RouteDriver logic
@@ -324,12 +324,15 @@ class ZEDRuntime(BaseRuntime):
             else:
                 msg.add_exception(ex, executor=self._data_request_handler._executor)
                 self.logger.error(
-                    f'{ex!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
+                    (
+                        f'{ex!r}'
+                        + '\n add "--quiet-error" to suppress the exception details'
+                    )
                     if not self.args.quiet_error
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+
 
             self._zmqstreamlet.send_message(msg)
 
@@ -353,13 +356,12 @@ class ZEDRuntime(BaseRuntime):
         """
         if msg.is_data_request:
             if (
-                self.args.socket_in == SocketType.ROUTER_BIND
-                and not self._static_routing_table
+                self.args.socket_in != SocketType.ROUTER_BIND
+                or self._static_routing_table
             ):
-                graph = RoutingTable(msg.envelope.routing_table)
-                return graph.active_target_pod.expected_parts
-            else:
                 return self.args.num_part
+            graph = RoutingTable(msg.envelope.routing_table)
+            return graph.active_target_pod.expected_parts
         else:
             return 1
 

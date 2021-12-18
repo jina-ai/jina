@@ -96,7 +96,7 @@ def patched_random_port(mocker):
 
     def _random_port():
 
-        for i in range(50):
+        for _ in range(50):
             _port = random_port()
 
             if _port is not None and _port not in used_ports:

@@ -7,9 +7,6 @@ from torch.sparse import FloatTensor
 from . import BaseSparseNdArray
 from ....proto import jina_pb2
 
-if False:
-    import numpy as np
-
 __all__ = ['SparseNdArray']
 
 

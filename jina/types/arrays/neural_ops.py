@@ -387,7 +387,7 @@ class DocumentArrayNeuralOpsMixin:
         if img_size < min_size:
             # image is too small, recompute the size
             img_size = min_size
-            img_per_row = int(canvas_size / img_size)
+            img_per_row = canvas_size // img_size
 
         max_num_img = img_per_row ** 2
         sprite_img = np.zeros(

@@ -87,7 +87,7 @@ def test_get_set_item(tmpdir, idx1, idx99):
     for idx, d in enumerate(dam):
         if idx == 1:
             assert d.text == 'hello'
-        if idx == 99:
+        elif idx == 99:
             assert d.text == 'world'
     with pytest.raises(ValueError):
         dam['unknown_new'] = Document()

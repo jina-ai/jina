@@ -21,13 +21,7 @@ def workspace():
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    'model, store, id',
-    [
-        (PeaModel(), PeaStore, DaemonID(f'jpea')),
-        (PodModel(), PodStore, DaemonID(f'jpod')),
-    ],
-)
+@pytest.mark.parametrize('model, store, id', [(PeaModel(), PeaStore, DaemonID('jpea')), (PodModel(), PodStore, DaemonID('jpod'))])
 async def test_peastore_add(model, store, id, workspace):
     s = store()
     await s.add(id=id, params=model, workspace_id=workspace, ports={})

@@ -1,8 +1,5 @@
 from .document import DocumentArray
 
-if False:
-    from ..document import Document
-
 
 class MatchArray(DocumentArray):
     """

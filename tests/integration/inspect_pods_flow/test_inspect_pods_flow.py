@@ -26,7 +26,7 @@ class DummyEvaluator3(DummyEvaluator1):
     tag = 3
 
 
-docs = DocumentArray([x for x in random_docs(1)])
+docs = DocumentArray(list(random_docs(1)))
 params = ['HANG', 'REMOVE', 'COLLECT']
 
 

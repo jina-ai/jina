@@ -68,11 +68,7 @@ class ListView(ProtoTypeMixin, MutableSequence):
             return False
 
     def __contains__(self, object: Any):
-        for element in self:
-            if element == object:
-                return True
-
-        return False
+        return any(element == object for element in self)
 
     def clear(self):
         """

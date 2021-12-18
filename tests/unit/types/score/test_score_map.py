@@ -144,7 +144,7 @@ def test_mapped_named_score_iterate():
 
     ks = []
     vs = []
-    for i, (k, v) in enumerate(scores.items()):
+    for k, v in scores.items():
         ks.append(k)
         vs.append(v.value)
 

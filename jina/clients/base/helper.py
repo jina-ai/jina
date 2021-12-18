@@ -103,7 +103,7 @@ class WebsocketClientlet(AioHttpClientlet):
         try:
             return await self.websocket.send_bytes(request.SerializeToString())
         except ConnectionResetError:
-            self.logger.critical(f'server connection closed already!')
+            self.logger.critical('server connection closed already!')
 
     async def send_eoi(self):
         """To confirm end of iteration, we send `bytes(True)` to the server.

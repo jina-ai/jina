@@ -88,12 +88,11 @@ class BufferPoolManager:
         self.buffer = []
 
     def __getitem__(self, key: str):
-        if isinstance(key, str):
-            doc = self.buffer[self.doc_map[key][0]]
-            self.doc_map.move_to_end(key)
-            return doc
-        else:
+        if not isinstance(key, str):
             raise TypeError(f'`key` must be str, but receiving {key!r}')
+        doc = self.buffer[self.doc_map[key][0]]
+        self.doc_map.move_to_end(key)
+        return doc
 
     def __delitem__(self, key):
         buffer_idx, _ = self.doc_map.pop(key)

@@ -4,8 +4,9 @@ from jina.parsers.peapods.runtimes.container import mixin_container_runtime_pars
 
 def test_runtime_parser():
     parser = argparse.ArgumentParser(
-        epilog=f'Test', description='Test Command Line Interface'
+        epilog='Test', description='Test Command Line Interface'
     )
+
 
     mixin_container_runtime_parser(parser)
 

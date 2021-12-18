@@ -27,7 +27,7 @@ def store_files_in_workspace(
     workdir = get_workspace_path(workspace_id)
     Path(workdir).mkdir(parents=True, exist_ok=True)
     if not files:
-        logger.warning(f'couldn\'t find any files to upload!')
+        logger.warning("couldn't find any files to upload!")
         return
     for f in files:
         dest = os.path.join(workdir, f.filename)
@@ -53,7 +53,7 @@ def is_requirements_txt(filename) -> bool:
     :param filename: filename
     :return: True if filename is in requirements.txt format
     """
-    return True if re.match(r'.*requirements.*\.txt$', filename) else False
+    return bool(re.match(r'.*requirements.*\.txt$', filename))
 
 
 class DaemonFile:
@@ -62,11 +62,10 @@ class DaemonFile:
     extension = '.jinad'
 
     def __init__(self, workdir: str, logger: 'JinaLogger' = None) -> None:
-        self._logger = (
-            logger
-            if logger
-            else JinaLogger(self.__class__.__name__, **vars(jinad_args))
+        self._logger = logger or JinaLogger(
+            self.__class__.__name__, **vars(jinad_args)
         )
+
         self._workdir = workdir
         self._logger.debug(
             f'analysing {self.extension} files in workdir: {self._workdir}'
@@ -197,13 +196,12 @@ class DaemonFile:
                 with open(os.path.join(self._workdir, filename)) as f:
                     requirements += ' '.join(f.read().splitlines())
                 requirements += ' '
-        if not requirements:
-            self._logger.warning(
-                'please add a requirements.txt file to manage python dependencies in the workspace'
-            )
-            return ''
-        else:
+        if requirements:
             return requirements.strip()
+        self._logger.warning(
+            'please add a requirements.txt file to manage python dependencies in the workspace'
+        )
+        return ''
 
     @property
     def dockercontext(self) -> str:
@@ -243,7 +241,7 @@ class DaemonFile:
             self.set_args(jinad_file_path)
         else:
             self._logger.warning(
-                f'please add a .jinad file to manage the docker image in the workspace'
+                'please add a .jinad file to manage the docker image in the workspace'
             )
 
     def set_args(self, file: Path) -> None:

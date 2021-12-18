@@ -139,11 +139,8 @@ class JAML:
 
         :return: tags
         """
-        return list(
-            v[1:]
-            for v in set(JinaLoader.yaml_constructors.keys())
-            if v and v.startswith('!')
-        )
+        return [v[1:] for v in set(JinaLoader.yaml_constructors.keys())
+                if v and v.startswith('!')]
 
     @staticmethod
     def registered_classes() -> Dict:
@@ -179,7 +176,7 @@ class JAML:
         :param kwargs: other kwargs
         :return: the Python object
         """
-        safe_yml = JAML.escape('\n'.join(v for v in stream))
+        safe_yml = JAML.escape('\n'.join(stream))
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
@@ -210,7 +207,7 @@ class JAML:
                         p.__dict__[k] = SimpleNamespace()
                         _scan(v, p.__dict__[k])
                     elif isinstance(v, list):
-                        p.__dict__[k] = list()
+                        p.__dict__[k] = []
                         _scan(v, p.__dict__[k])
                     else:
                         p.__dict__[k] = v
@@ -230,22 +227,20 @@ class JAML:
                 for k, v in sub_d.items():
                     if isinstance(v, (dict, list)):
                         _replace(v, p.__dict__[k], resolve_ref)
-                    else:
-                        if isinstance(v, str):
-                            if resolve_ref and internal_var_regex.findall(v):
-                                sub_d[k] = _resolve(v, p)
-                            else:
-                                sub_d[k] = _sub(v)
+                    elif isinstance(v, str):
+                        if resolve_ref and internal_var_regex.findall(v):
+                            sub_d[k] = _resolve(v, p)
+                        else:
+                            sub_d[k] = _sub(v)
             elif isinstance(sub_d, list):
                 for idx, v in enumerate(sub_d):
                     if isinstance(v, (dict, list)):
                         _replace(v, p[idx], resolve_ref)
-                    else:
-                        if isinstance(v, str):
-                            if resolve_ref and internal_var_regex.findall(v):
-                                sub_d[idx] = _resolve(v, p)
-                            else:
-                                sub_d[idx] = _sub(v)
+                    elif isinstance(v, str):
+                        if resolve_ref and internal_var_regex.findall(v):
+                            sub_d[idx] = _resolve(v, p)
+                        else:
+                            sub_d[idx] = _sub(v)
 
         def _sub(v):
             org_v = v

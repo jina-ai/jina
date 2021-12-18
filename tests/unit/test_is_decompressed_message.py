@@ -22,20 +22,18 @@ class DecompressExec(Executor):
 class MockRuntimeNotDecompressed(ZEDRuntime):
     def _post_hook(self, msg: 'Message'):
         super()._post_hook(msg)
-        if msg is not None:
+        if msg is not None and msg.is_data_request:
             decompressed = msg.request.is_decompressed
-            if msg.is_data_request:
-                assert not decompressed
+            assert not decompressed
         return msg
 
 
 class MockRuntimeDecompressed(ZEDRuntime):
     def _post_hook(self, msg: 'Message'):
         super()._post_hook(msg)
-        if msg is not None:
+        if msg is not None and msg.is_data_request:
             decompressed = msg.request.is_decompressed
-            if msg.is_data_request:
-                assert decompressed
+            assert decompressed
         return msg
 
 

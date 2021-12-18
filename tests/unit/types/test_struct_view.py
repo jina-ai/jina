@@ -103,14 +103,14 @@ def test_struct_view_iterate(struct_proto):
         'key_array',
         'key_nested',
     }
-    assert set([key for key, value in view.items()]) == {
+    assert {key for key, value in view.items()} == {
         'key_int',
         'key_float',
         'key_string',
         'key_array',
         'key_nested',
     }
-    assert set([element for element in view]) == {
+    assert set(list(view)) == {
         'key_int',
         'key_float',
         'key_string',

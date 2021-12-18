@@ -48,7 +48,7 @@ async def _delete(
         raise HTTPException(status_code=404, detail=f'{id} not found in store')
     except ValueError:
         raise HTTPException(
-            status_code=404, detail=f'There is no container to kill in store'
+            status_code=404, detail='There is no container to kill in store'
         )
 
 

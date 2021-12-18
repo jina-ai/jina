@@ -134,5 +134,4 @@ def _create_test_data_message():
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
         )
     )[0]
-    msg = Message(None, req, 'test', '123')
-    return msg
+    return Message(None, req, 'test', '123')

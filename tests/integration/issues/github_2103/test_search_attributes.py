@@ -16,11 +16,12 @@ from tests import validate_callback
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 _document_fields = sorted(
-    set(
+    {
         _to_camel_case(k)
         for k in list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
-    )
+    }
 )
+
 
 # check if this can be bypassed
 IGNORED_FIELDS = ['embedding', 'scores', 'graphInfo', 'evaluations']
@@ -44,7 +45,7 @@ def test_no_matches_grpc(mocker, docs):
 
 @pytest.fixture
 def query_dict():
-    return {'top_k': 3, 'mode': 'search', 'data': [f'text:query']}
+    return {'top_k': 3, 'mode': 'search', 'data': ['text:query']}
 
 
 class MockExecutor(Executor):

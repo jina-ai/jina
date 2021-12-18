@@ -13,7 +13,7 @@ def docker_image():
     os.system(f"docker build -f {docker_file} -t clitest {cur_dir}")
     time.sleep(3)
     yield
-    os.system(f"docker rmi -f $(docker images | grep 'clitest')")
+    os.system("docker rmi -f $(docker images | grep 'clitest')")
 
 
 def test_executor_cli_docker(docker_image):

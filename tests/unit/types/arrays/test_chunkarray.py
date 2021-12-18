@@ -9,8 +9,7 @@ from jina.types.request import Request
 def document_factory():
     class DocumentFactory(object):
         def create(self, idx, text, mime_type=None):
-            d = Document(tags={'id': idx}, text=text, mime_type=mime_type)
-            return d
+            return Document(tags={'id': idx}, text=text, mime_type=mime_type)
 
     return DocumentFactory()
 

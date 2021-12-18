@@ -76,13 +76,14 @@ def test_yaml_expand4():
 
 
 def test_attr_dict():
+
     class AttrDict:
         pass
 
     a = AttrDict()
     a.__dict__['sda'] = 1
     assert a.sda == 1
-    a.__dict__['components'] = list()
+    a.__dict__['components'] = []
     assert isinstance(a.components, list)
 
 

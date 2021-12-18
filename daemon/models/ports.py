@@ -36,9 +36,7 @@ class PortMappings(BaseModel):
             return self.__root__[item]
         elif isinstance(item, str):
             for mapping in self.__root__:
-                if mapping.pea_name == item:
-                    return mapping
-                elif mapping.pod_name == item:
+                if mapping.pea_name == item or mapping.pod_name == item:
                     return mapping
 
     @property
@@ -68,7 +66,7 @@ class PortMappings(BaseModel):
 
         :return: unique list of pod names
         """
-        return list(set(mapping.pod_name for mapping in self.__root__))
+        return list({mapping.pod_name for mapping in self.__root__})
 
     @property
     def pea_names(self) -> List[str]:

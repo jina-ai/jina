@@ -95,12 +95,6 @@ def fill_overload(
         noqa_str = '\n'.join(
             f'{indent}{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
         )
-    else:
-        doc_str = '\n'.join(f'{indent}:param {k[0]}: {k[1]["description"]}' for k in a)
-        noqa_str = '\n'.join(
-            f'{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
-        )
-    if class_method:
         final_str = f'@overload\n{indent}{signature_str}\n{indent}{indent}"""{doc_str_title}\n\n{doc_str}{return_str}\n\n{noqa_str}\n{indent}{indent}"""'
         final_code = re.sub(
             rf'(# overload_inject_start_{regex_tag or cli_entrypoint}).*(# overload_inject_end_{regex_tag or cli_entrypoint})',
@@ -110,6 +104,10 @@ def fill_overload(
             re.DOTALL,
         )
     else:
+        doc_str = '\n'.join(f'{indent}:param {k[0]}: {k[1]["description"]}' for k in a)
+        noqa_str = '\n'.join(
+            f'{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
+        )
         final_str = f'@overload\n{signature_str}\n{indent}"""{doc_str_title}\n\n{doc_str}{return_str}\n\n{noqa_str}\n{indent}"""'
         final_code = re.sub(
             rf'(# overload_inject_start_{regex_tag or cli_entrypoint}).*(# overload_inject_end_{regex_tag or cli_entrypoint})',

@@ -142,13 +142,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         # set self values filtered by those non-exist, and non-expandable
         for k, v in tmp.items():
             if not hasattr(target, k):
-                if isinstance(v, str):
-                    if not subvar_regex.findall(v):
-                        setattr(target, k, v)
-                    else:
-                        unresolved_attr = True
-                else:
+                if (
+                    isinstance(v, str)
+                    and not subvar_regex.findall(v)
+                    or not isinstance(v, str)
+                ):
                     setattr(target, k, v)
+                else:
+                    unresolved_attr = True
             elif type(getattr(target, k)) == type(v):
                 setattr(target, k, v)
 
@@ -210,26 +211,25 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         workspace = getattr(self.metas, 'workspace') or getattr(
             self.runtime_args, 'workspace', None
         )
-        if workspace:
-            complete_workspace = os.path.join(workspace, self.metas.name)
-            replica_id = getattr(self.runtime_args, 'replica_id', None)
-            pea_id = getattr(
-                self.runtime_args,
-                'pea_id',
-                getattr(self.runtime_args, 'shard_id', None),
-            )
-            if replica_id is not None and replica_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(replica_id))
-            if pea_id is not None and pea_id != -1:
-                complete_workspace = os.path.join(complete_workspace, str(pea_id))
-            if not os.path.exists(complete_workspace):
-                os.makedirs(complete_workspace)
-            return os.path.abspath(complete_workspace)
-        else:
+        if not workspace:
             raise ValueError(
                 'Neither `metas.workspace` nor `runtime_args.workspace` is set, '
                 'are you using this Executor is a Flow?'
             )
+        complete_workspace = os.path.join(workspace, self.metas.name)
+        replica_id = getattr(self.runtime_args, 'replica_id', None)
+        pea_id = getattr(
+            self.runtime_args,
+            'pea_id',
+            getattr(self.runtime_args, 'shard_id', None),
+        )
+        if replica_id is not None and replica_id != -1:
+            complete_workspace = os.path.join(complete_workspace, str(replica_id))
+        if pea_id is not None and pea_id != -1:
+            complete_workspace = os.path.join(complete_workspace, str(pea_id))
+        if not os.path.exists(complete_workspace):
+            os.makedirs(complete_workspace)
+        return os.path.abspath(complete_workspace)
 
     def __enter__(self):
         return self

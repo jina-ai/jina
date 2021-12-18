@@ -159,7 +159,7 @@ def test_init_container_args(pod_args):
 
     init_container = get_init_container_args(pod.args)
 
-    if any(['--k8s-uses-init' in arg for arg in pod_args]):
+    if any('--k8s-uses-init' in arg for arg in pod_args):
         assert init_container == {
             'init-name': 'init',
             'init-image': args.k8s_uses_init,

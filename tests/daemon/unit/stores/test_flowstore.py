@@ -32,7 +32,7 @@ async def test_flow_store(workspace):
     store = FlowStore()
     flow_id = DaemonID('jflow')
     flow_model = FlowModel()
-    flow_model.uses = f'flow.yml'
+    flow_model.uses = 'flow.yml'
 
     await store.add(
         id=flow_id,

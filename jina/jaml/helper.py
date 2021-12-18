@@ -202,7 +202,7 @@ def _search_file_in_paths(path, extra_search_paths: Optional[List[str]] = None):
 
     search_paths = []
     if extra_search_paths:
-        search_paths.extend((v for v in extra_search_paths))
+        search_paths.extend(iter(extra_search_paths))
 
     frame = inspect.currentframe()
 

@@ -92,7 +92,7 @@ class CompoundPod(BasePod):
 
         :return: total number of peas including head and tail
         """
-        return sum([shard.num_peas for shard in self.shards]) + 2
+        return sum(shard.num_peas for shard in self.shards) + 2
 
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -202,13 +202,9 @@ class CompoundPod(BasePod):
         :return: list of arguments for the shards
         """
         result = []
-        _host_list = (
-            args.peas_hosts
-            if args.peas_hosts
-            else [
+        _host_list = args.peas_hosts or [
                 args.host,
             ]
-        )
         host_generator = cycle(_host_list)
         for idx in range(args.shards):
             _args = copy.deepcopy(args)
@@ -294,7 +290,7 @@ class CompoundPod(BasePod):
 
         .. # noqa: DAR201
         """
-        mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
+        mermaid_graph = [f'subgraph {self.name};\n', 'direction LR;\n']
         head_name = self.head_args.name
         tail_name = self.tail_args.name
         pod_names = []

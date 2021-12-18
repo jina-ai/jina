@@ -7,19 +7,20 @@ from jina.parsers.hubble.new import mixin_hub_new_parser
 
 def test_new_parser():
     parser = argparse.ArgumentParser(
-        epilog=f'Test', description='Test Hub Command Line Interface'
+        epilog='Test', description='Test Hub Command Line Interface'
     )
+
 
     mixin_hub_new_parser(parser)
 
     args = parser.parse_args([])
     assert not args.add_dockerfile
     assert not args.advance_configuration
-    assert args.name == None
-    assert args.path == None
-    assert args.description == None
-    assert args.keywords == None
-    assert args.url == None
+    assert args.name is None
+    assert args.path is None
+    assert args.description is None
+    assert args.keywords is None
+    assert args.url is None
 
     args = parser.parse_args(['--add-dockerfile'])
     assert args.add_dockerfile

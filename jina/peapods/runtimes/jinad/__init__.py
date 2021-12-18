@@ -69,7 +69,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
             complete=True,
         )
         if not workspace_id:
-            self.logger.critical(f'remote workspace creation failed')
+            self.logger.critical('remote workspace creation failed')
             raise DaemonWorkspaceCreationFailed
 
         payload = replace_enum_to_str(vars(self._mask_args()))
@@ -78,7 +78,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
             workspace_id=workspace_id, payload=payload
         )
         if not success:
-            self.logger.critical(f'remote pea creation failed')
+            self.logger.critical('remote pea creation failed')
             raise DaemonPeaCreationFailed(response)
         else:
             self.pea_id = response
@@ -104,9 +104,10 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """Cancels the logstream task, removes the remote Pea"""
         if self.logstream is not None:
             self.logstream.cancel()
-        if self.pea_id is not None:
-            if await self.client.peas.delete(id=self.pea_id):
-                self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
+        if self.pea_id is not None and await self.client.peas.delete(
+            id=self.pea_id
+        ):
+            self.logger.success(f'Successfully terminated remote Pea {self.pea_id}')
             # Don't delete workspace here, as other Executors might use them.
             # TODO(Deepankar): probably enable an arg here?
 
@@ -122,7 +123,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         """
         paths = set()
         if not self.args.upload_files:
-            self.logger.warning(f'no files passed to upload to remote')
+            self.logger.warning('no files passed to upload to remote')
         else:
             for path in self.args.upload_files:
                 try:
@@ -140,11 +141,10 @@ class JinadRuntime(AsyncNewLoopRuntime):
         if cargs.runtime_cls == 'JinadRuntime':
             if cargs.uses.startswith(('docker://', 'jinahub+docker://')):
                 cargs.runtime_cls = 'ContainerRuntime'
+            elif cargs.grpc_data_requests:
+                cargs.runtime_cls = 'GRPCDataRuntime'
             else:
-                if cargs.grpc_data_requests:
-                    cargs.runtime_cls = 'GRPCDataRuntime'
-                else:
-                    cargs.runtime_cls = 'ZEDRuntime'
+                cargs.runtime_cls = 'ZEDRuntime'
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         # _args.host = __default_host__
@@ -154,12 +154,12 @@ class JinadRuntime(AsyncNewLoopRuntime):
         cargs.upload_files = []  # reset upload files
         cargs.noblock_on_start = False  # wait until start success
 
-        changes = []
-        for k, v in vars(cargs).items():
-            if v != getattr(self.args, k):
-                changes.append(
-                    f'{k:>30s}: {str(getattr(self.args, k)):30s} -> {str(v):30s}'
-                )
+        changes = [
+            f'{k:>30s}: {str(getattr(self.args, k)):30s} -> {str(v):30s}'
+            for k, v in vars(cargs).items()
+            if v != getattr(self.args, k)
+        ]
+
         if changes:
             changes = [
                 'note the following arguments have been masked or altered for remote purpose:'

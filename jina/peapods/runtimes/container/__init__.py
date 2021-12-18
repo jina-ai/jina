@@ -173,10 +173,7 @@ class ContainerRuntime(BaseRuntime):
                 paths = p.split(':')
                 local_path = paths[0]
                 Path(os.path.abspath(local_path)).mkdir(parents=True, exist_ok=True)
-                if len(paths) == 2:
-                    container_path = paths[1]
-                else:
-                    container_path = '/' + os.path.basename(p)
+                container_path = paths[1] if len(paths) == 2 else '/' + os.path.basename(p)
                 _volumes[os.path.abspath(local_path)] = {
                     'bind': container_path,
                     'mode': 'rw',

@@ -64,7 +64,7 @@ class K8sPod(BasePod):
         def _construct_runtime_container_args(
             deployment_args, uses, uses_metas, uses_with_string
         ):
-            container_args = (
+            return (
                 f'["executor", '
                 f'"--native", '
                 f'"--uses", "{uses}", '
@@ -74,7 +74,6 @@ class K8sPod(BasePod):
                 + uses_with_string
                 + f'{kubernetes_deployment.get_cli_params(deployment_args)}]'
             )
-            return container_args
 
         def _get_image_name(self):
             image_name = kubernetes_deployment.get_image_name(self.deployment_args.uses)
@@ -239,9 +238,7 @@ class K8sPod(BasePod):
                                     f'\nNumber of updated replicas {updated_replicas}, waiting for {self.num_replicas - updated_replicas} replicas to be updated'
                                 )
                             elif has_pod_with_uid:
-                                logger.debug(
-                                    f'\nWaiting for old replicas to be terminated'
-                                )
+                                logger.debug('\nWaiting for old replicas to be terminated')
                             else:
                                 logger.debug(
                                     f'\nNumber of alive replicas {alive_replicas}, waiting for {alive_replicas - self.num_replicas} old replicas to be terminated'
@@ -597,7 +594,7 @@ class K8sPod(BasePod):
         """
         mermaid_graph = []
         if self.name != 'gateway':
-            mermaid_graph = [f'subgraph {self.name};\n', f'direction LR;\n']
+            mermaid_graph = [f'subgraph {self.name};\n', 'direction LR;\n']
 
             num_replicas = getattr(self.args, 'replicas', 1)
             num_shards = getattr(self.args, 'shards', 1)
@@ -608,15 +605,12 @@ class K8sPod(BasePod):
                     for i, args in enumerate(self.deployment_args['deployments'])
                 ]
                 for shard_name in shard_names:
-                    shard_mermaid_graph = [
-                        f'subgraph {shard_name}\n',
-                        f'direction TB;\n',
-                    ]
+                    shard_mermaid_graph = [f'subgraph {shard_name}\n', 'direction TB;\n']
                     for replica_id in range(num_replicas):
                         shard_mermaid_graph.append(
                             f'{shard_name}/replica-{replica_id}[{uses}]\n'
                         )
-                    shard_mermaid_graph.append(f'end\n')
+                    shard_mermaid_graph.append('end\n')
                     mermaid_graph.extend(shard_mermaid_graph)
                 head_name = f'{self.name}/head'
                 tail_name = f'{self.name}/tail'
@@ -641,5 +635,5 @@ class K8sPod(BasePod):
                 for replica_id in range(num_replicas):
                     mermaid_graph.append(f'{self.name}/replica-{replica_id}[{uses}];')
 
-            mermaid_graph.append(f'end;')
+            mermaid_graph.append('end;')
         return mermaid_graph

@@ -77,13 +77,15 @@ class DenseNdArray(BaseDenseNdArray):
             blob.quantization = jina_pb2.DenseNdArrayProto.FP32
             blob.original_dtype = x.dtype.name
             x = x.astype(np.float32)
-        elif self._dtype == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):
+        elif self._dtype == 'fp16' and x.dtype in [np.float32, np.float64]:
             blob.quantization = jina_pb2.DenseNdArrayProto.FP16
             blob.original_dtype = x.dtype.name
             x = x.astype(np.float16)
-        elif self._dtype == 'uint8' and (
-            x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16
-        ):
+        elif self._dtype == 'uint8' and x.dtype in [
+            np.float32,
+            np.float64,
+            np.float16,
+        ]:
             blob.quantization = jina_pb2.DenseNdArrayProto.UINT8
             blob.max_val, blob.min_val = x.max(), x.min()
             blob.original_dtype = x.dtype.name

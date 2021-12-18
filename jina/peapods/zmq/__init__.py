@@ -45,10 +45,7 @@ class Zmqlet:
     ):
         self.args = args
 
-        if args.zmq_identity:
-            self.identity = args.zmq_identity
-        else:
-            self.identity = random_identity()
+        self.identity = args.zmq_identity or random_identity()
         self.name = str(args.name) or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
@@ -133,14 +130,9 @@ class Zmqlet:
         ctrl_with_ipc = (os.name != 'nt') and ctrl_with_ipc
         if ctrl_with_ipc:
             return _get_random_ipc(), ctrl_with_ipc
-        else:
-            host_out = host
-            if '@' in host_out:
-                # user@hostname
-                host_out = host_out.split('@')[-1]
-            else:
-                host_out = host_out
-            return f'tcp://{host_out}:{port_ctrl}', ctrl_with_ipc
+        host_out = host
+        host_out = host_out.split('@')[-1] if '@' in host_out else host_out
+        return f'tcp://{host_out}:{port_ctrl}', ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
         socks = dict(self.poller.poll(interval))
@@ -313,11 +305,10 @@ class Zmqlet:
 
     def _get_dynamic_next_routes(self, message):
         # use our own static routing table if available, otherwise use the one in the message
-        routing_table = (
-            self._routing_table
-            if self._routing_table
-            else RoutingTable(message.envelope.routing_table)
+        routing_table = self._routing_table or RoutingTable(
+            message.envelope.routing_table
         )
+
         next_targets = routing_table.get_next_targets()
         next_routes = []
         for target, send_as_bind in next_targets:
@@ -619,12 +610,7 @@ def send_ctrl_message(
     :param raise_exception: raise exception when exception found
     :return: received message
     """
-    if isinstance(cmd, str):
-        # we assume ControlMessage as default
-        msg = ControlMessage(cmd)
-    else:
-        msg = cmd
-
+    msg = ControlMessage(cmd) if isinstance(cmd, str) else cmd
     # control message is short, set a timeout and ask for quick response
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
@@ -636,8 +622,6 @@ def send_ctrl_message(
         except Exception as ex:
             if raise_exception:
                 raise ex
-            else:
-                pass
         finally:
             sock.close()
         return r
@@ -885,11 +869,7 @@ def _init_socket(
                     )
                     raise
     else:
-        if port is None:
-            address = host
-        else:
-            address = f'tcp://{host}:{port}'
-
+        address = host if port is None else f'tcp://{host}:{port}'
         # note that ssh only takes effect on CONNECT, not BIND
         # that means control socket setup does not need ssh
         _connect_socket(sock, address, ssh_server, ssh_keyfile, ssh_password)

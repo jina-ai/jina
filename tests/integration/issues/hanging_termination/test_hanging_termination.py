@@ -78,10 +78,14 @@ def get_documents(count=10, emb_size=7):
 
 
 def path_size(dump_path):
-    dir_size = (
-        sum(f.stat().st_size for f in Path(dump_path).glob('**/*') if f.is_file()) / 1e6
+    return (
+        sum(
+            f.stat().st_size
+            for f in Path(dump_path).glob('**/*')
+            if f.is_file()
+        )
+        / 1e6
     )
-    return dir_size
 
 
 @pytest.mark.repeat(20)
@@ -92,18 +96,18 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
     """showcases using replicas + dump + rolling update with independent clients"""
 
     with Flow().add(uses=DumpExecutor, name='dump_exec').add(
-        uses=ErrorExecutor, name='error_exec'
-    ) as flow_dump:
+            uses=ErrorExecutor, name='error_exec'
+        ) as flow_dump:
         merge_executor = MergeExecutor if shards > 1 else None
         with Flow().add(
-            uses=ReloadExecutor,
-            name='reload_exec',
-            replicas=2,
-            shards=shards,
-            uses_after=merge_executor,
-        ) as flow_reload:
+                    uses=ReloadExecutor,
+                    name='reload_exec',
+                    replicas=2,
+                    shards=shards,
+                    uses_after=merge_executor,
+                ) as flow_reload:
             for run_number in range(times_to_index):
-                dump_path = os.path.join(tmpdir, f'dump-{str(run_number)}')
+                dump_path = os.path.join(tmpdir, f'dump-{run_number}')
                 client_dbms = get_client(flow_dump.port_expose)
                 client_query = get_client(flow_reload.port_expose)
                 docs = list(
@@ -127,7 +131,7 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
                     # flow object is used for ctrl requests
                     flow_reload.rolling_update('reload_exec', dump_path)
 
-                for i in range(5):
+                for _ in range(5):
                     result = client_query.post(
                         on='/search', inputs=[Document()], return_results=True
                     )

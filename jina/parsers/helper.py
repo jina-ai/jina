@@ -106,32 +106,34 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
     def _get_help_string(self, action):
         help_string = ''
-        if '%(default)' not in action.help:
-            if action.default is not argparse.SUPPRESS:
-                from ..helper import colored
+        if (
+            '%(default)' not in action.help
+            and action.default is not argparse.SUPPRESS
+        ):
+            from ..helper import colored
 
-                defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
-                if isinstance(action, argparse._StoreTrueAction):
+            defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
+            if isinstance(action, argparse._StoreTrueAction):
 
-                    help_string = colored(
-                        'default: %s'
-                        % (
-                            'enabled'
-                            if action.default
-                            else f'disabled, use "{action.option_strings[0]}" to enable it'
-                        ),
-                        attrs=['dark'],
-                    )
-                elif action.choices:
-                    choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
-                    help_string = colored(
-                        'choose from: ' + choices_str + '; default: %(default)s',
-                        attrs=['dark'],
-                    )
-                elif action.option_strings or action.nargs in defaulting_nargs:
-                    help_string = colored(
-                        'type: %(type)s; default: %(default)s', attrs=['dark']
-                    )
+                help_string = colored(
+                    'default: %s'
+                    % (
+                        'enabled'
+                        if action.default
+                        else f'disabled, use "{action.option_strings[0]}" to enable it'
+                    ),
+                    attrs=['dark'],
+                )
+            elif action.choices:
+                choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
+                help_string = colored(
+                    'choose from: ' + choices_str + '; default: %(default)s',
+                    attrs=['dark'],
+                )
+            elif action.option_strings or action.nargs in defaulting_nargs:
+                help_string = colored(
+                    'type: %(type)s; default: %(default)s', attrs=['dark']
+                )
         return f'''
         
         {help_string}
@@ -197,11 +199,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
         indent = len(re.match(r'( *)', line).group(1))
         list_match = re.match(r'( *)(([*\-+>]+|\w+\)|\w+\.) +)', line)
-        if list_match:
-            sub_indent = indent + len(list_match.group(2))
-        else:
-            sub_indent = indent
-
+        sub_indent = indent + len(list_match.group(2)) if list_match else indent
         return (indent, sub_indent)
 
     def _split_paragraphs(self, text):
@@ -217,7 +215,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         text = re.sub('\n\n[\n]+', '\n\n', text)
 
         last_sub_indent = None
-        paragraphs = list()
+        paragraphs = []
         for line in text.splitlines():
             (indent, sub_indent) = self._indents(line)
             is_text = len(line.strip()) > 0
@@ -227,11 +225,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             else:
                 paragraphs.append(line)
 
-            if is_text:
-                last_sub_indent = sub_indent
-            else:
-                last_sub_indent = None
-
+            last_sub_indent = sub_indent if is_text else None
         return paragraphs
 
     def _para_reformat(self, text, width):
@@ -244,7 +238,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
         import textwrap
 
-        lines = list()
+        lines = []
         for paragraph in self._split_paragraphs(text):
             (indent, sub_indent) = self._indents(paragraph)
 

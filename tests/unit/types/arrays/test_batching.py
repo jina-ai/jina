@@ -92,7 +92,7 @@ def test_needs_attr_empty(attr_name: str, attr_value: Any):
 
     assert len(filtered_docs) == 1 and len(filtered_docs[0]) == 1
 
-    if attr_name in ['blob', 'embedding']:
+    if attr_name in {'blob', 'embedding'}:
         np.testing.assert_array_equal(
             getattr(filtered_docs[0][0], attr_name), attr_value
         )

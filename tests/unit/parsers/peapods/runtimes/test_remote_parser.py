@@ -4,8 +4,9 @@ from jina.parsers.peapods.runtimes.remote import mixin_http_gateway_parser
 
 def test_runtime_parser():
     parser = argparse.ArgumentParser(
-        epilog=f'Test', description='Test Command Line Interface'
+        epilog='Test', description='Test Command Line Interface'
     )
+
 
     mixin_http_gateway_parser(parser)
 

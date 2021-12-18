@@ -6,8 +6,9 @@ from jina.parsers.hubble.pull import mixin_hub_pull_parser
 
 def test_push_parser(tmpdir):
     parser = argparse.ArgumentParser(
-        epilog=f'Test', description='Test Hub Command Line Interface'
+        epilog='Test', description='Test Hub Command Line Interface'
     )
+
 
     mixin_hub_push_parser(parser)
     tmpdir = str(tmpdir)
@@ -53,8 +54,9 @@ def test_push_parser(tmpdir):
 
 def test_pull_parser():
     parser = argparse.ArgumentParser(
-        epilog=f'Test', description='Test Hub Command Line Interface'
+        epilog='Test', description='Test Hub Command Line Interface'
     )
+
 
     mixin_hub_pull_parser(parser)
 

@@ -107,10 +107,10 @@ def wait_for_workspace(
             time.sleep(2)
             continue
         elif state == RemoteWorkspaceState.ACTIVE:
-            print(f'workspace got created successfully')
+            print('workspace got created successfully')
             return True
         elif state == RemoteWorkspaceState.FAILED:
-            print(f'workspace creation failed. please check logs')
+            print('workspace creation failed. please check logs')
             return False
 
 

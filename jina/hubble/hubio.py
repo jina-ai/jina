@@ -75,11 +75,10 @@ class HubIO:
         """
         metas, envs = get_full_version()
 
-        header = {
+        return {
             **{f'jinameta-{k}': str(v) for k, v in metas.items()},
             **envs,
         }
-        return header
 
     def new(self) -> None:
         """Create a new executor folder interactively."""
@@ -190,8 +189,8 @@ your executor has non-trivial dependencies or must be run under certain environm
                 srcs, description=f'Creating {exec_name}...', total=len(srcs)
             ):
                 with open(
-                    os.path.join(__resources_path__, 'executor-template', src)
-                ) as fp, open(os.path.join(exec_path, src), 'w') as fpw:
+                            os.path.join(__resources_path__, 'executor-template', src)
+                        ) as fp, open(os.path.join(exec_path, src), 'w') as fpw:
                     f = (
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
@@ -200,9 +199,7 @@ your executor has non-trivial dependencies or must be run under certain environm
                         .replace('{{exec_url}}', exec_url)
                     )
 
-                    f = [
-                        v + '\n' for v in f.split('\n') if not ('{{' in v or '}}' in v)
-                    ]
+                    f = [v + '\n' for v in f.split('\n') if '{{' not in v and '}}' not in v]
                     fpw.writelines(f)
 
         Path(exec_path).mkdir(parents=True, exist_ok=True)
@@ -342,10 +339,7 @@ metas:
 
         work_path = Path(self.args.path)
 
-        exec_tags = None
-        if self.args.tag:
-            exec_tags = ','.join(self.args.tag)
-
+        exec_tags = ','.join(self.args.tag) if self.args.tag else None
         dockerfile = None
         if self.args.dockerfile:
             dockerfile = Path(self.args.dockerfile)
@@ -392,11 +386,11 @@ metas:
 
                 method = 'put' if ('force' in form_data) else 'post'
 
-                st.update(f'Connecting to Jina Hub ...')
+                st.update('Connecting to Jina Hub ...')
                 hubble_url = get_hubble_url()
 
                 # upload the archived executor to Jina Hub
-                st.update(f'Uploading...')
+                st.update('Uploading...')
                 resp = upload_file(
                     hubble_url,
                     'filename',
@@ -650,8 +644,9 @@ with f:
                 )
             except docker.errors.DockerException:
                 self.logger.critical(
-                    f'Docker daemon seems not running. Please run Docker daemon and try again.'
+                    'Docker daemon seems not running. Please run Docker daemon and try again.'
                 )
+
                 exit(1)
 
     def pull(self) -> str:
@@ -692,7 +687,7 @@ with f:
                         need_pull = True
 
                     if need_pull:
-                        st.update(f'Pulling image ...')
+                        st.update('Pulling image ...')
                         log_stream = self._raw_client.pull(
                             executor.image_name, stream=True, decode=True
                         )

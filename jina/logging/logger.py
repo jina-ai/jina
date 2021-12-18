@@ -147,12 +147,10 @@ class JinaLogger:
             elif h == 'SysLogHandler' and not __windows__:
                 if cfg['host'] and cfg['port']:
                     handler = SysLogHandlerWrapper(address=(cfg['host'], cfg['port']))
+                elif platform.system() == 'Darwin':
+                    handler = SysLogHandlerWrapper(address='/var/run/syslog')
                 else:
-                    # a UNIX socket is used
-                    if platform.system() == 'Darwin':
-                        handler = SysLogHandlerWrapper(address='/var/run/syslog')
-                    else:
-                        handler = SysLogHandlerWrapper(address='/dev/log')
+                    handler = SysLogHandlerWrapper(address='/dev/log')
                 if handler:
                     handler.ident = cfg.get('ident', '')
                     handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
@@ -161,7 +159,6 @@ class JinaLogger:
                     handler._connect_unixsocket(handler.address)
                 except OSError:
                     handler = None
-                    pass
             elif h == 'FileHandler':
                 filename = cfg['output'].format_map(kwargs)
                 if __windows__:

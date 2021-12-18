@@ -16,11 +16,11 @@ class V1Parser(VersionedYAMLParser):
         :return: the YAML parser given the syntax version number
         """
         expanded_data = JAML.expand_dict(data, None)
-        if 'with' in data:
-            obj = cls(**expanded_data.get('with', {}))
-        else:
-            obj = cls(**expanded_data)
-        return obj
+        return (
+            cls(**expanded_data.get('with', {}))
+            if 'with' in data
+            else cls(**expanded_data)
+        )
 
     def dump(self, data: 'JAMLCompatible') -> Dict:
         """

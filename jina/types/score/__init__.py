@@ -154,36 +154,34 @@ class NamedScore(ProtoTypeMixin):
         for k, v in kwargs.items():
             if isinstance(v, (list, tuple)):
                 self._pb_body.ClearField(k)
-                if k == 'operands':
-                    scores_to_add = []
-                    for item in v:
-                        if isinstance(item, NamedScore):
-                            score_to_add = item
-                        elif isinstance(item, jina_pb2.NamedScoreProto):
-                            score_to_add = NamedScore(item)
-                        elif isinstance(item, dict):
-                            score_to_add = NamedScore(**item)
-                        else:
-                            raise AttributeError(f'{item} is not recognized.')
-                        scores_to_add.append(score_to_add)
-
-                    for score_to_add in scores_to_add:
-                        s = self._pb_body.operands.add()
-                        s.CopyFrom(score_to_add._pb_body)
-                else:
+                if k != 'operands':
                     raise AttributeError(
                         f'{k} is not recognized, the only list argument is operands'
                     )
-            else:
-                if (
+                scores_to_add = []
+                for item in v:
+                    if isinstance(item, NamedScore):
+                        score_to_add = item
+                    elif isinstance(item, jina_pb2.NamedScoreProto):
+                        score_to_add = NamedScore(item)
+                    elif isinstance(item, dict):
+                        score_to_add = NamedScore(**item)
+                    else:
+                        raise AttributeError(f'{item} is not recognized.')
+                    scores_to_add.append(score_to_add)
+
+                for score_to_add in scores_to_add:
+                    s = self._pb_body.operands.add()
+                    s.CopyFrom(score_to_add._pb_body)
+            elif (
                     hasattr(NamedScore, k)
                     and isinstance(getattr(NamedScore, k), property)
                     and getattr(NamedScore, k).fset
                 ):
-                    # if class property has a setter
-                    setattr(self, k, v)
-                elif hasattr(self._pb_body, k):
-                    # no property setter, but proto has this attribute so fallback to proto
-                    setattr(self._pb_body, k, v)
-                else:
-                    raise AttributeError(f'{k} is not recognized')
+                # if class property has a setter
+                setattr(self, k, v)
+            elif hasattr(self._pb_body, k):
+                # no property setter, but proto has this attribute so fallback to proto
+                setattr(self._pb_body, k, v)
+            else:
+                raise AttributeError(f'{k} is not recognized')

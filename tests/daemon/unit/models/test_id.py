@@ -35,7 +35,7 @@ def test_id_raise():
         DaemonID(f'invalid-{an_id}')
 
     with pytest.raises(TypeError):
-        DaemonID(f'jflow-invalid')
+        DaemonID('jflow-invalid')
 
 
 def test_validate_id_in_pydantic_model():

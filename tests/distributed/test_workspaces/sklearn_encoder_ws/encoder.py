@@ -5,5 +5,3 @@ class Encoder(Executor):
     @requests
     def foo(*args, **kwargs):
         import sklearn
-
-        pass

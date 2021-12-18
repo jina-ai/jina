@@ -51,21 +51,17 @@ async def test_wait_for_ready(
             api_response = k8s_clients.apps_v1.read_namespaced_deployment(
                 name='slow-init-executor', namespace='test-flow-slow-executor'
             )
+            # new replica is ready, check that connection pool knows about it
+            slow_executor_connections = pool._connections[
+                pool._deployment_clusteraddresses['slow-init-executor']
+            ]
             if (
                 api_response.status.ready_replicas is not None
                 and api_response.status.ready_replicas == 2
             ):
-                # new replica is ready, check that connection pool knows about it
-                slow_executor_connections = pool._connections[
-                    pool._deployment_clusteraddresses['slow-init-executor']
-                ]
                 assert len(slow_executor_connections._connections) == 2
                 break
             else:
-                # new replica is not ready yet, make sure connection pool ignores it
-                slow_executor_connections = pool._connections[
-                    pool._deployment_clusteraddresses['slow-init-executor']
-                ]
                 assert len(slow_executor_connections._connections) == 1
             await asyncio.sleep(1.0)
         pool.close()
