@@ -47,6 +47,7 @@ def test_remote_jinad_pod(pod_args, jinad_client):
     assert jinad_client.pods.delete(pod_id)
     resp = jinad_client.pods.get(pod_id)
     assert resp == pod_id + ' not found in store'
+    assert jinad_client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.asyncio
@@ -70,6 +71,7 @@ async def test_remote_jinad_pod_async(pod_args, async_jinad_client):
     assert await async_jinad_client.pods.delete(pod_id)
     resp = await async_jinad_client.pods.get(pod_id)
     assert resp == pod_id + ' not found in store'
+    assert await async_jinad_client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.asyncio
@@ -87,6 +89,7 @@ async def test_jinad_pod_create_async_given_unprocessable_entity(
     )
     assert not success
     assert 'validation error in the payload' in resp
+    assert await async_jinad_client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.asyncio

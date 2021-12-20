@@ -44,4 +44,5 @@ async def test_rolloing_update_remote_pod(async_jinad_client, pod_args):
     # TODO: HOW TO CHECK PEA ARGS IN JINAD? ROLLING UPDATE WON'T CHANGE POD ARGS
     # TODO: PEA_STORE IS EMPTY
     _ = await async_jinad_client.pods.get(pod_id)
-    assert jinad_client.pods.delete(pod_id)
+    assert async_jinad_client.pods.delete(pod_id)
+    assert async_jinad_client.workspaces.delete(workspace_id)

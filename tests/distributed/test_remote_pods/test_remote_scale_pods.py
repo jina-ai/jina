@@ -58,6 +58,7 @@ def test_scale_remote_pod(pod_params, jinad_client):
     assert remote_pod_args['replicas'] == scale_to
     assert remote_pod_args['shards'] == shards
     assert jinad_client.pods.delete(pod_id)
+    assert jinad_client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.asyncio
@@ -98,3 +99,4 @@ async def test_scale_remote_pod_async(pod_params, async_jinad_client):
     assert remote_pod_args['replicas'] == scale_to
     assert remote_pod_args['shards'] == shards
     assert await async_jinad_client.pods.delete(pod_id)
+    assert await async_jinad_client.workspaces.delete(workspace_id)
