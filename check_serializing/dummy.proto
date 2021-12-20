@@ -1,0 +1,10 @@
+syntax = "proto3";
+import "docarray.proto";
+
+message BytesWrapper {
+  bytes docs = 1;
+}
+
+message DocsWrapper {
+  repeated docarray.DocumentProto docs = 1;
+}
