@@ -415,21 +415,21 @@ class GrpcConnectionPool:
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-                        return response, dict(metadata)
+                        return response, metadata
                     if request_type == DataRequest and len(requests) > 1:
                         call_result = stubs[1].process_data(requests)
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-                        return response, dict(metadata)
+                        return response, metadata
                     elif request_type == ControlRequest:
                         call_result = stubs[2].process_control(requests[0])
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-                        return response, dict(metadata)
+                        return response, metadata
                     else:
                         raise ValueError(
                             f'Unsupported request type {type(requests[0])}'

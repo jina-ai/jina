@@ -249,7 +249,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if uses_before_metadata:
             merged_metadata.update(uses_before_metadata)
         for meta in metadata:
-            merged_metadata.update(meta)
+            for key, value in meta:
+                merged_metadata[key] = value
         if uses_after_metadata:
             merged_metadata.update(uses_after_metadata)
         return merged_metadata
