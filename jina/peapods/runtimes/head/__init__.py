@@ -13,7 +13,7 @@ from ..asyncio import AsyncNewLoopRuntime
 from ..request_handlers.data_request_handler import (
     DataRequestHandler,
     get_docs_from_request,
-    _get_docs_matrix_from_request,
+    get_docs_matrix_from_request,
 )
 from ...networking import create_connection_pool, K8sGrpcConnectionPool
 from ....enums import PollingType
@@ -209,7 +209,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             and len(worker_results) > 1
             and not self.args.uses_after
         ):
-            docs_matrix = _get_docs_matrix_from_request(worker_results, field='docs')
+            docs_matrix = get_docs_matrix_from_request(worker_results, field='docs')
             docs = reduce(docs_matrix)
         else:
             docs = get_docs_from_request(worker_results, field='docs')

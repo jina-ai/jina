@@ -15,10 +15,16 @@ if TYPE_CHECKING:
     from ....logging.logger import JinaLogger
 
 
-def _get_docs_matrix_from_request(
+def get_docs_matrix_from_request(
     requests: List['DataRequest'],
     field: str,
 ) -> List['DocumentArray']:
+    """
+    Returns a docs matrix from a list of DataRequest objects.
+    :param requests: List of DataRequest objects
+    :param field: field to be retrieved
+    :return: docs matrix: list of DocumentArray objects
+    """
     if len(requests) > 1:
         result = [getattr(request, field) for request in reversed(requests)]
     else:
@@ -114,7 +120,7 @@ class DataRequestHandler:
         :returns: the processed message
         """
         if self.args.reduce and self.args.uses == __default_executor__:
-            docs = reduce(_get_docs_matrix_from_request(requests, field='docs'))
+            docs = reduce(get_docs_matrix_from_request(requests, field='docs'))
         else:
             docs = get_docs_from_request(
                 requests,
@@ -145,7 +151,7 @@ class DataRequestHandler:
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=_get_docs_matrix_from_request(
+            docs_matrix=get_docs_matrix_from_request(
                 requests,
                 field='docs',
             ),
@@ -153,7 +159,7 @@ class DataRequestHandler:
                 requests,
                 field='groundtruths',
             ),
-            groundtruths_matrix=_get_docs_matrix_from_request(
+            groundtruths_matrix=get_docs_matrix_from_request(
                 requests,
                 field='groundtruths',
             ),
