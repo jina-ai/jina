@@ -3,11 +3,12 @@ import os
 import pytest
 
 from daemon.clients import AsyncJinaDClient, JinaDClient
+from jina import __default_host__
 from jina.enums import replace_enum_to_str
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
 
-HOST = '127.0.0.1'
+HOST = __default_host__
 PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
