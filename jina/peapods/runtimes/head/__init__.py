@@ -207,7 +207,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if (
             self.polling == PollingType.ALL
             and len(worker_results) > 1
-            and not self.args.uses_after
+            and not getattr(self.args, 'uses_after', None)
         ):
             docs_matrix = get_docs_matrix_from_request(worker_results, field='docs')
             docs = reduce(docs_matrix)
