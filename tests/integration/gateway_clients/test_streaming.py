@@ -76,7 +76,7 @@ class DummyMockConnectionPool:
                 if pod == 'slow-executor':
                     await asyncio.sleep(SLOW_EXECUTOR_SLEEP_TIME)
                 for doc in request.docs:
-                    new_doc = Document(obj=doc, copy=True)
+                    new_doc = Document(document=doc, copy=True)
                     new_doc.tags['executor'] = time.time()
                     print(
                         f'in {pod}, {new_doc.id} => time: {readable_time_from(new_doc.tags["executor"])}, {new_doc.tags["executor"]}',
@@ -90,7 +90,7 @@ class DummyMockConnectionPool:
 
         async def task_wrapper():
             response_msg = await _compute_response()
-            return response_msg, {}
+            return response_msg
 
         return asyncio.create_task(task_wrapper())
 

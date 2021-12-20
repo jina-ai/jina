@@ -1,19 +1,19 @@
-import pytest
 import asyncio
-import time
 import copy
 import multiprocessing
-
+import time
 from typing import Dict
 
+import pytest
+
+from jina import Document, DocumentArray
+from jina.helper import random_port
 from jina.parsers import set_gateway_parser
+from jina.peapods import networking
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
-
-from jina import Document, DocumentArray
-from jina.peapods import networking
-from jina.helper import random_port
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture
@@ -80,6 +80,23 @@ def complete_graph_dict():
     }
 
 
+class DummyNoDocAccessMockConnectionPool:
+    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
+        async def task_wrapper():
+            import random
+
+            await asyncio.sleep(1 / (random.randint(1, 3) * 10))
+            if requests[0].is_decompressed:
+                return (
+                    DataRequest(request=requests[0].proto.SerializePartialToString()),
+                    {},
+                )
+            else:
+                return DataRequest(request=requests[0].buffer), {}
+
+        return asyncio.create_task(task_wrapper())
+
+
 class DummyMockConnectionPool:
     def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
         assert head
@@ -103,11 +120,28 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
-def create_runtime(graph_dict: Dict, protocol: str, port_in: int):
+def create_runtime(
+    graph_dict: Dict, protocol: str, port_in: int, call_counts=None, monkeypatch=None
+):
     import json
 
     graph_description = json.dumps(graph_dict)
     runtime_cls = None
+    if call_counts:
+
+        def decompress(self):
+            call_counts.put_nowait('called')
+            from jina.proto import jina_pb2
+
+            self._pb_body = jina_pb2.DataRequestProto()
+            self._pb_body.ParseFromString(self.buffer)
+            self.buffer = None
+
+        monkeypatch.setattr(
+            DataRequest,
+            '_decompress',
+            decompress,
+        )
     if protocol == 'grpc':
         runtime_cls = GRPCGatewayRuntime
     elif protocol == 'http':
@@ -185,6 +219,49 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         cp.join()
     p.terminate()
     p.join()
+    for cp in client_processes:
+        assert cp.exitcode == 0
+
+
+def test_grpc_gateway_runtime_lazy_request_access(linear_graph_dict, monkeypatch):
+    call_counts = multiprocessing.Queue()
+
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_requests_once',
+        DummyNoDocAccessMockConnectionPool.send_requests_once,
+    )
+    port_in = random_port()
+
+    def client_validate(client_id: int):
+        responses = client_send(client_id, port_in, 'grpc')
+        assert len(responses) > 0
+
+    p = multiprocessing.Process(
+        target=create_runtime,
+        kwargs={
+            'protocol': 'grpc',
+            'port_in': port_in,
+            'graph_dict': linear_graph_dict,
+            'call_counts': call_counts,
+            'monkeypatch': monkeypatch,
+        },
+    )
+    p.start()
+    time.sleep(1.0)
+    client_processes = []
+    for i in range(NUM_PARALLEL_CLIENTS):
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
+        cp.start()
+        client_processes.append(cp)
+
+    for cp in client_processes:
+        cp.join()
+    p.terminate()
+    p.join()
+    assert (
+        call_counts.qsize() == NUM_PARALLEL_CLIENTS * 2
+    )  # request should be decompressed at start and end only
     for cp in client_processes:
         assert cp.exitcode == 0
 
