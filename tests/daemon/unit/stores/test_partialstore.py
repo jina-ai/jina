@@ -5,7 +5,7 @@ import pytest
 
 from daemon.models import FlowModel, PeaModel
 from daemon.stores.partial import PartialFlowStore, PartialPeaStore, PartialStoreItem
-from jina import Flow, __default_host__, helper
+from jina import Flow, __default_host__
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
 from jina.parsers.flow import set_flow_parser
