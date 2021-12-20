@@ -1,8 +1,8 @@
 import os
 
 from daemon import jinad_args
-from daemon.models import DaemonID
 from daemon.helper import get_workspace_path
+from daemon.models import DaemonID
 
 
 def test_workspace_path():

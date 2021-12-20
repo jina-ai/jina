@@ -13,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='module', autouse=True)
 def workspace():
-    from tests.conftest import _create_workspace_directly, _clean_up_workspace
+    from tests.conftest import _clean_up_workspace, _create_workspace_directly
 
     image_id, network_id, workspace_id, workspace_store = _create_workspace_directly(
         cur_dir

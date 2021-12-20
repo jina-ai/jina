@@ -1,7 +1,8 @@
 import platform
-from daemon.dockerize import Dockerizer
 
 import pytest
+
+from daemon.dockerize import Dockerizer
 
 
 @pytest.mark.parametrize(

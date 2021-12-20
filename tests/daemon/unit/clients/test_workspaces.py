@@ -1,10 +1,10 @@
 import os
 
+import aiohttp
+
+from daemon.clients.workspaces import FormData
 from jina import __default_host__
 from jina.logging.logger import JinaLogger
-from daemon.clients.workspaces import FormData
-
-import aiohttp
 
 logger = JinaLogger('test')
 cur_dir = os.path.dirname(os.path.abspath(__file__))

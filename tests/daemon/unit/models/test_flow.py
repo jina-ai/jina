@@ -1,6 +1,6 @@
-from daemon.models import FlowModel
-
 import pytest
+
+from daemon.models import FlowModel
 
 
 def test_no_exceptions():

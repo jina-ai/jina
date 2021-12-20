@@ -1,10 +1,9 @@
 import pathlib
 
+from daemon import __root_workspace__
 from daemon.models import DaemonID
 from daemon.models.base import StoreItem
 from daemon.stores.base import BaseStore
-from daemon import __root_workspace__
-
 
 store_items = {
     DaemonID(f'jflow'): StoreItem(),

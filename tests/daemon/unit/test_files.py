@@ -1,10 +1,10 @@
 import os
 
-from jina.excepts import DaemonInvalidDockerfile
+import pytest
+
 from daemon import daemon_logger
 from daemon.files import DaemonFile, is_requirements_txt
-
-import pytest
+from jina.excepts import DaemonInvalidDockerfile
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 cur_filename = os.path.basename(__file__)

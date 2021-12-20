@@ -1,13 +1,10 @@
-import os
 import json
+import os
 import time
 
 from daemon.helper import get_workspace_path
-from daemon.models import DaemonID
-from daemon.models.containers import ContainerArguments
-
-from daemon.models import ContainerItem
-from daemon.models.containers import ContainerMetadata
+from daemon.models import ContainerItem, DaemonID
+from daemon.models.containers import ContainerArguments, ContainerMetadata
 from jina import Flow
 
 log_content = """

@@ -1,8 +1,9 @@
 import uuid
+
 import pytest
 from pydantic import BaseModel
-from daemon.models import DaemonID
 
+from daemon.models import DaemonID
 
 VALID_JTYPES = ['jflow', 'jpod', 'jpea', 'jworkspace', 'jnetwork']
 
