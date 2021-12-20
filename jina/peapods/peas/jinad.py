@@ -161,7 +161,7 @@ class JinaDProcessTarget:
             # TODO(Deepankar): probably enable an arg here?
 
     @property
-    def filepaths(self) -> List[Path]:
+    def filepaths(self) -> List[str]:
         """Get file/directories to be uploaded to remote workspace
 
         :return: filepaths to be uploaded to remote
@@ -173,7 +173,7 @@ class JinaDProcessTarget:
             for path in self.args.upload_files:
                 try:
                     fullpath = Path(complete_path(path))
-                    paths.add(fullpath)
+                    paths.add(fullpath.stem)
                 except FileNotFoundError:
                     self._logger.error(f'invalid path {path} passed')
 
