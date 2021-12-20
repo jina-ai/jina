@@ -1,5 +1,4 @@
 import copy
-import sys
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -791,6 +790,9 @@ class Pod(BasePod):
             'uses_after': None,
             'peas': {},
         }
+
+        if not getattr(args, 'uses_before', None) and len(self.needs) > 1:
+            args.reduce = True
 
         # a gateway has no heads and uses
         if self.role != PodRoleType.GATEWAY:

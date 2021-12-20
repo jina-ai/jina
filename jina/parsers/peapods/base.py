@@ -128,3 +128,10 @@ When not given, then the default naming strategy will apply.
     - ALL: all Peas poll the message (like a broadcast)
     ''',
     )
+
+    parser.add_argument(
+        '--reduce',
+        action='store_true',
+        default=False,
+        help='If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod',
+    )

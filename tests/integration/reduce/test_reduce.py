@@ -1,5 +1,4 @@
-from typing import List
-
+import numpy as np
 import pytest
 
 from jina import Document, DocumentArray, Flow, Executor, requests
@@ -98,7 +97,9 @@ class Executor1(Executor):
     @requests
     def endpoint(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.text = 'hey'
+            doc.text = 'exec1'
+            doc.modality = 'audio'
+            doc.embedding = np.zeros(3)
 
 
 class Executor2(Executor):
@@ -106,6 +107,8 @@ class Executor2(Executor):
     def endpoint(self, docs: DocumentArray, **kwargs):
         for doc in docs:
             doc.tags = {'a': 'b'}
+            doc.text = 'exec2'
+            doc.modality = 'image'
 
 
 class Executor3(Executor):
@@ -113,6 +116,7 @@ class Executor3(Executor):
     def endpoint(self, docs: DocumentArray, **kwargs):
         for doc in docs:
             doc.modality = 'text'
+            doc.text = 'exec3'
 
 
 def test_reduce_needs():
@@ -130,9 +134,27 @@ def test_reduce_needs():
 
     assert len(resp[0].docs) == 5
     for doc in resp[0].docs:
-        assert doc.text == 'hey'
+        assert doc.text == 'exec3'
         assert doc.tags == {'a': 'b'}
         assert doc.modality == 'text'
+        assert (doc.embedding == np.zeros(3)).all()
+
+
+def test_uses_before_no_reduce():
+    flow = (
+        Flow()
+        .add(uses=Executor1, name='pod0')
+        .add(uses=Executor2, needs='gateway', name='pod1')
+        .add(uses=Executor3, needs='gateway', name='pod2')
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses_before='BaseExecutor')
+    )
+
+    with flow as f:
+        da = DocumentArray([Document() for _ in range(5)])
+        resp = f.post('/', inputs=da, return_results=True)
+
+    # assert no reduce happened
+    assert len(resp[0].docs) == 15
 
 
 def test_uses_before_no_reduce():

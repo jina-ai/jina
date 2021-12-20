@@ -1,12 +1,13 @@
 from typing import Dict, List, TYPE_CHECKING
 
-from .... import __default_endpoint__
+from .... import __default_endpoint__, __default_executor__
 from ....excepts import (
     ExecutorFailToLoad,
     BadConfigSource,
 )
 from ....executors import BaseExecutor
 from .... import DocumentArray, DocumentArrayMemmap
+from ....helper import reduce
 from ....types.request.data import DataRequest
 
 if TYPE_CHECKING:
@@ -112,6 +113,14 @@ class DataRequestHandler:
         :param requests: The messages to handle containing a DataRequest
         :returns: the processed message
         """
+        if self.args.reduce and self.args.uses == __default_executor__:
+            docs = reduce(_get_docs_matrix_from_request(requests, field='docs'))
+        else:
+            docs = get_docs_from_request(
+                requests,
+                field='docs',
+            )
+
         # skip executor if endpoints mismatch
         if (
             requests[0].header.exec_endpoint not in self._executor.requests
@@ -123,17 +132,14 @@ class DataRequestHandler:
             if len(requests) > 1:
                 DataRequestHandler.replace_docs(
                     requests[0],
-                    docs=get_docs_from_request(requests, field='docs'),
+                    docs=docs,
                 )
             return requests[0]
 
         params = self._parse_params(
             requests[0].parameters.to_dict(), self._executor.metas.name
         )
-        docs = get_docs_from_request(
-            requests,
-            field='docs',
-        )
+
         # executor logic
         r_docs = self._executor(
             req_endpoint=requests[0].header.exec_endpoint,
