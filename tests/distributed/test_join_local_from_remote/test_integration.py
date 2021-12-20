@@ -8,8 +8,7 @@ from jina.clients.grpc import GRPCClient
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
 
-from ..helpers import (assert_request, create_flow, create_workspace,
-                       wait_for_workspace)
+from ..helpers import assert_request, create_flow, create_workspace, wait_for_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')

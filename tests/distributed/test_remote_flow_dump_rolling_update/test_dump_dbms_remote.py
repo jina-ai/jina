@@ -6,22 +6,23 @@ import requests
 
 from daemon.clients import JinaDClient
 from daemon.models.id import DaemonID
-from jina import Document
+from jina import Document, __default_host__
 from jina.logging.logger import JinaLogger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
-JINAD_PORT = '8000'
-JINAD_PORT_DBMS = '8001'
-JINAD_PORT_QUERY = '8001'
-REST_PORT_DBMS = '9000'
-REST_PORT_QUERY = '9001'
+JINAD_PORT = 8000
+JINAD_PORT_DBMS = 8001
+JINAD_PORT_QUERY = 8001
+REST_PORT_DBMS = 9000
+REST_PORT_QUERY = 9001
+HOST = __default_host__
 
 DUMP_PATH_DOCKER = '/workspace/dump'
 
 logger = JinaLogger('test-dump')
-client = JinaDClient(host='localhost', port=JINAD_PORT)
+client = JinaDClient(host=HOST, port=JINAD_PORT)
 
 SHARDS = 3
 EMB_SIZE = 10
@@ -121,7 +122,7 @@ def _send_rest_request(
     params=None,
     target_peapod=None,
     timeout=13,
-    ip='0.0.0.0',
+    ip=HOST,
 ):
     json = {'data': data}
     if params:
@@ -145,7 +146,7 @@ def _send_rest_request(
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
         yield Document(
-            id=i,
+            id=str(i),
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

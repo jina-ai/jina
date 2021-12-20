@@ -5,10 +5,10 @@ import pytest
 import requests
 
 from daemon.clients import JinaDClient
-from jina import Client, Document
+from jina import Client, Document, __default_host__
 
 NUM_DOCS = 10
-HOST = '54.93.57.58'
+HOST = __default_host__
 PORT = 8000
 FLOW_PORT = 12345
 cur_dir = os.path.dirname(os.path.abspath(__file__))
