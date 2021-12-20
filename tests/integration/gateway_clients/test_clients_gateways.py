@@ -36,7 +36,7 @@ def bifurcation_graph_dict():
         'pod2': ['pod3'],
         'pod4': ['pod5'],
         'pod5': ['end-gateway'],
-        'pod3': ['end-gateway'],
+        'pod3': ['pod5'],
         'pod6': [],  # hanging_pod
     }
 
@@ -69,7 +69,7 @@ def complete_graph_dict():
     return {
         'start-gateway': ['pod0', 'pod4', 'pod6'],
         'pod0': ['pod1', 'pod2'],
-        'pod1': ['end-gateway'],
+        'pod1': ['merger'],
         'pod2': ['pod3'],
         'pod4': ['pod5'],
         'merger': ['pod_last'],
@@ -98,7 +98,7 @@ class DummyMockConnectionPool:
             import random
 
             await asyncio.sleep(1 / (random.randint(1, 3) * 10))
-            return response_msg
+            return response_msg, {}
 
         return asyncio.create_task(task_wrapper())
 
@@ -203,13 +203,12 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     def client_validate(client_id: int):
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
-        assert len(responses[0].docs) == 2
+        # reducing is supposed to happen in the pods, in the test it will get a single doc in non deterministic order
+        assert len(responses[0].docs) == 1
         assert (
             responses[0].docs[0].text
             == f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
-        )
-        assert (
-            responses[0].docs[1].text
+            or responses[0].docs[0].text
             == f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
         )
 
@@ -352,22 +351,16 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     def client_validate(client_id: int):
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
-        assert len(responses[0].docs) == 2
+        assert len(responses[0].docs) == 1
+        # there are 3 incoming paths to merger, it could be any
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
+            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
+            == responses[0].docs[0].text
+            or f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
+            == responses[0].docs[0].text
+            or f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
             == responses[0].docs[0].text
         )
-
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
-            == responses[0].docs[1].text
-        )
-        pod4_path = (
-            f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
-            == responses[0].docs[1].text
-        )
-
-        assert pod2_path or pod4_path
 
     p = multiprocessing.Process(
         target=create_runtime,

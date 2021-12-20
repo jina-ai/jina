@@ -68,7 +68,7 @@ def handle_request(
         if not tasks_to_respond:
             r.end_time.GetCurrentTime()
             future = asyncio.Future()
-            future.set_result(request)
+            future.set_result((request, {}))
             tasks_to_respond.append(future)
         return asyncio.ensure_future(
             _process_results_at_end_gateway(tasks_to_respond, request_graph)
