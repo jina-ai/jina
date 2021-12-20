@@ -132,7 +132,8 @@ class TopologyGraph:
                 r = request.routes.add()
                 r.pod = self.name
                 r.start_time.FromDatetime(self.start_time)
-                r.end_time.FromDatetime(self.end_time)
+                if self.end_time:
+                    r.end_time.FromDatetime(self.end_time)
                 if self.status:
                     r.status.CopyFrom(self.status)
             for outgoing_node in self.outgoing_nodes:
