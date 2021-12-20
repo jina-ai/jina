@@ -247,10 +247,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     def _merge_metadata(self, metadata, uses_after_metadata, uses_before_metadata):
         merged_metadata = {}
         if uses_before_metadata:
-            merged_metadata.update(uses_before_metadata)
+            for key, value in uses_before_metadata:
+                merged_metadata[key] = value
         for meta in metadata:
             for key, value in meta:
                 merged_metadata[key] = value
         if uses_after_metadata:
-            merged_metadata.update(uses_after_metadata)
+            for key, value in uses_after_metadata:
+                merged_metadata[key] = value
         return merged_metadata
