@@ -1,8 +1,8 @@
-from jina import Executor, requests, DocumentArray
+from jina import DocumentArray, Executor, requests
 
-from .utils.io import ioops
-from .utils.data import dataops
 from .helper import print_something
+from .utils.data import dataops
+from .utils.io import ioops
 
 
 class DataExecutor(Executor):

@@ -1,6 +1,8 @@
 import sys
+
+from executors import SklearnExecutor, TinyDBIndexer
+
 from jina import Flow
-from executors import TinyDBIndexer, SklearnExecutor
 
 
 def main(port_expose):

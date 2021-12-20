@@ -1,7 +1,8 @@
 from pathlib import Path
 
 import requests as py_req
-from jina import Executor, requests, DocumentArray
+
+from jina import DocumentArray, Executor, requests
 
 
 class CacheValidator(Executor):

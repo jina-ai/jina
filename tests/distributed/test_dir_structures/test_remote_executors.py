@@ -1,7 +1,8 @@
 import os
 
 import pytest
-from jina import Flow, Document, __default_host__
+
+from jina import Document, Flow, __default_host__
 
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 cur_dir = os.path.dirname(os.path.abspath(__file__))

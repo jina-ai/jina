@@ -1,4 +1,4 @@
-from jina import requests, Executor
+from jina import Executor, requests
 
 
 class MergeExecutor(Executor):

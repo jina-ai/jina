@@ -1,10 +1,10 @@
-import os
-import pytest
 import asyncio
+import os
 
-from jina import __default_host__
+import pytest
+
 from daemon.clients import AsyncJinaDClient
-
+from jina import __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

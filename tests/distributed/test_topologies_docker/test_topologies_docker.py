@@ -4,8 +4,7 @@ import numpy as np
 import pytest
 
 from daemon.clients import JinaDClient
-from jina import Flow, Client, Document, __default_host__
-
+from jina import Client, Document, Flow, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

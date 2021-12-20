@@ -1,15 +1,15 @@
-from jina import Executor, requests, DocumentArray
+from jina import DocumentArray, Executor, requests
 
-from .utils.io import ioops
-from .utils.data import dataops
 from .helper import print_something
+from .utils.data import dataops
+from .utils.io import ioops
 
 
 class MyExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
-        import tinydb
         import sklearn
+        import tinydb
 
         assert tinydb, sklearn
 

@@ -1,8 +1,9 @@
-import time
-import redis
 import subprocess
+import time
 
-from jina import Executor, requests, DocumentArray, Document
+import redis
+
+from jina import Document, DocumentArray, Executor, requests
 
 
 class DummyRedisIndexer(Executor):

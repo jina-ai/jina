@@ -2,9 +2,9 @@ import os
 from contextlib import contextmanager
 
 from daemon.clients import JinaDClient
-from jina.types.request import Response
+from jina import Client, Document, Flow, __default_host__
 from jina.helper import random_identity
-from jina import Document, Client, __default_host__, Flow
+from jina.types.request import Response
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 HOST = __default_host__

@@ -1,9 +1,9 @@
 import os
 
-import pytest
 import numpy as np
+import pytest
 
-from jina import Flow, Document
+from jina import Document, Flow
 from jina.parsers import set_pod_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

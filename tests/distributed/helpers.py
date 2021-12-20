@@ -1,7 +1,7 @@
 import time
 from contextlib import ExitStack
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 import requests
 

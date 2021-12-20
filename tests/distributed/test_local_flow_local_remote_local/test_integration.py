@@ -2,8 +2,7 @@ import os
 
 import pytest
 
-from jina import Document
-from jina import Flow
+from jina import Document, Flow
 from jina.helper import get_internal_ip
 from tests import validate_callback
 

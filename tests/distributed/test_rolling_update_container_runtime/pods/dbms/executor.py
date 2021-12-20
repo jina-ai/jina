@@ -1,4 +1,4 @@
-from jina import Executor, requests, DocumentArray
+from jina import DocumentArray, Executor, requests
 from jina.logging.logger import JinaLogger
 
 

@@ -3,11 +3,11 @@ import time
 
 import numpy as np
 import pytest
-from daemon.models.id import DaemonID
 
-from jina import Document, Client, __default_host__
-from jina.logging.logger import JinaLogger
 from daemon.clients import JinaDClient
+from daemon.models.id import DaemonID
+from jina import Client, Document, __default_host__
+from jina.logging.logger import JinaLogger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')

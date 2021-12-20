@@ -1,15 +1,16 @@
+import asyncio
 import os
 import time
-import asyncio
 
 import numpy as np
 import pytest
 
-from jina.enums import RemoteWorkspaceState
-from jina import Flow, Client, Document, __default_host__
+from daemon.clients import AsyncJinaDClient, JinaDClient
 from daemon.models.id import DaemonID
 from daemon.models.workspaces import WorkspaceItem
-from daemon.clients import JinaDClient, AsyncJinaDClient
+from jina import Client, Document, Flow, __default_host__
+from jina.enums import RemoteWorkspaceState
+
 from ..helpers import assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

@@ -1,7 +1,8 @@
 import os
+
 import numpy as np
 
-from jina import Flow, __default_host__, Document
+from jina import Document, Flow, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

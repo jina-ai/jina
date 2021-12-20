@@ -1,9 +1,9 @@
 import os
-
 from typing import Optional
 
 import numpy as np
-from jina import Executor, requests, DocumentArray, Document
+
+from jina import Document, DocumentArray, Executor, requests
 from jina.logging.logger import JinaLogger
 
 

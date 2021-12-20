@@ -1,4 +1,4 @@
-from jina import requests, Executor, DocumentArray
+from jina import DocumentArray, Executor, requests
 
 
 class MWUEncoder(Executor):

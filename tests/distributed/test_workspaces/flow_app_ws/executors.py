@@ -1,7 +1,8 @@
 import numpy as np
-from tinydb import TinyDB, where
 from sklearn.utils import shuffle
-from jina import requests, Document, DocumentArray, Executor
+from tinydb import TinyDB, where
+
+from jina import Document, DocumentArray, Executor, requests
 
 
 class TinyDBIndexer(Executor):

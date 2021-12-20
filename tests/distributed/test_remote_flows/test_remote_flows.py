@@ -2,11 +2,9 @@ import os
 
 import pytest
 
-from daemon.clients import JinaDClient, AsyncJinaDClient
+from daemon.clients import AsyncJinaDClient, JinaDClient
 from daemon.models import DaemonID
-
 from jina import __default_host__
-
 
 HOST = __default_host__
 PORT = 8000

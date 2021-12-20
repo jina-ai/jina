@@ -2,9 +2,9 @@ import os
 
 import docker
 
-from jina import __default_host__
 from daemon.clients import JinaDClient
 from daemon.models.workspaces import WorkspaceItem
+from jina import __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

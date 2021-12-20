@@ -1,5 +1,4 @@
 import os
-
 from typing import Any
 
 from jina import Executor, requests

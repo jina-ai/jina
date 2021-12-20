@@ -1,23 +1,21 @@
-import os
 import asyncio
-import threading
 import multiprocessing
+import os
+import threading
 
 import pytest
 
-from daemon.clients import JinaDClient, AsyncJinaDClient
+from daemon.clients import AsyncJinaDClient, JinaDClient
 from daemon.models.id import DaemonID
-
+from jina import Client, Document, __default_host__, __docker_host__
+from jina.enums import PeaRoleType, PollingType, replace_enum_to_str
 from jina.helper import random_port
-from jina import Document, Client, __docker_host__, __default_host__
-from jina.enums import PollingType, PeaRoleType
+from jina.parsers import set_gateway_parser, set_pea_parser
+from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.peas.factory import PeaFactory
 from jina.peapods.peas.helper import is_ready
 from jina.peapods.peas.jinad import JinaDPea, JinaDProcessTarget
-from jina.enums import replace_enum_to_str
 from jina.types.message.common import ControlMessage
-from jina.parsers import set_pea_parser, set_gateway_parser
-from jina.peapods.networking import GrpcConnectionPool
 
 HOST = '127.0.0.1'
 PORT_JINAD = 8000

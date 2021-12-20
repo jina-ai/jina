@@ -1,5 +1,4 @@
 import time
-
 from typing import Any
 
 from jina import Executor, requests

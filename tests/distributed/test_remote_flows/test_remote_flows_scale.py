@@ -1,9 +1,9 @@
 import os
 import time
+
 import pytest
 
-from daemon.clients import JinaDClient, AsyncJinaDClient
-
+from daemon.clients import AsyncJinaDClient, JinaDClient
 from jina import Client, Document, DocumentArray, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

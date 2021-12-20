@@ -1,8 +1,7 @@
 import time
-
 from typing import Any
 
-from jina import Executor, requests, DocumentArray
+from jina import DocumentArray, Executor, requests
 
 
 class CustomExecutor(Executor):

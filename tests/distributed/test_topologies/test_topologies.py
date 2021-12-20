@@ -1,11 +1,11 @@
 import os
 
-import pytest
 import numpy as np
+import pytest
 
-from daemon.clients import JinaDClient
 from daemon import __partial_workspace__
-from jina import Flow, Document, Client, __default_host__
+from daemon.clients import JinaDClient
+from jina import Client, Document, Flow, __default_host__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

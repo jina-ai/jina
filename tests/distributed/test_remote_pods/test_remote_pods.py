@@ -2,13 +2,11 @@ import os
 
 import pytest
 
-from daemon.clients import JinaDClient, AsyncJinaDClient
-
+from daemon.clients import AsyncJinaDClient, JinaDClient
 from jina import __default_host__
+from jina.enums import replace_enum_to_str
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
-from jina.enums import replace_enum_to_str
-
 
 HOST = __default_host__
 PORT = 8000
