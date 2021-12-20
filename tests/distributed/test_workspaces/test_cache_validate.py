@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from daemon.clients import JinaDClient
 from jina import Client, Document, Flow, __default_host__
 from jina.helper import random_identity
-from jina.types.request import Response
+from jina.types.request.data import Response
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 HOST = __default_host__
