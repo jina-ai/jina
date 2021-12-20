@@ -12,7 +12,6 @@ from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
 from .. import jinad_args, __partial_workspace__
-from ..models import GATEWAY_RUNTIME_DICT
 from ..models.ports import Ports, PortMappings
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
@@ -242,10 +241,9 @@ class PartialFlowStore(PartialStore):
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        else:
-            self.item.arguments = vars(self.object.args)
-            self._logger.success(f'Flow is successfully scaled!')
-            return self.item
+        self.item.arguments = vars(self.object.args)
+        self._logger.success(f'Flow is successfully scaled!')
+        return self.item
 
     async def _scale(
         self,
