@@ -77,7 +77,7 @@ html_css_files = [
     'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
 ]
-html_js_files = ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js', 'docbot.js']
+html_js_files = []
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_favicon = '_static/favicon.ico'
@@ -183,14 +183,19 @@ ogp_custom_meta_tags = [
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.1.1"></script>
     ''',
 ]
 
 
-def add_server_address(app):
-    # This makes variable `server_address` available to docbot.js
+def set_qa_server_address(app):
+    # This sets the server address to <qa-bot>
     server_address = app.config['server_address']
-    js_text = "var server_address = '%s';" % server_address
+    js_text = """
+        document.addEventListener("DOMContentLoaded", function() { 
+            document.querySelector("qa-bot").setAttribute("server", "%s");
+        });
+        """ % server_address
     app.add_js_file(None, body=js_text)
 
 
@@ -225,4 +230,4 @@ def setup(app):
         default=os.getenv('JINA_DOCSBOT_SERVER', 'https://docsbot.jina.ai'),
         rebuild='',
     )
-    app.connect('builder-inited', add_server_address)
+    app.connect('builder-inited', set_qa_server_address)
