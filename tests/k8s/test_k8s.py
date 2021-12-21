@@ -162,7 +162,7 @@ def k8s_flow_with_needs(docker_images, k8s_connection_pool):
         )
         .add(
             name='merger',
-            uses=docker_images[1],
+            uses_before=docker_images[1],
             timeout_ready=120000,
             needs=['imageencoder', 'textencoder'],
             k8s_connection_pool=k8s_connection_pool,

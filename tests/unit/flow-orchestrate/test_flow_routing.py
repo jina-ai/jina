@@ -17,8 +17,8 @@ def test_simple_routing():
 class MergeExecutor(Executor):
     @requests
     def add_text(self, docs, docs_matrix, **kwargs):
-        if {docs[0].text, docs[1].text} == {'Hello World!', '1'}:
-            docs[0].text = str(len(docs_matrix))
+        if len(docs) == 1:
+            docs[0].text = 'merged'
 
 
 def test_expected_messages_routing():
@@ -30,17 +30,18 @@ def test_expected_messages_routing():
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert results[0].docs[0].text == '2'
+        assert len(results[0].docs) == 1
+        assert results[0].docs[0].text == 'merged'
 
 
-class SimplAddExecutor(Executor):
+class SimpleAddExecutor(Executor):
     @requests
     def add_doc(self, docs, **kwargs):
         docs.append(Document(text=self.runtime_args.name))
 
 
 def test_shards():
-    f = Flow().add(uses=SimplAddExecutor, shards=2)
+    f = Flow().add(uses=SimpleAddExecutor, shards=2)
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
@@ -56,17 +57,17 @@ class MergeDocsExecutor(Executor):
 def test_complex_flow():
     f = (
         Flow()
-        .add(name='first', uses=SimplAddExecutor, needs=['gateway'])
-        .add(name='forth', uses=SimplAddExecutor, needs=['first'], shards=2)
+        .add(name='first', uses=SimpleAddExecutor, needs=['gateway'])
+        .add(name='forth', uses=SimpleAddExecutor, needs=['first'], shards=2)
         .add(
             name='second_shards_needs',
-            uses=SimplAddExecutor,
+            uses=SimpleAddExecutor,
             needs=['gateway'],
             shards=2,
         )
         .add(
             name='third',
-            uses=SimplAddExecutor,
+            uses=SimpleAddExecutor,
             shards=3,
             needs=['second_shards_needs'],
         )
@@ -75,4 +76,4 @@ def test_complex_flow():
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-    assert len(results[0].docs) == 6
+    assert len(results[0].docs) == 5

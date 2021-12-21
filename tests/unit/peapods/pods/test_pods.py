@@ -281,7 +281,7 @@ def test_pod_activates_shards():
             f'{pod.head_args.host}:{pod.head_args.port_in}',
         )
         response_texts.update(response.response.docs.texts)
-        assert 6 == len(response.response.docs.texts)
+        assert 4 == len(response.response.docs.texts)
         assert 4 == len(response_texts)
         assert all(text in response_texts for text in ['0', '1', '2', 'client'])
 
