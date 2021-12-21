@@ -5,17 +5,20 @@ import time
 from multiprocessing import Process
 from threading import Event
 
+import grpc
 import pytest
 
+from docarray import Document
 from jina import DocumentArray
 from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
 from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.peapods.runtimes.request_handlers.data_request_handler import (
+    DataRequestHandler,
+)
 from jina.peapods.runtimes.worker import WorkerRuntime
-from jina.proto.jina_pb2 import DocumentArrayProto
-from jina.types.document import Document
-from jina.types.request.data import DataRequest
+from jina.proto import jina_pb2_grpc, jina_pb2
 
 
 @pytest.mark.slow
@@ -42,11 +45,61 @@ def test_worker_runtime():
         ready_or_shutdown_event=Event(),
     )
 
-    response = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(),
-        f'{args.host}:{args.port_in}',
+    target = f'{args.host}:{args.port_in}'
+    with grpc.insecure_channel(
+        target,
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(_create_test_data_message())
+
+    cancel_event.set()
+    runtime_thread.join()
+
+    assert response
+
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
+
+
+@pytest.mark.slow
+@pytest.mark.timeout(10)
+def test_error_in_worker_runtime(monkeypatch):
+    args = set_pea_parser().parse_args([])
+
+    cancel_event = multiprocessing.Event()
+
+    def fail(*args, **kwargs):
+        raise RuntimeError('intentional error')
+
+    monkeypatch.setattr(DataRequestHandler, 'handle', fail)
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port_in}',
+        ready_or_shutdown_event=Event(),
     )
 
+    target = f'{args.host}:{args.port_in}'
+    with grpc.insecure_channel(
+        target,
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(_create_test_data_message())
+
+    assert response.header.status.code == jina_pb2.StatusProto.ERROR
+    assert 'is-error' in dict(call.trailing_metadata())
     cancel_event.set()
     runtime_thread.join()
 
@@ -98,9 +151,12 @@ async def test_worker_runtime_graceful_shutdown():
 
     async def task_wrapper(adress, messages_received):
         request = _create_test_data_message(len(messages_received))
-        data_stub, control_stub, channel = GrpcConnectionPool.create_async_channel_stub(
-            adress
-        )
+        (
+            single_data_stub,
+            data_stub,
+            control_stub,
+            channel,
+        ) = GrpcConnectionPool.create_async_channel_stub(adress)
         await data_stub.process_data(request)
         await channel.close()
         messages_received.append(request)

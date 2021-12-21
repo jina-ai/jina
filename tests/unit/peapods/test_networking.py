@@ -194,6 +194,7 @@ async def _mock_grpc(mocker, monkeypatch):
     close_mock_object = mocker.Mock()
     channel_mock = mocker.Mock()
     data_stub_mock = mocker.Mock()
+    single_data_stub_mock = mocker.Mock()
     control_stub_mock = mocker.Mock()
 
     async def close_mock(*args):
@@ -202,7 +203,7 @@ async def _mock_grpc(mocker, monkeypatch):
     def create_async_channel_mock(*args):
         create_mock()
         channel_mock.close = close_mock
-        return data_stub_mock, control_stub_mock, channel_mock
+        return single_data_stub_mock, data_stub_mock, control_stub_mock, channel_mock
 
     monkeypatch.setattr(
         GrpcConnectionPool, 'create_async_channel_stub', create_async_channel_mock
@@ -277,10 +278,10 @@ async def test_grpc_connection_pool_real_sending():
     assert len(results_call_1) == 1
     assert len(results_call_2) == 1
 
-    response1 = await results_call_1[0]
+    response1, meta = await results_call_1[0]
     assert response1.command == 'DEACTIVATE'
 
-    response2 = await results_call_2[0]
+    response2, meta = await results_call_2[0]
     assert response2.command == 'DEACTIVATE'
 
     await pool.close()

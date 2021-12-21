@@ -5,7 +5,7 @@ import multiprocessing
 import os
 import threading
 from abc import ABC
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Tuple, Dict
 
 import grpc
 
@@ -92,6 +92,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ]
         )
 
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self, self._grpc_server
+        )
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
@@ -117,16 +120,28 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         await self.async_cancel()
         await self.connection_pool.close()
 
-    async def process_data(self, requests: List[DataRequest], *args) -> DataRequest:
+    async def process_single_data(self, request: DataRequest, context) -> DataRequest:
+        """
+        Process the received requests and return the result as a new request
+
+        :param request: the data request to process
+        :param context: grpc context
+        :returns: the response request
+        """
+        return await self.process_data([request], context)
+
+    async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received data request and return the result as a new request
 
         :param requests: the data requests to process
-        :param args: additional arguments in the grpc call, ignored
+        :param context: grpc context
         :returns: the response request
         """
         try:
-            return await self._handle_data_request(requests)
+            response, metadata = await self._handle_data_request(requests)
+            context.set_trailing_metadata(metadata.items())
+            return response
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
@@ -178,18 +193,22 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
             raise
 
-    async def _handle_data_request(self, requests: List[DataRequest]) -> DataRequest:
-        if self.logger.debug_enabled:
-            self._log_data_request(requests[0])
+    async def _handle_data_request(
+        self, requests: List[DataRequest]
+    ) -> Tuple[DataRequest, Dict]:
+        self.logger.debug(f'recv {len(requests)} DataRequest(s)')
 
         DataRequestHandler.merge_routes(requests)
 
+        uses_before_metadata = None
         if self.uses_before_address:
-            requests = [
-                await self.connection_pool.send_requests_once(
-                    requests, pod='uses_before'
-                )
-            ]
+            (
+                response,
+                uses_before_metadata,
+            ) = await self.connection_pool.send_requests_once(
+                requests, pod='uses_before'
+            )
+            requests = [response]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests, pod=self._pod_name, polling_type=self.polling
@@ -202,9 +221,15 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 f'Head {self.name} did not receive a response when sending message to worker peas'
             )
 
+        worker_results, metadata = zip(*worker_results)
+
         response_request = worker_results[0]
+        uses_after_metadata = None
         if self.uses_after_address:
-            response_request = await self.connection_pool.send_requests_once(
+            (
+                response_request,
+                uses_after_metadata,
+            ) = await self.connection_pool.send_requests_once(
                 worker_results, pod='uses_after'
             )
         elif len(worker_results) > 1:
@@ -213,4 +238,21 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 docs=get_docs_from_request(worker_results, field='docs'),
             )
 
-        return response_request
+        merged_metadata = self._merge_metadata(
+            metadata, uses_after_metadata, uses_before_metadata
+        )
+
+        return response_request, merged_metadata
+
+    def _merge_metadata(self, metadata, uses_after_metadata, uses_before_metadata):
+        merged_metadata = {}
+        if uses_before_metadata:
+            for key, value in uses_before_metadata:
+                merged_metadata[key] = value
+        for meta in metadata:
+            for key, value in meta:
+                merged_metadata[key] = value
+        if uses_after_metadata:
+            for key, value in uses_after_metadata:
+                merged_metadata[key] = value
+        return merged_metadata
