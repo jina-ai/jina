@@ -143,7 +143,7 @@ async def test_peas_flow_topology(
         pea.close()
 
     assert len(response_list) == 20
-    assert len(response_list[0].docs) == 3
+    assert len(response_list[0].docs) == 1
 
 
 @pytest.mark.asyncio

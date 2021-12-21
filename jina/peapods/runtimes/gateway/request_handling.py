@@ -49,35 +49,30 @@ def handle_request(
                 tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
                 tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
 
-        async def _merge_results_at_end_gateway(
-            tasks: List[asyncio.Task],
+        async def _process_results_at_end_gateway(
+            tasks: List[asyncio.Task], request_graph: TopologyGraph
         ) -> asyncio.Future:
-            from .... import DocumentArray
 
-            # TODO: Should the order be deterministic by the graph structure, or depending on the response speed?
             partial_responses = await asyncio.gather(*tasks)
-            # when merging comes, one task may return None
+            partial_responses, metadatas = zip(*partial_responses)
             filtered_partial_responses = list(
                 filter(lambda x: x is not None, partial_responses)
             )
-            if len(filtered_partial_responses) > 1:
-                docs = DocumentArray(
-                    [d for r in filtered_partial_responses for d in getattr(r, 'docs')]
-                )
-                filtered_partial_responses[0].docs.clear()
-                filtered_partial_responses[0].docs.extend(docs)
 
-                DataRequestHandler.merge_routes(filtered_partial_responses)
+            response = filtered_partial_responses[0]
+            request_graph.add_routes(response)
 
-            return filtered_partial_responses[0]
+            return response
 
         # In case of empty topologies
         if not tasks_to_respond:
             r.end_time.GetCurrentTime()
             future = asyncio.Future()
-            future.set_result(request)
+            future.set_result((request, {}))
             tasks_to_respond.append(future)
-        return asyncio.ensure_future(_merge_results_at_end_gateway(tasks_to_respond))
+        return asyncio.ensure_future(
+            _process_results_at_end_gateway(tasks_to_respond, request_graph)
+        )
 
     return _handle_request
 

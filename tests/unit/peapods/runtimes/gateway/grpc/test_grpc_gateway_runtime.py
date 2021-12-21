@@ -71,7 +71,7 @@ def bifurcation_graph_dict():
         'pod2': ['pod3'],
         'pod4': ['pod5'],
         'pod5': ['end-gateway'],
-        'pod3': ['end-gateway'],
+        'pod3': ['pod5'],
         'pod6': [],  # hanging_pod
     }
 
@@ -104,7 +104,7 @@ def complete_graph_dict():
     return {
         'start-gateway': ['pod0', 'pod4', 'pod6'],
         'pod0': ['pod1', 'pod2'],
-        'pod1': ['end-gateway'],
+        'pod1': ['merger'],
         'pod2': ['pod3'],
         'pod4': ['pod5'],
         'merger': ['pod_last'],
@@ -132,7 +132,7 @@ class DummyMockConnectionPool:
             import random
 
             await asyncio.sleep(1 / (random.randint(1, 3) * 10))
-            return response_msg
+            return response_msg, {}
 
         return asyncio.create_task(task_wrapper())
 
@@ -217,12 +217,12 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
 
             responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 2
+        assert len(responses[0].docs) == 1
         assert (
             responses[0].docs[0].text
             == f'client0-Request-client0-pod0-client0-pod2-client0-pod3'
+            or responses[0].docs[0].text == f'client0-Request-client0-pod4-client0-pod5'
         )
-        assert responses[0].docs[1].text == f'client0-Request-client0-pod4-client0-pod5'
 
     p = Process(target=process_wrapper)
     p.start()
@@ -369,19 +369,21 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
 
             responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 2
-        assert f'client0-Request-client0-pod0-client0-pod1' == responses[0].docs[0].text
-
+        assert len(responses[0].docs) == 1
         pod2_path = (
             f'client0-Request-client0-pod0-client0-pod2-client0-pod3-client0-merger-client0-pod_last'
-            == responses[0].docs[1].text
+            == responses[0].docs[0].text
         )
         pod4_path = (
             f'client0-Request-client0-pod4-client0-pod5-client0-merger-client0-pod_last'
-            == responses[0].docs[1].text
+            == responses[0].docs[0].text
         )
-
-        assert pod2_path or pod4_path
+        assert (
+            f'client0-Request-client0-pod0-client0-pod1-client0-merger-client0-pod_last'
+            == responses[0].docs[0].text
+            or pod2_path
+            or pod4_path
+        )
 
     p = Process(target=process_wrapper)
     p.start()
