@@ -62,7 +62,7 @@ def test_cache_validate_remote_executor():
     f = Flow().add(
         uses=CacheValidator,
         host='localhost:8000',
-        py_modules='cache_validator.py',
+        py_modules=['cache_validator.py'],
         upload_files=cur_dir,
         workspace_id=workspace_id,
     )
@@ -76,7 +76,7 @@ def test_cache_validate_remote_executor():
     f = Flow().add(
         uses=CacheValidator,
         host='localhost:8000',
-        py_modules='cache_validator.py',
+        py_modules=['cache_validator.py'],
         upload_files=cur_dir,
         workspace_id=workspace_id,
     )

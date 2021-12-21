@@ -40,7 +40,7 @@ def test_upload_via_pymodule(replicas):
             uses_with={'greetings': 'hi'},
             host=CLOUD_HOST,
             replicas=replicas,
-            py_modules='mwu_encoder.py',
+            py_modules=['mwu_encoder.py'],
             upload_files=cur_dir,
         )
         .add()
@@ -90,16 +90,16 @@ def test_upload_multiple_workspaces(replicas):
             uses='sklearn.yml',
             host=CLOUD_HOST,
             replicas=replicas,
-            py_modules='encoder.py',
-            upload_files=encoder_workspace,
+            py_modules=['encoder.py'],
+            upload_files=[encoder_workspace],
         )
         .add(
             name='tdb_indexer',
             uses='tdb.yml',
             host=CLOUD_HOST,
             replicas=replicas,
-            py_modules='tdb_indexer.py',
-            upload_files=indexer_workspace,
+            py_modules=['tdb_indexer.py'],
+            upload_files=[indexer_workspace],
         )
     )
     with f:
