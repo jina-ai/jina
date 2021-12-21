@@ -119,13 +119,10 @@ class DataRequestHandler:
         :param requests: The messages to handle containing a DataRequest
         :returns: the processed message
         """
-        if self.args.reduce and self.args.uses == __default_executor__:
-            docs = reduce(get_docs_matrix_from_request(requests, field='docs'))
-        else:
-            docs = get_docs_from_request(
-                requests,
-                field='docs',
-            )
+        docs = get_docs_from_request(
+            requests,
+            field='docs',
+        )
 
         # skip executor if endpoints mismatch
         if (

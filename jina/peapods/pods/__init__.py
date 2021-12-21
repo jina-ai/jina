@@ -791,9 +791,6 @@ class Pod(BasePod):
             'peas': {},
         }
 
-        if not getattr(args, 'uses_before', None) and len(self.needs) > 1:
-            args.reduce = True
-
         # a gateway has no heads and uses
         if self.role != PodRoleType.GATEWAY:
             if (

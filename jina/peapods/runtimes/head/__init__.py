@@ -211,6 +211,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 requests, pod='uses_before'
             )
             requests = [response]
+        elif len(requests) > 1:
+            docs_matrix = get_docs_matrix_from_request(requests, field='docs')
+
+            # Reduction is applied in-place to the first DocumentArray in the matrix
+            reduce(docs_matrix)
+            requests = requests[:1]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests, pod=self._pod_name, polling_type=self.polling
