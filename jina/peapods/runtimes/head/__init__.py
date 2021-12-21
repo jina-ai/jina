@@ -10,14 +10,9 @@ from typing import Optional, Union, List, Tuple, Dict
 import grpc
 
 from ..asyncio import AsyncNewLoopRuntime
-from ..request_handlers.data_request_handler import (
-    DataRequestHandler,
-    get_docs_from_request,
-    get_docs_matrix_from_request,
-)
+from ..request_handlers.data_request_handler import DataRequestHandler
 from ...networking import create_connection_pool, K8sGrpcConnectionPool
 from ....enums import PollingType
-from ....helper import reduce
 from ....proto import jina_pb2_grpc
 from ....types.request.control import ControlRequest
 from ....types.request.data import DataRequest
@@ -212,11 +207,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
             requests = [response]
         elif len(requests) > 1:
-            docs_matrix = get_docs_matrix_from_request(requests, field='docs')
-
-            # Reduction is applied in-place to the first DocumentArray in the matrix
-            reduce(docs_matrix)
-            requests = requests[:1]
+            requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests, pod=self._pod_name, polling_type=self.polling
@@ -241,10 +232,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 worker_results, pod='uses_after'
             )
         elif len(worker_results) > 1:
-            docs_matrix = get_docs_matrix_from_request(worker_results, field='docs')
-
-            # Reduction is applied in-place to the first DocumentArray in the matrix
-            reduce(docs_matrix)
+            DataRequestHandler.reduce_requests(worker_results)
 
         merged_metadata = self._merge_metadata(
             metadata, uses_after_metadata, uses_before_metadata

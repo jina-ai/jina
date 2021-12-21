@@ -55,7 +55,6 @@ __all__ = [
     'get_readable_size',
     'get_or_reuse_loop',
     'T',
-    'reduce',
 ]
 
 
@@ -1424,31 +1423,3 @@ def get_request_header() -> Dict:
         **envs,
     }
     return header
-
-
-def reduce(docs_matrix: List['DocumentArray']) -> Optional['DocumentArray']:
-    """
-    Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first
-    DocumentArray in-place.
-
-    Reduction consists in reducing every DocumentArray in `docs_matrix` sequentially using
-    :class:`DocumentArray`.:method:`reduce`.
-    The resulting DocumentArray contains Documents of all DocumentArrays.
-    If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
-    DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
-    attribute value of the left-most DocumentArray is kept).
-    Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
-    Other non-data properties are ignored.
-
-    .. note::
-        - Matches are not kept in a sorted order when they are reduced. You might want to re-sort them in a later
-            step.
-        - The final result depends on the order of DocumentArrays when applying reduction.
-
-    :param docs_matrix: List of DocumentArrays to be reduced
-    :return: the resulting DocumentArray
-    """
-    if docs_matrix:
-        da = docs_matrix[0]
-        da.reduce_all(docs_matrix[1:])
-        return da
