@@ -15,8 +15,8 @@ compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 JINAD_PORT = 8000
 JINAD_PORT_DBMS = 8001
 JINAD_PORT_QUERY = 8001
-REST_PORT_DBMS = 9000
-REST_PORT_QUERY = 9001
+REST_PORT_DBMS = 9007
+REST_PORT_QUERY = 9008
 HOST = __default_host__
 
 DUMP_PATH_DOCKER = '/workspace/dump'
@@ -60,7 +60,7 @@ def test_dump_dbms_remote(docker_compose):
         REST_PORT_QUERY,
         'search',
         'post',
-        [doc.dict() for doc in docs[:nr_search]],
+        [doc.to_dict() for doc in docs[:nr_search]],
     )
     # TODO some times it was None
     assert (
@@ -68,7 +68,7 @@ def test_dump_dbms_remote(docker_compose):
         or r['data']['docs'][0].get('matches') == []
     )
 
-    _send_rest_request(REST_PORT_DBMS, 'index', 'post', [doc.dict() for doc in docs])
+    _send_rest_request(REST_PORT_DBMS, 'index', 'post', [doc.to_dict() for doc in docs])
 
     _send_rest_request(
         REST_PORT_DBMS,
@@ -102,7 +102,7 @@ def test_dump_dbms_remote(docker_compose):
         REST_PORT_QUERY,
         'search',
         'post',
-        [doc.dict() for doc in docs[:nr_search]],
+        [doc.to_dict() for doc in docs[:nr_search]],
         params={'top_k': 100},
     )
     for doc in r['data']['docs']:

@@ -2,7 +2,7 @@ jtype: Flow
 version: '1'
 with:
   protocol: http
-  port_expose: 9001
+  port_expose: 9008
   cors: true
 executors:
   - name: indexer_query
