@@ -1,7 +1,7 @@
 import asyncio
 import ipaddress
 from threading import Thread
-from typing import Optional, List, Dict, TYPE_CHECKING, Tuple, Type
+from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
 
 import grpc
 from grpc.aio import AioRpcError
@@ -37,13 +37,14 @@ class ReplicaList:
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
             (
+                single_data_stub,
                 data_stub,
                 control_stub,
                 channel,
             ) = GrpcConnectionPool.create_async_channel_stub(address)
             self._address_to_channel[address] = channel
 
-            self._connections.append((data_stub, control_stub))
+            self._connections.append((single_data_stub, data_stub, control_stub))
 
     async def remove_connection(self, address: str):
         """
@@ -407,10 +408,28 @@ class GrpcConnectionPool:
 
             for i in range(3):
                 try:
-                    if type(requests[0]) == DataRequest:
-                        return await stubs[0].process_data(requests)
-                    elif type(requests[0]) == ControlRequest:
-                        return await stubs[1].process_control(requests[0])
+                    request_type = type(requests[0])
+                    if request_type == DataRequest and len(requests) == 1:
+                        call_result = stubs[0].process_single_data(requests[0])
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                        return response, metadata
+                    if request_type == DataRequest and len(requests) > 1:
+                        call_result = stubs[1].process_data(requests)
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                        return response, metadata
+                    elif request_type == ControlRequest:
+                        call_result = stubs[2].process_control(requests[0])
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                        return response, metadata
                     else:
                         raise ValueError(
                             f'Unsupported request type {type(requests[0])}'
@@ -516,8 +535,8 @@ class GrpcConnectionPool:
                     options=GrpcConnectionPool.get_default_grpc_options(),
                 ) as channel:
                     if type(request) == DataRequest:
-                        stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-                        response = stub.process_data([request], timeout=timeout)
+                        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+                        response = stub.process_single_data(request, timeout=timeout)
                     elif type(request) == ControlRequest:
                         stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
                         response = stub.process_control(request, timeout=timeout)
@@ -553,8 +572,8 @@ class GrpcConnectionPool:
             target, options=GrpcConnectionPool.get_default_grpc_options()
         ) as channel:
             if type(request) == DataRequest:
-                stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
-                return await stub.process_data([request], timeout=timeout)
+                stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+                return await stub.process_single_data(request, timeout=timeout)
             elif type(request) == ControlRequest:
                 stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
                 return await stub.process_control(request, timeout=timeout)
@@ -563,6 +582,7 @@ class GrpcConnectionPool:
     def create_async_channel_stub(
         address,
     ) -> Tuple[
+        jina_pb2_grpc.JinaSingleDataRequestRPCStub,
         jina_pb2_grpc.JinaDataRequestRPCStub,
         jina_pb2_grpc.JinaControlRequestRPCStub,
         grpc.aio.insecure_channel,
@@ -579,6 +599,7 @@ class GrpcConnectionPool:
             options=GrpcConnectionPool.get_default_grpc_options(),
         )
         return (
+            jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel),
             jina_pb2_grpc.JinaDataRequestRPCStub(channel),
             jina_pb2_grpc.JinaControlRequestRPCStub(channel),
             channel,
