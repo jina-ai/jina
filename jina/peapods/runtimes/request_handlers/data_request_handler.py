@@ -119,11 +119,6 @@ class DataRequestHandler:
         :param requests: The messages to handle containing a DataRequest
         :returns: the processed message
         """
-        docs = get_docs_from_request(
-            requests,
-            field='docs',
-        )
-
         # skip executor if endpoints mismatch
         if (
             requests[0].header.exec_endpoint not in self._executor.requests
@@ -137,11 +132,15 @@ class DataRequestHandler:
         params = self._parse_params(
             requests[0].parameters.to_dict(), self._executor.metas.name
         )
+        docs = get_docs_from_request(
+            requests,
+            field='docs',
+        )
 
         # executor logic
         r_docs = self._executor(
             req_endpoint=requests[0].header.exec_endpoint,
-            docs=docs,
+            docs=get_docs_from_request(requests, field='docs'),
             parameters=params,
             docs_matrix=get_docs_matrix_from_request(
                 requests,
