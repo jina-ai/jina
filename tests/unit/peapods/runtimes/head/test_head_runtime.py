@@ -85,7 +85,7 @@ def test_message_merging():
     )
     assert result
     assert handle_queue.qsize() == 3
-    assert len(result.response.docs) == 3
+    assert len(result.response.docs) == 1
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
