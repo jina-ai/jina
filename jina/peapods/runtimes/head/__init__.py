@@ -232,7 +232,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         ):
             docs_matrix = get_docs_matrix_from_request(worker_results, field='docs')
             docs = reduce(docs_matrix)
-        else:
+        elif len(worker_results) > 1:
             docs = get_docs_from_request(worker_results, field='docs')
 
         response_request = worker_results[0]
