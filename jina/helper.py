@@ -57,6 +57,10 @@ __all__ = [
     'T',
 ]
 
+
+if TYPE_CHECKING:
+    from docarray import DocumentArray
+
 T = TypeVar('T')
 
 

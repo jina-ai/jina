@@ -1,6 +1,6 @@
-from typing import Dict, List, TYPE_CHECKING
+from typing import Dict, List, TYPE_CHECKING, Optional
 
-from .... import __default_endpoint__
+from .... import __default_endpoint__, __default_executor__
 from ....excepts import (
     ExecutorFailToLoad,
     BadConfigSource,
@@ -12,48 +12,6 @@ from ....types.request.data import DataRequest
 if TYPE_CHECKING:
     import argparse
     from ....logging.logger import JinaLogger
-
-
-def _get_docs_matrix_from_request(
-    requests: List['DataRequest'],
-    field: str,
-) -> List['DocumentArray']:
-    if len(requests) > 1:
-        result = [getattr(request, field) for request in reversed(requests)]
-    else:
-        result = [getattr(requests[0], field)]
-
-    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-    # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
-    len_r = sum(len(r) for r in result)
-    if len_r:
-        return result
-
-
-def get_docs_from_request(
-    requests: List['DataRequest'],
-    field: str,
-) -> 'DocumentArray':
-    """
-    Gets a field from the message
-
-    :param requests: requests to get the field from
-    :param field: field name to access
-
-    :returns: DocumentArray extraced from the field from all messages
-    """
-    if len(requests) > 1:
-        result = DocumentArray(
-            [
-                d
-                for r in reversed([request for request in requests])
-                for d in getattr(r, field)
-            ]
-        )
-    else:
-        result = getattr(requests[0], field)
-
-    return result
 
 
 class DataRequestHandler:
@@ -120,34 +78,30 @@ class DataRequestHandler:
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            if len(requests) > 1:
-                DataRequestHandler.replace_docs(
-                    requests[0],
-                    docs=get_docs_from_request(requests, field='docs'),
-                )
             return requests[0]
 
         params = self._parse_params(
             requests[0].parameters.to_dict(), self._executor.metas.name
         )
-        docs = get_docs_from_request(
+        docs = DataRequestHandler.get_docs_from_request(
             requests,
             field='docs',
         )
+
         # executor logic
         r_docs = self._executor(
             req_endpoint=requests[0].header.exec_endpoint,
-            docs=docs,
+            docs=DataRequestHandler.get_docs_from_request(requests, field='docs'),
             parameters=params,
-            docs_matrix=_get_docs_matrix_from_request(
+            docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
             ),
-            groundtruths=get_docs_from_request(
+            groundtruths=DataRequestHandler.get_docs_from_request(
                 requests,
                 field='groundtruths',
             ),
-            groundtruths_matrix=_get_docs_matrix_from_request(
+            groundtruths_matrix=DataRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='groundtruths',
             ),
@@ -204,3 +158,100 @@ class DataRequestHandler:
         if not self._is_closed:
             self._executor.close()
             self._is_closed = True
+
+    @staticmethod
+    def get_docs_matrix_from_request(
+        requests: List['DataRequest'],
+        field: str,
+    ) -> List['DocumentArray']:
+        """
+        Returns a docs matrix from a list of DataRequest objects.
+        :param requests: List of DataRequest objects
+        :param field: field to be retrieved
+        :return: docs matrix: list of DocumentArray objects
+        """
+        if len(requests) > 1:
+            result = [getattr(request, field) for request in requests]
+        else:
+            result = [getattr(requests[0], field)]
+
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+        len_r = sum(len(r) for r in result)
+        if len_r:
+            return result
+
+    @staticmethod
+    def get_docs_from_request(
+        requests: List['DataRequest'],
+        field: str,
+    ) -> 'DocumentArray':
+        """
+        Gets a field from the message
+
+        :param requests: requests to get the field from
+        :param field: field name to access
+
+        :returns: DocumentArray extraced from the field from all messages
+        """
+        if len(requests) > 1:
+            result = DocumentArray(
+                [
+                    d
+                    for r in reversed([request for request in requests])
+                    for d in getattr(r, field)
+                ]
+            )
+        else:
+            result = getattr(requests[0], field)
+
+        return result
+
+    @staticmethod
+    def reduce(docs_matrix: List['DocumentArray']) -> Optional['DocumentArray']:
+        """
+        Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first
+        DocumentArray in-place.
+
+        Reduction consists in reducing every DocumentArray in `docs_matrix` sequentially using
+        :class:`DocumentArray`.:method:`reduce`.
+        The resulting DocumentArray contains Documents of all DocumentArrays.
+        If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
+        DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
+        attribute value of the left-most DocumentArray is kept).
+        Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
+        Other non-data properties are ignored.
+
+        .. note::
+            - Matches are not kept in a sorted order when they are reduced. You might want to re-sort them in a later
+                step.
+            - The final result depends on the order of DocumentArrays when applying reduction.
+
+        :param docs_matrix: List of DocumentArrays to be reduced
+        :return: the resulting DocumentArray
+        """
+        if docs_matrix:
+            da = docs_matrix[0]
+            da.reduce_all(docs_matrix[1:])
+            return da
+
+    @staticmethod
+    def reduce_requests(requests: List['DataRequest']) -> 'DataRequest':
+        """
+        Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first
+        request object in-place.
+
+        Reduction consists in reducing every DocumentArray in `requests` sequentially using
+        :class:`DocumentArray`.:method:`reduce`.
+        The resulting DataRequest object contains Documents of all DocumentArrays inside requests.
+
+        :param requests: List of DataRequest objects
+        :return: the resulting DataRequest
+        """
+        docs_matrix = DataRequestHandler.get_docs_matrix_from_request(
+            requests, field='docs'
+        )
+
+        # Reduction is applied in-place to the first DocumentArray in the matrix
+        DataRequestHandler.reduce(docs_matrix)
+        return requests[0]
