@@ -491,7 +491,7 @@ class DummyMockConnectionPool:
             import random
 
             await asyncio.sleep(1 / (random.randint(1, 3) * 10))
-            return response_msg
+            return response_msg, {}
 
         return asyncio.create_task(task_wrapper())
 
@@ -514,7 +514,8 @@ class DummyMockGatewayRuntime:
             tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
             tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
         resp = await asyncio.gather(*tasks_to_respond)
-        return client_id, resp
+        response, _ = zip(*resp)
+        return client_id, response
 
 
 def create_req_from_text(text: str):

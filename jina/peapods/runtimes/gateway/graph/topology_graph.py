@@ -1,9 +1,9 @@
 import asyncio
 
 from collections import defaultdict
+from datetime import datetime
 from typing import List, Optional, Dict, Tuple
 
-from .....proto import jina_pb2
 from ....networking import GrpcConnectionPool
 from .....types.request.data import DataRequest
 
@@ -25,6 +25,9 @@ class TopologyGraph:
             self.number_of_parts = number_of_parts
             self.hanging = hanging
             self.parts_to_send = []
+            self.start_time = None
+            self.end_time = None
+            self.status = None
 
         @property
         def leaf(self):
@@ -36,37 +39,25 @@ class TopologyGraph:
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
         ):
+            metadata = {}
             if previous_task is not None:
-                request = await previous_task
-            if (
-                request is not None
-                and request.header.status.code == jina_pb2.StatusProto.ERROR
-            ):
-                if request.routes and request.routes[-1].pod != 'gateway':
-                    request.routes[-1].end_time.GetCurrentTime()
-                    request.routes[-1].status.CopyFrom(request.header.status)
-                return request
+                result = await previous_task
+                request, metadata = result[0], result[1]
+            if 'is-error' in metadata:
+                return request, metadata
             elif request is not None:
                 self.parts_to_send.append(request)
-                if request.routes and request.routes[-1].pod != 'gateway':
-                    request.routes[-1].end_time.GetCurrentTime()
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
-                    for request in self.parts_to_send:
-                        r = request.routes.add()
-                        r.pod = self.name
-                        r.start_time.GetCurrentTime()
-                    resp = await connection_pool.send_requests_once(
+                    self.start_time = datetime.utcnow()
+                    resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send, pod=self.name, head=True
                     )
-                    for route in resp.response.routes:
-                        if route.pod == self.name:
-                            if resp.header.status.code == jina_pb2.StatusProto.ERROR:
-                                route.status.CopyFrom(resp.header.status)
-                            route.end_time.GetCurrentTime()
-                            break
-                    return resp
-            return None
+                    self.end_time = datetime.utcnow()
+                    if 'is-error' in metadata:
+                        self.status = resp.header.status
+                    return resp, metadata
+            return None, {}
 
         def get_leaf_tasks(
             self,
@@ -122,6 +113,33 @@ class TopologyGraph:
 
             return hanging_tasks_tuples
 
+        def add_route(self, request: 'DataRequest'):
+            """
+             Add routes to the DataRequest based on the state of request processing
+
+             :param request: the request to add the routes to
+            :return: modified request with added routes
+            """
+
+            def _find_route(request):
+                for r in request.routes:
+                    if r.pod == self.name:
+                        return r
+                return None
+
+            r = _find_route(request)
+            if r is None and self.start_time:
+                r = request.routes.add()
+                r.pod = self.name
+                r.start_time.FromDatetime(self.start_time)
+                if self.end_time:
+                    r.end_time.FromDatetime(self.end_time)
+                if self.status:
+                    r.status.CopyFrom(self.status)
+            for outgoing_node in self.outgoing_nodes:
+                request = outgoing_node.add_route(request=request)
+            return request
+
     def __init__(self, graph_representation: Dict, *args, **kwargs):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
@@ -157,6 +175,17 @@ class TopologyGraph:
                         nodes[node_name].outgoing_nodes.append(nodes[out_node_name])
 
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
+
+    def add_routes(self, request: 'DataRequest'):
+        """
+        Add routes to the DataRequest based on the state of request processing
+
+        :param request: the request to add the routes to
+        :return: modified request with added routes
+        """
+        for node in self._origin_nodes:
+            request = node.add_route(request=request)
+        return request
 
     @property
     def origin_nodes(self):

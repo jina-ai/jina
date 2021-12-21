@@ -1,19 +1,19 @@
-import pytest
 import asyncio
-import time
 import copy
 import multiprocessing
-
+import time
 from typing import Dict
 
+import pytest
+
+from jina import Document, DocumentArray
+from jina.helper import random_port
 from jina.parsers import set_gateway_parser
+from jina.peapods import networking
 from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
-
-from jina import Document, DocumentArray
-from jina.peapods import networking
-from jina.helper import random_port
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def bifurcation_graph_dict():
         'pod2': ['pod3'],
         'pod4': ['pod5'],
         'pod5': ['end-gateway'],
-        'pod3': ['end-gateway'],
+        'pod3': ['pod5'],
         'pod6': [],  # hanging_pod
     }
 
@@ -69,7 +69,7 @@ def complete_graph_dict():
     return {
         'start-gateway': ['pod0', 'pod4', 'pod6'],
         'pod0': ['pod1', 'pod2'],
-        'pod1': ['end-gateway'],
+        'pod1': ['merger'],
         'pod2': ['pod3'],
         'pod4': ['pod5'],
         'merger': ['pod_last'],
@@ -78,6 +78,23 @@ def complete_graph_dict():
         'pod6': [],  # hanging_pod
         'pod_last': ['end-gateway'],
     }
+
+
+class DummyNoDocAccessMockConnectionPool:
+    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
+        async def task_wrapper():
+            import random
+
+            await asyncio.sleep(1 / (random.randint(1, 3) * 10))
+            if requests[0].is_decompressed:
+                return (
+                    DataRequest(request=requests[0].proto.SerializePartialToString()),
+                    {},
+                )
+            else:
+                return DataRequest(request=requests[0].buffer), {}
+
+        return asyncio.create_task(task_wrapper())
 
 
 class DummyMockConnectionPool:
@@ -98,16 +115,33 @@ class DummyMockConnectionPool:
             import random
 
             await asyncio.sleep(1 / (random.randint(1, 3) * 10))
-            return response_msg
+            return response_msg, {}
 
         return asyncio.create_task(task_wrapper())
 
 
-def create_runtime(graph_dict: Dict, protocol: str, port_in: int):
+def create_runtime(
+    graph_dict: Dict, protocol: str, port_in: int, call_counts=None, monkeypatch=None
+):
     import json
 
     graph_description = json.dumps(graph_dict)
     runtime_cls = None
+    if call_counts:
+
+        def decompress(self):
+            call_counts.put_nowait('called')
+            from jina.proto import jina_pb2
+
+            self._pb_body = jina_pb2.DataRequestProto()
+            self._pb_body.ParseFromString(self.buffer)
+            self.buffer = None
+
+        monkeypatch.setattr(
+            DataRequest,
+            '_decompress',
+            decompress,
+        )
     if protocol == 'grpc':
         runtime_cls = GRPCGatewayRuntime
     elif protocol == 'http':
@@ -189,6 +223,49 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         assert cp.exitcode == 0
 
 
+def test_grpc_gateway_runtime_lazy_request_access(linear_graph_dict, monkeypatch):
+    call_counts = multiprocessing.Queue()
+
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_requests_once',
+        DummyNoDocAccessMockConnectionPool.send_requests_once,
+    )
+    port_in = random_port()
+
+    def client_validate(client_id: int):
+        responses = client_send(client_id, port_in, 'grpc')
+        assert len(responses) > 0
+
+    p = multiprocessing.Process(
+        target=create_runtime,
+        kwargs={
+            'protocol': 'grpc',
+            'port_in': port_in,
+            'graph_dict': linear_graph_dict,
+            'call_counts': call_counts,
+            'monkeypatch': monkeypatch,
+        },
+    )
+    p.start()
+    time.sleep(1.0)
+    client_processes = []
+    for i in range(NUM_PARALLEL_CLIENTS):
+        cp = multiprocessing.Process(target=client_validate, kwargs={'client_id': i})
+        cp.start()
+        client_processes.append(cp)
+
+    for cp in client_processes:
+        cp.join()
+    p.terminate()
+    p.join()
+    assert (
+        call_counts.qsize() == NUM_PARALLEL_CLIENTS * 2
+    )  # request should be decompressed at start and end only
+    for cp in client_processes:
+        assert cp.exitcode == 0
+
+
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_grpc_gateway_runtime_handle_messages_bifurcation(
     bifurcation_graph_dict, monkeypatch, protocol
@@ -203,13 +280,12 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     def client_validate(client_id: int):
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
-        assert len(responses[0].docs) == 2
+        # reducing is supposed to happen in the pods, in the test it will get a single doc in non deterministic order
+        assert len(responses[0].docs) == 1
         assert (
             responses[0].docs[0].text
             == f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
-        )
-        assert (
-            responses[0].docs[1].text
+            or responses[0].docs[0].text
             == f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
         )
 
@@ -352,22 +428,16 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     def client_validate(client_id: int):
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
-        assert len(responses[0].docs) == 2
+        assert len(responses[0].docs) == 1
+        # there are 3 incoming paths to merger, it could be any
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
+            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
+            == responses[0].docs[0].text
+            or f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
+            == responses[0].docs[0].text
+            or f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
             == responses[0].docs[0].text
         )
-
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
-            == responses[0].docs[1].text
-        )
-        pod4_path = (
-            f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
-            == responses[0].docs[1].text
-        )
-
-        assert pod2_path or pod4_path
 
     p = multiprocessing.Process(
         target=create_runtime,

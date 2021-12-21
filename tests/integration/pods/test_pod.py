@@ -108,11 +108,11 @@ async def test_pods_flow_topology(
         pod.close()
 
     assert len(response_list) == 20
-    expected_docs = 3
+    expected_docs = 1
     if uses_before and uses_after:
-        expected_docs = 21
+        expected_docs = 3 + 1 + 1
     elif uses_before or uses_after:
-        expected_docs = 12
+        expected_docs = 3
     assert len(response_list[0].docs) == expected_docs
 
 
