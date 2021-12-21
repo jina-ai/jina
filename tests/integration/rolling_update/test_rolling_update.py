@@ -73,7 +73,8 @@ def test_normal(docs):
     shards = [s for r, s in replica_shards]
 
     assert len(set(replicas)) == NUM_REPLICAS
-    assert len(set(shards)) == NUM_SHARDS
+    # shard results are reduced
+    assert len(set(shards)) == 1
 
 
 @pytest.mark.timeout(60)
@@ -144,7 +145,7 @@ def test_search_while_updating(docs, reraise, docker_image, uses):
     total_docs = 0
     while result_queue.qsize():
         total_docs += len(result_queue.get())
-    assert total_docs == len(docs) * request_count * shards
+    assert total_docs == len(docs) * request_count
 
 
 # TODO: this should be repeatable, but its not due to head/gateway not being containerized
@@ -183,7 +184,7 @@ def test_vector_indexer_thread(config, docs, reraise):
     total_docs = 0
     while result_queue.qsize():
         total_docs += len(result_queue.get())
-    assert total_docs == len(docs) * 40 * 3
+    assert total_docs == len(docs) * 40
 
 
 def test_workspace(config, tmpdir, docs):

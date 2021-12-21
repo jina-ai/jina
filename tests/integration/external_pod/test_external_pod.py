@@ -87,40 +87,6 @@ def test_flow_with_external_pod(
         validate_response(resp[0], 50)
 
 
-@pytest.fixture(scope='function')
-def external_executor_args():
-    args = [
-        '--uses',
-        'MyExternalExecutor',
-        '--name',
-        'external_real',
-        '--port-in',
-        str(random_port()),
-    ]
-    return set_pea_parser().parse_args(args)
-
-
-@pytest.fixture
-def external_executor(external_executor_args):
-    return PeaFactory.build_pea(external_executor_args)
-
-
-def test_flow_with_external_executor(
-    external_executor, external_executor_args, input_docs
-):
-    with external_executor:
-        external_args = vars(external_executor_args)
-        del external_args['name']
-        flow = Flow().add(
-            **external_args,
-            name='external_fake',
-            external=True,
-        )
-        with flow:
-            resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0])
-
-
 @pytest.mark.parametrize('num_replicas', [2], indirect=True)
 @pytest.mark.parametrize('num_shards', [2], indirect=True)
 def test_two_flow_with_shared_external_pod(
@@ -153,41 +119,9 @@ def test_two_flow_with_shared_external_pod(
             # Reducing applied after shards, expect only 50 docs
             validate_response(results[0], 50)
 
-            # Reducing applied only after shards, not after needs (external pod is immutable), expect 100 docs
+            # Reducing applied, expect 50 docs
             results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50 * 2)
-
-
-def test_two_flow_with_shared_external_executor(
-    external_executor,
-    external_executor_args,
-    input_docs,
-):
-    with external_executor:
-        external_args = vars(external_executor_args)
-        del external_args['name']
-        flow1 = Flow().add(
-            **external_args,
-            name='external_fake',
-            external=True,
-        )
-
-        flow2 = (
-            Flow()
-            .add(name='foo')
-            .add(
-                **external_args,
-                name='external_fake',
-                external=True,
-                needs=['gateway', 'foo'],
-            )
-        )
-        with flow1, flow2:
-            results = flow1.index(inputs=input_docs, return_results=True)
-            validate_response(results[0])
-
-            results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50 * 2)
+            validate_response(results[0], 50)
 
 
 @pytest.fixture(scope='function')
@@ -408,5 +342,5 @@ def test_flow_with_external_pod_join(
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
 
-        # Reducing applied only after shards, not after needs (external pod is immutable), expect 100 docs
-        validate_response(resp[0], 50 * 2)
+        # Reducing applied, expect 50 docs
+        validate_response(resp[0], 50)

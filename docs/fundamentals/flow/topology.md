@@ -332,12 +332,3 @@ If a Document exists in many DocumentArrays, data properties are merged.
 
 Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
 Other non-data properties are ignored.
-
-````{admonition} Warning
-:class: warning
-If a data property is set on many Documents with the same ID, only one value is kept in the final Document. This value 
-can be belong to any of these Documents. This also means, if you make the same request, with such conflicting data 
-properties, you can end up with undeterministic results.
-When you use shards or parallel branches, you should always make sure that all data properties of the same Documents 
-either do not conflict or have the same value.
-````
