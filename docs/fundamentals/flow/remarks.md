@@ -197,6 +197,9 @@ Few cases require to use `spawn` start method for multiprocessing.
 
 Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip instal epdb` to have acces to this type of breakpoints.
 
+
+- Write `import epdb; epdb.set_trace()` in the line you want to stop the execution.
+
     ````{tab} ✅ Do
     ```{code-block} python
     ---
