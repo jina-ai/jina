@@ -37,7 +37,7 @@ def test_remote_flow_with_directory(directory, filename, mul):
     with RemoteFlow(
         directory=directory,
         filename=filename,
-        envs={'PORT_EXPOSE': 12345},
+        envs={'PORT_EXPOSE': '12345'},
     ):
         resp = Client(port=12345).post(
             on='/',
