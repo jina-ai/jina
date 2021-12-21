@@ -199,7 +199,7 @@ async def test_runtimes_flow_topology(
         process.join()
 
     assert len(response_list) == 20
-    assert len(response_list[0].docs) == 3
+    assert len(response_list[0].docs) == 1
 
     assert gateway_process.exitcode == 0
     for process in runtime_processes:

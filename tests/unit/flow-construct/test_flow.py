@@ -585,9 +585,14 @@ def test_flow_routes_list():
         name='merge', needs=['a2', 'b1']
     ) as shards_flow:
         response = shards_flow.index(inputs=Document(), return_results=True)
-        gateway_entry, a1_entry, b1_entry, merge_entry, a2_entry = json.loads(
-            response[0].json()
-        )['routes']
+        routes = json.loads(response[0].json())['routes']
+        (
+            a1_entry,
+            a2_entry,
+            b1_entry,
+            gateway_entry,
+            merge_entry,
+        ) = _extract_route_entries(gateway_entry, routes)
         assert gateway_entry['pod'] == 'gateway'
         assert a1_entry['pod'].startswith('a1')
         assert a2_entry['pod'].startswith('a2')
@@ -602,6 +607,21 @@ def test_flow_routes_list():
             > _time(a1_entry['start_time'])
             > _time(gateway_entry['start_time'])
         )
+
+
+def _extract_route_entries(gateway_entry, routes):
+    for route in routes:
+        if route['pod'] == 'gateway':
+            gateway_entry = route
+        elif route['pod'] == 'a1':
+            a1_entry = route
+        elif route['pod'] == 'a2':
+            a2_entry = route
+        elif route['pod'] == 'b1':
+            b1_entry = route
+        elif route['pod'] == 'merge':
+            merge_entry = route
+    return a1_entry, a2_entry, b1_entry, gateway_entry, merge_entry
 
 
 def test_flow_auto_polling():
