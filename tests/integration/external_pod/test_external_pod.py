@@ -82,7 +82,9 @@ def test_flow_with_external_pod(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_shards)
+
+        # expect 50 reduced Documents in total after sharding
+        validate_response(resp[0], 50)
 
 
 @pytest.fixture(scope='function')
@@ -147,10 +149,13 @@ def test_two_flow_with_shared_external_pod(
         )
         with flow1, flow2:
             results = flow1.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50 * num_shards)
 
+            # Reducing applied after shards, expect only 50 docs
+            validate_response(results[0], 50)
+
+            # Reducing applied only after shards, not after needs (external pod is immutable), expect 100 docs
             results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50 * num_shards * 2)
+            validate_response(results[0], 50 * 2)
 
 
 def test_two_flow_with_shared_external_executor(
@@ -273,7 +278,9 @@ def test_flow_with_external_pod_shards(
 
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_shards * 2)
+
+        # Reducing applied on shards and needs, expect 50 docs
+        validate_response(resp[0], 50)
 
 
 @pytest.fixture(scope='function')
@@ -333,7 +340,9 @@ def test_flow_with_external_pod_pre_shards(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_shards * 2)
+
+        # Reducing applied on shards and needs, expect 50 docs
+        validate_response(resp[0], 50)
 
 
 @pytest.fixture(scope='function')
@@ -398,4 +407,6 @@ def test_flow_with_external_pod_join(
         )
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
-        validate_response(resp[0], 50 * num_shards * num_shards * 2)
+
+        # Reducing applied only after shards, not after needs (external pod is immutable), expect 100 docs
+        validate_response(resp[0], 50 * 2)
