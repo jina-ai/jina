@@ -197,12 +197,12 @@ Few cases require to use `spawn` start method for multiprocessing.
 
 Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip instal epdb` to have acces to this type of breakpoints.
 
-
     ````{tab} ✅ Do
     ```{code-block} python
     ---
     emphasize-lines: 7
     ---
+
     from jina import Flow, Executor, requests
      
     class CustomExecutor(Executor):
@@ -211,7 +211,7 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
             a = 25
             import epdb; epdb.set_trace() 
             print(f'\n\na={a}\n\n')
-     
+
     def main():
         f = Flow().add(uses=CustomExecutor)
         with f:
@@ -236,7 +236,7 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
             a = 25
             breakpoint()
             print(f'\n\na={a}\n\n')
-     
+
     def main():
         f = Flow().add(uses=CustomExecutor)
         with f:
@@ -246,8 +246,3 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
         main()
     ```
     ````
-
-
-
-
-
