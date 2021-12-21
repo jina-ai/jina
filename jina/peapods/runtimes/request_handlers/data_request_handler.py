@@ -26,7 +26,7 @@ def get_docs_matrix_from_request(
     :return: docs matrix: list of DocumentArray objects
     """
     if len(requests) > 1:
-        result = [getattr(request, field) for request in reversed(requests)]
+        result = [getattr(request, field) for request in requests]
     else:
         result = [getattr(requests[0], field)]
 
@@ -135,11 +135,6 @@ class DataRequestHandler:
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            if len(requests) > 1:
-                DataRequestHandler.replace_docs(
-                    requests[0],
-                    docs=docs,
-                )
             return requests[0]
 
         params = self._parse_params(

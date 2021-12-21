@@ -224,16 +224,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
 
         worker_results, metadata = zip(*worker_results)
-        if (
-            self.polling == PollingType.ALL
-            and len(worker_results) > 1
-            and not getattr(self.args, 'uses_after', None)
-            and not self.uses_after_address
-        ):
-            docs_matrix = get_docs_matrix_from_request(worker_results, field='docs')
-            docs = reduce(docs_matrix)
-        elif len(worker_results) > 1:
-            docs = get_docs_from_request(worker_results, field='docs')
 
         response_request = worker_results[0]
         uses_after_metadata = None
@@ -245,10 +235,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 worker_results, pod='uses_after'
             )
         elif len(worker_results) > 1:
-            DataRequestHandler.replace_docs(
-                response_request,
-                docs=docs,
-            )
+            docs_matrix = get_docs_matrix_from_request(worker_results, field='docs')
+
+            # Reduction is applied in-place to the first DocumentArray in the matrix
+            reduce(docs_matrix)
 
         merged_metadata = self._merge_metadata(
             metadata, uses_after_metadata, uses_before_metadata
