@@ -669,9 +669,7 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
-                executor, from_cache = HubIO.fetch_meta(
-                    name, tag, secret=secret, force=need_pull
-                )
+                executor = HubIO.fetch_meta(name, tag, secret=secret, force=need_pull)
 
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
@@ -730,10 +728,9 @@ with f:
 
                         if need_pull:
                             # pull the latest executor meta, as the cached data would expire
-                            if from_cache:
-                                executor, _ = HubIO.fetch_meta(
-                                    name, tag, secret=secret, force=True
-                                )
+                            executor = HubIO.fetch_meta(
+                                name, tag, secret=secret, force=True
+                            )
 
                             cache_dir = Path(
                                 os.environ.get(

@@ -218,12 +218,7 @@ def download_with_resume(
     _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
-        raise RuntimeError(
-            'MD5 checksum failed.'
-            'Might happen when the network is unstable, please retry.'
-            'If still not work, feel free to raise an issue.'
-            'https://github.com/jina-ai/jina/issues/new'
-        )
+        raise RuntimeError('MD5 checksum failed.')
 
     return filepath
 
@@ -313,12 +308,12 @@ def disk_cache_offline(
 
             if cache_db is None:
                 # if we failed to load cache, do not raise, it is only an optimization thing
-                return func(*args, **kwargs), False
+                return func(*args, **kwargs)
             else:
                 with cache_db as dict_db:
                     try:
                         if call_hash in dict_db and not kwargs.get('force', False):
-                            return dict_db[call_hash], True
+                            return dict_db[call_hash]
 
                         result = func(*args, **kwargs)
                         dict_db[call_hash] = result
@@ -327,10 +322,10 @@ def disk_cache_offline(
                             default_logger.warning(
                                 message.format(func_name=func.__name__)
                             )
-                            return dict_db[call_hash], True
+                            return dict_db[call_hash]
                         else:
                             raise
-                return result, False
+                return result
 
         return wrapper
 

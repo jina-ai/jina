@@ -133,16 +133,16 @@ def test_disk_cache(tmpfile):
 
     raise_exception = False
     # returns latest, saves result in cache
-    assert _myfunc() == (1, False)
+    assert _myfunc() == 1
 
     result = 2
     # does not return latest, defaults to cache since force == False
-    assert _myfunc() == (1, True)
+    assert _myfunc() == 1
 
     # returns latest since force == True
-    assert _myfunc(force=True) == (2, False)
+    assert _myfunc(force=True) == 2
 
     raise_exception = True
     result = 3
     # does not return latest and exception is not raised, defaults to cache
-    assert _myfunc(force=True) == (2, True)
+    assert _myfunc(force=True) == 2

@@ -189,7 +189,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        reduce: Optional[bool] = False,
         replicas: Optional[int] = 1,
         runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
@@ -262,7 +261,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param reduce: If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod
         :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
@@ -616,7 +614,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         quiet_remote_logs: Optional[bool] = False,
-        reduce: Optional[bool] = False,
         replicas: Optional[int] = 1,
         runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
@@ -692,7 +689,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
-        :param reduce: If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod
         :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
