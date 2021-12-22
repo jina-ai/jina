@@ -18,7 +18,7 @@ def to_dns_name(name: str) -> str:
     return name.replace('/', '-').replace('_', '-').lower()
 
 
-def deploy_service(
+def dump_deployment_yamls(
     name: str,
     namespace: str,
     image_name: str,
@@ -41,9 +41,9 @@ def deploy_service(
     container_cmd_uses_after: Optional[str] = None,
     container_args_uses_before: Optional[str] = None,
     container_args_uses_after: Optional[str] = None,
-    replace_deployment: Optional[bool] = False,
-) -> str:
-    """Deploy service on Kubernetes.
+    output_base_path: str = '',
+):
+    """Get the yaml description of a service on Kubernetes.
 
     :param name: name of the service and deployment
     :param namespace: k8s namespace of the service and deployment
@@ -68,9 +68,9 @@ def deploy_service(
     :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
     :param container_args_uses_before: arguments used for uses_before container on the k8s pod
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
-    :param replace_deployment: If set to True the entity name in namespace will be replaced and not created
-    :return: dns name of the created service
+    :param output_base_path: the base path where to dump the resulting yaml files
     """
+    import os
 
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
@@ -121,21 +121,8 @@ def deploy_service(
     else:
         template_name = 'deployment'
 
-    if replace_deployment:
-        logger.debug(
-            f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
-        )
-        kubernetes_tools.replace(
-            deployment_name=name,
-            namespace_name=namespace,
-            template=template_name,
-            params=deployment_params,
-            custom_resource_dir=custom_resource_dir,
-        )
-        return f'{name}.{namespace}.svc'
-
     logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
-    kubernetes_tools.create(
+    yaml = kubernetes_tools.get_yaml(
         'service',
         {
             'name': name,
@@ -145,51 +132,58 @@ def deploy_service(
             'port_in': port_in,
             'type': 'ClusterIP',
         },
-        logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
+    with open(os.path.join(output_base_path, 'service.yml'), 'w') as fp:
+        fp.write(yaml)
 
     logger.debug(f'📝\tCreate ConfigMap for deployment.')
 
-    kubernetes_tools.create(
+    yaml = kubernetes_tools.get_yaml(
         'configmap',
         {
             'name': name,
             'namespace': namespace,
             'data': env,
         },
-        logger=logger,
         custom_resource_dir=None,
     )
+    with open(os.path.join(output_base_path, 'configmap.yml'), 'w') as fp:
+        fp.write(yaml)
 
     logger.debug(
         f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
     )
 
-    kubernetes_tools.create(
+    yaml = kubernetes_tools.get_yaml(
         template_name,
         deployment_params,
-        logger=logger,
         custom_resource_dir=custom_resource_dir,
     )
+    with open(os.path.join(output_base_path, f'{template_name}.yml'), 'w') as fp:
+        fp.write(yaml)
 
     logger.debug(f'🔑\tCreate necessary permissions"')
 
-    kubernetes_tools.create(
+    yaml = kubernetes_tools.get_yaml(
         'connection-pool-role',
         {
             'namespace': namespace,
         },
     )
+    with open(os.path.join(output_base_path, 'connection-pool-role.yml'), 'w') as fp:
+        fp.write(yaml)
 
-    kubernetes_tools.create(
+    yaml = kubernetes_tools.get_yaml(
         'connection-pool-role-binding',
         {
             'namespace': namespace,
         },
     )
-
-    return f'{name}.{namespace}.svc'
+    with open(
+        os.path.join(output_base_path, 'connection-pool-role-binding.yml'), 'w'
+    ) as fp:
+        fp.write(yaml)
 
 
 def get_cli_params(

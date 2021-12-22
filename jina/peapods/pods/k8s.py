@@ -4,7 +4,6 @@ import time
 from argparse import Namespace
 from typing import Optional, Dict, Union, Set, List, Iterable
 
-import jina
 from .k8slib import kubernetes_deployment, kubernetes_client
 from ..networking import K8sGrpcConnectionPool
 from ..pods import BasePod
@@ -680,13 +679,14 @@ class K8sPod(BasePod):
         return res
 
     def _get_base_executor_version(self):
+        from jina import __version__
         import requests
 
         url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
         tags = requests.get(url).json()
         name_set = {tag['name'] for tag in tags}
-        if jina.__version__ in name_set:
-            return jina.__version__
+        if __version__ in name_set:
+            return __version__
         else:
             return 'master'
 

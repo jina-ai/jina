@@ -22,10 +22,9 @@ DEFAULT_RESOURCE_DIR = os.path.join(
 )
 
 
-def create(
+def get_yaml(
     template: str,
     params: Dict,
-    logger: JinaLogger = default_logger,
     custom_resource_dir: Optional[str] = None,
 ):
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
@@ -33,14 +32,9 @@ def create(
     :param template: path to the template file.
     :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
         Defaults to the standard location jina.resources if not specified.
-    :param logger: logger to use. Defaults to the default logger.
     :param params: dictionary for replacing the placeholders (keys) with the actual values.
     """
 
-    from kubernetes.utils import FailToCreateError
-    from kubernetes import utils
-
-    clients = K8sClients()
     if template == 'configmap':
         yaml = _patch_configmap_yaml(template, params)
     elif template in DEPLOYMENT_FILES and params.get('device_plugins'):
@@ -48,26 +42,8 @@ def create(
         yaml = _patch_deployment_with_device_plugins(yaml, params)
     else:
         yaml = _get_yaml(template, params, custom_resource_dir)
-    fd, path = tempfile.mkstemp()
-    try:
-        with os.fdopen(fd, 'w') as tmp:
-            tmp.write(yaml)
-        try:
-            utils.create_from_yaml(clients.k8s_client, path)
-        except FailToCreateError as e:
-            for api_exception in e.api_exceptions:
-                if api_exception.status == 409:
-                    # The exception's body is the error response from the
-                    # Kubernetes apiserver, it looks like:
-                    # {..."message": "<resource> <name> already exists"...}
-                    resp = json.loads(api_exception.body)
-                    logger.warning(f'🔁\t{resp["message"]}')
-                else:
-                    raise e
-        except Exception as e2:
-            raise e2
-    finally:
-        os.remove(path)
+
+    return yaml
 
 
 def replace(
