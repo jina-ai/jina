@@ -482,7 +482,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
-        args.k8s_namespace = self.args.k8s_namespace or self.args.name
+        args.k8s_namespace = self.args.k8s_namespace or self.args.name or 'default'
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
         args.pods_addresses = json.dumps(pod_addresses)
@@ -506,9 +506,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         continue
                     from jina.peapods.networking import K8sGrpcConnectionPool
 
-                    pod_k8s_address = (
-                        f'{v.name}.{self.args.k8s_namespace or self.args.name}.svc'
-                    )
+                    pod_k8s_address = f'{v.name}.{self.args.k8s_namespace or self.args.name or "default"}.svc'
 
                     graph_dict[node] = [
                         f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
@@ -815,7 +813,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        args.k8s_namespace = self.args.k8s_namespace or self.args.name
+        args.k8s_namespace = self.args.k8s_namespace or self.args.name or 'default'
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
 
@@ -1755,6 +1753,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             uses_with=uses_with,
             any_event_loop=True,
         )
+
+    def to_k8s_yaml(self, output_base_path: str, k8s_namespace: Optional[str] = None):
+        """
+        Converts the Flow into a set of yaml deployments to deploy in Kubernetes
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        """
+        import yaml
+
+        if self._build_level.value < FlowBuildLevel.GRAPH.value:
+            self.build(copy_flow=False)
+
+        for node, v in self._pod_nodes.items():
+            pod_base = os.path.join(output_base_path, node)
+            configs = v.to_k8s_yaml()
+            for name, k8s_objects in configs:
+                filename = os.path.join(pod_base, f'{name}.yml')
+                os.makedirs(pod_base, exist_ok=True)
+                for k8s_object in k8s_objects:
+                    with open(filename, 'a+') as fp:
+                        yaml.dump(k8s_object, fp)
+                        fp.write('---\n')
 
     def scale(
         self,

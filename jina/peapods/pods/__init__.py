@@ -18,6 +18,7 @@ from ...enums import (
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
+from .config import PodConfig
 
 
 class BasePod(ExitStack):
@@ -188,7 +189,7 @@ class BasePod(ExitStack):
         ]
 
 
-class Pod(BasePod):
+class Pod(PodConfig, BasePod):
     """A Pod is an immutable set of peas, which run in replicas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
@@ -373,6 +374,7 @@ class Pod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
+
         # BACKWARDS COMPATIBILITY:
         self.args.parallel = self.args.shards
         self.args.polling = (

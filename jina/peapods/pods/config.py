@@ -1,28 +1,45 @@
 import copy
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from argparse import Namespace
-from contextlib import ExitStack
-from itertools import cycle
-from typing import Dict, Union, Set, List, Optional
+from typing import Dict, Union, List, Optional, Tuple
 
-from .. import Pea
-from ..networking import GrpcConnectionPool
-from ..peas.factory import PeaFactory
-from ... import __default_executor__, __default_host__
-from ... import helper
-from ...enums import (
-    PodRoleType,
-    PeaRoleType,
-    PollingType,
-)
-from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
-from ...helper import random_identity, CatchAllCleanupContextManager
-from ...jaml.helper import complete_path
-from .k8slib import kubernetes_deployment, kubernetes_client
+from ... import __default_executor__
+from ...enums import PeaRoleType
+from .k8slib import kubernetes_deployment
 from ..networking import K8sGrpcConnectionPool
 
 
-class PodConfig:
+def _get_base_executor_version():
+    from jina import __version__
+    import requests
+
+    url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
+    tags = requests.get(url).json()
+    name_set = {tag['name'] for tag in tags}
+    if __version__ in name_set:
+        return __version__
+    else:
+        return 'master'
+
+
+class PodConfig(ABC):
+
+    """
+    Mixin that implements the output of configuration files for different cloud-solutions (e.g Kubernetes) for a given Pod.
+    """
+
+    args: Namespace
+    name: str
+
+    @property
+    @abstractmethod
+    def head_args(self) -> Namespace:
+        """Get the arguments for the `head` of this BasePod.
+
+        .. # noqa: DAR201
+        """
+        ...
+
     class _K8sDeployment:
         def __init__(
             self,
@@ -48,7 +65,7 @@ class PodConfig:
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.cluster_address = None
 
-        def _create_gateway_yamls(self):
+        def get_gateway_yamls(self) -> List[Dict]:
             import os
 
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
@@ -57,7 +74,7 @@ class PodConfig:
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
-            kubernetes_deployment.deploy_service(
+            return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
@@ -87,6 +104,8 @@ class PodConfig:
             return container_args
 
         def _get_image_name(self, uses: str):
+            import os
+
             image_name = kubernetes_deployment.get_image_name(uses)
             if image_name == __default_executor__:
                 test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
@@ -120,10 +139,9 @@ class PodConfig:
                 port_in,
             )
 
-        def _deploy_runtime(
+        def get_runtime_yamls(
             self,
-            replace=False,
-        ):
+        ) -> List[Dict]:
             image_name = self._get_image_name(self.deployment_args.uses)
             image_name_uses_before = (
                 self._get_image_name(self.deployment_args.uses_before)
@@ -160,7 +178,7 @@ class PodConfig:
                 else None
             )
 
-            self.cluster_address = kubernetes_deployment.deploy_service(
+            return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
@@ -172,7 +190,6 @@ class PodConfig:
                 container_args=container_args,
                 container_args_uses_before=container_args_uses_before,
                 container_args_uses_after=container_args_uses_after,
-                logger=JinaLogger(f'deploy_{self.name}'),
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
                 jina_pod_name=self.jina_pod_name,
@@ -186,7 +203,6 @@ class PodConfig:
                 custom_resource_dir=getattr(
                     self.common_args, 'k8s_custom_resource_dir', None
                 ),
-                replace_deployment=replace,
             )
 
     def _get_deployment_args(self, args):
@@ -241,55 +257,38 @@ class PodConfig:
 
         return parsed_args
 
-    def _get_base_executor_version(self):
-        from jina import __version__
-        import requests
-
-        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
-        tags = requests.get(url).json()
-        name_set = {tag['name'] for tag in tags}
-        if __version__ in name_set:
-            return __version__
-        else:
-            return 'master'
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """the name of the Pod"""
-        ...
-
-    @property
-    @abstractmethod
-    def args(self) -> Union['Namespace', Dict]:
-        """The args to be given to the Pod"""
-        ...
-
     @property
     def head_deployment(self):
+        """
+        .. # noqa: DAR201
+        """
         if self._get_deployment_args(self.args)['head_deployment'] is not None:
             name = f'{self.name}-head'
             return self._K8sDeployment(
                 name=name,
                 head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
-                version=self._get_base_executor_version(),
+                version=_get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
-                deployment_args=self.head_args,
+                deployment_args=self._get_deployment_args(self.args)['head_deployment'],
                 pea_type='head',
             )
 
+    @property
     def worker_deployments(self) -> List['PodConfig._K8sDeployment']:
+        """
+        .. # noqa: DAR201
+        """
         deployments = []
-        deployment_args = self.self._get_deployment_args(self.args)['deployments']
+        deployment_args = self._get_deployment_args(self.args)['deployments']
         for i, args in enumerate(deployment_args):
             name = f'{self.name}-{i}' if len(deployment_args) > 1 else f'{self.name}'
             deployments.append(
                 self._K8sDeployment(
                     name=name,
                     head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
-                    version=self._get_base_executor_version(),
+                    version=_get_base_executor_version(),
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
@@ -300,14 +299,24 @@ class PodConfig:
         return deployments
 
     def k8s_namespace(self) -> str:
-        """The k8s namespace"""
+        """The k8s namespace
+        .. # noqa: DAR201
+        .. # noqa: DAR101
+        """
         return self.args.k8s_namespace
 
-    def to_k8s_yaml(self) -> List[Dict]:
+    def to_k8s_yaml(self) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Pod
+            .. # noqa: DAR201
+            .. # noqa: DAR101
         """
         if self.name == 'gateway':
-            return self._get_gateway_yamls()
+            return [('gateway', self.worker_deployments[0].get_gateway_yamls())]
         else:
-            return self._get_deployments_yamls()
+            deployments = [self.head_deployment]
+            deployments.extend(self.worker_deployments)
+            return [
+                (deployment.name, deployment.get_runtime_yamls())
+                for deployment in deployments
+            ]

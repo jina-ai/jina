@@ -1,10 +1,9 @@
 import json
 from argparse import Namespace
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, List
 
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
-from jina.logging.logger import JinaLogger
 from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.k8slib import kubernetes_tools
 
@@ -18,13 +17,12 @@ def to_dns_name(name: str) -> str:
     return name.replace('/', '-').replace('_', '-').lower()
 
 
-def dump_deployment_yamls(
+def get_deployment_yamls(
     name: str,
     namespace: str,
     image_name: str,
     container_cmd: str,
     container_args: str,
-    logger: JinaLogger,
     replicas: int,
     pull_policy: str,
     jina_pod_name: str,
@@ -41,8 +39,7 @@ def dump_deployment_yamls(
     container_cmd_uses_after: Optional[str] = None,
     container_args_uses_before: Optional[str] = None,
     container_args_uses_after: Optional[str] = None,
-    output_base_path: str = '',
-):
+) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
     :param name: name of the service and deployment
@@ -50,7 +47,6 @@ def dump_deployment_yamls(
     :param image_name: image for the k8s deployment
     :param container_cmd: command executed on the k8s pods
     :param container_args: arguments used for the k8s pod
-    :param logger: used logger
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
     :param jina_pod_name: Name of the Jina Pod this deployment belongs to
@@ -68,10 +64,8 @@ def dump_deployment_yamls(
     :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
     :param container_args_uses_before: arguments used for uses_before container on the k8s pod
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
-    :param output_base_path: the base path where to dump the resulting yaml files
+    :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
-    import os
-
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port_expose:
@@ -121,69 +115,48 @@ def dump_deployment_yamls(
     else:
         template_name = 'deployment'
 
-    logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
-    yaml = kubernetes_tools.get_yaml(
-        'service',
-        {
-            'name': name,
-            'target': name,
-            'namespace': namespace,
-            'port_expose': port_expose,
-            'port_in': port_in,
-            'type': 'ClusterIP',
-        },
-        custom_resource_dir=custom_resource_dir,
-    )
-    with open(os.path.join(output_base_path, 'service.yml'), 'w') as fp:
-        fp.write(yaml)
+    yamls = [
+        kubernetes_tools.get_yaml(
+            'connection-pool-role',
+            {
+                'namespace': namespace,
+            },
+        ),
+        kubernetes_tools.get_yaml(
+            'connection-pool-role-binding',
+            {
+                'namespace': namespace,
+            },
+        ),
+        kubernetes_tools.get_yaml(
+            'configmap',
+            {
+                'name': name,
+                'namespace': namespace,
+                'data': env,
+            },
+            custom_resource_dir=None,
+        ),
+        kubernetes_tools.get_yaml(
+            'service',
+            {
+                'name': name,
+                'target': name,
+                'namespace': namespace,
+                'port_expose': port_expose,
+                'port_in': port_in,
+                'type': 'ClusterIP',
+            },
+            custom_resource_dir=custom_resource_dir,
+        ),
+        kubernetes_tools.get_yaml(
+            template_name,
+            deployment_params,
+            custom_resource_dir=custom_resource_dir,
+        ),
+    ]
 
-    logger.debug(f'📝\tCreate ConfigMap for deployment.')
-
-    yaml = kubernetes_tools.get_yaml(
-        'configmap',
-        {
-            'name': name,
-            'namespace': namespace,
-            'data': env,
-        },
-        custom_resource_dir=None,
-    )
-    with open(os.path.join(output_base_path, 'configmap.yml'), 'w') as fp:
-        fp.write(yaml)
-
-    logger.debug(
-        f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
-    )
-
-    yaml = kubernetes_tools.get_yaml(
-        template_name,
-        deployment_params,
-        custom_resource_dir=custom_resource_dir,
-    )
-    with open(os.path.join(output_base_path, f'{template_name}.yml'), 'w') as fp:
-        fp.write(yaml)
-
-    logger.debug(f'🔑\tCreate necessary permissions"')
-
-    yaml = kubernetes_tools.get_yaml(
-        'connection-pool-role',
-        {
-            'namespace': namespace,
-        },
-    )
-    with open(os.path.join(output_base_path, 'connection-pool-role.yml'), 'w') as fp:
-        fp.write(yaml)
-
-    yaml = kubernetes_tools.get_yaml(
-        'connection-pool-role-binding',
-        {
-            'namespace': namespace,
-        },
-    )
-    with open(
-        os.path.join(output_base_path, 'connection-pool-role-binding.yml'), 'w'
-    ) as fp:
-        fp.write(yaml)
+    return yamls
 
 
 def get_cli_params(
