@@ -173,7 +173,7 @@ class JinaDProcessTarget:
             for path in self.args.upload_files:
                 try:
                     fullpath = Path(complete_path(path))
-                    paths.add(fullpath.stem)
+                    paths.add(fullpath)
                 except FileNotFoundError:
                     self._logger.error(f'invalid path {path} passed')
 
