@@ -43,6 +43,7 @@ jobs:
         with:
           node-version: '14'
       - name: Build and Deploy
+        timeout-minutes: 30
         run: |
           npm i -g netlify-cli
           python -m pip install --upgrade pip
