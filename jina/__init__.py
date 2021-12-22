@@ -16,8 +16,8 @@ import types as _types
 import warnings as _warnings
 import docarray as _docarray
 
-if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
-    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
+if _sys.version_info < (3, 7, 0):
+    raise OSError(f'Jina requires Python >= 3.7, but yours is {_sys.version_info}')
 
 __windows__ = _sys.platform == 'win32'
 
