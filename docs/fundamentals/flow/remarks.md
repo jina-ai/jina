@@ -212,7 +212,7 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
         @requests
         def foo(self, **kwargs):
             a = 25
-            import edpb; epdb.set_trace() 
+            import epdb; epdb.set_trace() 
             print(f'\n\na={a}\n\n')
      
     def main():

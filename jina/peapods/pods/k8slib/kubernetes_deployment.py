@@ -43,7 +43,7 @@ def dump_deployment_yamls(
     container_args_uses_after: Optional[str] = None,
     output_base_path: str = '',
 ):
-    """Get the yaml description of a service on Kubernetes.
+    """Get the yaml description of a service on Kubernetes
 
     :param name: name of the service and deployment
     :param namespace: k8s namespace of the service and deployment

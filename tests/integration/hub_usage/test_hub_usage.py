@@ -74,14 +74,17 @@ def test_use_from_local_hub_pod_level(
 
     def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
-        return HubExecutor(
-            uuid='hello',
-            name='alias_dummy',
-            tag='v0',
-            image_name='jinahub/pod.dummy_mwu_encoder',
-            md5sum=None,
-            visibility=True,
-            archive_url=None,
+        return (
+            HubExecutor(
+                uuid='hello',
+                name='alias_dummy',
+                tag='v0',
+                image_name='jinahub/pod.dummy_mwu_encoder',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
         )
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
@@ -99,14 +102,17 @@ def test_use_from_local_hub_flow_level(
 
     def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
-        return HubExecutor(
-            uuid='hello',
-            name='alias_dummy',
-            tag='v0',
-            image_name='jinahub/pod.dummy_mwu_encoder',
-            md5sum=None,
-            visibility=True,
-            archive_url=None,
+        return (
+            HubExecutor(
+                uuid='hello',
+                name='alias_dummy',
+                tag='v0',
+                image_name='jinahub/pod.dummy_mwu_encoder',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
         )
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
