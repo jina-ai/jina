@@ -49,7 +49,7 @@ else
   docker run --rm \
     -v $(pwd)/proto:/out \
     -v $(pwd)/../jina/proto:/protos \
-    pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+    ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
   sphinx-multiversion . ${BUILD_DIR} -b dirhtml
   mv -v _build/dirhtml/${LATEST_JINA_VERSION}/* _build/dirhtml
