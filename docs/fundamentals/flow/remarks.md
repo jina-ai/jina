@@ -3,8 +3,8 @@
 
 ## Joining/Merging
 
-By default, if you have multiple Executors running in parallel and one Executor that needs them, merging of the 
-resulting Documents is applied. However, you can also customize the default reducing logic using a Merger Executor.
+If you have multiple Executors running in parallel and one Executor that needs them, merging of the 
+resulting Documents is applied automatically. However, you can also customize the default reducing logic using a Merger Executor in uses_before.
 
 Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's
 function. Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
