@@ -9,7 +9,7 @@ if [[ $1 == "local-only" ]]; then
   docker run --rm \
     -v $(pwd)/proto:/out \
     -v $(pwd)/../jina/proto:/protos \
-    pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+    ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
   rm $(pwd)/../jina/proto/docarray.proto
   make dirhtml
