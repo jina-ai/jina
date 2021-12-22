@@ -110,3 +110,21 @@ When not given, then the default naming strategy will apply.
     - ALL: all Peas poll the message (like a broadcast)
     ''',
     )
+
+    gp.add_argument(
+        '--k8s-disable-connection-pool',
+        action='store_false',
+        dest='k8s_connection_pool',
+        default=True,
+        help='Defines if connection pooling for replicas should be disabled in K8s. This mechanism implements load balancing between replicas of the same executor. This should be disabled if a service mesh (like istio) is used for load balancing.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--k8s-namespace',
+        type=str,
+        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

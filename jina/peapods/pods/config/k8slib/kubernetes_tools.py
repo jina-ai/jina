@@ -1,12 +1,5 @@
-import json
 import os
-import tempfile
-from typing import Dict, Optional, Generator
-
-from .kubernetes_client import K8sClients
-from ....importer import ImportExtensions
-from ....logging.logger import JinaLogger
-from ....logging.predefined import default_logger
+from typing import Dict, Optional
 
 DEPLOYMENT_FILES = [
     'deployment',
@@ -18,7 +11,7 @@ DEPLOYMENT_FILES = [
 
 cur_dir = os.path.dirname(__file__)
 DEFAULT_RESOURCE_DIR = os.path.join(
-    cur_dir, '..', '..', '..', 'resources', 'k8s', 'template'
+    cur_dir, '..', '..', '..', '..', 'resources', 'k8s', 'template'
 )
 
 

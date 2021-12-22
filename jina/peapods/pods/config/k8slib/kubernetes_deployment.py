@@ -2,10 +2,10 @@ import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple, Union, List
 
-from jina.hubble.helper import parse_hub_uri
-from jina.hubble.hubio import HubIO
-from jina.peapods.networking import K8sGrpcConnectionPool
-from jina.peapods.pods.k8slib import kubernetes_tools
+from .....hubble.helper import parse_hub_uri
+from .....hubble.hubio import HubIO
+from ....networking import K8sGrpcConnectionPool
+from . import kubernetes_tools
 
 
 def to_dns_name(name: str) -> str:

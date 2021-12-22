@@ -47,7 +47,7 @@ class TestExecutor(Executor):
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
 
-        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+        from jina.peapods.pods.config.k8slib.kubernetes_client import K8sClients
 
         client = K8sClients().core_v1
         pods = client.list_namespaced_pod('test-gpu')  # List[V1Pod]

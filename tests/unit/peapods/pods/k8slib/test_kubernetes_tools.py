@@ -7,8 +7,8 @@ import yaml
 import pytest
 import kubernetes
 
-from jina.peapods.pods.k8slib.kubernetes_tools import create
-from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+from jina.peapods.pods.config.k8slib.kubernetes_tools import create
+from jina.peapods.pods.config.k8slib.kubernetes_client import K8sClients
 
 
 def test_lazy_load_k8s_client(monkeypatch):

@@ -1,6 +1,6 @@
 import pytest
 
-from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+from jina.peapods.pods.config.k8slib.kubernetes_client import K8sClients
 
 
 @pytest.fixture

@@ -1697,11 +1697,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
+        from ..peapods.pods.config.k8s import K8sPodConfig
+
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
         for node, v in self._pod_nodes.items():
             pod_base = os.path.join(output_base_path, node)
-            configs = v.to_k8s_yaml(
+            k8s_pod = K8sPodConfig(
+                args=v.args,
+                head_args=v.head_args,
                 k8s_namespace=k8s_namespace,
                 k8s_uses_init=k8s_uses_init,
                 k8s_mount_path=k8s_mount_path,
@@ -1710,6 +1714,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 k8s_custom_resource_dir=k8s_custom_resource_dir,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace),
             )
+            configs = k8s_pod.to_k8s_yaml()
             for name, k8s_objects in configs:
                 filename = os.path.join(pod_base, f'{name}.yml')
                 os.makedirs(pod_base, exist_ok=True)
