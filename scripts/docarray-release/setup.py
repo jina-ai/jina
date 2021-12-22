@@ -44,7 +44,7 @@ setup(
     long_description_content_type='text/markdown',
     zip_safe=False,
     setup_requires=['setuptools>=18.0', 'wheel'],
-    install_requires=['protobuf>=3.13.0' 'numpy'],
+    install_requires=['protobuf>=3.13.0', 'numpy'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
