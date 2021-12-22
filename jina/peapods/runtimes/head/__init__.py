@@ -10,10 +10,7 @@ from typing import Optional, Union, List, Tuple, Dict
 import grpc
 
 from ..asyncio import AsyncNewLoopRuntime
-from ..request_handlers.data_request_handler import (
-    DataRequestHandler,
-    get_docs_from_request,
-)
+from ..request_handlers.data_request_handler import DataRequestHandler
 from ...networking import create_connection_pool, K8sGrpcConnectionPool
 from ....enums import PollingType
 from ....proto import jina_pb2_grpc
@@ -67,7 +64,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 self.connection_pool.add_connection(
                     pod=self._pod_name,
                     address=connection_list[shard_id],
-                    shard_id=shard_id,
+                    shard_id=int(shard_id),
                 )
 
         self.uses_before_address = args.uses_before_address
@@ -209,6 +206,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 requests, pod='uses_before'
             )
             requests = [response]
+        elif len(requests) > 1:
+            requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests, pod=self._pod_name, polling_type=self.polling
@@ -233,10 +232,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 worker_results, pod='uses_after'
             )
         elif len(worker_results) > 1:
-            DataRequestHandler.replace_docs(
-                response_request,
-                docs=get_docs_from_request(worker_results, field='docs'),
-            )
+            DataRequestHandler.reduce_requests(worker_results)
 
         merged_metadata = self._merge_metadata(
             metadata, uses_after_metadata, uses_before_metadata

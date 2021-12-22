@@ -7,7 +7,7 @@ from . import Request
 from docarray.simple import StructView
 from ... import DocumentArray
 from ...excepts import BadRequestType
-from ...helper import typename, random_identity
+from ...helper import typename, random_identity, cached_property
 from ...proto import jina_pb2
 
 RequestSourceType = TypeVar(
@@ -22,14 +22,14 @@ class DataRequest(Request):
         def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
             self._content = content
 
-        @property
+        @cached_property
         def docs(self) -> 'DocumentArray':
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
             return DocumentArray(self._content.docs)
 
-        @property
+        @cached_property
         def groundtruths(self) -> 'DocumentArray':
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
@@ -108,16 +108,16 @@ class DataRequest(Request):
         """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
         .. # noqa: DAR201"""
-        return DocumentArray(self.proto.data.docs)
+        return self.data.docs
 
     @property
     def groundtruths(self) -> 'DocumentArray':
         """Get the :class: `DocumentArray` with sequence `data.groundtruths` as content.
 
         .. # noqa: DAR201"""
-        return DocumentArray(self.proto.data.groundtruths)
+        return self.data.groundtruths
 
-    @property
+    @cached_property
     def data(self) -> 'DataRequest._DataContent':
         """Get the data contaned in this data request
 

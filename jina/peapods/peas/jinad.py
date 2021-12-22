@@ -161,7 +161,7 @@ class JinaDProcessTarget:
             # TODO(Deepankar): probably enable an arg here?
 
     @property
-    def filepaths(self) -> List[str]:
+    def filepaths(self) -> List[Path]:
         """Get file/directories to be uploaded to remote workspace
 
         :return: filepaths to be uploaded to remote

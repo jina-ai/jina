@@ -3,6 +3,9 @@
 
 ## Joining/Merging
 
+By default, if you have multiple Executors running in parallel and one Executor that needs them, merging of the 
+resulting Documents is applied. However, you can also customize the default reducing logic using a Merger Executor.
+
 Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's
 function. Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
 /`DocumentArray`
@@ -209,7 +212,7 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
         @requests
         def foo(self, **kwargs):
             a = 25
-            import edpb; epdb.set_trace() 
+            import epdb; epdb.set_trace() 
             print(f'\n\na={a}\n\n')
      
     def main():

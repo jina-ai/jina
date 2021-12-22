@@ -507,7 +507,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     from jina.peapods.networking import K8sGrpcConnectionPool
 
                     pod_k8s_address = (
-                        f'{v.name}.{self.args.k8s_namespace or self.args.name}.svc'
+                        f'{v.name}-head.{self.args.k8s_namespace or self.args.name}.svc'
                     )
 
                     graph_dict[node] = [

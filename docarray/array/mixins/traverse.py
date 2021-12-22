@@ -19,13 +19,15 @@ def _check_traversal_path_type(tp):
     if isinstance(tp, str):
         return tp
     elif isinstance(tp, Sequence) and all(isinstance(p, str) for p in tp):
-        tp = ','.join(tp)
         warnings.warn(
-            f'The syntax of traversal_path is changed to comma-separated string, '
-            f'that means your need to change {tp} into `{",".join(tp)}`. '
-            f'The old list of string syntax will be deprecated soon',
+            f'''
+            The syntax of traversal_path is changed to comma-separated string, '
+            that means your need to change {tp} into `{','.join(tp)}`. '
+            The old list of string syntax will be deprecated soon
+            ''',
             DeprecationWarning,
         )
+        tp = ','.join(tp)
         return tp
     else:
         raise TypeError(
@@ -73,6 +75,7 @@ class TraverseMixin:
         path: str,
         filter_fn: Optional[Callable[['Document'], bool]] = None,
     ):
+        path = path.strip()
         if path:
             loc = path[0]
             if loc == 'r':
