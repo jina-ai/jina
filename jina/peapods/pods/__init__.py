@@ -369,7 +369,9 @@ class Pod(PodConfig, BasePod):
                 raise closing_exception
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+        self,
+        args: Union['Namespace', Dict],
+        needs: Optional[Union[str, Set[str]]] = None,
     ):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)

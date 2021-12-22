@@ -61,11 +61,12 @@ class PodConfig(ABC):
             self.shard_id = shard_id
             self.common_args = common_args
             self.deployment_args = deployment_args
-            self.k8s_namespace = self.common_args.k8s_namespace
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.cluster_address = None
 
-        def get_gateway_yamls(self) -> List[Dict]:
+        def get_gateway_yamls(
+            self, k8s_namespace: str, pod_addresses: List[str]
+        ) -> List[Dict]:
             import os
 
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
@@ -74,18 +75,23 @@ class PodConfig(ABC):
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
+            cargs = copy.copy(self.common_args)
+            if cargs.k8s_connection_pool:
+                cargs.pods_addresses = []
+            else:
+                cargs.pods_addresses = pod_addresses
             return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
-                namespace=self.k8s_namespace,
+                namespace=k8s_namespace,
                 image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'["gateway", '
-                f'{kubernetes_deployment.get_cli_params(arguments=self.common_args, skip_list=("pod_role",))}]',
+                f'{kubernetes_deployment.get_cli_params(arguments=cargs, skip_list=("pod_role",))}]',
                 replicas=1,
                 pull_policy='IfNotPresent',
                 jina_pod_name='gateway',
                 pea_type='gateway',
-                port_expose=self.common_args.port_expose,
+                port_expose=cargs.port_expose,
             )
 
         @staticmethod
@@ -139,9 +145,7 @@ class PodConfig(ABC):
                 port_in,
             )
 
-        def get_runtime_yamls(
-            self,
-        ) -> List[Dict]:
+        def get_runtime_yamls(self, k8s_namespace: str) -> List[Dict]:
             image_name = self._get_image_name(self.deployment_args.uses)
             image_name_uses_before = (
                 self._get_image_name(self.deployment_args.uses_before)
@@ -180,7 +184,7 @@ class PodConfig(ABC):
 
             return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
-                namespace=self.k8s_namespace,
+                namespace=k8s_namespace,
                 image_name=image_name,
                 image_name_uses_after=image_name_uses_after,
                 image_name_uses_before=image_name_uses_before,
@@ -305,18 +309,27 @@ class PodConfig(ABC):
         """
         return self.args.k8s_namespace
 
-    def to_k8s_yaml(self) -> List[Tuple[str, List[Dict]]]:
+    def to_k8s_yaml(
+        self, k8s_namespace: str, pod_addresses: Optional[List[str]] = None
+    ) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Pod
             .. # noqa: DAR201
             .. # noqa: DAR101
         """
         if self.name == 'gateway':
-            return [('gateway', self.worker_deployments[0].get_gateway_yamls())]
+            return [
+                (
+                    'gateway',
+                    self.worker_deployments[0].get_gateway_yamls(
+                        k8s_namespace, pod_addresses
+                    ),
+                )
+            ]
         else:
             deployments = [self.head_deployment]
             deployments.extend(self.worker_deployments)
             return [
-                (deployment.name, deployment.get_runtime_yamls())
+                (deployment.name, deployment.get_runtime_yamls(k8s_namespace))
                 for deployment in deployments
             ]
