@@ -153,6 +153,7 @@ class GrpcConnectionPool:
                     entity_id = 0
                 return self._get_connection_list(pod, type, entity_id)
             else:
+                self._logger.debug(f'Unknown pod {pod}, no replicas available')
                 return None
 
         def get_replicas_all_shards(self, pod: str) -> List[ReplicaList]:
@@ -191,6 +192,9 @@ class GrpcConnectionPool:
                     # This can happen as a race condition when removing connections while accessing it
                     # In this case we dont care for the concrete entity, so retry with the first one
                     return self._get_connection_list(pod, type, 0)
+                self._logger.debug(
+                    f'Did not find a connection for pod {pod}, type {type} and entity_id {entity_id}. There are {len(self._pods[pod][type]) if pod in self._pods else 0} available connections for this pod and type. '
+                )
                 return None
 
         def _add_pod(self, pod: str):
