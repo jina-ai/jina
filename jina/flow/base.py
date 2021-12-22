@@ -317,7 +317,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
 
-        self.k8s_connection_pool = kwargs.get('k8s_connection_pool', True)
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
                 self.__class__.__name__, **vars(self.args), **self._common_kwargs
@@ -424,17 +423,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 port_expose=self.port_expose,
                 pod_role=PodRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
-                k8s_namespace=self.args.k8s_namespace or self.args.name,
             )
         )
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
-        args.k8s_namespace = self.args.k8s_namespace or self.args.name or 'default'
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
         args.pods_addresses = json.dumps(pod_addresses)
-        args.k8s_connection_pool = self.k8s_connection_pool
         self._pod_nodes[GATEWAY_NAME] = Pod(args, needs)
 
     def _get_pod_addresses(self) -> Dict[str, List[str]]:
@@ -760,7 +756,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # BACKWARDS COMPATIBILITY:
         # We assume that this is used in a search Flow if replicas and shards are used
         # Thus the polling type should be all
-        # But dont override any user provided polling
+        # But don't override any user provided polling
         if args.replicas > 1 and args.shards > 1 and 'polling' not in kwargs:
             args.polling = PollingType.ALL
 
@@ -768,11 +764,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if not port_in:
             port_in = helper.random_port()
             args.port_in = port_in
-
-        # TODO: this should not be necessary, but the boolean flag handling in the parser is not able to handle this
-        args.k8s_connection_pool = kwargs.get(
-            'k8s_connection_pool', self.k8s_connection_pool
-        )
 
         op_flow._pod_nodes[pod_name] = Pod(args, needs)
 
@@ -1680,11 +1671,26 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             any_event_loop=True,
         )
 
-    def to_k8s_yaml(self, output_base_path: str, k8s_namespace: Optional[str] = None):
+    def to_k8s_yaml(
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        k8s_connection_pool: bool = True,
+        k8s_uses_init: Optional[str] = None,
+        k8s_mount_path: Optional[str] = None,
+        k8s_init_container_command: Optional[str] = None,
+        k8s_custom_resource_dir: Optional[str] = None,
+    ):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes
         :param output_base_path: The base path where to dump all the yaml files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        :param k8s_connection_pool: Boolean indicationg wether the kubernetes connection pool should be used inside the Executor Runtimes.
+        :param k8s_uses_init: Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.
+        :param k8s_mount_path: Path where the init container and the executor can exchange files.
+        :param k8s_init_container_command: Arguments for the init container.'
+        :param k8s_custom_resource_dir: Path to a folder containing custom k8s template files which shall be used for this pod. Please copy the standard Jina resource files and add parameters as you need'
+             to make sure the minimum configuration Jina needs is present'
         """
         import yaml
 
@@ -1696,7 +1702,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._pod_nodes.items():
             pod_base = os.path.join(output_base_path, node)
             configs = v.to_k8s_yaml(
-                k8s_namespace, pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
+                k8s_namespace=k8s_namespace,
+                k8s_uses_init=k8s_uses_init,
+                k8s_mount_path=k8s_mount_path,
+                k8s_connection_pool=k8s_connection_pool,
+                k8s_init_container_command=k8s_init_container_command,
+                k8s_custom_resource_dir=k8s_custom_resource_dir,
+                k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace),
             )
             for name, k8s_objects in configs:
                 filename = os.path.join(pod_base, f'{name}.yml')

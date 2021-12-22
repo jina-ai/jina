@@ -23,7 +23,6 @@ def _get_base_executor_version():
 
 
 class PodConfig(ABC):
-
     """
     Mixin that implements the output of configuration files for different cloud-solutions (e.g Kubernetes) for a given Pod.
     """
@@ -65,7 +64,10 @@ class PodConfig(ABC):
             self.cluster_address = None
 
         def get_gateway_yamls(
-            self, k8s_namespace: str, pod_addresses: List[str]
+            self,
+            k8s_namespace: str,
+            k8s_connection_pool: bool,
+            pod_addresses: Dict[str, List[str]],
         ) -> List[Dict]:
             import os
 
@@ -76,8 +78,9 @@ class PodConfig(ABC):
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
             cargs = copy.copy(self.common_args)
-            if cargs.k8s_connection_pool:
-                cargs.pods_addresses = []
+            cargs.k8s_connection_pool = k8s_connection_pool
+            if k8s_connection_pool:
+                cargs.pods_addresses = {}
             else:
                 cargs.pods_addresses = pod_addresses
             return kubernetes_deployment.get_deployment_yamls(
@@ -123,9 +126,6 @@ class PodConfig(ABC):
 
             return image_name
 
-        def _get_init_container_args(self):
-            return kubernetes_deployment.get_init_container_args(self.common_args)
-
         def _get_container_args(self, uses, pea_type=None, port_in=None):
             uses_metas = kubernetes_deployment.dictionary_to_cli_param(
                 {'pea_id': self.shard_id}
@@ -145,40 +145,48 @@ class PodConfig(ABC):
                 port_in,
             )
 
-        def get_runtime_yamls(self, k8s_namespace: str) -> List[Dict]:
-            image_name = self._get_image_name(self.deployment_args.uses)
+        def get_runtime_yamls(
+            self,
+            k8s_namespace: str,
+            connection_list: str,
+            k8s_uses_init: Optional[str] = None,
+            k8s_mount_path: Optional[str] = None,
+            k8s_init_container_command: Optional[str] = None,
+            k8s_custom_resource_dir: Optional[str] = None,
+        ) -> List[Dict]:
+            cargs = copy.copy(self.deployment_args)
+            cargs.connection_list = connection_list
+            image_name = self._get_image_name(cargs.uses)
             image_name_uses_before = (
-                self._get_image_name(self.deployment_args.uses_before)
-                if hasattr(self.deployment_args, 'uses_before')
-                and self.deployment_args.uses_before
+                self._get_image_name(cargs.uses_before)
+                if hasattr(cargs, 'uses_before') and cargs.uses_before
                 else None
             )
             image_name_uses_after = (
-                self._get_image_name(self.deployment_args.uses_after)
-                if hasattr(self.deployment_args, 'uses_after')
-                and self.deployment_args.uses_after
+                self._get_image_name(cargs.uses_after)
+                if hasattr(cargs, 'uses_after') and cargs.uses_after
                 else None
             )
-            init_container_args = self._get_init_container_args()
-            container_args = self._get_container_args(self.deployment_args.uses)
+            init_container_args = kubernetes_deployment.get_init_container_args(
+                k8s_uses_init, k8s_mount_path, k8s_init_container_command
+            )
+            container_args = self._get_container_args(cargs.uses)
             container_args_uses_before = (
                 self._get_container_args(
-                    self.deployment_args.uses_before,
+                    cargs.uses_before,
                     'worker',
                     port_in=K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
                 )
-                if hasattr(self.deployment_args, 'uses_before')
-                and self.deployment_args.uses_before
+                if hasattr(cargs, 'uses_before') and cargs.uses_before
                 else None
             )
             container_args_uses_after = (
                 self._get_container_args(
-                    self.deployment_args.uses_after,
+                    cargs.uses_after,
                     'worker',
                     port_in=K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
                 )
-                if hasattr(self.deployment_args, 'uses_after')
-                and self.deployment_args.uses_after
+                if hasattr(cargs, 'uses_after') and cargs.uses_after
                 else None
             )
 
@@ -200,13 +208,9 @@ class PodConfig(ABC):
                 pea_type=self.pea_type,
                 shard_id=self.shard_id,
                 init_container=init_container_args,
-                env=self.deployment_args.env,
-                gpus=self.deployment_args.gpus
-                if hasattr(self.deployment_args, 'gpus')
-                else None,
-                custom_resource_dir=getattr(
-                    self.common_args, 'k8s_custom_resource_dir', None
-                ),
+                env=cargs.env,
+                gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
+                custom_resource_dir=k8s_custom_resource_dir,
             )
 
     def _get_deployment_args(self, args):
@@ -310,7 +314,14 @@ class PodConfig(ABC):
         return self.args.k8s_namespace
 
     def to_k8s_yaml(
-        self, k8s_namespace: str, pod_addresses: Optional[List[str]] = None
+        self,
+        k8s_namespace: str,
+        k8s_connection_pool: bool = True,
+        k8s_uses_init: Optional[str] = None,
+        k8s_mount_path: Optional[str] = None,
+        k8s_init_container_command: Optional[str] = None,
+        k8s_custom_resource_dir: Optional[str] = None,
+        k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
     ) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Pod
@@ -322,14 +333,35 @@ class PodConfig(ABC):
                 (
                     'gateway',
                     self.worker_deployments[0].get_gateway_yamls(
-                        k8s_namespace, pod_addresses
+                        k8s_namespace=k8s_namespace,
+                        k8s_connection_pool=k8s_connection_pool,
+                        pod_addresses=k8s_pod_addresses,
                     ),
                 )
             ]
         else:
+            num_shards = len(self.worker_deployments)
             deployments = [self.head_deployment]
             deployments.extend(self.worker_deployments)
+            connection_list = ''
+            if not k8s_connection_pool:
+                connection_list = '{'
+                for i in range(num_shards):
+                    name = f'{self.name}-{i}' if num_shards > 1 else f'{self.name}'
+                    connection_list += f'"{str(i)}": "{name}.{k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT_IN}",'
+                connection_list = connection_list[:-1]
+                connection_list += '}'
             return [
-                (deployment.name, deployment.get_runtime_yamls(k8s_namespace))
+                (
+                    deployment.name,
+                    deployment.get_runtime_yamls(
+                        k8s_namespace=k8s_namespace,
+                        connection_list=connection_list,
+                        k8s_uses_init=k8s_uses_init,
+                        k8s_mount_path=k8s_mount_path,
+                        k8s_init_container_command=k8s_init_container_command,
+                        k8s_custom_resource_dir=k8s_custom_resource_dir,
+                    ),
+                )
                 for deployment in deployments
             ]
