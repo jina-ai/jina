@@ -1,15 +1,11 @@
 import sys
-import os
 from os import path
 
 from setuptools import find_packages
 from setuptools import setup
-from setuptools.command.develop import develop
-from setuptools.command.install import install
 
 if sys.version_info < (3, 7, 0):
     raise OSError(f'DocArray requires Python >=3.7, but yours is {sys.version}')
-
 
 try:
     pkg_name = 'docarray'
@@ -27,7 +23,6 @@ try:
         _long_description = fp.read()
 except FileNotFoundError:
     _long_description = ''
-
 
 setup(
     name=pkg_name,
