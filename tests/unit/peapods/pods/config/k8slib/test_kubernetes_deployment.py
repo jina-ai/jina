@@ -10,7 +10,6 @@ from jina.peapods.pods.k8s import K8sPod
 from jina.peapods.pods.k8slib.kubernetes_deployment import (
     get_cli_params,
     dictionary_to_cli_param,
-    get_init_container_args,
     kubernetes_tools,
     to_dns_name,
     deploy_service,
@@ -31,11 +30,7 @@ def test_to_dns_name(name: str, dns_name: str):
     assert to_dns_name(name) == dns_name
 
 
-@pytest.mark.parametrize(
-    ['init_container', 'custom_resource'],
-    [(None, None), ({'test-init-arg': 'test-value'}, None), (None, '/test')],
-)
-def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch):
+def test_deploy_service(monkeypatch):
     mock_create = Mock()
     monkeypatch.setattr(kubernetes_tools, 'create', mock_create)
 
@@ -48,8 +43,6 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
         logger=JinaLogger('test'),
         replicas=1,
         pull_policy='test-pull-policy',
-        init_container=init_container,
-        custom_resource_dir=custom_resource,
         env={'k1': 'v1', 'k2': 'v2'},
         jina_pod_name="some_pod_name",
         pea_type='worker',
@@ -61,24 +54,16 @@ def test_deploy_service(init_container: Dict, custom_resource: str, monkeypatch)
     service_call_kwargs = mock_create.call_args_list[0][1]
 
     assert service_call_args[0] == 'service'
-    assert service_call_kwargs['custom_resource_dir'] == custom_resource
 
     configmap_call_args = mock_create.call_args_list[1][0]
     configmap_call_kwargs = mock_create.call_args_list[1][1]
 
     assert configmap_call_args[0] == 'configmap'
-    assert configmap_call_kwargs['custom_resource_dir'] is None
 
     deployment_call_args = mock_create.call_args_list[2][0]
     deployment_call_kwargs = mock_create.call_args_list[2][1]
-    assert deployment_call_kwargs['custom_resource_dir'] == custom_resource
 
-    if init_container:
-        assert deployment_call_args[0] == 'deployment-init'
-        for k, v in init_container.items():
-            assert deployment_call_args[1][k] == v
-    else:
-        assert deployment_call_args[0] == 'deployment'
+    assert deployment_call_args[0] == 'deployment'
 
     assert service_name == 'test-executor.test-ns.svc'
 
@@ -130,40 +115,3 @@ def test_get_cli_params(namespace: Dict, skip_attr: Tuple, expected_string: str)
 )
 def test_dictionary_to_cli_param(dictionary: Dict, expected_string: str):
     assert dictionary_to_cli_param(dictionary) == expected_string
-
-
-@pytest.mark.parametrize(
-    'pod_args',
-    [
-        [
-            '--k8s-uses-init',
-            'test-image',
-            '--k8s-init-container-command',
-            'test-command',
-            '--k8s-mount-path',
-            'test/path',
-        ],
-        [
-            '--k8s-init-container-command',
-            'test-command',
-            '--k8s-mount-path',
-            'test/path',
-        ],
-        [],
-    ],
-)
-def test_init_container_args(pod_args):
-    args = set_pod_parser().parse_args(pod_args)
-    pod = K8sPod(args)
-
-    init_container = get_init_container_args(pod.args)
-
-    if any(['--k8s-uses-init' in arg for arg in pod_args]):
-        assert init_container == {
-            'init-name': 'init',
-            'init-image': args.k8s_uses_init,
-            'init-command': f'{args.k8s_init_container_command}',
-            'mount-path': args.k8s_mount_path,
-        }
-    else:
-        assert init_container is None

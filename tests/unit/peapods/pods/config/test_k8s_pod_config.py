@@ -8,9 +8,8 @@ import jina
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.networking import K8sGrpcConnectionPool
-from jina.peapods.pods.k8s import K8sPod
+from jina.peapods.pods.config.k8s import _get_base_executor_version, K8sPodConfig
 from jina.peapods.pods.k8slib import kubernetes_deployment
-from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
 
 
 def namespace_equal(
@@ -30,7 +29,6 @@ def namespace_equal(
 
 @pytest.mark.parametrize('is_master', (True, False))
 def test_version(is_master, requests_mock):
-    args = set_pod_parser().parse_args(['--name', 'test-pod'])
     if is_master:
         version = 'v2'
     else:
@@ -40,32 +38,25 @@ def test_version(is_master, requests_mock):
         'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags',
         text='[{"name": "v1"}, {"name": "' + version + '"}]',
     )
-    pod = K8sPod(args)
+    v = _get_base_executor_version()
     if is_master:
-        assert pod.version == 'master'
+        assert v == 'master'
     else:
-        assert pod.version == jina.__version__
-
-
-def test_dictionary_to_cli_param():
-    assert (
-        dictionary_to_cli_param({'k1': 'v1', 'k2': {'k3': 'v3'}})
-        == '{\\"k1\\": \\"v1\\", \\"k2\\": {\\"k3\\": \\"v3\\"}}'
-    )
+        assert v == jina.__version__
 
 
 @pytest.mark.parametrize('shards', [1, 2, 3, 4, 5])
 def test_parse_args(shards: int):
     args = set_pod_parser().parse_args(['--shards', str(shards)])
-    pod = K8sPod(args)
+    pod_config = K8sPodConfig(args, None)
 
     assert namespace_equal(
-        pod.deployment_args['head_deployment'],
+        pod_config.deployment_args['head_deployment'],
         args,
         skip_attr=('runtime_cls', 'pea_role', 'port_in'),
     )
-    assert pod.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
-    for i, depl_arg in enumerate(pod.deployment_args['deployments']):
+    assert pod_config.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
+    for i, depl_arg in enumerate(pod_config.deployment_args['deployments']):
         import copy
 
         cargs = copy.deepcopy(args)
@@ -91,6 +82,7 @@ def test_parse_args_custom_executor(shards: int):
             uses_after,
         ]
     )
+    pod = None
     pod = K8sPod(args)
 
     assert pod.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
