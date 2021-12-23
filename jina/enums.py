@@ -100,13 +100,6 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         return cls.from_string(node.value)
 
 
-class SchedulerType(BetterEnum):
-    """The enum for Scheduler Type."""
-
-    LOAD_BALANCE = 0  #: balance the workload between Peas, faster peas get more work
-    ROUND_ROBIN = 1  # : workload are scheduled round-robin manner to the peas, assuming all peas have uniform processing speed.
-
-
 class PollingType(BetterEnum):
     """The enum for representing the parallel type of peas in a pod."""
 
@@ -254,13 +247,6 @@ class FlowInspectType(BetterEnum):
         :return: True if the target is inspected else False.
         """
         return self.value in {0, 2}
-
-
-class RemoteAccessType(BetterEnum):
-    """Remote access type when connect to the host."""
-
-    SSH = 0  # ssh connection
-    JINAD = 1  # using rest api via jinad
 
 
 class BuildTestLevel(BetterEnum):
