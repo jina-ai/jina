@@ -16,6 +16,7 @@ from ....enums import PollingType
 from ....proto import jina_pb2_grpc
 from ....types.request.control import ControlRequest
 from ....types.request.data import DataRequest
+from .... import __default_executor__
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -79,6 +80,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 pod='uses_after', address=self.uses_after_address
             )
         self.polling = args.polling if hasattr(args, 'polling') else PollingType.ANY
+        self._has_uses = args.uses is not None and args.uses != __default_executor__
 
     async def async_setup(self):
         """ Wait for the GRPC server to start """
@@ -206,7 +208,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 requests, pod='uses_before'
             )
             requests = [response]
-        elif len(requests) > 1:
+        elif len(requests) > 1 and not self._has_uses:
             requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
