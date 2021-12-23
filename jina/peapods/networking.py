@@ -452,48 +452,37 @@ class GrpcConnectionPool:
         return asyncio.create_task(task_wrapper(requests, connection))
 
     @staticmethod
-    def get_grpc_channel(address: str, options: Optional[list] = None) -> grpc.Channel:
+    def get_grpc_channel(
+        address: str,
+        options: Optional[list] = None,
+        asyncio: Optional[bool] = False,
+        https: Optional[bool] = False,
+    ) -> grpc.Channel:
         """
         Creates a grpc channel to the given address
 
         :param address: The address to connect to, format is <host>:<port>
         :param options: A list of options to pass to the grpc channel
+        :param asyncio: If True, use the asyncio implementation of the grpc channel
+        :param https: If True, use https for the grpc channel
 
-        :return: A grpc channel
+        :return: A grpc channel or an asyncio channel
         """
+
+        secure_channel = grpc.secure_channel
+        insecure_channel = grpc.insecure_channel
+
+        if asyncio:
+            secure_channel = grpc.aio.secure_channel
+            insecure_channel = grpc.aio.insecure_channel
+
         if options == None:
             options = GrpcConnectionPool.get_default_grpc_options()
 
-        port = address.split(':')[-1]
+        if https:
+            return secure_channel(address, grpc.ssl_channel_credentials(), options)
 
-        if port == '443':
-            return grpc.secure_channel(address, grpc.ssl_channel_credentials(), options)
-
-        return grpc.insecure_channel(address, options)
-
-    @staticmethod
-    def get_grpc_aio_channel(
-        address: str, options: Optional[list] = None
-    ) -> grpc.aio.Channel:
-        """
-        Creates a async grpc channel to the given address
-
-        :param address: The address to connect to, format is <host>:<port>
-        :param options: A list of options to pass to the grpc channel
-
-        :return: A async grpc channel
-        """
-        if options == None:
-            options = GrpcConnectionPool.get_default_grpc_options()
-
-        port = address.split(':')[-1]
-
-        if port == '443':
-            return grpc.aio.secure_channel(
-                address, grpc.ssl_channel_credentials(), options
-            )
-
-        return grpc.aio.insecure_channel(address, options)
+        return insecure_channel(address, options)
 
     @staticmethod
     def activate_worker_sync(
@@ -566,19 +555,28 @@ class GrpcConnectionPool:
         )
 
     @staticmethod
-    def send_request_sync(request: Request, target: str, timeout=100.0) -> Request:
+    def send_request_sync(
+        request: Request,
+        target: str,
+        timeout=100.0,
+        https=False,
+    ) -> Request:
         """
-        Sends a request synchronizly to the target via grpc
+        Sends a request synchronically to the target via grpc
 
         :param request: the request to send
         :param target: where to send the request to, like 127.0.0.1:8080
         :param timeout: timeout for the send
+        :param https: if True, use https for the grpc channel
+
         :returns: the response request
         """
 
         for i in range(3):
             try:
-                with GrpcConnectionPool.get_grpc_channel(target) as channel:
+                with GrpcConnectionPool.get_grpc_channel(
+                    target, https=https
+                ) as channel:
                     if type(request) == DataRequest:
                         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                         response = stub.process_single_data(request, timeout=timeout)
@@ -603,17 +601,26 @@ class GrpcConnectionPool:
         ]
 
     @staticmethod
-    async def send_request_async(request: Request, target: str, timeout=1.0) -> Request:
+    async def send_request_async(
+        request: Request,
+        target: str,
+        timeout=1.0,
+        https=False,
+    ) -> Request:
         """
-        Sends a request synchronizly to the target via grpc
+        Sends a request asynchronously to the target via grpc
 
         :param request: the request to send
         :param target: where to send the request to, like 127.0.0.1:8080
         :param timeout: timeout for the send
+        :param https: if True, use https for the grpc channel
+
         :returns: the response request
         """
 
-        async with GrpcConnectionPool.get_grpc_aio_channel(target) as channel:
+        async with GrpcConnectionPool.get_grpc_channel(
+            target, asyncio=True, https=https
+        ) as channel:
             if type(request) == DataRequest:
                 stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                 return await stub.process_single_data(request, timeout=timeout)
@@ -624,6 +631,7 @@ class GrpcConnectionPool:
     @staticmethod
     def create_async_channel_stub(
         address,
+        https=False,
     ) -> Tuple[
         jina_pb2_grpc.JinaSingleDataRequestRPCStub,
         jina_pb2_grpc.JinaDataRequestRPCStub,
@@ -633,11 +641,14 @@ class GrpcConnectionPool:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
-        :param address: the adress to create the connection to, like 127.0.0.0.1:8080
+        :param address: the address to create the connection to, like 127.0.0.0.1:8080
+        :param https: if True, use https for the grpc channel
 
         :returns: DataRequest/ControlRequest stubs and an async grpc channel
         """
-        channel = GrpcConnectionPool.get_grpc_aio_channel(address)
+        channel = GrpcConnectionPool.get_grpc_channel(
+            address, asyncio=True, https=https
+        )
 
         return (
             jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel),
