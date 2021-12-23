@@ -76,7 +76,7 @@ async def scale(pod_name: str, replicas: int):
     .. #noqa: DAR201
     """
     try:
-        return store.scale(pod_name=pod_name, replicas=replicas)
+        return await store.scale(pod_name=pod_name, replicas=replicas)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 

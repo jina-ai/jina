@@ -71,7 +71,7 @@ async def _rolling_update(
 )
 async def _scale(id: DaemonID, pod_name: str, replicas: int):
     try:
-        return await store.scale(pod_name=pod_name, replicas=replicas)
+        return await store.scale(id=id, pod_name=pod_name, replicas=replicas)
     except Exception as ex:
         raise Runtime400Exception from ex
 
