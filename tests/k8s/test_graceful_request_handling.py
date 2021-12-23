@@ -13,7 +13,7 @@ from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 
-
+# TODO: This is not passing now but we may want to keep
 def send_requests(
     client_kwargs,
     stop_event: multiprocessing.Event,

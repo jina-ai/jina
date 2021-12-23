@@ -18,26 +18,6 @@ def run_test(flow, endpoint, port_expose):
     return resp
 
 
-@pytest.fixture
-def k8s_flow_with_init_container(docker_images):
-    flow = Flow(
-        name='test-flow-with-init-container',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-        k8s_namespace='test-flow-with-init-container-ns',
-    ).add(
-        name='test_executor',
-        uses=docker_images[0],
-        k8s_init_container_command=["python", "dump.py", "/shared/test_file.txt"],
-        k8s_uses_init=docker_images[1],
-        k8s_mount_path='/shared',
-        timeout_ready=120000,
-    )
-    return flow
-
-
 @pytest.fixture()
 def k8s_flow_with_sharding(docker_images, polling):
     flow = Flow(
@@ -207,25 +187,6 @@ def test_flow_with_needs(
 
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
-    'docker_images', [['test-executor', 'dummy-dumper', 'jinaai/jina']], indirect=True
-)
-def test_flow_with_init(
-    k8s_flow_with_init_container,
-):
-    resp = run_test(
-        k8s_flow_with_init_container,
-        endpoint='/search',
-        port_expose=9090,
-    )
-
-    docs = resp[0].docs
-    assert len(docs) == 10
-    for doc in docs:
-        assert doc.tags['file'] == ['1\n', '2\n', '3']
-
-
-@pytest.mark.timeout(3600)
-@pytest.mark.parametrize(
     'docker_images',
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
@@ -264,9 +225,7 @@ def test_flow_with_sharding(k8s_flow_with_sharding, polling):
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-def test_flow_with_configmap(
-    k8s_flow_configmap,
-):
+def test_flow_with_configmap(k8s_flow_configmap, docker_images):
     resp = run_test(
         k8s_flow_configmap,
         endpoint='/env',
@@ -287,9 +246,7 @@ def test_flow_with_configmap(
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-def test_flow_with_gpu(
-    k8s_flow_gpu,
-):
+def test_flow_with_gpu(k8s_flow_gpu, docker_images):
     resp = run_test(
         k8s_flow_gpu,
         endpoint='/cuda',
@@ -306,9 +263,7 @@ def test_flow_with_gpu(
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-def test_flow_with_k8s_namespace(
-    k8s_flow_with_namespace,
-):
+def test_flow_with_k8s_namespace(k8s_flow_with_namespace, docker_images):
     with k8s_flow_with_namespace as f:
         client = K8sClients().core_v1
         namespaces = client.list_namespace().items
@@ -320,9 +275,7 @@ def test_flow_with_k8s_namespace(
     'docker_images', [['reload-executor', 'jinaai/jina']], indirect=True
 )
 def test_rolling_update_simple(
-    k8s_flow_with_reload_executor,
-    logger,
-    reraise,
+    k8s_flow_with_reload_executor, logger, reraise, docker_images
 ):
     from jina.peapods.pods.k8slib import kubernetes_tools
     from multiprocessing import Process, Event

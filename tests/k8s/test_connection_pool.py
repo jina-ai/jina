@@ -12,6 +12,7 @@ client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 
 
+# TODO: Create Kubernetes Pod unrelated to Jina and see how K8sConnectionPool can capture it
 @pytest.mark.asyncio
 @pytest.mark.parametrize('docker_images', [['alpine']], indirect=True)
 async def test_process_up_down_events(docker_images, logger, test_dir: str):
@@ -102,7 +103,7 @@ async def test_process_up_down_events(docker_images, logger, test_dir: str):
     'docker_images', [['slow-init-executor', 'jinaai/jina']], indirect=True
 )
 async def test_wait_for_ready(docker_images):
-    # TODO: make it much more "unitary"
+    # TODO: make it much more "unitary", an unrelated Kubernetes Pod with some readiness check and is not added until the readiness check is good
     flow = Flow(
         name='test-flow-slow-executor',
         infrastructure='K8S',

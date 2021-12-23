@@ -4,6 +4,8 @@ from jina import Flow
 
 DEFAULT_REPLICAS = 2
 
+# TODO: Remove, this may not be our concern anymore
+
 
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)

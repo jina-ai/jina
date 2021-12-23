@@ -95,10 +95,12 @@ def get_deployment_yamls(
         'port_ready_probe': port_ready_probe,
     }
 
-    template_name = 'deployment'
     if gpus:
         deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
-    elif image_name_uses_before and image_name_uses_after:
+
+    template_name = 'deployment'
+
+    if image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
     elif image_name_uses_before:
         template_name = 'deployment-uses-before'

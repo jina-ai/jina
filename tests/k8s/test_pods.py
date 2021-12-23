@@ -9,6 +9,9 @@ from jina.peapods.pods.k8slib import kubernetes_tools
 from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 
+# TODO: potentially move to unit test if needed
+
+
 @pytest.mark.parametrize('docker_images', [['test-executor']], indirect=True)
 def test_regular_pod(docker_images):
     args = set_pod_parser().parse_args(
