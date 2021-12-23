@@ -6,6 +6,8 @@ from jina import Flow
 
 cur_dir = os.path.dirname(__file__)
 
+# TODO: make them a unittest
+
 
 def test_default_k8s_connection_pooling(tmpdir):
     flow = Flow(

@@ -30,7 +30,7 @@ def test_regular_pod(docker_images):
         ]
     )
 
-    with K8sPod(args) as pod:
+    with K8sPod(args):
         k8s_clients = K8sClients()
         pods = k8s_clients.core_v1.list_namespaced_pod(
             namespace='default',

@@ -6,8 +6,7 @@ import pytest
 
 from jina import Flow
 from jina.peapods.networking import K8sGrpcConnectionPool
-from jina.peapods.pods.k8slib import kubernetes_tools, kubernetes_deployment
-from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+from jina.peapods.pods.config.k8slib import kubernetes_tools, kubernetes_deployment
 
 client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
@@ -103,6 +102,7 @@ async def test_process_up_down_events(docker_images, logger, test_dir: str):
     'docker_images', [['slow-init-executor', 'jinaai/jina']], indirect=True
 )
 async def test_wait_for_ready(docker_images):
+    # TODO: make it much more "unitary"
     flow = Flow(
         name='test-flow-slow-executor',
         infrastructure='K8S',
