@@ -488,7 +488,7 @@ class GrpcConnectionPool:
             secure_channel = grpc.aio.secure_channel
             insecure_channel = grpc.aio.insecure_channel
 
-        if options == None:
+        if options is None:
             options = GrpcConnectionPool.get_default_grpc_options()
 
         if https:
