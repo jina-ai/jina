@@ -118,7 +118,7 @@ def test_func_joiner(mocker):
 
     def validate(req):
         texts = {d.text for d in req.docs}
-        assert len(texts) == 3
+        assert len(texts) == 6
         mock()
 
     with f:
