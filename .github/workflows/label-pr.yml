@@ -43,13 +43,14 @@ jobs:
         with:
           node-version: '14'
       - name: Build and Deploy
+        timeout-minutes: 30
         run: |
           npm i -g netlify-cli
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           git fetch origin
           export NUM_RELEASES=2 # only 2 last tags to save build time 
-          bash makedoc.sh development
+          bash makedoc.sh local-only
           netlify deploy --dir=_build/dirhtml --alias=${{ env.BRANCH_NAME }} --message="Deploying docs to ${{ env.BRANCH_NAME }} branch"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

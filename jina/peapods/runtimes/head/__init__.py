@@ -64,7 +64,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 self.connection_pool.add_connection(
                     pod=self._pod_name,
                     address=connection_list[shard_id],
-                    shard_id=shard_id,
+                    shard_id=int(shard_id),
                 )
 
         self.uses_before_address = args.uses_before_address
