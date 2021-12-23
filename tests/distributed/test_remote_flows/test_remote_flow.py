@@ -1,5 +1,5 @@
 import os
-import time
+import asyncio
 
 import pytest
 
@@ -80,7 +80,7 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
     assert remote_flow_args['protocol'] == PROTOCOL
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)
-    time.sleep(0.5)
+    await asyncio.sleep(0.5)
 
 
 @pytest.mark.asyncio
