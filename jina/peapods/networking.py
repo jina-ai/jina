@@ -190,7 +190,7 @@ class GrpcConnectionPool:
                     and len(self._pods[pod][type])
                 ):
                     # This can happen as a race condition when removing connections while accessing it
-                    # In this case we dont care for the concrete entity, so retry with the first one
+                    # In this case we don't care for the concrete entity, so retry with the first one
                     return self._get_connection_list(pod, type, 0)
                 self._logger.debug(
                     f'Did not find a connection for pod {pod}, type {type} and entity_id {entity_id}. There are {len(self._pods[pod][type]) if pod in self._pods else 0} available connections for this pod and type. '
@@ -255,7 +255,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
     ) -> List[asyncio.Task]:
-        """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convinience function wrapper around send_messages
+        """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_messages
         :param request: a single request to send
         :param pod: name of the Jina pod to send the message to
         :param head: If True it is send to the head, otherwise to the worker peas
