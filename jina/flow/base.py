@@ -1676,21 +1676,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
         k8s_connection_pool: bool = True,
-        k8s_uses_init: Optional[str] = None,
-        k8s_mount_path: Optional[str] = None,
-        k8s_init_container_command: Optional[str] = None,
-        k8s_custom_resource_dir: Optional[str] = None,
     ):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes
         :param output_base_path: The base path where to dump all the yaml files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         :param k8s_connection_pool: Boolean indicationg wether the kubernetes connection pool should be used inside the Executor Runtimes.
-        :param k8s_uses_init: Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.
-        :param k8s_mount_path: Path where the init container and the executor can exchange files.
-        :param k8s_init_container_command: Arguments for the init container.'
-        :param k8s_custom_resource_dir: Path to a folder containing custom k8s template files which shall be used for this pod. Please copy the standard Jina resource files and add parameters as you need'
-             to make sure the minimum configuration Jina needs is present'
         """
         import yaml
 
@@ -1707,11 +1698,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 args=v.args,
                 head_args=v.head_args,
                 k8s_namespace=k8s_namespace,
-                k8s_uses_init=k8s_uses_init,
-                k8s_mount_path=k8s_mount_path,
                 k8s_connection_pool=k8s_connection_pool,
-                k8s_init_container_command=k8s_init_container_command,
-                k8s_custom_resource_dir=k8s_custom_resource_dir,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace),
             )
             configs = k8s_pod.to_k8s_yaml()

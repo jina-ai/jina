@@ -3,7 +3,6 @@ from typing import Dict, Optional
 
 DEPLOYMENT_FILES = [
     'deployment',
-    'deployment-init',
     'deployment-uses-before',
     'deployment-uses-after',
     'deployment-uses-before-after',
@@ -15,16 +14,10 @@ DEFAULT_RESOURCE_DIR = os.path.join(
 )
 
 
-def get_yaml(
-    template: str,
-    params: Dict,
-    custom_resource_dir: Optional[str] = None,
-) -> Dict:
+def get_yaml(template: str, params: Dict) -> Dict:
     """Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.
 
     :param template: path to the template file.
-    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
-        Defaults to the standard location jina.resources if not specified.
     :param params: dictionary for replacing the placeholders (keys) with the actual values.
     :return: The yaml dictionary with the corresponding template filled with parameters
     """
@@ -32,23 +25,18 @@ def get_yaml(
     if template == 'configmap':
         yaml = _get_configmap_yaml(template, params)
     elif template in DEPLOYMENT_FILES and params.get('device_plugins'):
-        yaml = _get_yaml(template, params, custom_resource_dir)
+        yaml = _get_yaml(template, params)
         yaml = _get_deployment_with_device_plugins(yaml, params)
     else:
-        yaml = _get_yaml(template, params, custom_resource_dir)
+        yaml = _get_yaml(template, params)
 
     return yaml
 
 
-def _get_yaml(
-    template: str, params: Dict, custom_resource_dir: Optional[str] = None
-) -> Dict:
+def _get_yaml(template: str, params: Dict) -> Dict:
     import yaml
 
-    if custom_resource_dir:
-        path = os.path.join(custom_resource_dir, f'{template}.yml')
-    else:
-        path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
+    path = os.path.join(DEFAULT_RESOURCE_DIR, f'{template}.yml')
 
     with open(path) as f:
         content = f.read()

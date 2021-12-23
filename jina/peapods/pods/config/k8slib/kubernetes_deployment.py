@@ -28,8 +28,6 @@ def get_deployment_yamls(
     jina_pod_name: str,
     pea_type: str,
     shard_id: Optional[int] = None,
-    init_container: Optional[Dict] = None,
-    custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
     gpus: Optional[Union[int, str]] = None,
@@ -52,9 +50,6 @@ def get_deployment_yamls(
     :param jina_pod_name: Name of the Jina Pod this deployment belongs to
     :param pea_type: type os this pea, can be gateway/head/worker
     :param shard_id: id of this shard, None if shards=1 or this is gateway/head
-    :param init_container: additional arguments used for the init container
-    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
-        Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
@@ -100,20 +95,15 @@ def get_deployment_yamls(
         'port_ready_probe': port_ready_probe,
     }
 
+    template_name = 'deployment'
     if gpus:
         deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
-
-    if init_container:
-        template_name = 'deployment-init'
-        deployment_params = {**deployment_params, **init_container}
     elif image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
     elif image_name_uses_before:
         template_name = 'deployment-uses-before'
     elif image_name_uses_after:
         template_name = 'deployment-uses-after'
-    else:
-        template_name = 'deployment'
 
     yamls = [
         kubernetes_tools.get_yaml(
@@ -135,7 +125,6 @@ def get_deployment_yamls(
                 'namespace': namespace,
                 'data': env,
             },
-            custom_resource_dir=None,
         ),
         kubernetes_tools.get_yaml(
             'service',
@@ -147,13 +136,8 @@ def get_deployment_yamls(
                 'port_in': port_in,
                 'type': 'ClusterIP',
             },
-            custom_resource_dir=custom_resource_dir,
         ),
-        kubernetes_tools.get_yaml(
-            template_name,
-            deployment_params,
-            custom_resource_dir=custom_resource_dir,
-        ),
+        kubernetes_tools.get_yaml(template_name, deployment_params),
     ]
 
     return yamls
@@ -181,9 +165,6 @@ def get_cli_params(
         'uses_after',
         'uses_before',
         'replicas',
-        'k8s_init_container_command',
-        'k8s_uses_init',
-        'k8s_mount_path',
     ] + list(skip_list)
     if port_in:
         arguments.port_in = port_in
@@ -234,26 +215,3 @@ def dictionary_to_cli_param(dictionary) -> str:
     :return: string representation of the dictionary
     """
     return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
-
-
-def get_init_container_args(
-    k8s_uses_init: Optional[str] = None,
-    k8s_mount_path: Optional[str] = None,
-    k8s_init_container_command: Optional[str] = None,
-) -> Optional[Dict]:
-    """Return the init container arguments for the k8s pod.
-
-    :param k8s_uses_init: Init container for k8s pod. Usually retrieves some data which or waits until some condition is fulfilled.
-    :param k8s_mount_path: Path where the init container and the executor can exchange files.
-    :param k8s_init_container_command: Arguments for the init container.'
-    :return: dictionary of init container arguments
-    """
-    init_container = None
-    if k8s_uses_init:
-        init_container = {
-            'init-name': 'init',
-            'init-image': k8s_uses_init,
-            'init-command': f'{k8s_init_container_command}',
-            'mount-path': k8s_mount_path,
-        }
-    return init_container

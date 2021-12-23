@@ -39,10 +39,6 @@ class K8sPodConfig:
             deployment_args: Union['Namespace', Dict],
             k8s_namespace: str,
             k8s_connection_pool: bool = True,
-            k8s_uses_init: Optional[str] = None,
-            k8s_mount_path: Optional[str] = None,
-            k8s_init_container_command: Optional[str] = None,
-            k8s_custom_resource_dir: Optional[str] = None,
             k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
@@ -58,10 +54,6 @@ class K8sPodConfig:
             self.cluster_address = None
             self.k8s_namespace = k8s_namespace
             self.k8s_connection_pool = k8s_connection_pool
-            self.k8s_uses_init = k8s_uses_init
-            self.k8s_mount_path = k8s_mount_path
-            self.k8s_init_container_command = k8s_init_container_command
-            self.k8s_custom_resource_dir = k8s_custom_resource_dir
             self.k8s_pod_addresses = k8s_pod_addresses
 
         def get_gateway_yamls(
@@ -152,9 +144,6 @@ class K8sPodConfig:
                 if hasattr(cargs, 'uses_after') and cargs.uses_after
                 else None
             )
-            init_container_args = kubernetes_deployment.get_init_container_args(
-                self.k8s_uses_init, self.k8s_mount_path, self.k8s_init_container_command
-            )
             container_args = self._get_container_args(cargs.uses)
             container_args_uses_before = (
                 self._get_container_args(
@@ -192,10 +181,8 @@ class K8sPodConfig:
                 jina_pod_name=self.jina_pod_name,
                 pea_type=self.pea_type,
                 shard_id=self.shard_id,
-                init_container=init_container_args,
                 env=cargs.env,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
-                custom_resource_dir=self.k8s_custom_resource_dir,
             )
 
     def __init__(
@@ -204,18 +191,10 @@ class K8sPodConfig:
         head_args: Optional[Union['Namespace', Dict]],
         k8s_namespace: str,
         k8s_connection_pool: bool = True,
-        k8s_uses_init: Optional[str] = None,
-        k8s_mount_path: Optional[str] = None,
-        k8s_init_container_command: Optional[str] = None,
-        k8s_custom_resource_dir: Optional[str] = None,
         k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
     ):
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
-        self.k8s_uses_init = k8s_uses_init
-        self.k8s_mount_path = k8s_mount_path
-        self.k8s_init_container_command = k8s_init_container_command
-        self.k8s_custom_resource_dir = k8s_custom_resource_dir
         self.k8s_pod_addresses = k8s_pod_addresses
         self.head_deployment = None
         self.args = copy.copy(args)
@@ -238,10 +217,6 @@ class K8sPodConfig:
                 pea_type='head',
                 k8s_namespace=self.k8s_namespace,
                 k8s_connection_pool=self.k8s_connection_pool,
-                k8s_uses_init=self.k8s_uses_init,
-                k8s_mount_path=self.k8s_mount_path,
-                k8s_init_container_command=self.k8s_init_container_command,
-                k8s_custom_resource_dir=self.k8s_custom_resource_dir,
                 k8s_pod_addresses=self.k8s_pod_addresses,
             )
 
@@ -261,10 +236,6 @@ class K8sPodConfig:
                     jina_pod_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
-                    k8s_uses_init=self.k8s_uses_init,
-                    k8s_mount_path=self.k8s_mount_path,
-                    k8s_init_container_command=self.k8s_init_container_command,
-                    k8s_custom_resource_dir=self.k8s_custom_resource_dir,
                     k8s_pod_addresses=self.k8s_pod_addresses,
                 )
             )

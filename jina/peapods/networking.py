@@ -442,7 +442,7 @@ class GrpcConnectionPool:
                         raise
                     else:
                         self._logger.debug(
-                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/3'
+                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i + 1}/3'
                         )
 
         return asyncio.create_task(task_wrapper(requests, connection))
@@ -518,7 +518,9 @@ class GrpcConnectionPool:
         )
 
     @staticmethod
-    def send_request_sync(request: Request, target: str, timeout=100.0) -> Request:
+    def send_request_sync(
+        request: Request, target: str, timeout: float = 100.0
+    ) -> Request:
         """
         Sends a request synchronizly to the target via grpc
 
@@ -558,7 +560,9 @@ class GrpcConnectionPool:
         ]
 
     @staticmethod
-    async def send_request_async(request: Request, target: str, timeout=1.0) -> Request:
+    async def send_request_async(
+        request: Request, target: str, timeout: float = 1.0
+    ) -> Request:
         """
         Sends a request synchronizly to the target via grpc
 
@@ -611,7 +615,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     Manages grpc connections to replicas in a K8s deployment.
 
     :param namespace: K8s namespace to operate in
-    :param client: K8s client
     :param logger: the logger to use
     """
 
@@ -623,19 +626,27 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     def __init__(
         self,
         namespace: str,
-        client: 'kubernetes.client.CoreV1Api',
-        logger: JinaLogger = None,
+        logger: Optional[JinaLogger] = None,
     ):
         super().__init__(logger=logger)
 
         self._namespace = namespace
         self._process_events_task = None
-        self._k8s_client = client
-        self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
 
+        import kubernetes
         from kubernetes import watch
+        from kubernetes import client
 
+        try:
+            # try loading kube config from disk first
+            kubernetes.config.load_kube_config()
+        except kubernetes.config.config_exception.ConfigException:
+            # if the config could not be read from disk, try loading in cluster config
+            # this works if we are running inside k8s
+            kubernetes.config.load_incluster_config()
+        self._k8s_client = client.CoreV1Api(api_client=kubernetes.client.ApiClient())
+        self._k8s_event_queue = asyncio.Queue()
         self._api_watch = watch.Watch()
 
         self.update_thread = Thread(target=self.run, daemon=True)
@@ -780,11 +791,6 @@ def create_connection_pool(
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
-        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
-
-        k8s_clients = K8sClients()
-        return K8sGrpcConnectionPool(
-            namespace=k8s_namespace, client=k8s_clients.core_v1, logger=logger
-        )
+        return K8sGrpcConnectionPool(namespace=k8s_namespace, logger=logger)
     else:
         return GrpcConnectionPool(logger=logger)
