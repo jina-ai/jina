@@ -6,6 +6,7 @@ from .... import __default_executor__
 from ....enums import PeaRoleType
 from .k8slib import kubernetes_deployment
 from ...networking import K8sGrpcConnectionPool
+from .. import BasePod
 
 
 def _get_base_executor_version():
@@ -51,7 +52,6 @@ class K8sPodConfig:
             self.common_args = common_args
             self.deployment_args = deployment_args
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
-            self.cluster_address = None
             self.k8s_namespace = k8s_namespace
             self.k8s_connection_pool = k8s_connection_pool
             self.k8s_pod_addresses = k8s_pod_addresses
@@ -67,13 +67,15 @@ class K8sPodConfig:
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
+            cargs = copy.copy(self.common_args)
+            cargs.pods_addresses = self.k8s_pod_addresses
             return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
                 container_cmd='["jina"]',
                 container_args=f'["gateway", '
-                f'{kubernetes_deployment.get_cli_params(arguments=self.common_args, skip_list=("pod_role"))}]',
+                f'{kubernetes_deployment.get_cli_params(arguments=cargs, skip_list=("pod_role"))}]',
                 replicas=1,
                 pull_policy='IfNotPresent',
                 jina_pod_name='gateway',
@@ -188,8 +190,7 @@ class K8sPodConfig:
     def __init__(
         self,
         args: Union['Namespace', Dict],
-        head_args: Optional[Union['Namespace', Dict]],
-        k8s_namespace: str,
+        k8s_namespace: Optional[str] = None,
         k8s_connection_pool: bool = True,
         k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
     ):
@@ -198,16 +199,17 @@ class K8sPodConfig:
         self.k8s_pod_addresses = k8s_pod_addresses
         self.head_deployment = None
         self.args = copy.copy(args)
-        self.args.k8s_namespace = k8s_namespace
+        if k8s_namespace is not None:
+            # otherwise it will remain with the one from the original Pod
+            self.args.k8s_namespace = k8s_namespace
         self.args.k8s_connection_pool = k8s_connection_pool
         self.name = self.args.name
-        self.head_args = copy.copy(head_args)
+
         self.deployment_args = self._get_deployment_args(self.args)
 
         if self.deployment_args['head_deployment'] is not None:
-            name = f'{self.name}-head'
             self.head_deployment = self._K8sDeployment(
-                name=name,
+                name=self.deployment_args['head_deployment'].name,
                 head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                 version=_get_base_executor_version(),
                 shard_id=None,
@@ -250,22 +252,23 @@ class K8sPodConfig:
         uses_after = getattr(args, 'uses_after', None)
 
         if args.name != 'gateway':
-            parsed_args['head_deployment'] = copy.copy(args)
-            parsed_args['head_deployment'].replicas = 1
-            parsed_args['head_deployment'].runtime_cls = 'HeadRuntime'
-            parsed_args['head_deployment'].pea_role = PeaRoleType.HEAD
+            parsed_args['head_deployment'] = BasePod._copy_to_head_args(self.args)
             parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             if not self.k8s_connection_pool:
-                connection_list = '{'
+                import json
+
+                connection_list = {}
                 for i in range(shards):
                     name = f'{self.name}-{i}' if shards > 1 else f'{self.name}'
-                    connection_list += f'"{str(i)}": "{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT_IN}",'
-                connection_list = connection_list[:-1]
-                connection_list += '}'
+                    connection_list[
+                        str(i)
+                    ] = f'{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT_IN}'
 
-                parsed_args['head_deployment'].connection_list = connection_list
+                parsed_args['head_deployment'].connection_list = json.dumps(
+                    connection_list
+                )
 
         if uses_before:
             parsed_args[
@@ -288,6 +291,8 @@ class K8sPodConfig:
             cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
             if args.name == 'gateway':
                 cargs.pea_role = PeaRoleType.GATEWAY
+            # the worker runtimes do not care
+            cargs.k8s_connection_pool = False
             parsed_args['deployments'].append(cargs)
 
         return parsed_args

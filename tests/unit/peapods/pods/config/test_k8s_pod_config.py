@@ -1,15 +1,15 @@
 from typing import Union, Dict, Tuple, List, Optional, Set
 from unittest.mock import Mock
-
+import json
 import pytest
 from kubernetes import client
 
-import jina
+from jina import __version__, __default_executor__
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.config.k8s import _get_base_executor_version, K8sPodConfig
-from jina.peapods.pods.k8slib import kubernetes_deployment
+from jina.peapods.pods.config.k8slib import kubernetes_deployment
 
 
 def namespace_equal(
@@ -23,6 +23,7 @@ def namespace_equal(
         return True
     for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
         if not getattr(n1, attr) == getattr(n2, attr):
+            print(f' differ in {attr} => {getattr(n1, attr)} vs {getattr(n2, attr)}')
             return False
     return True
 
@@ -33,7 +34,7 @@ def test_version(is_master, requests_mock):
         version = 'v2'
     else:
         # current version is published already
-        version = jina.__version__
+        version = __version__
     requests_mock.get(
         'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags',
         text='[{"name": "v1"}, {"name": "' + version + '"}]',
@@ -42,34 +43,79 @@ def test_version(is_master, requests_mock):
     if is_master:
         assert v == 'master'
     else:
-        assert v == jina.__version__
+        assert v == __version__
 
 
 @pytest.mark.parametrize('shards', [1, 2, 3, 4, 5])
-def test_parse_args(shards: int):
-    args = set_pod_parser().parse_args(['--shards', str(shards)])
-    pod_config = K8sPodConfig(args, None)
+@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
+def test_parse_args(shards: int, k8s_connection_pool_call: bool):
+    args = set_pod_parser().parse_args(['--shards', str(shards), '--name', 'executor'])
+    pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
 
     assert namespace_equal(
         pod_config.deployment_args['head_deployment'],
         args,
-        skip_attr=('runtime_cls', 'pea_role', 'port_in'),
+        skip_attr=(
+            'runtime_cls',
+            'pea_role',
+            'port_in',
+            'k8s_namespace',
+            'k8s_connection_pool',
+            'name',
+            'uses',
+            'connection_list',
+        ),
     )
+    assert (
+        pod_config.deployment_args['head_deployment'].k8s_namespace
+        == 'default-namespace'
+    )
+    assert pod_config.deployment_args['head_deployment'].name == 'executor/head-0'
     assert pod_config.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
+    assert pod_config.deployment_args['head_deployment'].uses is None
+    assert pod_config.deployment_args['head_deployment'].uses_before is None
+    assert pod_config.deployment_args['head_deployment'].uses_after is None
+    assert (
+        pod_config.deployment_args['head_deployment'].k8s_connection_pool
+        is k8s_connection_pool_call
+    )
+    assert pod_config.deployment_args['head_deployment'].uses_before_address is None
+    assert pod_config.deployment_args['head_deployment'].uses_after_address is None
+    if k8s_connection_pool_call:
+        assert pod_config.deployment_args['head_deployment'].connection_list is None
+    else:
+        if shards > 1:
+            candidate_connection_list = {
+                str(i): f'executor-{i}.default-namespace.svc:8081'
+                for i in range(shards)
+            }
+        else:
+            candidate_connection_list = {'0': f'executor.default-namespace.svc:8081'}
+        assert pod_config.deployment_args[
+            'head_deployment'
+        ].connection_list == json.dumps(candidate_connection_list)
     for i, depl_arg in enumerate(pod_config.deployment_args['deployments']):
         import copy
 
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
+        assert depl_arg.k8s_connection_pool is False
         assert namespace_equal(
             depl_arg,
             cargs,
-            skip_attr=('runtime_cls', 'pea_role', 'port_in'),
+            skip_attr=(
+                'runtime_cls',
+                'pea_role',
+                'port_in',
+                'k8s_namespace',
+                'k8s_connection_pool',
+            ),
         )
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4, 5])
-def test_parse_args_custom_executor(shards: int):
+@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
+def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
     args = set_pod_parser().parse_args(
@@ -82,79 +128,86 @@ def test_parse_args_custom_executor(shards: int):
             uses_after,
         ]
     )
-    pod = None
-    pod = K8sPod(args)
+    pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
 
-    assert pod.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
-    assert pod.deployment_args['head_deployment'].uses_before == uses_before
+    assert pod_config.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
+    assert pod_config.deployment_args['head_deployment'].uses_before == uses_before
     assert (
-        pod.deployment_args['head_deployment'].uses_before_address == f'127.0.0.1:8082'
+        pod_config.deployment_args['head_deployment'].uses_before_address
+        == f'127.0.0.1:8082'
     )
-    assert pod.deployment_args['head_deployment'].uses == jina.__default_executor__
-    assert pod.deployment_args['head_deployment'].uses_after == uses_after
+    assert pod_config.deployment_args['head_deployment'].uses is None
+    assert pod_config.deployment_args['head_deployment'].uses_after == uses_after
     assert (
-        pod.deployment_args['head_deployment'].uses_after_address == f'127.0.0.1:8083'
+        pod_config.deployment_args['head_deployment'].uses_after_address
+        == f'127.0.0.1:8083'
     )
-    for i, depl_arg in enumerate(pod.deployment_args['deployments']):
+    assert (
+        pod_config.deployment_args['head_deployment'].k8s_connection_pool
+        is k8s_connection_pool_call
+    )
+    assert (
+        pod_config.deployment_args['head_deployment'].uses_before_address
+        == f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE}'
+    )
+    assert (
+        pod_config.deployment_args['head_deployment'].uses_after_address
+        == f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_AFTER}'
+    )
+
+    for i, depl_arg in enumerate(pod_config.deployment_args['deployments']):
         import copy
 
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-
+        assert depl_arg.k8s_connection_pool is False
         assert namespace_equal(
             depl_arg,
             cargs,
-            skip_attr=('uses_before', 'uses_after', 'port_in'),
+            skip_attr=(
+                'uses_before',
+                'uses_after',
+                'port_in',
+                'k8s_namespace',
+                'k8s_connection_pool',
+            ),
         )
 
 
 @pytest.mark.parametrize(
-    ['name', 'shards', 'expected_deployments'],
+    ['name', 'shards'],
     [
         (
             'gateway',
             '1',
-            [{'name': 'gateway', 'head_host': 'gateway.ns.svc'}],
         ),
         (
             'test-pod',
             '1',
-            [
-                {
-                    'name': 'test-pod-head',
-                    'head_host': 'test-pod-head.ns.svc',
-                },
-                {'name': 'test-pod', 'head_host': 'test-pod.ns.svc'},
-            ],
         ),
         (
             'test-pod',
             '2',
-            [
-                {
-                    'name': 'test-pod-head',
-                    'head_host': 'test-pod-head.ns.svc',
-                },
-                {'name': 'test-pod-0', 'head_host': 'test-pod-0.ns.svc'},
-                {'name': 'test-pod-1', 'head_host': 'test-pod-1.ns.svc'},
-            ],
         ),
     ],
 )
-def test_deployments(name: str, shards: str, expected_deployments: List[Dict]):
-    args = set_pod_parser().parse_args(
-        ['--name', name, '--shards', shards, '--k8s-namespace', 'ns']
-    )
-    pod = K8sPod(args)
+@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
+def test_deployments(name: str, shards: str, k8s_connection_pool_call):
+    args = set_pod_parser().parse_args(['--name', name, '--shards', shards])
+    pod_config = K8sPodConfig(args, 'ns', k8s_connection_pool_call)
 
-    actual_deployments = pod.deployments
+    actual_deployments = pod_config.worker_deployments
 
-    assert len(actual_deployments) == len(expected_deployments)
-
-    for actual, expected in zip(actual_deployments, expected_deployments):
-        assert actual['name'] == expected['name']
-        assert actual['head_host'] == expected['head_host']
-        assert actual['head_port_in'] == K8sGrpcConnectionPool.K8S_PORT_IN
+    assert len(actual_deployments) == int(shards)
+    for i, deploy in enumerate(actual_deployments):
+        if int(shards) > 1:
+            assert deploy.name == f'{name}-{i}'
+        else:
+            assert deploy.name == name
+        assert deploy.head_port_in == K8sGrpcConnectionPool.K8S_PORT_IN
+        assert deploy.jina_pod_name == name
+        assert deploy.shard_id == i
+        assert deploy.k8s_connection_pool is k8s_connection_pool_call
 
 
 def get_k8s_pod(

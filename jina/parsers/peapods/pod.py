@@ -1,7 +1,7 @@
 """Argparser module for Pod runtimes"""
 import argparse
 
-from jina.enums import SchedulerType, PodRoleType
+from jina.enums import PodRoleType
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 
 
@@ -23,14 +23,6 @@ def mixin_base_pod_parser(parser):
         type=str,
         help='The executor attached after the Peas described by --uses, typically used for receiving from '
         'all shards, accepted type follows `--uses`',
-    )
-
-    gp.add_argument(
-        '--scheduling',
-        type=SchedulerType.from_string,
-        choices=list(SchedulerType),
-        default=SchedulerType.LOAD_BALANCE,
-        help='The strategy of scheduling workload among Peas',
     )
 
     gp.add_argument(
