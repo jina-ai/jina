@@ -17,7 +17,7 @@ def test_simple_routing():
 class MergeExecutor(Executor):
     @requests
     def add_text(self, docs, docs_matrix, **kwargs):
-        if len(docs) == 1:
+        if len(docs) == 2:
             docs[0].text = 'merged'
 
 
@@ -30,7 +30,8 @@ def test_expected_messages_routing():
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert len(results[0].docs) == 1
+        # there merge executor actually does not merge despite its name
+        assert len(results[0].docs) == 2
         assert results[0].docs[0].text == 'merged'
 
 
@@ -76,4 +77,4 @@ def test_complex_flow():
 
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-    assert len(results[0].docs) == 5
+    assert len(results[0].docs) == 6
