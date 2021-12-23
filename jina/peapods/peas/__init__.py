@@ -10,7 +10,7 @@ from ..networking import GrpcConnectionPool
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ...jaml import JAML
 from .helper import _get_event, _get_worker, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__
+from ... import __stop_msg__, __ready_msg__, __windows__
 from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
@@ -168,10 +168,17 @@ class BasePea(ABC):
             try:
                 self.logger.debug(f'terminate')
                 self._terminate()
-                if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
-                    raise Exception(
-                        f'Shutdown signal was not received for {self._timeout_ctrl}'
-                    )
+                if not self.is_shutdown.wait(
+                    timeout=self._timeout_ctrl if not __windows__ else 1.0
+                ):
+                    if not __windows__:
+                        raise Exception(
+                            f'Shutdown signal was not received for {self._timeout_ctrl}'
+                        )
+                    else:
+                        self.logger.warning(
+                            'Pea was forced to close after 1 second. Graceful closing is not available on Windows.'
+                        )
             except Exception as ex:
                 self.logger.error(
                     f'{ex!r} during {self.close!r}'
