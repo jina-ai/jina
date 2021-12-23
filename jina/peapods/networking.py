@@ -622,7 +622,7 @@ class GrpcConnectionPool:
         request: Request,
         target: str,
         timeout=1.0,
-        https=False,
+        https: bool =False,
     ) -> Request:
         """
         Sends a request asynchronously to the target via grpc
