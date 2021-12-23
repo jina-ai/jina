@@ -6,7 +6,7 @@ from jina import Flow, Document
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_flow_complex_toploogy(protocol):
     f = (
-        Flow(protocol=protocol)
+        Flow(protocol='grpc')
         .add(name='p2', needs='gateway')
         .add(name='p3', needs='gateway')
         .add(name='p2p3joiner', needs=['p2', 'p3'])
