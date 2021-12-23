@@ -171,7 +171,7 @@ class FlowDepends:
                     and hasattr(pod.args, 'replicas')
                     and pod.args.replicas > 1
                 ):
-                    for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                    for pea_args in [pod.peas_args['head']]:
                         self._update_port_mapping(pea_args, pod_name, port_mapping)
 
             self.ports = port_mapping

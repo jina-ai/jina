@@ -38,9 +38,13 @@ class PartialStore(ABC):
         try:
             if hasattr(self.object, 'close'):
                 self.object.close()
-                self._logger.success(
-                    f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
-                )
+                self._logger.info(self.item.arguments)
+                if self.item.arguments.get('identity'):
+                    self._logger.success(
+                        f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
+                    )
+                else:
+                    self._logger.success('object is removed!')
             else:
                 self._logger.warning(f'nothing to close. exiting')
         except Exception as e:
@@ -172,7 +176,7 @@ class PartialFlowStore(PartialStore):
                 if port_mapping and (
                     hasattr(pod.args, 'replicas') and pod.args.replicas > 1
                 ):
-                    for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                    for pea_args in [pod.peas_args['head']]:
                         if pea_args.name in port_mapping.pea_names:
                             for port_name in Ports.__fields__:
                                 self._set_pea_ports(pea_args, port_mapping, port_name)

@@ -35,7 +35,7 @@ class FormData(aiohttpFormData):
 
     def __init__(
         self,
-        paths: Optional[List[str]] = None,
+        paths: Optional[List[Path]] = None,
         logger: 'JinaLogger' = None,
         complete: bool = False,
     ) -> None:
@@ -146,7 +146,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
     @if_alive
     async def create(
         self,
-        paths: Optional[List[str]] = None,
+        paths: Optional[List[Path]] = None,
         id: Optional[Union[str, 'DaemonID']] = None,
         complete: bool = False,
         *args,
