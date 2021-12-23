@@ -113,33 +113,20 @@ class PartialPodStore(PartialPeaStore):
             self._logger.success(f'Pod is successfully rolling_updated!')
             return self.item
 
-    async def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
-        """Scale the Pod in current Flow
-        :param pod_name: Pod to be scaled
+    async def scale(self, replicas: int) -> PartialStoreItem:
+        """Scale the current Pod
         :param replicas: number of replicas for the Pod
         :return: Item describing the Flow object
         """
         try:
-            await self._scale(pod_name=pod_name, replicas=replicas)
+            await self.object.scale(replicas=replicas)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        self.item.arguments = vars(self.object.args)
-        self._logger.success(f'Flow is successfully scaled!')
-        return self.item
-
-    async def _scale(
-        self,
-        pod_name: str,
-        replicas: int,
-    ):
-        """
-        Scale the amount of replicas of a given Executor.
-        :param pod_name: pod to update
-        :param replicas: The number of replicas to scale to
-        """
-
-        await self.object._pod_nodes[pod_name].scale(replicas)
+        else:
+            self.item.arguments = vars(self.object.args)
+            self._logger.success(f'Pod is successfully scaled!')
+            return self.item
 
 
 class PartialFlowStore(PartialStore):
@@ -242,19 +229,30 @@ class PartialFlowStore(PartialStore):
             self._logger.success(f'Flow is successfully rolling_updated!')
             return self.item
 
-    def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
+    async def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
         """Scale the Pod in current Flow
-
         :param pod_name: Pod to be scaled
         :param replicas: number of replicas for the Pod
         :return: Item describing the Flow object
         """
         try:
-            self.object.scale(pod_name=pod_name, replicas=replicas)
+            await self._scale(pod_name=pod_name, replicas=replicas)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        else:
-            self.item.arguments = vars(self.object.args)
-            self._logger.success(f'Flow is successfully scaled!')
-            return self.item
+        self.item.arguments = vars(self.object.args)
+        self._logger.success(f'Flow is successfully scaled!')
+        return self.item
+
+    async def _scale(
+        self,
+        pod_name: str,
+        replicas: int,
+    ):
+        """
+        Scale the amount of replicas of a given Executor.
+        :param pod_name: pod to update
+        :param replicas: The number of replicas to scale to
+        """
+
+        await self.object._pod_nodes[pod_name].scale(replicas)
