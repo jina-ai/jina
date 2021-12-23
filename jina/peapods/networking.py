@@ -464,6 +464,50 @@ class GrpcConnectionPool:
         return asyncio.create_task(task_wrapper(requests, connection, endpoint))
 
     @staticmethod
+    def get_grpc_channel(address: str, options: Optional[list] = None) -> grpc.Channel:
+        """
+        Creates a grpc channel to the given address
+
+        :param address: The address to connect to, format is <host>:<port>
+        :param options: A list of options to pass to the grpc channel
+
+        :return: A grpc channel
+        """
+        if options == None:
+            options = GrpcConnectionPool.get_default_grpc_options()
+
+        port = address.split(':')[-1]
+
+        if port == '443':
+            return grpc.secure_channel(address, grpc.ssl_channel_credentials(), options)
+
+        return grpc.insecure_channel(address, options)
+
+    @staticmethod
+    def get_grpc_aio_channel(
+        address: str, options: Optional[list] = None
+    ) -> grpc.aio.Channel:
+        """
+        Creates a async grpc channel to the given address
+
+        :param address: The address to connect to, format is <host>:<port>
+        :param options: A list of options to pass to the grpc channel
+
+        :return: A async grpc channel
+        """
+        if options == None:
+            options = GrpcConnectionPool.get_default_grpc_options()
+
+        port = address.split(':')[-1]
+
+        if port == '443':
+            return grpc.aio.secure_channel(
+                address, grpc.ssl_channel_credentials(), options
+            )
+
+        return grpc.aio.insecure_channel(address, options)
+
+    @staticmethod
     def activate_worker_sync(
         worker_host: str,
         worker_port: int,
@@ -549,10 +593,7 @@ class GrpcConnectionPool:
 
         for i in range(3):
             try:
-                with grpc.insecure_channel(
-                    target,
-                    options=GrpcConnectionPool.get_default_grpc_options(),
-                ) as channel:
+                with GrpcConnectionPool.get_grpc_channel(target) as channel:
                     if type(request) == DataRequest:
                         metadata = (('endpoint', endpoint),) if endpoint else None
                         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -590,9 +631,7 @@ class GrpcConnectionPool:
         :returns: the response request
         """
 
-        async with grpc.aio.insecure_channel(
-            target, options=GrpcConnectionPool.get_default_grpc_options()
-        ) as channel:
+        async with GrpcConnectionPool.get_grpc_aio_channel(target) as channel:
             if type(request) == DataRequest:
                 stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                 return await stub.process_single_data(request, timeout=timeout)
@@ -607,7 +646,7 @@ class GrpcConnectionPool:
         jina_pb2_grpc.JinaSingleDataRequestRPCStub,
         jina_pb2_grpc.JinaDataRequestRPCStub,
         jina_pb2_grpc.JinaControlRequestRPCStub,
-        grpc.aio.insecure_channel,
+        grpc.aio.Channel,
     ]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -616,10 +655,8 @@ class GrpcConnectionPool:
 
         :returns: DataRequest/ControlRequest stubs and an async grpc channel
         """
-        channel = grpc.aio.insecure_channel(
-            address,
-            options=GrpcConnectionPool.get_default_grpc_options(),
-        )
+        channel = GrpcConnectionPool.get_grpc_aio_channel(address)
+
         return (
             jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel),
             jina_pb2_grpc.JinaDataRequestRPCStub(channel),

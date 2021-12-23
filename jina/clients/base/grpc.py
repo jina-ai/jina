@@ -9,6 +9,7 @@ from ..helper import callback_exec
 from ...excepts import BadClient, BadClientInput
 from ...logging.profile import ProgressBar
 from ...proto import jina_pb2_grpc
+from ...peapods.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
     from . import InputType, CallbackFnType
@@ -31,12 +32,8 @@ class GRPCBaseClient(BaseClient):
         try:
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
-            async with grpc.aio.insecure_channel(
+            async with GrpcConnectionPool.get_grpc_aio_channel(
                 f'{self.args.host}:{self.args.port}',
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
