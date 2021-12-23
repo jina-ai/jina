@@ -61,6 +61,7 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flow_envs', [(1, 1), (2, 1), (2, 2), (1, 2)], indirect=True)
 async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
+    await asyncio.sleep(0.5)
     replicas, shards = flow_envs
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
@@ -80,7 +81,6 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
     assert remote_flow_args['protocol'] == PROTOCOL
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)
-    await asyncio.sleep(0.5)
 
 
 @pytest.mark.asyncio
