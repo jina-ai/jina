@@ -553,7 +553,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'WorkerRuntime',
-        scheduling: Optional[str] = 'LOAD_BALANCE',
         shards: Optional[int] = 1,
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
@@ -628,7 +627,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
-        :param scheduling: The strategy of scheduling workload among Peas
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever

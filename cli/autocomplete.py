@@ -332,7 +332,6 @@ ac_table = {
             '--connection-list',
             '--uses-before',
             '--uses-after',
-            '--scheduling',
             '--external',
             '--peas-hosts',
             '--pod-role',
