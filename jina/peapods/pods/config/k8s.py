@@ -344,7 +344,7 @@ class K8sPodConfig:
             deployments.extend(self.worker_deployments)
             return [
                 (
-                    deployment.name,
+                    deployment.dns_name,
                     deployment.get_runtime_yamls(),
                 )
                 for deployment in deployments

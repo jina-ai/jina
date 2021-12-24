@@ -1694,13 +1694,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             pod_base = os.path.join(output_base_path, node)
             k8s_pod = K8sPodConfig(
                 args=v.args,
-                head_args=v.head_args,
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace),
             )
             configs = k8s_pod.to_k8s_yaml()
             for name, k8s_objects in configs:
+                print(f' name {name}')
                 filename = os.path.join(pod_base, f'{name}.yml')
                 os.makedirs(pod_base, exist_ok=True)
                 for k8s_object in k8s_objects:
