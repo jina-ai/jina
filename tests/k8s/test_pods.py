@@ -4,9 +4,7 @@ from jina import Document, DocumentArray, Client
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.networking import GrpcConnectionPool, K8sGrpcConnectionPool
-from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_tools
-from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+from jina.peapods.pods.config.k8slib import kubernetes_tools
 
 
 # TODO: potentially move to unit test if needed

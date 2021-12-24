@@ -2,7 +2,7 @@ import copy
 from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
-from .... import __default_executor__
+from .... import __default_executor__, __version__
 from ....enums import PeaRoleType
 from .k8slib import kubernetes_deployment
 from ...networking import K8sGrpcConnectionPool
@@ -10,15 +10,17 @@ from .. import BasePod
 
 
 def _get_base_executor_version():
-    from jina import __version__
     import requests
 
-    url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
-    tags = requests.get(url).json()
-    name_set = {tag['name'] for tag in tags}
-    if __version__ in name_set:
-        return __version__
-    else:
+    try:
+        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
+        tags = requests.get(url).json()
+        name_set = {tag['name'] for tag in tags}
+        if __version__ in name_set:
+            return __version__
+        else:
+            return 'master'
+    except:
         return 'master'
 
 

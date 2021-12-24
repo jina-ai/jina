@@ -13,7 +13,6 @@ from jina.peapods.pods.config.k8slib.kubernetes_tools import get_yaml
         ('namespace', {'name': 'test-ns'}),
         ('service', {'name': 'test-svc'}),
         ('deployment', {'name': 'test-dep'}),
-        ('deployment-init', {'name': 'test-dep-init'}),
         (
             'configmap',
             {
@@ -29,7 +28,7 @@ def test_get(template: str, params: Dict):
 
     for v in params.values():
         if isinstance(v, str):
-            assert v in json.dumps(yaml)
+            assert v in json.dumps(config)
         elif isinstance(v, dict):
             for sub_key, sub_v in v.items():
                 assert config['data'][sub_key] == sub_v

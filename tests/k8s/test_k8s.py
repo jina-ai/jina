@@ -1,8 +1,8 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
-from pytest_kind import cluster
 import pytest
+from pytest_kind import cluster
+
 from jina import Flow, Document
-from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
 
 cluster.KIND_VERSION = 'v0.11.1'
 

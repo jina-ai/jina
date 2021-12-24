@@ -7,11 +7,11 @@ import docker
 import pytest
 
 from jina import Flow, Document
-from jina.peapods.pods.k8slib import kubernetes_tools
-from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+from jina.peapods.pods.config.k8slib import kubernetes_tools
 
 client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
+
 
 # TODO: This is not passing now but we may want to keep
 def send_requests(

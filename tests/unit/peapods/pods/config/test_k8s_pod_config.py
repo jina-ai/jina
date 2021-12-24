@@ -11,6 +11,15 @@ from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.config.k8s import _get_base_executor_version, K8sPodConfig
 
 
+@pytest.fixture(autouse=True)
+def set_test_pip_version():
+    import os
+
+    os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
+    yield
+    del os.environ['JINA_K8S_USE_TEST_PIP']
+
+
 def namespace_equal(
     n1: Union[Namespace, Dict], n2: Union[Namespace, Dict], skip_attr: Tuple = ()
 ) -> bool:
@@ -22,7 +31,6 @@ def namespace_equal(
         return True
     for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
         if not getattr(n1, attr) == getattr(n2, attr):
-            print(f' differ in {attr} => {getattr(n1, attr)} vs {getattr(n2, attr)}')
             return False
     return True
 
@@ -480,7 +488,7 @@ def test_k8s_yaml_regular_pod(
     yaml_configs = pod_config.to_k8s_yaml()
     assert len(yaml_configs) == 1 + shards
     head_name, head_configs = yaml_configs[0]
-    assert head_name == 'executor/head-0'
+    assert head_name == 'executor-head-0'
     assert (
         len(head_configs) == 5
     )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
