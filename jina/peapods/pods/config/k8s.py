@@ -130,7 +130,7 @@ class K8sPodConfig:
             return image_name
 
         def _get_container_args(self, cargs, pea_type):
-            uses_metas = cargs.uses_metas
+            uses_metas = cargs.uses_metas or {}
             if self.shard_id is not None:
                 uses_metas['pea_id'] = self.shard_id
             uses_with = self.deployment_args.uses_with
@@ -275,6 +275,7 @@ class K8sPodConfig:
         if args.name != 'gateway':
             parsed_args['head_deployment'] = BasePod._copy_to_head_args(self.args)
             parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
             parsed_args['head_deployment'].uses_with = None
 

@@ -4,6 +4,8 @@ import pytest
 
 from jina import __version__
 from jina.helper import Namespace
+from jina.hubble import HubExecutor
+from jina.hubble.hubio import HubIO
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.config.k8s import _get_base_executor_version, K8sPodConfig
@@ -20,6 +22,7 @@ def namespace_equal(
         return True
     for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
         if not getattr(n1, attr) == getattr(n2, attr):
+            print(f' differ in {attr} => {getattr(n1, attr)} vs {getattr(n2, attr)}')
             return False
     return True
 
@@ -134,6 +137,11 @@ def test_parse_args(
     for i, depl_arg in enumerate(pod_config.deployment_args['deployments']):
         import copy
 
+        assert (
+            depl_arg.name == f'executor-{i}'
+            if len(pod_config.deployment_args['deployments']) > 1
+            else 'executor'
+        )
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
         assert depl_arg.k8s_connection_pool is False
@@ -148,11 +156,12 @@ def test_parse_args(
                 'k8s_connection_pool',
                 'uses_before',  # the uses_before and after is head business
                 'uses_after',
+                'name',
             ),
         )
 
 
-@pytest.mark.parametrize('shards', [2, 3, 4, 5])
+@pytest.mark.parametrize('shards', [1, 5])
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool):
     uses_before = 'custom-executor-before'
@@ -165,6 +174,8 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
             uses_before,
             '--uses-after',
             uses_after,
+            '--name',
+            'executor',
         ]
     )
     pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
@@ -197,6 +208,11 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
     for i, depl_arg in enumerate(pod_config.deployment_args['deployments']):
         import copy
 
+        assert (
+            depl_arg.name == f'executor-{i}'
+            if len(pod_config.deployment_args['deployments']) > 1
+            else 'executor'
+        )
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
         assert depl_arg.k8s_connection_pool is False
@@ -209,6 +225,7 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
                 'port_in',
                 'k8s_namespace',
                 'k8s_connection_pool',
+                'name',
             ),
         )
 
@@ -416,7 +433,23 @@ def test_k8s_yaml_regular_pod(
     k8s_connection_pool_call,
     uses_with,
     uses_metas,
+    monkeypatch,
 ):
+    def _mock_fetch(name, tag=None, secret=None, force=False):
+        return (
+            HubExecutor(
+                uuid='hello',
+                name='alias_dummy',
+                tag='v0',
+                image_name=f'jinahub/{name}',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
     args_list = [
         '--name',
         'executor',
@@ -571,7 +604,7 @@ def test_k8s_yaml_regular_pod(
     if uses_before is not None:
         uses_before_container = head_containers[1]
         assert uses_before_container['name'] == 'uses-before'
-        assert uses_before_container['image'] == 'jinahub+HubBeforeExecutor'
+        assert uses_before_container['image'] == 'jinahub/HubBeforeExecutor'
         assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
         assert uses_before_container['command'] == ['jina']
         uses_before_runtime_container_args = uses_before_container['args']
@@ -612,7 +645,7 @@ def test_k8s_yaml_regular_pod(
     if uses_after is not None:
         uses_after_container = head_containers[-1]
         assert uses_after_container['name'] == 'uses-after'
-        assert uses_after_container['image'] == 'jinahub+HubAfterExecutor'
+        assert uses_after_container['image'] == 'jinahub/HubAfterExecutor'
         assert uses_after_container['imagePullPolicy'] == 'IfNotPresent'
         assert uses_after_container['command'] == ['jina']
         uses_after_runtime_container_args = uses_after_container['args']
@@ -708,7 +741,7 @@ def test_k8s_yaml_regular_pod(
         shard_container = shard_containers[0]
         assert shard_container['name'] == 'executor'
         assert shard_container['image'] in {
-            'jinahub+HubExecutor',
+            'jinahub/HubExecutor',
             'docker_image:latest',
         }
         assert shard_container['imagePullPolicy'] == 'IfNotPresent'
