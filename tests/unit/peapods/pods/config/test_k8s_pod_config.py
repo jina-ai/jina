@@ -20,7 +20,6 @@ def namespace_equal(
         return True
     for attr in filter(lambda x: x not in skip_attr and not x.startswith('_'), dir(n1)):
         if not getattr(n1, attr) == getattr(n2, attr):
-            print(f' differ in {attr} => {getattr(n1, attr)} vs {getattr(n2, attr)}')
             return False
     return True
 
@@ -360,7 +359,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
             'app': 'gateway',
             'jina_pod_name': 'gateway',
             'shard_id': '',
-            'pea_type': 'gateway',
+            'pea_type': 'GATEWAY',
             'ns': 'default-namespace',
         }
     }
@@ -400,12 +399,12 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
     assert port_dict['targetPort'] == port
 
 
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
-@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
+@pytest.mark.parametrize('shards', [3, 1])
 @pytest.mark.parametrize(
     'uses', ['jinahub+docker://HubExecutor', 'docker://docker_image:latest']
 )
-@pytest.mark.parametrize('shards', [1, 3])
+@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
@@ -441,8 +440,6 @@ def test_k8s_yaml_regular_pod(
 
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
-
-    print(f' args_list {args_list}')
 
     args = set_pod_parser().parse_args(args_list)
     # ignored for gateway
@@ -497,7 +494,7 @@ def test_k8s_yaml_regular_pod(
             'app': 'executor-head-0',
             'jina_pod_name': 'executor',
             'shard_id': '',
-            'pea_type': 'head',
+            'pea_type': 'HEAD',
             'ns': 'default-namespace',
         }
     }
@@ -513,7 +510,6 @@ def test_k8s_yaml_regular_pod(
     assert head_runtime_container['imagePullPolicy'] == 'IfNotPresent'
     assert head_runtime_container['command'] == ['jina']
     head_runtime_container_args = head_runtime_container['args']
-    print(f' head_runtime_container_args {head_runtime_container_args}')
 
     assert head_runtime_container_args[0] == 'executor'
     assert '--native' in head_runtime_container_args
@@ -568,6 +564,9 @@ def test_k8s_yaml_regular_pod(
             assert connection_list_string == json.dumps(
                 {'0': 'executor.default-namespace.svc:8081'}
             )
+    else:
+        assert '--k8s-disable-connection-pool' not in head_runtime_container_args
+        assert '--connection-list' not in head_runtime_container_args
 
     if uses_before is not None:
         uses_before_container = head_containers[1]
@@ -576,32 +575,15 @@ def test_k8s_yaml_regular_pod(
         assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
         assert uses_before_container['command'] == ['jina']
         uses_before_runtime_container_args = uses_before_container['args']
-        print(
-            f' uses_before_runtime_container_args {uses_before_runtime_container_args}'
-        )
 
         assert uses_before_runtime_container_args[0] == 'executor'
         assert '--native' in uses_before_runtime_container_args
-        assert '--runtime-cls' in uses_before_runtime_container_args
-        assert '--uses' in uses_before_runtime_container_args
-        assert (
-            uses_before_runtime_container_args[
-                uses_before_runtime_container_args.index('--uses') + 1
-            ]
-            == 'config.yml'
-        )
-        assert (
-            uses_before_runtime_container_args[
-                uses_before_runtime_container_args.index('--runtime-cls') + 1
-            ]
-            == 'WorkerRuntime'
-        )
         assert '--name' in uses_before_runtime_container_args
         assert (
             uses_before_runtime_container_args[
                 uses_before_runtime_container_args.index('--name') + 1
             ]
-            == 'executor/head-0'
+            == 'executor/uses-before'
         )
         assert '--k8s-namespace' in uses_before_runtime_container_args
         assert (
@@ -615,7 +597,7 @@ def test_k8s_yaml_regular_pod(
             uses_before_runtime_container_args[
                 uses_before_runtime_container_args.index('--port-in') + 1
             ]
-            == '8081'
+            == '8082'
         )
         assert '--env' in uses_before_runtime_container_args
         assert (
@@ -624,98 +606,166 @@ def test_k8s_yaml_regular_pod(
             ]
             == '{"ENV_VAR": "ENV_VALUE"}'
         )
-        assert '--pea-role' in uses_before_runtime_container_args
-        assert (
-            uses_before_runtime_container_args[
-                uses_before_runtime_container_args.index('--pea-role') + 1
-            ]
-            == 'HEAD'
-        )
         assert '--connection-list' not in uses_before_runtime_container_args
-        if not k8s_connection_pool_call:
-            assert '--k8s-disable-connection-pool' in uses_before_runtime_container_args
+        assert '--k8s-disable-connection-pool' not in uses_before_runtime_container_args
 
-    # if uses_metas is not None:
-    #     assert '--uses-metas' in head_runtime_container_args
-    #     assert head_runtime_container_args[head_runtime_container_args.index('--uses-metas') + 1] == '{"workspace": ' \
-    #                                                                                                  '"workspacevalue"} '
-    # head_runtime_container = containers[0]
-    # assert container['name'] == 'executor'
-    # assert container['image'] == 'jinaai/jina:master-py38-standard'
-    # assert container['imagePullPolicy'] == 'IfNotPresent'
-    # assert container['command'] == ['jina']
-    # args = container['args']
-    # assert len(configs) == 5  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-    # # deployment)
-    # role = configs[0]
-    # assert role['kind'] == 'Role'
-    # assert role['metadata'] == {'namespace': 'default-namespace', 'name': 'connection-pool'}
-    # assert role['rules'] == [{'apiGroups': [''], 'resources': ['pods', 'services'], 'verbs': ['list', 'watch']}]
-    #
-    # role_binding = configs[1]
-    # assert role_binding['kind'] == 'RoleBinding'
-    # assert role_binding['metadata'] == {'name': 'connection-pool-binding', 'namespace': 'default-namespace'}
-    # assert role_binding['subjects'] == [{'kind': 'ServiceAccount', 'name': 'default', 'apiGroup': ''}]
-    # assert role_binding['roleRef'] == {'kind': 'Role', 'name': 'connection-pool', 'apiGroup': ''}
-    #
-    # config_map = configs[2]
-    # assert config_map['kind'] == 'ConfigMap'
-    # assert config_map['metadata'] == {'name': 'gateway-configmap', 'namespace': 'default-namespace'}
-    # assert config_map['data'] == {'JINA_LOG_LEVEL': 'DEBUG', 'pythonunbuffered': '1',
-    #                               'worker_class': 'uvicorn.workers.UvicornH11Worker'}
-    #
-    # service = configs[3]
-    # assert service['kind'] == 'Service'
-    # assert service['metadata'] == {'name': 'gateway', 'namespace': 'default-namespace', 'labels': {'app': 'gateway'}}
-    # spec_service = service['spec']
-    # assert spec_service['type'] == 'ClusterIP'
-    # assert len(spec_service['ports']) == 2
-    # port_expose = spec_service['ports'][0]
-    # assert port_expose['name'] == 'port-expose'
-    # assert port_expose['protocol'] == 'TCP'
-    # assert port_expose['port'] == 32465
-    # assert port_expose['targetPort'] == 32465
-    # port_in = spec_service['ports'][1]
-    # assert port_in['name'] == 'port-in'
-    # assert port_in['protocol'] == 'TCP'
-    # assert port_in['port'] == 8081
-    # assert port_in['targetPort'] == 8081
-    # assert spec_service['ports'][1]['name'] == 'port-in'
-    # assert spec_service['ports'][1]['protocol'] == 'TCP'
-    # assert spec_service['selector'] == {'app': 'gateway'}
-    #
-    # deployment = configs[4]
-    # assert deployment['kind'] == 'Deployment'
-    # assert deployment['metadata'] == {'name': 'gateway', 'namespace': 'default-namespace'}
-    # spec_deployment = deployment['spec']
-    # assert spec_deployment['replicas'] == 1  # no gateway replication for now
-    # assert spec_deployment['strategy'] == {'type': 'RollingUpdate',
-    #                                        'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0}}
-    # assert spec_deployment['selector'] == {'matchLabels': {'app': 'gateway'}}
-    # template = spec_deployment['template']
-    # assert template['metadata'] == {
-    #     'labels': {'app': 'gateway', 'jina_pod_name': 'gateway', 'shard_id': '', 'pea_type': 'gateway',
-    #                'ns': 'default-namespace'}}
-    # spec = template['spec']
-    # containers = spec['containers']
-    # assert len(containers) == 1
-    # container = containers[0]
-    # assert container['name'] == 'executor'
-    # assert container['image'] == 'jinaai/jina:master-py38-standard'
-    # assert container['imagePullPolicy'] == 'IfNotPresent'
-    # assert container['command'] == ['jina']
-    # args = container['args']
-    #
-    # assert args[0] == 'gateway'
-    # assert '--k8s-namespace' in args
-    # assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
-    # assert '--port-in' in args
-    # assert args[args.index('--port-in') + 1] == '8081'
-    # assert '--port-expose' in args
-    # assert args[args.index('--port-expose') + 1] == '32465'
-    # assert '--env' in args
-    # assert args[args.index('--env') + 1] == '{"ENV_VAR": "ENV_VALUE"}'
-    # assert '--pea-role' in args
-    # assert args[args.index('--pea-role') + 1] == 'GATEWAY'
-    # if not k8s_connection_pool_call:
-    #     assert args[-1] == '--k8s-disable-connection-pool'
+    if uses_after is not None:
+        uses_after_container = head_containers[-1]
+        assert uses_after_container['name'] == 'uses-after'
+        assert uses_after_container['image'] == 'jinahub+HubAfterExecutor'
+        assert uses_after_container['imagePullPolicy'] == 'IfNotPresent'
+        assert uses_after_container['command'] == ['jina']
+        uses_after_runtime_container_args = uses_after_container['args']
+
+        assert uses_after_runtime_container_args[0] == 'executor'
+        assert '--native' in uses_after_runtime_container_args
+        assert '--name' in uses_after_runtime_container_args
+        assert (
+            uses_after_runtime_container_args[
+                uses_after_runtime_container_args.index('--name') + 1
+            ]
+            == 'executor/uses-after'
+        )
+        assert '--k8s-namespace' in uses_after_runtime_container_args
+        assert (
+            uses_after_runtime_container_args[
+                uses_after_runtime_container_args.index('--k8s-namespace') + 1
+            ]
+            == 'default-namespace'
+        )
+        assert '--port-in' in uses_after_runtime_container_args
+        assert (
+            uses_after_runtime_container_args[
+                uses_after_runtime_container_args.index('--port-in') + 1
+            ]
+            == '8083'
+        )
+        assert '--env' in uses_after_runtime_container_args
+        assert (
+            uses_after_runtime_container_args[
+                uses_after_runtime_container_args.index('--env') + 1
+            ]
+            == '{"ENV_VAR": "ENV_VALUE"}'
+        )
+        assert '--connection-list' not in uses_after_runtime_container_args
+        assert '--k8s-disable-connection-pool' not in uses_after_runtime_container_args
+
+    for i, (shard_name, shard_configs) in enumerate(yaml_configs[1:]):
+        name = f'executor-{i}' if shards > 1 else 'executor'
+        assert shard_name == name
+        assert (
+            len(shard_configs) == 5
+        )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
+        role = shard_configs[0]
+        assert_role_config(role)
+        role_binding = shard_configs[1]
+        assert_role_binding_config(role_binding)
+        config_map = shard_configs[2]
+        assert_config_map_config(config_map, name)
+        shard_service = shard_configs[3]
+        assert shard_service['kind'] == 'Service'
+        assert shard_service['metadata'] == {
+            'name': name,
+            'namespace': 'default-namespace',
+            'labels': {'app': name},
+        }
+        shard_spec_service = shard_service['spec']
+        assert shard_spec_service['type'] == 'ClusterIP'
+        assert len(shard_spec_service['ports']) == 2
+        shard_port_expose = shard_spec_service['ports'][0]
+        assert_port_config(shard_port_expose, 'port-expose', 8080)
+        shard_port_in = shard_spec_service['ports'][1]
+        assert_port_config(shard_port_in, 'port-in', 8081)
+        assert shard_spec_service['selector'] == {'app': name}
+
+        shard_deployment = shard_configs[4]
+        assert shard_deployment['kind'] == 'Deployment'
+        assert shard_deployment['metadata'] == {
+            'name': name,
+            'namespace': 'default-namespace',
+        }
+        shard_spec_deployment = shard_deployment['spec']
+        assert shard_spec_deployment['replicas'] == 3  # no head replication for now
+        assert shard_spec_deployment['strategy'] == {
+            'type': 'RollingUpdate',
+            'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
+        }
+        assert shard_spec_deployment['selector'] == {'matchLabels': {'app': name}}
+        shard_template = shard_spec_deployment['template']
+        assert shard_template['metadata'] == {
+            'labels': {
+                'app': name,
+                'jina_pod_name': 'executor',
+                'shard_id': str(i),
+                'pea_type': 'WORKER',
+                'ns': 'default-namespace',
+            }
+        }
+
+        shard_spec = shard_template['spec']
+        shard_containers = shard_spec['containers']
+        assert len(shard_containers) == 1
+        shard_container = shard_containers[0]
+        assert shard_container['name'] == 'executor'
+        assert shard_container['image'] in {
+            'jinahub+HubExecutor',
+            'docker_image:latest',
+        }
+        assert shard_container['imagePullPolicy'] == 'IfNotPresent'
+        assert shard_container['command'] == ['jina']
+        shard_container_runtime_container_args = shard_container['args']
+        assert shard_container_runtime_container_args[0] == 'executor'
+        assert '--native' in shard_container_runtime_container_args
+        assert '--name' in shard_container_runtime_container_args
+        assert (
+            shard_container_runtime_container_args[
+                shard_container_runtime_container_args.index('--name') + 1
+            ]
+            == name
+        )
+        assert '--k8s-namespace' in shard_container_runtime_container_args
+        assert (
+            shard_container_runtime_container_args[
+                shard_container_runtime_container_args.index('--k8s-namespace') + 1
+            ]
+            == 'default-namespace'
+        )
+        assert '--port-in' in shard_container_runtime_container_args
+        assert (
+            shard_container_runtime_container_args[
+                shard_container_runtime_container_args.index('--port-in') + 1
+            ]
+            == '8081'
+        )
+        assert '--env' in shard_container_runtime_container_args
+        assert (
+            shard_container_runtime_container_args[
+                shard_container_runtime_container_args.index('--env') + 1
+            ]
+            == '{"ENV_VAR": "ENV_VALUE"}'
+        )
+        assert '--connection-list' not in shard_container_runtime_container_args
+        assert (
+            '--k8s-disable-connection-pool'
+            not in shard_container_runtime_container_args
+        )
+
+        if uses_with is not None:
+            assert '--uses-with' in shard_container_runtime_container_args
+            assert (
+                shard_container_runtime_container_args[
+                    shard_container_runtime_container_args.index('--uses-with') + 1
+                ]
+                == uses_with
+            )
+        else:
+            assert '--uses-with' not in shard_container_runtime_container_args
+
+        expected_uses_metas = {}
+        if uses_metas is not None:
+            expected_uses_metas = json.loads(uses_metas)
+        expected_uses_metas['pea_id'] = i
+        assert '--uses-metas' in shard_container_runtime_container_args
+        assert shard_container_runtime_container_args[
+            shard_container_runtime_container_args.index('--uses-metas') + 1
+        ] == json.dumps(expected_uses_metas)

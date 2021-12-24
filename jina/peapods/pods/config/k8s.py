@@ -32,7 +32,7 @@ class K8sPodConfig:
             self,
             name: str,
             version: str,
-            pea_type: str,
+            pea_type: PeaRoleType,
             jina_pod_name: str,
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
@@ -87,83 +87,64 @@ class K8sPodConfig:
                 replicas=1,
                 pull_policy='IfNotPresent',
                 jina_pod_name='gateway',
-                pea_type='gateway',
+                pea_type=self.pea_type,
                 port_expose=self.common_args.port_expose,
                 env=cargs.env,
             )
 
         @staticmethod
-        def _construct_runtime_container_args(
-            deployment_args, uses, uses_metas, uses_with, pea_type, port_in
-        ):
+        def _construct_runtime_container_args(cargs, uses_metas, uses_with, pea_type):
             import json
             from ....helper import ArgNamespace
             from ....parsers import set_pea_parser
 
-            cargs = copy.copy(deployment_args)
-            if port_in is not None:
-                cargs.port_in = port_in
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
                 set_pea_parser(),
-                taboo={'uses', 'uses_with', 'uses_metas' 'runtime-cls'},
+                taboo={'uses_with', 'uses_metas'},
             )
-            print(f' non_defaults {non_defaults} vs cargs {cargs}')
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['executor'] + _args
-            if not deployment_args.k8s_connection_pool:
+            if not cargs.k8s_connection_pool and pea_type == PeaRoleType.HEAD:
                 container_args.append('--k8s-disable-connection-pool')
-            container_args.extend(['uses', uses])
             if uses_metas is not None:
-                container_args.extend(['uses-metas', json.dumps(uses_metas)])
+                container_args.extend(['--uses-metas', json.dumps(uses_metas)])
             if uses_with is not None:
-                container_args.extend(['uses-with', json.dumps(uses_with)])
-            container_args.extend(
-                [
-                    '--runtime-cls',
-                    f'{"WorkerRuntime" if pea_type.lower() == "worker" else "HeadRuntime"}',
-                ]
-            )
+                container_args.extend(['--uses-with', json.dumps(uses_with)])
             container_args.append('--native')
-            print(f' container_args {container_args}')
             return container_args
 
         def _get_image_name(self, uses: Optional[str]):
             import os
 
-            if uses is not None:
-                image_name = kubernetes_deployment.get_image_name(uses)
+            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
+            image_name = (
+                'jinaai/jina:test-pip'
+                if test_pip
+                else f'jinaai/jina:{self.version}-py38-perf'
+            )
 
-            if uses is None or image_name == __default_executor__:
-                test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-                image_name = (
-                    'jinaai/jina:test-pip'
-                    if test_pip
-                    else f'jinaai/jina:{self.version}-py38-perf'
-                )
+            if uses is not None and uses != __default_executor__:
+                image_name = kubernetes_deployment.get_image_name(uses)
 
             return image_name
 
-        def _get_container_args(self, uses, pea_type=None, port_in=None):
-            uses_metas = self.deployment_args.uses_metas
+        def _get_container_args(self, cargs, pea_type):
+            uses_metas = cargs.uses_metas
             if self.shard_id is not None:
                 uses_metas['pea_id'] = self.shard_id
             uses_with = self.deployment_args.uses_with
-            if uses != __default_executor__:
-                uses = 'config.yml'
+            if cargs.uses != __default_executor__:
+                cargs.uses = 'config.yml'
             return self._construct_runtime_container_args(
-                self.deployment_args,
-                uses,
-                uses_metas,
-                uses_with,
-                pea_type if pea_type else self.pea_type,
-                port_in,
+                cargs, uses_metas, uses_with, pea_type
             )
 
         def get_runtime_yamls(
             self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
+
             image_name = self._get_image_name(cargs.uses)
             image_name_uses_before = (
                 self._get_image_name(cargs.uses_before)
@@ -175,26 +156,36 @@ class K8sPodConfig:
                 if hasattr(cargs, 'uses_after') and cargs.uses_after
                 else None
             )
-            container_args = self._get_container_args(cargs.uses)
-            print(f' uses_before {cargs.uses_before}')
-            container_args_uses_before = (
-                self._get_container_args(
-                    cargs.uses_before,
-                    'worker',
-                    port_in=K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
+            container_args = self._get_container_args(cargs, pea_type=self.pea_type)
+            container_args_uses_before = None
+            if getattr(cargs, 'uses_before', False):
+                uses_before_cargs = copy.copy(cargs)
+                uses_before_cargs.uses = cargs.uses_before
+                uses_before_cargs.name = f'{self.common_args.name}/uses-before'
+                uses_before_cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE
+                uses_before_cargs.uses_before_address = None
+                uses_before_cargs.uses_after_address = None
+                uses_before_cargs.connection_list = None
+                uses_before_cargs.runtime_cls = 'WorkerRuntime'
+                uses_before_cargs.pea_role = PeaRoleType.WORKER
+                container_args_uses_before = self._get_container_args(
+                    uses_before_cargs, PeaRoleType.WORKER
                 )
-                if hasattr(cargs, 'uses_before') and cargs.uses_before
-                else None
-            )
-            container_args_uses_after = (
-                self._get_container_args(
-                    cargs.uses_after,
-                    'worker',
-                    port_in=K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
+
+            container_args_uses_after = None
+            if getattr(cargs, 'uses_after', False):
+                uses_after_cargs = copy.copy(cargs)
+                uses_after_cargs.uses = cargs.uses_after
+                uses_after_cargs.name = f'{self.common_args.name}/uses-after'
+                uses_after_cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_USES_AFTER
+                uses_after_cargs.uses_before_address = None
+                uses_after_cargs.uses_after_address = None
+                uses_after_cargs.connection_list = None
+                uses_after_cargs.runtime_cls = 'WorkerRuntime'
+                uses_after_cargs.pea_role = PeaRoleType.WORKER
+                container_args_uses_after = self._get_container_args(
+                    uses_after_cargs, PeaRoleType.WORKER
                 )
-                if hasattr(cargs, 'uses_after') and cargs.uses_after
-                else None
-            )
 
             return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
@@ -245,7 +236,7 @@ class K8sPodConfig:
                 jina_pod_name=self.name,
                 common_args=self.args,
                 deployment_args=self.deployment_args['head_deployment'],
-                pea_type='head',
+                pea_type=PeaRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
                 k8s_connection_pool=self.k8s_connection_pool,
                 k8s_pod_addresses=self.k8s_pod_addresses,
@@ -262,7 +253,9 @@ class K8sPodConfig:
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
-                    pea_type='worker',
+                    pea_type=PeaRoleType.WORKER
+                    if name != 'gateway'
+                    else PeaRoleType.GATEWAY,
                     jina_pod_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
@@ -319,6 +312,8 @@ class K8sPodConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            if shards > 1:
+                cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':
                 cargs.pea_role = PeaRoleType.GATEWAY
             # the worker runtimes do not care
