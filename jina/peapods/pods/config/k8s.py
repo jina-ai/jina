@@ -31,7 +31,6 @@ class K8sPodConfig:
         def __init__(
             self,
             name: str,
-            head_port_in: int,
             version: str,
             pea_type: str,
             jina_pod_name: str,
@@ -44,7 +43,6 @@ class K8sPodConfig:
         ):
             self.name = name
             self.dns_name = kubernetes_deployment.to_dns_name(name)
-            self.head_port_in = head_port_in
             self.version = version
             self.pea_type = pea_type
             self.jina_pod_name = jina_pod_name
@@ -67,42 +65,76 @@ class K8sPodConfig:
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
-            cargs = copy.copy(self.common_args)
+            cargs = copy.copy(self.deployment_args)
             cargs.pods_addresses = self.k8s_pod_addresses
+            from ....helper import ArgNamespace
+            from ....parsers import set_gateway_parser
+
+            non_defaults = ArgNamespace.get_non_defaults_args(
+                cargs,
+                set_gateway_parser(),
+            )
+            _args = ArgNamespace.kwargs2list(non_defaults)
+            container_args = ['gateway'] + _args
+            if not cargs.k8s_connection_pool:
+                container_args.append('--k8s-disable-connection-pool')
             return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
                 container_cmd='["jina"]',
-                container_args=f'["gateway", '
-                f'{kubernetes_deployment.get_cli_params(arguments=cargs, skip_list=("pod_role"))}]',
+                container_args=f'{container_args}',
                 replicas=1,
                 pull_policy='IfNotPresent',
                 jina_pod_name='gateway',
                 pea_type='gateway',
                 port_expose=self.common_args.port_expose,
+                env=cargs.env,
             )
 
         @staticmethod
         def _construct_runtime_container_args(
-            deployment_args, uses, uses_metas, uses_with_string, pea_type, port_in
+            deployment_args, uses, uses_metas, uses_with, pea_type, port_in
         ):
-            container_args = (
-                f'["executor", '
-                f'"--native", '
-                f'"--uses", "{uses}", '
-                f'"--runtime-cls", {"WorkerRuntime" if pea_type.lower() == "worker" else "HeadRuntime"}, '
-                f'"--uses-metas", "{uses_metas}", '
-                + uses_with_string
-                + f'{kubernetes_deployment.get_cli_params(arguments=deployment_args, port_in=port_in)}]'
+            import json
+            from ....helper import ArgNamespace
+            from ....parsers import set_pea_parser
+
+            cargs = copy.copy(deployment_args)
+            if port_in is not None:
+                cargs.port_in = port_in
+            non_defaults = ArgNamespace.get_non_defaults_args(
+                cargs,
+                set_pea_parser(),
+                taboo={'uses', 'uses_with', 'uses_metas' 'runtime-cls'},
             )
+            print(f' non_defaults {non_defaults} vs cargs {cargs}')
+            _args = ArgNamespace.kwargs2list(non_defaults)
+            container_args = ['executor'] + _args
+            if not deployment_args.k8s_connection_pool:
+                container_args.append('--k8s-disable-connection-pool')
+            container_args.extend(['uses', uses])
+            if uses_metas is not None:
+                container_args.extend(['uses-metas', json.dumps(uses_metas)])
+            if uses_with is not None:
+                container_args.extend(['uses-with', json.dumps(uses_with)])
+            container_args.extend(
+                [
+                    '--runtime-cls',
+                    f'{"WorkerRuntime" if pea_type.lower() == "worker" else "HeadRuntime"}',
+                ]
+            )
+            container_args.append('--native')
+            print(f' container_args {container_args}')
             return container_args
 
-        def _get_image_name(self, uses: str):
+        def _get_image_name(self, uses: Optional[str]):
             import os
 
-            image_name = kubernetes_deployment.get_image_name(uses)
-            if image_name == __default_executor__:
+            if uses is not None:
+                image_name = kubernetes_deployment.get_image_name(uses)
+
+            if uses is None or image_name == __default_executor__:
                 test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
                 image_name = (
                     'jinaai/jina:test-pip'
@@ -113,20 +145,17 @@ class K8sPodConfig:
             return image_name
 
         def _get_container_args(self, uses, pea_type=None, port_in=None):
-            uses_metas = kubernetes_deployment.dictionary_to_cli_param(
-                {'pea_id': self.shard_id}
-            )
-            uses_with = kubernetes_deployment.dictionary_to_cli_param(
-                self.deployment_args.uses_with
-            )
-            uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
+            uses_metas = self.deployment_args.uses_metas
+            if self.shard_id is not None:
+                uses_metas['pea_id'] = self.shard_id
+            uses_with = self.deployment_args.uses_with
             if uses != __default_executor__:
                 uses = 'config.yml'
             return self._construct_runtime_container_args(
                 self.deployment_args,
                 uses,
                 uses_metas,
-                uses_with_string,
+                uses_with,
                 pea_type if pea_type else self.pea_type,
                 port_in,
             )
@@ -147,6 +176,7 @@ class K8sPodConfig:
                 else None
             )
             container_args = self._get_container_args(cargs.uses)
+            print(f' uses_before {cargs.uses_before}')
             container_args_uses_before = (
                 self._get_container_args(
                     cargs.uses_before,
@@ -175,7 +205,7 @@ class K8sPodConfig:
                 container_cmd='["jina"]',
                 container_cmd_uses_before='["jina"]',
                 container_cmd_uses_after='["jina"]',
-                container_args=container_args,
+                container_args=f'{container_args}',
                 container_args_uses_before=container_args_uses_before,
                 container_args_uses_after=container_args_uses_after,
                 replicas=self.num_replicas,
@@ -210,7 +240,6 @@ class K8sPodConfig:
         if self.deployment_args['head_deployment'] is not None:
             self.head_deployment = self._K8sDeployment(
                 name=self.deployment_args['head_deployment'].name,
-                head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                 version=_get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
@@ -229,7 +258,6 @@ class K8sPodConfig:
             self.worker_deployments.append(
                 self._K8sDeployment(
                     name=name,
-                    head_port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
                     version=_get_base_executor_version(),
                     shard_id=i,
                     common_args=self.args,
@@ -254,6 +282,8 @@ class K8sPodConfig:
         if args.name != 'gateway':
             parsed_args['head_deployment'] = BasePod._copy_to_head_args(self.args)
             parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            parsed_args['head_deployment'].uses_metas = None
+            parsed_args['head_deployment'].uses_with = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             if not self.k8s_connection_pool:
@@ -292,7 +322,8 @@ class K8sPodConfig:
             if args.name == 'gateway':
                 cargs.pea_role = PeaRoleType.GATEWAY
             # the worker runtimes do not care
-            cargs.k8s_connection_pool = False
+            else:
+                cargs.k8s_connection_pool = False
             parsed_args['deployments'].append(cargs)
 
         return parsed_args

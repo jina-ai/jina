@@ -1,15 +1,12 @@
-from typing import Union, Dict, Tuple, List, Optional, Set
-from unittest.mock import Mock
+from typing import Union, Dict, Tuple
 import json
 import pytest
-from kubernetes import client
 
-from jina import __version__, __default_executor__
+from jina import __version__
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.config.k8s import _get_base_executor_version, K8sPodConfig
-from jina.peapods.pods.config.k8slib import kubernetes_deployment
 
 
 def namespace_equal(
@@ -46,10 +43,33 @@ def test_version(is_master, requests_mock):
         assert v == __version__
 
 
-@pytest.mark.parametrize('shards', [1, 2, 3, 4, 5])
+@pytest.mark.parametrize('shards', [1, 5])
+@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize('uses_after', [None, 'docker://docker_after_image:latest'])
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
-def test_parse_args(shards: int, k8s_connection_pool_call: bool):
-    args = set_pod_parser().parse_args(['--shards', str(shards), '--name', 'executor'])
+@pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
+@pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
+def test_parse_args(
+    shards: int,
+    k8s_connection_pool_call: bool,
+    uses_with,
+    uses_metas,
+    uses_before,
+    uses_after,
+):
+    args_list = ['--shards', str(shards), '--name', 'executor']
+    if uses_before is not None:
+        args_list.extend(['--uses-before', uses_before])
+
+    if uses_after is not None:
+        args_list.extend(['--uses-after', uses_after])
+
+    if uses_with is not None:
+        args_list.extend(['--uses-with', uses_with])
+
+    if uses_metas is not None:
+        args_list.extend(['--uses-metas', uses_metas])
+    args = set_pod_parser().parse_args(args_list)
     pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
 
     assert namespace_equal(
@@ -64,6 +84,10 @@ def test_parse_args(shards: int, k8s_connection_pool_call: bool):
             'name',
             'uses',
             'connection_list',
+            'uses_with',
+            'uses_metas',
+            'uses_before_address',
+            'uses_after_address',
         ),
     )
     assert (
@@ -73,14 +97,28 @@ def test_parse_args(shards: int, k8s_connection_pool_call: bool):
     assert pod_config.deployment_args['head_deployment'].name == 'executor/head-0'
     assert pod_config.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
     assert pod_config.deployment_args['head_deployment'].uses is None
-    assert pod_config.deployment_args['head_deployment'].uses_before is None
-    assert pod_config.deployment_args['head_deployment'].uses_after is None
+    assert pod_config.deployment_args['head_deployment'].uses_before == uses_before
+    assert pod_config.deployment_args['head_deployment'].uses_after == uses_after
+    assert pod_config.deployment_args['head_deployment'].uses_metas is None
+    assert pod_config.deployment_args['head_deployment'].uses_with is None
     assert (
         pod_config.deployment_args['head_deployment'].k8s_connection_pool
         is k8s_connection_pool_call
     )
-    assert pod_config.deployment_args['head_deployment'].uses_before_address is None
-    assert pod_config.deployment_args['head_deployment'].uses_after_address is None
+    if uses_before is None:
+        assert pod_config.deployment_args['head_deployment'].uses_before_address is None
+    else:
+        assert (
+            pod_config.deployment_args['head_deployment'].uses_before_address
+            == '127.0.0.1:8082'
+        )
+    if uses_after is None:
+        assert pod_config.deployment_args['head_deployment'].uses_after_address is None
+    else:
+        assert (
+            pod_config.deployment_args['head_deployment'].uses_after_address
+            == '127.0.0.1:8083'
+        )
     if k8s_connection_pool_call:
         assert pod_config.deployment_args['head_deployment'].connection_list is None
     else:
@@ -109,6 +147,8 @@ def test_parse_args(shards: int, k8s_connection_pool_call: bool):
                 'port_in',
                 'k8s_namespace',
                 'k8s_connection_pool',
+                'uses_before',  # the uses_before and after is head business
+                'uses_after',
             ),
         )
 
@@ -204,416 +244,478 @@ def test_deployments(name: str, shards: str, k8s_connection_pool_call):
             assert deploy.name == f'{name}-{i}'
         else:
             assert deploy.name == name
-        assert deploy.head_port_in == K8sGrpcConnectionPool.K8S_PORT_IN
         assert deploy.jina_pod_name == name
         assert deploy.shard_id == i
         assert deploy.k8s_connection_pool is k8s_connection_pool_call
 
 
-def get_k8s_pod(
-    pod_name: str,
-    namespace: str,
-    shards: str = None,
-    replicas: str = None,
-    needs: Optional[Set[str]] = None,
-    uses_before=None,
-    uses_after=None,
-    port_expose=None,
-):
-    parameter_list = ['--name', pod_name, '--k8s-namespace', namespace]
-    if shards:
-        parameter_list.extend(
-            [
-                '--shards',
-                str(shards),
-            ]
-        )
-    if replicas:
-        parameter_list.extend(
-            [
-                '--replicas',
-                str(replicas),
-            ]
-        )
-
-    if port_expose:
-        parameter_list.extend(
-            [
-                '--port-expose',
-                str(port_expose),
-            ]
-        )
-    if uses_before:
-        parameter_list.extend(
-            [
-                '--uses-before',
-                uses_before,
-            ]
-        )
-    if uses_after:
-        parameter_list.extend(['--uses-after', uses_after])
-    parameter_list.append('--noblock-on-start')
-    parser = set_gateway_parser() if pod_name == 'gateway' else set_pod_parser()
-    args = parser.parse_args(parameter_list)
-    pod = K8sPod(args, needs)
-    return pod
-
-
-def test_start_creates_namespace():
-    ns = 'test'
-    pod = get_k8s_pod('gateway', ns, port_expose=8085)
-    kubernetes_deployment.deploy_service = Mock()
-    _mock_delete(pod)
-
-    with pod:
-        assert kubernetes_deployment.deploy_service.call_args[0][0] == 'gateway'
-        assert kubernetes_deployment.deploy_service.call_args[1]['port_expose'] == 8085
-
-
-def _mock_delete(pod):
-    mock = Mock()
-    mock.status = 'Success'
-    for d in pod.k8s_deployments:
-        d._delete_namespaced_deployment = lambda *args, **kwargs: mock
-    if pod.k8s_head_deployment:
-        pod.k8s_head_deployment._delete_namespaced_deployment = (
-            lambda *args, **kwargs: mock
-        )
-
-
-def test_start_deploys_gateway():
-    pod_name = 'gateway'
-    ns = 'test-flow'
-
-    kubernetes_deployment.deploy_service = Mock()
-    kubernetes_deployment.get_cli_params = Mock()
-
-    pod = get_k8s_pod(pod_name, ns)
-    _mock_delete(pod)
-
-    with pod:
-        kubernetes_deployment.deploy_service.assert_called_once()
-
-        assert kubernetes_deployment.deploy_service.call_args[0][0] == pod_name
-        call_kwargs = kubernetes_deployment.deploy_service.call_args[1]
-        assert call_kwargs['namespace'] == ns
-        assert pod.version in call_kwargs['image_name']
-
-        kubernetes_deployment.get_cli_params.assert_called_once()
-
-
-@pytest.mark.parametrize(
-    'uses_before, uses_after',
-    [
-        (None, None),
-        ('uses_before_exec', None),
-        (None, 'uses_after_exec'),
-        ('uses_before_exec', 'uses_after_exec'),
-    ],
-)
-def test_start_deploys_runtime(uses_before, uses_after):
-    pod_name = 'executor'
-    namespace = 'ns'
-    pod = get_k8s_pod(
-        pod_name, namespace, uses_before=uses_before, uses_after=uses_after
-    )
-    _mock_delete(pod)
-
-    assert len(pod.k8s_deployments) > 0
-    for deployment in pod.k8s_deployments:
-        deployment._construct_runtime_container_args = Mock()
-    pod.k8s_head_deployment._construct_runtime_container_args = Mock()
-    kubernetes_deployment.deploy_service = Mock()
-
-    with pod:
-        assert 2 == kubernetes_deployment.deploy_service.call_count
-        dns_name = kubernetes_deployment.deploy_service.call_args[0][0]
-        kwargs = kubernetes_deployment.deploy_service.call_args[1]
-
-        assert dns_name == pod_name
-        assert kwargs['namespace'] == namespace
-        assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-perf'
-        assert kwargs['replicas'] == 1
-        assert kwargs['init_container'] is None
-        assert kwargs['custom_resource_dir'] is None
-
-        assert len(pod.k8s_deployments) == 1
-        assert pod.k8s_head_deployment.head_port_in == 8081
-
-
-@pytest.mark.parametrize('shards', [2, 3, 4])
-def test_start_deploys_runtime_with_shards(shards: int):
-    namespace = 'ns'
-    pod = get_k8s_pod('executor', namespace, str(shards))
-
-    deploy_mock = Mock()
-    kubernetes_deployment.deploy_service = deploy_mock
-
-    pod.start()
-
-    expected_calls = shards + 1  # for head
-
-    assert expected_calls == kubernetes_deployment.deploy_service.call_count
-
-    head_call_args = deploy_mock.call_args_list[0][0]
-    assert head_call_args[0] == pod.name + '-head'
-
-    executor_call_args_list = [
-        deploy_mock.call_args_list[i][0] for i in range(1, shards + 1)
+def assert_role_config(role: Dict):
+    assert role['kind'] == 'Role'
+    assert role['metadata'] == {
+        'namespace': 'default-namespace',
+        'name': 'connection-pool',
+    }
+    assert role['rules'] == [
+        {
+            'apiGroups': [''],
+            'resources': ['pods', 'services'],
+            'verbs': ['list', 'watch'],
+        }
     ]
-    for i, call_args in enumerate(executor_call_args_list):
-        assert call_args[0] == pod.name + f'-{i}'
 
 
-@pytest.mark.parametrize(
-    'needs, replicas, expected_calls, expected_executors',
-    [
-        (None, 1, 2, ['executor-head', 'executor']),
-        (None, 2, 2, ['executor-head', 'executor']),
-        (['first_pod'], 1, 2, ['executor-head', 'executor']),
-        (['first_pod'], 2, 2, ['executor-head', 'executor']),
-        (['first_pod', 'second_pod'], 1, 2, ['executor-head', 'executor']),
-        (['first_pod', 'second_pod'], 2, 2, ['executor-head', 'executor']),
-        (['first_pod', 'second_pod', 'third_pod'], 1, 2, ['executor-head', 'executor']),
-        (['first_pod', 'second_pod', 'third_pod'], 2, 2, ['executor-head', 'executor']),
-    ],
-)
-def test_needs(needs, replicas, expected_calls, expected_executors):
-    namespace = 'ns'
-    pod = get_k8s_pod('executor', namespace, str(1), str(replicas), needs)
-
-    deploy_mock = Mock()
-    kubernetes_deployment.deploy_service = deploy_mock
-    pod.start()
-    assert expected_calls == kubernetes_deployment.deploy_service.call_count
-
-    actual_executors = [executor[0][0] for executor in deploy_mock.call_args_list]
-    assert actual_executors == expected_executors
-
-
-@pytest.mark.parametrize(
-    'uses_before, uses_after, expected_calls, expected_executors',
-    [
-        (None, None, 2, ['executor-head', 'executor']),
-        ('custom_head', None, 2, ['executor-head', 'executor']),
-        (None, 'custom_tail', 2, ['executor-head', 'executor']),
-        (
-            'custom_head',
-            'custom_tail',
-            2,
-            ['executor-head', 'executor'],
-        ),
-    ],
-)
-def test_uses_before_and_uses_after(
-    uses_before, uses_after, expected_calls, expected_executors
-):
-    namespace = 'ns'
-    pod = get_k8s_pod(
-        'executor', namespace, str(1), uses_before=uses_before, uses_after=uses_after
-    )
-    deploy_mock = Mock()
-    kubernetes_deployment.deploy_service = deploy_mock
-    pod.start()
-    assert expected_calls == kubernetes_deployment.deploy_service.call_count
-
-    actual_executors = [executor[0][0] for executor in deploy_mock.call_args_list]
-    assert actual_executors == expected_executors
-
-
-@pytest.mark.parametrize(
-    'name, k8s_namespace, shards, replicas, needs, uses_before',
-    [
-        (
-            'test-with-multiple-shards',
-            'test-namespace',
-            '2',
-            '1',
-            [],
-            False,
-        ),  # shards > 1
-        (
-            'test-with-replicas-needs',
-            'test-namespace',
-            '1',
-            '2',
-            [1, 2],
-            False,
-        ),  # replicas > 1 and needs
-        ('test-with-uses-before', 'test-namespace', '1', '1', [], True),  # uses before
-    ],
-)
-def test_pod_start_close_given_head_deployment(
-    name, k8s_namespace, shards, replicas, mocker, needs, uses_before
-):
-    args_list = [
-        '--name',
-        name,
-        '--k8s-namespace',
-        k8s_namespace,
-        '--shards',
-        shards,
-        '--replicas',
-        replicas,
-        '--noblock-on-start',
+def assert_role_binding_config(role_binding: Dict):
+    assert role_binding['kind'] == 'RoleBinding'
+    assert role_binding['metadata'] == {
+        'name': 'connection-pool-binding',
+        'namespace': 'default-namespace',
+    }
+    assert role_binding['subjects'] == [
+        {'kind': 'ServiceAccount', 'name': 'default', 'apiGroup': ''}
     ]
-    if uses_before:
-        args_list.extend(['--uses-before', 'custom-executor-before'])
-    args = set_pod_parser().parse_args(args_list)
-    mocker.patch(
-        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
-        return_value=f'{name}.{k8s_namespace}.svc',
-    )
-    mocker.patch(
-        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
-        return_value=client.V1Status(status=200),
-    )
-    with K8sPod(args, needs=needs) as pod:
-        # enter `_deploy_runtime`
-        assert isinstance(pod.k8s_head_deployment, K8sPod._K8sDeployment)
-        assert pod.k8s_head_deployment.name == name + '-head'
-        assert pod.args.noblock_on_start
+    assert role_binding['roleRef'] == {
+        'kind': 'Role',
+        'name': 'connection-pool',
+        'apiGroup': '',
+    }
 
 
-@pytest.mark.parametrize(
-    'name, k8s_namespace, shards, uses_after',
-    [
-        (
-            'test-with-multiple-shards',
-            'test-namespace',
-            '2',
-            False,
-        ),  # shards > 1
-        (
-            'test-with-uses-after',
-            'test-namespace',
-            '1',
-            True,
-        ),  # uses-after
-    ],
-)
-def test_pod_start_close_given_tail_deployment(
-    name, k8s_namespace, shards, mocker, uses_after
-):
-    args_list = [
-        '--name',
-        name,
-        '--k8s-namespace',
-        k8s_namespace,
-        '--shards',
-        shards,
-        '--noblock-on-start',
-    ]
-    if uses_after:
-        args_list.extend(['--uses-after', 'custom-executor-after'])
-    args = set_pod_parser().parse_args(args_list)
-    mocker.patch(
-        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
-        return_value=f'{name}.{k8s_namespace}.svc',
-    )
-    mocker.patch(
-        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
-        return_value=client.V1Status(status=200),
-    )
-    with K8sPod(args) as pod:
-        # enter `_deploy_runtime`
-        assert pod.args.noblock_on_start
+def assert_config_map_config(config_map: Dict, base_name: str):
+    assert config_map['kind'] == 'ConfigMap'
+    assert config_map['metadata'] == {
+        'name': f'{base_name}-configmap',
+        'namespace': 'default-namespace',
+    }
+    assert config_map['data'] == {
+        'ENV_VAR': 'ENV_VALUE',
+        'JINA_LOG_LEVEL': 'DEBUG',
+        'pythonunbuffered': '1',
+        'worker_class': 'uvicorn.workers.UvicornH11Worker',
+    }
 
 
-@pytest.mark.parametrize(
-    'all_replicas_ready',
-    [
-        True,  # enter wait-until-success and ready replicas = num of replicas
-        False,  # enter wait-until-success and ready replicas < num of replicas
-    ],
-)
-def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
-    args_list = [
-        '--name',
-        'test-wait-success',
-        '--k8s-namespace',
-        'test-namespace',
-        '--shards',
-        '1',
-        '--replicas',
-        '3',
-        '--timeout-ready',
-        '100',
-    ]
-    args = set_pod_parser().parse_args(args_list)
-    mocker.patch(
-        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
-        return_value=f'test-wait-success.test-namespace.svc',
+@pytest.mark.parametrize('pod_addresses', [None, {'1': 'address.svc'}])
+@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
+def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
+    args = set_gateway_parser().parse_args(
+        ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465']
+    )  # envs are
+    # ignored for gateway
+    pod_config = K8sPodConfig(
+        args, 'default-namespace', k8s_connection_pool_call, pod_addresses
     )
-    mocker.patch(
-        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
-        return_value=client.V1Status(status=200),
-    )
-    if all_replicas_ready:
-        pod = K8sPod(args)
-        pod.k8s_deployments[
-            0
-        ]._read_namespaced_deployment = lambda *args, **kwargs: client.V1Deployment(
-            status=client.V1DeploymentStatus(replicas=3, ready_replicas=3)
-        )
-        pod.k8s_head_deployment._read_namespaced_deployment = (
-            lambda *args, **kwargs: client.V1Deployment(
-                status=client.V1DeploymentStatus(replicas=1, ready_replicas=1)
-            )
-        )
-        with pod:
-            pass
+    yaml_configs = pod_config.to_k8s_yaml()
+    assert len(yaml_configs) == 1
+    name, configs = yaml_configs[0]
+    assert name == 'gateway'
+    assert (
+        len(configs) == 5
+    )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
+    # deployment)
+    role = configs[0]
+    assert_role_config(role)
+
+    role_binding = configs[1]
+    assert_role_binding_config(role_binding)
+    config_map = configs[2]
+    assert_config_map_config(config_map, 'gateway')
+    service = configs[3]
+    assert service['kind'] == 'Service'
+    assert service['metadata'] == {
+        'name': 'gateway',
+        'namespace': 'default-namespace',
+        'labels': {'app': 'gateway'},
+    }
+    spec_service = service['spec']
+    assert spec_service['type'] == 'ClusterIP'
+    assert len(spec_service['ports']) == 2
+    port_expose = spec_service['ports'][0]
+    assert port_expose['name'] == 'port-expose'
+    assert port_expose['protocol'] == 'TCP'
+    assert port_expose['port'] == 32465
+    assert port_expose['targetPort'] == 32465
+    port_in = spec_service['ports'][1]
+    assert port_in['name'] == 'port-in'
+    assert port_in['protocol'] == 'TCP'
+    assert port_in['port'] == 8081
+    assert port_in['targetPort'] == 8081
+    assert spec_service['selector'] == {'app': 'gateway'}
+
+    deployment = configs[4]
+    assert deployment['kind'] == 'Deployment'
+    assert deployment['metadata'] == {
+        'name': 'gateway',
+        'namespace': 'default-namespace',
+    }
+    spec_deployment = deployment['spec']
+    assert spec_deployment['replicas'] == 1  # no gateway replication for now
+    assert spec_deployment['strategy'] == {
+        'type': 'RollingUpdate',
+        'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
+    }
+    assert spec_deployment['selector'] == {'matchLabels': {'app': 'gateway'}}
+    template = spec_deployment['template']
+    assert template['metadata'] == {
+        'labels': {
+            'app': 'gateway',
+            'jina_pod_name': 'gateway',
+            'shard_id': '',
+            'pea_type': 'gateway',
+            'ns': 'default-namespace',
+        }
+    }
+    spec = template['spec']
+    containers = spec['containers']
+    assert len(containers) == 1
+    container = containers[0]
+    assert container['name'] == 'executor'
+    assert container['image'] == 'jinaai/jina:test-pip'
+    assert container['imagePullPolicy'] == 'IfNotPresent'
+    assert container['command'] == ['jina']
+    args = container['args']
+    assert args[0] == 'gateway'
+    assert '--k8s-namespace' in args
+    assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
+    assert '--port-in' in args
+    assert args[args.index('--port-in') + 1] == '8081'
+    assert '--port-expose' in args
+    assert args[args.index('--port-expose') + 1] == '32465'
+    assert '--env' in args
+    assert args[args.index('--env') + 1] == '{"ENV_VAR": "ENV_VALUE"}'
+    assert '--pea-role' in args
+    assert args[args.index('--pea-role') + 1] == 'GATEWAY'
+    if not k8s_connection_pool_call:
+        assert args[-1] == '--k8s-disable-connection-pool'
+    if pod_addresses is not None:
+        assert '--pods-addresses' in args
+        assert args[args.index('--pods-addresses') + 1] == json.dumps(pod_addresses)
     else:
-        # expect Number of ready replicas 1, waiting for 2 replicas to be available
-        # keep waiting, and we set a small timeout-ready, raise the exception
-        pod = K8sPod(args)
-        pod.k8s_deployments[
-            0
-        ]._read_namespaced_deployment = lambda *args, **kwargs: client.V1Deployment(
-            status=client.V1DeploymentStatus(replicas=3, ready_replicas=1)
-        )
-        pod.k8s_head_deployment._read_namespaced_deployment = (
-            lambda *args, **kwargs: client.V1Deployment(
-                status=client.V1DeploymentStatus(replicas=1, ready_replicas=1)
-            )
-        )
-        with pytest.raises(jina.excepts.RuntimeFailToStart):
-            with pod:
-                pass
+        assert '--pods-addresses' not in args
 
 
-def test_pod_with_gpus(mocker):
+def assert_port_config(port_dict: Dict, name: str, port: int):
+    assert port_dict['name'] == name
+    assert port_dict['protocol'] == 'TCP'
+    assert port_dict['port'] == port
+    assert port_dict['targetPort'] == port
+
+
+@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
+@pytest.mark.parametrize(
+    'uses', ['jinahub+docker://HubExecutor', 'docker://docker_image:latest']
+)
+@pytest.mark.parametrize('shards', [1, 3])
+@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
+@pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
+@pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
+def test_k8s_yaml_regular_pod(
+    uses_before,
+    uses_after,
+    uses,
+    shards,
+    k8s_connection_pool_call,
+    uses_with,
+    uses_metas,
+):
     args_list = [
         '--name',
-        'test-wait-success',
-        '--k8s-namespace',
-        'test-namespace',
-        '--shards',
-        '1',
+        'executor',
+        '--uses',
+        uses,
+        '--env',
+        'ENV_VAR:ENV_VALUE',
         '--replicas',
-        '1',
-        '--gpus',
         '3',
+        '--shards',
+        str(shards),
     ]
+    if uses_before is not None:
+        args_list.extend(['--uses-before', uses_before])
+
+    if uses_after is not None:
+        args_list.extend(['--uses-after', uses_after])
+
+    if uses_with is not None:
+        args_list.extend(['--uses-with', uses_with])
+
+    if uses_metas is not None:
+        args_list.extend(['--uses-metas', uses_metas])
+
+    print(f' args_list {args_list}')
+
     args = set_pod_parser().parse_args(args_list)
-    container = client.V1Container(
-        name='test-container',
-        resources=client.V1ResourceRequirements(limits={'nvidia.com/gpu': 3}),
+    # ignored for gateway
+    pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
+    yaml_configs = pod_config.to_k8s_yaml()
+    assert len(yaml_configs) == 1 + shards
+    head_name, head_configs = yaml_configs[0]
+    assert head_name == 'executor/head-0'
+    assert (
+        len(head_configs) == 5
+    )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
+    role = head_configs[0]
+    assert_role_config(role)
+    role_binding = head_configs[1]
+    assert_role_binding_config(role_binding)
+    config_map = head_configs[2]
+    assert_config_map_config(config_map, 'executor-head-0')
+    head_service = head_configs[3]
+    assert head_service['kind'] == 'Service'
+    assert head_service['metadata'] == {
+        'name': 'executor-head-0',
+        'namespace': 'default-namespace',
+        'labels': {'app': 'executor-head-0'},
+    }
+    head_spec_service = head_service['spec']
+    assert head_spec_service['type'] == 'ClusterIP'
+    assert len(head_spec_service['ports']) == 2
+    head_port_expose = head_spec_service['ports'][0]
+    assert_port_config(head_port_expose, 'port-expose', 8080)
+    head_port_in = head_spec_service['ports'][1]
+    assert_port_config(head_port_in, 'port-in', 8081)
+    assert head_spec_service['selector'] == {'app': 'executor-head-0'}
+
+    head_deployment = head_configs[4]
+    assert head_deployment['kind'] == 'Deployment'
+    assert head_deployment['metadata'] == {
+        'name': 'executor-head-0',
+        'namespace': 'default-namespace',
+    }
+    head_spec_deployment = head_deployment['spec']
+    assert head_spec_deployment['replicas'] == 1  # no head replication for now
+    assert head_spec_deployment['strategy'] == {
+        'type': 'RollingUpdate',
+        'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
+    }
+    assert head_spec_deployment['selector'] == {
+        'matchLabels': {'app': 'executor-head-0'}
+    }
+    head_template = head_spec_deployment['template']
+    assert head_template['metadata'] == {
+        'labels': {
+            'app': 'executor-head-0',
+            'jina_pod_name': 'executor',
+            'shard_id': '',
+            'pea_type': 'head',
+            'ns': 'default-namespace',
+        }
+    }
+
+    head_spec = head_template['spec']
+    head_containers = head_spec['containers']
+    assert len(head_containers) == 1 + (1 if uses_before is not None else 0) + (
+        1 if uses_after is not None else 0
     )
-    spec = client.V1PodSpec(containers=[container])
-    mocker.patch(
-        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
-        return_value=client.V1Deployment(
-            status=client.V1DeploymentStatus(replicas=1, ready_replicas=1), spec=spec
-        ),
+    head_runtime_container = head_containers[0]
+    assert head_runtime_container['name'] == 'executor'
+    assert head_runtime_container['image'] == 'jinaai/jina:test-pip'
+    assert head_runtime_container['imagePullPolicy'] == 'IfNotPresent'
+    assert head_runtime_container['command'] == ['jina']
+    head_runtime_container_args = head_runtime_container['args']
+    print(f' head_runtime_container_args {head_runtime_container_args}')
+
+    assert head_runtime_container_args[0] == 'executor'
+    assert '--native' in head_runtime_container_args
+    assert '--runtime-cls' in head_runtime_container_args
+    assert (
+        head_runtime_container_args[
+            head_runtime_container_args.index('--runtime-cls') + 1
+        ]
+        == 'HeadRuntime'
     )
-    mocker.patch(
-        'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
-        return_value=f'test-wait-success.test-namespace.svc',
+    assert '--name' in head_runtime_container_args
+    assert (
+        head_runtime_container_args[head_runtime_container_args.index('--name') + 1]
+        == 'executor/head-0'
     )
-    mocker.patch(
-        'jina.peapods.pods.k8s.K8sPod._K8sDeployment._delete_namespaced_deployment',
-        return_value=client.V1Status(status=200),
+    assert '--k8s-namespace' in head_runtime_container_args
+    assert (
+        head_runtime_container_args[
+            head_runtime_container_args.index('--k8s-namespace') + 1
+        ]
+        == 'default-namespace'
     )
-    with K8sPod(args) as pod:
-        assert pod.args.gpus == '3'
+    assert '--port-in' in head_runtime_container_args
+    assert (
+        head_runtime_container_args[head_runtime_container_args.index('--port-in') + 1]
+        == '8081'
+    )
+    assert '--env' in head_runtime_container_args
+    assert (
+        head_runtime_container_args[head_runtime_container_args.index('--env') + 1]
+        == '{"ENV_VAR": "ENV_VALUE"}'
+    )
+    assert '--pea-role' in head_runtime_container_args
+    assert (
+        head_runtime_container_args[head_runtime_container_args.index('--pea-role') + 1]
+        == 'HEAD'
+    )
+    if not k8s_connection_pool_call:
+        assert '--k8s-disable-connection-pool' in head_runtime_container_args
+        assert '--connection-list' in head_runtime_container_args
+        connection_list_string = head_runtime_container_args[
+            head_runtime_container_args.index('--connection-list') + 1
+        ]
+        if shards > 1:
+            assert connection_list_string == json.dumps(
+                {
+                    str(shard_id): f'executor-{shard_id}.default-namespace.svc:8081'
+                    for shard_id in range(shards)
+                }
+            )
+        else:
+            assert connection_list_string == json.dumps(
+                {'0': 'executor.default-namespace.svc:8081'}
+            )
+
+    if uses_before is not None:
+        uses_before_container = head_containers[1]
+        assert uses_before_container['name'] == 'uses-before'
+        assert uses_before_container['image'] == 'jinahub+HubBeforeExecutor'
+        assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
+        assert uses_before_container['command'] == ['jina']
+        uses_before_runtime_container_args = uses_before_container['args']
+        print(
+            f' uses_before_runtime_container_args {uses_before_runtime_container_args}'
+        )
+
+        assert uses_before_runtime_container_args[0] == 'executor'
+        assert '--native' in uses_before_runtime_container_args
+        assert '--runtime-cls' in uses_before_runtime_container_args
+        assert '--uses' in uses_before_runtime_container_args
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--uses') + 1
+            ]
+            == 'config.yml'
+        )
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--runtime-cls') + 1
+            ]
+            == 'WorkerRuntime'
+        )
+        assert '--name' in uses_before_runtime_container_args
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--name') + 1
+            ]
+            == 'executor/head-0'
+        )
+        assert '--k8s-namespace' in uses_before_runtime_container_args
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--k8s-namespace') + 1
+            ]
+            == 'default-namespace'
+        )
+        assert '--port-in' in uses_before_runtime_container_args
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--port-in') + 1
+            ]
+            == '8081'
+        )
+        assert '--env' in uses_before_runtime_container_args
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--env') + 1
+            ]
+            == '{"ENV_VAR": "ENV_VALUE"}'
+        )
+        assert '--pea-role' in uses_before_runtime_container_args
+        assert (
+            uses_before_runtime_container_args[
+                uses_before_runtime_container_args.index('--pea-role') + 1
+            ]
+            == 'HEAD'
+        )
+        assert '--connection-list' not in uses_before_runtime_container_args
+        if not k8s_connection_pool_call:
+            assert '--k8s-disable-connection-pool' in uses_before_runtime_container_args
+
+    # if uses_metas is not None:
+    #     assert '--uses-metas' in head_runtime_container_args
+    #     assert head_runtime_container_args[head_runtime_container_args.index('--uses-metas') + 1] == '{"workspace": ' \
+    #                                                                                                  '"workspacevalue"} '
+    # head_runtime_container = containers[0]
+    # assert container['name'] == 'executor'
+    # assert container['image'] == 'jinaai/jina:master-py38-standard'
+    # assert container['imagePullPolicy'] == 'IfNotPresent'
+    # assert container['command'] == ['jina']
+    # args = container['args']
+    # assert len(configs) == 5  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
+    # # deployment)
+    # role = configs[0]
+    # assert role['kind'] == 'Role'
+    # assert role['metadata'] == {'namespace': 'default-namespace', 'name': 'connection-pool'}
+    # assert role['rules'] == [{'apiGroups': [''], 'resources': ['pods', 'services'], 'verbs': ['list', 'watch']}]
+    #
+    # role_binding = configs[1]
+    # assert role_binding['kind'] == 'RoleBinding'
+    # assert role_binding['metadata'] == {'name': 'connection-pool-binding', 'namespace': 'default-namespace'}
+    # assert role_binding['subjects'] == [{'kind': 'ServiceAccount', 'name': 'default', 'apiGroup': ''}]
+    # assert role_binding['roleRef'] == {'kind': 'Role', 'name': 'connection-pool', 'apiGroup': ''}
+    #
+    # config_map = configs[2]
+    # assert config_map['kind'] == 'ConfigMap'
+    # assert config_map['metadata'] == {'name': 'gateway-configmap', 'namespace': 'default-namespace'}
+    # assert config_map['data'] == {'JINA_LOG_LEVEL': 'DEBUG', 'pythonunbuffered': '1',
+    #                               'worker_class': 'uvicorn.workers.UvicornH11Worker'}
+    #
+    # service = configs[3]
+    # assert service['kind'] == 'Service'
+    # assert service['metadata'] == {'name': 'gateway', 'namespace': 'default-namespace', 'labels': {'app': 'gateway'}}
+    # spec_service = service['spec']
+    # assert spec_service['type'] == 'ClusterIP'
+    # assert len(spec_service['ports']) == 2
+    # port_expose = spec_service['ports'][0]
+    # assert port_expose['name'] == 'port-expose'
+    # assert port_expose['protocol'] == 'TCP'
+    # assert port_expose['port'] == 32465
+    # assert port_expose['targetPort'] == 32465
+    # port_in = spec_service['ports'][1]
+    # assert port_in['name'] == 'port-in'
+    # assert port_in['protocol'] == 'TCP'
+    # assert port_in['port'] == 8081
+    # assert port_in['targetPort'] == 8081
+    # assert spec_service['ports'][1]['name'] == 'port-in'
+    # assert spec_service['ports'][1]['protocol'] == 'TCP'
+    # assert spec_service['selector'] == {'app': 'gateway'}
+    #
+    # deployment = configs[4]
+    # assert deployment['kind'] == 'Deployment'
+    # assert deployment['metadata'] == {'name': 'gateway', 'namespace': 'default-namespace'}
+    # spec_deployment = deployment['spec']
+    # assert spec_deployment['replicas'] == 1  # no gateway replication for now
+    # assert spec_deployment['strategy'] == {'type': 'RollingUpdate',
+    #                                        'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0}}
+    # assert spec_deployment['selector'] == {'matchLabels': {'app': 'gateway'}}
+    # template = spec_deployment['template']
+    # assert template['metadata'] == {
+    #     'labels': {'app': 'gateway', 'jina_pod_name': 'gateway', 'shard_id': '', 'pea_type': 'gateway',
+    #                'ns': 'default-namespace'}}
+    # spec = template['spec']
+    # containers = spec['containers']
+    # assert len(containers) == 1
+    # container = containers[0]
+    # assert container['name'] == 'executor'
+    # assert container['image'] == 'jinaai/jina:master-py38-standard'
+    # assert container['imagePullPolicy'] == 'IfNotPresent'
+    # assert container['command'] == ['jina']
+    # args = container['args']
+    #
+    # assert args[0] == 'gateway'
+    # assert '--k8s-namespace' in args
+    # assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
+    # assert '--port-in' in args
+    # assert args[args.index('--port-in') + 1] == '8081'
+    # assert '--port-expose' in args
+    # assert args[args.index('--port-expose') + 1] == '32465'
+    # assert '--env' in args
+    # assert args[args.index('--env') + 1] == '{"ENV_VAR": "ENV_VALUE"}'
+    # assert '--pea-role' in args
+    # assert args[args.index('--pea-role') + 1] == 'GATEWAY'
+    # if not k8s_connection_pool_call:
+    #     assert args[-1] == '--k8s-disable-connection-pool'
