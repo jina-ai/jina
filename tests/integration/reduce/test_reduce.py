@@ -142,7 +142,7 @@ def test_reduce_needs():
         assert (doc.embedding == np.zeros(3)).all()
 
 
-def test_uses_before_no_reduce():
+def test_uses_before_reduce():
     flow = (
         Flow()
         .add(uses=Executor1, name='pod0')
@@ -155,17 +155,35 @@ def test_uses_before_no_reduce():
         da = DocumentArray([Document() for _ in range(5)])
         resp = f.post('/', inputs=da, return_results=True)
 
-    # assert no reduce happened
-    assert len(resp[0].docs) == 15
+    # assert reduce happened because there is only BaseExecutor as uses_before
+    assert len(resp[0].docs) == 5
 
 
-def test_uses_before_no_reduce():
+def test_uses_before_no_reduce_real_executor():
     flow = (
         Flow()
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
         .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses_before=DummyExecutor)
+    )
+
+    with flow as f:
+        da = DocumentArray([Document() for _ in range(5)])
+        resp = f.post('/', inputs=da, return_results=True)
+
+    # assert no reduce happened
+    assert len(resp[0].docs) == 1
+    assert resp[0].docs[0].id == 'fake_document'
+
+
+def test_uses_before_no_reduce_real_executor_uses():
+    flow = (
+        Flow()
+        .add(uses=Executor1, name='pod0')
+        .add(uses=Executor2, needs='gateway', name='pod1')
+        .add(uses=Executor3, needs='gateway', name='pod2')
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses=DummyExecutor)
     )
 
     with flow as f:

@@ -6,6 +6,7 @@ from ... import __default_host__
 from . import Pea
 from .jinad import JinaDPea
 from .container import ContainerPea
+from ...enums import PeaRoleType
 
 from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
@@ -39,7 +40,11 @@ class PeaFactory:
             _hub_args.no_usage = True
             cargs.uses = HubIO(_hub_args).pull()
 
-        if cargs.uses and cargs.uses.startswith('docker://'):
+        if (
+            cargs.pea_role != PeaRoleType.HEAD
+            and cargs.uses
+            and cargs.uses.startswith('docker://')
+        ):
             return ContainerPea(cargs)
         else:
             return Pea(args)

@@ -119,9 +119,9 @@ def test_two_flow_with_shared_external_pod(
             # Reducing applied after shards, expect only 50 docs
             validate_response(results[0], 50)
 
-            # Reducing applied, expect 50 docs
+            # Reducing applied after sharding, but not for the needs, expect 100 docs
             results = flow2.index(inputs=input_docs, return_results=True)
-            validate_response(results[0], 50)
+            validate_response(results[0], 100)
 
 
 @pytest.fixture(scope='function')
@@ -342,5 +342,5 @@ def test_flow_with_external_pod_join(
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
 
-        # Reducing applied, expect 50 docs
-        validate_response(resp[0], 50)
+        # Reducing applied for shards, not for uses, expect 100 docs
+        validate_response(resp[0], 100)
