@@ -80,6 +80,19 @@ def set_test_pip_version():
     del os.environ['JINA_K8S_USE_TEST_PIP']
 
 
+@pytest.fixture(autouse=True)
+def load_cluster_config(k8s_cluster):
+    import kubernetes
+
+    try:
+        # try loading kube config from disk first
+        kubernetes.config.load_kube_config()
+    except kubernetes.config.config_exception.ConfigException:
+        # if the config could not be read from disk, try loading in cluster config
+        # this works if we are running inside k8s
+        kubernetes.config.load_incluster_config()
+
+
 @pytest.fixture
 def docker_images(request, image_name_tag_map, k8s_cluster):
     image_names = request.param

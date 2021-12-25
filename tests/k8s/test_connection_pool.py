@@ -11,11 +11,10 @@ cur_dir = os.path.dirname(__file__)
 @pytest.mark.asyncio
 @pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)
 async def test_process_up_down_events(docker_images):
-    import kubernetes
     from kubernetes import client
     from kubernetes import utils
 
-    k8s_client = kubernetes.client.ApiClient()
+    k8s_client = client.ApiClient()
     app_client = client.AppsV1Api(api_client=k8s_client)
     core_client = client.CoreV1Api(api_client=k8s_client)
     namespace = 'pool-test-namespace'
@@ -125,16 +124,16 @@ async def test_process_up_down_events(docker_images):
     await pool.close()
 
 
+@pytest.mark.skip
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     'docker_images', [['slow-init-executor', 'jinaai/jina']], indirect=True
 )
 async def test_wait_for_ready(docker_images):
-    import kubernetes
     from kubernetes import client
     from kubernetes import utils
 
-    k8s_client = kubernetes.client.ApiClient()
+    k8s_client = client.ApiClient()
     app_client = client.AppsV1Api(api_client=k8s_client)
     core_client = client.CoreV1Api(api_client=k8s_client)
     namespace = 'test-flow-slow-executor'
