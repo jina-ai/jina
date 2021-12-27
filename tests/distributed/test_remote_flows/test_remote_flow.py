@@ -5,11 +5,12 @@ import pytest
 
 from daemon.clients import AsyncJinaDClient, JinaDClient
 from daemon.models import DaemonID
-from jina import __default_host__
+from jina import Client, Document, __default_host__
 
 HOST = __default_host__
 PORT = 8000
 PROTOCOL = 'HTTP'
+NUM_DOCS = 10
 MINI_FLOW1_PORT = 9000
 MINI_FLOW2_PORT = 9001
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -54,6 +55,13 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
     assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
+    resp = Client(host=HOST, port=MINI_FLOW1_PORT).post(
+        on='/',
+        inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
+        return_results=True,
+    )
+    for idx, doc in enumerate(resp[0].data.docs):
+        assert doc.tags['key1'] == str(idx)
     assert jinad_client.flows.delete(flow_id)
     assert jinad_client.workspaces.delete(workspace_id)
 
