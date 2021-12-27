@@ -36,6 +36,12 @@ def async_jinad_client():
     return AsyncJinaDClient(host=HOST, port=PORT)
 
 
+@pytest.fixture(autouse=True)
+async def slow_down_tests():
+    yield
+    await asyncio.sleep(0.5)
+
+
 @pytest.mark.parametrize('flow_envs', [(1, 1), (2, 1), (2, 2), (1, 2)], indirect=True)
 def test_remote_jinad_flow(jinad_client, flow_envs):
     shards, replicas = flow_envs
@@ -68,7 +74,6 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('flow_envs', [(1, 1), (2, 1), (2, 2), (1, 2)], indirect=True)
 async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
-    await asyncio.sleep(0.5)
     replicas, shards = flow_envs
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
