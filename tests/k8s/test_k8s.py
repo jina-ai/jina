@@ -1,5 +1,8 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 import pytest
+import os
+import asyncio
+
 from pytest_kind import cluster
 
 from jina import Flow, Document
@@ -7,33 +10,111 @@ from jina import Flow, Document
 cluster.KIND_VERSION = 'v0.11.1'
 
 
-def run_test(flow, endpoint, port_expose):
-    with flow:
-        resp = flow.post(
-            endpoint,
-            [Document() for _ in range(10)],
-            return_results=True,
-            port_expose=port_expose,
+async def create_all_flow_pods_and_wait_ready(
+    flow_dump_path,
+    namespace,
+    api_client,
+    app_client,
+    core_client,
+    deployment_replicas_expected,
+):
+    from kubernetes import utils
+
+    namespace_object = {
+        'apiVersion': 'v1',
+        'kind': 'Namespace',
+        'metadata': {'name': f'{namespace}'},
+    }
+    utils.create_from_dict(api_client, namespace_object)
+
+    pod_set = set(os.listdir(flow_dump_path))
+    for pod_name in pod_set:
+        file_set = set(os.listdir(os.path.join(flow_dump_path, pod_name)))
+        for file in file_set:
+            try:
+                utils.create_from_yaml(
+                    api_client,
+                    yaml_file=os.path.join(flow_dump_path, pod_name, file),
+                    namespace=namespace,
+                )
+            except Exception:
+                # some objects are not successfully created since they exist from previous files
+                pass
+
+    # wait for all the pods to be up
+    while True:
+        namespaced_pods = core_client.list_namespaced_pod(namespace)
+        if namespaced_pods.items is not None and len(namespaced_pods.items) == sum(
+            deployment_replicas_expected.values()
+        ):
+            break
+        await asyncio.sleep(1.0)
+
+    # wait for all the pods to be up
+    resp = app_client.list_namespaced_deployment(namespace=namespace)
+    deployment_names = set([item.metadata.name for item in resp.items])
+    assert deployment_names == set(deployment_replicas_expected.keys())
+    while len(deployment_names) > 0:
+        deployments_ready = []
+        for deployment_name in deployment_names:
+            api_response = app_client.read_namespaced_deployment(
+                name=deployment_name, namespace=namespace
+            )
+            expected_num_replicas = deployment_replicas_expected[deployment_name]
+            if (
+                api_response.status.ready_replicas is not None
+                and api_response.status.ready_replicas == expected_num_replicas
+            ):
+                deployments_ready.append(deployment_name)
+
+        for deployment_name in deployments_ready:
+            deployment_names.remove(deployment_name)
+        await asyncio.sleep(1.0)
+
+
+async def run_test(flow, core_client, namespace, endpoint):
+    # start port forwarding
+    from jina.clients import Client
+
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
         )
-    return resp
+        .items[0]
+        .metadata.name
+    )
+    config_path = os.environ['KUBECONFIG']
+    import portforward
+
+    with portforward.forward(
+        namespace, gateway_pod_name, flow.port_expose, flow.port_expose, config_path
+    ):
+        client_kwargs = dict(
+            host='localhost',
+            port=flow.port_expose,
+            asyncio=True,
+        )
+        client_kwargs.update(flow._common_kwargs)
+
+        client = Client(**client_kwargs)
+        client.show_progress = True
+        responses = []
+        async for resp in client.post(
+            endpoint, inputs=[Document() for _ in range(10)], return_results=True
+        ):
+            responses.append(resp)
+
+    return responses
 
 
 @pytest.fixture()
 def k8s_flow_with_sharding(docker_images, polling):
-    flow = Flow(
-        name='test-flow-with-sharding',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-        k8s_namespace='test-flow-with-sharding-ns',
-    ).add(
+    flow = Flow(name='test-flow-with-sharding', port_expose=9090, protocol='http',).add(
         name='test_executor',
         shards=2,
         replicas=2,
-        uses=docker_images[0],
-        uses_after=docker_images[1],
-        timeout_ready=360000,
+        uses=f'docker://{docker_images[0]}',
+        uses_after=f'docker://{docker_images[1]}',
         polling=polling,
     )
     return flow
@@ -41,17 +122,9 @@ def k8s_flow_with_sharding(docker_images, polling):
 
 @pytest.fixture
 def k8s_flow_configmap(docker_images):
-    flow = Flow(
-        name='k8s-flow-configmap',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-        k8s_namespace='k8s-flow-configmap-ns',
-    ).add(
+    flow = Flow(name='k8s-flow-configmap', port_expose=9090, protocol='http',).add(
         name='test_executor',
-        uses=docker_images[0],
-        timeout_ready=12000,
+        uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
     )
     return flow
@@ -59,17 +132,9 @@ def k8s_flow_configmap(docker_images):
 
 @pytest.fixture
 def k8s_flow_gpu(docker_images):
-    flow = Flow(
-        name='k8s-flow-gpu',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-        k8s_namespace='k8s-flow-gpu-ns',
-    ).add(
+    flow = Flow(name='k8s-flow-gpu', port_expose=9090, protocol='http',).add(
         name='test_executor',
-        uses=docker_images[0],
-        timeout_ready=12000,
+        uses=f'docker://{docker_images[0]}',
         gpus=1,
     )
     return flow
@@ -77,80 +142,59 @@ def k8s_flow_gpu(docker_images):
 
 @pytest.fixture
 def k8s_flow_with_reload_executor(docker_images):
-    flow = Flow(
-        name='test-flow-with-reload',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-    ).add(
+    flow = Flow(name='test-flow-with-reload', port_expose=9090, protocol='http',).add(
         name='test_executor',
         replicas=2,
         uses_with={'argument': 'value1'},
-        uses=docker_images[0],
-        timeout_ready=120000,
+        uses=f'docker://{docker_images[0]}',
     )
     return flow
 
 
 @pytest.fixture
-def k8s_flow_with_namespace(docker_images):
-    flow = Flow(
-        name='test-flow-with-namespace',
-        port_expose=9090,
-        infrastructure='K8S',
-        protocol='http',
-        timeout_ready=120000,
-        k8s_namespace='my-custom-namespace',
-    ).add(
+def k8s_flow_scale(docker_images, shards):
+    DEFAULT_REPLICAS = 2
+
+    flow = Flow(name='test-flow-scale', port_expose=9090, protocol='http',).add(
         name='test_executor',
+        shards=shards,
+        replicas=DEFAULT_REPLICAS,
     )
     return flow
 
 
 @pytest.fixture
-def k8s_flow_with_needs(docker_images, k8s_connection_pool):
+def k8s_flow_with_needs(docker_images):
     flow = (
         Flow(
             name='test-flow-with-needs',
             port_expose=9090,
-            infrastructure='K8S',
             protocol='http',
-            timeout_ready=120000,
-            k8s_namespace='test-flow-with-needs-ns',
-            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='segmenter',
-            uses=docker_images[0],
-            timeout_ready=120000,
-            k8s_connection_pool=k8s_connection_pool,
+            uses=f'docker://{docker_images[0]}',
         )
         .add(
             name='textencoder',
-            uses=docker_images[0],
+            uses=f'docker://{docker_images[0]}',
             needs='segmenter',
-            timeout_ready=120000,
-            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='imageencoder',
-            uses=docker_images[0],
+            uses=f'docker://{docker_images[0]}',
             needs='segmenter',
-            timeout_ready=120000,
-            k8s_connection_pool=k8s_connection_pool,
         )
         .add(
             name='merger',
-            uses_before=docker_images[1],
-            timeout_ready=120000,
+            uses_before=f'docker://{docker_images[0]}',
             needs=['imageencoder', 'textencoder'],
-            k8s_connection_pool=k8s_connection_pool,
         )
     )
     return flow
 
 
+@pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
@@ -158,15 +202,43 @@ def k8s_flow_with_needs(docker_images, k8s_connection_pool):
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
-def test_flow_with_needs(
-    logger,
-    k8s_connection_pool,
-    k8s_flow_with_needs,
+async def test_flow_with_needs(
+    logger, k8s_connection_pool, k8s_flow_with_needs, tmpdir
 ):
-    resp = run_test(
-        k8s_flow_with_needs,
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
+    namespace = f'test-flow-with-needs-{k8s_connection_pool}'.lower()
+    k8s_flow_with_needs.to_k8s_yaml(
+        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
+    )
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'segmenter-head-0': 1,
+            'segmenter': 1,
+            'textencoder-head-0': 1,
+            'textencoder': 1,
+            'imageencoder-head-0': 1,
+            'imageencoder': 1,
+            'merger-head-0': 1,
+            'merger': 1,
+        },
+    )
+    resp = await run_test(
+        flow=k8s_flow_with_needs,
+        namespace=namespace,
+        core_client=core_client,
         endpoint='/index',
-        port_expose=9090,
     )
     expected_traversed_executors = {
         'segmenter',
@@ -179,28 +251,52 @@ def test_flow_with_needs(
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
 
-    for pod in k8s_flow_with_needs._pod_nodes.values():
-        assert pod.args.k8s_connection_pool == k8s_connection_pool
-        for peapod in pod.k8s_deployments:
-            assert peapod.deployment_args.k8s_connection_pool == k8s_connection_pool
-
 
 @pytest.mark.timeout(3600)
+@pytest.mark.asyncio
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images',
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
 @pytest.mark.parametrize('polling', ['ALL', 'ANY'])
-def test_flow_with_sharding(k8s_flow_with_sharding, polling):
-    resp = run_test(
-        k8s_flow_with_sharding,
-        endpoint='/index',
-        port_expose=9090,
+async def test_flow_with_sharding(
+    k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir
+):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
+    namespace = f'test-flow-with-sharding-{k8s_connection_pool}'.lower()
+    k8s_flow_with_sharding.to_k8s_yaml(
+        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
     )
 
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor-head-0': 1,
+            'test-executor': 2,
+        },
+    )
+    resp = await run_test(
+        flow=k8s_flow_with_sharding,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/index',
+    )
     expected_traversed_executors = {
-        'test_executor',
+        'segmenter',
+        'imageencoder',
+        'textencoder',
     }
 
     docs = resp[0].docs
@@ -222,14 +318,42 @@ def test_flow_with_sharding(k8s_flow_with_sharding, polling):
 
 
 @pytest.mark.timeout(3600)
+@pytest.mark.asyncio
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-def test_flow_with_configmap(k8s_flow_configmap, docker_images):
-    resp = run_test(
-        k8s_flow_configmap,
-        endpoint='/env',
-        port_expose=9090,
+async def test_flow_with_configmap(
+    k8s_flow_configmap, k8s_connection_pool, docker_images, tmpdir
+):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-configmap')
+    namespace = f'test-flow-with-configmap-{k8s_connection_pool}'.lower()
+    k8s_flow_configmap.to_k8s_yaml(
+        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
+    )
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor-head-0': 1,
+            'test-executor': 1,
+        },
+    )
+    resp = await run_test(
+        flow=k8s_flow_configmap,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/index',
     )
 
     docs = resp[0].docs
@@ -242,17 +366,39 @@ def test_flow_with_configmap(k8s_flow_configmap, docker_images):
 
 
 @pytest.mark.timeout(3600)
+@pytest.mark.asyncio
 @pytest.mark.skip('Need to config gpu host.')
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-def test_flow_with_gpu(k8s_flow_gpu, docker_images):
-    resp = run_test(
-        k8s_flow_gpu,
-        endpoint='/cuda',
-        port_expose=9090,
-    )
+async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-gpu')
+    namespace = f'test-flow-with-gpu'
+    k8s_flow_gpu.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor-head-0': 1,
+            'test-executor': 1,
+        },
+    )
+    resp = await run_test(
+        flow=k8s_flow_gpu,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/cuda',
+    )
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
@@ -260,121 +406,65 @@ def test_flow_with_gpu(k8s_flow_gpu, docker_images):
 
 
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize(
-    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
-)
-def test_flow_with_k8s_namespace(k8s_flow_with_namespace, docker_images):
-    with k8s_flow_with_namespace as f:
-        client = K8sClients().core_v1
-        namespaces = client.list_namespace().items
-        namespaces = [item.metadata.name for item in namespaces]
-        assert 'my-custom-namespace' in namespaces
-
-
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     'docker_images', [['reload-executor', 'jinaai/jina']], indirect=True
 )
-def test_rolling_update_simple(
-    k8s_flow_with_reload_executor, logger, reraise, docker_images
+async def test_rolling_update_simple(
+    k8s_flow_with_reload_executor, docker_images, tmpdir
 ):
-    from jina.peapods.pods.k8slib import kubernetes_tools
-    from multiprocessing import Process, Event
-    import time
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-reload')
+    namespace = f'test-flow-with-reload-executor'
+    k8s_flow_configmap.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
-    def send_requests(
-        client_kwargs,
-        rolling_event,
-        client_ready_to_send_event,
-        exception_to_raise_event,
-    ):
-        from jina.logging.logger import JinaLogger
-        from jina.clients import Client
+    from kubernetes import client
 
-        _logger = JinaLogger('test_send_requests')
-        _logger.debug(f' send request start')
-        try:
-            client = Client(**client_kwargs)
-            client.show_progress = True
-            _logger.debug(f' Client instantiated with {client_kwargs}')
-            _logger.debug(f' Set client_ready_to_send_event event')
-            client_ready_to_send_event.set()
-            while not rolling_event.is_set():
-                _logger.debug(f' event is not set')
-                r = client.post(
-                    '/exec',
-                    [Document() for _ in range(10)],
-                    return_results=True,
-                    port_expose=9090,
-                )
-                assert len(r) > 0
-                assert len(r[0].docs) > 0
-                for doc in r[0].docs:
-                    assert doc.tags['argument'] in ['value1', 'value2']
-                    time.sleep(0.1)
-                _logger.debug(f' event is unset')
-        except:
-            _logger.error(f' Some error happened while sending requests')
-            exception_to_raise_event.set()
-        _logger.debug(f' send requests finished')
-
-    with k8s_flow_with_reload_executor as flow:
-        with kubernetes_tools.get_port_forward_contextmanager(
-            'test-flow-with-reload', 9090
-        ):
-            resp_v1 = flow.post(
-                '/exec',
-                [Document() for _ in range(10)],
-                return_results=True,
-                port_expose=9090,
-                disable_portforward=True,
-            )
-            assert len(resp_v1[0].docs) > 0
-            for doc in resp_v1[0].docs:
-                assert doc.tags['argument'] == 'value1'
-
-            rolling_update_finished_event = Event()
-            client_ready_to_send = Event()
-            exception_to_raise = Event()
-            client_kwargs = dict(
-                host='localhost',
-                port=9090,
-                protocol='http',
-            )
-            client_kwargs.update(flow._common_kwargs)
-            process = Process(
-                target=send_requests,
-                kwargs={
-                    'client_kwargs': client_kwargs,
-                    'rolling_event': rolling_update_finished_event,
-                    'client_ready_to_send_event': client_ready_to_send,
-                    'exception_to_raise_event': exception_to_raise,
-                },
-                daemon=True,
-            )
-            process.start()
-            logger.debug(f' Waiting for client to be ready to send')
-            client_ready_to_send.wait(10000.0)
-            logger.debug(f' Waiting for client to be ready to send')
-            flow.rolling_update('test_executor', uses_with={'argument': 'value2'})
-            rolling_update_finished_event.set()
-            time.sleep(0.5)
-            resp_v2 = flow.post(
-                '/exec',
-                [Document() for _ in range(10)],
-                return_results=True,
-                port_expose=9090,
-                disable_portforward=True,
-            )
-        logger.debug(f' Joining the process')
-        process.join()
-        logger.debug(f' Process succesfully joined')
-
-    assert not exception_to_raise.set()
-
-    assert len(resp_v1[0].docs) > 0
-    for doc in resp_v1[0].docs:
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor-head-0': 1,
+            'test-executor': 2,
+        },
+    )
+    resp = await run_test(
+        flow=k8s_flow_configmap,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/index',
+    )
+    docs = resp[0].docs
+    assert len(docs) == 10
+    for doc in docs:
         assert doc.tags['argument'] == 'value1'
 
-    assert len(resp_v2[0].docs) > 0
-    for doc in resp_v2[0].docs:
+    import yaml
+
+    with open(os.path.join(dump_path, 'test-executor', 'test-executor.yml')) as f:
+        yml_document_all = list(yaml.safe_load_all(f))
+
+    yml_deployment = yml_document_all[-1]
+    container_args = yml_deployment['spec']['template']['spec']['containers'][0]['args']
+    container_args[container_args.index('--uses-with') + 1] = '{"argument": "value2"}'
+    yml_deployment['spec']['template']['spec']['containers'][0]['args'] = container_args
+    app_client.patch_namespaced_deployment(
+        name='test-executor', namespace=namespace, body=yml_deployment
+    )
+    await asyncio.sleep(10.0)
+    resp = await run_test(
+        flow=k8s_flow_configmap,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/index',
+    )
+    docs = resp[0].docs
+    assert len(docs) == 10
+    for doc in docs:
         assert doc.tags['argument'] == 'value2'
