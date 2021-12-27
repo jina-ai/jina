@@ -1180,9 +1180,9 @@ def iscoroutinefunction(func: Callable):
     return inspect.iscoroutinefunction(func)
 
 
-async def run_in_threadpool(func: Callable, *args, **kwargs):
+async def run_in_threadpool(func: Callable, executor=None, *args, **kwargs):
     return await get_or_reuse_loop().run_in_executor(
-        None, functools.partial(func, *args, **kwargs)
+        executor, functools.partial(func, *args, **kwargs)
     )
 
 

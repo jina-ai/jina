@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Dict, Optional, Type, List, Any
 import inspect
 import os
@@ -99,6 +100,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
+        self._thread_pool = ThreadPoolExecutor(max_workers=1)
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
@@ -220,7 +222,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if iscoroutinefunction(func):
             return await (await func(self, **kwargs))  # 2 awaits ugly
         else:
-            return await run_in_threadpool(func, self, **kwargs)
+            return await run_in_threadpool(func, self._thread_pool, self, **kwargs)
 
     @property
     def workspace(self) -> Optional[str]:
