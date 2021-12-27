@@ -70,7 +70,7 @@ Read more about {ref}`how Reducing works <reduce>`.
 ````
 
 If you don't want to use the default `Reduce` logic, you can implement a custom reducing logic in an Executor and 
-specify it with `uses_before`:
+specify it with `uses` or `uses_before`:
 
 ```python
 import itertools
@@ -88,13 +88,13 @@ f = (Flow()
      .add(name='p1', needs='gateway')
      .add(name='p2', needs='gateway')
      .add(name='p3', needs='gateway')
-     .needs(['p1', 'p2', 'p3'], name='r1', uses_before=CustomReducerExecutor))
+     .needs(['p1', 'p2', 'p3'], name='r1', uses=CustomReducerExecutor))
 ```
 
 ````{admonition} Note
 :class: note
 If there is no pod that needs all 3 pods `p1`, `p2` and `p3`, there will be no reduce logic.
-If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses_before='BaseExecutor'`.
+If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses='BaseExecutor'`.
 ````
 
 
@@ -332,3 +332,12 @@ If a Document exists in many DocumentArrays, data properties are merged.
 
 Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
 Other non-data properties are ignored.
+
+````{admonition} Warning
+:class: warning
+If a data property is set on many Documents with the same ID, only one value is kept in the final Document. This value 
+can be belong to any of these Documents. This also means, if you make the same request, with such conflicting data 
+properties, you can end up with undeterministic results.
+When you use shards or parallel branches, you should always make sure that all data properties of the same Documents 
+either do not conflict or have the same value.
+````
