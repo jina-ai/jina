@@ -87,17 +87,9 @@ class ProtoTypeMixin:
         return getattr(self._pb_body, name)
 
     def __repr__(self):
-        content = str(self.non_empty_fields)
+        content = str(tuple(field[0].name for field in self.proto.ListFields()))
         content += f' at {id(self)}'
         return f'<{typename(self)} {content.strip()}>'
-
-    @property
-    def non_empty_fields(self) -> Tuple[str, ...]:
-        """Return the set fields of the current Protobuf message that are not empty
-
-        :return: the tuple of non-empty fields
-        """
-        return tuple(field[0].name for field in self._pb_body.ListFields())
 
     def MergeFrom(self: T, other: T) -> None:
         """Merge the content of target

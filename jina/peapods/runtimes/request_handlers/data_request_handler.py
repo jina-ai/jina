@@ -35,7 +35,7 @@ class DataRequestHandler:
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
         try:
-            self._executor = BaseExecutor.load_config(
+            self._executor: BaseExecutor = BaseExecutor.load_config(
                 self.args.uses,
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
@@ -64,7 +64,7 @@ class DataRequestHandler:
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def handle(self, requests: List['DataRequest']) -> DataRequest:
+    async def handle(self, requests: List['DataRequest']) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
         :param requests: The messages to handle containing a DataRequest
@@ -89,7 +89,7 @@ class DataRequestHandler:
         )
 
         # executor logic
-        r_docs = self._executor(
+        r_docs = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=DataRequestHandler.get_docs_from_request(requests, field='docs'),
             parameters=params,

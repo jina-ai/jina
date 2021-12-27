@@ -109,7 +109,7 @@ async def run_test(flow, core_client, namespace, endpoint):
 
 @pytest.fixture()
 def k8s_flow_with_sharding(docker_images, polling):
-    flow = Flow(name='test-flow-with-sharding', port_expose=9090, protocol='http',).add(
+    flow = Flow(name='test-flow-with-sharding', port_expose=9090, protocol='http').add(
         name='test_executor',
         shards=2,
         replicas=2,
@@ -284,7 +284,8 @@ async def test_flow_with_sharding(
         deployment_replicas_expected={
             'gateway': 1,
             'test-executor-head-0': 1,
-            'test-executor': 2,
+            'test-executor-0': 2,
+            'test-executor-1': 2,
         },
     )
     resp = await run_test(
@@ -293,22 +294,25 @@ async def test_flow_with_sharding(
         core_client=core_client,
         endpoint='/index',
     )
-    expected_traversed_executors = {
-        'segmenter',
-        'imageencoder',
-        'textencoder',
-    }
 
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert set(doc.tags['traversed-executors']) == expected_traversed_executors
         if polling == 'ALL':
+            assert set(doc.tags['traversed-executors']) == {
+                'test_executor-0',
+                'test_executor-1',
+            }
             assert set(doc.tags['pea_id']) == {0, 1}
             assert set(doc.tags['shard_id']) == {0, 1}
             assert doc.tags['parallel'] == [2, 2]
             assert doc.tags['shards'] == [2, 2]
         else:
+            assert len(set(doc.tags['traversed-executors'])) == 1
+            assert doc.tags['traversed_executors'] in {
+                'test_executor-0',
+                'test_executor-1',
+            }
             assert len(set(doc.tags['pea_id'])) == 1
             assert len(set(doc.tags['shard_id'])) == 1
             assert 0 in set(doc.tags['pea_id']) or 1 in set(doc.tags['pea_id'])
@@ -353,16 +357,16 @@ async def test_flow_with_configmap(
         flow=k8s_flow_configmap,
         namespace=namespace,
         core_client=core_client,
-        endpoint='/index',
+        endpoint='/env',
     )
 
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert doc.tags.get('JINA_LOG_LEVEL') == 'DEBUG'
-        assert doc.tags.get('k1') == 'v1'
-        assert doc.tags.get('k2') == 'v2'
-        assert doc.tags.get('env') == {'k1': 'v1', 'k2': 'v2'}
+        assert doc.tags['JINA_LOG_LEVEL'] == 'DEBUG'
+        assert doc.tags['k1'] == 'v1'
+        assert doc.tags['k2'] == 'v2'
+        assert doc.tags['env'] == {'k1': 'v1', 'k2': 'v2'}
 
 
 @pytest.mark.timeout(3600)
@@ -415,7 +419,7 @@ async def test_rolling_update_simple(
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-reload')
     namespace = f'test-flow-with-reload-executor'
-    k8s_flow_configmap.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    k8s_flow_with_reload_executor.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -435,10 +439,10 @@ async def test_rolling_update_simple(
         },
     )
     resp = await run_test(
-        flow=k8s_flow_configmap,
+        flow=k8s_flow_with_reload_executor,
         namespace=namespace,
         core_client=core_client,
-        endpoint='/index',
+        endpoint='/exec',
     )
     docs = resp[0].docs
     assert len(docs) == 10
@@ -459,7 +463,7 @@ async def test_rolling_update_simple(
     )
     await asyncio.sleep(10.0)
     resp = await run_test(
-        flow=k8s_flow_configmap,
+        flow=k8s_flow_with_reload_executor,
         namespace=namespace,
         core_client=core_client,
         endpoint='/index',
