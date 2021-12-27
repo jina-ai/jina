@@ -100,7 +100,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             if self.logger.debug_enabled:
                 self._log_data_request(requests[0])
 
-            return self._data_request_handler.handle(requests=requests)
+            return await self._data_request_handler.handle(requests=requests)
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
