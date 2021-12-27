@@ -9,7 +9,7 @@ import grpc
 import pytest
 
 from docarray import Document
-from jina import DocumentArray
+from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
@@ -57,6 +57,89 @@ def test_worker_runtime():
     runtime_thread.join()
 
     assert response
+
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
+
+
+class AsyncSlowNewDocsExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._count = 0
+
+    @requests
+    async def foo(self, docs, **kwargs):
+        self._count += 1
+        current_count = self._count
+        if current_count % 2 == 0:
+            await asyncio.sleep(0.1)
+        return DocumentArray([Document(text=str(current_count))])
+
+
+class SlowNewDocsExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._count = 0
+
+    @requests
+    def foo(self, docs, **kwargs):
+        self._count += 1
+        current_count = self._count
+        if current_count % 2 == 0:
+            time.sleep(0.1)
+        return DocumentArray([Document(text=str(current_count))])
+
+
+@pytest.mark.slow
+@pytest.mark.timeout(5)
+@pytest.mark.asyncio
+@pytest.mark.parametrize('uses', ['AsyncSlowNewDocsExecutor', 'SlowNewDocsExecutor'])
+async def test_worker_runtime_slow_async_exec(uses):
+    args = set_pea_parser().parse_args(['--uses', uses])
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port_in}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    target = f'{args.host}:{args.port_in}'
+    results = []
+    async with grpc.aio.insecure_channel(
+        target,
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        tasks = []
+        for i in range(10):
+
+            async def task_wrapper():
+                return await stub.process_single_data(_create_test_data_message())
+
+            tasks.append(asyncio.create_task(task_wrapper()))
+        for future in asyncio.as_completed(tasks):
+            t = await future
+            results.append(t.docs[0].text)
+
+    cancel_event.set()
+    runtime_thread.join()
+
+    if uses == 'AsyncSlowNewDocsExecutor':
+        assert results == ['1', '3', '5', '7', '9', '2', '4', '6', '8', '10']
+    else:
+        assert results == ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
 

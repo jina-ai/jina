@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Dict, Optional, Type, List, Any
 import inspect
 import os
@@ -6,7 +7,7 @@ from typing import Dict, Optional, Type, List
 
 from .decorators import store_init_kwargs, wrap_func, requests
 from .. import __default_endpoint__, __args_executor_init__
-from ..helper import typename, ArgNamespace, T
+from ..helper import typename, ArgNamespace, T, iscoroutinefunction, run_in_threadpool
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
 
@@ -99,6 +100,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
+        self._thread_pool = ThreadPoolExecutor(max_workers=1)
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
@@ -203,6 +205,24 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             return self.requests[__default_endpoint__](
                 self, **kwargs
             )  # unbound method, self is required
+
+    async def __acall__(self, req_endpoint: str, **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        if req_endpoint in self.requests:
+            return await self.__acall_endpoint__(req_endpoint, **kwargs)
+        elif __default_endpoint__ in self.requests:
+            return await self.__acall_endpoint__(__default_endpoint__, **kwargs)
+
+    async def __acall_endpoint__(self, req_endpoint, **kwargs):
+        func = self.requests[req_endpoint]
+        if iscoroutinefunction(func):
+            return await func(self, **kwargs)
+        else:
+            return await run_in_threadpool(func, self._thread_pool, self, **kwargs)
 
     @property
     def workspace(self) -> Optional[str]:

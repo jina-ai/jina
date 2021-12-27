@@ -273,3 +273,41 @@ def test_reducer_executor(n_shards, n_matches, n_chunks):
     for doc in reduced_da:
         assert len(doc.matches) == n_shards * n_matches
         assert len(doc.chunks) == n_shards * n_chunks
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+@pytest.mark.asyncio
+async def test_async(da_cls):
+    class AsyncExecutor(Executor):
+        @requests
+        async def foo(self, docs: DocumentArray, **kwargs):
+            for d in docs:
+                d.text = 'hello'
+            return docs
+
+    N = 2
+    da = DocumentArray.empty(N)
+    exec = AsyncExecutor()
+    da1 = await exec.foo(docs=da)
+    assert da1.texts == ['hello'] * N
+
+
+def set_hello(d: Document):
+    d.text = 'hello'
+    return d
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+@pytest.mark.asyncio
+async def test_async_apply(da_cls):
+    class AsyncExecutor(Executor):
+        @requests
+        async def foo(self, docs: DocumentArray, **kwargs):
+            docs.apply(set_hello)
+            return docs
+
+    N = 2
+    da = DocumentArray.empty(N)
+    exec = AsyncExecutor()
+    da1 = await exec.foo(docs=da)
+    assert da1.texts == ['hello'] * N
