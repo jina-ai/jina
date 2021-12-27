@@ -105,7 +105,7 @@ def requests(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(*args, **kwargs):
-                    return fn(*args, **kwargs)
+                    return await fn(*args, **kwargs)
 
                 self.fn = arg_wrapper
             else:

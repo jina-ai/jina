@@ -220,7 +220,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(self, req_endpoint, **kwargs):
         func = self.requests[req_endpoint]
         if iscoroutinefunction(func):
-            return await (await func(self, **kwargs))  # 2 awaits ugly
+            return await func(self, **kwargs)
         else:
             return await run_in_threadpool(func, self._thread_pool, self, **kwargs)
 

@@ -288,5 +288,5 @@ async def test_async(da_cls):
     N = 2
     da = DocumentArray.empty(N)
     exec = AsyncExecutor()
-    da1 = await exec.__acall__(req_endpoint='/default', docs=da)
+    da1 = await exec.foo(docs=da)
     assert da1.texts == ['hello'] * N
