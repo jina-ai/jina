@@ -24,6 +24,8 @@ class Request(ProtoTypeMixin):
     """
 
     def __getattr__(self, name: str):
+        if name == 'non_empty_fields':
+            return self.non_empty_fields
         return getattr(self.proto, name)
 
     def add_exception(
