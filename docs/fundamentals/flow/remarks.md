@@ -273,7 +273,7 @@ Few cases require to use `spawn` start method for multiprocessing.
 
 ## Debugging Executor in a Flow
 
-Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip instal epdb` to have acces to this type of breakpoints.
+Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip install epdb` to have acces to this type of breakpoints.
 
 
 ````{tab} ✅ Do
