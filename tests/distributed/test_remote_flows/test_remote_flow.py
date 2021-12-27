@@ -174,13 +174,14 @@ async def test_jinad_flow_container_runtime(async_jinad_client, executor_image):
         filename='flow-container.yml',
     )
     assert flow_id
-    remote_flow_args = jinad_client.flows.get(DaemonID(flow_id))
-    print(remote_flow_args)
+    remote_flow_args = await async_jinad_client.flows.get(DaemonID(flow_id))
+    assert remote_flow_args
     resp = Client(host=HOST, port=CONTAINER_FLOW_PORT, protocol='http').post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
-    assert len(resp[0].data.docs) == NUM_DOCS
-    assert jinad_client.flows.delete(flow_id)
-    assert jinad_client.workspaces.delete(workspace_id)
+    async for item in resp:
+        assert len(item.data.docs) == NUM_DOCS
+    assert await async_jinad_client.flows.delete(flow_id)
+    assert await async_jinad_client.workspaces.delete(workspace_id)
