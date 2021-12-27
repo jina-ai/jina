@@ -25,7 +25,10 @@ async def create_all_flow_pods_and_wait_ready(
         'kind': 'Namespace',
         'metadata': {'name': f'{namespace}'},
     }
-    utils.create_from_dict(api_client, namespace_object)
+    try:
+        utils.create_from_dict(api_client, namespace_object)
+    except:
+        pass
 
     pod_set = set(os.listdir(flow_dump_path))
     for pod_name in pod_set:
@@ -451,7 +454,7 @@ async def test_rolling_update_simple(
 
     import yaml
 
-    with open(os.path.join(dump_path, 'test-executor', 'test-executor.yml')) as f:
+    with open(os.path.join(dump_path, 'test_executor', 'test-executor.yml')) as f:
         yml_document_all = list(yaml.safe_load_all(f))
 
     yml_deployment = yml_document_all[-1]
