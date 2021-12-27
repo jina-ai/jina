@@ -290,3 +290,24 @@ async def test_async(da_cls):
     exec = AsyncExecutor()
     da1 = await exec.foo(docs=da)
     assert da1.texts == ['hello'] * N
+
+
+def set_hello(d: Document):
+    d.text = 'hello'
+    return d
+
+
+@pytest.mark.parametrize('da_cls', [DocumentArray, DocumentArrayMemmap])
+@pytest.mark.asyncio
+async def test_async_apply(da_cls):
+    class AsyncExecutor(Executor):
+        @requests
+        async def foo(self, docs: DocumentArray, **kwargs):
+            docs.apply(set_hello)
+            return docs
+
+    N = 2
+    da = DocumentArray.empty(N)
+    exec = AsyncExecutor()
+    da1 = await exec.foo(docs=da)
+    assert da1.texts == ['hello'] * N
