@@ -176,7 +176,9 @@ async def test_jinad_flow_container_runtime(async_jinad_client, executor_image):
     assert flow_id
     remote_flow_args = await async_jinad_client.flows.get(DaemonID(flow_id))
     assert remote_flow_args
-    resp = Client(host=HOST, port=CONTAINER_FLOW_PORT, protocol='http', asyncio=True).post(
+    resp = Client(
+        host=HOST, port=CONTAINER_FLOW_PORT, protocol='http', asyncio=True
+    ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
