@@ -5,5 +5,5 @@ with:
   port_expose: 9007
   cors: true
 executors:
-  - name: scale_executor
+  - name: container_executor
     uses: docker://container-executor
