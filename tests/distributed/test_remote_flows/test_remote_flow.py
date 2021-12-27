@@ -91,7 +91,15 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
-    assert len(resp[0].data.docs) == NUM_DOCS
+    async for item in resp:
+        assert len(item.data.docs) == NUM_DOCS
+    resp = Client(host=HOST, port=MINI_FLOW2_PORT, protocol='http', asyncio=True).post(
+        on='/',
+        inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
+        return_results=True,
+    )
+    async for item in resp:
+        assert len(item.data.docs) == NUM_DOCS
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)
 
@@ -121,7 +129,8 @@ async def test_remote_jinad_flow_get_delete_all(async_jinad_client):
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
-    assert len(resp[0].data.docs) == NUM_DOCS
+    async for item in resp:
+        assert len(item.data.docs) == NUM_DOCS
     await async_jinad_client.flows.clear()
     remote_flow_args = await async_jinad_client.flows.list()
     assert len(remote_flow_args.keys()) == 0
