@@ -1701,13 +1701,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
             configs = k8s_pod.to_k8s_yaml()
             for name, k8s_objects in configs:
-                print(f' name {name}')
                 filename = os.path.join(pod_base, f'{name}.yml')
                 os.makedirs(pod_base, exist_ok=True)
-                for k8s_object in k8s_objects:
+                for i, k8s_object in enumerate(k8s_objects):
                     with open(filename, 'a+') as fp:
                         yaml.dump(k8s_object, fp)
-                        fp.write('---\n')
+                        if i < len(k8s_objects) - 1:
+                            fp.write('---\n')
 
     def scale(
         self,
