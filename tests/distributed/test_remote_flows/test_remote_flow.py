@@ -55,13 +55,12 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
     assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
-    resp = Client(host=HOST, port=MINI_FLOW1_PORT).post(
+    resp = Client(host=HOST, port=MINI_FLOW1_PORT, protocol='http').post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
-    for idx, doc in enumerate(resp[0].data.docs):
-        assert doc.tags['key1'] == str(idx)
+    assert len(resp[0].data.docs) == NUM_DOCS
     assert jinad_client.flows.delete(flow_id)
     assert jinad_client.workspaces.delete(workspace_id)
 
@@ -87,6 +86,12 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
     assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
+    resp = Client(host=HOST, port=MINI_FLOW1_PORT, protocol='http', asyncio=True).post(
+        on='/',
+        inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
+        return_results=True,
+    )
+    assert len(resp[0].data.docs) == NUM_DOCS
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)
 
@@ -111,6 +116,12 @@ async def test_remote_jinad_flow_get_delete_all(async_jinad_client):
     # get all flows
     remote_flow_args = await async_jinad_client.flows.list()
     assert len(remote_flow_args.keys()) == 2
+    resp = Client(host=HOST, port=MINI_FLOW1_PORT, protocol='http', asyncio=True).post(
+        on='/',
+        inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
+        return_results=True,
+    )
+    assert len(resp[0].data.docs) == NUM_DOCS
     await async_jinad_client.flows.clear()
     remote_flow_args = await async_jinad_client.flows.list()
     assert len(remote_flow_args.keys()) == 0
