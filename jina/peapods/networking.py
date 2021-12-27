@@ -699,6 +699,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         if self._process_events_task:
             self._process_events_task.cancel()
         self._api_watch.stop()
+        self.update_thread.join(0.5)
         await super().close()
 
     @staticmethod

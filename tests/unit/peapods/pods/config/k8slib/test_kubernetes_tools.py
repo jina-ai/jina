@@ -1,7 +1,6 @@
 import json
 from typing import Dict
 
-import yaml
 import pytest
 
 from jina.peapods.pods.config.k8slib.kubernetes_tools import get_yaml

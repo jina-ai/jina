@@ -9,7 +9,11 @@ cur_dir = os.path.dirname(__file__)
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['jinaai/jina'], ['slow-init-executor', 'jinaai/jina']],
+    indirect=True,
+)
 async def test_process_up_down_events(docker_images):
     from kubernetes import client
     from kubernetes import utils
@@ -17,19 +21,25 @@ async def test_process_up_down_events(docker_images):
     k8s_client = client.ApiClient()
     app_client = client.AppsV1Api(api_client=k8s_client)
     core_client = client.CoreV1Api(api_client=k8s_client)
-    namespace = 'pool-test-namespace'
+    namespace = f'pool-test-namespace-{docker_images[0][0:4]}'
     namespace_object = {
         'apiVersion': 'v1',
         'kind': 'Namespace',
-        'metadata': {'name': f'{namespace}', 'annotations': 'Test'},
+        'metadata': {'name': f'{namespace}'},
     }
-    utils.create_from_dict(k8s_client, namespace_object)
+    try:
+        utils.create_from_dict(k8s_client, namespace_object)
+    except:
+        pass
+    container_args = ['executor', '--native', '--port-in', '8081']
+    if 'slow-init-executor' in docker_images[0]:
+        container_args.extend(['--uses', 'config.yml'])
     deployment_object = {
         'apiVersion': 'apps/v1',
         'kind': 'Deployment',
         'metadata': {'name': 'dummy-deployment', 'namespace': f'{namespace}'},
         'spec': {
-            'replicas': 3,
+            'replicas': 1,
             'strategy': {
                 'type': 'RollingUpdate',
                 'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
@@ -40,7 +50,7 @@ async def test_process_up_down_events(docker_images):
                     'labels': {
                         'app': 'dummy-deployment',
                         'jina_pod_name': 'some-pod',
-                        'shard_id': 4,
+                        'shard_id': '4',
                         'pea_type': 'WORKER',
                         'ns': f'{namespace}',
                     }
@@ -49,9 +59,9 @@ async def test_process_up_down_events(docker_images):
                     'containers': [
                         {
                             'name': 'executor',
-                            'image': 'jinaai/jina:test-pip',
+                            'image': docker_images[0],
                             'command': ['jina'],
-                            'args': ['executor', '--native', '--port-in', '8081'],
+                            'args': container_args,
                             'ports': [{'containerPort': 8081}],
                             'readinessProbe': {
                                 'tcpSocket': {'port': 8081},
@@ -64,7 +74,9 @@ async def test_process_up_down_events(docker_images):
             },
         },
     }
-    utils.create_from_dict(k8s_client, deployment_object, namespace=namespace)
+    utils.create_from_dict(
+        k8s_client, deployment_object, namespace=namespace, verbose=True
+    )
     pool = K8sGrpcConnectionPool(
         namespace=namespace,
     )
@@ -106,7 +118,7 @@ async def test_process_up_down_events(docker_images):
                 app_client.patch_namespaced_deployment_scale(
                     'dummy-deployment',
                     namespace=namespace,
-                    body={"spec": {"replicas": 2}},
+                    body={'spec': {'replicas': 2}},
                 )
                 expected_replicas += 1
             elif expected_replicas == 2:
@@ -121,127 +133,4 @@ async def test_process_up_down_events(docker_images):
                 break
         else:
             await asyncio.sleep(1.0)
-    await pool.close()
-
-
-@pytest.mark.skip
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    'docker_images', [['slow-init-executor', 'jinaai/jina']], indirect=True
-)
-async def test_wait_for_ready(docker_images):
-    from kubernetes import client
-    from kubernetes import utils
-
-    k8s_client = client.ApiClient()
-    app_client = client.AppsV1Api(api_client=k8s_client)
-    core_client = client.CoreV1Api(api_client=k8s_client)
-    namespace = 'test-flow-slow-executor'
-    namespace_object = {
-        'apiVersion': 'v1',
-        'kind': 'Namespace',
-        'metadata': {'name': f'{namespace}', 'annotations': []},
-    }
-    utils.create_from_dict(k8s_client, namespace_object)
-    deployment_object = {
-        'apiVersion': 'apps/v1',
-        'kind': 'Deployment',
-        'metadata': {'name': 'slow-init-executor', 'namespace': f'{namespace}'},
-        'spec': {
-            'replicas': 3,
-            'strategy': {
-                'type': 'RollingUpdate',
-                'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
-            },
-            'selector': {'matchLabels': {'app': 'slow-init-executor'}},
-            'template': {
-                'metadata': {
-                    'labels': {
-                        'app': 'slow-init-executor',
-                        'jina_pod_name': 'some-pod',
-                        'shard_id': 4,
-                        'pea_type': 'WORKER',
-                        'ns': f'{namespace}',
-                    }
-                },
-                'spec': {
-                    'containers': [
-                        {
-                            'name': 'executor',
-                            'image': {docker_images[0]},
-                            'command': ['jina'],
-                            'args': ['executor', '--native', '--port-in', '8081'],
-                            'ports': [{'containerPort': 8081}],
-                            'readinessProbe': {
-                                'tcpSocket': {'port': 8081},
-                                'initialDelaySeconds': 5,
-                                'periodSeconds': 10,
-                            },
-                        }
-                    ]
-                },
-            },
-        },
-    }
-    utils.create_from_dict(k8s_client, deployment_object, namespace=namespace)
-
-    pool = K8sGrpcConnectionPool(
-        namespace=namespace,
-    )
-    pool.start()
-    await asyncio.sleep(1.0)
-    namespaced_pods = core_client.list_namespaced_pod(namespace)
-    while not namespaced_pods.items:
-        await asyncio.sleep(1.0)
-        namespaced_pods = core_client.list_namespaced_pod(namespace)
-
-    assigned_pod_ip = namespaced_pods.items[0].status.pod_ip
-    for container in namespaced_pods.items[0].spec.containers:
-        if container.name == 'executor':
-            assigned_port = container.ports[0].container_port
-            break
-
-    assert len(pool._connections._pods) == 2
-    for pod in pool._connections._pods:
-        # k8s pod has one instance at the moment
-        assert len(pool._connections.get_replicas_all_shards(pod)) == 1
-        # scale slow init executor up
-    app_client.patch_namespaced_deployment_scale(
-        'slow-init-executor',
-        namespace='test-flow-slow-executor',
-        body={"spec": {"replicas": 2}},
-    )
-
-    while True:
-        api_response = app_client.read_namespaced_deployment(
-            name='slow-init-executor', namespace=namespace
-        )
-        if (
-            api_response.status.ready_replicas is not None
-            and api_response.status.ready_replicas == 2
-        ):
-            # new replica is ready, check that connection pool knows about it
-            replica_lists = pool._connections.get_replicas_all_shards(
-                'slow_init_executor'
-            )
-            assert 2 == sum(
-                [
-                    len(replica_list.get_all_connections())
-                    for replica_list in replica_lists
-                ]
-            )
-
-            break
-        else:
-            # new replica is not ready yet, make sure connection pool ignores it
-            replica_lists = pool._connections.get_replicas_all_shards(
-                'slow_init_executor'
-            )
-            assert 1 == sum(
-                [
-                    len(replica_list.get_all_connections())
-                    for replica_list in replica_lists
-                ]
-            )
-        await asyncio.sleep(1.0)
     await pool.close()
