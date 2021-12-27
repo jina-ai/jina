@@ -444,12 +444,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _get_k8s_pod_addresses(self, k8s_namespace: str) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.peapods.networking import K8sGrpcConnectionPool
+        from ..peapods.networking import K8sGrpcConnectionPool
+        from ..peapods.pods.config.k8slib.kubernetes_deployment import to_dns_name
 
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
                 continue
-            pod_k8s_address = f'{v.name}.{k8s_namespace}.svc'
+            pod_k8s_address = f'{to_dns_name(v.head_args.name)}.{k8s_namespace}.svc'
             graph_dict[node] = [
                 f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
             ]
