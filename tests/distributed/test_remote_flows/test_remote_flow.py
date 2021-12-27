@@ -1,4 +1,5 @@
 import os
+import time
 import asyncio
 
 import pytest
@@ -13,6 +14,7 @@ PROTOCOL = 'HTTP'
 NUM_DOCS = 10
 MINI_FLOW1_PORT = 9000
 MINI_FLOW2_PORT = 9001
+CONTAINER_FLOW_PORT = 9007
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -40,6 +42,22 @@ def async_jinad_client():
 async def slow_down_tests():
     yield
     await asyncio.sleep(0.5)
+
+
+@pytest.fixture
+def executor_image():
+    import docker
+
+    client = docker.from_env()
+
+    container_image_dir = os.path.join(cur_dir, 'executors', 'container_executor')
+    client.images.build(path=container_image_dir, tag='container-executor')
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
 @pytest.mark.parametrize('flow_envs', [(1, 1), (2, 1), (2, 2), (1, 2)], indirect=True)
@@ -146,3 +164,23 @@ async def test_jinad_flow_arguments(async_jinad_client):
     resp = await async_jinad_client.flows.arguments()
     assert resp
     assert resp['name']['title'] == 'Name'
+
+
+@pytest.mark.asyncio
+async def test_jinad_flow_container_runtime(async_jinad_client, executor_image):
+    workspace_id = await async_jinad_client.workspaces.create(paths=[cur_dir])
+    flow_id = await async_jinad_client.flows.create(
+        workspace_id=workspace_id,
+        filename='flow-container.yml',
+    )
+    assert flow_id
+    remote_flow_args = jinad_client.flows.get(DaemonID(flow_id))
+    print(remote_flow_args)
+    resp = Client(host=HOST, port=CONTAINER_FLOW_PORT, protocol='http').post(
+        on='/',
+        inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
+        return_results=True,
+    )
+    assert len(resp[0].data.docs) == NUM_DOCS
+    assert jinad_client.flows.delete(flow_id)
+    assert jinad_client.workspaces.delete(workspace_id)
