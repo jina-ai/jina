@@ -9,7 +9,7 @@ if [[ $1 == "windows" ]]; then
     printf '%s\n' "${array2[@]}" | jq -R . | jq -cs .
 else
     # TODO: enable all distributed/daemon unit tests
-    declare -a array1=( "tests/unit/*.py" "tests/integration/*.py" "tests/system/*.py" "tests/docarray/*.py" "tests/distributed/test_remote_pod/*.py" "tests/distributed/test_remote_flow/*.py" "tests/distributed/test_topologies*/*.py")
+    declare -a array1=( "tests/unit/*.py" "tests/integration/*.py" "tests/system/*.py" "tests/docarray/*.py" "tests/distributed/test_remote_pods/*.py" "tests/distributed/test_remote_flows/*.py" "tests/distributed/test_topologies*/*.py")
     # declare -a array1=( "tests/unit/*.py" "tests/integration/*.py" "tests/distributed/*.py" "tests/system/*.py" "tests/docarray/*.py")
     declare -a array2=( $(ls -d tests/{unit,integration,system,docarray}/*/ | grep -v '__pycache__' ))
     # declare -a array2=( $(ls -d tests/{unit,integration,distributed,system,docarray}/*/ | grep -v '__pycache__' ))
