@@ -264,7 +264,7 @@ def get_image_name(uses: str) -> str:
     """
     try:
         scheme, name, tag, secret = parse_hub_uri(uses)
-        meta_data = HubIO.fetch_meta(name, tag, secret=secret, force=True)
+        meta_data, _ = HubIO.fetch_meta(name, tag, secret=secret, force=True)
         image_name = meta_data.image_name
         return image_name
     except Exception:

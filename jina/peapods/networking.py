@@ -5,15 +5,16 @@ import socket
 from abc import abstractmethod
 from argparse import Namespace
 from threading import Thread
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import grpc
 
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
 from jina.types.message import Message
+
 from .. import __default_host__, __docker_host__
-from ..helper import get_public_ip, get_internal_ip, get_or_reuse_loop
+from ..helper import get_internal_ip, get_or_reuse_loop, get_public_ip
 
 if TYPE_CHECKING:
     import kubernetes
@@ -289,16 +290,21 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
             if deployment_name in self._deployment_clusteraddresses:
                 self._add_pod_connection(deployment_name, item)
             else:
-                cluster_ip, port = self._find_cluster_ip(deployment_name)
-                if cluster_ip:
-                    self._deployment_clusteraddresses[
-                        deployment_name
-                    ] = f'{cluster_ip}:{port}'
-                    self._connections[f'{cluster_ip}:{port}'] = ConnectionList(port)
-                    self._add_pod_connection(deployment_name, item)
-                else:
+                try:
+                    cluster_ip, port = self._find_cluster_ip(deployment_name)
+                    if cluster_ip:
+                        self._deployment_clusteraddresses[
+                            deployment_name
+                        ] = f'{cluster_ip}:{port}'
+                        self._connections[f'{cluster_ip}:{port}'] = ConnectionList(port)
+                        self._add_pod_connection(deployment_name, item)
+                    else:
+                        self._logger.debug(
+                            f'Observed state change in unknown deployment {deployment_name}'
+                        )
+                except (KeyError, ValueError):
                     self._logger.debug(
-                        f'Observed state change in unknown deployment {deployment_name}'
+                        f'Ignoring changes to non Jina resource {item.metadata.name}'
                     )
         elif (
             is_deleted
