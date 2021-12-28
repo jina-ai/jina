@@ -312,10 +312,9 @@ async def test_flow_with_sharding(
             assert doc.tags['shards'] == [2, 2]
         else:
             assert len(set(doc.tags['traversed-executors'])) == 1
-            assert doc.tags['traversed_executors'] in {
-                'test_executor-0',
-                'test_executor-1',
-            }
+            assert set(doc.tags['traversed-executors']) == {'test_executor-0'} or set(
+                doc.tags['traversed-executors']
+            ) == {'test_executor-1'}
             assert len(set(doc.tags['pea_id'])) == 1
             assert len(set(doc.tags['shard_id'])) == 1
             assert 0 in set(doc.tags['pea_id']) or 1 in set(doc.tags['pea_id'])
