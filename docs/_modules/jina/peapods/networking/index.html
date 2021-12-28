@@ -745,15 +745,16 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.types.message</span> <span class="kn">import</span> <span class="n">Message</span>
+
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_internal_ip</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">get_public_ip</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">kubernetes</span>
@@ -1029,16 +1030,21 @@
             <span class="k">if</span> <span class="n">deployment_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">cluster_ip</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_cluster_ip</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">cluster_ip</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span>
-                        <span class="n">deployment_name</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cluster_ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cluster_ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConnectionList</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">cluster_ip</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_cluster_ip</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">cluster_ip</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_clusteraddresses</span><span class="p">[</span>
+                            <span class="n">deployment_name</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cluster_ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cluster_ip</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConnectionList</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_add_pod_connection</span><span class="p">(</span><span class="n">deployment_name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">'Observed state change in unknown deployment </span><span class="si">{</span><span class="n">deployment_name</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'Observed state change in unknown deployment </span><span class="si">{</span><span class="n">deployment_name</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">'Ignoring changes to non Jina resource </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
         <span class="k">elif</span> <span class="p">(</span>
             <span class="n">is_deleted</span>
@@ -1215,7 +1221,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 23, 2021.
+                    Last updated on Dec 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

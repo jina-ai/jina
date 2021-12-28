@@ -1004,7 +1004,7 @@
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">uses</span><span class="p">)</span>
-        <span class="n">meta_data</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">meta_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">image_name</span> <span class="o">=</span> <span class="n">meta_data</span><span class="o">.</span><span class="n">image_name</span>
         <span class="k">return</span> <span class="n">image_name</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -1047,7 +1047,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 23, 2021.
+                    Last updated on Dec 28, 2021.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
