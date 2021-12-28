@@ -268,7 +268,7 @@ async def test_flow_with_sharding(
     k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
-    namespace = f'test-flow-with-sharding-{k8s_connection_pool}'.lower()
+    namespace = f'test-flow-with-sharding-{polling}-{k8s_connection_pool}'.lower()
     k8s_flow_with_sharding.to_k8s_yaml(
         dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
     )
@@ -298,6 +298,7 @@ async def test_flow_with_sharding(
         endpoint='/index',
     )
 
+    core_client.delete_namespace(namespace)
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
