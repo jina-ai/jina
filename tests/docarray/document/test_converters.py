@@ -248,3 +248,10 @@ def test_glb_converters():
     doc = Document(uri=os.path.join(cur_dir, 'test.glb'))
     doc.convert_uri_to_point_cloud_blob(2000)
     assert doc.blob.shape == (2000, 3)
+
+
+def test_sliding_window_chunks():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+    doc.load_uri_to_image_blob()
+    doc.convert_image_blob_to_sliding_windows(window_shape=(64, 64), as_chunks=True)
+    assert len(doc.chunks) > 0
