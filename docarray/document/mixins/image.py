@@ -267,7 +267,7 @@ class ImageDataMixin:
         ]
         expanded_img = expanded_img.reshape((-1, window_h, window_w, c))
         if as_chunks:
-            from . import Document
+            from .. import Document
 
             for location, _blob in zip(bbox_locations, expanded_img):
                 self.chunks.append(
