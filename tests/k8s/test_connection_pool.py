@@ -74,9 +74,7 @@ async def test_process_up_down_events(docker_images):
             },
         },
     }
-    utils.create_from_dict(
-        k8s_client, deployment_object, namespace=namespace, verbose=True
-    )
+    utils.create_from_dict(k8s_client, deployment_object, namespace=namespace)
     pool = K8sGrpcConnectionPool(
         namespace=namespace,
     )

@@ -125,7 +125,7 @@ def k8s_flow_with_sharding(docker_images, polling):
 
 @pytest.fixture
 def k8s_flow_configmap(docker_images):
-    flow = Flow(name='k8s-flow-configmap', port_expose=9090, protocol='http',).add(
+    flow = Flow(name='k8s-flow-configmap', port_expose=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
@@ -135,7 +135,7 @@ def k8s_flow_configmap(docker_images):
 
 @pytest.fixture
 def k8s_flow_gpu(docker_images):
-    flow = Flow(name='k8s-flow-gpu', port_expose=9090, protocol='http',).add(
+    flow = Flow(name='k8s-flow-gpu', port_expose=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         gpus=1,
@@ -145,7 +145,7 @@ def k8s_flow_gpu(docker_images):
 
 @pytest.fixture
 def k8s_flow_with_reload_executor(docker_images):
-    flow = Flow(name='test-flow-with-reload', port_expose=9090, protocol='http',).add(
+    flow = Flow(name='test-flow-with-reload', port_expose=9090, protocol='http').add(
         name='test_executor',
         replicas=2,
         uses_with={'argument': 'value1'},
@@ -158,7 +158,7 @@ def k8s_flow_with_reload_executor(docker_images):
 def k8s_flow_scale(docker_images, shards):
     DEFAULT_REPLICAS = 2
 
-    flow = Flow(name='test-flow-scale', port_expose=9090, protocol='http',).add(
+    flow = Flow(name='test-flow-scale', port_expose=9090, protocol='http').add(
         name='test_executor',
         shards=shards,
         replicas=DEFAULT_REPLICAS,
@@ -190,7 +190,7 @@ def k8s_flow_with_needs(docker_images):
         )
         .add(
             name='merger',
-            uses_before=f'docker://{docker_images[0]}',
+            uses_before=f'docker://{docker_images[1]}',
             needs=['imageencoder', 'textencoder'],
         )
     )
@@ -263,7 +263,7 @@ async def test_flow_with_needs(
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
-@pytest.mark.parametrize('polling', ['ALL', 'ANY'])
+@pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_flow_with_sharding(
     k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir
 ):

@@ -433,6 +433,7 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
+@pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 def test_k8s_yaml_regular_pod(
     uses_before,
     uses_after,
@@ -441,6 +442,7 @@ def test_k8s_yaml_regular_pod(
     k8s_connection_pool_call,
     uses_with,
     uses_metas,
+    polling,
     monkeypatch,
 ):
     def _mock_fetch(name, tag=None, secret=None, force=False):
@@ -469,6 +471,8 @@ def test_k8s_yaml_regular_pod(
         '3',
         '--shards',
         str(shards),
+        '--polling',
+        str(polling),
     ]
     if uses_before is not None:
         args_list.extend(['--uses-before', uses_before])
@@ -608,6 +612,17 @@ def test_k8s_yaml_regular_pod(
     else:
         assert '--k8s-disable-connection-pool' not in head_runtime_container_args
         assert '--connection-list' not in head_runtime_container_args
+
+    if polling == 'ANY':
+        assert '--polling' not in head_runtime_container_args
+    else:
+        assert '--polling' in head_runtime_container_args
+        assert (
+            head_runtime_container_args[
+                head_runtime_container_args.index('--polling') + 1
+            ]
+            == 'ALL'
+        )
 
     if uses_before is not None:
         uses_before_container = head_containers[1]

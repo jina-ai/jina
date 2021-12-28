@@ -85,7 +85,6 @@ async def create_all_flow_pods_and_wait_ready(
         await asyncio.sleep(1.0)
 
 
-# TODO: This is not passing now but we may want to keep
 def send_requests(
     client_kwargs,
     stop_event: multiprocessing.Event,

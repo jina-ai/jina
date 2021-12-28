@@ -287,7 +287,11 @@ class K8sPodConfig:
 
                 connection_list = {}
                 for i in range(shards):
-                    name = f'{self.name}-{i}' if shards > 1 else f'{self.name}'
+                    name = (
+                        f'{kubernetes_deployment.to_dns_name(self.name)}-{i}'
+                        if shards > 1
+                        else f'{kubernetes_deployment.to_dns_name(self.name)}'
+                    )
                     connection_list[
                         str(i)
                     ] = f'{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT_IN}'
