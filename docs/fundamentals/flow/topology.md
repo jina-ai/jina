@@ -218,7 +218,8 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request. Polling can be configured per endpoint (like `/index`) and Executor.
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request.
+Polling can be configured per endpoint (like `/index`) and Executor.
 By default the following `polling` is applied:
 - `ANY` for endpoints at `/index`
 - `ALL` for endpoints at `/search`
@@ -243,6 +244,8 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 - `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
 - `/custom` has polling `ALL`
 - all other endpoints will have polling `ANY`
+
+`endpoint_polling` always takes precedence over `polling`. `endpoint_polling` can be configured for all endpoints, `polling` will only be applied to endpoints not mentioned in `endpoint_polling` and does never apply to `/index` and `/search`.
 
 ### Merging search results
 
