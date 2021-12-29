@@ -17,8 +17,8 @@ from jina.peapods.peas.helper import is_ready
 from jina.peapods.peas.jinad import JinaDPea, JinaDProcessTarget
 from jina.types.request.control import ControlRequest
 
-HOST = __default_host__
-PORT_JINAD = 8000
+HOST = '54.93.57.58'
+PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 is_remote = lambda l_or_r: l_or_r == 'remote'
 
@@ -27,47 +27,54 @@ def is_pea_ready(args):
     return is_ready(f'{HOST}:{args.port_in}')
 
 
+@pytest.fixture
+def pea_args():
+    return set_pea_parser().parse_args([])
+
+
+@pytest.fixture
+def jinad_client():
+    return JinaDClient(host=HOST, port=PORT)
+
+
+@pytest.fixture
+def async_jinad_client():
+    return AsyncJinaDClient(host=HOST, port=PORT)
+
+
 @pytest.mark.asyncio
-async def test_async_jinad_client():
-    args = set_pea_parser().parse_args([])
-
-    client = AsyncJinaDClient(host=HOST, port=PORT_JINAD)
-    workspace_id = await client.workspaces.create(
-        paths=[], id=args.workspace_id, complete=True
-    )
+async def test_async_jinad_client(async_jinad_client, pea_args):
+    workspace_id = await async_jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
-    payload = replace_enum_to_str(vars(args))
-    assert not is_pea_ready(args)
+    resp = await async_jinad_client.peas.list()
+    assert not resp
 
-    success, response = await client.peas.create(
-        workspace_id=workspace_id, payload=payload
+    success, pea_id = await async_jinad_client.peas.create(
+        workspace_id=workspace_id, payload=replace_enum_to_str(vars(pea_args))
     )
     assert success
-    pea_id = DaemonID(response)
+    assert pea_id
+    assert is_pea_ready(pea_args)
+    assert await async_jinad_client.peas.delete(pea_id)
+    assert not is_pea_ready(pea_args)
+    assert await async_jinad_client.workspaces.delete(workspace_id)
 
-    assert is_pea_ready(args)
-    assert await client.peas.delete(pea_id)
-    assert not is_pea_ready(args)
 
-
-def test_sync_jinad_client():
-    args = set_pea_parser().parse_args([])
-
-    client = JinaDClient(host=HOST, port=8000)
-    workspace_id = client.workspaces.create(
-        paths=[], id=args.workspace_id, complete=True
-    )
+def test_sync_jinad_client(jinad_client, pea_args):
+    workspace_id = jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
-    payload = replace_enum_to_str(vars(args))
-    assert not is_pea_ready(args)
+    resp = jinad_client.peas.list()
+    assert not resp
 
-    success, response = client.peas.create(workspace_id=workspace_id, payload=payload)
+    success, pea_id = jinad_client.peas.create(
+        workspace_id=workspace_id, payload=replace_enum_to_str(vars(pea_args))
+    )
     assert success
-    pea_id = DaemonID(response)
-
-    assert is_pea_ready(args)
-    assert client.peas.delete(pea_id)
-    assert not is_pea_ready(args)
+    assert pea_id
+    assert is_pea_ready(pea_args)
+    assert jinad_client.peas.delete(pea_id)
+    assert not is_pea_ready(pea_args)
+    assert jinad_client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.parametrize(
@@ -133,7 +140,7 @@ def _create_worker_pea(
     args = set_pea_parser().parse_args([])
     if is_remote(l_or_r):
         args.host = HOST
-        args.port_jinad = PORT_JINAD
+        args.port_jinad = PORT
     args.name = name if name else f'worker-{l_or_r}'
     args.port_in = port
     args.runtime_cls = 'WorkerRuntime'
@@ -152,7 +159,7 @@ def _create_head_pea(
     args = set_pea_parser().parse_args([])
     if is_remote(l_or_r):
         args.host = HOST
-        args.port_jinad = PORT_JINAD
+        args.port_jinad = PORT
     args.name = name if name else f'head-{l_or_r}'
     args.port_in = port
     args.pea_role = PeaRoleType.HEAD
@@ -169,7 +176,7 @@ def _create_gateway_pea(l_or_r, graph_description, pods_addresses, port_expose):
     args = set_gateway_parser().parse_args([])
     if l_or_r == 'remote':
         args.host = HOST
-        args.port_jinad = PORT_JINAD
+        args.port_jinad = PORT
     args.graph_description = graph_description
     args.pods_addresses = pods_addresses
     args.port_expose = port_expose
