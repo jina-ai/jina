@@ -38,9 +38,13 @@ class PartialStore(ABC):
         try:
             if hasattr(self.object, 'close'):
                 self.object.close()
-                self._logger.success(
-                    f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
-                )
+                self._logger.info(self.item.arguments)
+                if self.item.arguments.get('identity'):
+                    self._logger.success(
+                        f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
+                    )
+                else:
+                    self._logger.success('object is removed!')
             else:
                 self._logger.warning(f'nothing to close. exiting')
         except Exception as e:
@@ -111,7 +115,6 @@ class PartialPodStore(PartialPeaStore):
 
     async def scale(self, replicas: int) -> PartialStoreItem:
         """Scale the current Pod
-
         :param replicas: number of replicas for the Pod
         :return: Item describing the Flow object
         """
@@ -160,7 +163,7 @@ class PartialFlowStore(PartialStore):
                 if port_mapping and (
                     hasattr(pod.args, 'replicas') and pod.args.replicas > 1
                 ):
-                    for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
+                    for pea_args in [pod.peas_args['head']]:
                         if pea_args.name in port_mapping.pea_names:
                             for port_name in Ports.__fields__:
                                 self._set_pea_ports(pea_args, port_mapping, port_name)
@@ -226,19 +229,30 @@ class PartialFlowStore(PartialStore):
             self._logger.success(f'Flow is successfully rolling_updated!')
             return self.item
 
-    def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
+    async def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
         """Scale the Pod in current Flow
-
         :param pod_name: Pod to be scaled
         :param replicas: number of replicas for the Pod
         :return: Item describing the Flow object
         """
         try:
-            self.object.scale(pod_name=pod_name, replicas=replicas)
+            await self._scale(pod_name=pod_name, replicas=replicas)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        else:
-            self.item.arguments = vars(self.object.args)
-            self._logger.success(f'Flow is successfully scaled!')
-            return self.item
+        self.item.arguments = vars(self.object.args)
+        self._logger.success(f'Flow is successfully scaled!')
+        return self.item
+
+    async def _scale(
+        self,
+        pod_name: str,
+        replicas: int,
+    ):
+        """
+        Scale the amount of replicas of a given Executor.
+        :param pod_name: pod to update
+        :param replicas: The number of replicas to scale to
+        """
+
+        await self.object._pod_nodes[pod_name].scale(replicas)
