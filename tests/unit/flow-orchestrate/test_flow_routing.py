@@ -1,4 +1,7 @@
+from docarray import DocumentArray
 from jina import Document, Executor, Flow, requests
+
+import pytest
 
 
 class SimplExecutor(Executor):
@@ -78,3 +81,42 @@ def test_complex_flow():
     with f:
         results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
     assert len(results[0].docs) == 6
+
+
+class DynamicPollingExecutorDefaultNames(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @requests(on='/index')
+    def index(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+    @requests(on='/search')
+    def search(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+    @requests(on='/custom')
+    def custom(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_flow_default_polling_endpoints(polling):
+    f = Flow().add(uses=DynamicPollingExecutorDefaultNames, shards=2, polling=polling)
+
+    with f:
+        results_index = f.post(
+            on='/index', inputs=[Document(text='1')], return_results=True
+        )
+        results_search = f.post(
+            on='/search', inputs=[Document(text='1')], return_results=True
+        )
+        results_custom = f.post(
+            on='/custom', inputs=[Document(text='1')], return_results=True
+        )
+    assert len(results_index[0].docs) == 2
+    assert len(results_search[0].docs) == 3
+    assert len(results_custom[0].docs) == 3 if polling == 'all' else 2

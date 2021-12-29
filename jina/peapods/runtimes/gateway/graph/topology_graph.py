@@ -38,6 +38,7 @@ class TopologyGraph:
             request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
+            endpoint: Optional[str],
         ):
             metadata = {}
             if previous_task is not None:
@@ -51,7 +52,10 @@ class TopologyGraph:
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
                     resp, metadata = await connection_pool.send_requests_once(
-                        requests=self.parts_to_send, pod=self.name, head=True
+                        requests=self.parts_to_send,
+                        pod=self.name,
+                        head=True,
+                        endpoint=endpoint,
                     )
                     self.end_time = datetime.utcnow()
                     if 'is-error' in metadata:
@@ -64,6 +68,7 @@ class TopologyGraph:
             connection_pool: GrpcConnectionPool,
             request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
+            endpoint: Optional[str] = None,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -71,6 +76,7 @@ class TopologyGraph:
             :param connection_pool: The connection_pool need to actually send the requests
             :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
+            :param endpoint: Optional string defining the endpoint of this request
 
             .. note:
                 pod1 -> outgoing_nodes: pod2
@@ -96,7 +102,7 @@ class TopologyGraph:
             """
             wait_previous_and_send_task = asyncio.create_task(
                 self._wait_previous_and_send(
-                    request_to_send, previous_task, connection_pool
+                    request_to_send, previous_task, connection_pool, endpoint=endpoint
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -106,7 +112,10 @@ class TopologyGraph:
             hanging_tasks_tuples = []
             for outgoing_node in self.outgoing_nodes:
                 t = outgoing_node.get_leaf_tasks(
-                    connection_pool, None, wait_previous_and_send_task
+                    connection_pool,
+                    None,
+                    wait_previous_and_send_task,
+                    endpoint=endpoint,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)

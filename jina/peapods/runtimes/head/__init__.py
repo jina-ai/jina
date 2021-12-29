@@ -49,6 +49,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             k8s_namespace=args.k8s_namespace,
         )
 
+        self._endpoint_polling = {}
+        # by default search and index have polling defined, it can be overriden by the args if needed
+        self._endpoint_polling['/search'] = PollingType.ALL
+        self._endpoint_polling['/index'] = PollingType.ANY
+        if hasattr(args, 'endpoint_polling') and args.endpoint_polling:
+            endpoint_polling = json.loads(args.endpoint_polling)
+            for endpoint in endpoint_polling:
+                self._endpoint_polling[endpoint] = PollingType(
+                    endpoint_polling[endpoint]
+                )
+
         # In K8s the ConnectionPool needs the information about the Jina Pod its running in
         # This is stored in the environment variable JINA_POD_NAME in all Jina K8s default templates
         if (
@@ -138,7 +149,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            response, metadata = await self._handle_data_request(requests)
+            endpoint = self._extract_endpoint(context)
+            response, metadata = await self._handle_data_request(requests, endpoint)
             context.set_trailing_metadata(metadata.items())
             return response
         except (RuntimeError, Exception) as ex:
@@ -149,6 +161,13 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 exc_info=not self.args.quiet_error,
             )
             raise
+
+    def _extract_endpoint(self, context):
+        metadata = context.invocation_metadata()
+        for key, value in metadata:
+            if key == 'endpoint':
+                return value
+        return None
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """
@@ -193,7 +212,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             raise
 
     async def _handle_data_request(
-        self, requests: List[DataRequest]
+        self, requests: List[DataRequest], endpoint: Optional[str]
     ) -> Tuple[DataRequest, Dict]:
         self.logger.debug(f'recv {len(requests)} DataRequest(s)')
 
@@ -212,7 +231,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
-            requests=requests, pod=self._pod_name, polling_type=self.polling
+            requests=requests,
+            pod=self._pod_name,
+            polling_type=self._endpoint_polling[endpoint]
+            if endpoint in self._endpoint_polling
+            else self.polling,
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)
