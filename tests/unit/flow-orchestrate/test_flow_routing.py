@@ -120,3 +120,28 @@ def test_flow_default_polling_endpoints(polling):
     assert len(results_index[0].docs) == 2
     assert len(results_search[0].docs) == 3
     assert len(results_custom[0].docs) == 3 if polling == 'all' else 2
+
+
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_flow_default_polling_endpoints(polling):
+    custom_polling_config = {'/custom': 'ALL', '/search': 'ANY'}
+    f = Flow().add(
+        uses=DynamicPollingExecutorDefaultNames,
+        shards=2,
+        polling=polling,
+        endpoint_polling=custom_polling_config,
+    )
+
+    with f:
+        results_index = f.post(
+            on='/index', inputs=[Document(text='1')], return_results=True
+        )
+        results_search = f.post(
+            on='/search', inputs=[Document(text='1')], return_results=True
+        )
+        results_custom = f.post(
+            on='/custom', inputs=[Document(text='1')], return_results=True
+        )
+    assert len(results_index[0].docs) == 2
+    assert len(results_search[0].docs) == 2
+    assert len(results_custom[0].docs) == 3

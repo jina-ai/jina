@@ -58,6 +58,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             for endpoint in endpoint_polling:
                 self._endpoint_polling[endpoint] = PollingType(
                     endpoint_polling[endpoint]
+                    if type(endpoint_polling[endpoint]) == int
+                    else PollingType.from_string(endpoint_polling[endpoint])
                 )
 
         # In K8s the ConnectionPool needs the information about the Jina Pod its running in

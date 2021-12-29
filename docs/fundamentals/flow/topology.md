@@ -218,7 +218,11 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request. Polling can be configured per endpoint (like `/index` and Executor).
+By default the following `polling` is applied:
+- `ANY` for endpoints at `/index`
+- `ALL` for endpoints at `/search`
+- `ANY` for all other endpoints
 
 When you shard your index, the request handling usually differs between index and search requests:
 
@@ -231,9 +235,14 @@ For searching, you probably need to send the search request to all Shards, becau
 ```python Usage
 from jina import Flow
 
-index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all')
+flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any', endpoint_polling={'/custom': 'ALL', '/search': 'ANY'})
 ```
+
+The example above will result in a Flow having the Executor `ExecutorWithShards` with the following polling options configured
+- `/index` has polling `ANY` (the default value is not changed here)
+- `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
+- `/custom` has polling `ALL`
+- all other endpoints will have polling `ANY`
 
 ### Merging search results
 
