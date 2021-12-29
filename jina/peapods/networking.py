@@ -701,38 +701,44 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         )
 
     async def _process_item(self, item):
-        jina_pod_name = item.metadata.labels['jina_pod_name']
-        is_head = item.metadata.labels['pea_type'] == 'head'
-        shard_id = (
-            int(item.metadata.labels['shard_id'])
-            if item.metadata.labels['shard_id'] and not is_head
-            else None
-        )
-
-        is_deleted = item.metadata.deletion_timestamp is not None
-        ip = item.status.pod_ip
-        port = self.K8S_PORT_IN
-
-        if (
-            ip
-            and port
-            and not is_deleted
-            and self._pod_is_up(item)
-            and self._pod_is_ready(item)
-        ):
-            self.add_connection(
-                pod=jina_pod_name,
-                head=is_head,
-                address=f'{ip}:{port}',
-                shard_id=shard_id,
+        try:
+            jina_pod_name = item.metadata.labels['jina_pod_name']
+            is_head = item.metadata.labels['pea_type'] == 'head'
+            shard_id = (
+                int(item.metadata.labels['shard_id'])
+                if item.metadata.labels['shard_id'] and not is_head
+                else None
             )
-        elif ip and port and is_deleted and self._pod_is_up(item):
-            await self.remove_connection(
-                pod=jina_pod_name,
-                head=is_head,
-                address=f'{ip}:{port}',
-                shard_id=shard_id,
+
+            is_deleted = item.metadata.deletion_timestamp is not None
+            ip = item.status.pod_ip
+            port = self.K8S_PORT_IN
+
+            if (
+                ip
+                and port
+                and not is_deleted
+                and self._pod_is_up(item)
+                and self._pod_is_ready(item)
+            ):
+                self.add_connection(
+                    pod=jina_pod_name,
+                    head=is_head,
+                    address=f'{ip}:{port}',
+                    shard_id=shard_id,
+                )
+            elif ip and port and is_deleted and self._pod_is_up(item):
+                await self.remove_connection(
+                    pod=jina_pod_name,
+                    head=is_head,
+                    address=f'{ip}:{port}',
+                    shard_id=shard_id,
+                )
+        except KeyError:
+            self._logger.debug(
+                f'Ignoring changes to non Jina resource {item.metadata.name}'
             )
+            pass
 
     @staticmethod
     def _extract_port(item):

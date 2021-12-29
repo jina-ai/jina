@@ -1,3 +1,6 @@
+import asyncio
+import time
+
 import pytest
 
 from jina import DocumentArray, Executor, requests, Document, DocumentArrayMemmap
@@ -12,6 +15,12 @@ from jina.clients.request import request_generator
 class NewDocsExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
+        return DocumentArray([Document(text='new document')])
+
+
+class AsyncNewDocsExecutor(Executor):
+    @requests
+    async def foo(self, docs, **kwargs):
         return DocumentArray([Document(text='new document')])
 
 
@@ -35,7 +44,8 @@ def logger():
     return JinaLogger('data request handler')
 
 
-def test_data_request_handler_new_docs(logger):
+@pytest.mark.asyncio
+async def test_data_request_handler_new_docs(logger):
     args = set_pea_parser().parse_args(['--uses', 'NewDocsExecutor'])
     handler = DataRequestHandler(args, logger)
     req = list(
@@ -44,13 +54,30 @@ def test_data_request_handler_new_docs(logger):
         )
     )[0]
     assert len(req.docs) == 10
-    response = handler.handle(requests=[req])
+    response = await handler.handle(requests=[req])
 
     assert len(response.docs) == 1
     assert response.docs[0].text == 'new document'
 
 
-def test_data_request_handler_change_docs(logger):
+@pytest.mark.asyncio
+async def test_aync_data_request_handler_new_docs(logger):
+    args = set_pea_parser().parse_args(['--uses', 'AsyncNewDocsExecutor'])
+    handler = DataRequestHandler(args, logger)
+    req = list(
+        request_generator(
+            '/', DocumentArray([Document(text='input document') for _ in range(10)])
+        )
+    )[0]
+    assert len(req.docs) == 10
+    response = await handler.handle(requests=[req])
+
+    assert len(response.docs) == 1
+    assert response.docs[0].text == 'new document'
+
+
+@pytest.mark.asyncio
+async def test_data_request_handler_change_docs(logger):
     args = set_pea_parser().parse_args(['--uses', 'ChangeDocsExecutor'])
     handler = DataRequestHandler(args, logger)
 
@@ -60,14 +87,15 @@ def test_data_request_handler_change_docs(logger):
         )
     )[0]
     assert len(req.docs) == 10
-    response = handler.handle(requests=[req])
+    response = await handler.handle(requests=[req])
 
     assert len(response.docs) == 10
     for doc in response.docs:
         assert doc.text == 'changed document'
 
 
-def test_data_request_handler_change_docs_dam(logger, tmpdir):
+@pytest.mark.asyncio
+async def test_data_request_handler_change_docs_dam(logger, tmpdir):
     class MemmapExecutor(Executor):
         @requests
         def foo(self, docs, **kwargs):
@@ -84,14 +112,15 @@ def test_data_request_handler_change_docs_dam(logger, tmpdir):
         )
     )[0]
     assert len(req.docs) == 10
-    response = handler.handle(requests=[req])
+    response = await handler.handle(requests=[req])
 
     assert len(response.docs) == 10
     for doc in response.docs:
         assert doc.text == 'input document'
 
 
-def test_data_request_handler_change_docs_from_partial_requests(logger):
+@pytest.mark.asyncio
+async def test_data_request_handler_change_docs_from_partial_requests(logger):
     NUM_PARTIAL_REQUESTS = 5
     args = set_pea_parser().parse_args(['--uses', 'MergeChangeDocsExecutor'])
     handler = DataRequestHandler(args, logger)
@@ -105,7 +134,7 @@ def test_data_request_handler_change_docs_from_partial_requests(logger):
     ] * NUM_PARTIAL_REQUESTS
     assert len(partial_reqs) == 5
     assert len(partial_reqs[0].docs) == 10
-    response = handler.handle(requests=partial_reqs)
+    response = await handler.handle(requests=partial_reqs)
 
     assert len(response.docs) == 10 * NUM_PARTIAL_REQUESTS
     for doc in response.docs:
