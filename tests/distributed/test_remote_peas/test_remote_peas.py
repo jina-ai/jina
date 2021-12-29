@@ -17,7 +17,7 @@ from jina.peapods.peas.helper import is_ready
 from jina.peapods.peas.jinad import JinaDPea, JinaDProcessTarget
 from jina.types.request.control import ControlRequest
 
-HOST = '54.93.57.58'
+HOST = __default_host__
 PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 is_remote = lambda l_or_r: l_or_r == 'remote'
