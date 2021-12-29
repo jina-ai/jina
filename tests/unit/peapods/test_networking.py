@@ -55,7 +55,7 @@ async def test_connection_pool(mocker, monkeypatch):
 
     pool = GrpcConnectionPool()
     send_mock = mocker.Mock()
-    pool._send_requests = lambda messages, connection: mock_send(send_mock)
+    pool._send_requests = lambda messages, connection, endpoint: mock_send(send_mock)
 
     pool.add_connection(pod='encoder', head=False, address='1.1.1.1:53')
     pool.add_connection(pod='encoder', head=False, address='1.1.1.2:53')
