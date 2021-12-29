@@ -126,7 +126,7 @@ async def _activate_worker(
     activate_msg.add_related_entity(
         'worker', worker_host, worker_port, shard_id=shard_id
     )
-    GrpcConnectionPool.send_message_sync(activate_msg, f'{head_host}:{head_port}')
+    GrpcConnectionPool.send_request_sync(activate_msg, f'{head_host}:{head_port}')
 
 
 def _create_worker_pea(
@@ -228,7 +228,7 @@ async def test_psuedo_remote_peas_topologies(gateway, head, worker):
             worker_host = __docker_host__
 
         activate_msg.add_related_entity('worker', worker_host, int(worker_port))
-        assert GrpcConnectionPool.send_message_sync(
+        assert GrpcConnectionPool.send_request_sync(
             activate_msg, head_pea.runtime_ctrl_address
         )
 
@@ -277,7 +277,7 @@ async def test_psuedo_remote_peas_shards(gateway, head, worker, polling):
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id=i)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'{HOST}:{head_port}')
+        GrpcConnectionPool.send_request_sync(activate_msg, f'{HOST}:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(
@@ -335,7 +335,7 @@ async def test_psuedo_remote_peas_replicas(gateway, head, worker):
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', worker_host, worker_port)
-        GrpcConnectionPool.send_message_sync(activate_msg, f'{HOST}:{head_port}')
+        GrpcConnectionPool.send_request_sync(activate_msg, f'{HOST}:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(
