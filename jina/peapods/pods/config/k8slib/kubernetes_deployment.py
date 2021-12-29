@@ -66,10 +66,6 @@ def get_deployment_yamls(
     if not port_expose:
         port_expose = K8sGrpcConnectionPool.K8S_PORT_EXPOSE
     port_in = K8sGrpcConnectionPool.K8S_PORT_IN
-    if name == 'gateway':
-        port_ready_probe = port_expose
-    else:
-        port_ready_probe = port_in
 
     deployment_params = {
         'name': name,
@@ -78,8 +74,6 @@ def get_deployment_yamls(
         'replicas': replicas,
         'command': container_cmd,
         'args': container_args,
-        'port_expose': port_expose,
-        'port_in': port_in,
         'port_in_uses_before': K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
         'port_in_uses_after': K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
         'args_uses_before': container_args_uses_before,
@@ -92,8 +86,17 @@ def get_deployment_yamls(
         'jina_pod_name': jina_pod_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pea_type': pea_type,
-        'port_ready_probe': port_ready_probe,
     }
+
+    if name == 'gateway':
+        port = port_expose
+        port_name = 'port-expose'
+    else:
+        port = port_in
+        port_name = 'port-in'
+
+    deployment_params['port'] = port
+    deployment_params['port_name'] = port_name
 
     if gpus:
         deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
@@ -134,8 +137,8 @@ def get_deployment_yamls(
                 'name': name,
                 'target': name,
                 'namespace': namespace,
-                'port_expose': port_expose,
-                'port_in': port_in,
+                'port': port,
+                'port_name': port_name,
                 'type': 'ClusterIP',
             },
         ),
