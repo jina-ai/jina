@@ -218,7 +218,7 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request. Polling can be configured per endpoint (like `/index` and Executor).
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request. Polling can be configured per endpoint (like `/index`) and Executor.
 By default the following `polling` is applied:
 - `ANY` for endpoints at `/index`
 - `ALL` for endpoints at `/search`
