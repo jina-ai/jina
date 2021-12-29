@@ -84,7 +84,6 @@ def path_size(dump_path):
     return dir_size
 
 
-@pytest.mark.repeat(20)
 @pytest.mark.parametrize('shards', [5, 3, 1])
 @pytest.mark.parametrize('nr_docs', [7])
 @pytest.mark.parametrize('emb_size', [10])
