@@ -511,7 +511,7 @@ emphasize-lines: 7, 8
 
 class MyIndexer(Executor):
     animals = ['cat', 'dog', 'turtle']
-    @request
+    @requests
     def foo(self, docs, parameters: dict, **kwargs):
         for doc in docs:
             # need to cast to int since list indices must be integers not float
@@ -532,7 +532,7 @@ emphasize-lines: 7, 8
 
 class MyIndexer(Executor):
     animals = ['cat', 'dog', 'turtle']
-    @request
+    @requests
     def foo(self, docs, parameters: dict, **kwargs):
         for doc in docs:
             # ERROR: list indices must be integer not float
