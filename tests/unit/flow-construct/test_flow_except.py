@@ -1,7 +1,10 @@
+import os
+
 import numpy as np
 import pytest
 
 from jina import Flow, Executor, requests, Document
+from jina.excepts import RuntimeFailToStart
 from jina.proto import jina_pb2
 from docarray.document.generators import from_ndarray
 from tests import validate_callback
@@ -245,6 +248,18 @@ class ExceptionExecutor2(Executor):
 def test_flow_startup_exception_not_hanging2(protocol):
     f = Flow(protocol=protocol).add(uses=ExceptionExecutor2)
     from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+def test_flow_does_not_import_exec_depencies():
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    f = Flow().add(
+        name='importErrorExecutor',
+        uses=os.path.join(cur_dir, 'executor-invalid-import/config.yml'),
+    )
 
     with pytest.raises(RuntimeFailToStart):
         with f:

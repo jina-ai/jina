@@ -1,4 +1,5 @@
 import asyncio
+import json
 import multiprocessing
 from multiprocessing import Process
 from typing import List
@@ -153,8 +154,53 @@ def test_decompress(monkeypatch):
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
-def _create_test_data_message(counter=0):
-    return list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_dynamic_polling(polling):
+    args = set_pea_parser().parse_args(
+        [
+            '--endpoint-polling',
+            json.dumps({'/any': PollingType.ANY, '/all': PollingType.ALL}),
+            '--shards',
+            str(2),
+        ]
+    )
+    args.polling = PollingType.from_string(polling)
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
+
+    _add_worker(args, shard_id=0)
+    _add_worker(args, shard_id=1)
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port_in}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(
+            _create_test_data_message(endpoint='all'), metadata=(('endpoint', '/all'),)
+        )
+
+    assert response
+    assert handle_queue.qsize() == 2
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port_in}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(
+            _create_test_data_message(endpoint='any'), metadata=(('endpoint', '/any'),)
+        )
+
+    assert response
+    assert handle_queue.qsize() == 3
+
+    _destroy_runtime(args, cancel_event, runtime_thread)
+
+
+def _create_test_data_message(counter=0, endpoint='/'):
+    return list(
+        request_generator(endpoint, DocumentArray([Document(text=str(counter))]))
+    )[0]
 
 
 def _create_runtime(args):
@@ -162,7 +208,9 @@ def _create_runtime(args):
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, handle_queue, cancel_event):
-        def _send_requests_mock(request: List[Request], connection) -> asyncio.Task:
+        def _send_requests_mock(
+            request: List[Request], connection, endpoint
+        ) -> asyncio.Task:
             async def mock_task_wrapper(new_requests, *args, **kwargs):
                 handle_queue.put('mock_called')
                 await asyncio.sleep(0.1)

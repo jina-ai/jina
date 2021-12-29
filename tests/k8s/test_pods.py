@@ -163,7 +163,7 @@ def test_gateway_pod(docker_images, k8s_disable_connection_pool):
                         yield Document(text=f'{i}')
 
                 response = client.post(
-                    '/index', inputs=inputs, request_size=1, return_results=True
+                    '/debug', inputs=inputs, request_size=1, return_results=True
                 )
 
                 assert len(response[0].docs) == 1
@@ -171,6 +171,6 @@ def test_gateway_pod(docker_images, k8s_disable_connection_pool):
 
 
 def _create_test_data_message():
-    return list(request_generator('/index', DocumentArray([Document(text='client')])))[
+    return list(request_generator('/debug', DocumentArray([Document(text='client')])))[
         0
     ]
