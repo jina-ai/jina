@@ -185,7 +185,7 @@ def test_flow_with_needs(
 ):
     resp = run_test(
         k8s_flow_with_needs,
-        endpoint='/index',
+        endpoint='/debug',
         port_expose=9090,
     )
     expected_traversed_executors = {
@@ -234,7 +234,7 @@ def test_flow_with_init(
 def test_flow_with_sharding(k8s_flow_with_sharding, polling):
     resp = run_test(
         k8s_flow_with_sharding,
-        endpoint='/index',
+        endpoint='/debug',
         port_expose=9090,
     )
 
