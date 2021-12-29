@@ -5,6 +5,7 @@ import multiprocessing
 import os
 import threading
 from abc import ABC
+from collections import defaultdict
 from typing import Optional, Union, List, Tuple, Dict
 
 import grpc
@@ -49,10 +50,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             k8s_namespace=args.k8s_namespace,
         )
 
-        self._endpoint_polling = {}
+        self.polling = args.polling if hasattr(args, 'polling') else PollingType.ANY
+        self._endpoint_polling = defaultdict(
+            lambda: self.polling,
+            {'/search': PollingType.ALL, '/index': PollingType.ANY},
+        )
         # by default search and index have polling defined, it can be overriden by the args if needed
-        self._endpoint_polling['/search'] = PollingType.ALL
-        self._endpoint_polling['/index'] = PollingType.ANY
         if hasattr(args, 'endpoint_polling') and args.endpoint_polling:
             endpoint_polling = json.loads(args.endpoint_polling)
             for endpoint in endpoint_polling:
@@ -92,7 +95,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self.connection_pool.add_connection(
                 pod='uses_after', address=self.uses_after_address
             )
-        self.polling = args.polling if hasattr(args, 'polling') else PollingType.ANY
         self._has_uses = args.uses is not None and args.uses != __default_executor__
 
     async def async_setup(self):
@@ -151,7 +153,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            endpoint = self._extract_endpoint(context)
+            endpoint = dict(context.invocation_metadata()).get('endpoint')
             response, metadata = await self._handle_data_request(requests, endpoint)
             context.set_trailing_metadata(metadata.items())
             return response
@@ -163,13 +165,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 exc_info=not self.args.quiet_error,
             )
             raise
-
-    def _extract_endpoint(self, context):
-        metadata = context.invocation_metadata()
-        for key, value in metadata:
-            if key == 'endpoint':
-                return value
-        return None
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """
@@ -235,9 +230,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests,
             pod=self._pod_name,
-            polling_type=self._endpoint_polling[endpoint]
-            if endpoint in self._endpoint_polling
-            else self.polling,
+            polling_type=self._endpoint_polling[endpoint],
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)
