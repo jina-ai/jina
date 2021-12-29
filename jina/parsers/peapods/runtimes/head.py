@@ -25,3 +25,9 @@ def mixin_head_parser(parser):
         type=str,
         help='dictionary JSON with a list of connections to configure',
     )
+
+    gp.add_argument(
+        '--endpoint-polling',
+        type=str,
+        help='dictionary JSON defining the polling type per endpoint',
+    )

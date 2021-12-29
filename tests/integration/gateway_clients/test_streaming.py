@@ -48,7 +48,9 @@ def simple_graph_dict_indexer():
 
 
 class DummyMockConnectionPool:
-    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
+    def send_requests_once(
+        self, requests, pod: str, head: bool, endpoint: str = None
+    ) -> asyncio.Task:
         assert head
         request = requests[0]
 

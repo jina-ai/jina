@@ -11,7 +11,7 @@ class TestExecutor(Executor):
         self.logger = JinaLogger(self.__class__.__name__)
         self._name = self.runtime_args.name
 
-    @requests(on='/index')
+    @requests(on='/debug')
     def debug(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
