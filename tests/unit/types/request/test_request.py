@@ -49,11 +49,6 @@ def test_docs(req):
     assert len(docs) == 1
 
 
-def test_non_empty_fields(req):
-    request = DataRequest(request=req)
-    assert request.non_empty_fields == ('header', 'data')
-
-
 def test_docs_operations():
     req = DataRequest()
     assert not req.docs
