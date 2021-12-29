@@ -1703,8 +1703,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             for name, k8s_objects in configs:
                 filename = os.path.join(pod_base, f'{name}.yml')
                 os.makedirs(pod_base, exist_ok=True)
-                for i, k8s_object in enumerate(k8s_objects):
-                    with open(filename, 'a+') as fp:
+                with open(filename, 'w+') as fp:
+                    for i, k8s_object in enumerate(k8s_objects):
                         yaml.dump(k8s_object, fp)
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
