@@ -243,9 +243,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
-        :param polling: The polling strategy of the Pod (when `shards>1`)
+        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Pod or by endpoint.
+              Define per Pod:
               - ANY: only one (whoever is idle) Pea polls the message
               - ALL: all Peas poll the message (like a broadcast)
+              Define per Endpoint:
+              JSON dict, {endpoint: PollingType}
+              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -328,9 +333,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param polling: The polling strategy of the Pod (when `shards>1`)
+        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Pod or by endpoint.
+              Define per Pod:
               - ANY: only one (whoever is idle) Pea polls the message
               - ALL: all Peas poll the message (like a broadcast)
+              Define per Endpoint:
+              JSON dict, {endpoint: PollingType}
+              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -674,9 +684,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param peas_hosts: The hosts of the peas when shards greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
                   peas are running on host provided by the argument ``host``
-        :param polling: The polling strategy of the Pod (when `shards>1`)
+        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Pod or by endpoint.
+              Define per Pod:
               - ANY: only one (whoever is idle) Pea polls the message
               - ALL: all Peas poll the message (like a broadcast)
+              Define per Endpoint:
+              JSON dict, {endpoint: PollingType}
+              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
