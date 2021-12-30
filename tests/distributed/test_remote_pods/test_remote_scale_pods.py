@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 import pytest
 
@@ -22,6 +23,12 @@ def jinad_client():
 @pytest.fixture
 def async_jinad_client():
     return AsyncJinaDClient(host=HOST, port=PORT)
+
+
+@pytest.fixture
+async def slow_down_tests():
+    yield
+    await asyncio.sleep(0.5)
 
 
 @pytest.mark.parametrize(
@@ -71,7 +78,7 @@ def test_scale_remote_pod(pod_params, jinad_client):
         (3, 1, 2),  # scale down 2 replicas with 1 shard
     ],
 )
-async def test_scale_remote_pod_async(pod_params, async_jinad_client):
+async def test_scale_remote_pod_async(pod_params, async_jinad_client, slow_down_tests):
     num_replicas, scale_to, shards = pod_params
     args = set_pod_parser().parse_args(
         ['--replicas', str(num_replicas), '--shards', str(shards)]

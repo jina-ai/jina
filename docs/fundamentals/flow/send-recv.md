@@ -165,7 +165,7 @@ emphasize-lines: 6, 7
 
 class MyExecutor(Executor):
     animals = ['cat', 'dog', 'turtle']
-    @request
+    @requests
     def foo(self, docs, parameters: dict, **kwargs):
         # need to cast to int since list indices must be integers not float
         index = int(parameters.get('index', 0))
@@ -184,7 +184,7 @@ emphasize-lines: 6, 7
 
 class MyIndexer(Executor):
     animals = ['cat', 'dog', 'turtle']
-    @request
+    @requests
     def foo(self, docs, parameters: dict, **kwargs):
           # ERROR: list indices must be integer not float
           index = parameters.get('index', 0)
@@ -252,7 +252,7 @@ def requests_generator():
         yield Document(...)
 
 class MyExecutor(Executor):
-    @request
+    @requests
     def foo(self, **kwargs):
         slow_operation()
 

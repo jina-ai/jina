@@ -472,7 +472,7 @@ class DummyMockConnectionPool:
         self.responded_messages = defaultdict(dict)
 
     def send_requests_once(
-        self, requests: List[Request], pod: str, head: bool
+        self, requests: List[Request], pod: str, head: bool, endpoint: str = None
     ) -> asyncio.Task:
         assert head
         response_msg = copy.deepcopy(requests[0])

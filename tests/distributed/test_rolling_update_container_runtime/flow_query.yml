@@ -10,4 +10,4 @@ executors:
     replicas: 2
     polling: all
     timeout_ready: '-1'
-    volumes: $JINAD_WORKSPACE:/jinad_workspace
+    volumes: ${{ JINAD_WORKSPACE }}:/jinad_workspace

@@ -116,7 +116,9 @@ def complete_graph_dict():
 
 
 class DummyMockConnectionPool:
-    def send_requests_once(self, requests, pod: str, head: bool) -> asyncio.Task:
+    def send_requests_once(
+        self, requests, pod: str, head: bool, endpoint: str = None
+    ) -> asyncio.Task:
         assert head
         response_msg = copy.deepcopy(requests[0])
         new_docs = DocumentArray()

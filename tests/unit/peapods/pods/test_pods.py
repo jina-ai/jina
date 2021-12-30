@@ -1,3 +1,4 @@
+import json
 import os
 from multiprocessing import Process
 
@@ -509,5 +510,159 @@ def test_pod_upload_files(
                     assert sorted(pea.upload_files) == sorted(expected)
 
 
-def _create_test_data_message():
-    return list(request_generator('/', DocumentArray([Document(text='client')])))[0]
+class DynamicPollingExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @requests(on='/any')
+    def any(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+    @requests(on='/all')
+    def all(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+    @requests(on='/no_polling')
+    def no_polling(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_dynamic_polling_with_config(polling):
+    endpoint_polling = {'/any': PollingType.ANY, '/all': PollingType.ALL}
+
+    args = set_pod_parser().parse_args(
+        [
+            '--uses',
+            'DynamicPollingExecutor',
+            '--shards',
+            str(2),
+            '--polling',
+            polling,
+            '--endpoint-polling',
+            json.dumps(endpoint_polling),
+        ]
+    )
+    pod = Pod(args)
+
+    with pod:
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/all'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/all',
+        )
+        assert len(response.docs) == 1 + 2  # 1 source doc + 2 docs added by each shard
+
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/any'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/any',
+        )
+        assert (
+            len(response.docs) == 1 + 1
+        )  # 1 source doc + 1 doc added by the one shard
+
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/no_polling'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/no_polling',
+        )
+        if polling == 'any':
+            assert (
+                len(response.docs) == 1 + 1
+            )  # 1 source doc + 1 doc added by the one shard
+        else:
+            assert (
+                len(response.docs) == 1 + 2
+            )  # 1 source doc + 1 doc added by the two shards
+
+
+class DynamicPollingExecutorDefaultNames(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @requests(on='/index')
+    def index(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+    @requests(on='/search')
+    def search(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='added'))
+        return docs
+
+
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_dynamic_polling_default_config(polling):
+    args = set_pod_parser().parse_args(
+        [
+            '--uses',
+            'DynamicPollingExecutorDefaultNames',
+            '--shards',
+            str(2),
+            '--polling',
+            polling,
+        ]
+    )
+    pod = Pod(args)
+
+    with pod:
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/search'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/search',
+        )
+        assert len(response.docs) == 1 + 2
+
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/index'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/index',
+        )
+        assert len(response.docs) == 1 + 1
+
+
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_dynamic_polling_overwrite_default_config(polling):
+    endpoint_polling = {'/search': PollingType.ANY}
+    args = set_pod_parser().parse_args(
+        [
+            '--uses',
+            'DynamicPollingExecutorDefaultNames',
+            '--shards',
+            str(2),
+            '--polling',
+            polling,
+            '--endpoint-polling',
+            json.dumps(endpoint_polling),
+        ]
+    )
+    pod = Pod(args)
+
+    with pod:
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/search'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/search',
+        )
+        assert (
+            len(response.docs) == 1 + 1
+        )  # 1 source doc + 1 doc added by the one shard
+
+        response = GrpcConnectionPool.send_request_sync(
+            _create_test_data_message(endpoint='/index'),
+            f'{pod.head_args.host}:{pod.head_args.port_in}',
+            endpoint='/index',
+        )
+        assert (
+            len(response.docs) == 1 + 1
+        )  # 1 source doc + 1 doc added by the one shard
+
+
+def _create_test_data_message(endpoint='/'):
+    return list(request_generator(endpoint, DocumentArray([Document(text='client')])))[
+        0
+    ]

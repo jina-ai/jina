@@ -125,6 +125,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         description: Optional[str] = None,
+        endpoint_polling: Optional[str] = None,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
@@ -178,6 +179,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param endpoint_polling: dictionary JSON defining the polling type per endpoint
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
@@ -528,6 +530,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
+        endpoint_polling: Optional[str] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
         expose_public: Optional[bool] = False,
@@ -578,6 +581,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param endpoint_polling: dictionary JSON defining the polling type per endpoint
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas

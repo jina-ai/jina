@@ -9,7 +9,7 @@ class FastSlowExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @requests(on=['/search'])
+    @requests(on=['/custom'])
     def encode(self, docs: DocumentArray, *args, **kwargs):
         assert len(docs) == 1
         if docs[0].text == 'slow':
@@ -30,6 +30,6 @@ def test_non_blocking_gateway(shards, expected_response):
 
     f = Flow().add(uses=FastSlowExecutor, shards=shards)
     with f:
-        f.post(on='/search', inputs=data, request_size=1, on_done=fill_responses)
+        f.post(on='/custom', inputs=data, request_size=1, on_done=fill_responses)
 
     assert response == expected_response

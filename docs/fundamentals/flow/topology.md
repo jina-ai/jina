@@ -70,7 +70,7 @@ Read more about {ref}`how Reducing works <reduce>`.
 ````
 
 If you don't want to use the default `Reduce` logic, you can implement a custom reducing logic in an Executor and 
-specify it with `uses_before`:
+specify it with `uses` or `uses_before`:
 
 ```python
 import itertools
@@ -88,13 +88,13 @@ f = (Flow()
      .add(name='p1', needs='gateway')
      .add(name='p2', needs='gateway')
      .add(name='p3', needs='gateway')
-     .needs(['p1', 'p2', 'p3'], name='r1', uses_before=CustomReducerExecutor))
+     .needs(['p1', 'p2', 'p3'], name='r1', uses=CustomReducerExecutor))
 ```
 
 ````{admonition} Note
 :class: note
 If there is no pod that needs all 3 pods `p1`, `p2` and `p3`, there will be no reduce logic.
-If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses_before='BaseExecutor'`.
+If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses='BaseExecutor'`.
 ````
 
 
@@ -218,7 +218,12 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request.
+Polling can be configured per endpoint (like `/index`) and Executor.
+By default the following `polling` is applied:
+- `ANY` for endpoints at `/index`
+- `ALL` for endpoints at `/search`
+- `ANY` for all other endpoints
 
 When you shard your index, the request handling usually differs between index and search requests:
 
@@ -231,9 +236,16 @@ For searching, you probably need to send the search request to all Shards, becau
 ```python Usage
 from jina import Flow
 
-index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all')
+flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any', endpoint_polling={'/custom': 'ALL', '/search': 'ANY'})
 ```
+
+The example above will result in a Flow having the Executor `ExecutorWithShards` with the following polling options configured
+- `/index` has polling `ANY` (the default value is not changed here)
+- `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
+- `/custom` has polling `ALL`
+- all other endpoints will have polling `ANY`
+
+`endpoint_polling` always takes precedence over `polling`. `endpoint_polling` can be configured for all endpoints, `polling` will only be applied to endpoints not mentioned in `endpoint_polling` and does never apply to `/index` and `/search`.
 
 ### Merging search results
 
@@ -332,3 +344,12 @@ If a Document exists in many DocumentArrays, data properties are merged.
 
 Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
 Other non-data properties are ignored.
+
+````{admonition} Warning
+:class: warning
+If a data property is set on many Documents with the same ID, only one value is kept in the final Document. This value 
+can be belong to any of these Documents. This also means, if you make the same request, with such conflicting data 
+properties, you can end up with undeterministic results.
+When you use shards or parallel branches, you should always make sure that all data properties of the same Documents 
+either do not conflict or have the same value.
+````

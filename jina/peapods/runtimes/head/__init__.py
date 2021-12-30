@@ -5,6 +5,7 @@ import multiprocessing
 import os
 import threading
 from abc import ABC
+from collections import defaultdict
 from typing import Optional, Union, List, Tuple, Dict
 
 import grpc
@@ -49,6 +50,21 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             k8s_namespace=args.k8s_namespace,
         )
 
+        self.polling = args.polling if hasattr(args, 'polling') else PollingType.ANY
+        self._endpoint_polling = defaultdict(
+            lambda: self.polling,
+            {'/search': PollingType.ALL, '/index': PollingType.ANY},
+        )
+        # by default search and index have polling defined, it can be overriden by the args if needed
+        if hasattr(args, 'endpoint_polling') and args.endpoint_polling:
+            endpoint_polling = json.loads(args.endpoint_polling)
+            for endpoint in endpoint_polling:
+                self._endpoint_polling[endpoint] = PollingType(
+                    endpoint_polling[endpoint]
+                    if type(endpoint_polling[endpoint]) == int
+                    else PollingType.from_string(endpoint_polling[endpoint])
+                )
+
         # In K8s the ConnectionPool needs the information about the Jina Pod its running in
         # This is stored in the environment variable JINA_POD_NAME in all Jina K8s default templates
         if (
@@ -79,7 +95,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self.connection_pool.add_connection(
                 pod='uses_after', address=self.uses_after_address
             )
-        self.polling = args.polling if hasattr(args, 'polling') else PollingType.ANY
         self._has_uses = args.uses is not None and args.uses != __default_executor__
 
     async def async_setup(self):
@@ -138,7 +153,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            response, metadata = await self._handle_data_request(requests)
+            endpoint = dict(context.invocation_metadata()).get('endpoint')
+            response, metadata = await self._handle_data_request(requests, endpoint)
             context.set_trailing_metadata(metadata.items())
             return response
         except (RuntimeError, Exception) as ex:
@@ -193,7 +209,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             raise
 
     async def _handle_data_request(
-        self, requests: List[DataRequest]
+        self, requests: List[DataRequest], endpoint: Optional[str]
     ) -> Tuple[DataRequest, Dict]:
         self.logger.debug(f'recv {len(requests)} DataRequest(s)')
 
@@ -212,7 +228,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
-            requests=requests, pod=self._pod_name, polling_type=self.polling
+            requests=requests,
+            pod=self._pod_name,
+            polling_type=self._endpoint_polling[endpoint],
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)

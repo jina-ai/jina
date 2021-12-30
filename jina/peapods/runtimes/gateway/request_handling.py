@@ -28,6 +28,7 @@ def handle_request(
         # important that the gateway needs to have an instance of the graph per request
         tasks_to_respond = []
         tasks_to_ignore = []
+        endpoint = request.header.exec_endpoint
         r = request.routes.add()
         r.pod = 'gateway'
         r.start_time.GetCurrentTime()
@@ -38,11 +39,14 @@ def handle_request(
                     request=request,
                     pod=request.header.target_peapod,
                     head=True,
+                    endpoint=endpoint,
                 )
             )
         else:
             for origin_node in request_graph.origin_nodes:
-                leaf_tasks = origin_node.get_leaf_tasks(connection_pool, request, None)
+                leaf_tasks = origin_node.get_leaf_tasks(
+                    connection_pool, request, None, endpoint=endpoint
+                )
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
                 # nodes
