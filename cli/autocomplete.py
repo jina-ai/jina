@@ -186,10 +186,6 @@ ac_table = {
             '--uses-after-address',
             '--connection-list',
             '--endpoint-polling',
-            '--k8s-uses-init',
-            '--k8s-mount-path',
-            '--k8s-init-container-command',
-            '--k8s-custom-resource-dir',
         ],
         'hub new': [
             '--help',
