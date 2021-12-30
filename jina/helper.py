@@ -448,7 +448,8 @@ def random_port() -> Optional[int]:
                 f'can not find an available port between [{min_port}, {max_port}].'
             )
     else:
-        _port = _get_port()
+        while not _port or _port in assigned_ports:
+            _port = _get_port()
 
     assigned_ports.add(int(_port))
     return int(_port)
