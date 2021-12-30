@@ -494,12 +494,9 @@ class GrpcConnectionPool:
             options = GrpcConnectionPool.get_default_grpc_options()
 
         if https:
-            credentials = grpc.ssl_channel_credentials()
-
-            if root_certificates is not None:
-                credentials = grpc.ssl_channel_credentials(
-                    root_certificates=root_certificates
-                )
+            credentials = grpc.ssl_channel_credentials(
+                root_certificates=root_certificates
+            )
 
             return secure_channel(address, credentials, options)
 
