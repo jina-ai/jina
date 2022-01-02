@@ -24,7 +24,7 @@ from ..logging.predefined import default_logger
 
 
 @lru_cache()
-def get_hubble_url() -> str:
+def get_hubble_url(url_path: str) -> str:
     """Get the Hubble URL from api.jina.ai or os.environ
 
     :return: the Hubble URL
@@ -44,7 +44,7 @@ def get_hubble_url() -> str:
                 'Can not fetch the URL of Hubble from `api.jina.ai`'
             )
             raise
-    return urljoin(u, '/v1/executors')
+    return urljoin(u, url_path)
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:

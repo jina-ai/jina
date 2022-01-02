@@ -379,12 +379,12 @@ metas:
                 method = 'put' if ('force' in form_data) else 'post'
 
                 st.update(f'Connecting to Jina Hub ...')
-                hubble_url = get_hubble_url()
+                hubble_push_url = get_hubble_url('/v2/rpc/executor.list')
 
                 # upload the archived executor to Jina Hub
                 st.update(f'Uploading...')
                 resp = upload_file(
-                    hubble_url,
+                    hubble_push_url,
                     'filename',
                     content,
                     dict_data=form_data,
@@ -417,8 +417,8 @@ metas:
                         self.logger.error(
                             '''
                         Failed on building Docker image. Potential solutions:
-                        - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one, 
-                          as the auto-generated one on the cloud did not work.   
+                        - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one,
+                          as the auto-generated one on the cloud did not work.
                         - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
                         '''
                         )
@@ -562,7 +562,7 @@ with f:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = get_hubble_url() + f'/{name}/?'
+        pull_url = get_hubble_url('/v2/executors/') + f'/{name}/?'
         path_params = {}
         if secret:
             path_params['secret'] = secret
