@@ -192,7 +192,7 @@ async def async_inputs():
 @pytest.mark.parametrize('gateway', ['local'])
 @pytest.mark.parametrize('head', ['local', 'remote'])
 @pytest.mark.parametrize('worker', ['remote'])
-async def test_psuedo_remote_peas_topologies(gateway, head, worker):
+async def test_pseudo_remote_peas_topologies(gateway, head, worker):
     """
     g(l)-h(l)-w(l) - works
     g(l)-h(l)-w(r) - works - head connects to worker via localhost
@@ -253,7 +253,7 @@ async def test_psuedo_remote_peas_topologies(gateway, head, worker):
 @pytest.mark.parametrize('worker', ['local', 'remote'])
 @pytest.mark.parametrize('polling', [PollingType.ANY, PollingType.ALL])
 # test simple topology with shards on remote
-async def test_psuedo_remote_peas_shards(gateway, head, worker, polling):
+async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
     head_port = random_port()
     port_expose = random_port()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
@@ -310,7 +310,7 @@ async def test_psuedo_remote_peas_shards(gateway, head, worker, polling):
 @pytest.mark.parametrize('head', ['local', 'remote'])
 @pytest.mark.parametrize('worker', ['local', 'remote'])
 # test simple topology with shards on remote
-async def test_psuedo_remote_peas_replicas(gateway, head, worker):
+async def test_pseudo_remote_peas_replicas(gateway, head, worker):
     NUM_REPLICAS = 3
     head_port = random_port()
     port_expose = random_port()
@@ -369,7 +369,7 @@ async def test_psuedo_remote_peas_replicas(gateway, head, worker):
 @pytest.mark.parametrize('worker', ['local', 'remote'])
 @pytest.mark.parametrize('uses_before', ['local', 'remote'])
 @pytest.mark.parametrize('uses_after', ['local', 'remote'])
-async def test_psuedo_remote_peas_executor(
+async def test_pseudo_remote_peas_executor(
     gateway, head, worker, uses_before, uses_after
 ):
     """
