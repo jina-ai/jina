@@ -29,7 +29,7 @@ def is_pea_ready(args):
 
 @pytest.fixture
 def pea_args():
-    return set_pea_parser().parse_args([])
+    return set_pea_parser().parse_args(['--host', HOST, '--port-jinad', str(PORT)])
 
 
 @pytest.fixture
@@ -84,16 +84,15 @@ def test_sync_jinad_client(jinad_client, pea_args):
         (threading.Thread, threading.Event),
     ],
 )
-def test_jinad_process_target(worker_cls, event):
+def test_jinad_process_target(worker_cls, event, pea_args):
     is_started_event, is_shutdown_event, is_ready_event, is_cancelled_event = [
         event()
     ] * 4
-    args = set_pea_parser().parse_args([])
 
     process = worker_cls(
         target=JinaDProcessTarget(),
         kwargs={
-            'args': args,
+            'args': pea_args,
             'is_started': is_started_event,
             'is_shutdown': is_shutdown_event,
             'is_ready': is_ready_event,
@@ -102,10 +101,10 @@ def test_jinad_process_target(worker_cls, event):
     )
     process.start()
     is_ready_event.wait()
-    assert is_pea_ready(args)
+    assert is_pea_ready(pea_args)
     process.join()
     assert is_shutdown_event.is_set()
-    assert not is_pea_ready(args)
+    assert not is_pea_ready(pea_args)
 
 
 @pytest.mark.parametrize('runtime_backend', ['PROCESS', 'THREAD'])
