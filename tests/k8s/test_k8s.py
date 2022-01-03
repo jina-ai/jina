@@ -241,7 +241,7 @@ async def test_flow_with_needs(
         flow=k8s_flow_with_needs,
         namespace=namespace,
         core_client=core_client,
-        endpoint='/index',
+        endpoint='/debug',
     )
     expected_traversed_executors = {
         'segmenter',
@@ -295,7 +295,7 @@ async def test_flow_with_sharding(
         flow=k8s_flow_with_sharding,
         namespace=namespace,
         core_client=core_client,
-        endpoint='/index',
+        endpoint='/debug',
     )
 
     core_client.delete_namespace(namespace)
