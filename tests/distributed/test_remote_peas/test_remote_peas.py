@@ -271,7 +271,7 @@ async def test_psuedo_remote_peas_shards(gateway, head, worker, polling):
         worker_pea.start()
 
         await asyncio.sleep(0.1)
-        worker_host = __docker_host__ if is_remote(head) else HOST
+        worker_host = HOST
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
@@ -329,7 +329,7 @@ async def test_psuedo_remote_peas_replicas(gateway, head, worker):
         worker_pea.start()
 
         await asyncio.sleep(0.1)
-        worker_host = __docker_host__ if is_remote(head) else HOST
+        worker_host = HOST
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
@@ -441,7 +441,7 @@ async def test_psuedo_remote_peas_executor(
         peas.append(worker_pea)
         await asyncio.sleep(0.1)
 
-        worker_host = __docker_host__ if is_remote(head) else HOST
+        worker_host = HOST
         await _activate_worker(
             head_host=HOST,
             head_port=head_port,
