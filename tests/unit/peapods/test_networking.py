@@ -1,3 +1,4 @@
+import os
 import asyncio
 import multiprocessing
 import time
@@ -13,6 +14,19 @@ from jina.helper import random_port
 from jina.peapods.networking import ReplicaList, GrpcConnectionPool
 from jina.proto import jina_pb2_grpc
 from jina.types.request.control import ControlRequest
+
+
+@pytest.fixture
+def private_key_cert_chain():
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+    with open(f'{cur_dir}/test-ssl.key', 'rb') as f:
+        private_key = f.read()
+
+    with open(f'{cur_dir}/test-ssl.pem', 'rb') as f:
+        certificate_chain = f.read()
+
+    return (private_key, certificate_chain)
 
 
 @pytest.mark.asyncio
@@ -289,6 +303,71 @@ async def test_grpc_connection_pool_real_sending():
     server_process2.kill()
     server_process1.join()
     server_process2.join()
+
+
+@pytest.mark.asyncio
+@pytest.mark.slow
+@pytest.mark.timeout(5)
+async def test_secure_send_request(private_key_cert_chain):
+    server1_ready_event = multiprocessing.Event()
+    (private_key, certificate_chain) = private_key_cert_chain
+
+    def listen(port, event: multiprocessing.Event):
+        class DummyServer:
+            async def process_control(self, request, *args):
+                returned_msg = ControlRequest(command='DEACTIVATE')
+                return returned_msg
+
+        async def start_grpc_server():
+            grpc_server = grpc.aio.server(
+                options=[
+                    ('grpc.max_send_request_length', -1),
+                    ('grpc.max_receive_message_length', -1),
+                ]
+            )
+
+            jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
+                DummyServer(), grpc_server
+            )
+            grpc_server.add_secure_port(
+                f'localhost:{port}',
+                grpc.ssl_server_credentials((private_key_cert_chain,)),
+            )
+
+            await grpc_server.start()
+            event.set()
+            await grpc_server.wait_for_termination()
+
+        asyncio.run(start_grpc_server())
+
+    port = random_port()
+    server_process1 = Process(
+        target=listen,
+        args=(
+            port,
+            server1_ready_event,
+        ),
+    )
+    server_process1.start()
+
+    time.sleep(0.1)
+    server1_ready_event.wait()
+    sent_msg = ControlRequest(command='STATUS')
+
+    result = GrpcConnectionPool.send_request_sync(
+        sent_msg, f'localhost:{port}', https=True, root_certificates=certificate_chain
+    )
+
+    assert result.command == 'DEACTIVATE'
+
+    result = await GrpcConnectionPool.send_request_async(
+        sent_msg, f'localhost:{port}', https=True, root_certificates=certificate_chain
+    )
+
+    assert result.command == 'DEACTIVATE'
+
+    server_process1.kill()
+    server_process1.join()
 
 
 def _create_test_data_message():
