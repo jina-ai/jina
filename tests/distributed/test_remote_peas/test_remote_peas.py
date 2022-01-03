@@ -17,7 +17,7 @@ from jina.peapods.peas.helper import is_ready
 from jina.peapods.peas.jinad import JinaDPea, JinaDProcessTarget
 from jina.types.request.control import ControlRequest
 
-HOST = __default_host__
+HOST = '54.93.57.58'
 PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 is_remote = lambda l_or_r: l_or_r == 'remote'
@@ -191,7 +191,7 @@ async def async_inputs():
 @pytest.mark.asyncio
 @pytest.mark.parametrize('gateway', ['local'])
 @pytest.mark.parametrize('head', ['local', 'remote'])
-@pytest.mark.parametrize('worker', ['local', 'remote'])
+@pytest.mark.parametrize('worker', ['remote'])
 async def test_psuedo_remote_peas_topologies(gateway, head, worker):
     """
     g(l)-h(l)-w(l) - works
@@ -205,7 +205,10 @@ async def test_psuedo_remote_peas_topologies(gateway, head, worker):
     head_port = random_port()
     port_expose = random_port()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pods_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+    if head == 'remote':
+        pods_addresses = f'{{"pod0": ["{HOST}:{head_port}"]}}'
+    else:
+        pods_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
     # create a single head pea
     head_pea = _create_head_pea(head, head_port)
@@ -232,7 +235,7 @@ async def test_psuedo_remote_peas_topologies(gateway, head, worker):
         )
 
         # send requests to the gateway
-        c = Client(host='localhost', port=port_expose, asyncio=True)
+        c = Client(host='127.0.0.1', port=port_expose, asyncio=True)
         responses = c.post(
             '/', inputs=async_inputs, request_size=1, return_results=True
         )
