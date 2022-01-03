@@ -6,9 +6,11 @@ from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
 from .. import Pea
-from ..networking import GrpcConnectionPool
+from ..networking import GrpcConnectionPool, host_is_local
+from ..peas.container import ContainerPea
 from ..peas.factory import PeaFactory
-from ... import __default_executor__, __default_host__
+from ..peas.jinad import JinaDPea
+from ... import __default_executor__, __default_host__, __docker_host__
 from ... import helper
 from ...enums import (
     PodRoleType,
@@ -527,13 +529,28 @@ class Pod(BasePod):
         """
         if self.head_pea is not None:
             for shard_id in self.peas_args['peas']:
-                for pea_args in self.peas_args['peas'][shard_id]:
+                for pea_idx, pea_args in enumerate(self.peas_args['peas'][shard_id]):
+                    # Check if the current pea and head are both containerized on the same host
+                    # If so __docker_host__ needs to be advertised as the worker's address to the head
+                    worker_host = (
+                        __docker_host__
+                        if self._is_container_to_container(pea_idx, shard_id)
+                        and host_is_local(pea_args.host)
+                        else pea_args.host
+                    )
                     GrpcConnectionPool.activate_worker_sync(
-                        pea_args.host,
+                        worker_host,
                         int(pea_args.port_in),
                         self.head_pea.runtime_ctrl_address,
                         shard_id,
                     )
+
+    def _is_container_to_container(self, pea_idx, shard_id):
+        # Check if both shard_id/pea_idx and the head are containerized
+        return (
+            type(self.shards[shard_id]._peas[pea_idx]) == ContainerPea
+            or type(self.shards[shard_id]._peas[pea_idx]) == JinaDPea
+        ) and (type(self.head_pea) == ContainerPea or type(self.head_pea) == JinaDPea)
 
     def start(self) -> 'Pod':
         """
