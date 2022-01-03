@@ -190,7 +190,7 @@ async def async_inputs():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('gateway', ['local'])
-@pytest.mark.parametrize('head', ['local', 'remote'])
+@pytest.mark.parametrize('head', ['local'])  # add remote head back
 @pytest.mark.parametrize('worker', ['remote'])
 async def test_pseudo_remote_peas_topologies(gateway, head, worker):
     """
@@ -388,7 +388,7 @@ async def test_pseudo_remote_peas_executor(
         uses_before_port,
         'pod0/uses_before',
         executor='NameChangeExecutor',
-        py_modules='executor.py' if is_remote(uses_before) else 'executors/executor.py',
+        py_modules='executors/executor.py',
         upload_files=[os.path.join(cur_dir, 'executors')]
         if is_remote(uses_before)
         else None,
@@ -402,7 +402,7 @@ async def test_pseudo_remote_peas_executor(
         uses_after_port,
         'pod0/uses_after',
         executor='NameChangeExecutor',
-        py_modules='executor.py' if is_remote(uses_after) else 'executors/executor.py',
+        py_modules='executors/executor.py',
         upload_files=[os.path.join(cur_dir, 'executors')]
         if is_remote(uses_after)
         else None,
@@ -435,7 +435,7 @@ async def test_pseudo_remote_peas_executor(
             worker_port,
             f'pod0/shards/{i}',
             executor='NameChangeExecutor',
-            py_modules='executor.py' if is_remote(worker) else 'executors/executor.py',
+            py_modules='executors/executor.py',
             upload_files=[os.path.join(cur_dir, 'executors')]
             if is_remote(worker)
             else None,
