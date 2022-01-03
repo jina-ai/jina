@@ -5,6 +5,7 @@ from typing import Dict, Union, List, Optional, Tuple
 from .... import __default_executor__, __version__
 from ....enums import PeaRoleType
 from .k8slib import kubernetes_deployment
+from .helper import get_image_name
 from ...networking import K8sGrpcConnectionPool
 from .. import BasePod
 
@@ -127,7 +128,7 @@ class K8sPodConfig:
             )
 
             if uses is not None and uses != __default_executor__:
-                image_name = kubernetes_deployment.get_image_name(uses)
+                image_name = get_image_name(uses)
 
             return image_name
 

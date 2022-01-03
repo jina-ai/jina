@@ -4,6 +4,7 @@ from typing import Dict, Union, List, Optional, Tuple
 
 from .... import __default_executor__, __version__
 from ....enums import PeaRoleType
+from .helper import get_image_name
 from .. import BasePod
 
 
@@ -110,7 +111,7 @@ class DockerComposeConfig:
             )
 
             if uses is not None and uses != __default_executor__:
-                image_name = kubernetes_deployment.get_image_name(uses)
+                image_name = get_image_name(uses)
 
             return image_name
 
@@ -152,7 +153,9 @@ class DockerComposeConfig:
         pod_addresses: Optional[Dict[str, List[str]]] = None,
     ):
         self.pod_addresses = pod_addresses
-        self.head_deployment = None
+        self.head_service = None
+        self.uses_before_service = None
+        self.uses_after_service = None
         self.args = copy.copy(args)
         self.name = self.args.name
 
@@ -236,11 +239,7 @@ class DockerComposeConfig:
 
             connection_list = {}
             for i in range(shards):
-                name = (
-                    f'{kubernetes_deployment.to_dns_name(self.name)}-{i}'
-                    if shards > 1
-                    else f'{kubernetes_deployment.to_dns_name(self.name)}'
-                )
+                name = f'{self.name}-{i}' if shards > 1 else f'{self.name}'
                 # TODO: Fix connection list
                 # connection_list[
                 #     str(i)
@@ -314,12 +313,32 @@ class DockerComposeConfig:
                 )
             ]
         else:
-            services = [self.head_service]
-            services.extend(self.worker_services)
-            return [
-                (
-                    service.name,
-                    service.get_runtime_config(),
+            services = []
+            if self.head_service is not None:
+                services.append(
+                    (self.head_service.name, self.head_service.get_runtime_config())
                 )
-                for service in services
-            ]
+            if self.uses_before_service is not None:
+                services.append(
+                    (
+                        self.uses_before_service.name,
+                        self.uses_before_service.get_runtime_config(),
+                    )
+                )
+            if self.uses_after_service is not None:
+                services.append(
+                    (
+                        self.uses_after_service.name,
+                        self.uses_after_service.get_runtime_config(),
+                    )
+                )
+            for worker_service in self.worker_services:
+                configs = worker_service.get_runtime_config()
+                for rep_id, config in enumerate(configs):
+                    name = (
+                        f'{worker_service.name}/rep-{rep_id}'
+                        if len(configs) > 1
+                        else worker_service.name
+                    )
+                    services.append((name, config))
+            return services
