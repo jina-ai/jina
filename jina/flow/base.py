@@ -1701,7 +1701,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 args=v.args,
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
-                k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace),
+                k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
+                if not k8s_connection_pool
+                else None,
             )
             configs = k8s_pod.to_k8s_yaml()
             for name, k8s_objects in configs:
