@@ -1713,6 +1713,22 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
 
+    def to_docker_compose_yaml(self, output_path: Optional[str] = None):
+        if self._build_level.value < FlowBuildLevel.GRAPH.value:
+            self.build(copy_flow=False)
+
+        output_path = output_path or 'docker-compose.yml'
+
+        from ..peapods.pods.config.docker_compose import DockerComposeConfig
+
+        for node, v in self._pod_nodes.items():
+            docker_compose_pod = DockerComposeConfig(
+                args=v.args,
+                pod_addresses=self._get_pod_addresses(),
+            )
+            configs = docker_compose_pod.to_docker_compose_config()
+            print(f' configs {configs}')
+
     def scale(
         self,
         pod_name: str,

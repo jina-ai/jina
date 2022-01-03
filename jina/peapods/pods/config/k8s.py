@@ -26,7 +26,7 @@ def _get_base_executor_version():
 
 class K8sPodConfig:
     """
-    Class that implements the output of configuration files for different cloud-solutions (e.g Kubernetes) for a given Pod.
+    Class that implements the output of configuration files for Kubernetes for a given Pod.
     """
 
     class _K8sDeployment:
@@ -261,7 +261,7 @@ class K8sPodConfig:
                     jina_pod_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
-                    k8s_pod_addresses=self.k8s_pod_addresses,
+                    k8s_pod_addresses=None,
                 )
             )
 
