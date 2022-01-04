@@ -907,27 +907,27 @@ together with other meta-information in the <code class="docutils literal notran
 <li><p>In the query Flow it encodes query questions</p></li>
 </ul>
 <p>In these two cases, we need to choose different models to encode the different attributes of the Documents. To achieve this, we use different initialization settings for <code class="docutils literal notranslate"><span class="pre">DPRTextEncoder</span></code> by overriding the <code class="docutils literal notranslate"><span class="pre">with</span></code> arguments in the YAML file. To do this, we need to pass the new argument to <code class="docutils literal notranslate"><span class="pre">uses_with</span></code>. You can find more information in <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/add-exec-to-flow/#override-with-configuration">Jina’s docs</a>.</p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span>  <span class="c1"># index.yml</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span> 
-  <span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">encoder</span>
-    <span class="l l-Scalar l-Scalar-Plain">uses</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">jinahub://DPRTextEncoder/v0.2</span>
-<span class="hll">    <span class="l l-Scalar l-Scalar-Plain">uses_with</span><span class="p p-Indicator">:</span>
-</span><span class="hll">      <span class="nt">pretrained_model_name_or_path</span><span class="p">:</span> <span class="s">'facebook/dpr-ctx_encoder-single-nq-base'</span>
-</span><span class="hll">      <span class="nt">encoder_type</span><span class="p">:</span> <span class="s">'context'</span>
-</span><span class="hll">      <span class="nt">traversal_paths</span><span class="p">:</span>
-</span><span class="hll">        <span class="p p-Indicator">-</span> <span class="s">'c'</span>
-</span>  <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1"># index.yml</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"> </span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">uses</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://DPRTextEncoder/v0.2</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">uses_with</span><span class="p p-Indicator">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">pretrained_model_name_or_path</span><span class="p">:</span><span class="w"> </span><span class="s">'facebook/dpr-ctx_encoder-single-nq-base'</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">encoder_type</span><span class="p">:</span><span class="w"> </span><span class="s">'context'</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">traversal_paths</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">'c'</span><span class="w"></span>
+</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span>  <span class="c1"># query.yml</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span> 
-  <span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">encoder</span>
-    <span class="l l-Scalar l-Scalar-Plain">uses</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">jinahub://DPRTextEncoder/v0.2</span>
-<span class="hll">    <span class="l l-Scalar l-Scalar-Plain">uses_with</span><span class="p p-Indicator">:</span>
-</span><span class="hll">      <span class="nt">pretrained_model_name_or_path</span><span class="p">:</span> <span class="s">'facebook/dpr-question_encoder-single-nq-base'</span>
-</span><span class="hll">      <span class="nt">encoder_type</span><span class="p">:</span> <span class="s">'question'</span>
-</span><span class="hll">      <span class="nt">batch_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-</span>  <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1"># query.yml</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"> </span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">uses</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://DPRTextEncoder/v0.2</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">uses_with</span><span class="p p-Indicator">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">pretrained_model_name_or_path</span><span class="p">:</span><span class="w"> </span><span class="s">'facebook/dpr-question_encoder-single-nq-base'</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">encoder_type</span><span class="p">:</span><span class="w"> </span><span class="s">'question'</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -983,7 +983,7 @@ together with other meta-information in the <code class="docutils literal notran
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

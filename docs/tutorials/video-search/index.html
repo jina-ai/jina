@@ -859,34 +859,34 @@ These requests have the text descriptions stored in the <code class="docutils li
 <li><p><a class="reference external" href="https://hub.jina.ai/executor/zb38xlt4"><code class="docutils literal notranslate"><span class="pre">SimpleIndexer</span></code></a></p></li>
 </ul>
 <p>Note that by default <code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code> encodes the <code class="docutils literal notranslate"><span class="pre">blob</span></code> of the Documents at the root level. In this example, the Document at the root level represents the video and its chunks represent video frames that the CLIP model should encode. To override this default configuration in the YAML file, we set <code class="docutils literal notranslate"><span class="pre">traversal_paths:</span> <span class="pre">['c']</span></code> under the <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> field. Instead of encoding the Document at the root level, the embeddings are calculated based on the <code class="docutils literal notranslate"><span class="pre">blob</span></code> of each chunk.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">...</span>
-<span class="nt">executors</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">- uses</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPImageEncoder/v0.1</span>
-<span class="hll">    <span class="l l-Scalar l-Scalar-Plain">uses_with</span><span class="p p-Indicator">:</span>
-</span><span class="hll">      <span class="nt">traversal_paths</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,]</span>
-</span><span class="nn">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">...</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">- uses</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPImageEncoder/v0.1</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">uses_with</span><span class="p p-Indicator">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">traversal_paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,]</span><span class="w"></span>
+</span><span class="nn">...</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="override-requests-configuration">
 <h3>Override requests configuration<a class="headerlink" href="#override-requests-configuration" title="Permalink to this headline">¶</a></h3>
 <p>Similar to overriding the <code class="docutils literal notranslate"><span class="pre">traversal_paths</span></code>, we need to configure the <code class="docutils literal notranslate"><span class="pre">@requests</span></code> for the Executors to ensure the requests to <code class="docutils literal notranslate"><span class="pre">/index</span></code> and <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoints can be handled as expected. The <code class="docutils literal notranslate"><span class="pre">VideoLoader</span></code> and <code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code> only process requests to the <code class="docutils literal notranslate"><span class="pre">/index</span></code> endpoint. In contrast, <code class="docutils literal notranslate"><span class="pre">CLIPTextEncoder</span></code> only handles requests to the <code class="docutils literal notranslate"><span class="pre">/search</span></code> endpoint.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">...</span>
-<span class="nt">executors</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">jinahub://VideoLoader/v0.2</span>
-    <span class="l l-Scalar l-Scalar-Plain">...</span>
-<span class="hll">    <span class="nt">uses_requests</span><span class="p">:</span>
-</span><span class="hll">      <span class="nt">/index</span><span class="p">:</span> <span class="s">'extract'</span>
-</span>  <span class="p p-Indicator">-</span> <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPImageEncoder/v0.1</span>
-    <span class="l l-Scalar l-Scalar-Plain">...</span>
-<span class="hll">    <span class="nt">uses_requests</span><span class="p">:</span>
-</span><span class="hll">      <span class="nt">/index</span><span class="p">:</span> <span class="s">'encode'</span>
-</span>  <span class="p p-Indicator">-</span> <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPTextEncoder/v0.1</span>
-    <span class="l l-Scalar l-Scalar-Plain">...</span>
-<span class="hll">    <span class="nt">uses_requests</span><span class="p">:</span>
-</span><span class="hll">      <span class="nt">/search</span><span class="p">:</span> <span class="s">'encode'</span>
-</span><span class="nn">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">...</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://VideoLoader/v0.2</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">uses_requests</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">/index</span><span class="p">:</span><span class="w"> </span><span class="s">'extract'</span><span class="w"></span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPImageEncoder/v0.1</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">uses_requests</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">/index</span><span class="p">:</span><span class="w"> </span><span class="s">'encode'</span><span class="w"></span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPTextEncoder/v0.1</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">uses_requests</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">/search</span><span class="p">:</span><span class="w"> </span><span class="s">'encode'</span><span class="w"></span>
+</span><span class="nn">...</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -929,7 +929,7 @@ These requests have the text descriptions stored in the <code class="docutils li
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

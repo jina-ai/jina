@@ -830,7 +830,7 @@
 An expression can be any combination of literal values, references to a context, or functions.
 You can combine literals, context references, and functions using operators.</p>
 <p>You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ &lt;expression&gt; }}</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ &lt;expression&gt; }}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>To evaluate (i.e. substitute the value to the real value)
@@ -1066,10 +1066,10 @@ implements <a class="reference internal" href="#jina.jaml.JAMLCompatible" title=
 </dd>
 </dl>
 <p>Substitutions are carried in the order and multiple passes to resolve variables with best effort.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span>
-<span class="nt">metas</span><span class="p">:</span>
-    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span>  <span class="c1"># env or context variables</span>
-    <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span>  <span class="c1"># internal reference</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span><span class="w"></span>
+<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span><span class="w"></span>
+<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load Executor from yaml file</span>
@@ -1156,7 +1156,7 @@ parser errors
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -845,16 +845,16 @@ Your browser does not support the audio element.
 <li><p>the file path information of a <code class="docutils literal notranslate"><span class="pre">.mp3</span></code> or <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file stored in the <code class="docutils literal notranslate"><span class="pre">uri</span></code> attribute</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">load_input_from</span></code> argument is to configurate the input data type, which can be each <code class="docutils literal notranslate"><span class="pre">waveform</span></code>, <code class="docutils literal notranslate"><span class="pre">log_mel</span></code>, or <code class="docutils literal notranslate"><span class="pre">uri</span></code>. <code class="docutils literal notranslate"><span class="pre">min_duration</span></code> defines the number of vectors to concatenate.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span> <span class="s">'encoder'</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="s">'jinahub+docker://VGGishAudioEncoder/v0.4'</span>
-    <span class="nt">uses_with</span><span class="p">:</span>
-      <span class="nt">traversal_paths</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,</span> <span class="p p-Indicator">]</span>
-      <span class="nt">load_input_from</span><span class="p">:</span> <span class="s">'waveform'</span>
-      <span class="nt">min_duration</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
-    <span class="nt">volumes</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="s">'./models:/workspace/models'</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">'encoder'</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">'jinahub+docker://VGGishAudioEncoder/v0.4'</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">traversal_paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">load_input_from</span><span class="p">:</span><span class="w"> </span><span class="s">'waveform'</span><span class="w"></span>
+<span class="w">      </span><span class="nt">min_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">'./models:/workspace/models'</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="important admonition">
@@ -865,15 +865,15 @@ Your browser does not support the audio element.
 <section id="storage">
 <h3>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
 <p>We choose the <a class="reference external" href="https://hub.jina.ai/executor/zb38xlt4">SimpleIndexer</a> from Jina Hub for building a simple index storing both embedding vectors and meta information. During querying, we need to split the querying audios in the same way as indexing and generating chunks. Therefore, we need to set both <code class="docutils literal notranslate"><span class="pre">traversal_rdarray</span></code> and <code class="docutils literal notranslate"><span class="pre">traversal_ldarray</span></code> to <code class="docutils literal notranslate"><span class="pre">['c',]</span></code> to ask the SimpleIndexer to use the embeddings of the chunks for the querying and the indexed Documents correspondingly.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span> <span class="s">'indexer'</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="s">'jinahub://SimpleIndexer/v0.7'</span>
-    <span class="nt">uses_with</span><span class="p">:</span>
-      <span class="nt">match_args</span><span class="p">:</span>
-        <span class="nt">limit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-        <span class="nt">traversal_rdarray</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,]</span>
-        <span class="nt">traversal_ldarray</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,]</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">'indexer'</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">'jinahub://SimpleIndexer/v0.7'</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">match_args</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="w">        </span><span class="nt">traversal_rdarray</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,]</span><span class="w"></span>
+<span class="w">        </span><span class="nt">traversal_ldarray</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'c'</span><span class="p p-Indicator">,]</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -926,13 +926,13 @@ Your browser does not support the audio element.
 <h3>Query from Python<a class="headerlink" href="#query-from-python" title="Permalink to this headline">¶</a></h3>
 <p>With the Flow running as a http service, we can use the Jina swagger UI tool to query.
 Open the browser at <code class="docutils literal notranslate"><span class="pre">localhost:45678/docs</span></code>, send query via the Swagger UI,</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"data"</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="nt">"uri"</span><span class="p">:</span> <span class="s2">"toy-data/6pO06krKrf8_30000_airplane.mp3"</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"toy-data/6pO06krKrf8_30000_airplane.mp3"</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -1005,7 +1005,7 @@ Open the browser at <code class="docutils literal notranslate"><span class="pre"
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -772,12 +772,12 @@
             <span class="c1"># full-match, each doc has 6K matches</span>
             <span class="k">for</span> <span class="n">doc_id</span> <span class="ow">in</span> <span class="n">doc_ids</span><span class="p">:</span>
                 <span class="n">match</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-                <span class="n">match</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc_id</span><span class="p">)</span>
+                <span class="k">match</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc_id</span><span class="p">)</span>
                 <span class="n">groundtruths</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># pseudo-match, each doc has only one match, but this match's id is a list of 6k elements</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
-            <span class="n">match</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">match</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">groundtruths</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">groundtruths</span>
@@ -955,7 +955,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

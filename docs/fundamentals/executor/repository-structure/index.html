@@ -818,14 +818,14 @@ my.yml<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
-<span class="nt">metas</span><span class="p">:</span>
-  <span class="nt">py_modules</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">foo.py</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">awesomeness</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my first awesome executor</span>
-<span class="nt">requests</span><span class="p">:</span>
-  <span class="nt">/random_work</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
+<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo.py</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awesomeness</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my first awesome executor</span><span class="w"></span>
+<span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">/random_work</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -850,10 +850,10 @@ flow.py<div class="sd-summary-down docutils">
 <section id="single-python-file">
 <h2>Single Python file<a class="headerlink" href="#single-python-file" title="Permalink to this headline">¶</a></h2>
 <p>When you are only working with a single python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can simply put it at the root of the repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
-<span class="nt">metas</span><span class="p">:</span>
-  <span class="nt">py_modules</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
+<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -900,10 +900,10 @@ your repository (as you would normally do with Python packages). Specifically, y
 </pre></div>
 </div>
 <p>Finally, the contents of <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> - notice that only the <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> file needs to be listed under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
-<span class="nt">metas</span><span class="p">:</span>
-  <span class="nt">py_modules</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">executor/__init__.py</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
+<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/__init__.py</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This was a relatively simple example, but this way of structuring python modules works for any python package structure, however complex. Consider this slightly more complicated example</p>
@@ -960,7 +960,7 @@ your repository (as you would normally do with Python packages). Specifically, y
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

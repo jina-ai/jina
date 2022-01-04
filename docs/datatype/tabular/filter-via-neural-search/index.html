@@ -804,21 +804,21 @@
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>print(da[5].json())
 </pre></div>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"16a9745c-3d99-11ec-a97f-1e008a366d49"</span><span class="p">,</span>
-  <span class="nt">"tags"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-    <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Gere, Richard"</span><span class="p">,</span>
-    <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">"Adams, Brooke"</span><span class="p">,</span>
-    <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-    <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Malick, Terrence"</span><span class="p">,</span>
-    <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"94"</span><span class="p">,</span>
-    <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"14"</span><span class="p">,</span>
-    <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Drama"</span><span class="p">,</span>
-    <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Days of Heaven"</span><span class="p">,</span>
-    <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1978"</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"16a9745c-3d99-11ec-a97f-1e008a366d49"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gere, Richard"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Adams, Brooke"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Malick, Terrence"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"94"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Drama"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Days of Heaven"</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1978"</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>It looks like this Document has two non-empty attributes <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">tags</span></code>, and all values in <code class="docutils literal notranslate"><span class="pre">tags</span></code> correspond to the column value we have in the CSV data. Now our task is clear: we want to filter Documents from this DocumentArray according to their values in <code class="docutils literal notranslate"><span class="pre">.tags</span></code>, but no SQL, pure Jina, pure neural search.</p>
@@ -946,194 +946,194 @@
 </div>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">“Subject”: “Comedy”</label><div class="tab-content docutils">
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Chase, Chevy"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"82"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Valkenvania"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1990"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"paulNewman.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Newman, Paul"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"28"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Secret War of Harry Frigg, The"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1968"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Murphy, Eddie"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"56"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Best of Eddie Murphy, Saturday Night Live, The"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1989"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Mastroianni, Marcello"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Fellini, Federico"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"29"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Ginger &amp; Fred"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1993"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Piscopo, Joe"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"60"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"14"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Joe Piscopo New Jersey Special"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Chase, Chevy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"82"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Valkenvania"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1990"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"paulNewman.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Newman, Paul"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"28"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Secret War of Harry Frigg, The"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1968"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Murphy, Eddie"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"56"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Best of Eddie Murphy, Saturday Night Live, The"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1989"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mastroianni, Marcello"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fellini, Federico"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"29"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ginger &amp; Fred"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1993"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Piscopo, Joe"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Joe Piscopo New Jersey Special"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">“Year”: 1987.0</label><div class="tab-content docutils">
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">"Madonna"</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"50"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"75"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Music"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Madonna Live, The Virgin Tour"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Piscopo, Joe"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"60"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"14"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Joe Piscopo New Jersey Special"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Everett, Rupert"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"95"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"25"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Drama"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Hearts of Fire"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Lambert, Christopher"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">"Sukowa, Barbara"</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Cimino, Michael"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"41"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Drama"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Sicilian, The"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Hubley, Whip"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Rosenthal, Rick"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"98"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"87"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Action"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Russkies"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Madonna"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"50"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"75"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Music"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Madonna Live, The Virgin Tour"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Piscopo, Joe"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Joe Piscopo New Jersey Special"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Everett, Rupert"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"95"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Drama"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hearts of Fire"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Lambert, Christopher"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sukowa, Barbara"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cimino, Michael"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"41"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Drama"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sicilian, The"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hubley, Whip"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rosenthal, Rick"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"98"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"87"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Action"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Russkies"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">{ “Subject”: “Comedy”, “Year”: 1987.0}</label><div class="tab-content docutils">
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Piscopo, Joe"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"60"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"14"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Joe Piscopo New Jersey Special"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Murphy, Eddie"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Murphy, Eddie"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"90"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"51"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Eddie Murphy Raw"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"McCarthy, Andrew"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">"Cattrall, Kim"</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Gottlieb, Michael"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"23"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Mannequin"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Williams, Robin"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Levinson, Barry"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"120"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"37"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Good Morning, Vietnam"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
-<span class="p">{</span>
-  <span class="nt">"*Image"</span><span class="p">:</span> <span class="s2">"NicholasCage.png"</span><span class="p">,</span>
-  <span class="nt">"Actor"</span><span class="p">:</span> <span class="s2">"Boys, The Fat"</span><span class="p">,</span>
-  <span class="nt">"Actress"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="nt">"Awards"</span><span class="p">:</span> <span class="s2">"No"</span><span class="p">,</span>
-  <span class="nt">"Director"</span><span class="p">:</span> <span class="s2">"Schultz, Michael"</span><span class="p">,</span>
-  <span class="nt">"Length"</span><span class="p">:</span> <span class="s2">"86"</span><span class="p">,</span>
-  <span class="nt">"Popularity"</span><span class="p">:</span> <span class="s2">"69"</span><span class="p">,</span>
-  <span class="nt">"Subject"</span><span class="p">:</span> <span class="s2">"Comedy"</span><span class="p">,</span>
-  <span class="nt">"Title"</span><span class="p">:</span> <span class="s2">"Disorderlies"</span><span class="p">,</span>
-  <span class="nt">"Year"</span><span class="p">:</span> <span class="s2">"1987"</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Piscopo, Joe"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Joe Piscopo New Jersey Special"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Murphy, Eddie"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Murphy, Eddie"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"90"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"51"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Eddie Murphy Raw"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"McCarthy, Andrew"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cattrall, Kim"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gottlieb, Michael"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"23"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mannequin"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Williams, Robin"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Levinson, Barry"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"120"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"37"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Good Morning, Vietnam"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"*Image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NicholasCage.png"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Boys, The Fat"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Actress"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Awards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Director"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Schultz, Michael"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Length"</span><span class="p">:</span><span class="w"> </span><span class="s2">"86"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Popularity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"69"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Comedy"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Disorderlies"</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">"Year"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1987"</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -1174,7 +1174,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

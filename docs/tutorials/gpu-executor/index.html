@@ -932,8 +932,8 @@ encoder by encoding 10 thousand text documents.</p>
 <section id="using-gpu-locally">
 <h2>Using GPU locally<a class="headerlink" href="#using-gpu-locally" title="Permalink to this headline">¶</a></h2>
 <p>By now you can already see how easy it is to use the encoder on a GPU - simply set the device on initialization to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code></p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})</span>
-<span class="gd">- f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})</span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})</span><span class="w"></span>
+<span class="gd">- f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Let’s see how much faster the GPU is, compared to CPU. The following
@@ -1016,14 +1016,14 @@ so for most use cases this is not something we would worry about.</p>
 <h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this headline">¶</a></h2>
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?</p>
 <p>Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../advanced/hub/push-executor/#hub-tags"><span class="std std-ref">Jina Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Jina Hub</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>f = Flow().add(
-<span class="gd">-   uses='docker://sentence-encoder',</span>
-<span class="gi">+   uses='jinahub+docker://TransformerTorchEncoder/gpu',</span>
-    uses_with={'device': 'cuda'},
-    gpus='all',
-    # This has to be an absolute path, replace /home/ubuntu with your home directory
-    volumes="/home/ubuntu/.cache:/root/.cache",
-)
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
+<span class="gd">-   uses='docker://sentence-encoder',</span><span class="w"></span>
+<span class="gi">+   uses='jinahub+docker://TransformerTorchEncoder/gpu',</span><span class="w"></span>
+<span class="w"> </span>   uses_with={'device': 'cuda'},<span class="w"></span>
+<span class="w"> </span>   gpus='all',<span class="w"></span>
+<span class="w"> </span>   # This has to be an absolute path, replace /home/ubuntu with your home directory<span class="w"></span>
+<span class="w"> </span>   volumes="/home/ubuntu/.cache:/root/.cache",<span class="w"></span>
+<span class="w">)</span>
 </pre></div>
 </div>
 <p>You’ll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.</p>
@@ -1077,7 +1077,7 @@ so for most use cases this is not something we would worry about.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

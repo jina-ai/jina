@@ -1114,20 +1114,20 @@ Flow in an explicit C/S style.</p>
 </pre></div>
 </div>
 <p>You can enable custom endpoints in a Flow using yaml syntax as well.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Flow</span>
-<span class="nt">with</span><span class="p">:</span>
-  <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http</span>
-  <span class="nt">expose_endpoints</span><span class="p">:</span>
-    <span class="nt">/foo</span><span class="p">:</span>
-      <span class="nt">methods</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">"GET"</span><span class="p p-Indicator">]</span>
-    <span class="nt">/bar</span><span class="p">:</span>
-      <span class="nt">methods</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">"PUT"</span><span class="p p-Indicator">]</span>
-      <span class="nt">summary</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my endpoint</span>
-      <span class="nt">tags</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">fine-tuning</span>
-    <span class="nt">/foobar</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
-<span class="nt">executors</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">indexer</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
+<span class="w">  </span><span class="nt">expose_endpoints</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">/foo</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"GET"</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">/bar</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"PUT"</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my endpoint</span><span class="w"></span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fine-tuning</span><span class="w"></span>
+<span class="w">    </span><span class="nt">/foobar</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
 </pre></div>
 </div>
 <figure class="align-center">
@@ -1198,7 +1198,7 @@ override <code class="docutils literal notranslate"><span class="pre">jina.helpe
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

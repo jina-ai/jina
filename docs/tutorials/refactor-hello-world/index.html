@@ -861,128 +861,128 @@ have <code class="docutils literal notranslate"><span class="pre">flow-index.yml
 <li><p>Change index flow and search flow accordingly</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">flow-index.yml</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Flow</span>
-<span class="nt">version</span><span class="p">:</span> <span class="s">'1'</span>
-<span class="nt">executors</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">segment</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Segmenter</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">craftText</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TextCrafter</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">encodeText</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="s">'jinahub+docker://TransformerTorchEncoder'</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">textIndexer</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span>
-      <span class="nt">with</span><span class="p">:</span>
-        <span class="nt">index_file_name</span><span class="p">:</span> <span class="s">"text.json"</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">craftImage</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ImageCrafter</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-    <span class="nt">needs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">segment</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">encodeImage</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="s">'jinahub+docker://ImageTorchEncoder'</span>
-    <span class="nt">uses_with</span><span class="p">:</span>
-      <span class="nt">use_default_preprocessing</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">imageIndexer</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span>
-      <span class="nt">with</span><span class="p">:</span>
-        <span class="nt">index_file_name</span><span class="p">:</span> <span class="s">"image.json"</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">keyValueIndexer</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyValueIndexer</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-    <span class="nt">needs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">segment</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">joinAll</span>
-    <span class="nt">needs</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">textIndexer</span><span class="p p-Indicator">,</span> <span class="nv">imageIndexer</span><span class="p p-Indicator">,</span> <span class="nv">keyValueIndexer</span> <span class="p p-Indicator">]</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">'1'</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">segment</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Segmenter</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">craftText</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TextCrafter</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodeText</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">'jinahub+docker://TransformerTorchEncoder'</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">textIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">index_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">"text.json"</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">craftImage</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ImageCrafter</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">segment</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodeImage</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">'jinahub+docker://ImageTorchEncoder'</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">use_default_preprocessing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">imageIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">index_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">"image.json"</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keyValueIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyValueIndexer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">segment</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joinAll</span><span class="w"></span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">textIndexer</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">imageIndexer</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">keyValueIndexer</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">flow-search.yml</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Flow</span>
-<span class="nt">version</span><span class="p">:</span> <span class="s">'1'</span>
-<span class="nt">with</span><span class="p">:</span>
-  <span class="nt">cors</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-  <span class="nt">expose_crud_endpoints</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="nt">executors</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">craftText</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TextCrafter</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">encodeText</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="s">'jinahub+docker://TransformerTorchEncoder'</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">textIndexer</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span>
-      <span class="nt">with</span><span class="p">:</span>
-        <span class="nt">index_file_name</span><span class="p">:</span> <span class="s">"text.json"</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">craftImage</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ImageCrafter</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-    <span class="nt">needs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gateway</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">encodeImage</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="s">'jinahub+docker://ImageTorchEncoder'</span>
-    <span class="nt">uses_with</span><span class="p">:</span>
-      <span class="nt">use_default_preprocessing</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">imageIndexer</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span>
-      <span class="nt">with</span><span class="p">:</span>
-        <span class="nt">index_file_name</span><span class="p">:</span> <span class="s">"image.json"</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">weightedRanker</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">WeightedRanker</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-    <span class="nt">needs</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">textIndexer</span><span class="p p-Indicator">,</span> <span class="nv">imageIndexer</span> <span class="p p-Indicator">]</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">keyvalueIndexer</span>
-    <span class="nt">uses</span><span class="p">:</span>
-      <span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyValueIndexer</span>
-      <span class="nt">metas</span><span class="p">:</span>
-        <span class="nt">workspace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span>
-        <span class="nt">py_modules</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">my_executors.py</span>
-    <span class="nt">needs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">weightedRanker</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">'1'</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="w">  </span><span class="nt">expose_crud_endpoints</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">craftText</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TextCrafter</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodeText</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">'jinahub+docker://TransformerTorchEncoder'</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">textIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">index_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">"text.json"</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">craftImage</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ImageCrafter</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodeImage</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">'jinahub+docker://ImageTorchEncoder'</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">use_default_preprocessing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">imageIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DocVectorIndexer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">index_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">"image.json"</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weightedRanker</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">WeightedRanker</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">textIndexer</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">imageIndexer</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keyvalueIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyValueIndexer</span><span class="w"></span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HW_WORKDIR</span><span class="w"></span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executors.py</span><span class="w"></span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weightedRanker</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -1003,7 +1003,7 @@ have <code class="docutils literal notranslate"><span class="pre">flow-index.yml
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

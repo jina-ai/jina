@@ -820,15 +820,15 @@ Therefore, you can add an executor via:</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">myexec.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
-<span class="nt">with</span><span class="p">:</span>
-  <span class="nt">bar</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">123</span>
-<span class="nt">metas</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">awesomeness</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my first awesome executor</span>
-  <span class="nt">py_modules</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myexec.py</span>
-<span class="nt">requests</span><span class="p">:</span>
-  <span class="nt">/random_work</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">foo</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123</span><span class="w"></span>
+<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awesomeness</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my first awesome executor</span><span class="w"></span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec.py</span><span class="w"></span>
+<span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">/random_work</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -900,10 +900,10 @@ located elsewhere, you can specify their locations using the parameter
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">executor/config.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
-<span class="nt">metas</span><span class="p">:</span>
-  <span class="nt">py_modules</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">executor.py</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
+<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Now, in <code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>, to correctly load the Executor, you can specify the directory of the Executor like so:</p>
@@ -929,10 +929,10 @@ relative to the Flow config file. The Flow will infer its config file location a
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Flow</span>
-<span class="nt">executors</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">executor</span>
-    <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">../executor/config.yml</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../executor/config.yml</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
@@ -1209,7 +1209,7 @@ the <code class="docutils literal notranslate"><span class="pre">connect_to_pred
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 28, 2021.
+                    Last updated on Jan 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
