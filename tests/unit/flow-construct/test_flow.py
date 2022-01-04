@@ -2,6 +2,7 @@ import datetime
 import inspect
 import json
 import os
+from typing import Union
 
 import numpy as np
 import pytest
@@ -645,12 +646,22 @@ def test_flow_auto_polling():
         )
     )
 
-    assert f['pod_replica_only_polling_any'].args.polling == PollingType.ANY
-    assert f['pod_replica_only_polling_ignored'].args.polling == PollingType.ANY
-    assert f['pod_replicas_shards_auto_polling_all'].args.polling == PollingType.ALL
-    assert f['pod_shards_default_polling_any'].args.polling == PollingType.ANY
-    assert f['pod_replicas_shards_manual_polling_any'].args.polling == PollingType.ANY
-    assert f['pod_replicas_shards_manual_polling_all'].args.polling == PollingType.ALL
+    def _assert_polling(value: Union[PollingType, str], expected: PollingType):
+        assert value == expected or value.lower() == expected.name.lower()
+
+    _assert_polling(f['pod_replica_only_polling_any'].args.polling, PollingType.ANY)
+
+    _assert_polling(f['pod_replica_only_polling_ignored'].args.polling, PollingType.ANY)
+    _assert_polling(
+        f['pod_replicas_shards_auto_polling_all'].args.polling, PollingType.ALL
+    )
+    _assert_polling(f['pod_shards_default_polling_any'].args.polling, PollingType.ANY)
+    _assert_polling(
+        f['pod_replicas_shards_manual_polling_any'].args.polling, PollingType.ANY
+    )
+    _assert_polling(
+        f['pod_replicas_shards_manual_polling_all'].args.polling, PollingType.ALL
+    )
 
 
 def test_flow_change_parameters():

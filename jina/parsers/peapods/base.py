@@ -119,12 +119,17 @@ When not given, then the default naming strategy will apply.
 
     gp.add_argument(
         '--polling',
-        type=PollingType.from_string,
-        choices=list(PollingType),
-        default=PollingType.ANY,
+        type=str,
+        default=PollingType.ANY.name,
         help='''
-    The polling strategy of the Pod (when `shards>1`)
+    The polling strategy of the Pod and its endpoints (when `shards>1`).
+    Can be defined for all endpoints of a Pod or by endpoint.
+    Define per Pod:
     - ANY: only one (whoever is idle) Pea polls the message
     - ALL: all Peas poll the message (like a broadcast)
+    Define per Endpoint:
+    JSON dict, {endpoint: PollingType}
+    {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+    
     ''',
     )
