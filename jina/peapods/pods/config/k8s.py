@@ -268,7 +268,9 @@ class K8sPodConfig:
                     jina_pod_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
-                    k8s_pod_addresses=None,
+                    k8s_pod_addresses=self.k8s_pod_addresses
+                    if name == 'gateway'
+                    else None,
                 )
             )
 
@@ -287,6 +289,7 @@ class K8sPodConfig:
             parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
             parsed_args['head_deployment'].uses_with = None
+            parsed_args['head_deployment'].env = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             if not self.k8s_connection_pool:

@@ -228,6 +228,7 @@ class DockerComposeConfig:
             parsed_args['head_service'].uses_with = None
             parsed_args['head_service'].uses_before = None
             parsed_args['head_service'].uses_after = None
+            parsed_args['head_service'].env = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             import json

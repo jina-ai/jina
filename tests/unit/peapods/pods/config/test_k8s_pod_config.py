@@ -483,7 +483,6 @@ def test_k8s_yaml_regular_pod(
         config_map,
         'executor-head-0',
         {
-            'ENV_VAR': 'ENV_VALUE',
             'JINA_LOG_LEVEL': 'DEBUG',
             'pythonunbuffered': '1',
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
@@ -569,11 +568,6 @@ def test_k8s_yaml_regular_pod(
         head_runtime_container_args[head_runtime_container_args.index('--port-in') + 1]
         == '8081'
     )
-    assert '--env' in head_runtime_container_args
-    assert (
-        head_runtime_container_args[head_runtime_container_args.index('--env') + 1]
-        == '{"ENV_VAR": "ENV_VALUE"}'
-    )
     assert '--pea-role' in head_runtime_container_args
     assert (
         head_runtime_container_args[head_runtime_container_args.index('--pea-role') + 1]
@@ -642,13 +636,7 @@ def test_k8s_yaml_regular_pod(
             ]
             == '8082'
         )
-        assert '--env' in uses_before_runtime_container_args
-        assert (
-            uses_before_runtime_container_args[
-                uses_before_runtime_container_args.index('--env') + 1
-            ]
-            == '{"ENV_VAR": "ENV_VALUE"}'
-        )
+        assert '--env' not in uses_before_runtime_container_args
         assert '--connection-list' not in uses_before_runtime_container_args
         assert '--k8s-disable-connection-pool' not in uses_before_runtime_container_args
 
@@ -683,13 +671,7 @@ def test_k8s_yaml_regular_pod(
             ]
             == '8083'
         )
-        assert '--env' in uses_after_runtime_container_args
-        assert (
-            uses_after_runtime_container_args[
-                uses_after_runtime_container_args.index('--env') + 1
-            ]
-            == '{"ENV_VAR": "ENV_VALUE"}'
-        )
+        assert '--env' not in uses_after_runtime_container_args
         assert '--connection-list' not in uses_after_runtime_container_args
         assert '--k8s-disable-connection-pool' not in uses_after_runtime_container_args
 
