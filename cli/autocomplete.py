@@ -103,7 +103,6 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
-            '--endpoint-polling',
         ],
         'flow': [
             '--help',
@@ -186,7 +185,6 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
-            '--endpoint-polling',
             '--k8s-uses-init',
             '--k8s-mount-path',
             '--k8s-init-container-command',
@@ -279,7 +277,6 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
-            '--endpoint-polling',
         ],
         'pod': [
             '--help',
@@ -338,7 +335,6 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
-            '--endpoint-polling',
             '--uses-before',
             '--uses-after',
             '--scheduling',
