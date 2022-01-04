@@ -129,6 +129,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -11970,4 +11971,34 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```514afb14```](https://github.com/jina-ai/jina/commit/514afb142b1ca83c875c146ab880b9b54bf608f0)] __-__ __docarray__: add build script for docarray (*Han Xiao*)
  - [[```614846c6```](https://github.com/jina-ai/jina/commit/614846c66ea7bbfa804196e5212513b69bd6c9c9)] __-__ __version__: the next docarray version will be 0.0.3 (*Jina Dev Bot*)
  - [[```7699293f```](https://github.com/jina-ai/jina/commit/7699293f6d4cc0b33765ef09c55e88cb6d3151ed)] __-__ __version__: the next version will be 2.6.3 (*Jina Dev Bot*)
+
+<a name=release-note-2-6-4></a>
+## Release Note (`2.6.4`)
+
+> Release time: 2022-01-04 08:42:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Zhaofeng Miao,  Jina Dev Bot,  Deepankar Mahapatro,  Wang Bo,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```77cfc818```](https://github.com/jina-ai/jina/commit/77cfc818a50e4dcaef0bf94256eef65d3b112b48)] __-__ ignore non jina resources (#4107) (*Deepankar Mahapatro*)
+
+### 🧼 Code Refactoring
+
+ - [[```c84d0fa0```](https://github.com/jina-ai/jina/commit/c84d0fa0fb67ec52dcf0afd95b30e079506984a9)] __-__ __helloworld__: supress warnings of traversal flat (#4094) (*Wang Bo*)
+
+### 📗 Documentation
+
+ - [[```56af142a```](https://github.com/jina-ai/jina/commit/56af142ad73f0db7d821a325a6967f9084fce415)] __-__ __tutorial__: typo (#4120) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```65194e83```](https://github.com/jina-ai/jina/commit/65194e8332e538fde1779583702c5ccf7c55ca24)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b59b1935```](https://github.com/jina-ai/jina/commit/b59b193549cd6a460b3f8de5e9e5362739debb26)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```79388360```](https://github.com/jina-ai/jina/commit/79388360877941f3c81e8e8b22a8cde9d3b11b80)] __-__ __version__: the next docarray version will be 0.0.4 (*Jina Dev Bot*)
+ - [[```ebcbb078```](https://github.com/jina-ai/jina/commit/ebcbb078c7339bf3fec6b25352270fa9c679d6a5)] __-__ __version__: the next version will be 2.6.4 (*Jina Dev Bot*)
 
