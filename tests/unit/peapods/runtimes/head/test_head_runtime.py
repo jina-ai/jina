@@ -158,13 +158,14 @@ def test_decompress(monkeypatch):
 def test_dynamic_polling(polling):
     args = set_pea_parser().parse_args(
         [
-            '--endpoint-polling',
-            json.dumps({'/any': PollingType.ANY, '/all': PollingType.ALL}),
+            '--polling',
+            json.dumps(
+                {'/any': PollingType.ANY, '/all': PollingType.ALL, '*': polling}
+            ),
             '--shards',
             str(2),
         ]
     )
-    args.polling = PollingType.from_string(polling)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     _add_worker(args, shard_id=0)
@@ -193,6 +194,48 @@ def test_dynamic_polling(polling):
 
     assert response
     assert handle_queue.qsize() == 3
+
+    _destroy_runtime(args, cancel_event, runtime_thread)
+
+
+@pytest.mark.parametrize('polling', ['any', 'all'])
+def test_base_polling(polling):
+    args = set_pea_parser().parse_args(
+        [
+            '--polling',
+            polling,
+            '--shards',
+            str(2),
+        ]
+    )
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
+
+    _add_worker(args, shard_id=0)
+    _add_worker(args, shard_id=1)
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port_in}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(
+            _create_test_data_message(endpoint='all'), metadata=(('endpoint', '/all'),)
+        )
+
+    assert response
+    assert handle_queue.qsize() == 2 if polling == 'all' else 1
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port_in}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(
+            _create_test_data_message(endpoint='any'), metadata=(('endpoint', '/any'),)
+        )
+
+    assert response
+    assert handle_queue.qsize() == 4 if polling == 'all' else 2
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 

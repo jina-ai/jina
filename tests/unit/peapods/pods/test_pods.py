@@ -532,7 +532,7 @@ class DynamicPollingExecutor(Executor):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_dynamic_polling_with_config(polling):
-    endpoint_polling = {'/any': PollingType.ANY, '/all': PollingType.ALL}
+    endpoint_polling = {'/any': PollingType.ANY, '/all': PollingType.ALL, '*': polling}
 
     args = set_pod_parser().parse_args(
         [
@@ -541,8 +541,6 @@ def test_dynamic_polling_with_config(polling):
             '--shards',
             str(2),
             '--polling',
-            polling,
-            '--endpoint-polling',
             json.dumps(endpoint_polling),
         ]
     )
@@ -627,7 +625,7 @@ def test_dynamic_polling_default_config(polling):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_dynamic_polling_overwrite_default_config(polling):
-    endpoint_polling = {'/search': PollingType.ANY}
+    endpoint_polling = {'/search': PollingType.ANY, '*': polling}
     args = set_pod_parser().parse_args(
         [
             '--uses',
@@ -635,8 +633,6 @@ def test_dynamic_polling_overwrite_default_config(polling):
             '--shards',
             str(2),
             '--polling',
-            polling,
-            '--endpoint-polling',
             json.dumps(endpoint_polling),
         ]
     )

@@ -125,7 +125,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         description: Optional[str] = None,
-        endpoint_polling: Optional[str] = None,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
@@ -179,7 +178,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param endpoint_polling: dictionary JSON defining the polling type per endpoint
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
@@ -203,9 +201,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
         :param pods_addresses: dictionary JSON with the input addresses of each Pod
-        :param polling: The polling strategy of the Pod (when `shards>1`)
+        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Pod or by endpoint.
+              Define per Pod:
               - ANY: only one (whoever is idle) Pea polls the message
               - ALL: all Peas poll the message (like a broadcast)
+              Define per Endpoint:
+              JSON dict, {endpoint: PollingType}
+              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port_expose: The port that the gateway exposes for clients for GRPC connections.
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -288,9 +291,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param polling: The polling strategy of the Pod (when `shards>1`)
+        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Pod or by endpoint.
+              Define per Pod:
               - ANY: only one (whoever is idle) Pea polls the message
               - ALL: all Peas poll the message (like a broadcast)
+              Define per Endpoint:
+              JSON dict, {endpoint: PollingType}
+              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -530,7 +538,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
-        endpoint_polling: Optional[str] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
         expose_public: Optional[bool] = False,
@@ -581,7 +588,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
-        :param endpoint_polling: dictionary JSON defining the polling type per endpoint
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
@@ -613,9 +619,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param peas_hosts: The hosts of the peas when shards greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
                   peas are running on host provided by the argument ``host``
-        :param polling: The polling strategy of the Pod (when `shards>1`)
+        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Pod or by endpoint.
+              Define per Pod:
               - ANY: only one (whoever is idle) Pea polls the message
               - ALL: all Peas poll the message (like a broadcast)
+              Define per Endpoint:
+              JSON dict, {endpoint: PollingType}
+              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
