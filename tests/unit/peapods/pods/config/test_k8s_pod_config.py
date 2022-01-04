@@ -171,16 +171,8 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
 
     assert pod_config.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
     assert pod_config.deployment_args['head_deployment'].uses_before == uses_before
-    assert (
-        pod_config.deployment_args['head_deployment'].uses_before_address
-        == f'127.0.0.1:8082'
-    )
     assert pod_config.deployment_args['head_deployment'].uses is None
     assert pod_config.deployment_args['head_deployment'].uses_after == uses_after
-    assert (
-        pod_config.deployment_args['head_deployment'].uses_after_address
-        == f'127.0.0.1:8083'
-    )
     assert (
         pod_config.deployment_args['head_deployment'].k8s_connection_pool
         is k8s_connection_pool_call
@@ -285,18 +277,15 @@ def assert_role_binding_config(role_binding: Dict):
     }
 
 
-def assert_config_map_config(config_map: Dict, base_name: str):
+def assert_config_map_config(
+    config_map: Dict, base_name: str, expected_config_map_data: Dict
+):
     assert config_map['kind'] == 'ConfigMap'
     assert config_map['metadata'] == {
         'name': f'{base_name}-configmap',
         'namespace': 'default-namespace',
     }
-    assert config_map['data'] == {
-        'ENV_VAR': 'ENV_VALUE',
-        'JINA_LOG_LEVEL': 'DEBUG',
-        'pythonunbuffered': '1',
-        'worker_class': 'uvicorn.workers.UvicornH11Worker',
-    }
+    assert config_map['data'] == expected_config_map_data
 
 
 @pytest.mark.parametrize('pod_addresses', [None, {'1': 'address.svc'}])
@@ -323,7 +312,16 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
     role_binding = configs[1]
     assert_role_binding_config(role_binding)
     config_map = configs[2]
-    assert_config_map_config(config_map, 'gateway')
+    assert_config_map_config(
+        config_map,
+        'gateway',
+        {
+            'JINA_LOG_LEVEL': 'DEBUG',
+            'pythonunbuffered': '1',
+            'worker_class': 'uvicorn.workers.UvicornH11Worker',
+        },
+    )
+
     service = configs[3]
     assert service['kind'] == 'Service'
     assert service['metadata'] == {
@@ -385,8 +383,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
     assert args[args.index('--port-in') + 1] == '8081'
     assert '--port-expose' in args
     assert args[args.index('--port-expose') + 1] == '32465'
-    assert '--env' in args
-    assert args[args.index('--env') + 1] == '{"ENV_VAR": "ENV_VALUE"}'
+    assert '--env' not in args
     assert '--pea-role' in args
     assert args[args.index('--pea-role') + 1] == 'GATEWAY'
     if not k8s_connection_pool_call:
@@ -482,7 +479,16 @@ def test_k8s_yaml_regular_pod(
     role_binding = head_configs[1]
     assert_role_binding_config(role_binding)
     config_map = head_configs[2]
-    assert_config_map_config(config_map, 'executor-head-0')
+    assert_config_map_config(
+        config_map,
+        'executor-head-0',
+        {
+            'ENV_VAR': 'ENV_VALUE',
+            'JINA_LOG_LEVEL': 'DEBUG',
+            'pythonunbuffered': '1',
+            'worker_class': 'uvicorn.workers.UvicornH11Worker',
+        },
+    )
     head_service = head_configs[3]
     assert head_service['kind'] == 'Service'
     assert head_service['metadata'] == {
@@ -698,7 +704,16 @@ def test_k8s_yaml_regular_pod(
         role_binding = shard_configs[1]
         assert_role_binding_config(role_binding)
         config_map = shard_configs[2]
-        assert_config_map_config(config_map, name)
+        assert_config_map_config(
+            config_map,
+            name,
+            {
+                'ENV_VAR': 'ENV_VALUE',
+                'JINA_LOG_LEVEL': 'DEBUG',
+                'pythonunbuffered': '1',
+                'worker_class': 'uvicorn.workers.UvicornH11Worker',
+            },
+        )
         shard_service = shard_configs[3]
         assert shard_service['kind'] == 'Service'
         assert shard_service['metadata'] == {

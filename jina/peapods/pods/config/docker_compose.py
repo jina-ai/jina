@@ -8,7 +8,6 @@ from .helper import get_image_name, to_compatible_name, get_base_executor_versio
 from .. import BasePod
 
 PORT_IN = 8081
-PORT_EXPOSE = 8082
 
 
 class DockerComposeConfig:
@@ -52,6 +51,7 @@ class DockerComposeConfig:
             )
             cargs = copy.copy(self.service_args)
             cargs.pods_addresses = self.pod_addresses
+            cargs.env = None
             from ....helper import ArgNamespace
             from ....parsers import set_gateway_parser
 
@@ -76,7 +76,13 @@ class DockerComposeConfig:
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
                 set_pea_parser(),
-                taboo={'uses_with', 'uses_metas'},
+                taboo={
+                    'uses_with',
+                    'uses_metas',
+                    'volumes',
+                    'uses_before',
+                    'uses_after',
+                },
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['executor'] + _args
@@ -171,7 +177,7 @@ class DockerComposeConfig:
                 pod_addresses=None,
             )
 
-        if self.services_args['uses_before_service'] is not None:
+        if self.services_args['uses_after_service'] is not None:
             self.uses_after_service = self._DockerComposeService(
                 name=self.services_args['uses_after_service'].name,
                 version=get_base_executor_version(),
@@ -220,6 +226,8 @@ class DockerComposeConfig:
             parsed_args['head_service'].uses = None
             parsed_args['head_service'].uses_metas = None
             parsed_args['head_service'].uses_with = None
+            parsed_args['head_service'].uses_before = None
+            parsed_args['head_service'].uses_after = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             import json
@@ -247,11 +255,15 @@ class DockerComposeConfig:
             uses_before_cargs.uses = args.uses_before
             uses_before_cargs.uses_before = None
             uses_before_cargs.uses_after = None
+            uses_before_cargs.uses_with = None
+            uses_before_cargs.uses_metas = None
+            uses_before_cargs.env = None
             uses_before_cargs.port_in = PORT_IN
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
             uses_before_cargs.connection_list = None
             uses_before_cargs.pea_role = PeaRoleType.WORKER
+            uses_before_cargs.polling = None
             parsed_args['uses_before_service'] = uses_before_cargs
             parsed_args[
                 'head_service'
@@ -265,11 +277,15 @@ class DockerComposeConfig:
             uses_after_cargs.uses = args.uses_after
             uses_after_cargs.uses_before = None
             uses_after_cargs.uses_after = None
+            uses_after_cargs.uses_with = None
+            uses_after_cargs.uses_metas = None
+            uses_after_cargs.env = None
             uses_after_cargs.port_in = PORT_IN
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
             uses_after_cargs.connection_list = None
             uses_after_cargs.pea_role = PeaRoleType.WORKER
+            uses_after_cargs.polling = None
             parsed_args['uses_after_service'] = uses_after_cargs
             parsed_args[
                 'head_service'
@@ -318,14 +334,14 @@ class DockerComposeConfig:
                 services.append(
                     (
                         self.uses_before_service.compatible_name,
-                        self.uses_before_service.get_runtime_config(),
+                        self.uses_before_service.get_runtime_config()[0],
                     )
                 )
             if self.uses_after_service is not None:
                 services.append(
                     (
                         self.uses_after_service.compatible_name,
-                        self.uses_after_service.get_runtime_config(),
+                        self.uses_after_service.get_runtime_config()[0],
                     )
                 )
             for worker_service in self.worker_services:

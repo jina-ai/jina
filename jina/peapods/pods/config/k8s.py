@@ -54,6 +54,7 @@ class K8sPodConfig:
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
             cargs = copy.copy(self.deployment_args)
+            cargs.env = None
             cargs.pods_addresses = self.k8s_pod_addresses
             from ....helper import ArgNamespace
             from ....parsers import set_gateway_parser
@@ -89,7 +90,13 @@ class K8sPodConfig:
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
                 set_pea_parser(),
-                taboo={'uses_with', 'uses_metas', 'volumes'},
+                taboo={
+                    'uses_with',
+                    'uses_metas',
+                    'volumes',
+                    'uses_before',
+                    'uses_after',
+                },
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['executor'] + _args
@@ -153,9 +160,15 @@ class K8sPodConfig:
                 uses_before_cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE
                 uses_before_cargs.uses_before_address = None
                 uses_before_cargs.uses_after_address = None
+                uses_before_cargs.uses_before = None
+                uses_before_cargs.uses_after = None
+                uses_before_cargs.uses_with = None
+                uses_before_cargs.uses_metas = None
+                uses_before_cargs.env = None
                 uses_before_cargs.connection_list = None
                 uses_before_cargs.runtime_cls = 'WorkerRuntime'
                 uses_before_cargs.pea_role = PeaRoleType.WORKER
+                uses_before_cargs.polling = None
                 container_args_uses_before = self._get_container_args(
                     uses_before_cargs, PeaRoleType.WORKER
                 )
@@ -168,9 +181,15 @@ class K8sPodConfig:
                 uses_after_cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_USES_AFTER
                 uses_after_cargs.uses_before_address = None
                 uses_after_cargs.uses_after_address = None
+                uses_after_cargs.uses_before = None
+                uses_after_cargs.uses_after = None
+                uses_after_cargs.uses_with = None
+                uses_after_cargs.uses_metas = None
+                uses_after_cargs.env = None
                 uses_after_cargs.connection_list = None
                 uses_after_cargs.runtime_cls = 'WorkerRuntime'
                 uses_after_cargs.pea_role = PeaRoleType.WORKER
+                uses_after_cargs.polling = None
                 container_args_uses_after = self._get_container_args(
                     uses_after_cargs, PeaRoleType.WORKER
                 )
