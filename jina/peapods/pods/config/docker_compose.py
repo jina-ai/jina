@@ -4,7 +4,7 @@ from typing import Dict, Union, List, Optional, Tuple
 
 from .... import __default_executor__, __version__
 from ....enums import PeaRoleType
-from .helper import get_image_name
+from .helper import get_image_name, to_compatible_name
 from .. import BasePod
 
 
@@ -21,6 +21,10 @@ def _get_base_executor_version():
             return 'master'
     except:
         return 'master'
+
+
+PORT_IN = 8081
+PORT_EXPOSE = 8082
 
 
 class DockerComposeConfig:
@@ -41,6 +45,7 @@ class DockerComposeConfig:
             pod_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
+            self.compatible_name = to_compatible_name(self.name)
             self.version = version
             self.pea_type = pea_type
             self.jina_pod_name = jina_pod_name
@@ -79,12 +84,10 @@ class DockerComposeConfig:
             }
 
         @staticmethod
-        def _construct_runtime_container_args(cargs, uses_metas, uses_with, replica_id):
+        def _construct_runtime_container_args(cargs, uses_metas, uses_with):
             import json
             from ....helper import ArgNamespace
             from ....parsers import set_pea_parser
-
-            cargs.replica_id = replica_id
 
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
@@ -115,16 +118,14 @@ class DockerComposeConfig:
 
             return image_name
 
-        def _get_container_args(self, cargs, pea_type):
+        def _get_container_args(self, cargs):
             uses_metas = cargs.uses_metas or {}
             if self.shard_id is not None:
                 uses_metas['pea_id'] = self.shard_id
             uses_with = self.service_args.uses_with
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'
-            return self._construct_runtime_container_args(
-                cargs, uses_metas, uses_with, pea_type
-            )
+            return self._construct_runtime_container_args(cargs, uses_metas, uses_with)
 
         def get_runtime_config(
             self,
@@ -133,11 +134,12 @@ class DockerComposeConfig:
             replica_configs = []
             for replica_id in range(self.service_args.replicas):
                 cargs = copy.copy(self.service_args)
+                cargs.replica_id = (
+                    replica_id if self.service_args.replicas > 1 else -1
+                )  # keep backwards compatibility with `workspace` in `Executor`
 
                 image_name = self._get_image_name(cargs.uses)
-                container_args = self._get_container_args(
-                    cargs, replica_id=replica_id, pea_type=self.pea_type
-                )
+                container_args = self._get_container_args(cargs)
                 replica_configs.append(
                     {
                         'image': image_name,
@@ -170,7 +172,7 @@ class DockerComposeConfig:
                 common_args=self.args,
                 service_args=self.services_args['head_service'],
                 pea_type=PeaRoleType.HEAD,
-                pod_addresses=self.pod_addresses,
+                pod_addresses=None,
             )
 
         if self.services_args['uses_before_service'] is not None:
@@ -212,7 +214,7 @@ class DockerComposeConfig:
                     if name != 'gateway'
                     else PeaRoleType.GATEWAY,
                     jina_pod_name=self.name,
-                    pod_addresses=None,
+                    pod_addresses=self.pod_addresses if name == 'gateway' else None,
                 )
             )
 
@@ -224,6 +226,7 @@ class DockerComposeConfig:
             'services': [],
         }
         shards = getattr(args, 'shards', 1)
+        replicas = getattr(args, 'replicas', 1)
         uses_before = getattr(args, 'uses_before', None)
         uses_after = getattr(args, 'uses_after', None)
 
@@ -238,12 +241,16 @@ class DockerComposeConfig:
             import json
 
             connection_list = {}
-            for i in range(shards):
-                name = f'{self.name}-{i}' if shards > 1 else f'{self.name}'
-                # TODO: Fix connection list
-                # connection_list[
-                #     str(i)
-                # ] = f'{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT_IN}'
+            for shard_id in range(shards):
+                shard_name = f'{self.name}-{shard_id}' if shards > 1 else f'{self.name}'
+                connection_list[str(shard_id)] = []
+                for replica_id in range(replicas):
+                    replica_name = (
+                        f'{shard_name}/rep-{replica_id}' if replicas > 1 else shard_name
+                    )
+                    connection_list[str(shard_id)].append(
+                        f'{to_compatible_name(replica_name)}:{PORT_IN}'
+                    )
 
             parsed_args['head_service'].connection_list = json.dumps(connection_list)
 
@@ -252,6 +259,7 @@ class DockerComposeConfig:
             uses_before_cargs.shard_id = 0
             uses_before_cargs.replicas = 1
             uses_before_cargs.replica_id = -1
+            uses_before_cargs.name = f'{args.name}/uses-before'
             uses_before_cargs.uses = args.uses_before
             uses_before_cargs.uses_before = None
             uses_before_cargs.uses_after = None
@@ -263,12 +271,13 @@ class DockerComposeConfig:
             parsed_args['uses_before_service'] = uses_before_cargs
             parsed_args[
                 'head_service'
-            ].uses_before_address = f'127.0.0.1:{uses_before_cargs.port_in}'
+            ].uses_before_address = f'{to_compatible_name(uses_before_cargs.name)}:{uses_before_cargs.port_in}'
         if uses_after:
             uses_after_cargs = copy.deepcopy(args)
             uses_after_cargs.shard_id = 0
             uses_after_cargs.replicas = 1
             uses_after_cargs.replica_id = -1
+            uses_after_cargs.name = f'{args.name}/uses-after'
             uses_after_cargs.uses = args.uses_after
             uses_after_cargs.uses_before = None
             uses_after_cargs.uses_after = None
@@ -280,7 +289,7 @@ class DockerComposeConfig:
             parsed_args['uses_after_service'] = uses_after_cargs
             parsed_args[
                 'head_service'
-            ].uses_after_address = f'127.0.0.1:{uses_after_cargs.port_in}'
+            ].uses_after_address = f'{to_compatible_name(uses_after_cargs.name)}:{uses_after_cargs.port_in}'
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
@@ -288,7 +297,7 @@ class DockerComposeConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             cargs.k8s_connection_pool = False
-            # cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            cargs.port_in = PORT_IN
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':
@@ -316,19 +325,22 @@ class DockerComposeConfig:
             services = []
             if self.head_service is not None:
                 services.append(
-                    (self.head_service.name, self.head_service.get_runtime_config())
+                    (
+                        self.head_service.compatible_name,
+                        self.head_service.get_runtime_config()[0],
+                    )
                 )
             if self.uses_before_service is not None:
                 services.append(
                     (
-                        self.uses_before_service.name,
+                        self.uses_before_service.compatible_name,
                         self.uses_before_service.get_runtime_config(),
                     )
                 )
             if self.uses_after_service is not None:
                 services.append(
                     (
-                        self.uses_after_service.name,
+                        self.uses_after_service.compatible_name,
                         self.uses_after_service.get_runtime_config(),
                     )
                 )
@@ -340,5 +352,5 @@ class DockerComposeConfig:
                         if len(configs) > 1
                         else worker_service.name
                     )
-                    services.append((name, config))
+                    services.append((to_compatible_name(name), config))
             return services

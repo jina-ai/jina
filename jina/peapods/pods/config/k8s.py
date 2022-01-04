@@ -5,7 +5,7 @@ from typing import Dict, Union, List, Optional, Tuple
 from .... import __default_executor__, __version__
 from ....enums import PeaRoleType
 from .k8slib import kubernetes_deployment
-from .helper import get_image_name
+from .helper import get_image_name, to_compatible_name
 from ...networking import K8sGrpcConnectionPool
 from .. import BasePod
 
@@ -45,7 +45,7 @@ class K8sPodConfig:
             k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
-            self.dns_name = kubernetes_deployment.to_dns_name(name)
+            self.dns_name = to_compatible_name(name)
             self.version = version
             self.pea_type = pea_type
             self.jina_pod_name = jina_pod_name
@@ -291,9 +291,9 @@ class K8sPodConfig:
                 connection_list = {}
                 for i in range(shards):
                     name = (
-                        f'{kubernetes_deployment.to_dns_name(self.name)}-{i}'
+                        f'{to_compatible_name(self.name)}-{i}'
                         if shards > 1
-                        else f'{kubernetes_deployment.to_dns_name(self.name)}'
+                        else f'{to_compatible_name(self.name)}'
                     )
                     connection_list[
                         str(i)

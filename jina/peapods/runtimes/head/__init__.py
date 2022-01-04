@@ -78,11 +78,20 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if hasattr(args, 'connection_list') and args.connection_list:
             connection_list = json.loads(args.connection_list)
             for shard_id in connection_list:
-                self.connection_pool.add_connection(
-                    pod=self._pod_name,
-                    address=connection_list[shard_id],
-                    shard_id=int(shard_id),
-                )
+                shard_connections = connection_list[shard_id]
+                if isinstance(connection_list, str):
+                    self.connection_pool.add_connection(
+                        pod=self._pod_name,
+                        address=shard_connections,
+                        shard_id=int(shard_id),
+                    )
+                else:
+                    for connection in shard_connections:
+                        self.connection_pool.add_connection(
+                            pod=self._pod_name,
+                            address=connection,
+                            shard_id=int(shard_id),
+                        )
 
         self.uses_before_address = args.uses_before_address
 

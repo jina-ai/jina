@@ -20,3 +20,12 @@ def get_image_name(uses: str) -> str:
             # docker:// is a valid requirement and user may want to put its own image
             return uses.replace('docker://', '')
         raise
+
+
+def to_compatible_name(name: str) -> str:
+    """Converts the pod name to a valid name for K8s and docker compose.
+
+    :param name: name of the pod
+    :return: compatible name
+    """
+    return name.replace('/', '-').replace('_', '-').lower()

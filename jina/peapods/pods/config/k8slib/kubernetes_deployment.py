@@ -6,15 +6,6 @@ from ....networking import K8sGrpcConnectionPool
 from . import kubernetes_tools
 
 
-def to_dns_name(name: str) -> str:
-    """Converts the pod name to a dns compatible name.
-
-    :param name: name of the pod
-    :return: dns compatible name
-    """
-    return name.replace('/', '-').replace('_', '-').lower()
-
-
 def get_deployment_yamls(
     name: str,
     namespace: str,
