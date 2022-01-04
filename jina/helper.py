@@ -427,7 +427,7 @@ def random_port() -> Optional[int]:
                     ) as s:
                         try:
                             s.bind(('', port))
-                            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 0)
+                            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                             return s.getsockname()[1]
                         except OSError:
                             pass
