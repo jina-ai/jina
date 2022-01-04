@@ -2,13 +2,12 @@ from typing import Union, Dict, Tuple
 import json
 import pytest
 
-from jina import __version__
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods.networking import K8sGrpcConnectionPool
-from jina.peapods.pods.config.k8s import _get_base_executor_version, K8sPodConfig
+from jina.peapods.pods.config.k8s import K8sPodConfig
 
 
 @pytest.fixture(autouse=True)
@@ -33,24 +32,6 @@ def namespace_equal(
         if not getattr(n1, attr) == getattr(n2, attr):
             return False
     return True
-
-
-@pytest.mark.parametrize('is_master', (True, False))
-def test_version(is_master, requests_mock):
-    if is_master:
-        version = 'v2'
-    else:
-        # current version is published already
-        version = __version__
-    requests_mock.get(
-        'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags',
-        text='[{"name": "v1"}, {"name": "' + version + '"}]',
-    )
-    v = _get_base_executor_version()
-    if is_master:
-        assert v == 'master'
-    else:
-        assert v == __version__
 
 
 @pytest.mark.parametrize('shards', [1, 5])

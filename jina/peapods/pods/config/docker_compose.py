@@ -2,26 +2,10 @@ import copy
 from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
-from .... import __default_executor__, __version__
+from .... import __default_executor__
 from ....enums import PeaRoleType
-from .helper import get_image_name, to_compatible_name
+from .helper import get_image_name, to_compatible_name, get_base_executor_version
 from .. import BasePod
-
-
-def _get_base_executor_version():
-    import requests
-
-    try:
-        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
-        tags = requests.get(url).json()
-        name_set = {tag['name'] for tag in tags}
-        if __version__ in name_set:
-            return __version__
-        else:
-            return 'master'
-    except:
-        return 'master'
-
 
 PORT_IN = 8081
 PORT_EXPOSE = 8082
@@ -166,7 +150,7 @@ class DockerComposeConfig:
         if self.services_args['head_service'] is not None:
             self.head_service = self._DockerComposeService(
                 name=self.services_args['head_service'].name,
-                version=_get_base_executor_version(),
+                version=get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
@@ -178,7 +162,7 @@ class DockerComposeConfig:
         if self.services_args['uses_before_service'] is not None:
             self.uses_before_service = self._DockerComposeService(
                 name=self.services_args['uses_before_service'].name,
-                version=_get_base_executor_version(),
+                version=get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
@@ -190,7 +174,7 @@ class DockerComposeConfig:
         if self.services_args['uses_before_service'] is not None:
             self.uses_after_service = self._DockerComposeService(
                 name=self.services_args['uses_after_service'].name,
-                version=_get_base_executor_version(),
+                version=get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
@@ -206,7 +190,7 @@ class DockerComposeConfig:
             self.worker_services.append(
                 self._DockerComposeService(
                     name=name,
-                    version=_get_base_executor_version(),
+                    version=get_base_executor_version(),
                     shard_id=i,
                     common_args=self.args,
                     service_args=args,
@@ -232,7 +216,7 @@ class DockerComposeConfig:
 
         if args.name != 'gateway':
             parsed_args['head_service'] = BasePod._copy_to_head_args(self.args)
-            parsed_args['head_service'].port_in = 8081
+            parsed_args['head_service'].port_in = PORT_IN
             parsed_args['head_service'].uses = None
             parsed_args['head_service'].uses_metas = None
             parsed_args['head_service'].uses_with = None
@@ -263,7 +247,7 @@ class DockerComposeConfig:
             uses_before_cargs.uses = args.uses_before
             uses_before_cargs.uses_before = None
             uses_before_cargs.uses_after = None
-            uses_before_cargs.port_in = 8082
+            uses_before_cargs.port_in = PORT_IN
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
             uses_before_cargs.connection_list = None
@@ -281,7 +265,7 @@ class DockerComposeConfig:
             uses_after_cargs.uses = args.uses_after
             uses_after_cargs.uses_before = None
             uses_after_cargs.uses_after = None
-            uses_after_cargs.port_in = 8082
+            uses_after_cargs.port_in = PORT_IN
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
             uses_after_cargs.connection_list = None

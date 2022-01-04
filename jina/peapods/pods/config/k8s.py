@@ -2,27 +2,12 @@ import copy
 from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
-from .... import __default_executor__, __version__
+from .... import __default_executor__
 from ....enums import PeaRoleType
 from .k8slib import kubernetes_deployment
-from .helper import get_image_name, to_compatible_name
+from .helper import get_image_name, to_compatible_name, get_base_executor_version
 from ...networking import K8sGrpcConnectionPool
 from .. import BasePod
-
-
-def _get_base_executor_version():
-    import requests
-
-    try:
-        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
-        tags = requests.get(url).json()
-        name_set = {tag['name'] for tag in tags}
-        if __version__ in name_set:
-            return __version__
-        else:
-            return 'master'
-    except:
-        return 'master'
 
 
 class K8sPodConfig:
@@ -236,7 +221,7 @@ class K8sPodConfig:
         if self.deployment_args['head_deployment'] is not None:
             self.head_deployment = self._K8sDeployment(
                 name=self.deployment_args['head_deployment'].name,
-                version=_get_base_executor_version(),
+                version=get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
@@ -254,7 +239,7 @@ class K8sPodConfig:
             self.worker_deployments.append(
                 self._K8sDeployment(
                     name=name,
-                    version=_get_base_executor_version(),
+                    version=get_base_executor_version(),
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,

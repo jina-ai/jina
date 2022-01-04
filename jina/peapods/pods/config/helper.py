@@ -1,3 +1,4 @@
+from .... import __version__
 from ....hubble.helper import parse_hub_uri
 from ....hubble.hubio import HubIO
 
@@ -29,3 +30,22 @@ def to_compatible_name(name: str) -> str:
     :return: compatible name
     """
     return name.replace('/', '-').replace('_', '-').lower()
+
+
+def get_base_executor_version():
+    """
+    Get the version of jina to be used
+    :return: the version tag
+    """
+    import requests
+
+    try:
+        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
+        tags = requests.get(url).json()
+        name_set = {tag['name'] for tag in tags}
+        if __version__ in name_set:
+            return __version__
+        else:
+            return 'master'
+    except:
+        return 'master'
