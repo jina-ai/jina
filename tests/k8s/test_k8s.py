@@ -475,3 +475,51 @@ async def test_rolling_update_simple(
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['argument'] == 'value2'
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, tmpdir):
+    flow = Flow(name='k8s_flow-with_workspace', port_expose=9090, protocol='http').add(
+        name='test_executor',
+        uses=f'docker://{docker_images[0]}',
+        workspace='/shared',
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-workspace')
+    namespace = f'test-flow-with-workspace'
+    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor-head-0': 1,
+            'test-executor': 1,
+        },
+    )
+    resp = await run_test(
+        flow=flow,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/workspace',
+    )
+    docs = resp[0].docs
+    assert len(docs) == 10
+    for doc in docs:
+        assert doc.tags['workspace'] == '/shared/TestExecutor/0/0'

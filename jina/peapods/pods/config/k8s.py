@@ -104,7 +104,7 @@ class K8sPodConfig:
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
                 set_pea_parser(),
-                taboo={'uses_with', 'uses_metas'},
+                taboo={'uses_with', 'uses_metas', 'volumes'},
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['executor'] + _args

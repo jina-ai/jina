@@ -69,15 +69,11 @@ class TestExecutor(Executor):
         for doc in docs:
             doc.tags['resources']['limits'] = pod_resources.limits
 
-    @requests(on='/search')
-    def read_file(self, docs: DocumentArray, **kwargs):
+    @requests(on='/workspace')
+    def foo_workspace(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
-        key = 'file'
-        file_path = '/shared/test_file.txt'
-
-        with open(file_path, 'r') as text_file:
-            lines = text_file.readlines()
+        self.logger.debug(f'Workspace {self.workspace}.')
         for doc in docs:
-            doc.tags[key] = lines
+            doc.tags['workspace'] = self.workspace
