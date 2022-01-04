@@ -189,15 +189,20 @@ async def async_inputs():
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('gateway', ['local'])
-@pytest.mark.parametrize('head', ['local'])  # add remote head back
-@pytest.mark.parametrize('worker', ['remote'])
+@pytest.mark.parametrize(
+    'gateway, head, worker',
+    [
+        ('local', 'local', 'local'),
+        ('local', 'local', 'remote'),
+        ('local', 'remote', 'remote'),
+    ],
+)
 async def test_pseudo_remote_peas_topologies(gateway, head, worker):
     """
     g(l)-h(l)-w(l) - works
     g(l)-h(l)-w(r) - works - head connects to worker via localhost
-    g(l)-h(r)-w(l) - works - head (inside docker) connects to worker via dockerhost
     g(l)-h(r)-w(r) - works - head (inside docker) connects to worker via dockerhost
+    g(l)-h(r)-w(l) - doesn't work remote head need remote worker
     g(r)-... - doesn't work, as distributed parser not enabled for gateway
     After any 1 failure, segfault
     """
