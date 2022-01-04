@@ -430,8 +430,7 @@ def test_docker_compose_yaml_regular_pod(
     assert head_args[head_args.index('--name') + 1] == 'executor/head-0'
     assert '--port-in' in head_args
     assert head_args[head_args.index('--port-in') + 1] == '8081'
-    assert '--env' in head_args
-    assert head_args[head_args.index('--env') + 1] == '{"ENV_VAR": "ENV_VALUE"}'
+    assert '--env' not in head_args
     assert '--pea-role' in head_args
     assert head_args[head_args.index('--pea-role') + 1] == 'HEAD'
     assert '--connection-list' in head_args
@@ -472,7 +471,6 @@ def test_docker_compose_yaml_regular_pod(
 
     if uses_before is not None:
         uses_before_name, uses_before_config = yaml_configs[1]
-        print(f' uses_before_config {uses_before_config}')
         assert uses_before_name == 'executor-uses-before'
         assert uses_before_config['image'] == 'jinahub/HubBeforeExecutor'
         assert uses_before_config['entrypoint'] == ['jina']
@@ -480,6 +478,7 @@ def test_docker_compose_yaml_regular_pod(
         assert uses_before_args[0] == 'executor'
         assert '--native' in uses_before_args
         assert '--name' in uses_before_args
+        assert '--env' not in uses_before_args
         assert (
             uses_before_args[uses_before_args.index('--name') + 1]
             == 'executor/uses-before'
@@ -493,7 +492,6 @@ def test_docker_compose_yaml_regular_pod(
         uses_after_name, uses_after_config = (
             yaml_configs[1] if uses_before is None else yaml_configs[2]
         )
-        print(f' uses_after_config {uses_after_config}')
         assert uses_after_name == 'executor-uses-after'
         assert uses_after_config['image'] == 'jinahub/HubAfterExecutor'
         assert uses_after_config['entrypoint'] == ['jina']
@@ -501,6 +499,7 @@ def test_docker_compose_yaml_regular_pod(
         assert uses_after_args[0] == 'executor'
         assert '--native' in uses_after_args
         assert '--name' in uses_after_args
+        assert '--env' not in uses_after_args
         assert (
             uses_after_args[uses_after_args.index('--name') + 1]
             == 'executor/uses-after'
@@ -509,204 +508,53 @@ def test_docker_compose_yaml_regular_pod(
         assert uses_after_args[uses_after_args.index('--port-in') + 1] == '8081'
         assert '--connection-list' not in uses_after_args
         assert '--polling' not in uses_after_args
-    # if uses_before is not None:
-    #     uses_before_container = head_containers[1]
-    #     assert uses_before_container['name'] == 'uses-before'
-    #     assert uses_before_container['image'] == 'jinahub/HubBeforeExecutor'
-    #     assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
-    #     assert uses_before_container['command'] == ['jina']
-    #     uses_before_runtime_container_args = uses_before_container['args']
-    #
-    #     assert uses_before_runtime_container_args[0] == 'executor'
-    #     assert '--native' in uses_before_runtime_container_args
-    #     assert '--name' in uses_before_runtime_container_args
-    #     assert (
-    #             uses_before_runtime_container_args[
-    #                 uses_before_runtime_container_args.index('--name') + 1
-    #                 ]
-    #             == 'executor/uses-before'
-    #     )
-    #     assert '--k8s-namespace' in uses_before_runtime_container_args
-    #     assert (
-    #             uses_before_runtime_container_args[
-    #                 uses_before_runtime_container_args.index('--k8s-namespace') + 1
-    #                 ]
-    #             == 'default-namespace'
-    #     )
-    #     assert '--port-in' in uses_before_runtime_container_args
-    #     assert (
-    #             uses_before_runtime_container_args[
-    #                 uses_before_runtime_container_args.index('--port-in') + 1
-    #                 ]
-    #             == '8082'
-    #     )
-    #     assert '--env' in uses_before_runtime_container_args
-    #     assert (
-    #             uses_before_runtime_container_args[
-    #                 uses_before_runtime_container_args.index('--env') + 1
-    #                 ]
-    #             == '{"ENV_VAR": "ENV_VALUE"}'
-    #     )
-    #     assert '--connection-list' not in uses_before_runtime_container_args
-    #     assert '--k8s-disable-connection-pool' not in uses_before_runtime_container_args
-    #
-    # if uses_after is not None:
-    #     uses_after_container = head_containers[-1]
-    #     assert uses_after_container['name'] == 'uses-after'
-    #     assert uses_after_container['image'] == 'jinahub/HubAfterExecutor'
-    #     assert uses_after_container['imagePullPolicy'] == 'IfNotPresent'
-    #     assert uses_after_container['command'] == ['jina']
-    #     uses_after_runtime_container_args = uses_after_container['args']
-    #
-    #     assert uses_after_runtime_container_args[0] == 'executor'
-    #     assert '--native' in uses_after_runtime_container_args
-    #     assert '--name' in uses_after_runtime_container_args
-    #     assert (
-    #             uses_after_runtime_container_args[
-    #                 uses_after_runtime_container_args.index('--name') + 1
-    #                 ]
-    #             == 'executor/uses-after'
-    #     )
-    #     assert '--k8s-namespace' in uses_after_runtime_container_args
-    #     assert (
-    #             uses_after_runtime_container_args[
-    #                 uses_after_runtime_container_args.index('--k8s-namespace') + 1
-    #                 ]
-    #             == 'default-namespace'
-    #     )
-    #     assert '--port-in' in uses_after_runtime_container_args
-    #     assert (
-    #             uses_after_runtime_container_args[
-    #                 uses_after_runtime_container_args.index('--port-in') + 1
-    #                 ]
-    #             == '8083'
-    #     )
-    #     assert '--env' in uses_after_runtime_container_args
-    #     assert (
-    #             uses_after_runtime_container_args[
-    #                 uses_after_runtime_container_args.index('--env') + 1
-    #                 ]
-    #             == '{"ENV_VAR": "ENV_VALUE"}'
-    #     )
-    #     assert '--connection-list' not in uses_after_runtime_container_args
-    #     assert '--k8s-disable-connection-pool' not in uses_after_runtime_container_args
-    #
-    # for i, (shard_name, shard_configs) in enumerate(yaml_configs[1:]):
-    #     name = f'executor-{i}' if shards > 1 else 'executor'
-    #     assert shard_name == name
-    #     assert (
-    #             len(shard_configs) == 5
-    #     )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-    #     role = shard_configs[0]
-    #     assert_role_config(role)
-    #     role_binding = shard_configs[1]
-    #     assert_role_binding_config(role_binding)
-    #     config_map = shard_configs[2]
-    #     assert_config_map_config(config_map, name)
-    #     shard_service = shard_configs[3]
-    #     assert shard_service['kind'] == 'Service'
-    #     assert shard_service['metadata'] == {
-    #         'name': name,
-    #         'namespace': 'default-namespace',
-    #         'labels': {'app': name},
-    #     }
-    #     shard_spec_service = shard_service['spec']
-    #     assert shard_spec_service['type'] == 'ClusterIP'
-    #     assert len(shard_spec_service['ports']) == 2
-    #     shard_port_expose = shard_spec_service['ports'][0]
-    #     assert_port_config(shard_port_expose, 'port-expose', 8080)
-    #     shard_port_in = shard_spec_service['ports'][1]
-    #     assert_port_config(shard_port_in, 'port-in', 8081)
-    #     assert shard_spec_service['selector'] == {'app': name}
-    #
-    #     shard_deployment = shard_configs[4]
-    #     assert shard_deployment['kind'] == 'Deployment'
-    #     assert shard_deployment['metadata'] == {
-    #         'name': name,
-    #         'namespace': 'default-namespace',
-    #     }
-    #     shard_spec_deployment = shard_deployment['spec']
-    #     assert shard_spec_deployment['replicas'] == 3  # no head replication for now
-    #     assert shard_spec_deployment['strategy'] == {
-    #         'type': 'RollingUpdate',
-    #         'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
-    #     }
-    #     assert shard_spec_deployment['selector'] == {'matchLabels': {'app': name}}
-    #     shard_template = shard_spec_deployment['template']
-    #     assert shard_template['metadata'] == {
-    #         'labels': {
-    #             'app': name,
-    #             'jina_pod_name': 'executor',
-    #             'shard_id': str(i),
-    #             'pea_type': 'WORKER',
-    #             'ns': 'default-namespace',
-    #         }
-    #     }
-    #
-    #     shard_spec = shard_template['spec']
-    #     shard_containers = shard_spec['containers']
-    #     assert len(shard_containers) == 1
-    #     shard_container = shard_containers[0]
-    #     assert shard_container['name'] == 'executor'
-    #     assert shard_container['image'] in {
-    #         'jinahub/HubExecutor',
-    #         'docker_image:latest',
-    #     }
-    #     assert shard_container['imagePullPolicy'] == 'IfNotPresent'
-    #     assert shard_container['command'] == ['jina']
-    #     shard_container_runtime_container_args = shard_container['args']
-    #     assert shard_container_runtime_container_args[0] == 'executor'
-    #     assert '--native' in shard_container_runtime_container_args
-    #     assert '--name' in shard_container_runtime_container_args
-    #     assert (
-    #             shard_container_runtime_container_args[
-    #                 shard_container_runtime_container_args.index('--name') + 1
-    #                 ]
-    #             == name
-    #     )
-    #     assert '--k8s-namespace' in shard_container_runtime_container_args
-    #     assert (
-    #             shard_container_runtime_container_args[
-    #                 shard_container_runtime_container_args.index('--k8s-namespace') + 1
-    #                 ]
-    #             == 'default-namespace'
-    #     )
-    #     assert '--port-in' in shard_container_runtime_container_args
-    #     assert (
-    #             shard_container_runtime_container_args[
-    #                 shard_container_runtime_container_args.index('--port-in') + 1
-    #                 ]
-    #             == '8081'
-    #     )
-    #     assert '--env' in shard_container_runtime_container_args
-    #     assert (
-    #             shard_container_runtime_container_args[
-    #                 shard_container_runtime_container_args.index('--env') + 1
-    #                 ]
-    #             == '{"ENV_VAR": "ENV_VALUE"}'
-    #     )
-    #     assert '--connection-list' not in shard_container_runtime_container_args
-    #     assert (
-    #             '--k8s-disable-connection-pool'
-    #             not in shard_container_runtime_container_args
-    #     )
-    #
-    #     if uses_with is not None:
-    #         assert '--uses-with' in shard_container_runtime_container_args
-    #         assert (
-    #                 shard_container_runtime_container_args[
-    #                     shard_container_runtime_container_args.index('--uses-with') + 1
-    #                     ]
-    #                 == uses_with
-    #         )
-    #     else:
-    #         assert '--uses-with' not in shard_container_runtime_container_args
-    #
-    #     expected_uses_metas = {}
-    #     if uses_metas is not None:
-    #         expected_uses_metas = json.loads(uses_metas)
-    #     expected_uses_metas['pea_id'] = i
-    #     assert '--uses-metas' in shard_container_runtime_container_args
-    #     assert shard_container_runtime_container_args[
-    #                shard_container_runtime_container_args.index('--uses-metas') + 1
-    #                ] == json.dumps(expected_uses_metas)
+
+    num_shards_replicas_configs = shards * replicas
+    shards_replicas_configs = yaml_configs[-num_shards_replicas_configs:]
+    for shard_id in range(shards):
+        replicas_configs = shards_replicas_configs[
+            shard_id * replicas : shard_id * replicas + replicas
+        ]
+        for replica_id, (replica_name, replica_config) in enumerate(replicas_configs):
+            expected_name = 'executor'
+            expected_arg_name = 'executor'
+            if shards > 1:
+                expected_name += f'-{shard_id}'
+                expected_arg_name += f'-{shard_id}'
+            if replicas > 1:
+                expected_name += f'-rep-{replica_id}'
+                expected_arg_name += f'/rep-{replica_id}'
+            assert replica_name == expected_name
+            assert (
+                replica_config['image'] == 'docker_image:latest'
+                if uses == 'docker_image:latest'
+                else 'jinahub/HubExecutor'
+            )
+            assert replica_config['entrypoint'] == ['jina']
+            replica_args = replica_config['command']
+            assert replica_args[0] == 'executor'
+            assert '--native' in replica_args
+            assert '--name' in replica_args
+            assert replica_args[replica_args.index('--name') + 1] == expected_arg_name
+            assert '--port-in' in replica_args
+            assert replica_args[replica_args.index('--port-in') + 1] == '8081'
+            assert '--env' in replica_args
+            assert (
+                replica_args[replica_args.index('--env') + 1]
+                == '{"ENV_VAR": "ENV_VALUE"}'
+            )
+            assert '--connection-list' not in replica_args
+            if uses_with is not None:
+                assert '--uses-with' in replica_args
+                assert replica_args[replica_args.index('--uses-with') + 1] == uses_with
+            else:
+                assert '--uses-with' not in replica_args
+
+            expected_uses_metas = {}
+            if uses_metas is not None:
+                expected_uses_metas = json.loads(uses_metas)
+            expected_uses_metas['pea_id'] = shard_id
+            assert '--uses-metas' in replica_args
+            assert replica_args[replica_args.index('--uses-metas') + 1] == json.dumps(
+                expected_uses_metas
+            )

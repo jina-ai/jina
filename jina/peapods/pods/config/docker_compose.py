@@ -127,6 +127,11 @@ class DockerComposeConfig:
                 cargs.replica_id = (
                     replica_id if self.service_args.replicas > 1 else -1
                 )  # keep backwards compatibility with `workspace` in `Executor`
+                cargs.name = (
+                    f'{cargs.name}/rep-{replica_id}'
+                    if self.service_args.replicas > 1
+                    else cargs.name
+                )
 
                 image_name = self._get_image_name(cargs.uses)
                 container_args = self._get_container_args(cargs)
