@@ -141,15 +141,18 @@ class DockerComposeConfig:
                     else cargs.name
                 )
 
+                env = cargs.env
+
                 image_name = self._get_image_name(cargs.uses)
                 container_args = self._get_container_args(cargs)
-                replica_configs.append(
-                    {
-                        'image': image_name,
-                        'entrypoint': ['jina'],
-                        'command': container_args,
-                    }
-                )
+                config = {
+                    'image': image_name,
+                    'entrypoint': ['jina'],
+                    'command': container_args,
+                }
+                if env is not None:
+                    config['environment'] = [f'{k}={v}' for k, v in env.items()]
+                replica_configs.append(config)
             return replica_configs
 
     def __init__(

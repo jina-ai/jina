@@ -26,4 +26,4 @@ def test_version(is_master, requests_mock):
 
 
 def test_to_compatible_name():
-    assert to_compatible_name('executor/heay-ha_HO') == 'executor-hey-ha-HO'
+    assert to_compatible_name('executor/hey-ha_HO') == 'executor-hey-ha-ho'

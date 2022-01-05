@@ -1,7 +1,6 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 import pytest
 import os
-import asyncio
 import time
 
 from jina import Flow, Document
@@ -67,27 +66,6 @@ def flow_configmap(docker_images):
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
-    )
-    return flow
-
-
-@pytest.fixture
-def flow_gpu(docker_images):
-    flow = Flow(name='k8s-flow-gpu', port_expose=9090, protocol='http').add(
-        name='test_executor',
-        uses=f'docker://{docker_images[0]}',
-        gpus=1,
-    )
-    return flow
-
-
-@pytest.fixture
-def flow_with_reload_executor(docker_images):
-    flow = Flow(name='test-flow-with-reload', port_expose=9090, protocol='http').add(
-        name='test_executor',
-        replicas=2,
-        uses_with={'argument': 'value1'},
-        uses=f'docker://{docker_images[0]}',
     )
     return flow
 
@@ -254,4 +232,4 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert doc.tags['workspace'] == '/shared/TestExecutor/0/0'
+        assert doc.tags['workspace'] == '/shared/TestExecutor/0'
