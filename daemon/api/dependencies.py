@@ -11,6 +11,7 @@ from pydantic.errors import PathNotAFileError
 from jina import Flow
 from jina.enums import (
     RemoteWorkspaceState,
+    PeaRoleType,
 )
 from jina.helper import cached_property
 from jina.peapods.peas.container_helper import get_gpu_device_requests
@@ -236,7 +237,18 @@ class PeaDepends:
 
         :return: dict of port mappings
         """
-        return {f'{self.params.port_in}/tcp': self.params.port_in}
+        # Container peas are started in separate docker containers, so we should not expose port_in here
+        if (
+            (
+                self.params.pea_role
+                and PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.HEAD
+            )
+            and self.params.uses
+            and self.params.uses.startswith('docker://')
+        ):
+            return {}
+        else:
+            return {f'{self.params.port_in}/tcp': self.params.port_in}
 
     def update_args(self):
         """TODO: update docs"""

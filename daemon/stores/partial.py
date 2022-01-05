@@ -80,9 +80,10 @@ class PartialPeaStore(PartialStore):
             ] = self.__class__.peapod_constructor(args).__enter__()
             self.object.env = envs
         except Exception as e:
-            if hasattr(self, 'object'):
+            if hasattr(self, 'object') and self.object:
                 self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
+
             raise
         else:
             self.item = PartialStoreItem(arguments=vars(args))
