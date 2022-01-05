@@ -334,6 +334,7 @@ def test_docker_compose_gateway(pod_addresses):
     assert name == 'gateway'
     assert gateway_config['image'] == 'jinaai/jina:test-pip'
     assert gateway_config['entrypoint'] == ['jina']
+    assert gateway_config['expose'] == [f'{args.port_expose}:{args.port_expose}']
     args = gateway_config['command']
     assert args[0] == 'gateway'
     assert '--port-in' in args

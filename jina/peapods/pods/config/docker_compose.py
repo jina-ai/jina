@@ -65,6 +65,7 @@ class DockerComposeConfig:
                 'image': image_name,
                 'entrypoint': ['jina'],
                 'command': container_args,
+                'expose': [f'{cargs.port_expose}:{cargs.port_expose}'],
             }
 
         @staticmethod
