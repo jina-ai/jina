@@ -329,6 +329,8 @@ class K8sPodConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            cargs.uses_before_address = None
+            cargs.uses_after_address = None
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':

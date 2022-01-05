@@ -65,7 +65,10 @@ class DockerComposeConfig:
                 'image': image_name,
                 'entrypoint': ['jina'],
                 'command': container_args,
-                'expose': [f'{cargs.port_expose}:{cargs.port_expose}'],
+                'expose': [
+                    f'{cargs.port_expose}:{cargs.port_expose}',
+                    f'{cargs.port_in}:{cargs.port_in}',
+                ],
             }
 
         @staticmethod
@@ -304,11 +307,14 @@ class DockerComposeConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             cargs.k8s_connection_pool = False
-            cargs.port_in = PORT_IN
+            cargs.uses_before_address = None
+            cargs.uses_after_address = None
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':
                 cargs.pea_role = PeaRoleType.GATEWAY
+            else:
+                cargs.port_in = PORT_IN
             parsed_args['services'].append(cargs)
 
         return parsed_args
