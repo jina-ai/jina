@@ -62,6 +62,9 @@ class PostMixin:
                 docs = [r.data.docs for r in result]
                 return docs[0].reduce_all(docs[1:])
 
+        if (on_always is None) and (on_done is None):
+            return_results = True
+
         if (
             'disable_portforward' not in kwargs.keys()
             and hasattr(self.args, 'infrastructure')
