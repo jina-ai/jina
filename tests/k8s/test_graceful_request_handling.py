@@ -6,7 +6,6 @@ import multiprocessing
 import pytest
 
 from jina import Flow, Document
-from jina.peapods.pods.config.k8slib import kubernetes_tools
 
 cur_dir = os.path.dirname(__file__)
 

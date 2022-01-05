@@ -66,6 +66,10 @@ class DockerComposeConfig:
                 'entrypoint': ['jina'],
                 'command': container_args,
                 'expose': [
+                    f'{cargs.port_expose}',
+                    f'{cargs.port_in}',
+                ],
+                'ports': [
                     f'{cargs.port_expose}:{cargs.port_expose}',
                     f'{cargs.port_in}:{cargs.port_in}',
                 ],

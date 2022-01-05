@@ -1752,7 +1752,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         docker_compose_dict = {
             'version': '3.3',
-            'networks': {network_name: {'driver': 'default'}},
+            'networks': {network_name: {'driver': 'bridge'}},
         }
 
         services = {}

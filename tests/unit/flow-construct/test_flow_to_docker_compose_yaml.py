@@ -33,7 +33,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
 
     assert set(configuration.keys()) == {'version', 'services', 'networks'}
     assert configuration['version'] == '3.3'
-    assert configuration['networks'] == {'jina-network': {'driver': 'default'}}
+    assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
     services = configuration['services']
     assert (
         len(services) == 11
@@ -55,7 +55,8 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
 
     gateway_service = services['gateway']
     assert gateway_service['entrypoint'] == ['jina']
-    assert gateway_service['expose'] == ['8080:8080', '9090:9090']
+    assert gateway_service['expose'] == ['8080', '9090']
+    assert gateway_service['ports'] == ['8080:8080', '9090:9090']
     gateway_args = gateway_service['command']
     assert gateway_args[0] == 'gateway'
     assert '--port-in' in gateway_args

@@ -326,7 +326,7 @@ def test_worker_services(name: str, shards: str):
 @pytest.mark.parametrize('pod_addresses', [None, {'1': 'executor-head:8081'}])
 def test_docker_compose_gateway(pod_addresses):
     args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465']
+        ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465', '--port-in', '33455']
     )  # envs are
     # ignored for gateway
     pod_config = DockerComposeConfig(args, pod_addresses=pod_addresses)
@@ -334,11 +334,15 @@ def test_docker_compose_gateway(pod_addresses):
     assert name == 'gateway'
     assert gateway_config['image'] == 'jinaai/jina:test-pip'
     assert gateway_config['entrypoint'] == ['jina']
-    assert gateway_config['expose'] == [f'{args.port_expose}:{args.port_expose}']
+    assert gateway_config['ports'] == [
+        f'{args.port_expose}:{args.port_expose}',
+        f'{args.port_in}:{args.port_in}',
+    ]
+    assert gateway_config['expose'] == [f'{args.port_expose}', f'{args.port_in}']
     args = gateway_config['command']
     assert args[0] == 'gateway'
     assert '--port-in' in args
-    assert args[args.index('--port-in') + 1] == '8081'
+    assert args[args.index('--port-in') + 1] == '33455'
     assert '--port-expose' in args
     assert args[args.index('--port-expose') + 1] == '32465'
     assert '--env' not in args
