@@ -43,7 +43,7 @@ More install options including Conda, Docker, Windows [can be found here](https:
 
 ## Learning and Docs
 
-- Brand new to Jina? Check our **[Learning Bootcamp](https://learn.jina.ai)** to get up to speed
+- Brand new to Jina? Check our **[Learning Bootcamp](https://learn.jina.ai)** to get up to speed.
 - Check our **[comprehensive docs](https://docs.jina.ai)** for deeper tutorials, more advanced topics, and API reference.
 
 ## Get Started
