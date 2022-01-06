@@ -32,6 +32,8 @@ async def test_peas_trivial_topology(port_generator):
 
     with gateway_pea, head_pea, worker_pea:
         # this would be done by the Pod, its adding the worker to the head
+        head_pea.wait_start_success()
+        worker_pea.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
         assert GrpcConnectionPool.send_request_sync(
@@ -39,6 +41,7 @@ async def test_peas_trivial_topology(port_generator):
         )
 
         # send requests to the gateway
+        gateway_pea.wait_start_success()
         c = Client(host='localhost', port=port_expose, asyncio=True)
         responses = c.post(
             '/', inputs=async_inputs, request_size=1, return_results=True
@@ -113,6 +116,9 @@ async def test_peas_flow_topology(
         peas.append(worker_pea)
         await asyncio.sleep(0.1)
 
+    for pea in peas:
+        pea.wait_start_success()
+
     for head_port, worker_port in ports:
         await _activate_worker(head_port, worker_port)
 
@@ -127,6 +133,7 @@ async def test_peas_flow_topology(
         json.dumps(complete_graph_dict), pod_addresses, port_expose
     )
     gateway_pea.start()
+    gateway_pea.wait_start_success()
 
     await asyncio.sleep(0.1)
 
@@ -171,8 +178,10 @@ async def test_peas_shards(polling, port_generator):
 
         await asyncio.sleep(0.1)
 
+    head_pea.wait_start_success()
     for i, pea in enumerate(shard_peas):
         # this would be done by the Pod, its adding the worker to the head
+        pea.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity(
             'worker', '127.0.0.1', pea.args.port_in, shard_id=i
@@ -185,6 +194,7 @@ async def test_peas_shards(polling, port_generator):
 
     await asyncio.sleep(1.0)
 
+    gateway_pea.wait_start_success()
     c = Client(host='localhost', port=port_expose, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
     response_list = []
@@ -226,7 +236,9 @@ async def test_peas_replicas(port_generator):
         await asyncio.sleep(0.1)
 
     # this would be done by the Pod, its adding the worker to the head
+    head_pea.wait_start_success()
     for worker_pea in replica_peas:
+        worker_pea.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', worker_pea.args.port_in)
         GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
@@ -237,6 +249,7 @@ async def test_peas_replicas(port_generator):
 
     await asyncio.sleep(1.0)
 
+    gateway_pea.wait_start_success()
     c = Client(host='localhost', port=port_expose, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
     response_list = []
@@ -292,11 +305,15 @@ async def test_peas_with_executor(port_generator):
         await asyncio.sleep(0.1)
         await _activate_worker(head_port, worker_port, shard_id=i)
 
+    for pea in peas:
+        pea.wait_start_success()
+
     # create a single gateway pea
     port_expose = port_generator()
     gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
 
     gateway_pea.start()
+    gateway_pea.wait_start_success()
     peas.append(gateway_pea)
 
     await asyncio.sleep(1.0)
@@ -343,6 +360,8 @@ async def test_peas_gateway_worker_direct_connection(port_generator):
 
     await asyncio.sleep(1.0)
 
+    worker_pea.wait_start_success()
+    gateway_pea.wait_start_success()
     c = Client(host='localhost', port=port_expose, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
     response_list = []
@@ -368,6 +387,10 @@ async def test_peas_with_replicas_advance_faster(port_generator):
     head_pea = _create_head_pea(head_port, 'head')
     head_pea.start()
 
+    # create a single gateway pea
+    gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
+    gateway_pea.start()
+
     # create the shards
     peas = []
     for i in range(10):
@@ -380,17 +403,14 @@ async def test_peas_with_replicas_advance_faster(port_generator):
 
         await asyncio.sleep(0.1)
 
+    head_pea.wait_start_success()
+    gateway_pea.wait_start_success()
     for pea in peas:
         # this would be done by the Pod, its adding the worker to the head
+        pea.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', '127.0.0.1', pea.args.port_in)
         GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
-
-    # create a single gateway pea
-    gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
-    gateway_pea.start()
-
-    await asyncio.sleep(1.0)
 
     c = Client(host='localhost', port=port_expose, asyncio=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
@@ -454,6 +474,7 @@ def _create_worker_pea(port, name='', executor=None):
     args = set_pea_parser().parse_args([])
     args.port_in = port
     args.name = name
+    args.no_block_on_start = True
     if executor:
         args.uses = executor
     return Pea(args)
@@ -465,6 +486,7 @@ def _create_head_pea(port, name='', polling='ANY', uses_before=None, uses_after=
     args.name = name
     args.pea_cls = 'HeadRuntime'
     args.pea_role = PeaRoleType.HEAD
+    args.no_block_on_start = True
     args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL
     if uses_before:
         args.uses_before_address = uses_before
@@ -484,6 +506,7 @@ def _create_gateway_pea(graph_description, pod_addresses, port_expose):
                 pod_addresses,
                 '--port-expose',
                 str(port_expose),
+                '--noblock-on-start',
             ]
         )
     )
