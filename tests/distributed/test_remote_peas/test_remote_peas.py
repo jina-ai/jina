@@ -46,8 +46,6 @@ def async_jinad_client():
 async def test_async_jinad_client(async_jinad_client, pea_args):
     workspace_id = await async_jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
-    resp = await async_jinad_client.peas.list()
-    assert not resp
 
     success, pea_id = await async_jinad_client.peas.create(
         workspace_id=workspace_id, payload=replace_enum_to_str(vars(pea_args))
@@ -63,8 +61,6 @@ async def test_async_jinad_client(async_jinad_client, pea_args):
 def test_sync_jinad_client(jinad_client, pea_args):
     workspace_id = jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
-    resp = jinad_client.peas.list()
-    assert not resp
 
     success, pea_id = jinad_client.peas.create(
         workspace_id=workspace_id, payload=replace_enum_to_str(vars(pea_args))
