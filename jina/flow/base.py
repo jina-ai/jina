@@ -1611,6 +1611,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.args.workspace = value
         for k, p in self:
             p.args.workspace = value
+            p.update_pea_args()
 
     @property
     def workspace_id(self) -> Dict[str, str]:
