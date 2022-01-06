@@ -227,7 +227,7 @@ def foo(docs: DocumentArray,
     pass
 ```
 
-The Executor's method receive the following arguments in order:
+The Executor's methods receive the following arguments in order:
 
 | Name | Type | Description  |
 | --- | --- | --- |
@@ -280,7 +280,7 @@ class MyExecutor(Executor):
 
 Methods decorated with `@request` can return `DocumentArray`, `DocumentArrayMemmap`, `Dict` or `None`.
 
-- If the return is `None`, then Jina considers all changes happen in-place. The next Executor will receive the updated `docs` modified by the current Executor.
+- If the return is `None`, then Jina considers all changes to happened in-place. The next Executor will receive the updated `docs` modified by the current Executor.
 - If the return is `DocumentArray` or `DocumentArrayMemmap`, then the current `docs` field in the `Request` will be overridden by the
   return, which will be forwarded to the next Executor in the Flow.
 - If the return is a `Dict`, then `Request.parameters` will be updated by union with the return. The next Executor will receive this updated `Request.parameters`. One can leverage this feature to pass parameters between Executors.
