@@ -404,6 +404,8 @@ def random_name() -> str:
 
 
 assigned_ports = set()
+DEFAULT_MIN_PORT = 49153
+MAX_PORT = 65535
 
 
 def random_port() -> Optional[int]:
@@ -418,10 +420,10 @@ def random_port() -> Optional[int]:
     from contextlib import closing
     import socket
 
-    def _get_port(port, max_ports):
+    def _get_port(port):
         with multiprocessing.Lock():
             with threading.Lock():
-                if port not in assigned_ports or len(assigned_ports) >= max_ports:
+                if port not in assigned_ports:
                     with closing(
                         socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     ) as s:
@@ -436,12 +438,17 @@ def random_port() -> Optional[int]:
 
     _port = None
 
-    min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '49153'))
-    max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', '65535'))
+    # if we are running out of ports, lower default minimum port
+    if MAX_PORT - DEFAULT_MIN_PORT - len(assigned_ports) < 10:
+        min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '16384'))
+    else:
+        min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT)))
+
+    max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
     all_ports = list(range(min_port, max_port + 1))
     random.shuffle(all_ports)
     for _port in all_ports:
-        if _get_port(_port, len(all_ports)) is not None:
+        if _get_port(_port) is not None:
             break
     else:
         raise OSError(
