@@ -418,10 +418,10 @@ def random_port() -> Optional[int]:
     from contextlib import closing
     import socket
 
-    def _get_port(port=0):
+    def _get_port(port, max_ports):
         with multiprocessing.Lock():
             with threading.Lock():
-                if port not in assigned_ports:
+                if port not in assigned_ports or len(assigned_ports) >= max_ports:
                     with closing(
                         socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     ) as s:
@@ -441,7 +441,7 @@ def random_port() -> Optional[int]:
     all_ports = list(range(min_port, max_port + 1))
     random.shuffle(all_ports)
     for _port in all_ports:
-        if _get_port(_port) is not None:
+        if _get_port(_port, len(all_ports)) is not None:
             break
     else:
         raise OSError(
