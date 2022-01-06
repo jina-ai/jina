@@ -137,7 +137,7 @@ with f:
 
 ## Methods
 
-Methods of `Executor` can be named and wrote freely. 
+Methods of `Executor` can be named and written freely. 
 
 Only methods that are decorated with `@requests` can be used in a `Flow`.
 
