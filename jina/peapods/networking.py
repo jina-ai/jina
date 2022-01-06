@@ -2,6 +2,7 @@ import asyncio
 import ipaddress
 from threading import Thread
 from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
+from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
@@ -35,13 +36,18 @@ class ReplicaList:
         :param address: Target address of this connection
         """
         if address not in self._address_to_connection_idx:
+            parsed_address = urlparse(address)
+            use_https = parsed_address.scheme == "https"
+
             self._address_to_connection_idx[address] = len(self._connections)
             (
                 single_data_stub,
                 data_stub,
                 control_stub,
                 channel,
-            ) = GrpcConnectionPool.create_async_channel_stub(address)
+            ) = GrpcConnectionPool.create_async_channel_stub(
+                parsed_address.netloc, https=use_https
+            )
             self._address_to_channel[address] = channel
 
             self._connections.append((single_data_stub, data_stub, control_stub))

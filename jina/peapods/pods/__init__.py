@@ -397,9 +397,35 @@ class Pod(BasePod):
         else:
             self.peas_args = self._parse_args(self.args)
 
+        if self.is_sandbox:
+            # TODO: dynamically fetching
+            self.first_pea_args.host = 'sandbox2.staging.jina.ai'
+            self.first_pea_args.port_in = 443
+            self.peas_args['head'].host = 'sandbox2.staging.jina.ai'
+            self.peas_args['head'].port_in = 443
+
     def update_worker_pea_args(self):
         """ Update args of all its worker peas based on Pod args. Does not touch head and tail"""
         self.peas_args['peas'] = self._set_peas_args(self.args)
+
+    @property
+    def is_sandbox(self):
+        """
+        Check if this pod is a sandbox.
+
+        :return: True if this pod is provided as a sandbox, False otherwise
+        """
+        uses = getattr(self.args, 'uses', '')
+        is_sandbox = uses.startswith('jinahub+sandbox://')
+        return is_sandbox
+
+    @property
+    def protocol(self):
+        """
+        :return: the protocol of this pod, https or http
+        """
+        protocol = getattr(self.args, 'protocol', 'http')
+        return 'https' if self.is_sandbox else protocol
 
     @property
     def first_pea_args(self) -> Namespace:
