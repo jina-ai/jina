@@ -17,7 +17,7 @@ from jina.peapods.peas.helper import is_ready
 from jina.peapods.peas.jinad import JinaDPea, JinaDProcessTarget
 from jina.types.request.control import ControlRequest
 
-HOST = __default_host__
+HOST = '127.0.0.1'
 PORT = 8000
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 is_remote = lambda l_or_r: l_or_r == 'remote'
@@ -194,7 +194,7 @@ async def async_inputs():
     [
         ('local', 'local', 'local'),
         ('local', 'local', 'remote'),
-        # ('local', 'remote', 'remote'),  TODO bring it back.
+        ('local', 'remote', 'remote'),
     ],
 )
 async def test_pseudo_remote_peas_topologies(gateway, head, worker):
