@@ -883,3 +883,18 @@ def create_connection_pool(
         )
     else:
         return GrpcConnectionPool(logger=logger)
+
+
+def host_is_local(hostname):
+    """
+    Check if hostname is point to localhost
+    :param hostname: host to check
+    :return: True if hostname means localhost, False otherwise
+    """
+    import socket
+
+    fqn = socket.getfqdn(hostname)
+    if fqn in ("localhost", "0.0.0.0") or hostname == '0.0.0.0':
+        return True
+
+    return ipaddress.ip_address(hostname).is_loopback

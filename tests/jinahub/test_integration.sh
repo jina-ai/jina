@@ -10,7 +10,7 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-CONTAINER_ID=$(docker run -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/test_hubapp_hubpods)
+CONTAINER_ID=$(docker run -v /var/run/docker.sock:/var/run/docker.sock -p 45678:45678 --add-host host.docker.internal:host-gateway -d jinaai/test_hubapp_hubpods)
 
 sleep 10
 
