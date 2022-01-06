@@ -1,4 +1,5 @@
 import copy
+import os
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -546,11 +547,24 @@ class Pod(BasePod):
                     )
 
     def _is_container_to_container(self, pea_idx, shard_id):
+        def _in_docker():
+            path = '/proc/self/cgroup'
+            return (
+                os.path.exists('/.dockerenv')
+                or os.path.isfile(path)
+                and any('docker' in line for line in open(path))
+            )
+
         # Check if both shard_id/pea_idx and the head are containerized
+        # if the head is not containerized, it still could mean that the pod itself is containerized
         return (
             type(self.shards[shard_id]._peas[pea_idx]) == ContainerPea
             or type(self.shards[shard_id]._peas[pea_idx]) == JinaDPea
-        ) and (type(self.head_pea) == ContainerPea or type(self.head_pea) == JinaDPea)
+        ) and (
+            type(self.head_pea) == ContainerPea
+            or type(self.head_pea) == JinaDPea
+            or _in_docker()
+        )
 
     def start(self) -> 'Pod':
         """
