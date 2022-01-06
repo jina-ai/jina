@@ -29,7 +29,7 @@ def is_pea_ready(args):
 
 @pytest.fixture
 def pea_args():
-    return set_pea_parser().parse_args(['--host', HOST, '--port-jinad', str(PORT)])
+    return set_pea_parser().parse_args([])
 
 
 @pytest.fixture
@@ -253,9 +253,14 @@ async def test_pseudo_remote_peas_topologies(gateway, head, worker):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('gateway', ['local'])
-@pytest.mark.parametrize('head', ['local', 'remote'])
-@pytest.mark.parametrize('worker', ['local', 'remote'])
+@pytest.mark.parametrize(
+    'gateway, head, worker',
+    [
+        ('local', 'local', 'local'),
+        ('local', 'local', 'remote'),
+        ('local', 'remote', 'remote'),
+    ],
+)
 @pytest.mark.parametrize('polling', [PollingType.ANY, PollingType.ALL])
 # test simple topology with shards on remote
 async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
@@ -279,7 +284,11 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
         worker_pea.start()
 
         await asyncio.sleep(0.1)
-        worker_host = HOST
+
+        if head == 'remote':
+            worker_host = __docker_host__
+        else:
+            worker_host = HOST
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
@@ -311,9 +320,14 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('gateway', ['local'])
-@pytest.mark.parametrize('head', ['local', 'remote'])
-@pytest.mark.parametrize('worker', ['local', 'remote'])
+@pytest.mark.parametrize(
+    'gateway, head, worker',
+    [
+        ('local', 'local', 'local'),
+        ('local', 'local', 'remote'),
+        ('local', 'remote', 'remote'),
+    ],
+)
 # test simple topology with shards on remote
 async def test_pseudo_remote_peas_replicas(gateway, head, worker):
     NUM_REPLICAS = 3
@@ -337,7 +351,10 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
         worker_pea.start()
 
         await asyncio.sleep(0.1)
-        worker_host = HOST
+        if head == 'remote':
+            worker_host = __docker_host__
+        else:
+            worker_host = HOST
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
@@ -393,7 +410,7 @@ async def test_pseudo_remote_peas_executor(
         uses_before_port,
         'pod0/uses_before',
         executor='NameChangeExecutor',
-        py_modules='executors/executor.py',
+        py_modules='executor.py' if is_remote(uses_before) else 'executors/executor.py',
         upload_files=[os.path.join(cur_dir, 'executors')]
         if is_remote(uses_before)
         else None,
@@ -407,7 +424,7 @@ async def test_pseudo_remote_peas_executor(
         uses_after_port,
         'pod0/uses_after',
         executor='NameChangeExecutor',
-        py_modules='executors/executor.py',
+        py_modules='executor.py' if is_remote(uses_after) else 'executors/executor.py',
         upload_files=[os.path.join(cur_dir, 'executors')]
         if is_remote(uses_after)
         else None,
@@ -440,7 +457,7 @@ async def test_pseudo_remote_peas_executor(
             worker_port,
             f'pod0/shards/{i}',
             executor='NameChangeExecutor',
-            py_modules='executors/executor.py',
+            py_modules='executor.py' if is_remote(worker) else 'executors/executor.py',
             upload_files=[os.path.join(cur_dir, 'executors')]
             if is_remote(worker)
             else None,
