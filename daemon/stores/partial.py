@@ -211,7 +211,7 @@ class PartialFlowStore(PartialStore):
                 ),
             )
 
-    def rolling_update(
+    async def rolling_update(
         self, pod_name: str, uses_with: Optional[Dict] = None
     ) -> PartialFlowItem:
         """Perform rolling_update on the Pod in current Flow
@@ -221,7 +221,7 @@ class PartialFlowStore(PartialStore):
         :return: Item describing the Flow object
         """
         try:
-            self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
+            await self._rolling_update(pod_name=pod_name, uses_with=uses_with)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
@@ -229,6 +229,19 @@ class PartialFlowStore(PartialStore):
             self.item.arguments = vars(self.object.args)
             self._logger.success(f'Flow is successfully rolling_updated!')
             return self.item
+
+    async def _rolling_update(
+        self,
+        pod_name: str,
+        uses_with: Optional[Dict] = None,
+    ):
+        """
+        Reload all replicas of a pod sequentially
+
+        :param pod_name: pod to update
+        :param uses_with: a Dictionary of arguments to restart the executor with
+        """
+        await self.object._pod_nodes[pod_name].rolling_update(uses_with=uses_with)
 
     async def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
         """Scale the Pod in current Flow

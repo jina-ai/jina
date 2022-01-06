@@ -103,7 +103,7 @@ When not given, then the default naming strategy will apply.
     gp.add_argument(
         '--timeout-ctrl',
         type=int,
-        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '5000')),
+        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '60')),
         help='The timeout in milliseconds of the control request, -1 for waiting forever',
     )
 

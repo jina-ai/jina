@@ -59,7 +59,7 @@ async def rolling_update(
     .. #noqa: DAR201
     """
     try:
-        return store.rolling_update(pod_name=pod_name, uses_with=uses_with)
+        return await store.rolling_update(pod_name=pod_name, uses_with=uses_with)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 

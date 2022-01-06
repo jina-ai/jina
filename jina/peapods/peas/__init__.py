@@ -173,7 +173,7 @@ class BasePea(ABC):
                 ):
                     if not __windows__:
                         raise Exception(
-                            f'Shutdown signal was not received for {self._timeout_ctrl}'
+                            f'Shutdown signal was not received for {self._timeout_ctrl} seconds'
                         )
                     else:
                         self.logger.warning(

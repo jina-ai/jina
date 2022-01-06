@@ -1,3 +1,5 @@
+import pytest
+
 from pathlib import Path
 
 from daemon.models import FlowModel
@@ -7,6 +9,9 @@ cur_dir = Path(__file__).parent
 api = '/flow'
 
 
+@pytest.mark.skip(
+    reason='TestClient uses a ThreadPoolExecutor which messes up RollingUpdate'
+)
 def test_flow_api(monkeypatch, partial_flow_client):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/good_flow_dummy.yml'
