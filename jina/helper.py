@@ -435,20 +435,18 @@ def random_port() -> Optional[int]:
                     return None
 
     _port = None
-    if 'JINA_RANDOM_PORT_MIN' in os.environ or 'JINA_RANDOM_PORT_MAX' in os.environ:
-        min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '49153'))
-        max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', '65535'))
-        all_ports = list(range(min_port, max_port + 1))
-        random.shuffle(all_ports)
-        for _port in all_ports:
-            if _get_port(_port) is not None:
-                break
-        else:
-            raise OSError(
-                f'can not find an available port between [{min_port}, {max_port}].'
-            )
+
+    min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '49153'))
+    max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', '65535'))
+    all_ports = list(range(min_port, max_port + 1))
+    random.shuffle(all_ports)
+    for _port in all_ports:
+        if _get_port(_port) is not None:
+            break
     else:
-        _port = _get_port()
+        raise OSError(
+            f'can not find an available port between [{min_port}, {max_port}].'
+        )
 
     assigned_ports.add(int(_port))
     return int(_port)
