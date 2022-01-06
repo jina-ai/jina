@@ -194,7 +194,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
-        timeout_ctrl: Optional[int] = 5000,
+        timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -271,7 +271,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ctrl: The timeout in seconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
@@ -312,7 +312,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         polling: Optional[str] = 'ANY',
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 5000,
+        timeout_ctrl: Optional[int] = 60,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
@@ -343,7 +343,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ctrl: The timeout in seconds of the control request, -1 for waiting forever
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -630,7 +630,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_cls: Optional[str] = 'WorkerRuntime',
         scheduling: Optional[str] = 'LOAD_BALANCE',
         shards: Optional[int] = 1,
-        timeout_ctrl: Optional[int] = 5000,
+        timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -710,7 +710,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_cls: The runtime class to run inside the Pea
         :param scheduling: The strategy of scheduling workload among Peas
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ctrl: The timeout in seconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Pod has more

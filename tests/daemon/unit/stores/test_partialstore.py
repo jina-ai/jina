@@ -63,18 +63,22 @@ def test_flowstore_add(monkeypatch, partial_flow_store):
     assert partial_flow_store.object.port_expose == 12345
 
 
-def test_flowstore_rolling_update(partial_flow_store, mocker):
+@pytest.mark.asyncio
+async def test_flowstore_rolling_update(partial_flow_store, mocker):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
 
     partial_flow_store.add(args)
 
-    rolling_update_mock = mocker.Mock()
-    partial_flow_store.object.rolling_update = rolling_update_mock
+    future = asyncio.Future()
+    future.set_result(PartialStoreItem())
+    mocker.patch(
+        'daemon.stores.partial.PartialFlowStore.rolling_update', return_value=future
+    )
 
-    partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
-    rolling_update_mock.assert_called()
+    resp = await partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
+    assert resp
 
 
 @pytest.mark.asyncio
