@@ -124,12 +124,11 @@ def test_flow_default_polling_endpoints(polling):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_flow_default_polling_endpoints(polling):
-    custom_polling_config = {'/custom': 'ALL', '/search': 'ANY'}
+    custom_polling_config = {'/custom': 'ALL', '/search': 'ANY', '*': polling}
     f = Flow().add(
         uses=DynamicPollingExecutorDefaultNames,
         shards=2,
-        polling=polling,
-        endpoint_polling=custom_polling_config,
+        polling=custom_polling_config,
     )
 
     with f:

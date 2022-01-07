@@ -1,4 +1,5 @@
 import copy
+import os
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -6,9 +7,11 @@ from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
 from .. import Pea
-from ..networking import GrpcConnectionPool
+from ..networking import GrpcConnectionPool, host_is_local
+from ..peas.container import ContainerPea
 from ..peas.factory import PeaFactory
-from ... import __default_executor__, __default_host__
+from ..peas.jinad import JinaDPea
+from ... import __default_executor__, __default_host__, __docker_host__
 from ... import helper
 from ...enums import (
     PodRoleType,
@@ -199,13 +202,18 @@ class Pod(BasePod):
 
     class _ReplicaSet:
         def __init__(
-            self, pod_args: Namespace, args: List[Namespace], head_args: Namespace
+            self,
+            pod_args: Namespace,
+            args: List[Namespace],
+            head_args: Namespace,
+            head_pea,
         ):
             self.pod_args = copy.copy(pod_args)
             self.head_args = head_args
             self.args = args
             self.shard_id = args[0].shard_id
             self._peas = []
+            self.head_pea = head_pea
 
         @property
         def is_ready(self):
@@ -234,7 +242,7 @@ class Pod(BasePod):
                 _args = self.args[i]
                 old_pea = self._peas[i]
                 await GrpcConnectionPool.deactivate_worker(
-                    worker_host=_args.host,
+                    worker_host=Pod.get_worker_host(_args, old_pea, self.head_pea),
                     worker_port=_args.port_in,
                     target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                     shard_id=self.shard_id,
@@ -249,7 +257,7 @@ class Pod(BasePod):
                 new_pea.__enter__()
                 await new_pea.async_wait_start_success()
                 await GrpcConnectionPool.activate_worker(
-                    worker_host=_args.host,
+                    worker_host=Pod.get_worker_host(_args, new_pea, self.head_pea),
                     worker_port=_args.port_in,
                     target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                     shard_id=self.shard_id,
@@ -274,7 +282,9 @@ class Pod(BasePod):
                 try:
                     await new_pea.async_wait_start_success()
                     await GrpcConnectionPool.activate_worker(
-                        worker_host=new_args.host,
+                        worker_host=Pod.get_worker_host(
+                            new_args, new_pea, self.head_pea
+                        ),
                         worker_port=new_args.port_in,
                         target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                         shard_id=self.shard_id,
@@ -305,7 +315,9 @@ class Pod(BasePod):
                 # Close returns exception, but in theory `termination` should handle close properly
                 try:
                     await GrpcConnectionPool.deactivate_worker(
-                        worker_host=self.args[i].host,
+                        worker_host=Pod.get_worker_host(
+                            self.args[i], self._peas[i], self.head_pea
+                        ),
                         worker_port=self.args[i].port_in,
                         target_head=f'{self.head_args.host}:{self.head_args.port_in}',
                         shard_id=self.shard_id,
@@ -370,9 +382,7 @@ class Pod(BasePod):
                 raise closing_exception
 
     def __init__(
-        self,
-        args: Union['Namespace', Dict],
-        needs: Optional[Union[str, Set[str]]] = None,
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
@@ -532,13 +542,53 @@ class Pod(BasePod):
         """
         if self.head_pea is not None:
             for shard_id in self.peas_args['peas']:
-                for pea_args in self.peas_args['peas'][shard_id]:
+                for pea_idx, pea_args in enumerate(self.peas_args['peas'][shard_id]):
+                    worker_host = self.get_worker_host(
+                        pea_args, self.shards[shard_id]._peas[pea_idx], self.head_pea
+                    )
                     GrpcConnectionPool.activate_worker_sync(
-                        pea_args.host,
+                        worker_host,
                         int(pea_args.port_in),
                         self.head_pea.runtime_ctrl_address,
                         shard_id,
                     )
+
+    @staticmethod
+    def get_worker_host(pea_args, pea, head_pea):
+        """
+        Check if the current pea and head are both containerized on the same host
+        If so __docker_host__ needs to be advertised as the worker's address to the head
+
+        :param pea_args: arguments of the worker pea
+        :param pea: the worker pea
+        :param head_pea: head pea communicating with the worker pea
+        :return: host to use in activate messages
+        """
+        # Check if the current pea and head are both containerized on the same host
+        # If so __docker_host__ needs to be advertised as the worker's address to the head
+        worker_host = (
+            __docker_host__
+            if Pod._is_container_to_container(pea, head_pea)
+            and host_is_local(pea_args.host)
+            else pea_args.host
+        )
+        return worker_host
+
+    @staticmethod
+    def _is_container_to_container(pea, head_pea):
+        def _in_docker():
+            path = '/proc/self/cgroup'
+            return (
+                os.path.exists('/.dockerenv')
+                or os.path.isfile(path)
+                and any('docker' in line for line in open(path))
+            )
+
+        # Check if both shard_id/pea_idx and the head are containerized
+        # if the head is not containerized, it still could mean that the pod itself is containerized
+        return (type(pea) == ContainerPea or type(pea) == JinaDPea) and (
+            type(head_pea) == ContainerPea or type(head_pea) == JinaDPea or _in_docker()
+        )
 
     def start(self) -> 'Pod':
         """
@@ -570,7 +620,10 @@ class Pod(BasePod):
             self.enter_context(self.head_pea)
         for shard_id in self.peas_args['peas']:
             self.shards[shard_id] = self._ReplicaSet(
-                self.args, self.peas_args['peas'][shard_id], self.head_args
+                self.args,
+                self.peas_args['peas'][shard_id],
+                self.head_args,
+                self.head_pea,
             )
             self.enter_context(self.shards[shard_id])
 

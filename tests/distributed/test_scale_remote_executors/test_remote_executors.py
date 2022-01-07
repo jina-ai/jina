@@ -124,9 +124,9 @@ def test_scale_with_concurrent_client(
 
     num_replicas, scale_to, _ = pod_params
     queue = multiprocessing.Queue()
-
+    remote_flow_with_runtime.protocol = protocol
     with remote_flow_with_runtime as f:
-        f.protocol = protocol
+
         port_expose = f.port_expose
 
         thread_pool = []

@@ -2,7 +2,6 @@ import os
 from contextlib import contextmanager
 
 from daemon.clients import JinaDClient
-from jina.types.request import Response
 from jina.helper import random_identity
 from jina import Document, Client, __default_host__, Flow
 
@@ -12,7 +11,7 @@ client = JinaDClient(host=HOST, port=8000)
 
 
 @contextmanager
-def RemoteFlow(workspace_id) -> Response:
+def RemoteFlow(workspace_id):
     flow_id = client.flows.create(
         workspace_id=workspace_id, filename='flow_cache_validator.yml'
     )

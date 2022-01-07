@@ -82,33 +82,11 @@ When not given, then the default naming strategy will apply.
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
-        '--extra-search-paths',
-        type=str,
-        default=[],
-        nargs='*',
-        help='Extra search paths to be used when loading modules and finding YAML config files.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
     gp.add_argument(
         '--timeout-ctrl',
         type=int,
-        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '5000')),
+        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '60')),
         help='The timeout in milliseconds of the control request, -1 for waiting forever',
-    )
-
-    gp.add_argument(
-        '--polling',
-        type=PollingType.from_string,
-        choices=list(PollingType),
-        default=PollingType.ANY,
-        help='''
-    The polling strategy of the Pod (when `shards>1`)
-    - ANY: only one (whoever is idle) Pea polls the message
-    - ALL: all Peas poll the message (like a broadcast)
-    ''',
     )
 
     gp.add_argument(
@@ -121,10 +99,19 @@ When not given, then the default naming strategy will apply.
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
-        '--k8s-namespace',
+    gp.add_argument(
+        '--polling',
         type=str,
-        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
+        default=PollingType.ANY.name,
+        help='''
+    The polling strategy of the Pod and its endpoints (when `shards>1`).
+    Can be defined for all endpoints of a Pod or by endpoint.
+    Define per Pod:
+    - ANY: only one (whoever is idle) Pea polls the message
+    - ALL: all Peas poll the message (like a broadcast)
+    Define per Endpoint:
+    JSON dict, {endpoint: PollingType}
+    {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+    
+    ''',
     )

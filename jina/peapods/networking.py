@@ -458,7 +458,7 @@ class GrpcConnectionPool:
                         raise
                     else:
                         self._logger.debug(
-                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i + 1}/3'
+                            f'GRPC call failed with StatusCode.UNAVAILABLE, retry attempt {i+1}/3'
                         )
 
         return asyncio.create_task(task_wrapper(requests, connection, endpoint))
@@ -700,6 +700,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     Manages grpc connections to replicas in a K8s deployment.
 
     :param namespace: K8s namespace to operate in
+    :param client: K8s client
     :param logger: the logger to use
     """
 
@@ -711,27 +712,19 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     def __init__(
         self,
         namespace: str,
-        logger: Optional[JinaLogger] = None,
+        client: 'kubernetes.client.CoreV1Api',
+        logger: JinaLogger = None,
     ):
         super().__init__(logger=logger)
 
         self._namespace = namespace
         self._process_events_task = None
+        self._k8s_client = client
+        self._k8s_event_queue = asyncio.Queue()
         self.enabled = False
 
-        import kubernetes
         from kubernetes import watch
-        from kubernetes import client
 
-        try:
-            # try loading kube config from disk first
-            kubernetes.config.load_kube_config()
-        except kubernetes.config.config_exception.ConfigException:
-            # if the config could not be read from disk, try loading in cluster config
-            # this works if we are running inside k8s
-            kubernetes.config.load_incluster_config()
-        self._k8s_client = client.CoreV1Api(api_client=kubernetes.client.ApiClient())
-        self._k8s_event_queue = asyncio.Queue()
         self._api_watch = watch.Watch()
 
         self.update_thread = Thread(target=self.run, daemon=True)
@@ -780,7 +773,6 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         if self._process_events_task:
             self._process_events_task.cancel()
         self._api_watch.stop()
-        self.update_thread.join(0.5)
         await super().close()
 
     @staticmethod
@@ -796,7 +788,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     async def _process_item(self, item):
         try:
             jina_pod_name = item.metadata.labels['jina_pod_name']
-            is_head = item.metadata.labels['pea_type'] == 'HEAD'
+            is_head = item.metadata.labels['pea_type'] == 'head'
             shard_id = (
                 int(item.metadata.labels['shard_id'])
                 if item.metadata.labels['shard_id'] and not is_head
@@ -883,6 +875,26 @@ def create_connection_pool(
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
-        return K8sGrpcConnectionPool(namespace=k8s_namespace, logger=logger)
+        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+
+        k8s_clients = K8sClients()
+        return K8sGrpcConnectionPool(
+            namespace=k8s_namespace, client=k8s_clients.core_v1, logger=logger
+        )
     else:
         return GrpcConnectionPool(logger=logger)
+
+
+def host_is_local(hostname):
+    """
+    Check if hostname is point to localhost
+    :param hostname: host to check
+    :return: True if hostname means localhost, False otherwise
+    """
+    import socket
+
+    fqn = socket.getfqdn(hostname)
+    if fqn in ("localhost", "0.0.0.0") or hostname == '0.0.0.0':
+        return True
+
+    return ipaddress.ip_address(hostname).is_loopback

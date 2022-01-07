@@ -89,7 +89,7 @@ class TextCrafter(Executor):
     @requests()
     def filter(self, docs: DocumentArray, **kwargs):
         filtered_docs = DocumentArray(
-            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
+            d for d in docs.traverse_flat('c') if d.mime_type == 'text/plain'
         )
         return filtered_docs
 
@@ -98,7 +98,7 @@ class ImageCrafter(Executor):
     @requests(on=['/index', '/search'])
     def craft(self, docs: DocumentArray, **kwargs):
         filtered_docs = DocumentArray(
-            d for d in docs.traverse_flat(['c']) if d.mime_type == 'image/jpeg'
+            d for d in docs.traverse_flat('c') if d.mime_type == 'image/jpeg'
         )
         target_size = 224
         for doc in filtered_docs:

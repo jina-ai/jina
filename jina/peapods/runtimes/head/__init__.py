@@ -25,6 +25,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     Runtime is used in head peas. It responds to Gateway requests and sends to uses_before/uses_after and its workers
     """
 
+    DEFAULT_POLLING = PollingType.ANY
+
     def __init__(
         self,
         args: argparse.Namespace,
@@ -50,20 +52,31 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             k8s_namespace=args.k8s_namespace,
         )
 
-        self.polling = args.polling if hasattr(args, 'polling') else PollingType.ANY
-        self._endpoint_polling = defaultdict(
-            lambda: self.polling,
-            {'/search': PollingType.ALL, '/index': PollingType.ANY},
-        )
-        # by default search and index have polling defined, it can be overriden by the args if needed
-        if hasattr(args, 'endpoint_polling') and args.endpoint_polling:
-            endpoint_polling = json.loads(args.endpoint_polling)
+        polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
+        try:
+            # try loading the polling args as json
+            endpoint_polling = json.loads(polling)
+            # '*' is used a wildcard and will match all endpoints, except /index, /search and explicitly defined endpoins
+            default_polling = (
+                PollingType.from_string(endpoint_polling['*'])
+                if '*' in endpoint_polling
+                else self.DEFAULT_POLLING
+            )
+            self._polling = self._default_polling_dict(default_polling)
             for endpoint in endpoint_polling:
-                self._endpoint_polling[endpoint] = PollingType(
+                self._polling[endpoint] = PollingType(
                     endpoint_polling[endpoint]
                     if type(endpoint_polling[endpoint]) == int
                     else PollingType.from_string(endpoint_polling[endpoint])
                 )
+        except (ValueError, TypeError):
+            # polling args is not a valid json, try interpreting as a polling enum type
+            default_polling = (
+                polling
+                if type(polling) == PollingType
+                else PollingType.from_string(polling)
+            )
+            self._polling = self._default_polling_dict(default_polling)
 
         # In K8s the ConnectionPool needs the information about the Jina Pod its running in
         # This is stored in the environment variable JINA_POD_NAME in all Jina K8s default templates
@@ -105,6 +118,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 pod='uses_after', address=self.uses_after_address
             )
         self._has_uses = args.uses is not None and args.uses != __default_executor__
+
+    def _default_polling_dict(self, default_polling):
+        return defaultdict(
+            lambda: default_polling,
+            {'/search': PollingType.ALL, '/index': PollingType.ANY},
+        )
 
     async def async_setup(self):
         """ Wait for the GRPC server to start """
@@ -239,7 +258,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests,
             pod=self._pod_name,
-            polling_type=self._endpoint_polling[endpoint],
+            polling_type=self._polling[endpoint],
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)

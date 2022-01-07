@@ -236,16 +236,16 @@ For searching, you probably need to send the search request to all Shards, becau
 ```python Usage
 from jina import Flow
 
-flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any', endpoint_polling={'/custom': 'ALL', '/search': 'ANY'})
+flow = Flow().add(name='ExecutorWithShards', shards=3, polling={'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'})
 ```
 
 The example above will result in a Flow having the Executor `ExecutorWithShards` with the following polling options configured
 - `/index` has polling `ANY` (the default value is not changed here)
 - `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
 - `/custom` has polling `ALL`
-- all other endpoints will have polling `ANY`
+- all other endpoints will have polling `ANY` due to the usage of `*` as a wildcard to catch all other cases
 
-`endpoint_polling` always takes precedence over `polling`. `endpoint_polling` can be configured for all endpoints, `polling` will only be applied to endpoints not mentioned in `endpoint_polling` and does never apply to `/index` and `/search`.
+
 
 ### Merging search results
 

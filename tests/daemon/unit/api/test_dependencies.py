@@ -58,13 +58,8 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
             for port in [
                 f.port_expose,
                 f['gateway'].args.port_in,
-                f['gateway'].args.port_out,
-                f['gateway'].args.port_ctrl,
                 f['local_replicas'].args.port_in,
-                f['local_replicas'].args.port_out,
-                f['local_replicas'].args.port_ctrl,
                 f['local_compound'].head_args.port_in,
-                f['local_compound'].tail_args.port_out,
             ]
         )
 

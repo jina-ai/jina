@@ -552,7 +552,8 @@ with Flow().add(uses=MyExecutor) as f:
 
 ## Serialization
 
-You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.to_dict` or binary string via {meth}`bytes`:
+You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.to_dict` or binary string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_bytes`:
+
 ````{tab} JSON
 ```python
 from jina import Document

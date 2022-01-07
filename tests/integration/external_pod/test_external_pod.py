@@ -1,6 +1,6 @@
 import pytest
 
-from jina.peapods.pods import Pod
+from jina.peapods.pods.factory import PodFactory
 from jina.peapods.peas.factory import PeaFactory
 from jina.parsers import set_pod_parser, set_pea_parser
 
@@ -52,7 +52,7 @@ def external_pod_args(num_replicas, num_shards):
 
 @pytest.fixture
 def external_pod(external_pod_args):
-    return Pod(external_pod_args)
+    return PodFactory.build_pod(external_pod_args)
 
 
 class MyExternalExecutor(Executor):
@@ -145,7 +145,7 @@ def external_pod_shards_1_args(num_replicas, num_shards):
 
 @pytest.fixture
 def external_pod_shards_1(external_pod_shards_1_args):
-    return Pod(external_pod_shards_1_args)
+    return PodFactory.build_pod(external_pod_shards_1_args)
 
 
 @pytest.fixture(scope='function')
@@ -169,7 +169,7 @@ def external_pod_shards_2_args(num_replicas, num_shards):
 
 @pytest.fixture
 def external_pod_shards_2(external_pod_shards_2_args):
-    return Pod(external_pod_shards_2_args)
+    return PodFactory.build_pod(external_pod_shards_2_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
@@ -238,7 +238,7 @@ def external_pod_pre_shards_args(num_replicas, num_shards):
 
 @pytest.fixture
 def external_pod_pre_shards(external_pod_pre_shards_args):
-    return Pod(external_pod_pre_shards_args)
+    return PodFactory.build_pod(external_pod_pre_shards_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
@@ -302,7 +302,7 @@ def external_pod_join_args(num_replicas, num_shards):
 
 @pytest.fixture
 def external_pod_join(external_pod_join_args):
-    return Pod(external_pod_join_args)
+    return PodFactory.build_pod(external_pod_join_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
@@ -342,4 +342,5 @@ def test_flow_with_external_pod_join(
         with flow:
             resp = flow.index(inputs=input_docs, return_results=True)
 
-        # Reducing applied for shards, not for uses, expectate_response(resp[0], 100)
+        # Reducing applied for shards, not for uses, expect 100 docs
+        validate_response(resp[0], 100)
