@@ -61,7 +61,10 @@ class PostMixin:
 
             if return_results:
                 docs = [r.data.docs for r in result]
-                return docs[0].reduce_all(docs[1:])
+                if len(docs) < 1:
+                    return docs
+                else:
+                    return docs[0].reduce_all(docs[1:])
 
         if (on_always is None) and (on_done is None):
             return_results = True
