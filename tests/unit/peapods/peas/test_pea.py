@@ -1,11 +1,12 @@
 import os
+import time
 
 import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods import Pea
+from jina.peapods import Pea, runtimes
 
 
 @pytest.fixture()
@@ -215,3 +216,28 @@ def test_failing_head():
     with pytest.raises(RuntimeFailToStart):
         with Pea(args):
             pass
+
+
+@pytest.mark.timeout(4)
+def test_close_before_start(monkeypatch):
+    class SlowFakeRuntime:
+        def __init__(self, *args, **kwargs):
+            time.sleep(5.0)
+
+        def __enter__(self):
+            pass
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+        def run_forever(self):
+            pass
+
+    monkeypatch.setattr(
+        runtimes,
+        'get_runtime',
+        lambda *args, **kwargs: SlowFakeRuntime,
+    )
+    pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
+    pea.start()
+    pea.close()

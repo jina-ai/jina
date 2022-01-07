@@ -164,7 +164,7 @@ class BasePea(ABC):
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if not self.is_shutdown.is_set():
+        if not self.is_shutdown.is_set() and self.is_started.is_set():
             try:
                 self.logger.debug(f'terminate')
                 self._terminate()
@@ -190,7 +190,7 @@ class BasePea(ABC):
         else:
             # here shutdown has been set already, therefore `run` will gracefully finish
             self.logger.debug(
-                'shutdown is already set. Runtime will end gracefully on its own'
+                f'{"shutdown is is already set" if self.is_shutdown.is_set() else "Runtime was never started"}. Runtime will end gracefully on its own'
             )
             pass
         self.logger.debug(__stop_msg__)
