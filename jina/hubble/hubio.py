@@ -590,6 +590,15 @@ with f:
             md5sum=resp['package']['md5'],
         )
 
+    @staticmethod
+    def deploy_public_sandbox():
+        """
+        Deploy a public sandbox to Jina Hub.
+
+        :return: the host and port of the sandbox
+        """
+        return 'e-miao-c-test-star-routing.sandbox.jina.ai', 443
+
     def _pull_with_progress(self, log_streams, console):
         from rich.progress import Progress, DownloadColumn, BarColumn
 
