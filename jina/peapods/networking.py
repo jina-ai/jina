@@ -875,11 +875,12 @@ def create_connection_pool(
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
-        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+        from kubernetes import client
 
-        k8s_clients = K8sClients()
+        k8s_client = client.ApiClient()
+        core_client = client.CoreV1Api(api_client=k8s_client)
         return K8sGrpcConnectionPool(
-            namespace=k8s_namespace, client=k8s_clients.core_v1, logger=logger
+            namespace=k8s_namespace, client=core_client, logger=logger
         )
     else:
         return GrpcConnectionPool(logger=logger)
