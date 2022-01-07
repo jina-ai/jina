@@ -423,17 +423,13 @@ def random_port() -> Optional[int]:
     def _get_port(port):
         with multiprocessing.Lock():
             with threading.Lock():
-                if port not in assigned_ports:
-                    with closing(
-                        socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    ) as s:
-                        try:
-                            s.bind(('', port))
-                            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                            return s.getsockname()[1]
-                        except OSError:
-                            pass
-                else:
+                with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+                    try:
+                        s.bind(('', port))
+                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                        return s.getsockname()[1]
+                    except OSError:
+                        pass
                     return None
 
     _port = None
@@ -445,7 +441,7 @@ def random_port() -> Optional[int]:
         min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT)))
 
     max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
-    all_ports = list(range(min_port, max_port + 1))
+    all_ports = list(set(range(min_port, max_port + 1)) - assigned_ports)
     random.shuffle(all_ports)
     for _port in all_ports:
         if _get_port(_port) is not None:
