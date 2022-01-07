@@ -148,7 +148,7 @@ from jina.types.request import Response
 
 def print_matches(resp: Response):  # the callback function invoked when task is done
     for idx, d in enumerate(resp.docs[0].matches[:3]):  # print top-3 matches
-        print(f'[{idx}]{d.scores["euclidean"].value:2f}: "{d.text}"')
+        print(f'[{idx}]{d.scores["cosine"].value:2f}: "{d.uri}"')
 
 
 c = Client(protocol='http', port=12345)  # connect to localhost:12345

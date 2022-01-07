@@ -3,6 +3,7 @@ import argparse
 import os
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS
+from ...enums import PollingType
 from ...helper import random_identity
 
 
@@ -89,29 +90,6 @@ When not given, then the default naming strategy will apply.
         else argparse.SUPPRESS,
     )
 
-    gp.add_argument(
-        '--static-routing-table',
-        action='store_true',
-        default=False,
-        help='Defines if the routing table should be pre computed by the Flow. In this case it is statically defined for each Pod and not send on every data request.'
-        ' Can not be used in combination with external pods',
-    )
-
-    parser.add_argument(
-        '--routing-table',
-        type=str,
-        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
     parser.add_argument(
         '--extra-search-paths',
         type=str,
@@ -122,9 +100,36 @@ When not given, then the default naming strategy will apply.
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
-        '--reduce',
-        action='store_true',
-        default=False,
-        help='If set, DocumentArray matrix will be reduced into one DocumentArray before reaching this pod',
+    gp.add_argument(
+        '--timeout-ctrl',
+        type=int,
+        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '60')),
+        help='The timeout in milliseconds of the control request, -1 for waiting forever',
+    )
+
+    gp.add_argument(
+        '--k8s-disable-connection-pool',
+        action='store_false',
+        dest='k8s_connection_pool',
+        default=True,
+        help='Defines if connection pooling for replicas should be disabled in K8s. This mechanism implements load balancing between replicas of the same executor. This should be disabled if a service mesh (like istio) is used for load balancing.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--polling',
+        type=str,
+        default=PollingType.ANY.name,
+        help='''
+    The polling strategy of the Pod and its endpoints (when `shards>1`).
+    Can be defined for all endpoints of a Pod or by endpoint.
+    Define per Pod:
+    - ANY: only one (whoever is idle) Pea polls the message
+    - ALL: all Peas poll the message (like a broadcast)
+    Define per Endpoint:
+    JSON dict, {endpoint: PollingType}
+    {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+    
+    ''',
     )

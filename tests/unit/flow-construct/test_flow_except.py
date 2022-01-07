@@ -1,7 +1,10 @@
+import os
+
 import numpy as np
 import pytest
 
 from jina import Flow, Executor, requests, Document
+from jina.excepts import RuntimeFailToStart
 from jina.proto import jina_pb2
 from docarray.document.generators import from_ndarray
 from tests import validate_callback
@@ -26,7 +29,7 @@ def test_bad_flow(mocker, protocol):
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1/ZEDRuntime'
+        assert bad_routes[0].pod == 'r1'
 
     f = (
         Flow(protocol=protocol)
@@ -53,7 +56,7 @@ def test_bad_flow_customized(mocker, protocol):
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r2/ZEDRuntime'
+        assert bad_routes[0].pod == 'r2'
         assert bad_routes[0].status.exception.name == 'ZeroDivisionError'
 
     f = (
@@ -90,11 +93,9 @@ def test_except_with_shards(mocker, protocol):
         err_routes = [
             r.status for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
-        assert len(err_routes) == 2
+        assert len(err_routes) == 1
         assert err_routes[0].exception.executor == 'DummyCrafterExcept'
-        assert err_routes[1].exception.executor == 'MyExecutor'
         assert err_routes[0].exception.name == 'ZeroDivisionError'
-        assert err_routes[1].exception.name == 'NotImplementedError'
 
     f = (
         Flow(protocol=protocol)
@@ -125,7 +126,7 @@ def test_on_error_callback(mocker, protocol):
         x = x.routes
         assert len(x) == 3  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
-        assert badones[0].pod == 'r3/ZEDRuntime'
+        assert badones[0].pod == 'r3'
 
     f = Flow(protocol=protocol).add(name='r1').add(name='r3', uses=MyExecutor)
 
@@ -187,7 +188,7 @@ def test_flow_on_callback(protocol):
 
 class DummyCrafterNotImplemented(Executor):
     @requests
-    def craft(self, text, *args, **kwargs):
+    def craft(self, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -247,6 +248,18 @@ class ExceptionExecutor2(Executor):
 def test_flow_startup_exception_not_hanging2(protocol):
     f = Flow(protocol=protocol).add(uses=ExceptionExecutor2)
     from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+def test_flow_does_not_import_exec_depencies():
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    f = Flow().add(
+        name='importErrorExecutor',
+        uses=os.path.join(cur_dir, 'executor-invalid-import/config.yml'),
+    )
 
     with pytest.raises(RuntimeFailToStart):
         with f:

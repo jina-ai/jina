@@ -82,7 +82,7 @@ class RequestLogger(Executor):
 It could be helpful to specify the number of Documents we want to work with, so we pass this directly in the arguments of our constructor
 
 ``` python
-de __init__(self,
+def __init__(self,
                 default_log_docs: int = 1,      
                 # here you can pass whatever other arguments you need
                 *args, **kwargs):     

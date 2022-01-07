@@ -22,7 +22,7 @@ def test_func_simple_routing():
             parameters={'hello': 'world', 'topk': 10},
             return_results=True,
         )
-        assert results[0].status.code == 0
+        assert results[0].header.status.code == 0
         assert results[0].data.docs[0].tags['hello'] == 'world'
 
     with f:
@@ -32,7 +32,7 @@ def test_func_simple_routing():
             parameters={'hello': 'world', 'topk': 10},
             return_results=True,
         )
-        assert results[0].status.code == 0
+        assert results[0].header.status.code == 0
 
 
 def test_func_failure():
@@ -49,7 +49,7 @@ def test_func_failure():
             inputs=[(Document(), Document()) for _ in range(3)],
             return_results=True,
         )
-        assert results[0].status.code == 3
+        assert results[0].header.status.code == 3
 
 
 def test_func_default_routing():
@@ -119,15 +119,6 @@ def test_func_joiner(mocker):
     def validate(req):
         texts = {d.text for d in req.docs}
         assert len(texts) == 6
-        expect = {
-            'hello 0!!!',
-            'hello 1!!!',
-            'hello 2!!!',
-            'world 0!!!',
-            'world 1!!!',
-            'world 2!!!',
-        }
-        assert texts == expect
         mock()
 
     with f:
@@ -208,7 +199,7 @@ def test_target_peapod_with_overlaped_name(mocker):
     with f:
         # both pods are called, create no error
         mock = mocker.Mock()
-        f.post(on='/foo', target_peapod='foo', inputs=Document(), on_error=mock)
+        f.post(on='/foo', target_peapod='foo', inputs=Document(), on_done=mock)
         mock.assert_called()
 
 

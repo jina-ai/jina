@@ -17,7 +17,7 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
 from ..logging.predefined import default_logger as logger
-from ..types.request import Response
+from ..types.request.data import Response
 from docarray.simple.map import NamedScoreMap
 
 if TYPE_CHECKING:

@@ -6,7 +6,7 @@ from ...enums import PeaRoleType, RuntimeBackendType
 
 
 def mixin_pea_parser(parser):
-    """Mixing in arguments required by :class:`BasePea` into the given parser.
+    """Mixing in arguments required by :class:`Pea` into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 
@@ -32,7 +32,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--runtime-cls',
         type=str,
-        default='ZEDRuntime',
+        default='WorkerRuntime',
         help='The runtime class to run inside the Pea',
     )
 
@@ -86,7 +86,7 @@ def mixin_pea_parser(parser):
         '--pea-role',
         type=PeaRoleType.from_string,
         choices=list(PeaRoleType),
-        default=PeaRoleType.SINGLETON,
+        default=PeaRoleType.WORKER,
         help='The role of this Pea in a Pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 

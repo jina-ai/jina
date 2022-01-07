@@ -1,6 +1,6 @@
 # JINA PACKAGE DEPENDENCIES
 #
-# Essential: only 6, they are labeled with `core`: numpy, pyzmq, tornado, grpcio, protobuf, pyyaml. They will be installed
+# Essential: only 6, they are labeled with `core`: numpy, grpcio, protobuf, pyyaml. They will be installed
 #           when you do `pip install jina`. They are essential to run 90% features & functionalities of Jina.
 # Extensions: they are labeled with different tags. They will NOT be installed by default. One can install a group of
 #           of dependencies labeled `tag` by `pip install "jina[tag]"`
@@ -43,11 +43,9 @@ Pillow:                     demo
 lz4<3.1.2:                  perf, standard, daemon, devel
 uvloop:                     perf, standard, daemon, devel
 numpy:                      core
-pyzmq>=17.1.0:              core
-protobuf>=3.13.0:           core
+protobuf>=3.19.1:           core
 grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
-tornado>=5.1.0:             core
 pytest:                     test
 pytest-timeout:             test
 pytest-mock:                test

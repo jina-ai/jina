@@ -2,15 +2,30 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
-from typing import Union, TYPE_CHECKING
+from typing import Callable, Dict, Union, TYPE_CHECKING
 
-from ... import __default_host__
-from ...enums import GatewayProtocolType, RuntimeBackendType
+from ...enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
 from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
 
+from grpc import RpcError
+
+from ..networking import GrpcConnectionPool
+from ...types.request.control import ControlRequest
+
 if TYPE_CHECKING:
     from argparse import Namespace
+
+
+def _get_worker(
+    args, target: Callable, kwargs: Dict
+) -> Union['threading.Thread', 'multiprocessing.Process']:
+    return {
+        RuntimeBackendType.THREAD: threading.Thread,
+        RuntimeBackendType.PROCESS: multiprocessing.Process,
+    }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+        target=target, kwargs=kwargs
+    )
 
 
 def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
@@ -84,31 +99,34 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     """
     _args = deepcopy(args) if copy else args
     gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCRuntime',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-        GatewayProtocolType.HTTP: 'HTTPRuntime',
+        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
+        GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }
-    if (
-        _args.runtime_cls not in gateway_runtime_dict.values()
-        and _args.host != __default_host__
-        and not _args.disable_remote
-    ):
-        _args.runtime_cls = 'JinadRuntime'
-        # NOTE: remote pea would also create a remote workspace which might take alot of time.
-        # setting it to -1 so that wait_start_success doesn't fail
-        _args.timeout_ready = -1
-    if _args.runtime_cls == 'ZEDRuntime' and _args.uses.startswith('docker://'):
-        _args.runtime_cls = 'ContainerRuntime'
-    if _args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(_args.uses):
+    if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)
         _hub_args.uri = _args.uses
         _hub_args.no_usage = True
         _args.uses = HubIO(_hub_args).pull()
 
-        if _args.uses.startswith('docker://'):
-            _args.runtime_cls = 'ContainerRuntime'
-
     if hasattr(_args, 'protocol'):
         _args.runtime_cls = gateway_runtime_dict[_args.protocol]
+    if _args.pea_role == PeaRoleType.HEAD:
+        _args.runtime_cls = 'HeadRuntime'
 
     return _args
+
+
+def is_ready(address: str) -> bool:
+    """
+    TODO: make this async
+    Check if status is ready.
+    :param address: the address where the control message needs to be sent
+    :return: True if status is ready else False.
+    """
+
+    try:
+        GrpcConnectionPool.send_request_sync(ControlRequest('STATUS'), address)
+    except RpcError:
+        return False
+    return True

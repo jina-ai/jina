@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {name}
+  namespace: {namespace}
+spec:
+  replicas: {replicas}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {name}
+  template:
+    metadata:
+      labels:
+        app: {name}
+        jina_pod_name: {jina_pod_name}
+        shard_id: {shard_id}
+        pea_type: {pea_type}
+        ns: {namespace}
+    spec:
+      containers:
+      - name: executor
+        image: {image}
+        imagePullPolicy: {pull_policy}
+        command: {command}
+        args: {args}
+        ports:
+          - containerPort: {port_expose}
+          - containerPort: {port_in}
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid

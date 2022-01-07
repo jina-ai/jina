@@ -30,10 +30,4 @@ Timeout in millisecond of one check
         default=3,
         help='The max number of tried health checks before exit with exit code 1',
     )
-    parser.add_argument(
-        '--print-response',
-        action='store_true',
-        default=False,
-        help='If set, print the response when received',
-    )
     return parser

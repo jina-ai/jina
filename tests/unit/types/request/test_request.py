@@ -1,3 +1,6 @@
+import copy
+import os
+
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
@@ -6,97 +9,120 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina import DocumentArray, Document
-from jina.types.request import Request, Response
+from jina.proto.serializer import DataRequestProto
+from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest, Response
 from tests import random_docs
 
 
 @pytest.fixture(scope='function')
 def req():
-    r = jina_pb2.RequestProto()
-    r.request_id = random_identity()
+    r = jina_pb2.DataRequestProto()
+    r.header.request_id = random_identity()
     r.data.docs.add()
     return r
 
 
+@pytest.fixture(scope='function')
+def control_req():
+    r = jina_pb2.ControlRequestProto()
+    r.header.request_id = random_identity()
+    return r
+
+
 def test_init(req):
-    assert Request(request=None)
-    assert Request(request=req, copy=True)
-    assert Request(request=req, copy=False)
-    assert Request(request=MessageToDict(req))
-    assert Request(request=MessageToJson(req))
+    assert DataRequest(request=None)
+    assert DataRequest(request=req)
+    assert DataRequest(request=MessageToDict(req))
+    assert DataRequest(request=MessageToJson(req))
 
 
 def test_init_fail():
     with pytest.raises(BadRequestType):
-        Request(request=5)
+        DataRequest(request=5)
 
 
 def test_docs(req):
-    request = Request(request=req, copy=False).as_typed_request('data')
+    request = DataRequest(request=req)
     docs = request.docs
-    assert request.is_decompressed
     assert isinstance(docs, DocumentArray)
     assert len(docs) == 1
 
 
+def test_docs_operations():
+    req = DataRequest()
+    assert not req.docs
+
+    req.docs.append(Document())
+    assert len(req.docs) == 1
+
+    req.docs.clear()
+    assert not req.docs
+
+    req.docs.extend(DocumentArray([Document(), Document()]))
+    assert len(req.docs) == 2
+
+
+def test_copy(req):
+    request = DataRequest(req)
+    copied_req = copy.deepcopy(request)
+    assert type(request) == type(copied_req)
+    assert request == copied_req
+    assert len(request.docs) == len(copied_req.docs)
+    request.docs.append(Document())
+    assert len(request.docs) != len(copied_req.docs)
+
+
 def test_groundtruth(req):
-    request = Request(request=req, copy=False).as_typed_request('data')
+    request = DataRequest(request=req)
     groundtruths = request.groundtruths
-    assert request.is_decompressed
     assert isinstance(groundtruths, DocumentArray)
     assert len(groundtruths) == 0
 
 
-def test_request_type_set_get(req):
-    request = Request(request=req, copy=False).as_typed_request('data')
-    assert request.request_type == 'DataRequestProto'
+def test_data_backwards_compatibility(req):
+    req = DataRequest(request=req)
+    assert len(req.data.docs) == 1
+    assert len(req.data.groundtruths) == 0
+    assert len(req.data.docs) == len(req.docs)
+    assert len(req.data.groundtruths) == len(req.groundtruths)
 
 
-def test_request_type_set_get_fail(req):
-    with pytest.raises(TypeError):
-        Request(request=req, copy=False).as_typed_request('random')
-
-
-def test_command(req):
-    request = Request(request=req, copy=False).as_typed_request('control')
+def test_command(control_req):
+    request = ControlRequest(request=control_req)
     cmd = request.command
-    assert request.is_decompressed
     assert cmd
     assert isinstance(cmd, str)
 
 
 def test_as_pb_object(req):
-    request = Request(request=req)
-    request.proto
-    assert request.is_decompressed
-    request = Request(request=None)
+    request = DataRequest(request=None)
     assert request.proto
-    assert request.is_decompressed
 
 
 def test_as_json_str(req):
-    request = Request(request=req)
+    request = DataRequest(request=req)
     assert isinstance(request.json(), str)
-    request = Request(request=None)
+    request = DataRequest(request=None)
     assert isinstance(request.json(), str)
 
 
 def test_access_header(req):
-    request = Request(request=req)
+    request = DataRequest(request=req)
     assert request.header == req.header
 
 
 def test_as_response(req):
-    request = Request(request=req)
-    response = request.as_response()
+    request = DataRequest(request=req)
+    response = request.response
     assert isinstance(response, Response)
-    assert isinstance(response, Request)
+    assert isinstance(response, DataRequest)
     assert response._pb_body == request._pb_body
 
 
 def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
-    r = Request().as_typed_request('data')
+    r = DataRequest()
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -130,7 +156,7 @@ def test_request_docs_mutable_iterator():
 
 def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
-    r = Request().as_typed_request('data')
+    r = DataRequest()
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -166,3 +192,30 @@ def test_request_docs_chunks_mutable_iterator():
         assert isinstance(d, DocumentProto)
         for c in d.chunks:
             assert c.text == 'now i change it back'
+
+
+def test_lazy_serialization():
+    doc_count = 1000
+    r = DataRequest()
+    r.docs.extend(
+        [Document(buffer=bytes(bytearray(os.urandom(1024 * 100))))] * doc_count
+    )
+    byte_array = DataRequestProto.SerializeToString(r)
+
+    deserialized_request = DataRequestProto.FromString(byte_array)
+    assert not deserialized_request.is_decompressed
+    assert len(deserialized_request.docs) == doc_count
+    assert deserialized_request.docs == r.docs
+    assert deserialized_request.is_decompressed
+
+
+def test_status():
+    r = DataRequest()
+    r.docs.extend([Document()])
+    r.add_exception(ValueError('intentional_error'))
+    byte_array = DataRequestProto.SerializeToString(r)
+
+    deserialized_request = DataRequestProto.FromString(byte_array)
+    assert not deserialized_request.is_decompressed
+    assert deserialized_request.status.code == jina_pb2.StatusProto.ERROR
+    assert deserialized_request.is_decompressed

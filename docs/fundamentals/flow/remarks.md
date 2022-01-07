@@ -1,23 +1,23 @@
 # Remarks
 
 
-## Joining/Merging
+## Joining/Reducing
 
-Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's
-function. Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
-/`DocumentArray`
+If you have multiple Executors running in parallel and one pod that needs them, merging of the 
+resulting Documents is applied automatically if you don't specify `uses` or `uses_before`. You can also customize the 
+default reducing logic using a Merger Executor in `uses_before` or `uses`.
+
+Combining `docs` from multiple requests is already done before feeding them to the Executor's
+function. Hence, simple joining is just returning this `docs`. However, if you wish to perform more complex logic, you 
+can make your endpoints expect a `docs_matrix` object which is a list of DocumentArrays coming from all Executors. You 
+can then process them and return the resulting DocumentArray
 
 ```python
 from jina import Executor, requests, Flow, Document
 
-
-class C(Executor):
-
-    @requests
-    def foo(self, docs, **kwargs):
-        # 6 docs
-        return docs
-
+def print_fn(resp):
+    for doc in resp.docs:
+        print(doc.text)
 
 class B(Executor):
 
@@ -37,17 +37,80 @@ class A(Executor):
             d.text = f'world {idx}'
 
 
+```
+
+````{tab} Default Reduce
+​```python
+f = Flow().add(uses=A).add(uses=B, needs='gateway').add(needs=['executor0', 'executor1'])
+
+with f:
+    f.post(on='/some_endpoint',
+           inputs=[Document() for _ in range(3)],
+           on_done=print_fn)
+```
+
+```text
+hello 0
+hello 1
+hello 2
+```
+````
+
+​````{tab} Simple Custom Reduce
+​```python
+class C(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        # 6 docs
+        return docs
+
 f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['executor0', 'executor1'])
 
 with f:
     f.post(on='/some_endpoint',
            inputs=[Document() for _ in range(3)],
-           on_done=print)
+           on_done=print_fn)
 ```
+```text
+world 0
+world 1
+world 2
+hello 0
+hello 1
+hello 2
+```
+````
 
+​````{tab} Custom Reduce with docs_matrix
+​```python
+class C(Executor):
+
+    @requests
+    def foo(self, docs_matrix: List[DocumentArray], **kwargs):
+        da = DocumentArray()
+        for doc1, doc2 in zip(docs_matrix[0], docs_matrix[1]):
+            da.append(Document(text=f'{doc1.text}-{doc2.text}'))
+        return da
+
+f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['executor0', 'executor1'])
+
+with f:
+    f.post(on='/some_endpoint',
+           inputs=[Document() for _ in range(3)],
+           on_done=print_fn)
+```
+```text
+world 0-hello 0
+world 1-hello 1
+world 2-hello 2
+```
+````
+
+​````{tab} Custom Reduce with modification
 You can also modify the Documents while merging:
 
-```python
+​```python
 class C(Executor):
 
     @requests
@@ -56,7 +119,22 @@ class C(Executor):
         for d in docs:
             d.text += '!!!'
         return docs
+
+f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['executor0', 'executor1'])
+with f:
+    f.post(on='/some_endpoint',
+           inputs=[Document() for _ in range(3)],
+           on_done=print_fn)
 ```
+```text
+hello 0!!!
+hello 1!!!
+hello 2!!!
+world 0!!!
+world 1!!!
+world 2!!!
+```
+````
 
 
 ## multiprocessing Spawn
@@ -68,12 +146,12 @@ Few cases require to use `spawn` start method for multiprocessing.
 
     ````{hint}
     There's no need to set this for Windows, as it only supports spawn method for multiprocessing. 
-    ````
+````
 
 - Define & start the Flow via an explicit function call inside `if __name__ == '__main__'`. For example
 
     ````{tab} ✅ Do
-    ```{code-block} python
+    ​```{code-block} python
     ---
     emphasize-lines: 13, 14
     ---
@@ -95,8 +173,8 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
-    ````{tab} 😔 Don't
-    ```{code-block} python
+    ​````{tab} 😔 Don't
+    ​```{code-block} python
     ---
     emphasize-lines: 2
     ---
@@ -133,7 +211,7 @@ Few cases require to use `spawn` start method for multiprocessing.
 - Declare Executors on the top-level of the module 
 
     ````{tab} ✅ Do
-    ```{code-block} python
+    ​```{code-block} python
     ---
     emphasize-lines: 1
     ---
@@ -151,8 +229,8 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
-    ````{tab} 😔 Don't
-    ```{code-block} python
+    ​````{tab} 😔 Don't
+    ​```{code-block} python
     ---
     emphasize-lines: 2
     ---
@@ -176,7 +254,7 @@ Few cases require to use `spawn` start method for multiprocessing.
     ````{hint}
     Here are a few errors which indicates that you are using some code that is not pickable.
 
-    ```bash
+    ​```bash
     pickle.PicklingError: Can't pickle: it's not the same object
     AssertionError: can only join a started process
     ```
@@ -201,11 +279,11 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
 - Write `import epdb; epdb.set_trace()` in the line you want to stop the execution.
 
     ````{tab} ✅ Do
-    ```{code-block} python
+    ​```{code-block} python
     ---
     emphasize-lines: 7
     ---
-
+    
     from jina import Flow, Executor, requests
      
     class CustomExecutor(Executor):
@@ -214,20 +292,20 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
             a = 25
             import epdb; epdb.set_trace() 
             print(f'\n\na={a}\n\n')
-
+    
     def main():
         f = Flow().add(uses=CustomExecutor)
         with f:
             f.post(on='')
-
+    
     if __name__ == '__main__':
         main()
-
+    
     ```
     ````
-
-    ````{tab} 😔 Don't
-    ```{code-block} python
+    
+    ​````{tab} 😔 Don't
+    ​```{code-block} python
     ---
     emphasize-lines: 7
     ---
@@ -239,7 +317,7 @@ Standard Python breakpoints will not work inside `Executor` methods when called 
             a = 25
             breakpoint()
             print(f'\n\na={a}\n\n')
-
+    
     def main():
         f = Flow().add(uses=CustomExecutor)
         with f:

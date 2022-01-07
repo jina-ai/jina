@@ -128,6 +128,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -384,6 +386,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.5.4`)](#release-note-254)
 - [Release Note (`2.5.5`)](#release-note-255)
 - [Release Note (`2.6.2`)](#release-note-262)
+- [Release Note (`2.6.3`)](#release-note-263)
+- [Release Note (`2.6.4`)](#release-note-264)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -11923,4 +11927,79 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```634f7c44```](https://github.com/jina-ai/jina/commit/634f7c44e4c38ac685c56e33a38a329960cf0484)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```7e797a2b```](https://github.com/jina-ai/jina/commit/7e797a2bd3dd1108fd7c22a1529d8f03c5489a97)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```eeefe616```](https://github.com/jina-ai/jina/commit/eeefe6169f21f0cbcedab15d341ef185511a8792)] __-__ __version__: the next version will be 2.5.6 (*Jina Dev Bot*)
+
+<a name=release-note-2-6-3></a>
+## Release Note (`2.6.3`)
+
+> Release time: 2021-12-22 08:38:48
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Zhaofeng Miao,  Jina Dev Bot,  Yanlong Wang,  Joan Fontanals,  Roshan Jossy,  AlaeddineAbdessalem,  felix-wang,  Gregor von Dulong,  David Buchaca Prats,  🙇
+
+
+### 🆕 New Features
+
+ - [[```79d6d6c7```](https://github.com/jina-ai/jina/commit/79d6d6c7876a13d1d9a8e19bcd4c9a4b32aa073a)] __-__ integrate reduce runtimes (#4030) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```5493a702```](https://github.com/jina-ai/jina/commit/5493a7023220bb52c12d6d897f74b437dc0017d2)] __-__ __docarray__: fix traverse warning (#4086) (*Han Xiao*)
+ - [[```4bcbb81f```](https://github.com/jina-ai/jina/commit/4bcbb81f8409b76aaa06aa4a862da5dfa8f7ce69)] __-__ remove upper bound of python version (#4085) (*Zhaofeng Miao*)
+ - [[```0728ed15```](https://github.com/jina-ai/jina/commit/0728ed15b5eead943fc7908c12b5fd175dd5cd07)] __-__ __qa-bot__: fix link reference and width style (#4081) (*Yanlong Wang*)
+ - [[```e714c2a8```](https://github.com/jina-ai/jina/commit/e714c2a8496cde0528f5eb3cf1fbd0086099632e)] __-__ __hub__: disk_cache_offline to return chached mark (#4065) (*felix-wang*)
+ - [[```1afd5593```](https://github.com/jina-ai/jina/commit/1afd5593825783e2573971a7e19d74fb0dcbbad0)] __-__ mispell import (#4063) (*David Buchaca Prats*)
+
+### 🧼 Code Refactoring
+
+ - [[```c376cdfd```](https://github.com/jina-ai/jina/commit/c376cdfd9dd288cecc411a44e66cea5eddb0e685)] __-__ __doc-bot__: migrate to &lt;jina-qa-bot&gt; (#4072) (*Yanlong Wang*)
+
+### 📗 Documentation
+
+ - [[```abca85d0```](https://github.com/jina-ai/jina/commit/abca85d05fe5e99c819a082d5199cac7e2df94da)] __-__ change typo in k8s explain (#4076) (*Joan Fontanals*)
+ - [[```1f349e69```](https://github.com/jina-ai/jina/commit/1f349e69fb62156373bc05c66142d6ec2eca5a7f)] __-__ __CONTRIBUTING__: add instructions to build docs locally (#4066) (*Roshan Jossy*)
+ - [[```0c826060```](https://github.com/jina-ai/jina/commit/0c82606019f867d0470af4dd5dfd7a809e2d71ad)] __-__ updates docqa tutorial after community feedback (#4064) (*Gregor von Dulong*)
+
+### 🍹 Other Improvements
+
+ - [[```ba3b0443```](https://github.com/jina-ai/jina/commit/ba3b0443b68cbf6598eca2593b1367c17cb8456f)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```2c081819```](https://github.com/jina-ai/jina/commit/2c081819433028f67bc4b7dc3388d20c8ca445d2)] __-__ update readme (*Han Xiao*)
+ - [[```560576e6```](https://github.com/jina-ai/jina/commit/560576e62afd08c5fd13a5b4218485d0f56c4dd3)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```ba84417d```](https://github.com/jina-ai/jina/commit/ba84417de8189cdcd18c9827e84164fac5412a47)] __-__ __hubble__: optimize error message (#4062) (*Zhaofeng Miao*)
+ - [[```0ead83f6```](https://github.com/jina-ai/jina/commit/0ead83f6685965b8366f3ead266374d114e89ac7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9b31e579```](https://github.com/jina-ai/jina/commit/9b31e5793d73f19c17d6d705d8ecc129c58a60ef)] __-__ __docarray__: fix readme (*Han Xiao*)
+ - [[```514afb14```](https://github.com/jina-ai/jina/commit/514afb142b1ca83c875c146ab880b9b54bf608f0)] __-__ __docarray__: add build script for docarray (*Han Xiao*)
+ - [[```614846c6```](https://github.com/jina-ai/jina/commit/614846c66ea7bbfa804196e5212513b69bd6c9c9)] __-__ __version__: the next docarray version will be 0.0.3 (*Jina Dev Bot*)
+ - [[```7699293f```](https://github.com/jina-ai/jina/commit/7699293f6d4cc0b33765ef09c55e88cb6d3151ed)] __-__ __version__: the next version will be 2.6.3 (*Jina Dev Bot*)
+
+<a name=release-note-2-6-4></a>
+## Release Note (`2.6.4`)
+
+> Release time: 2022-01-04 08:42:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Zhaofeng Miao,  Jina Dev Bot,  Deepankar Mahapatro,  Wang Bo,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```77cfc818```](https://github.com/jina-ai/jina/commit/77cfc818a50e4dcaef0bf94256eef65d3b112b48)] __-__ ignore non jina resources (#4107) (*Deepankar Mahapatro*)
+
+### 🧼 Code Refactoring
+
+ - [[```c84d0fa0```](https://github.com/jina-ai/jina/commit/c84d0fa0fb67ec52dcf0afd95b30e079506984a9)] __-__ __helloworld__: supress warnings of traversal flat (#4094) (*Wang Bo*)
+
+### 📗 Documentation
+
+ - [[```56af142a```](https://github.com/jina-ai/jina/commit/56af142ad73f0db7d821a325a6967f9084fce415)] __-__ __tutorial__: typo (#4120) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```65194e83```](https://github.com/jina-ai/jina/commit/65194e8332e538fde1779583702c5ccf7c55ca24)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b59b1935```](https://github.com/jina-ai/jina/commit/b59b193549cd6a460b3f8de5e9e5362739debb26)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```79388360```](https://github.com/jina-ai/jina/commit/79388360877941f3c81e8e8b22a8cde9d3b11b80)] __-__ __version__: the next docarray version will be 0.0.4 (*Jina Dev Bot*)
+ - [[```ebcbb078```](https://github.com/jina-ai/jina/commit/ebcbb078c7339bf3fec6b25352270fa9c679d6a5)] __-__ __version__: the next version will be 2.6.4 (*Jina Dev Bot*)
 
