@@ -2,18 +2,19 @@ import datetime
 import inspect
 import json
 import os
+from typing import Union
 
 import numpy as np
 import pytest
 
 from jina import Flow, Document, Executor, requests, __windows__
-from jina.enums import InfrastructureType, SocketType, FlowBuildLevel, PollingType
+from jina.enums import FlowBuildLevel, PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.peapods.pods import BasePod
 from docarray.document.generators import from_ndarray
-from jina.types.request import Response
+from jina.types.request.data import Response
 from docarray.proto import docarray_pb2
 from tests import random_docs
 
@@ -22,41 +23,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.mark.slow
 def test_flow_with_jump(tmpdir):
-    def _validate(f):
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r1']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r3']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r4']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r5']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r6']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r8']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r9']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        node = f._pod_nodes['r10']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-        for name, node in f._pod_nodes.items():
-            assert node.peas_args['peas'][0] == node.head_args
-            assert node.peas_args['peas'][0] == node.tail_args
-
     f = (
         Flow()
         .add(name='r1')
@@ -71,13 +37,13 @@ def test_flow_with_jump(tmpdir):
     )
 
     with f:
-        _validate(f)
+        _validate_flow(f)
 
     f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
     Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
 
     with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
-        _validate(f)
+        _validate_flow(f)
 
 
 @pytest.mark.slow
@@ -101,19 +67,9 @@ def test_simple_flow(protocol):
         f.index(inputs=bytes_fn)
         f.index(inputs=bytes_fn)
 
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
+        _validate_flow(f)
 
     assert 'gateway' not in f
-
-    node = f._pod_nodes['executor0']
-    assert node.head_args.socket_in == SocketType.ROUTER_BIND
-    assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-    for name, node in f._pod_nodes.items():
-        assert node.peas_args['peas'][0] == node.head_args
-        assert node.peas_args['peas'][0] == node.tail_args
 
 
 @pytest.mark.slow
@@ -137,36 +93,7 @@ def test_flow_identical(tmpdir):
     assert a == c
 
     with a as f:
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['chunk_seg']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.shards_args:
-            assert arg.socket_in == SocketType.DEALER_CONNECT
-            assert arg.socket_out == SocketType.PUSH_CONNECT
-        assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['wqncode1']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.shards_args:
-            assert arg.socket_in == SocketType.DEALER_CONNECT
-            assert arg.socket_out == SocketType.PUSH_CONNECT
-        assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['encode2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.ROUTER_BIND
-        for arg in node.shards_args:
-            assert arg.socket_in == SocketType.DEALER_CONNECT
-            assert arg.socket_out == SocketType.PUSH_CONNECT
-        assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
+        _validate_flow(f)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -203,70 +130,14 @@ def test_py_client():
     )
 
     with f:
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r1']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r3']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r4']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r5']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r6']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r8']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r9']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r10']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        for name, node in f._pod_nodes.items():
-            assert node.peas_args['peas'][0] == node.head_args
-            assert node.peas_args['peas'][0] == node.tail_args
+        _validate_flow(f)
 
 
 def test_dry_run_with_two_pathways_diverging_at_gateway():
     f = Flow().add(name='r2').add(name='r3', needs='gateway').join(['r2', 'r3'])
 
     with f:
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r3']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        for name, node in f._pod_nodes.items():
-            assert node.peas_args['peas'][0] == node.head_args
-            assert node.peas_args['peas'][0] == node.tail_args
+        _validate_flow(f)
 
 
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
@@ -279,25 +150,7 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
     )
 
     with f:
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r1']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r3']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        for name, node in f._pod_nodes.items():
-            assert node.peas_args['peas'][0] == node.head_args
-            assert node.peas_args['peas'][0] == node.tail_args
+        _validate_flow(f)
 
 
 def test_refactor_num_part():
@@ -309,21 +162,7 @@ def test_refactor_num_part():
     )
 
     with f:
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r1']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        for name, node in f._pod_nodes.items():
-            assert node.peas_args['peas'][0] == node.head_args
-            assert node.peas_args['peas'][0] == node.tail_args
+        _validate_flow(f)
 
 
 def test_refactor_num_part_proxy():
@@ -336,25 +175,7 @@ def test_refactor_num_part_proxy():
     )
 
     with f:
-        node = f._pod_nodes['gateway']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r1']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r2']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        node = f._pod_nodes['r3']
-        assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
-
-        for name, node in f._pod_nodes.items():
-            assert node.peas_args['peas'][0] == node.head_args
-            assert node.peas_args['peas'][0] == node.tail_args
+        _validate_flow(f)
 
 
 @pytest.mark.slow
@@ -370,6 +191,7 @@ def test_refactor_num_part_proxy_2(protocol):
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
+        _validate_flow(f)
 
 
 @pytest.mark.slow
@@ -418,6 +240,7 @@ def test_flow_with_publish_driver(protocol):
         results = f.index(
             [Document(text='text_1'), Document(text='text_2')], return_results=True
         )
+        _validate_flow(f)
 
     validate(results[0])
 
@@ -440,6 +263,7 @@ def test_flow_arbitrary_needs(protocol):
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
+        _validate_flow(f)
 
 
 @pytest.mark.slow
@@ -475,6 +299,7 @@ def test_flow_needs_all(protocol):
 
     with f:
         f.index(from_ndarray(np.random.random([10, 10])))
+        _validate_flow(f)
 
 
 class EnvChecker1(BaseExecutor):
@@ -504,7 +329,7 @@ class EnvChecker2(BaseExecutor):
 def test_flow_with_pod_envs():
     f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-with-envs.yml'))
     with f:
-        pass
+        _validate_flow(f)
 
 
 @pytest.mark.slow
@@ -517,17 +342,14 @@ def test_return_results_sync_flow(return_results, protocol):
         )
         if return_results:
             assert isinstance(r, list)
-            assert isinstance(r[0], Response)
-            assert len(r[0].docs) == 10
-            for doc in r[0].docs:
-                assert isinstance(doc, Document)
-
+            assert isinstance(r[0].response, Response)
             assert len(r[0].data.docs) == 10
             for doc in r[0].data.docs:
-                assert isinstance(doc, docarray_pb2.DocumentProto)
+                assert isinstance(doc, Document)
 
         else:
             assert r is None
+        _validate_flow(f)
 
 
 @pytest.mark.parametrize(
@@ -643,9 +465,7 @@ def test_socket_types_2_remote_one_local():
 
     f.build()
 
-    assert f._pod_nodes['join'].head_args.socket_in == SocketType.ROUTER_BIND
-    assert f._pod_nodes['executor2'].tail_args.socket_out == SocketType.ROUTER_BIND
-    assert f._pod_nodes['executor3'].tail_args.socket_out == SocketType.ROUTER_BIND
+    _validate_flow(f)
 
 
 def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
@@ -659,9 +479,7 @@ def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote()
 
     f.build()
 
-    assert f._pod_nodes['join'].head_args.socket_in == SocketType.ROUTER_BIND
-    assert f._pod_nodes['executor2'].tail_args.socket_out == SocketType.ROUTER_BIND
-    assert f._pod_nodes['executor3'].tail_args.socket_out == SocketType.ROUTER_BIND
+    _validate_flow(f)
 
 
 def test_single_document_flow_index():
@@ -747,95 +565,64 @@ def test_flow_set_asyncio_switch_post(is_async):
     assert inspect.isasyncgenfunction(f.post) == is_async
 
 
-async def delayed_send_message_via(self, socket, msg):
-    try:
-        if self.msg_sent > 0:
-            import asyncio
-
-            await asyncio.sleep(1)
-        from jina.peapods.zmq import send_message_async
-
-        num_bytes = await send_message_async(socket, msg, **self.send_recv_kwargs)
-        self.bytes_sent += num_bytes
-        self.msg_sent += 1
-    except (asyncio.CancelledError, TypeError) as ex:
-        self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
-
-
 @pytest.mark.skipif(__windows__, reason='timing comparison is broken for 2nd Flow')
-def test_flow_routes_list(monkeypatch):
+def test_flow_routes_list():
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     with Flow().add(name='executor1') as simple_flow:
-
-        def validate_routes(x):
-            gateway_entry, pod1_entry = json.loads(x.json())['routes']
-            assert gateway_entry['pod'] == 'gateway'
-            assert pod1_entry['pod'].startswith('executor1')
-            assert (
-                _time(gateway_entry['end_time'])
-                > _time(pod1_entry['end_time'])
-                > _time(pod1_entry['start_time'])
-                > _time(gateway_entry['start_time'])
-            )
-
-        simple_flow.index(inputs=Document(), on_done=validate_routes)
-
-    from jina.peapods.zmq import AsyncZmqlet
-
-    # we are adding an artificial delay after message is sent to a1, so that the a branch completed before b1 starts
-    monkeypatch.setattr(AsyncZmqlet, '_send_message_via', delayed_send_message_via)
+        response = simple_flow.index(inputs=Document(), return_results=True)
+        gateway_entry, pod1_entry = json.loads(response[0].json())['routes']
+        assert gateway_entry['pod'] == 'gateway'
+        assert pod1_entry['pod'].startswith('executor1')
+        assert (
+            _time(gateway_entry['end_time'])
+            > _time(pod1_entry['end_time'])
+            > _time(pod1_entry['start_time'])
+            > _time(gateway_entry['start_time'])
+        )
 
     with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
         name='merge', needs=['a2', 'b1']
     ) as shards_flow:
-
-        def validate_routes(x):
-            gateway_entry, a1_entry, a2_entry, b1_entry, merge_entry = json.loads(
-                x.json()
-            )['routes']
-            assert gateway_entry['pod'] == 'gateway'
-            assert a1_entry['pod'].startswith('a1')
-            assert a2_entry['pod'].startswith('a2')
-            assert b1_entry['pod'].startswith('b1')
-            assert merge_entry['pod'].startswith('merge')
-            assert (
-                _time(gateway_entry['end_time'])
-                > _time(merge_entry['end_time'])
-                > _time(merge_entry['start_time'])
-                > _time(b1_entry['end_time'])
-                > _time(b1_entry['start_time'])
-                > _time(a2_entry['end_time'])
-                > _time(a2_entry['start_time'])
-                > _time(a1_entry['end_time'])
-                > _time(a1_entry['start_time'])
-                > _time(gateway_entry['start_time'])
-            )
-
-        shards_flow.index(inputs=Document(), on_done=validate_routes)
-
-
-def test_connect_to_predecessor():
-    f = Flow().add(name='executor1').add(name='executor2', connect_to_predecessor=True)
-
-    f.build()
-
-    assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
-    assert len(f._pod_nodes['executor1'].head_args.hosts_in_connect) == 0
-    assert len(f._pod_nodes['executor2'].head_args.hosts_in_connect) == 1
+        response = shards_flow.index(inputs=Document(), return_results=True)
+        routes = json.loads(response[0].json())['routes']
+        (
+            a1_entry,
+            a2_entry,
+            b1_entry,
+            gateway_entry,
+            merge_entry,
+        ) = _extract_route_entries(gateway_entry, routes)
+        assert gateway_entry['pod'] == 'gateway'
+        assert a1_entry['pod'].startswith('a1')
+        assert a2_entry['pod'].startswith('a2')
+        assert b1_entry['pod'].startswith('b1')
+        assert merge_entry['pod'].startswith('merge')
+        assert (
+            _time(gateway_entry['end_time'])
+            > _time(merge_entry['end_time'])
+            > _time(merge_entry['start_time'])
+            > _time(a2_entry['end_time'])
+            > _time(a2_entry['start_time'])
+            > _time(a1_entry['start_time'])
+            > _time(gateway_entry['start_time'])
+        )
 
 
-def test_flow_grpc_with_shard():
-    with pytest.raises(
-        NotImplementedError, match='GRPC data runtime does not support sharding'
-    ):
-        Flow(grpc_data_requests=True).add(shards=2)
-        Flow(grpc_data_requests=True).add(shards=None)
-
-    Flow(grpc_data_requests=False).add(shards=1)
-    Flow(grpc_data_requests=False).add()
-    Flow(grpc_data_requests=True, infrastructure=InfrastructureType.K8S).add(shards=2)
+def _extract_route_entries(gateway_entry, routes):
+    for route in routes:
+        if route['pod'] == 'gateway':
+            gateway_entry = route
+        elif route['pod'] == 'a1':
+            a1_entry = route
+        elif route['pod'] == 'a2':
+            a2_entry = route
+        elif route['pod'] == 'b1':
+            b1_entry = route
+        elif route['pod'] == 'merge':
+            merge_entry = route
+    return a1_entry, a2_entry, b1_entry, gateway_entry, merge_entry
 
 
 def test_flow_auto_polling():
@@ -859,12 +646,22 @@ def test_flow_auto_polling():
         )
     )
 
-    assert f['pod_replica_only_polling_any'].args.polling == PollingType.ANY
-    assert f['pod_replica_only_polling_ignored'].args.polling == PollingType.ANY
-    assert f['pod_replicas_shards_auto_polling_all'].args.polling == PollingType.ALL
-    assert f['pod_shards_default_polling_any'].args.polling == PollingType.ANY
-    assert f['pod_replicas_shards_manual_polling_any'].args.polling == PollingType.ANY
-    assert f['pod_replicas_shards_manual_polling_all'].args.polling == PollingType.ALL
+    def _assert_polling(value: Union[PollingType, str], expected: PollingType):
+        assert value == expected or value.lower() == expected.name.lower()
+
+    _assert_polling(f['pod_replica_only_polling_any'].args.polling, PollingType.ANY)
+
+    _assert_polling(f['pod_replica_only_polling_ignored'].args.polling, PollingType.ANY)
+    _assert_polling(
+        f['pod_replicas_shards_auto_polling_all'].args.polling, PollingType.ALL
+    )
+    _assert_polling(f['pod_shards_default_polling_any'].args.polling, PollingType.ANY)
+    _assert_polling(
+        f['pod_replicas_shards_manual_polling_any'].args.polling, PollingType.ANY
+    )
+    _assert_polling(
+        f['pod_replicas_shards_manual_polling_all'].args.polling, PollingType.ALL
+    )
 
 
 def test_flow_change_parameters():
@@ -887,21 +684,33 @@ def test_flow_load_executor_yaml_extra_search_paths():
     )
     with f:
         r = f.post('/', inputs=Document(), return_results=True)
-    assert r[0].docs[0].text == 'done'
+    assert r[0].data.docs[0].text == 'done'
 
 
 def test_flow_load_yaml_extra_search_paths():
     f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
     with f:
         r = f.post('/', inputs=Document(), return_results=True)
-    assert r[0].docs[0].text == 'done'
+    assert r[0].data.docs[0].text == 'done'
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-@pytest.mark.parametrize('grpc_data_requests', [True, False])
-def test_gateway_only_flows_no_error(capsys, protocol, grpc_data_requests):
-    f = Flow(grpc_data_requests=grpc_data_requests, protocol=protocol)
+def test_gateway_only_flows_no_error(capsys, protocol):
+    f = Flow(protocol=protocol)
     with f:
         pass
     captured = capsys.readouterr()
     assert not captured.err
+
+
+def _validate_flow(f):
+    graph_dict = f._get_graph_representation()
+    adresses = f._get_pod_addresses()
+    for name, pod in f:
+        if name != 'gateway':
+            assert adresses[name][0] == f'{pod.host}:{pod.head_port_in}'
+            for n in pod.needs:
+                assert name in graph_dict[n if n != 'gateway' else 'start-gateway']
+        else:
+            for n in pod.needs:
+                assert 'end-gateway' in graph_dict[n]

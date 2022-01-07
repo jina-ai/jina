@@ -3,8 +3,8 @@ from typing import Tuple
 
 from ...enums import DataInputType
 from ...excepts import BadRequestType
-from ... import Document
-from ...types.request import Request
+from docarray.document import Document
+from ...types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
@@ -13,19 +13,13 @@ def _new_data_request_from_batch(
     req = _new_data_request(endpoint, target, parameters)
 
     # add docs, groundtruths fields
-    try:
-        _add_docs_groundtruths(req, batch, data_type, _kwargs)
-    except Exception as ex:
-        raise BadRequestType(
-            f'error when building {req.request_type} from {batch}'
-        ) from ex
+    _add_docs_groundtruths(req, batch, data_type, _kwargs)
 
     return req
 
 
 def _new_data_request(endpoint, target, parameters):
-    req = Request()
-    req = req.as_typed_request('data')
+    req = DataRequest()
 
     # set up header
     if endpoint:

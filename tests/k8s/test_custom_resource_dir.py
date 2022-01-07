@@ -4,6 +4,8 @@ import pytest
 from jina.peapods.pods.k8slib.kubernetes_tools import _get_yaml
 from jina import Flow
 
+cur_dir = os.path.dirname(__file__)
+
 
 def test_custom_resource_dir():
     custom_resource_dir = '/test'
@@ -43,13 +45,14 @@ def test_default_k8s_connection_pooling():
 
 
 @pytest.mark.parametrize('k8s_connection_pool', [False, True])
-def test_disable_k8s_connection_pooling(k8s_connection_pool):
+@pytest.mark.parametrize('docker_images', [['jinaai/jina']], indirect=True)
+def test_disable_k8s_connection_pooling(k8s_connection_pool, docker_images):
     flow = (
         Flow(
             name='test-flow',
             port_expose=8080,
             infrastructure='K8S',
-            k8s_disable_connection_pool=not k8s_connection_pool,
+            k8s_connection_pool=k8s_connection_pool,
             k8s_namespace='test-flow-ns',
         )
         .add(name='test_executor1', replicas=3)
@@ -61,8 +64,8 @@ def test_disable_k8s_connection_pooling(k8s_connection_pool):
             assert peapod.deployment_args.k8s_connection_pool == k8s_connection_pool
 
 
-def test_template_file_read_correctly(test_dir: str):
-    custom_resource_dir = os.path.join(test_dir, 'custom-resource')
+def test_template_file_read_correctly():
+    custom_resource_dir = os.path.join(cur_dir, 'custom-resource')
     content = _get_yaml('namespace', params={}, custom_resource_dir=custom_resource_dir)
 
     assert 'Test' in content

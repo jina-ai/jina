@@ -24,17 +24,6 @@ def mixin_base_pod_parser(parser):
         help='The executor attached after the Peas described by --uses, typically used for receiving from '
         'all shards, accepted type follows `--uses`',
     )
-    gp.add_argument(
-        '--polling',
-        type=PollingType.from_string,
-        choices=list(PollingType),
-        default=PollingType.ANY,
-        help='''
-The polling strategy of the Pod (when `shards>1`)
-- ANY: only one (whoever is idle) Pea polls the message
-- ALL: all Peas poll the message (like a broadcast)
-''',
-    )
 
     gp.add_argument(
         '--scheduling',
@@ -70,21 +59,6 @@ The polling strategy of the Pod (when `shards>1`)
         help='The role of this pod in the flow'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--no-dynamic-routing',
-        action='store_false',
-        dest='dynamic_routing',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.',
-    )
-
-    parser.add_argument(
-        '--connect-to-predecessor',
-        action='store_true',
-        default=False,
-        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
     )
 
 

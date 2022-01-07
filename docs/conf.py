@@ -67,6 +67,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="https://www.meetup.com/jina-community-meetup/events/279857968/">🚀 Learn more about RocketQA and building a multimodal fashion search at our Engineering All Hands on 11th Jan, 4 PM CET  ✨</a>
+    ''',
+        
     # end-announce
 }
 

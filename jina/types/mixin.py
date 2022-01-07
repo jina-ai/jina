@@ -32,7 +32,7 @@ class ProtoTypeMixin:
         from google.protobuf.json_format import MessageToJson
 
         return MessageToJson(
-            self._pb_body, preserving_proto_field_name=True, sort_keys=True
+            self.proto, preserving_proto_field_name=True, sort_keys=True
         )
 
     def to_dict(self) -> Dict:
@@ -47,7 +47,7 @@ class ProtoTypeMixin:
         from google.protobuf.json_format import MessageToDict
 
         return MessageToDict(
-            self._pb_body,
+            self.proto,
             preserving_proto_field_name=True,
         )
 
@@ -66,7 +66,7 @@ class ProtoTypeMixin:
 
         :return: binary string representation of the object
         """
-        return self._pb_body.SerializePartialToString()
+        return self.proto.SerializePartialToString()
 
     def __getstate__(self):
         return self._pb_body.__getstate__()
@@ -87,17 +87,9 @@ class ProtoTypeMixin:
         return getattr(self._pb_body, name)
 
     def __repr__(self):
-        content = str(self.non_empty_fields)
+        content = str(tuple(field[0].name for field in self.proto.ListFields()))
         content += f' at {id(self)}'
         return f'<{typename(self)} {content.strip()}>'
-
-    @property
-    def non_empty_fields(self) -> Tuple[str, ...]:
-        """Return the set fields of the current Protobuf message that are not empty
-
-        :return: the tuple of non-empty fields
-        """
-        return tuple(field[0].name for field in self._pb_body.ListFields())
 
     def MergeFrom(self: T, other: T) -> None:
         """Merge the content of target
@@ -126,6 +118,8 @@ class ProtoTypeMixin:
             self._pb_body.ClearField(k)
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.proto == other.proto
 
     def __bytes__(self):

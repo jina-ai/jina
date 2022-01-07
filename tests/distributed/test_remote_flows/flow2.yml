@@ -1,0 +1,9 @@
+jtype: Flow
+version: '1'
+with:
+  protocol: http
+  port_expose: 9001
+  cors: true
+executors:
+  - name: counter
+    uses: executors/simple_executor/config.yml

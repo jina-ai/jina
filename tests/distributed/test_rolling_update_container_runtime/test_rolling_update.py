@@ -13,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
 HOST = __default_host__
-JINAD_PORT = 8000
+JINAD_PORT = 8003
 REST_PORT_DBMS = 9000
 REST_PORT_QUERY = 9001
 DUMP_PATH = '/jinad_workspace/dump'
@@ -113,7 +113,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
         yield Document(
-            id=i,
+            id=str(i),
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

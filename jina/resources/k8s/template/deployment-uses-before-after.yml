@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {name}
+  namespace: {namespace}
+spec:
+  replicas: {replicas}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {name}
+  template:
+    metadata:
+      labels:
+        app: {name}
+        jina_pod_name: {jina_pod_name}
+        shard_id: {shard_id}
+        pea_type: {pea_type}
+        ns: {namespace}
+    spec:
+      containers:
+      - name: executor
+        image: {image}
+        imagePullPolicy: {pull_policy}
+        command: {command}
+        args: {args}
+        ports:
+          - containerPort: {port_expose}
+          - containerPort: {port_in}
+        envFrom:
+          - configMapRef:
+              name: {name}-configmap
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
+
+        readinessProbe:
+          tcpSocket:
+            port: {port_ready_probe}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      - name: uses-before
+        image: {image_uses_before}
+        imagePullPolicy: {pull_policy}
+        command: {command_uses_before}
+        args: {args_uses_before}
+        ports:
+          - containerPort: {port_in_uses_before}
+        envFrom:
+          - configMapRef:
+              name: {name}-configmap
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
+
+        readinessProbe:
+          tcpSocket:
+            port: {port_in_uses_before}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      - name: uses-after
+        image: {image_uses_after}
+        imagePullPolicy: {pull_policy}
+        command: {command_uses_after}
+        args: {args_uses_after}
+        ports:
+          - containerPort: {port_in_uses_after}
+        envFrom:
+          - configMapRef:
+              name: {name}-configmap
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_POD_NAME
+          value: {jina_pod_name}
+
+        readinessProbe:
+          tcpSocket:
+            port: {port_in_uses_after}
+          initialDelaySeconds: 5
+          periodSeconds: 10

@@ -117,7 +117,7 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 60):
             not Path(filepath).is_file()
             and websocket.application_state == WebSocketState.CONNECTED
         ):
-            if n % 10 == 0:
+            if n % 30 == 0:
                 daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1

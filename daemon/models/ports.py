@@ -7,8 +7,6 @@ class Ports(BaseModel):
     """Port names"""
 
     port_in: Optional[int]
-    port_out: Optional[int]
-    port_ctrl: Optional[int]
     port_expose: Optional[int]
 
     def __len__(self):

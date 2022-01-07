@@ -1,49 +1,79 @@
 import asyncio
-from asyncio import Future
-
 import pytest
 
-from jina.helper import ArgNamespace, random_identity
-from jina.parsers import set_gateway_parser
-from jina.peapods.stream.gateway import ZmqGatewayStreamer
+from jina import Document
+from jina.helper import Namespace, random_identity
+from jina.peapods.stream import RequestStreamer
 from jina.proto import jina_pb2
-
-
-def _generate_request():
-    req = jina_pb2.RequestProto()
-    req.request_id = random_identity()
-    req.data.docs.add()
-    return req
-
-
-class ZmqletMock:
-    def __init__(self):
-        self.sent_future = Future()
-        self.received_event = asyncio.Event()
-        self.msg_sent = 0
-        self.msg_recv = 0
-
-    async def recv_message(self, **kwargs):
-        msg = await self.sent_future
-        self.sent_future = Future()
-        self.received_event.set()
-        return msg
-
-    async def send_message(self, message):
-        self.sent_future.set_result(_generate_request())
-        await self.received_event.wait()
-        self.sent_future.set_result(message.response)
+from jina.types.request.data import DataRequest
 
 
 @pytest.mark.asyncio
-async def test_concurrent_requests():
-    args = ArgNamespace.kwargs2namespace({}, set_gateway_parser())
-    mock_zmqlet = ZmqletMock()
-    streamer = ZmqGatewayStreamer(args, mock_zmqlet)
+@pytest.mark.parametrize('prefetch', [0, 5])
+@pytest.mark.parametrize('num_requests', [1, 5, 13])
+@pytest.mark.parametrize('async_iterator', [False, True])
+async def test_request_streamer(prefetch, num_requests, async_iterator):
+    requests_handled = []
+    results_handled = []
 
-    request = _generate_request()
+    def request_handler_fn(request):
+        requests_handled.append(request)
 
-    response = streamer.stream(iter([request]))
+        async def task():
+            await asyncio.sleep(0.5)
+            request.docs[0].tags['request_handled'] = True
+            return request
+
+        future = asyncio.ensure_future(task())
+        return future
+
+    def result_handle_fn(result):
+        results_handled.append(result)
+        assert isinstance(result, DataRequest)
+        result.docs[0].tags['result_handled'] = True
+        return result
+
+    def end_of_iter_fn():
+        # with a sync generator, iteration
+        assert len(requests_handled) == num_requests
+        assert len(results_handled) < num_requests
+
+    def _get_sync_requests_iterator(num_requests):
+        for i in range(num_requests):
+            req = DataRequest()
+            req.header.request_id = random_identity()
+            req.docs.append(Document())
+            yield req
+
+    async def _get_async_requests_iterator(num_requests):
+        for i in range(num_requests):
+            req = DataRequest()
+            req.header.request_id = random_identity()
+            req.docs.append(Document())
+            yield req
+            await asyncio.sleep(0.1)
+
+    args = Namespace()
+    args.prefetch = prefetch
+    streamer = RequestStreamer(
+        args=args,
+        request_handler=request_handler_fn,
+        result_handler=result_handle_fn,
+        end_of_iter_handler=end_of_iter_fn,
+    )
+
+    it = (
+        _get_async_requests_iterator(num_requests)
+        if async_iterator
+        else _get_sync_requests_iterator(num_requests)
+    )
+    response = streamer.stream(it)
+
+    num_responses = 0
 
     async for r in response:
-        assert r.proto == request
+        num_responses += 1
+        assert r.docs[0].tags['request_handled']
+        assert r.docs[0].tags['result_handled']
+
+    assert num_responses == num_requests

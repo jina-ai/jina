@@ -1,0 +1,9 @@
+jtype: Flow
+version: '1'
+with:
+  protocol: http
+  port_expose: 9007
+  cors: true
+executors:
+  - name: container_executor
+    uses: docker://container-executor

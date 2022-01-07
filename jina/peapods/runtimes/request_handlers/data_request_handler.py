@@ -1,55 +1,17 @@
-import re
-from operator import itemgetter
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Dict, List, TYPE_CHECKING, Optional
 
-from .... import (
-    __default_endpoint__,
-    __default_executor__,
-    __default_reducer_executor__,
-)
+from .... import __default_endpoint__, __default_executor__
 from ....excepts import (
     ExecutorFailToLoad,
     BadConfigSource,
 )
 from ....executors import BaseExecutor
 from .... import DocumentArray, DocumentArrayMemmap
-from ....types.message import Message, Request
+from ....types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import argparse
     from ....logging.logger import JinaLogger
-
-
-def _get_docs_matrix_from_message(
-    msg: 'Message',
-    partial_request: Optional[List[Request]],
-    field: str,
-) -> List['DocumentArray']:
-    if partial_request is not None:
-        result = [getattr(r, field) for r in reversed(partial_request)]
-    else:
-        result = [getattr(msg.request, field)]
-
-    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-    # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
-    len_r = sum(len(r) for r in result)
-    if len_r:
-        return result
-
-
-def _get_docs_from_msg(
-    msg: 'Message',
-    partial_request: Optional[List[Request]],
-    field: str,
-) -> 'DocumentArray':
-    if partial_request is not None:
-        result = DocumentArray(
-            [d for r in reversed(partial_request) for d in getattr(r, field)]
-        )
-    else:
-        result = getattr(msg.request, field)
-
-    return result
 
 
 class DataRequestHandler:
@@ -72,10 +34,8 @@ class DataRequestHandler:
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
-        if self.args.reduce and self.args.uses == __default_executor__:
-            self.args.uses = __default_reducer_executor__
         try:
-            self._executor = BaseExecutor.load_config(
+            self._executor: BaseExecutor = BaseExecutor.load_config(
                 self.args.uses,
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
@@ -104,74 +64,48 @@ class DataRequestHandler:
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def handle(
-        self,
-        msg: 'Message',
-        partial_requests: Optional[List[Request]],
-        peapod_name: str,
-    ):
+    async def handle(self, requests: List['DataRequest']) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
-        :param msg: The message to handle containing a DataRequest
-        :param partial_requests: All the partial requests, to be considered when more than one expected part
-        :param peapod_name: the name of the peapod owning this handler
+        :param requests: The messages to handle containing a DataRequest
+        :returns: the processed message
         """
-        # skip executor if target_peapod mismatch
-        if not re.match(msg.envelope.header.target_peapod, peapod_name):
-            self.logger.debug(
-                f'skip executor: mismatch target, target: {msg.envelope.header.target_peapod}, name: {peapod_name}'
-            )
-            return
-
         # skip executor if endpoints mismatch
         if (
-            msg.envelope.header.exec_endpoint not in self._executor.requests
+            requests[0].header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
+                f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            if partial_requests:
-                DataRequestHandler.replace_docs(
-                    msg,
-                    docs=_get_docs_from_msg(
-                        msg,
-                        partial_request=partial_requests,
-                        field='docs',
-                    ),
-                )
-            return
+            return requests[0]
 
         params = self._parse_params(
-            msg.request.parameters.to_dict(), self._executor.metas.name
+            requests[0].parameters.to_dict(), self._executor.metas.name
         )
-        docs = _get_docs_from_msg(
-            msg,
-            partial_request=partial_requests,
+        docs = DataRequestHandler.get_docs_from_request(
+            requests,
             field='docs',
         )
+
         # executor logic
-        r_docs = self._executor(
-            req_endpoint=msg.envelope.header.exec_endpoint,
-            docs=docs,
+        r_docs = await self._executor.__acall__(
+            req_endpoint=requests[0].header.exec_endpoint,
+            docs=DataRequestHandler.get_docs_from_request(requests, field='docs'),
             parameters=params,
-            docs_matrix=_get_docs_matrix_from_message(
-                msg,
-                partial_request=partial_requests,
+            docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
+                requests,
                 field='docs',
             ),
-            groundtruths=_get_docs_from_msg(
-                msg,
-                partial_request=partial_requests,
+            groundtruths=DataRequestHandler.get_docs_from_request(
+                requests,
                 field='groundtruths',
             ),
-            groundtruths_matrix=_get_docs_matrix_from_message(
-                msg,
-                partial_request=partial_requests,
+            groundtruths_matrix=DataRequestHandler.get_docs_matrix_from_request(
+                requests,
                 field='groundtruths',
             ),
         )
-
         # assigning result back to request
         # 1. Return none: do nothing
         # 2. Return nonempty and non-DocumentArray: raise error
@@ -179,31 +113,145 @@ class DataRequestHandler:
         # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
             if isinstance(r_docs, (DocumentArray, DocumentArrayMemmap)):
-                if r_docs != msg.request.docs:
+                if r_docs != requests[0].docs:
                     # this means the returned DocArray is a completely new one
-                    DataRequestHandler.replace_docs(msg, r_docs)
+                    DataRequestHandler.replace_docs(requests[0], r_docs)
             elif isinstance(r_docs, dict):
-                msg.request.parameters.update(r_docs)
+                requests[0].parameters.update(r_docs)
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / DocumentArrayMemmap / Dict / `None`, '
                     f'but getting {r_docs!r}'
                 )
-        elif partial_requests:
-            DataRequestHandler.replace_docs(msg, docs)
+        elif len(requests) > 1:
+            DataRequestHandler.replace_docs(requests[0], docs)
+
+        return requests[0]
 
     @staticmethod
-    def replace_docs(msg, docs):
+    def replace_docs(request, docs):
         """Replaces the docs in a message with new Documents.
 
-        :param msg: The message object
+        :param request: The request object
         :param docs: the new docs to be used
         """
-        msg.request.docs.clear()
-        msg.request.docs.extend(docs)
+        request.docs.clear()
+        request.docs.extend(docs)
+
+    @staticmethod
+    def merge_routes(requests):
+        """Merges all routes found in requests into the first message
+
+        :param requests: The messages containing the requests with the routes to merge
+        """
+        if len(requests) <= 1:
+            return
+        existing_pod_routes = [r.pod for r in requests[0].routes]
+        for request in requests[1:]:
+            for route in request.routes:
+                if route.pod not in existing_pod_routes:
+                    requests[0].routes.append(route)
+                    existing_pod_routes.append(route.pod)
 
     def close(self):
         """ Close the data request handler, by closing the executor """
         if not self._is_closed:
             self._executor.close()
             self._is_closed = True
+
+    @staticmethod
+    def get_docs_matrix_from_request(
+        requests: List['DataRequest'],
+        field: str,
+    ) -> List['DocumentArray']:
+        """
+        Returns a docs matrix from a list of DataRequest objects.
+        :param requests: List of DataRequest objects
+        :param field: field to be retrieved
+        :return: docs matrix: list of DocumentArray objects
+        """
+        if len(requests) > 1:
+            result = [getattr(request, field) for request in requests]
+        else:
+            result = [getattr(requests[0], field)]
+
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+        len_r = sum(len(r) for r in result)
+        if len_r:
+            return result
+
+    @staticmethod
+    def get_docs_from_request(
+        requests: List['DataRequest'],
+        field: str,
+    ) -> 'DocumentArray':
+        """
+        Gets a field from the message
+
+        :param requests: requests to get the field from
+        :param field: field name to access
+
+        :returns: DocumentArray extraced from the field from all messages
+        """
+        if len(requests) > 1:
+            result = DocumentArray(
+                [
+                    d
+                    for r in reversed([request for request in requests])
+                    for d in getattr(r, field)
+                ]
+            )
+        else:
+            result = getattr(requests[0], field)
+
+        return result
+
+    @staticmethod
+    def reduce(docs_matrix: List['DocumentArray']) -> Optional['DocumentArray']:
+        """
+        Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first
+        DocumentArray in-place.
+
+        Reduction consists in reducing every DocumentArray in `docs_matrix` sequentially using
+        :class:`DocumentArray`.:method:`reduce`.
+        The resulting DocumentArray contains Documents of all DocumentArrays.
+        If a Document exists in many DocumentArrays, data properties are merged with priority to the left-most
+        DocumentArrays (that is, if a data attribute is set in a Document belonging to many DocumentArrays, the
+        attribute value of the left-most DocumentArray is kept).
+        Matches and chunks of a Document belonging to many DocumentArrays are also reduced in the same way.
+        Other non-data properties are ignored.
+
+        .. note::
+            - Matches are not kept in a sorted order when they are reduced. You might want to re-sort them in a later
+                step.
+            - The final result depends on the order of DocumentArrays when applying reduction.
+
+        :param docs_matrix: List of DocumentArrays to be reduced
+        :return: the resulting DocumentArray
+        """
+        if docs_matrix:
+            da = docs_matrix[0]
+            da.reduce_all(docs_matrix[1:])
+            return da
+
+    @staticmethod
+    def reduce_requests(requests: List['DataRequest']) -> 'DataRequest':
+        """
+        Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first
+        request object in-place.
+
+        Reduction consists in reducing every DocumentArray in `requests` sequentially using
+        :class:`DocumentArray`.:method:`reduce`.
+        The resulting DataRequest object contains Documents of all DocumentArrays inside requests.
+
+        :param requests: List of DataRequest objects
+        :return: the resulting DataRequest
+        """
+        docs_matrix = DataRequestHandler.get_docs_matrix_from_request(
+            requests, field='docs'
+        )
+
+        # Reduction is applied in-place to the first DocumentArray in the matrix
+        DataRequestHandler.reduce(docs_matrix)
+        return requests[0]

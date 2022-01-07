@@ -1,5 +1,5 @@
 from jina.parsers import set_pea_parser
-from jina.peapods import Pea
+from jina.peapods.peas.factory import PeaFactory
 
 
 def test_pea_instantiate_start_same_context():
@@ -7,7 +7,7 @@ def test_pea_instantiate_start_same_context():
     peas_args = [arg, arg]
 
     for args in peas_args:
-        pea = Pea(args)
+        pea = PeaFactory.build_pea(args)
         with pea:
             pass
 
@@ -17,7 +17,7 @@ def test_pea_instantiate_start_different_context():
     peas_args = [arg, arg]
     peas = []
     for args in peas_args:
-        peas.append(Pea(args))
+        peas.append(PeaFactory.build_pea(args))
 
     for pea in peas:
         with pea:

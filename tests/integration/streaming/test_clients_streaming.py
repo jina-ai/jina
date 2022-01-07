@@ -79,7 +79,7 @@ class SlowExecutor(Executor):
 
 
 def on_done(response, final_da: DocumentArray):
-    print(f' receiving response {response._pb_body.request_id}')
+    print(f' receiving response {response._pb_body.header.request_id}')
     for doc in response.docs:
         doc.tags['on_done'] = time.time()
         print(
@@ -89,7 +89,6 @@ def on_done(response, final_da: DocumentArray):
     final_da.extend(response.docs)
 
 
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
@@ -107,17 +106,13 @@ def on_done(response, final_da: DocumentArray):
         ('http', slow_blocking_gen),
     ],
 )
-def test_disable_prefetch_slow_client_fast_executor(
-    grpc_data_requests, protocol, inputs
-):
+def test_disable_prefetch_slow_client_fast_executor(protocol, inputs):
     print(
         f'\n\nRunning disable prefetch, slow client, fast Executor test for \n'
-        f'protocol: {protocol}, input: {inputs.__name__}, grpc_data_req: {grpc_data_requests}'
+        f'protocol: {protocol}, input: {inputs.__name__}'
     )
     final_da = DocumentArray()
-    with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
-        uses=FastExecutor
-    ) as f:
+    with Flow(protocol=protocol).add(uses=FastExecutor) as f:
         f.post(
             on='/',
             inputs=inputs,
@@ -140,7 +135,6 @@ def test_disable_prefetch_slow_client_fast_executor(
     assert final_da['id-3'].tags['executor'] < final_da['id-3'].tags['on_done']
 
 
-@pytest.mark.parametrize('grpc_data_requests', [True, False])
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
@@ -152,17 +146,13 @@ def test_disable_prefetch_slow_client_fast_executor(
         ('http', blocking_gen),
     ],
 )
-def test_disable_prefetch_fast_client_slow_executor(
-    grpc_data_requests, protocol, inputs
-):
+def test_disable_prefetch_fast_client_slow_executor(protocol, inputs):
     print(
         f'\n\nRunning disable prefetch, fast client, slow Executor test for \n'
-        f'protocol: {protocol}, input: {inputs.__name__}, grpc_data_req: {grpc_data_requests}'
+        f'protocol: {protocol}, input: {inputs.__name__}'
     )
     final_da = DocumentArray()
-    with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
-        uses=SlowExecutor
-    ) as f:
+    with Flow(protocol=protocol).add(uses=SlowExecutor) as f:
         f.post(
             on='/',
             inputs=inputs,
@@ -208,8 +198,7 @@ class Indexer(Executor):
 
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
-def test_multiple_clients(prefetch, protocol, grpc_data_requests):
+def test_multiple_clients(prefetch, protocol):
     os.environ['JINA_LOG_LEVEL'] = 'INFO'
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
@@ -236,9 +225,7 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
         )
 
     pool: List[Process] = []
-    f = Flow(
-        protocol=protocol, prefetch=prefetch, grpc_data_requests=grpc_data_requests
-    ).add(uses=Indexer)
+    f = Flow(protocol=protocol, prefetch=prefetch).add(uses=Indexer)
     with f:
         # We have 5 good clients connecting to the same gateway. They have controlled requests.
         # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.

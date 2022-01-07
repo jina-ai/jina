@@ -38,21 +38,6 @@ def docker_image_built():
 
 
 @pytest.fixture
-def remote_flow_with_zed_runtime(pod_params):
-    num_replicas, scale_to, shards = pod_params
-    return Flow().add(
-        name='executor',
-        uses='ScalableExecutor',
-        replicas=num_replicas,
-        shards=shards,
-        polling='ANY',
-        host=CLOUD_HOST,
-        py_modules='executors.py',
-        upload_files=cur_dir,
-    )
-
-
-@pytest.fixture
 def remote_flow_with_container_runtime(pod_params, docker_image_built):
     num_replicas, scale_to, shards = pod_params
     return Flow().add(
@@ -65,9 +50,7 @@ def remote_flow_with_container_runtime(pod_params, docker_image_built):
     )
 
 
-@pytest.fixture(
-    params=['remote_flow_with_zed_runtime', 'remote_flow_with_container_runtime']
-)
+@pytest.fixture(params=['remote_flow_with_container_runtime'])
 def remote_flow_with_runtime(request):
     return request.getfixturevalue(request.param)
 
@@ -141,9 +124,9 @@ def test_scale_with_concurrent_client(
 
     num_replicas, scale_to, _ = pod_params
     queue = multiprocessing.Queue()
-
+    remote_flow_with_runtime.protocol = protocol
     with remote_flow_with_runtime as f:
-        f.protocol = protocol
+
         port_expose = f.port_expose
 
         thread_pool = []

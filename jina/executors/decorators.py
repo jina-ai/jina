@@ -6,7 +6,7 @@ from functools import wraps
 from typing import Callable, Union, List, Optional, Dict, Sequence, TYPE_CHECKING
 
 from .metas import get_default_metas
-from ..helper import convert_tuple_to_list
+from ..helper import convert_tuple_to_list, iscoroutinefunction
 
 if TYPE_CHECKING:
     from jina import DocumentArray
@@ -101,11 +101,20 @@ def requests(
                     f'please add `**kwargs` to the function signature.'
                 )
 
-            @functools.wraps(fn)
-            def arg_wrapper(*args, **kwargs):
-                return fn(*args, **kwargs)
+            if iscoroutinefunction(fn):
 
-            self.fn = arg_wrapper
+                @functools.wraps(fn)
+                async def arg_wrapper(*args, **kwargs):
+                    return await fn(*args, **kwargs)
+
+                self.fn = arg_wrapper
+            else:
+
+                @functools.wraps(fn)
+                def arg_wrapper(*args, **kwargs):
+                    return fn(*args, **kwargs)
+
+                self.fn = arg_wrapper
 
         def __set_name__(self, owner, name):
             self.fn.class_name = owner.__name__
