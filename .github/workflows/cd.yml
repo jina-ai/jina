@@ -92,20 +92,8 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
-  update-doc:
-    needs: update-schema
-    runs-on: ubuntu-latest
-    steps:
-      - uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Manual Docs Build
-          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
-          token: ${{ secrets.JINA_DEV_BOT }}
-        env:
-          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
-
   update-docker:
-    needs: [update-doc, update-schema]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: benc-uk/workflow-dispatch@v1
@@ -331,7 +319,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, hub-test, k8s-test, docker-image-test, benchmark-pre-release, update-schema, update-doc, update-docker]
+    needs: [core-test, hub-test, k8s-test, docker-image-test, benchmark-pre-release, update-schema, update-docker]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2

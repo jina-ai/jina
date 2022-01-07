@@ -253,7 +253,6 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 ```bash
 cd docs
 pip install -r requirements.txt
-pip install furo==2021.10.9
 export NUM_RELEASES=10
 bash makedoc.sh local-only
 ```

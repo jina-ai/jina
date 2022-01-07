@@ -6,7 +6,6 @@ import time
 from abc import ABC, abstractmethod
 from typing import Type, Union, Dict, Optional
 
-from ..networking import GrpcConnectionPool
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ...jaml import JAML
 from .helper import _get_event, _get_worker, ConditionalEvent
@@ -173,7 +172,7 @@ class BasePea(ABC):
                 ):
                     if not __windows__:
                         raise Exception(
-                            f'Shutdown signal was not received for {self._timeout_ctrl}'
+                            f'Shutdown signal was not received for {self._timeout_ctrl} seconds'
                         )
                     else:
                         self.logger.warning(

@@ -13,7 +13,7 @@ shards_compose_yml = os.path.join(cur_dir, 'docker-compose-shards.yml')
 
 @pytest.fixture
 def external_pod_args():
-    args = ['--port-in', str(45678), '--port-out', str(45679)]
+    args = ['--port-in', str(45678)]
     args = vars(set_pod_parser().parse_args(args))
     del args['external']
     del args['pod_role']
@@ -32,27 +32,13 @@ def documents_to_index():
     return [Document(content=image) for i in range(200)]
 
 
-@pytest.fixture
-def patched_remote_local_connection(monkeypatch):
-    def alternative_remote_local_connection(first, second):
-        if first == '10.1.0.100':
-            return True
-        else:
-            return False
-
-    monkeypatch.setattr(
-        'jina.flow.base.is_remote_local_connection',
-        lambda x, y: alternative_remote_local_connection(x, y),
-    )
-
-
 @pytest.mark.parametrize(
     'docker_compose',
     [single_compose_yml, shards_compose_yml],
     indirect=['docker_compose'],
 )
 def test_local_flow_use_external_executor(
-    local_flow, documents_to_index, patched_remote_local_connection, docker_compose
+    local_flow, documents_to_index, docker_compose
 ):
     with local_flow as f:
         responses = f.index(

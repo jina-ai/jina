@@ -82,21 +82,21 @@ When not given, then the default naming strategy will apply.
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
-        '--extra-search-paths',
-        type=str,
-        default=[],
-        nargs='*',
-        help='Extra search paths to be used when loading modules and finding YAML config files.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
     gp.add_argument(
         '--timeout-ctrl',
         type=int,
-        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '5000')),
+        default=int(os.getenv('JINA_DEFAULT_TIMEOUT_CTRL', '60')),
         help='The timeout in milliseconds of the control request, -1 for waiting forever',
+    )
+
+    gp.add_argument(
+        '--k8s-disable-connection-pool',
+        action='store_false',
+        dest='k8s_connection_pool',
+        default=True,
+        help='Defines if connection pooling for replicas should be disabled in K8s. This mechanism implements load balancing between replicas of the same executor. This should be disabled if a service mesh (like istio) is used for load balancing.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
 
     gp.add_argument(
@@ -114,22 +114,4 @@ When not given, then the default naming strategy will apply.
     {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
     
     ''',
-    )
-
-    gp.add_argument(
-        '--k8s-disable-connection-pool',
-        action='store_false',
-        dest='k8s_connection_pool',
-        default=True,
-        help='Defines if connection pooling for replicas should be disabled in K8s. This mechanism implements load balancing between replicas of the same executor. This should be disabled if a service mesh (like istio) is used for load balancing.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--k8s-namespace',
-        type=str,
-        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
     )

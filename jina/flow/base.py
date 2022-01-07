@@ -152,7 +152,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
-        timeout_ctrl: Optional[int] = 5000,
+        timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -270,7 +270,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         polling: Optional[str] = 'ANY',
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 5000,
+        timeout_ctrl: Optional[int] = 60,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
@@ -565,7 +565,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
-        timeout_ctrl: Optional[int] = 5000,
+        timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -1525,6 +1525,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.args.workspace = value
         for k, p in self:
             p.args.workspace = value
+            p.update_pea_args()
 
     @property
     def workspace_id(self) -> Dict[str, str]:
