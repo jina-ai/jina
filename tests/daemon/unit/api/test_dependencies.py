@@ -49,8 +49,6 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
         f: Flow = Flow.load_config(fd.params.uses).build()
         assert f.port_expose == 12345
         assert f.protocol == GatewayProtocolType.HTTP
-        assert f['gateway'].args.runs_in_docker
-        assert f['local_replicas'].args.runs_in_docker
         assert f['local_replicas'].args.port_in == 45678
         assert f['local_replicas'].args.port_in is not None
         assert all(
@@ -83,8 +81,6 @@ def test_dump(monkeypatch, tmpdir):
         f: Flow = Flow.load_config(fd.params.uses).build()
         assert f.port_expose == 12345
         assert f.protocol == GatewayProtocolType.HTTP
-        assert f['gateway'].args.runs_in_docker
-        assert f['local_replicas'].args.runs_in_docker
         assert f['local_replicas'].args.port_in == 45678
 
 

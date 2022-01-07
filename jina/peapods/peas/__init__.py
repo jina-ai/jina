@@ -6,7 +6,6 @@ import time
 from abc import ABC, abstractmethod
 from typing import Type, Union, Dict, Optional
 
-from ..networking import GrpcConnectionPool
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ...jaml import JAML
 from .helper import _get_event, _get_worker, ConditionalEvent
@@ -117,8 +116,6 @@ class BasePea(ABC):
 
         if hasattr(self.args, 'port_expose'):
             self.args.port_in = self.args.port_expose
-        # BACKWARDS COMPATIBILITY
-        self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False

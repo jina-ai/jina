@@ -65,10 +65,9 @@ def mixin_pea_parser(parser):
 
     gp.add_argument(
         '--shard-id',
-        '--pea-id',
         type=int,
         default=0,
-        help='defines the suffix for the workspace path of the pea`'
+        help='defines the shard identifier for the executor. It is used as suffix for the workspace path of the executor`'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
