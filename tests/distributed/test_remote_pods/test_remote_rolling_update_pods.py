@@ -40,7 +40,7 @@ async def test_rolloing_update_remote_pod(async_jinad_client, pod_args):
     )
     assert success
     await async_jinad_client.pods.rolling_update(
-        id=pod_id, uses_with={'foo': 'bar-new', 'dump_path': dump_path}
+        id=pod_id, uses_with={'foo': 'bar-new', 'dump_path': 'test'}
     )
     # TODO: HOW TO CHECK PEA ARGS IN JINAD? ROLLING UPDATE WON'T CHANGE POD ARGS
     # TODO: PEA_STORE IS EMPTY
