@@ -60,11 +60,14 @@ class PostMixin:
                     result.append(resp)
 
             if return_results:
-                docs = [r.data.docs for r in result]
-                if len(docs) < 1:
-                    return docs
+                if c.results_as_docarray:
+                    docs = [r.data.docs for r in result]
+                    if len(docs) < 1:
+                        return docs
+                    else:
+                        return docs[0].reduce_all(docs[1:])
                 else:
-                    return docs[0].reduce_all(docs[1:])
+                    return result
 
         if (on_always is None) and (on_done is None):
             return_results = True

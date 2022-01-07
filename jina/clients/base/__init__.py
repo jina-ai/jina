@@ -27,7 +27,12 @@ class BaseClient(ABC):
     :param kwargs: additional parameters that can be accepted by client parser
     """
 
-    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
+    def __init__(
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        results_as_docarray=False,
+        **kwargs,
+    ):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
@@ -44,6 +49,7 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+        self.results_as_docarray = results_as_docarray
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
