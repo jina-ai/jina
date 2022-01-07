@@ -57,3 +57,11 @@ def test_automatically_set_returnresults(return_results, on_done, on_always, on_
         assert docs[0].text == 'Hello World!'
     else:
         assert docs is None
+
+
+def test_empty_docarray():
+    f = Flow().add(uses=SimplExecutor)
+    with f:
+        docs = f.post(on='/')
+    assert isinstance(docs, DocumentArray)
+    assert len(docs) == 0
