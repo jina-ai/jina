@@ -26,8 +26,8 @@ class Merger(Executor):
         return docs
 
 
-def validate(req):
-    chunk_ids = [c.id for d in req.docs for c in d.chunks]
+def validate(da):
+    chunk_ids = [c.id for d in da for c in d.chunks]
     assert len(chunk_ids) == 80
 
 
@@ -48,9 +48,9 @@ def test_this_will_fail(protocol):
     )
 
     with f:
-        results = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
+        da = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
 
-    validate(results[0])
+    validate(da)
 
 
 @pytest.mark.timeout(180)
@@ -70,6 +70,6 @@ def test_this_should_work(protocol):
     )
 
     with f:
-        results = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
+        da = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
 
-    validate(results[0])
+    validate(da)
