@@ -427,6 +427,9 @@ def random_port() -> Optional[int]:
                 os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT))
             )
         max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
+        print(
+            f'get new unassigned ports, from {min_port} to {max_port}. Excluding {len(assigned_ports)} already assigned ports'
+        )
         return set(range(min_port, max_port + 1)) - assigned_ports
 
     def _get_port(port):
@@ -447,7 +450,9 @@ def random_port() -> Optional[int]:
         if _get_port(_port) is not None:
             break
     else:
-        raise OSError(f'can not find an available port.')
+        raise OSError(
+            f'can not find an available port in {len(unassigned_ports)} unassigned ports, assigned already {len(assigned_ports)} ports'
+        )
 
     int_port = int(_port)
     unassigned_ports.remove(int_port)
