@@ -36,8 +36,12 @@ class ReplicaList:
         :param address: Target address of this connection
         """
         if address not in self._address_to_connection_idx:
-            parsed_address = urlparse(address)
-            use_https = parsed_address.scheme == 'https'
+            try:
+                parsed_address = urlparse(address)
+                address = parsed_address.netloc if parsed_address.netloc else address
+                use_https = parsed_address.scheme == 'https'
+            except:
+                use_https = False
 
             self._address_to_connection_idx[address] = len(self._connections)
             (
@@ -45,9 +49,7 @@ class ReplicaList:
                 data_stub,
                 control_stub,
                 channel,
-            ) = GrpcConnectionPool.create_async_channel_stub(
-                parsed_address.netloc, https=use_https
-            )
+            ) = GrpcConnectionPool.create_async_channel_stub(address, https=use_https)
             self._address_to_channel[address] = channel
 
             self._connections.append((single_data_stub, data_stub, control_stub))
