@@ -99,6 +99,14 @@ When not given, then the default naming strategy will apply.
         help='The timeout in milliseconds of the control request, -1 for waiting forever',
     )
 
+    parser.add_argument(
+        '--k8s-namespace',
+        type=str,
+        help='Name of the namespace where Kubernetes deployment should be deployed, to be filled by flow name'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     gp.add_argument(
         '--k8s-disable-connection-pool',
         action='store_false',
