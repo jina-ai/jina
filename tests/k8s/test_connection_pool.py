@@ -75,9 +75,7 @@ async def test_process_up_down_events(docker_images):
         },
     }
     utils.create_from_dict(k8s_client, deployment_object, namespace=namespace)
-    pool = K8sGrpcConnectionPool(
-        namespace=namespace,
-    )
+    pool = K8sGrpcConnectionPool(namespace=namespace, client=core_client)
     pool.start()
     await asyncio.sleep(1.0)
     namespaced_pods = core_client.list_namespaced_pod(namespace)
