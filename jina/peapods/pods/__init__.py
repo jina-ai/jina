@@ -203,11 +203,9 @@ class Pod(BasePod):
             self,
             pod_args: Namespace,
             args: List[Namespace],
-            head_args: Namespace,
             head_pea,
         ):
             self.pod_args = copy.copy(pod_args)
-            self.head_args = head_args
             self.args = args
             self.shard_id = args[0].shard_id
             self._peas = []
@@ -242,7 +240,7 @@ class Pod(BasePod):
                 await GrpcConnectionPool.deactivate_worker(
                     worker_host=Pod.get_worker_host(_args, old_pea, self.head_pea),
                     worker_port=_args.port_in,
-                    target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                     shard_id=self.shard_id,
                 )
                 old_pea.close()
@@ -257,7 +255,7 @@ class Pod(BasePod):
                 await GrpcConnectionPool.activate_worker(
                     worker_host=Pod.get_worker_host(_args, new_pea, self.head_pea),
                     worker_port=_args.port_in,
-                    target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                     shard_id=self.shard_id,
                 )
                 self.args[i] = _args
@@ -284,7 +282,7 @@ class Pod(BasePod):
                             new_args, new_pea, self.head_pea
                         ),
                         worker_port=new_args.port_in,
-                        target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                        target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                         shard_id=self.shard_id,
                     )
                 except (
@@ -317,7 +315,7 @@ class Pod(BasePod):
                             self.args[i], self._peas[i], self.head_pea
                         ),
                         worker_port=self.args[i].port_in,
-                        target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                        target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                         shard_id=self.shard_id,
                     )
                     self._peas[i].close()
@@ -619,7 +617,6 @@ class Pod(BasePod):
             self.shards[shard_id] = self._ReplicaSet(
                 self.args,
                 self.peas_args['peas'][shard_id],
-                self.head_args,
                 self.head_pea,
             )
             self.enter_context(self.shards[shard_id])
