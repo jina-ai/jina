@@ -1696,7 +1696,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes
         :param output_base_path: The base path where to dump all the yaml files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
-        :param k8s_connection_pool: Boolean indicationg wether the kubernetes connection pool should be used inside the Executor Runtimes.
+        :param k8s_connection_pool: Boolean indicating wether the kubernetes connection pool should be used inside the Executor Runtimes.
         """
         import yaml
 

@@ -788,7 +788,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     async def _process_item(self, item):
         try:
             jina_pod_name = item.metadata.labels['jina_pod_name']
-            is_head = item.metadata.labels['pea_type'] == 'head'
+            is_head = item.metadata.labels['pea_type'].lower() == 'head'
             shard_id = (
                 int(item.metadata.labels['shard_id'])
                 if item.metadata.labels['shard_id'] and not is_head
