@@ -404,55 +404,55 @@ def random_name() -> str:
 
 
 assigned_ports = set()
+unassigned_ports = set()
 DEFAULT_MIN_PORT = 49153
 MAX_PORT = 65535
 
 
 def random_port() -> Optional[int]:
     """
-    Get a random available port number from '49153' to '65535'.
+    Get a random available port number.
 
     :return: A random port.
     """
-
-    import threading
-    import multiprocessing
     from contextlib import closing
     import socket
 
+    def _get_unassigned_ports():
+        # if we are running out of ports, lower default minimum port
+        if MAX_PORT - DEFAULT_MIN_PORT - len(assigned_ports) < 100:
+            min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '16384'))
+        else:
+            min_port = int(
+                os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT))
+            )
+        max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
+        return set(range(min_port, max_port + 1)) - assigned_ports
+
     def _get_port(port):
-        with multiprocessing.Lock():
-            with threading.Lock():
-                with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                    try:
-                        s.bind(('', port))
-                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                        return s.getsockname()[1]
-                    except OSError:
-                        pass
-                    return None
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            try:
+                s.bind(('', port))
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                return s.getsockname()[1]
+            except OSError:
+                return None
 
     _port = None
 
-    # if we are running out of ports, lower default minimum port
-    if MAX_PORT - DEFAULT_MIN_PORT - len(assigned_ports) < 10:
-        min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '16384'))
-    else:
-        min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT)))
+    if len(unassigned_ports) == 0:
+        unassigned_ports.update(_get_unassigned_ports())
 
-    max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
-    all_ports = list(set(range(min_port, max_port + 1)) - assigned_ports)
-    random.shuffle(all_ports)
-    for _port in all_ports:
+    for _port in unassigned_ports:
         if _get_port(_port) is not None:
             break
     else:
-        raise OSError(
-            f'can not find an available port between [{min_port}, {max_port}].'
-        )
+        raise OSError(f'can not find an available port.')
 
-    assigned_ports.add(int(_port))
-    return int(_port)
+    int_port = int(_port)
+    unassigned_ports.remove(int_port)
+    assigned_ports.add(int_port)
+    return int_port
 
 
 def random_identity(use_uuid1: bool = False) -> str:
