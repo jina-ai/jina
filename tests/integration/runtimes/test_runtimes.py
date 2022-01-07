@@ -127,10 +127,20 @@ async def test_runtimes_flow_topology(
             uses_before_port, uses_before_process = await _create_worker(
                 pod, port_generator, type='uses_before'
             )
+            AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+                timeout=5.0,
+                ready_or_shutdown_event=threading.Event(),
+                ctrl_address=f'127.0.0.1:{uses_before_port}',
+            )
             runtime_processes.append(uses_before_process)
         if uses_after:
             uses_after_port, uses_after_process = await _create_worker(
                 pod, port_generator, type='uses_after'
+            )
+            AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+                timeout=5.0,
+                ready_or_shutdown_event=threading.Event(),
+                ctrl_address=f'127.0.0.1:{uses_after_port}',
             )
             runtime_processes.append(uses_after_process)
 
