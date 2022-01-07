@@ -37,7 +37,7 @@ class ReplicaList:
         """
         if address not in self._address_to_connection_idx:
             parsed_address = urlparse(address)
-            use_https = parsed_address.scheme == "https"
+            use_https = parsed_address.scheme == 'https'
 
             self._address_to_connection_idx[address] = len(self._connections)
             (
