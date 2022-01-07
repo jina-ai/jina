@@ -128,7 +128,7 @@ where
 For performing the **rolling update**, we can see the usage in the same test:
 
 ```python
-flow_query.rolling_update(pod_name='indexer_query', dump_path=dump_path)
+flow_query.rolling_update(pod_name='indexer_query', uses_with={'dump_path': dump_path})
 ```
 
 where

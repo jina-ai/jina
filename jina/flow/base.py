@@ -834,13 +834,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
 
-        # BACKWARDS COMPATIBILITY:
-        # We assume that this is used in a search Flow if replicas and shards are used
-        # Thus the polling type should be all
-        # But dont override any user provided polling
-        if args.replicas > 1 and args.shards > 1 and 'polling' not in kwargs:
-            args.polling = PollingType.ALL
-
         port_in = kwargs.get('port_in', None)
         if not port_in:
             port_in = helper.random_port()
@@ -1752,22 +1745,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def rolling_update(
         self,
         pod_name: str,
-        dump_path: Optional[str] = None,
-        *,
         uses_with: Optional[Dict] = None,
     ):
         """
         Reload all replicas of a pod sequentially
 
         :param pod_name: pod to update
-        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
         from ..helper import run_async
 
         run_async(
             self._pod_nodes[pod_name].rolling_update,
-            dump_path=dump_path,
             uses_with=uses_with,
             any_event_loop=True,
         )
