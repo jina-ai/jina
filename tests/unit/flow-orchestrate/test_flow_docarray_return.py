@@ -13,71 +13,47 @@ class SimplExecutor(Executor):
 def test_simple_docarray_return():
     f = Flow().add(uses=SimplExecutor)
     with f:
-        results = f.post(on='/index', inputs=[Document()], return_results=True)
-    assert results[0].text == 'Hello World!'
+        docs = f.post(on='/index', inputs=[Document()], return_results=True)
+    assert docs[0].text == 'Hello World!'
 
 
 def test_flatten_docarrays():
     f = Flow().add(uses=SimplExecutor)
     with f:
-        results = f.post(
+        docs = f.post(
             on='/index',
             inputs=[Document() for _ in range(100)],
             request_size=10,
             return_results=True,
         )
-    assert isinstance(results, DocumentArray)
-    assert len(results) == 100
-    assert results[0].text == 'Hello World!'
+    assert isinstance(docs, DocumentArray)
+    assert len(docs) == 100
+    assert docs[0].text == 'Hello World!'
 
 
-def test_set_returnresults_true_without_callbacks():
+def my_cb(resp):
+    return resp
+
+
+@pytest.mark.parametrize('return_results', [True, False])
+@pytest.mark.parametrize('on_done', [None, my_cb])
+@pytest.mark.parametrize('on_always', [None, my_cb])
+@pytest.mark.parametrize('on_error', [None, my_cb])
+def test_automatically_set_returnresults(return_results, on_done, on_always, on_error):
     f = Flow().add(uses=SimplExecutor)
     with f:
-        results = f.post(
+        docs = f.post(
             on='/index',
             inputs=[Document() for _ in range(100)],
             request_size=10,
-            return_results=False,
+            return_results=return_results,
+            on_done=on_done,
+            on_always=on_always,
+            on_error=on_error,
         )
-    assert isinstance(results, DocumentArray)
-    assert len(results) == 100
-    assert results[0].text == 'Hello World!'
-
-
-def test_set_returnresults_true_onerror():
-    f = Flow().add(uses=SimplExecutor)
-    with f:
-        results = f.post(
-            on='/index',
-            inputs=[Document() for _ in range(100)],
-            request_size=10,
-            return_results=False,
-            on_error=lambda x: x,
-        )
-    assert isinstance(results, DocumentArray)
-    assert len(results) == 100
-    assert results[0].text == 'Hello World!'
-
-
-def test_obey_returnresults_with_callbacks():
-    f = Flow().add(uses=SimplExecutor)
-    with f:
-        results = f.post(
-            on='/index',
-            inputs=[Document() for _ in range(100)],
-            request_size=10,
-            return_results=False,
-            on_done=lambda x: x,
-        )
-    assert results is None
-    f = Flow().add(uses=SimplExecutor)
-    with f:
-        results = f.post(
-            on='/index',
-            inputs=[Document() for _ in range(100)],
-            request_size=10,
-            return_results=False,
-            on_always=lambda x: x,
-        )
-    assert results is None
+    if return_results or (on_done is None and on_always is None):
+        assert isinstance(docs, DocumentArray)
+        assert len(docs) == 100
+        assert docs[0].text == 'Hello World!'
+    else:
+        assert docs is None
