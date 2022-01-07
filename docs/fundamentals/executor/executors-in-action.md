@@ -75,9 +75,10 @@ class PLMwuAutoEncoder(Executor):
 
 ## Paddle
 
-The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder. The Executor load
-pre-trained Ernie family of tokenizer and model. Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as
-embedding. As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
+The example below uses the PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as the encoder. The
+Executor loads the pre-trained Ernie tokenizer and model, converts Jina Documents' ``doc.text`` into Paddle Tensors and
+encodes the text as embeddings. As a result, each `Document` in the `DocumentArray` will have an `embedding` after
+`encode()` has completed.
 
 ```python
 import paddle as P  # paddle==2.1.0
