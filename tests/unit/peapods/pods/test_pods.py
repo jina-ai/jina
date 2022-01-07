@@ -377,7 +377,7 @@ def test_pod_remote_pea_replicas_pea_host_set_partially(
         elif v is not None:
             for shard_id in v:
                 for pea_arg in v[shard_id]:
-                    if pea_arg.pea_id in (0, 1):
+                    if pea_arg.shard_id in (0, 1):
                         assert pea_arg.host == pea1_host
                     else:
                         assert pea_arg.host == args.host

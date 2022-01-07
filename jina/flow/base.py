@@ -132,7 +132,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
-        memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
@@ -148,7 +147,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         replicas: Optional[int] = 1,
-        runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
@@ -185,7 +183,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
-        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
 
           This will be used in the following places:
@@ -225,7 +222,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
-        :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
@@ -548,7 +544,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
-        memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         native: Optional[bool] = False,
         peas_hosts: Optional[List[str]] = None,
@@ -561,7 +556,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet_error: Optional[bool] = False,
         quiet_remote_logs: Optional[bool] = False,
         replicas: Optional[int] = 1,
-        runs_in_docker: Optional[bool] = False,
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
@@ -605,7 +599,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
-        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
 
           This will be used in the following places:
@@ -640,7 +633,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
         :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
-        :param runs_in_docker: Informs a Pea that runs in a container. Important to properly set networking information
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
         :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
@@ -766,13 +758,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
-
-        # BACKWARDS COMPATIBILITY:
-        # We assume that this is used in a search Flow if replicas and shards are used
-        # Thus the polling type should be all
-        # But don't override any user provided polling
-        if args.replicas > 1 and args.shards > 1 and 'polling' not in kwargs:
-            args.polling = PollingType.ALL
 
         port_in = kwargs.get('port_in', None)
         if not port_in:
@@ -1666,22 +1651,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def rolling_update(
         self,
         pod_name: str,
-        dump_path: Optional[str] = None,
-        *,
         uses_with: Optional[Dict] = None,
     ):
         """
         Reload all replicas of a pod sequentially
 
         :param pod_name: pod to update
-        :param dump_path: **backwards compatibility** This function was only accepting dump_path as the only potential arg to override
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
         from ..helper import run_async
 
         run_async(
             self._pod_nodes[pod_name].rolling_update,
-            dump_path=dump_path,
             uses_with=uses_with,
             any_event_loop=True,
         )

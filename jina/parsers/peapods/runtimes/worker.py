@@ -87,14 +87,6 @@ which should be structured as a python package. For more details, please see the
     )
 
     gp.add_argument(
-        '--memory-hwm',
-        type=int,
-        default=-1,
-        help='The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
-        '-1 means no restriction',
-    )
-
-    gp.add_argument(
         '--native',
         action='store_true',
         default=False,
@@ -106,22 +98,6 @@ which should be structured as a python package. For more details, please see the
         type=int,
         default=0,
         help='the number of messages expected from upstream, 0 and 1 means single part'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--runs-in-docker',
-        action='store_true',
-        default=False,
-        help='Informs a Pea that runs in a container. Important to properly set networking information',
-    )
-
-    gp.add_argument(
-        '--dump-path',
-        type=str,
-        default='',
-        help='Dump path to be passed to the executor'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

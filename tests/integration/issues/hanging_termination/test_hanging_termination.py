@@ -13,10 +13,14 @@ from jina import DocumentArray, Executor, requests
 
 
 class DumpExecutor(Executor):
+    def __init__(self, dump_path=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dump_path = dump_path
+
     @requests
     def dump(self, docs: DocumentArray, parameters: Dict, **kwargs):
         shards = int(parameters['shards'])
-        dump_path = parameters['dump_path']
+        dump_path = parameters.get('dump_path', self.dump_path)
         shard_size = len(docs) / shards
         os.makedirs(dump_path, exist_ok=True)
         for i in range(shards):
@@ -36,7 +40,6 @@ class ReloadExecutor(Executor):
     def __init__(self, dump_path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # backwards compatibility
-        assert 'dump_path' in kwargs['runtime_args'].keys()
         if dump_path is not None:
             shard_id = getattr(self.runtime_args, 'pea_id', None)
             shard_dump_path = os.path.join(dump_path, f'{shard_id}.ndjson')
@@ -124,7 +127,9 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
 
                 with TimeContext(f'### rolling update on {len(docs)}'):
                     # flow object is used for ctrl requests
-                    flow_reload.rolling_update('reload_exec', dump_path)
+                    flow_reload.rolling_update(
+                        'reload_exec', uses_with={'dump_path': dump_path}
+                    )
 
                 for i in range(5):
                     result = client_query.post(

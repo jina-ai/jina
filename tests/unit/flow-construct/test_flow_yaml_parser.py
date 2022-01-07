@@ -118,14 +118,8 @@ def test_dump_load_build(monkeypatch):
           shards: 2
     '''
     ).build()
-    f['gateway'].args.runs_in_docker = True
-    f['executor1'].args.runs_in_docker = True
 
     f1: Flow = Flow.load_config(JAML.dump(f)).build()
-    assert not f1[
-        'gateway'
-    ].args.runs_in_docker  # gateway doesn't have custom args set, as env was not set
-    assert f1['executor1'].args.runs_in_docker
     # these were passed by the user
     assert f.port_expose == f1.port_expose
     assert f.protocol == f1.protocol
@@ -138,8 +132,6 @@ def test_dump_load_build(monkeypatch):
 
     monkeypatch.setenv('JINA_FULL_CLI', 'true')
     f2: Flow = Flow.load_config(JAML.dump(f)).build()
-    assert f2['gateway'].args.runs_in_docker
-    assert f2['executor1'].args.runs_in_docker
     # these were passed by the user
     assert f.port_expose == f2.port_expose
     # validate gateway args (set during build)

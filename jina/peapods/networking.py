@@ -875,7 +875,10 @@ def create_connection_pool(
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
+        import kubernetes
         from kubernetes import client
+
+        kubernetes.config.load_incluster_config()
 
         k8s_client = client.ApiClient()
         core_client = client.CoreV1Api(api_client=k8s_client)
