@@ -92,10 +92,11 @@ def run(
             exc_info=not args.quiet_error,
         )
     else:
-        is_started.set()
-        with runtime:
-            is_ready.set()
-            runtime.run_forever()
+        if not is_shutdown.is_set():
+            is_started.set()
+            with runtime:
+                is_ready.set()
+                runtime.run_forever()
     finally:
         _unset_envs()
         is_shutdown.set()
@@ -193,6 +194,7 @@ class BasePea(ABC):
                 f'{"shutdown is is already set" if self.is_shutdown.is_set() else "Runtime was never started"}. Runtime will end gracefully on its own'
             )
             pass
+        self.is_shutdown.set()
         self.logger.debug(__stop_msg__)
         self.logger.close()
 

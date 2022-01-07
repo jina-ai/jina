@@ -241,3 +241,28 @@ def test_close_before_start(monkeypatch):
     pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
     pea.start()
     pea.close()
+
+
+@pytest.mark.timeout(4)
+def test_close_before_start_slow_enter(monkeypatch):
+    class SlowFakeRuntime:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            time.sleep(5.0)
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+        def run_forever(self):
+            pass
+
+    monkeypatch.setattr(
+        runtimes,
+        'get_runtime',
+        lambda *args, **kwargs: SlowFakeRuntime,
+    )
+    pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
+    pea.start()
+    pea.close()
