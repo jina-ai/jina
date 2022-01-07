@@ -10,6 +10,8 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
+from jina import helper
+
 
 @pytest.fixture(scope='function')
 def random_workspace_name():
@@ -88,25 +90,6 @@ def docker_compose(request):
     )
 
 
-@pytest.fixture(scope='function', autouse=True)
-def patched_random_port(mocker):
-    used_ports = set()
-    from jina.helper import random_port
-    from jina.excepts import NoAvailablePortError
-
-    def _random_port():
-
-        for i in range(50):
-            _port = random_port()
-
-            if _port is not None and _port not in used_ports:
-                used_ports.add(_port)
-                return _port
-        raise NoAvailablePortError
-
-    mocker.patch('jina.helper.random_port', new_callable=lambda: _random_port)
-
-
 def _clean_up_workspace(image_id, network_id, workspace_id, workspace_store):
     from daemon.dockerize import Dockerizer
 
@@ -163,6 +146,20 @@ def _create_workspace_directly(cur_dir):
         ),
     )
     return image_id, network_id, workspace_id, workspace_store
+
+
+@pytest.fixture(scope='function')
+def port_generator():
+    generated_ports = set()
+
+    def random_port():
+        port = helper.random_port()
+        while port in generated_ports:
+            port = helper.random_port()
+        generated_ports.add(port)
+        return port
+
+    return random_port
 
 
 @pytest.fixture(scope='function')

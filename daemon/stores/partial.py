@@ -1,10 +1,12 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
 from argparse import Namespace
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Type, Union
 
 from jina.helper import colored, random_port
-from jina.peapods import Pea, Pod, CompoundPod
+from jina.peapods.pods.factory import PodFactory
+from jina.peapods.peas.factory import PeaFactory
+from jina.peapods import BasePod, BasePea
 from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
@@ -21,7 +23,7 @@ class PartialStore(ABC):
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         self.item = PartialStoreItem()
-        self.object: Union['Pea', 'Pod', 'Flow'] = None
+        self.object: Union[Type['BasePea'], Type['BasePod'], 'Flow'] = None
 
     @abstractmethod
     def add(self, *args, **kwargs) -> PartialStoreItem:
@@ -36,17 +38,26 @@ class PartialStore(ABC):
         try:
             if hasattr(self.object, 'close'):
                 self.object.close()
+                self._logger.info(self.item.arguments)
+                if self.item.arguments.get('identity'):
+                    self._logger.success(
+                        f'{colored(self.item.arguments["identity"], "cyan")} is removed!'
+                    )
+                else:
+                    self._logger.success('object is removed!')
             else:
                 self._logger.warning(f'nothing to close. exiting')
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
+        else:
+            self.item = PartialStoreItem()
 
 
 class PartialPeaStore(PartialStore):
     """A Pea store spawned inside partial-daemon container"""
 
-    peapod_cls = Pea
+    peapod_constructor = PeaFactory.build_pea
 
     def add(
         self, args: Namespace, envs: Optional[Dict] = {}, **kwargs
@@ -64,23 +75,26 @@ class PartialPeaStore(PartialStore):
             # and on linux machines, we can access dockerhost inside containers
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
-            self.object: Union['Pea', 'Pod'] = self.peapod_cls(args).__enter__()
+            self.object: Union[
+                Type['BasePea'], Type['BasePod']
+            ] = self.__class__.peapod_constructor(args).__enter__()
             self.object.env = envs
         except Exception as e:
-            if hasattr(self, 'object'):
+            if hasattr(self, 'object') and self.object:
                 self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
+
             raise
         else:
             self.item = PartialStoreItem(arguments=vars(args))
-            self._logger.success(f'{colored(_id, "cyan")} is created')
+            self._logger.success(f'{colored(_id, "cyan")} is created!')
             return self.item
 
 
 class PartialPodStore(PartialPeaStore):
     """A Pod store spawned inside partial-daemon container"""
 
-    peapod_cls = Pod
+    peapod_constructor = PodFactory.build_pod
 
     async def rolling_update(
         self, uses_with: Optional[Dict] = None
@@ -102,7 +116,6 @@ class PartialPodStore(PartialPeaStore):
 
     async def scale(self, replicas: int) -> PartialStoreItem:
         """Scale the current Pod
-
         :param replicas: number of replicas for the Pod
         :return: Item describing the Flow object
         """
@@ -148,55 +161,22 @@ class PartialFlowStore(PartialStore):
 
             for pod in self.object._pod_nodes.values():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
-                if isinstance(pod, CompoundPod):
-                    # In dependencies, we set `runs_in_docker` for the `gateway` and for `CompoundPod` we need
-                    # `runs_in_docker` to be False. Since `Flow` args are sent to all Pods, `runs_in_docker` gets set
-                    # for the `CompoundPod`, which blocks the requests. Below we unset that (hacky & ugly).
-                    # We do it only for runtimes that starts on local (not container or remote)
-                    if (
-                        runtime_cls
-                        in [
-                            'ZEDRuntime',
-                            'GRPCDataRuntime',
-                            'ContainerRuntime',
-                        ]
-                        + list(GATEWAY_RUNTIME_DICT.values())
-                    ):
-                        pod.args.runs_in_docker = False
-                        for shards_args in pod.shards_args:
-                            shards_args.runs_in_docker = False
-                        if port_mapping:
-                            # Ports for Head & Tail Peas in a CompoundPod set here.
-                            # This is specifically needed as `save_config` doesn't save `port_out` for a HeadPea
-                            # and `port_in` for a TailPea, which might be useful if replicas and head/tail Peas
-                            # are in different containers.
-                            for pea_args in [pod.head_args, pod.tail_args]:
-                                if pea_args.name in port_mapping.pea_names:
-                                    for port_name in Ports.__fields__:
-                                        self._set_pea_ports(
-                                            pea_args, port_mapping, port_name
-                                        )
-                            # Update shard_args according to updated head & tail args
-                            pod.assign_shards()
-                else:
-                    if port_mapping and (
-                        hasattr(pod.args, 'replicas') and pod.args.replicas > 1
-                    ):
-                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
-                            if pea_args.name in port_mapping.pea_names:
-                                for port_name in Ports.__fields__:
-                                    self._set_pea_ports(
-                                        pea_args, port_mapping, port_name
-                                    )
-                        pod.update_worker_pea_args()
+                if port_mapping and (
+                    hasattr(pod.args, 'replicas') and pod.args.replicas > 1
+                ):
+                    for pea_args in [pod.peas_args['head']]:
+                        if pea_args.name in port_mapping.pea_names:
+                            for port_name in Ports.__fields__:
+                                self._set_pea_ports(pea_args, port_mapping, port_name)
+                    pod.update_worker_pea_args()
 
-                    # avoid setting runs_in_docker for Pods with parallel > 1 and using `ZEDRuntime`
-                    # else, replica-peas would try connecting to head/tail-pea via __docker_host__
-                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] and (
-                        hasattr(pod.args, 'replicas') and pod.args.replicas > 1
-                    ):
-                        pod.args.runs_in_docker = False
-                        pod.update_worker_pea_args()
+                # avoid setting runs_in_docker for Pods with parallel > 1 and using `WorkerRuntime`
+                # else, replica-peas would try connecting to head/tail-pea via __docker_host__
+                if runtime_cls == 'WorkerRuntime' and (
+                    hasattr(pod.args, 'replicas') and pod.args.replicas > 1
+                ):
+                    pod.args.runs_in_docker = False
+                    pod.update_worker_pea_args()
 
             self.object = self.object.__enter__()
         except Exception as e:
@@ -231,7 +211,7 @@ class PartialFlowStore(PartialStore):
                 ),
             )
 
-    def rolling_update(
+    async def rolling_update(
         self, pod_name: str, uses_with: Optional[Dict] = None
     ) -> PartialFlowItem:
         """Perform rolling_update on the Pod in current Flow
@@ -241,7 +221,7 @@ class PartialFlowStore(PartialStore):
         :return: Item describing the Flow object
         """
         try:
-            self.object.rolling_update(pod_name=pod_name, uses_with=uses_with)
+            await self._rolling_update(pod_name=pod_name, uses_with=uses_with)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
@@ -250,19 +230,43 @@ class PartialFlowStore(PartialStore):
             self._logger.success(f'Flow is successfully rolling_updated!')
             return self.item
 
-    def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
-        """Scale the Pod in current Flow
+    async def _rolling_update(
+        self,
+        pod_name: str,
+        uses_with: Optional[Dict] = None,
+    ):
+        """
+        Reload all replicas of a pod sequentially
 
+        :param pod_name: pod to update
+        :param uses_with: a Dictionary of arguments to restart the executor with
+        """
+        await self.object._pod_nodes[pod_name].rolling_update(uses_with=uses_with)
+
+    async def scale(self, pod_name: str, replicas: int) -> PartialFlowItem:
+        """Scale the Pod in current Flow
         :param pod_name: Pod to be scaled
         :param replicas: number of replicas for the Pod
         :return: Item describing the Flow object
         """
         try:
-            self.object.scale(pod_name=pod_name, replicas=replicas)
+            await self._scale(pod_name=pod_name, replicas=replicas)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        else:
-            self.item.arguments = vars(self.object.args)
-            self._logger.success(f'Flow is successfully scaled!')
-            return self.item
+        self.item.arguments = vars(self.object.args)
+        self._logger.success(f'Flow is successfully scaled!')
+        return self.item
+
+    async def _scale(
+        self,
+        pod_name: str,
+        replicas: int,
+    ):
+        """
+        Scale the amount of replicas of a given Executor.
+        :param pod_name: pod to update
+        :param replicas: The number of replicas to scale to
+        """
+
+        await self.object._pod_nodes[pod_name].scale(replicas)

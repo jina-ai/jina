@@ -1,9 +1,7 @@
+import os
+import time
 import asyncio
 import multiprocessing
-import os
-import signal
-import time
-from multiprocessing import Process
 
 import docker
 import pytest
@@ -69,13 +67,8 @@ def send_requests(
     'GITHUB_WORKFLOW' in os.environ,
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
-async def test_no_message_lost_during_scaling(
-    slow_process_executor_image,
-    logger,
-    k8s_cluster,
-    load_images_in_kind,
-    set_test_pip_version,
-):
+@pytest.mark.parametrize('docker_images', [['slow-process-executor']], indirect=True)
+async def test_no_message_lost_during_scaling(logger, docker_images):
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -83,10 +76,9 @@ async def test_no_message_lost_during_scaling(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=slow_process_executor_image,
+        uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
-        grpc_data_requests=True,
     )
 
     with flow:
@@ -104,7 +96,7 @@ async def test_no_message_lost_during_scaling(
             stop_event = multiprocessing.Event()
             scale_event = multiprocessing.Event()
             received_resposes = multiprocessing.Queue()
-            process = Process(
+            process = multiprocessing.Process(
                 target=send_requests,
                 kwargs={
                     'client_kwargs': client_kwargs,
@@ -165,13 +157,8 @@ async def test_no_message_lost_during_scaling(
     'GITHUB_WORKFLOW' in os.environ,
     reason='this actually does not work, there are messages lost when shutting down k8s pods',
 )
-async def test_no_message_lost_during_kill(
-    slow_process_executor_image,
-    logger,
-    k8s_cluster,
-    load_images_in_kind,
-    set_test_pip_version,
-):
+@pytest.mark.parametrize('docker_images', [['slow-process-executor']], indirect=True)
+async def test_no_message_lost_during_kill(logger, docker_images):
     flow = Flow(
         name='test-flow-slow-process-executor',
         infrastructure='K8S',
@@ -179,10 +166,9 @@ async def test_no_message_lost_during_kill(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=slow_process_executor_image,
+        uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
-        grpc_data_requests=True,
     )
 
     with flow:
@@ -198,7 +184,7 @@ async def test_no_message_lost_during_kill(
             stop_event = multiprocessing.Event()
             scale_event = multiprocessing.Event()
             received_resposes = multiprocessing.Queue()
-            process = Process(
+            process = multiprocessing.Process(
                 target=send_requests,
                 kwargs={
                     'client_kwargs': client_kwargs,
@@ -265,12 +251,12 @@ async def test_no_message_lost_during_kill(
             )
 
 
+@pytest.mark.parametrize(
+    'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
+)
 def test_linear_processing_time_scaling(
-    slow_process_executor_image,
+    docker_images,
     logger,
-    k8s_cluster,
-    load_images_in_kind,
-    set_test_pip_version,
 ):
     flow = Flow(
         name='test-flow-slow-process-executor',
@@ -279,10 +265,9 @@ def test_linear_processing_time_scaling(
         k8s_namespace='test-flow-slow-process-executor-ns',
     ).add(
         name='slow_process_executor',
-        uses=slow_process_executor_image,
+        uses=docker_images[0],
         timeout_ready=360000,
         replicas=3,
-        grpc_data_requests=True,
     )
 
     with flow:
@@ -301,7 +286,7 @@ def test_linear_processing_time_scaling(
             scale_event = multiprocessing.Event()
             received_resposes = multiprocessing.Queue()
             response_arrival_times = multiprocessing.Queue()
-            process = Process(
+            process = multiprocessing.Process(
                 target=send_requests,
                 kwargs={
                     'client_kwargs': client_kwargs,

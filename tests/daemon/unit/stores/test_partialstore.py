@@ -1,10 +1,11 @@
+import asyncio
 from pathlib import Path
 
 import pytest
 
-from daemon.models import PeaModel, FlowModel
-from daemon.stores.partial import PartialPeaStore, PartialFlowStore
-from jina import helper, Flow, __default_host__
+from daemon.models import FlowModel, PeaModel
+from daemon.stores.partial import PartialFlowStore, PartialPeaStore, PartialStoreItem
+from jina import Flow, __default_host__
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
 from jina.parsers.flow import set_flow_parser
@@ -33,10 +34,10 @@ def test_peastore_add(partial_pea_store):
     )
     assert partial_store_item
     assert partial_pea_store.object
+    assert partial_store_item.arguments['runtime_cls'] == 'WorkerRuntime'
     assert partial_pea_store.object.env['key1'] == 'val1'
-    assert partial_store_item.arguments['runtime_cls'] == 'ZEDRuntime'
     assert partial_store_item.arguments['host_in'] == __default_host__
-    assert partial_store_item.arguments['host_out'] == __default_host__
+    assert partial_store_item.arguments['host'] == __default_host__
 
 
 @pytest.mark.timeout(5)
@@ -62,29 +63,34 @@ def test_flowstore_add(monkeypatch, partial_flow_store):
     assert partial_flow_store.object.port_expose == 12345
 
 
-def test_flowstore_rolling_update(partial_flow_store, mocker):
+@pytest.mark.asyncio
+async def test_flowstore_rolling_update(partial_flow_store, mocker):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
 
     partial_flow_store.add(args)
 
-    rolling_update_mock = mocker.Mock()
-    partial_flow_store.object.rolling_update = rolling_update_mock
+    future = asyncio.Future()
+    future.set_result(PartialStoreItem())
+    mocker.patch(
+        'daemon.stores.partial.PartialFlowStore.rolling_update', return_value=future
+    )
 
-    partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
-    rolling_update_mock.assert_called()
+    resp = await partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
+    assert resp
 
 
-def test_flowstore_scale(partial_flow_store, mocker):
+@pytest.mark.asyncio
+async def test_flowstore_scale(partial_flow_store, mocker):
     flow_model = FlowModel()
     flow_model.uses = f'{cur_dir}/flow.yml'
     args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
 
     partial_flow_store.add(args)
 
-    scale_mock = mocker.Mock()
-    partial_flow_store.object.scale = scale_mock
-
-    partial_flow_store.scale(pod_name='executor1', replicas=2)
-    scale_mock.assert_called()
+    future = asyncio.Future()
+    future.set_result(PartialStoreItem())
+    mocker.patch('daemon.stores.partial.PartialFlowStore.scale', return_value=future)
+    resp = await partial_flow_store.scale(pod_name='executor1', replicas=2)
+    assert resp

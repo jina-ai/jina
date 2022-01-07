@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import inspect
 import json
 import math
 import os
@@ -16,6 +17,7 @@ from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
 from typing import (
+    Callable,
     Tuple,
     Optional,
     Iterator,
@@ -56,6 +58,10 @@ __all__ = [
     'get_or_reuse_loop',
     'T',
 ]
+
+
+if TYPE_CHECKING:
+    from docarray import DocumentArray
 
 T = TypeVar('T')
 
@@ -397,6 +403,9 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
+assigned_ports = set()
+
+
 def random_port() -> Optional[int]:
     """
     Get a random available port number from '49153' to '65535'.
@@ -412,13 +421,18 @@ def random_port() -> Optional[int]:
     def _get_port(port=0):
         with multiprocessing.Lock():
             with threading.Lock():
-                with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                    try:
-                        s.bind(('', port))
-                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                        return s.getsockname()[1]
-                    except OSError:
-                        pass
+                if port not in assigned_ports:
+                    with closing(
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    ) as s:
+                        try:
+                            s.bind(('', port))
+                            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                            return s.getsockname()[1]
+                        except OSError:
+                            pass
+                else:
+                    return None
 
     _port = None
     if 'JINA_RANDOM_PORT_MIN' in os.environ or 'JINA_RANDOM_PORT_MAX' in os.environ:
@@ -436,6 +450,7 @@ def random_port() -> Optional[int]:
     else:
         _port = _get_port()
 
+    assigned_ports.add(int(_port))
     return int(_port)
 
 
@@ -823,7 +838,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    import os, grpc, zmq, numpy, google.protobuf, yaml, platform
+    import os, grpc, google.protobuf, yaml, platform
     from . import (
         __version__,
         __proto_version__,
@@ -844,8 +859,6 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'docarray': __docarray_version__,
             'jina-proto': __proto_version__,
             'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
-            'libzmq': zmq.zmq_version(),
-            'pyzmq': numpy.__version__,
             'protobuf': google.protobuf.__version__,
             'proto-backend': api_implementation._default_implementation_type,
             'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
@@ -1163,6 +1176,16 @@ def is_jupyter() -> bool:  # pragma: no cover
         return False  # Other type (?)
 
 
+def iscoroutinefunction(func: Callable):
+    return inspect.iscoroutinefunction(func)
+
+
+async def run_in_threadpool(func: Callable, executor=None, *args, **kwargs):
+    return await get_or_reuse_loop().run_in_executor(
+        executor, functools.partial(func, *args, **kwargs)
+    )
+
+
 def run_async(func, *args, **kwargs):
     """Generalized asyncio.run for jupyter notebook.
 
@@ -1219,7 +1242,7 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        return asyncio.run(func(*args, **kwargs))
+        return get_or_reuse_loop().run_until_complete(func(*args, **kwargs))
 
 
 def slugify(value):

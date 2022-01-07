@@ -7,8 +7,9 @@ from kubernetes import client
 import jina
 from jina.helper import Namespace
 from jina.parsers import set_pod_parser, set_gateway_parser
+from jina.peapods.networking import K8sGrpcConnectionPool
 from jina.peapods.pods.k8s import K8sPod
-from jina.peapods.pods.k8slib import kubernetes_deployment, kubernetes_client
+from jina.peapods.pods.k8slib import kubernetes_deployment
 from jina.peapods.pods.k8slib.kubernetes_deployment import dictionary_to_cli_param
 
 
@@ -59,17 +60,21 @@ def test_parse_args(shards: int):
     pod = K8sPod(args)
 
     assert namespace_equal(
-        pod.deployment_args['head_deployment'], None if shards == 1 else args
+        pod.deployment_args['head_deployment'],
+        args,
+        skip_attr=('runtime_cls', 'pea_role', 'port_in'),
     )
-    assert namespace_equal(
-        pod.deployment_args['tail_deployment'], None if shards == 1 else args
-    )
+    assert pod.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
     for i, depl_arg in enumerate(pod.deployment_args['deployments']):
         import copy
 
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg == cargs
+        assert namespace_equal(
+            depl_arg,
+            cargs,
+            skip_attr=('runtime_cls', 'pea_role', 'port_in'),
+        )
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4, 5])
@@ -88,20 +93,27 @@ def test_parse_args_custom_executor(shards: int):
     )
     pod = K8sPod(args)
 
-    assert namespace_equal(
-        args, pod.deployment_args['head_deployment'], skip_attr=('uses',)
+    assert pod.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
+    assert pod.deployment_args['head_deployment'].uses_before == uses_before
+    assert (
+        pod.deployment_args['head_deployment'].uses_before_address == f'127.0.0.1:8082'
     )
-    assert pod.deployment_args['head_deployment'].uses == uses_before
-    assert namespace_equal(
-        args, pod.deployment_args['tail_deployment'], skip_attr=('uses',)
+    assert pod.deployment_args['head_deployment'].uses == jina.__default_executor__
+    assert pod.deployment_args['head_deployment'].uses_after == uses_after
+    assert (
+        pod.deployment_args['head_deployment'].uses_after_address == f'127.0.0.1:8083'
     )
-    assert pod.deployment_args['tail_deployment'].uses == uses_after
     for i, depl_arg in enumerate(pod.deployment_args['deployments']):
         import copy
 
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg == cargs
+
+        assert namespace_equal(
+            depl_arg,
+            cargs,
+            skip_attr=('uses_before', 'uses_after', 'port_in'),
+        )
 
 
 @pytest.mark.parametrize(
@@ -115,7 +127,13 @@ def test_parse_args_custom_executor(shards: int):
         (
             'test-pod',
             '1',
-            [{'name': 'test-pod', 'head_host': 'test-pod.ns.svc'}],
+            [
+                {
+                    'name': 'test-pod-head',
+                    'head_host': 'test-pod-head.ns.svc',
+                },
+                {'name': 'test-pod', 'head_host': 'test-pod.ns.svc'},
+            ],
         ),
         (
             'test-pod',
@@ -127,10 +145,6 @@ def test_parse_args_custom_executor(shards: int):
                 },
                 {'name': 'test-pod-0', 'head_host': 'test-pod-0.ns.svc'},
                 {'name': 'test-pod-1', 'head_host': 'test-pod-1.ns.svc'},
-                {
-                    'name': 'test-pod-tail',
-                    'head_host': 'test-pod-tail.ns.svc',
-                },
             ],
         ),
     ],
@@ -148,9 +162,7 @@ def test_deployments(name: str, shards: str, expected_deployments: List[Dict]):
     for actual, expected in zip(actual_deployments, expected_deployments):
         assert actual['name'] == expected['name']
         assert actual['head_host'] == expected['head_host']
-        assert actual['head_port_in'] == pod.fixed_head_port_in
-        assert actual['tail_port_out'] == pod.fixed_tail_port_out
-        assert actual['head_zmq_identity'] == pod.head_zmq_identity
+        assert actual['head_port_in'] == K8sGrpcConnectionPool.K8S_PORT_IN
 
 
 def get_k8s_pod(
@@ -206,9 +218,22 @@ def test_start_creates_namespace():
     ns = 'test'
     pod = get_k8s_pod('gateway', ns, port_expose=8085)
     kubernetes_deployment.deploy_service = Mock()
-    pod.start()
-    assert kubernetes_deployment.deploy_service.call_args[0][0] == 'gateway'
-    assert kubernetes_deployment.deploy_service.call_args[1]['port_expose'] == 8085
+    _mock_delete(pod)
+
+    with pod:
+        assert kubernetes_deployment.deploy_service.call_args[0][0] == 'gateway'
+        assert kubernetes_deployment.deploy_service.call_args[1]['port_expose'] == 8085
+
+
+def _mock_delete(pod):
+    mock = Mock()
+    mock.status = 'Success'
+    for d in pod.k8s_deployments:
+        d._delete_namespaced_deployment = lambda *args, **kwargs: mock
+    if pod.k8s_head_deployment:
+        pod.k8s_head_deployment._delete_namespaced_deployment = (
+            lambda *args, **kwargs: mock
+        )
 
 
 def test_start_deploys_gateway():
@@ -219,53 +244,56 @@ def test_start_deploys_gateway():
     kubernetes_deployment.get_cli_params = Mock()
 
     pod = get_k8s_pod(pod_name, ns)
-    pod.start()
+    _mock_delete(pod)
 
-    kubernetes_deployment.deploy_service.assert_called_once()
+    with pod:
+        kubernetes_deployment.deploy_service.assert_called_once()
 
-    assert kubernetes_deployment.deploy_service.call_args[0][0] == pod_name
-    call_kwargs = kubernetes_deployment.deploy_service.call_args[1]
-    assert call_kwargs['namespace'] == ns
-    assert pod.version in call_kwargs['image_name']
+        assert kubernetes_deployment.deploy_service.call_args[0][0] == pod_name
+        call_kwargs = kubernetes_deployment.deploy_service.call_args[1]
+        assert call_kwargs['namespace'] == ns
+        assert pod.version in call_kwargs['image_name']
 
-    kubernetes_deployment.get_cli_params.assert_called_once()
-    assert kubernetes_deployment.get_cli_params.call_args[0][0] == pod.args
-    assert kubernetes_deployment.get_cli_params.call_args[0][1] == ('pod_role',)
+        kubernetes_deployment.get_cli_params.assert_called_once()
 
 
-def test_start_deploys_runtime():
+@pytest.mark.parametrize(
+    'uses_before, uses_after',
+    [
+        (None, None),
+        ('uses_before_exec', None),
+        (None, 'uses_after_exec'),
+        ('uses_before_exec', 'uses_after_exec'),
+    ],
+)
+def test_start_deploys_runtime(uses_before, uses_after):
     pod_name = 'executor'
     namespace = 'ns'
-    pod = get_k8s_pod(pod_name, namespace)
+    pod = get_k8s_pod(
+        pod_name, namespace, uses_before=uses_before, uses_after=uses_after
+    )
+    _mock_delete(pod)
 
     assert len(pod.k8s_deployments) > 0
     for deployment in pod.k8s_deployments:
         deployment._construct_runtime_container_args = Mock()
+    pod.k8s_head_deployment._construct_runtime_container_args = Mock()
     kubernetes_deployment.deploy_service = Mock()
 
-    pod.start()
+    with pod:
+        assert 2 == kubernetes_deployment.deploy_service.call_count
+        dns_name = kubernetes_deployment.deploy_service.call_args[0][0]
+        kwargs = kubernetes_deployment.deploy_service.call_args[1]
 
-    kubernetes_deployment.deploy_service.assert_called_once()
-    dns_name = kubernetes_deployment.deploy_service.call_args[0][0]
-    kwargs = kubernetes_deployment.deploy_service.call_args[1]
+        assert dns_name == pod_name
+        assert kwargs['namespace'] == namespace
+        assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-perf'
+        assert kwargs['replicas'] == 1
+        assert kwargs['init_container'] is None
+        assert kwargs['custom_resource_dir'] is None
 
-    assert dns_name == pod_name
-    assert kwargs['namespace'] == namespace
-    assert kwargs['image_name'] == f'jinaai/jina:{pod.version}-py38-perf'
-    assert kwargs['replicas'] == 1
-    assert kwargs['init_container'] is None
-    assert kwargs['custom_resource_dir'] is None
-
-    assert len(pod.k8s_deployments) > 0
-    for i, deployment in enumerate(pod.k8s_deployments):
-        deployment._construct_runtime_container_args.assert_called_once()
-        call_args = deployment._construct_runtime_container_args.call_args[0]
-        assert call_args[0] == deployment.deployment_args
-        assert call_args[1] == pod.args.uses
-        assert call_args[2] == kubernetes_deployment.dictionary_to_cli_param(
-            {'pea_id': i}
-        )
-        assert call_args[3] == ''
+        assert len(pod.k8s_deployments) == 1
+        assert pod.k8s_head_deployment.head_port_in == 8081
 
 
 @pytest.mark.parametrize('shards', [2, 3, 4])
@@ -278,7 +306,7 @@ def test_start_deploys_runtime_with_shards(shards: int):
 
     pod.start()
 
-    expected_calls = shards + 2  # for head and tail
+    expected_calls = shards + 1  # for head
 
     assert expected_calls == kubernetes_deployment.deploy_service.call_count
 
@@ -291,20 +319,17 @@ def test_start_deploys_runtime_with_shards(shards: int):
     for i, call_args in enumerate(executor_call_args_list):
         assert call_args[0] == pod.name + f'-{i}'
 
-    tail_call_args = deploy_mock.call_args_list[-1][0]
-    assert tail_call_args[0] == pod.name + '-tail'
-
 
 @pytest.mark.parametrize(
     'needs, replicas, expected_calls, expected_executors',
     [
-        (None, 1, 1, ['executor']),
-        (None, 2, 1, ['executor']),
-        (['first_pod'], 1, 1, ['executor']),
-        (['first_pod'], 2, 1, ['executor']),
-        (['first_pod', 'second_pod'], 1, 1, ['executor']),
+        (None, 1, 2, ['executor-head', 'executor']),
+        (None, 2, 2, ['executor-head', 'executor']),
+        (['first_pod'], 1, 2, ['executor-head', 'executor']),
+        (['first_pod'], 2, 2, ['executor-head', 'executor']),
+        (['first_pod', 'second_pod'], 1, 2, ['executor-head', 'executor']),
         (['first_pod', 'second_pod'], 2, 2, ['executor-head', 'executor']),
-        (['first_pod', 'second_pod', 'third_pod'], 1, 1, ['executor']),
+        (['first_pod', 'second_pod', 'third_pod'], 1, 2, ['executor-head', 'executor']),
         (['first_pod', 'second_pod', 'third_pod'], 2, 2, ['executor-head', 'executor']),
     ],
 )
@@ -324,14 +349,14 @@ def test_needs(needs, replicas, expected_calls, expected_executors):
 @pytest.mark.parametrize(
     'uses_before, uses_after, expected_calls, expected_executors',
     [
-        (None, None, 1, ['executor']),
+        (None, None, 2, ['executor-head', 'executor']),
         ('custom_head', None, 2, ['executor-head', 'executor']),
-        (None, 'custom_tail', 2, ['executor', 'executor-tail']),
+        (None, 'custom_tail', 2, ['executor-head', 'executor']),
         (
             'custom_head',
             'custom_tail',
-            3,
-            ['executor-head', 'executor', 'executor-tail'],
+            2,
+            ['executor-head', 'executor'],
         ),
     ],
 )
@@ -447,8 +472,6 @@ def test_pod_start_close_given_tail_deployment(
     )
     with K8sPod(args) as pod:
         # enter `_deploy_runtime`
-        assert isinstance(pod.k8s_tail_deployment, K8sPod._K8sDeployment)
-        assert pod.k8s_tail_deployment.name == name + '-tail'
         assert pod.args.noblock_on_start
 
 
@@ -472,20 +495,6 @@ def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
         '--timeout-ready',
         '100',
     ]
-    if all_replicas_ready:
-        mocker.patch(
-            'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
-            return_value=client.V1Deployment(
-                status=client.V1DeploymentStatus(replicas=3, ready_replicas=3)
-            ),
-        )  # all ready
-    else:
-        mocker.patch(
-            'jina.peapods.pods.k8s.K8sPod._K8sDeployment._read_namespaced_deployment',
-            return_value=client.V1Deployment(
-                status=client.V1DeploymentStatus(replicas=3, ready_replicas=1)
-            ),
-        )  # not all peas ready
     args = set_pod_parser().parse_args(args_list)
     mocker.patch(
         'jina.peapods.pods.k8slib.kubernetes_deployment.deploy_service',
@@ -496,13 +505,35 @@ def test_pod_wait_for_success(all_replicas_ready, mocker, caplog):
         return_value=client.V1Status(status=200),
     )
     if all_replicas_ready:
-        with K8sPod(args):
+        pod = K8sPod(args)
+        pod.k8s_deployments[
+            0
+        ]._read_namespaced_deployment = lambda *args, **kwargs: client.V1Deployment(
+            status=client.V1DeploymentStatus(replicas=3, ready_replicas=3)
+        )
+        pod.k8s_head_deployment._read_namespaced_deployment = (
+            lambda *args, **kwargs: client.V1Deployment(
+                status=client.V1DeploymentStatus(replicas=1, ready_replicas=1)
+            )
+        )
+        with pod:
             pass
     else:
         # expect Number of ready replicas 1, waiting for 2 replicas to be available
         # keep waiting, and we set a small timeout-ready, raise the exception
+        pod = K8sPod(args)
+        pod.k8s_deployments[
+            0
+        ]._read_namespaced_deployment = lambda *args, **kwargs: client.V1Deployment(
+            status=client.V1DeploymentStatus(replicas=3, ready_replicas=1)
+        )
+        pod.k8s_head_deployment._read_namespaced_deployment = (
+            lambda *args, **kwargs: client.V1Deployment(
+                status=client.V1DeploymentStatus(replicas=1, ready_replicas=1)
+            )
+        )
         with pytest.raises(jina.excepts.RuntimeFailToStart):
-            with K8sPod(args):
+            with pod:
                 pass
 
 

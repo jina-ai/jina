@@ -3,18 +3,19 @@ import os
 import grpc
 
 from jina import __default_host__
-from ....grpc import Grpclet
 
 from .....proto import jina_pb2_grpc
-from ....zmq import AsyncZmqlet
-from ...zmq.asyncio import AsyncNewLoopRuntime
-from ....stream.gateway import GrpcGatewayStreamer, ZmqGatewayStreamer
+from .. import GatewayRuntime
+from ....stream import RequestStreamer
+from ..request_handling import handle_request, handle_result
 
-__all__ = ['GRPCRuntime']
+__all__ = ['GRPCGatewayRuntime']
+
+from .....types.request.control import ControlRequest
 
 
-class GRPCRuntime(AsyncNewLoopRuntime):
-    """Runtime for gRPC."""
+class GRPCGatewayRuntime(GatewayRuntime):
+    """Gateway Runtime for gRPC."""
 
     async def async_setup(self):
         """
@@ -32,29 +33,32 @@ class GRPCRuntime(AsyncNewLoopRuntime):
                 ('grpc.max_receive_message_length', -1),
             ]
         )
+        self._set_topology_graph()
+        self._set_connection_pool()
 
-        if self.args.grpc_data_requests:
-            self._grpclet = Grpclet(
-                args=self.args,
-                message_callback=None,
-                logger=self.logger,
-            )
-            self.streamer = GrpcGatewayStreamer(self.args, iolet=self._grpclet)
-        else:
-            self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
-            self.streamer = ZmqGatewayStreamer(self.args, iolet=self.zmqlet)
+        self.streamer = RequestStreamer(
+            args=self.args,
+            request_handler=handle_request(
+                graph=self._topology_graph, connection_pool=self._connection_pool
+            ),
+            result_handler=handle_result,
+        )
+
+        self.streamer.Call = self.streamer.stream
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
+        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
         bind_addr = f'{__default_host__}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
+        self.logger.debug(f' Start server bound to {bind_addr}')
         await self.server.start()
 
     async def async_teardown(self):
-        """Close the iolet"""
-        if self.args.grpc_data_requests:
-            await self._grpclet.close()
-        else:
-            self.zmqlet.close()
+        """Close the connection pool"""
+        # usually async_cancel should already have been called, but then its a noop
+        # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
+        await self.async_cancel()
+        await self._connection_pool.close()
 
     async def async_cancel(self):
         """The async method to stop server."""
@@ -62,4 +66,21 @@ class GRPCRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """The async running of server."""
+        self._connection_pool.start()
         await self.server.wait_for_termination()
+
+    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
+        """
+        Should be used to check readiness by sending STATUS ControlRequests.
+        Throws for any other command than STATUS.
+
+        :param request: the ControlRequest, should have command 'STATUS'
+        :param args: additional arguments in the grpc call, ignored
+        :returns: will be the original request
+        """
+
+        if self.logger.debug_enabled:
+            self._log_control_request(request)
+        if request.command != 'STATUS':
+            raise ValueError('Gateway only support STATUS ControlRequests')
+        return request

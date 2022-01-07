@@ -12,3 +12,4 @@ executors:
     polling: all
     uses_after: executors/merge_matches.yml
     timeout_ready: '-1'
+    timeout_ctrl: 10

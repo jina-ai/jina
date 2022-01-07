@@ -59,7 +59,7 @@ async def rolling_update(
     .. #noqa: DAR201
     """
     try:
-        return store.rolling_update(pod_name=pod_name, uses_with=uses_with)
+        return await store.rolling_update(pod_name=pod_name, uses_with=uses_with)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 
@@ -76,7 +76,7 @@ async def scale(pod_name: str, replicas: int):
     .. #noqa: DAR201
     """
     try:
-        return store.scale(pod_name=pod_name, replicas=replicas)
+        return await store.scale(pod_name=pod_name, replicas=replicas)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 

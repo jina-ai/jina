@@ -1,7 +1,6 @@
-import argparse
-
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
+from .peapods.runtimes.head import mixin_head_parser
 
 
 def set_pea_parser(parser=None):
@@ -16,8 +15,7 @@ def set_pea_parser(parser=None):
         parser = set_base_parser()
 
     from .peapods.base import mixin_base_ppr_parser
-    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
-    from .peapods.runtimes.zed import mixin_zed_runtime_parser
+    from .peapods.runtimes.worker import mixin_worker_runtime_parser
     from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import mixin_remote_runtime_parser
     from .peapods.pea import mixin_pea_parser
@@ -25,13 +23,13 @@ def set_pea_parser(parser=None):
     from .hubble.pull import mixin_hub_pull_options_parser
 
     mixin_base_ppr_parser(parser)
-    mixin_zmq_runtime_parser(parser)
-    mixin_zed_runtime_parser(parser)
+    mixin_worker_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
     mixin_hub_pull_options_parser(parser)
+    mixin_head_parser(parser)
 
     return parser
 
@@ -69,8 +67,7 @@ def set_gateway_parser(parser=None):
         parser = set_base_parser()
 
     from .peapods.base import mixin_base_ppr_parser
-    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
-    from .peapods.runtimes.zed import mixin_zed_runtime_parser
+    from .peapods.runtimes.worker import mixin_worker_runtime_parser
     from .peapods.runtimes.remote import (
         mixin_gateway_parser,
         mixin_prefetch_parser,
@@ -81,24 +78,21 @@ def set_gateway_parser(parser=None):
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
-    mixin_zmq_runtime_parser(parser)
-    mixin_zed_runtime_parser(parser)
+    mixin_worker_runtime_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
+    mixin_head_parser(parser)
     mixin_k8s_pod_parser(parser)
 
-    from ..enums import SocketType, PodRoleType
+    from ..enums import PodRoleType
 
     parser.set_defaults(
         name='gateway',
-        socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
-        socket_out=SocketType.PUSH_CONNECT,
-        ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-        runtime_cls='GRPCRuntime',
+        runtime_cls='GRPCGatewayRuntime',
         pod_role=PodRoleType.GATEWAY,
     )
 

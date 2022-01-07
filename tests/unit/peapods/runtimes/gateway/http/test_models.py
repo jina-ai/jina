@@ -32,11 +32,6 @@ def test_enum_definitions():
     ]['StatusCode']
     assert status_code_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
 
-    command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
-        'definitions'
-    ]['Command']
-    assert command_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
-
 
 def test_all_fields_in_document_proto():
     """This tests: all fields are picked from the proto definition"""

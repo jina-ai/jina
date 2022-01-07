@@ -4,13 +4,13 @@ import asyncio
 from jina import __default_host__
 
 from .....importer import ImportExtensions
-from ...zmq.asyncio import AsyncNewLoopRuntime
+from ...gateway import GatewayRuntime
 from .app import get_fastapi_app
 
-__all__ = ['HTTPRuntime']
+__all__ = ['HTTPGatewayRuntime']
 
 
-class HTTPRuntime(AsyncNewLoopRuntime):
+class HTTPGatewayRuntime(GatewayRuntime):
     """Runtime for HTTP interface."""
 
     async def async_setup(self):
@@ -51,9 +51,18 @@ class HTTPRuntime(AsyncNewLoopRuntime):
         from .....helper import extend_rest_interface
 
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
+        self._set_topology_graph()
+        self._set_connection_pool()
         self._server = UviServer(
             config=Config(
-                app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
+                app=extend_rest_interface(
+                    get_fastapi_app(
+                        self.args,
+                        topology_graph=self._topology_graph,
+                        connection_pool=self._connection_pool,
+                        logger=self.logger,
+                    )
+                ),
                 host=__default_host__,
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
@@ -64,6 +73,7 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
+        self._connection_pool.start()
         await self._server.serve()
 
     async def _wait_for_cancel(self):
@@ -77,6 +87,7 @@ class HTTPRuntime(AsyncNewLoopRuntime):
     async def async_teardown(self):
         """Shutdown the server."""
         await self._server.shutdown()
+        await self._connection_pool.close()
 
     async def async_cancel(self):
         """Stop the server."""
