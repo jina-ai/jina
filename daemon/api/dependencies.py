@@ -123,7 +123,6 @@ class FlowDepends:
             - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)
             - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
             - Pod level args for ports are enough, as we don't need to publish Pea ports
-            - all the above Pods also run in docker, hence we set `runs_in_docker`
         3. `save` the Flow config.
             - saves port configs of all `executors` into the new yaml.
             - set `JINA_FULL_CLI` envvar, so that `gateway` args are also added.
@@ -155,7 +154,6 @@ class FlowDepends:
                 if runtime_cls in ['WorkerRuntime'] + list(
                     GATEWAY_RUNTIME_DICT.values()
                 ):
-                    pod.args.runs_in_docker = True
                     current_ports = Ports()
                     for port_name in Ports.__fields__:
                         setattr(
@@ -255,7 +253,6 @@ class PeaDepends:
         # Each pea is inside a container
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
-        self.params.runs_in_docker = True
         self.device_requests = (
             get_gpu_device_requests(self.params.gpus) if self.params.gpus else None
         )

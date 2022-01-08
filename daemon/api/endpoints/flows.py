@@ -50,16 +50,9 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 async def _rolling_update(
     id: DaemonID,
     pod_name: str,
-    dump_path: Optional[str] = None,
     uses_with: Optional[Dict[str, Any]] = None,
 ):
     try:
-        if dump_path is not None:
-            if uses_with is not None:
-                uses_with['dump_path'] = dump_path
-            else:
-                uses_with = {'dump_path': dump_path}
-
         return await store.rolling_update(id=id, pod_name=pod_name, uses_with=uses_with)
     except Exception as ex:
         raise Runtime400Exception from ex

@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Dict, Optional, Type, List, Any
+from typing import TYPE_CHECKING, Any
 import inspect
 import os
 from types import SimpleNamespace
@@ -240,7 +240,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             shard_id = getattr(
                 self.runtime_args,
                 'shard_id',
-                getattr(self.runtime_args, 'pea_id', None),
+                None,
             )
             if replica_id is not None and replica_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))

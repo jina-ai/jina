@@ -788,7 +788,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     async def _process_item(self, item):
         try:
             jina_pod_name = item.metadata.labels['jina_pod_name']
-            is_head = item.metadata.labels['pea_type'] == 'head'
+            is_head = item.metadata.labels['pea_type'].lower() == 'head'
             shard_id = (
                 int(item.metadata.labels['shard_id'])
                 if item.metadata.labels['shard_id'] and not is_head
@@ -875,11 +875,15 @@ def create_connection_pool(
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
-        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+        import kubernetes
+        from kubernetes import client
 
-        k8s_clients = K8sClients()
+        kubernetes.config.load_incluster_config()
+
+        k8s_client = client.ApiClient()
+        core_client = client.CoreV1Api(api_client=k8s_client)
         return K8sGrpcConnectionPool(
-            namespace=k8s_namespace, client=k8s_clients.core_v1, logger=logger
+            namespace=k8s_namespace, client=core_client, logger=logger
         )
     else:
         return GrpcConnectionPool(logger=logger)
