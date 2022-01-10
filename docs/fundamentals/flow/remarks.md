@@ -247,6 +247,7 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
+
 - **Avoid un-picklable objects**
 
     [Here's a list of types that can be pickled in Python](https://docs.python.org/3/library/pickle.html#what-can-be-pickled-and-unpickled). Since `spawn` relies on pickling, we should avoid using code that cannot be pickled.
@@ -324,8 +325,4 @@ if __name__ == '__main__':
     main()
 ```
 ````
-
-
-
-
 
