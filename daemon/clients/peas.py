@@ -49,6 +49,7 @@ class AsyncPeaClient(AsyncBaseClient):
             if envs and isinstance(envs, Dict)
             else []
         )
+        self._logger.info(f'create pea with payload {payload} ')
         async with aiohttp.request(
             method='POST',
             url=self.store_api,
