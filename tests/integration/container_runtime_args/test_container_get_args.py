@@ -3,11 +3,12 @@ import os
 
 import pytest
 
-from jina import Flow, Document, DocumentArray
+from jina import Flow, Document, DocumentArray, Client
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 img_name = 'jina/replica-exec'
+exposed_port = 12345
 
 
 @pytest.fixture(scope='function')
@@ -26,7 +27,7 @@ def docker_image_built():
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 3, 4])
 def test_containerruntime_args(docker_image_built, shards, replicas):
-    f = Flow().add(
+    f = Flow(port_expose=exposed_port).add(
         name='executor_container',
         uses=f'docker://{img_name}',
         replicas=replicas,
@@ -34,7 +35,7 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
         polling='ANY',
     )
     with f:
-        ret1 = f.index(
+        ret1 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
