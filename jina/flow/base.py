@@ -1695,6 +1695,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
+                if node == 'gateway'
+                else None
                 if not k8s_connection_pool
                 else None,
             )

@@ -104,9 +104,7 @@ def mixin_pea_parser(parser):
         '--parallel',
         type=int,
         default=1,
-        help='The number of shards in the pod running at the same time, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary. For more details check '
+        help='The number of shards in the pod running at the same time. For more details check '
         'https://docs.jina.ai/fundamentals/flow/topology/',
     )
 
@@ -114,7 +112,5 @@ def mixin_pea_parser(parser):
         '--replicas',
         type=int,
         default=1,
-        help='The number of replicas in the pod, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
+        help='The number of replicas in the pod',
     )
