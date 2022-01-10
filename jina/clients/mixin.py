@@ -60,7 +60,7 @@ class PostMixin:
                     result.append(resp)
 
             if return_results:
-                if c.results_as_docarray:
+                if c.args.results_as_docarray:
                     docs = [r.data.docs for r in result]
                     if len(docs) < 1:
                         return docs

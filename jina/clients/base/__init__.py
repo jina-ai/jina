@@ -30,7 +30,6 @@ class BaseClient(ABC):
     def __init__(
         self,
         args: Optional['argparse.Namespace'] = None,
-        results_as_docarray=False,
         **kwargs,
     ):
         if args and isinstance(args, argparse.Namespace):
@@ -49,7 +48,6 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
-        self.results_as_docarray = results_as_docarray
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:

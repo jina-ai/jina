@@ -30,3 +30,10 @@ def mixin_client_features_parser(parser):
         default=False,
         help='If set, then the input and output of this Client work in an asynchronous manner. ',
     )
+
+    parser.add_argument(
+        '--results-as-docarray',
+        action='store_true',
+        default=False,
+        help="If set, return results as DocArray instead of Request.",
+    )
