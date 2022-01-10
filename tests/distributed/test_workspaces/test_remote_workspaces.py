@@ -215,7 +215,7 @@ def docker_compose(request):
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_upload_simple_non_standard_rootworkspace(docker_compose):
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
             uses='mwu_encoder.yml',
@@ -225,7 +225,7 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose):
         .add()
     )
     with f:
-        responses = f.index(
+        responses = Client(port=exposed_port).index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
             return_results=True,
         )
