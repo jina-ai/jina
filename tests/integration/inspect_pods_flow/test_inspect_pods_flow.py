@@ -3,8 +3,10 @@ import os
 import pytest
 
 from docarray.simple import NamedScoreMap
-from jina import Flow, Executor, DocumentArray, requests
+from jina import Flow, Executor, DocumentArray, Client, requests
 from tests import random_docs
+
+exposed_port = 12345
 
 
 class DummyEvaluator1(Executor):
@@ -151,7 +153,7 @@ def test_flow_returned_collect(protocol):
         assert 10.0 in scores
 
     f = (
-        Flow(protocol=protocol, inspect='COLLECT')
+        Flow(protocol=protocol, inspect='COLLECT', port_expose=exposed_port)
         .add()
         .inspect(
             uses=AddEvaluationExecutor,
@@ -159,7 +161,9 @@ def test_flow_returned_collect(protocol):
     )
 
     with f:
-        response = f.index(inputs=docs, return_results=True)
+        response = Client(port=exposed_port, protocol=protocol).index(
+            inputs=docs, return_results=True
+        )
     validate_func(response[0])
 
 
@@ -172,7 +176,7 @@ def test_flow_not_returned(inspect, protocol):
             assert len(NamedScoreMap(doc.evaluations)) == 0
 
     f = (
-        Flow(protocol=protocol, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect, port_expose=exposed_port)
         .add()
         .inspect(
             uses=AddEvaluationExecutor,
@@ -180,6 +184,8 @@ def test_flow_not_returned(inspect, protocol):
     )
 
     with f:
-        res = f.index(inputs=docs, return_results=True)
+        res = Client(protocol=protocol, port=exposed_port).index(
+            inputs=docs, return_results=True
+        )
 
     validate_func(res[0])

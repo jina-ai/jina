@@ -1,6 +1,6 @@
 from typing import Dict
 
-from jina import Flow, DocumentArray, Document, Executor, requests
+from jina import Flow, DocumentArray, Document, Executor, Client, requests
 
 ORIGINAL_PARAMS = {'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}}
 OVERRIDEN_EXECUTOR1_PARAMS = {
@@ -8,6 +8,7 @@ OVERRIDEN_EXECUTOR1_PARAMS = {
     'param2': 60,
     'exec_name': {'param1': 'changed'},
 }
+exposed_port = 12345
 
 
 class DummyOverrideParams(Executor):
@@ -33,7 +34,7 @@ class DummyAssertIfParamsCanBeChangedInsidePods(Executor):
 
 def test_override_params(mocker):
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(
             uses={'jtype': 'DummyOverrideParams', 'metas': {'name': 'exec_name'}},
         )
@@ -44,7 +45,7 @@ def test_override_params(mocker):
     error_mock = mocker.Mock()
 
     with f:
-        resp = f.index(
+        resp = Client(port=exposed_port).index(
             inputs=DocumentArray([Document()]),
             parameters={'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}},
             on_error=error_mock,

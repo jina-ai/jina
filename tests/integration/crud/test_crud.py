@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-from jina import Flow, Document
+from jina import Flow, Document, Client
 from tests import random_docs
 
 # noinspection PyUnresolvedReferences
@@ -36,22 +36,24 @@ def test_crud(tmpdir, rest):
     os.environ['WORKSPACE'] = str(tmpdir)
 
     with Flow.load_config('flow.yml') as f:
+        c = Client(port=f.port_expose)
         original_docs = list(random_docs(10, chunks_per_doc=0))
         if rest:
             rest_post(f, 'index', original_docs)
         else:
-            f.post(
+            c.post(
                 on='/index',
                 inputs=original_docs,
             )
 
     with Flow.load_config('flow.yml') as f:
+        c = Client(port=f.port_expose)
         inputs = list(random_docs(1))
         if rest:
             results = rest_post(f, 'search', inputs)
             matches = results['data']['docs'][0]['matches']
         else:
-            results = f.post(
+            results = c.post(
                 on='/search', inputs=inputs, parameters=PARAMS, return_results=True
             )
             matches = results[0].docs[0].matches
@@ -59,15 +61,17 @@ def test_crud(tmpdir, rest):
         assert len(matches) == 10
 
     with Flow.load_config('flow.yml') as f:
+        c = Client(port=f.port_expose)
         inputs = list(random_docs(5, chunks_per_doc=0))
 
         if rest:
             rest_post(f, 'delete', inputs)
 
         else:
-            f.post(on='/delete', inputs=inputs)
+            c.post(on='/delete', inputs=inputs)
 
     with Flow.load_config('flow.yml') as f:
+        c = Client(port=f.port_expose)
         inputs = list(random_docs(1))
 
         if rest:
@@ -75,7 +79,7 @@ def test_crud(tmpdir, rest):
             matches = results['data']['docs'][0]['matches']
 
         else:
-            results = f.post(
+            results = c.post(
                 on='/search', inputs=inputs, parameters=PARAMS, return_results=True
             )
             matches = results[0].docs[0].matches
@@ -87,12 +91,14 @@ def test_crud(tmpdir, rest):
     )
 
     with Flow.load_config('flow.yml') as f:
+        c = Client(port=f.port_expose)
         if rest:
             rest_post(f, 'update', updated_docs)
         else:
-            f.post(on='/update', inputs=updated_docs)
+            c.post(on='/update', inputs=updated_docs)
 
     with Flow.load_config('flow.yml') as f:
+        c = Client(port=f.port_expose)
         inputs = list(random_docs(1))
         if rest:
             results = rest_post(f, 'search', inputs)
@@ -100,7 +106,7 @@ def test_crud(tmpdir, rest):
                 results['data']['docs'][0]['matches'], key=lambda match: match['id']
             )
         else:
-            results = f.post(
+            results = c.post(
                 on='/search', inputs=inputs, parameters=PARAMS, return_results=True
             )
             matches = sorted(results[0].docs[0].matches, key=lambda match: match.id)

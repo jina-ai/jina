@@ -10,6 +10,7 @@ import pytest
 from jina import Document, Flow, Executor, requests, Client
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+exposed_port = 12345
 
 
 @pytest.fixture
@@ -246,7 +247,7 @@ class UpdateExecutor(Executor):
 
 @pytest.mark.timeout(60)
 def test_override_uses_with(docs):
-    flow = Flow().add(
+    flow = Flow(port_expose=exposed_port).add(
         name='executor1',
         uses=UpdateExecutor,
         replicas=2,
@@ -254,13 +255,13 @@ def test_override_uses_with(docs):
     )
     with flow:
         # test rolling update does not hang
-        ret1 = flow.search(docs, return_results=True)
+        ret1 = Client(port=exposed_port).search(docs, return_results=True)
         flow.rolling_update(
             'executor1',
             dump_path='/tmp/dump_path2/',
             uses_with={'argument1': 'version2', 'argument2': 'version2'},
         )
-        ret2 = flow.search(docs, return_results=True)
+        ret2 = Client(port=exposed_port).search(docs, return_results=True)
 
     assert len(ret1) > 0
     assert len(ret1[0].docs) > 0
@@ -285,16 +286,20 @@ def test_override_uses_with(docs):
 def test_scale_after_rolling_update(
     docs, replicas, scale_to, expected_before_scale, expected_after_scale
 ):
-    flow = Flow().add(
+    flow = Flow(port_expose=exposed_port).add(
         name='executor1',
         uses=DummyMarkExecutor,
         replicas=replicas,
     )
     with flow:
-        ret1 = flow.search(docs, return_results=True, request_size=1)
+        ret1 = Client(port=exposed_port).search(
+            docs, return_results=True, request_size=1
+        )
         flow.rolling_update('executor1', None)
         flow.scale('executor1', replicas=scale_to)
-        ret2 = flow.search(docs, return_results=True, request_size=1)
+        ret2 = Client(port=exposed_port).search(
+            docs, return_results=True, request_size=1
+        )
 
     replica_ids = set()
     for r in ret1:
