@@ -1,5 +1,5 @@
 from docarray import DocumentArray
-from jina import Document, Executor, Flow, requests
+from jina import Document, Executor, Flow, Client, requests, types
 
 import pytest
 
@@ -65,3 +65,17 @@ def test_empty_docarray():
         docs = f.post(on='/')
     assert isinstance(docs, DocumentArray)
     assert len(docs) == 0
+
+
+def test_flow_client_defaults():
+    exposed_port = 12345
+    f = Flow(port_expose=exposed_port).add(uses=SimplExecutor)
+    c = Client(port=exposed_port)
+    with f:
+        docs = f.post(on='/index', inputs=[Document()], return_results=True)
+        results = c.post(on='/index', inputs=[Document()], return_results=True)
+    assert isinstance(docs, DocumentArray)
+    assert docs[0].text == 'Hello World!'
+    assert isinstance(results, list)
+    assert isinstance(results[0], types.request.data.DataRequest)
+    assert results[0].docs[0].text == 'Hello World!'
