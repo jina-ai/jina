@@ -73,19 +73,12 @@ def test_sync_jinad_client(jinad_client, pea_args):
     assert jinad_client.workspaces.delete(workspace_id)
 
 
-@pytest.mark.parametrize(
-    'worker_cls, event',
-    [
-        (multiprocessing.Process, multiprocessing.Event),
-        (threading.Thread, threading.Event),
-    ],
-)
-def test_jinad_process_target(worker_cls, event, pea_args):
+def test_jinad_process_target(pea_args):
     is_started_event, is_shutdown_event, is_ready_event, is_cancelled_event = [
-        event()
+        multiprocessing.Event()
     ] * 4
 
-    process = worker_cls(
+    process = multiprocessing.Process(
         target=JinaDProcessTarget(),
         kwargs={
             'args': pea_args,
@@ -104,9 +97,8 @@ def test_jinad_process_target(worker_cls, event, pea_args):
     assert not is_pea_ready(pea_args)
 
 
-@pytest.mark.parametrize('runtime_backend', ['PROCESS', 'THREAD'])
-def test_jinad_pea(runtime_backend):
-    args = set_pea_parser().parse_args(['--runtime-backend', runtime_backend])
+def test_jinad_pea():
+    args = set_pea_parser().parse_args([])
     assert not is_pea_ready(args)
 
     with JinaDPea(args):
