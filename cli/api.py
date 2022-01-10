@@ -10,10 +10,10 @@ def pod(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.pods.factory import PodFactory
+    from jina.peapods.pods import Pod
 
     try:
-        with PodFactory.build_pod(args) as p:
+        with Pod(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass

@@ -47,10 +47,9 @@ def set_pod_parser(parser=None):
 
     set_pea_parser(parser)
 
-    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
+    from .peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
-    mixin_k8s_pod_parser(parser)
 
     return parser
 
@@ -74,7 +73,7 @@ def set_gateway_parser(parser=None):
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
-    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
+    from .peapods.pod import mixin_base_pod_parser
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
@@ -86,7 +85,6 @@ def set_gateway_parser(parser=None):
     mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
     mixin_head_parser(parser)
-    mixin_k8s_pod_parser(parser)
 
     from ..enums import PodRoleType
 

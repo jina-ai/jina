@@ -23,8 +23,8 @@ Here are some managed `Kubernetes` cluster solutions you could use:
 
 ## Deploy your `Flow`
 
-To deploy a `Flow` on `Kubernetes`, you have to set `infrastructure='K8S'` when creating the `Flow`.
-The context manager makes sure to deploy the `Flow` when entering the context and to clean it up when leaving the context.
+To deploy a `Flow` on `Kubernetes`, first, you have to generate kubernetes YAML configuration files from a Jina Flow.
+Then, you can use the `kubectl apply` command to create or update your Flow resources within your cluster.
 
 ```{caution}
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
@@ -34,58 +34,45 @@ All Executors in the Flow should be used with `jinahub+docker://...` or `docker:
 
 ### CLIP image encoder
 
-The following code deploys a simple `Flow` with just a single `Executor`.
-It does the following:
-- deploying the `CLIP Executor` and the `Gateway` when entering the context of the `Flow`
-- sending an example image to the `Flow` using `port-forward`
-- printing the dimension of the resulting embedding
-- cleaning up the deployment when leaving the context of the `Flow`
+Let's create a Flow with a single Executor from Jina Hub:
 
 ```python
-import numpy as np
-from jina import Flow, Document
-
-f = Flow(name='example-clip', port_expose=8080, infrastructure='K8S', protocol='http').add(
-    uses='jinahub+docker://CLIPImageEncoder'
-)
-
-with f:
-    resp = f.index(Document(id=f'image', blob=np.random.rand(3, 16, 16)), return_results=True)
-    print('embedding size: ', len(resp[0].docs[0].embedding))
-```
-Console output:
-```txt
-create_example-clip@15611[I]:🏝️	Create Namespace "example-clip"
-⠸ 0/2 waiting executor0 gateway to be ready...waiting_for_gateway@15611[L]: gateway has all its replicas ready!!
-⠋ 1/2 waiting executor0 to be ready...waiting_for_executor0@15611[L]: executor0 has all its replicas ready!!
-Forwarding from 127.0.0.1:8080 -> 8080
-Forwarding from [::1]:8080 -> 8080
-embedding size:  512                                                                                       
-```
-
-You might have noticed that the above `Flow` has been deployed to the Namespace `example-clip`.
-By default, we use the `Flow` name as the `Kubernetes` namespace.
-However, you can deploy `Flow` to any given `Namespace`, like this:
-
-```{code-block} python
----
-emphasize-lines: 8
----
 from jina import Flow
 
-f = Flow(
-    name='example-clip',
-    port_expose=8080,
-    infrastructure='K8S',
-    protocol='http',
-    k8s_namespace='custom-namespace',
-).add(uses='jinahub+docker://CLIPImageEncoder')
+f = Flow(port_expose=8080, protocol='http').add(
+    uses='jinahub+docker://CLIPImageEncoder'
+)
+```
+
+Now, we can generate Kubernetes YAML configs from the Flow:
+
+```python
+f.to_k8s_yaml('./my_cluster', k8s_namespace='custom-namespace')
+```
+
+You should expect the following file structure generated:
+
+```
+.
+└── my_cluster
+    ├── gateway
+    │   └── gateway.yml
+    └── executor0
+        ├── executor0.yml
+        └── executor0-head-0.yml
+```
+
+As you can see, the Flow contains configuration for the gateway and 2 configuration files for the Executor.
+
+Now, you can deploy this Flow to you cluster in the following way:
+```shell
+kubectl apply -f ./my_cluster
 ```
 
 ```{admonition} Caution
 :class: caution
 We heavily recommend you to deploy each `Flow` into a separate namespace. In particular it should not be deployed into namespaces, where other essential non Jina services are running. 
-if `custom-namespace` has been used by another `Flow`, please set a different `k8s_namespace` name.
+If `custom-namespace` has been used by another `Flow`, please set a different `k8s_namespace` name.
 ```
 
 ### Postgres indexer
