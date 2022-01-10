@@ -13,6 +13,7 @@ IMG_NAME = 'jina/scale-executor'
 NUM_CONCURRENT_CLIENTS = 20
 NUM_DOCS_SENT_BY_CLIENTS = 50
 CLOUD_HOST = 'localhost:8000'
+exposed_port = 12345
 
 
 @pytest.fixture
@@ -74,7 +75,7 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
             request_size=10,
         )
         f.scale(pod_name='executor', replicas=scale_to)
-        ret2 = f.index(
+        ret2 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,

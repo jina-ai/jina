@@ -1,10 +1,11 @@
 import os
 
 import pytest
-from jina import Flow, Document, __default_host__
+from jina import Flow, Document, Client, __default_host__
 
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+exposed_port = 12345
 
 """
 Upload executors in `Flow().add()` syntax to JinaD
@@ -88,9 +89,11 @@ src5: Multiple python files in multiple directories with custom dependencies
     ],
 )
 def test_remote_executor_via_config_yaml(upload_files, config_yml):
-    f = Flow().add(host=CLOUD_HOST, uses=config_yml, upload_files=upload_files)
+    f = Flow(port_expose=exposed_port).add(
+        host=CLOUD_HOST, uses=config_yml, upload_files=upload_files
+    )
     with f:
-        resp = f.post(
+        resp = Client(port=exposed_port).post(
             on='/',
             inputs=Document(text=config_yml),
             return_results=True,
@@ -116,14 +119,14 @@ def test_remote_executor_via_config_yaml(upload_files, config_yml):
     ],
 )
 def test_remote_executor_via_pymodules(upload_files, uses, py_modules):
-    f = Flow().add(
+    f = Flow(port_expose=exposed_port).add(
         host=CLOUD_HOST,
         uses=uses,
         py_modules=py_modules,
         upload_files=upload_files,
     )
     with f:
-        resp = f.post(
+        resp = Client(port=exposed_port).post(
             on='/',
             inputs=Document(text=py_modules),
             return_results=True,
