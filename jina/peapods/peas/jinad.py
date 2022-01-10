@@ -230,12 +230,15 @@ class JinaDPea(BasePea):
         :param timeout: The time to wait before readiness or failure is determined
             .. # noqa: DAR201
         """
-        return self.wait_for_ready_or_shutdown(
+        is_ready_or_shutdown = self.wait_for_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
             ctrl_address=self.runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
         )
+        if is_ready_or_shutdown:
+            is_ready_or_shutdown = is_ready(self.runtime_ctrl_address)
+        return is_ready_or_shutdown
 
     @staticmethod
     def wait_for_ready_or_shutdown(
@@ -260,7 +263,7 @@ class JinaDPea(BasePea):
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             # is_ready returns True is the Pea is actually created by JinaD
             # ready_or_shutdown_event is set after JinaDProcessTarget
-            if ready_or_shutdown_event.is_set() or is_ready(ctrl_address):
+            if ready_or_shutdown_event.is_set():
                 return True
             time.sleep(0.1)
         return False
