@@ -40,7 +40,7 @@ class A(Executor):
 ```
 
 ````{tab} Default Reduce
-​```python
+```python
 f = Flow().add(uses=A).add(uses=B, needs='gateway').add(needs=['executor0', 'executor1'])
 
 with f:
@@ -56,8 +56,8 @@ hello 2
 ```
 ````
 
-​````{tab} Simple Custom Reduce
-​```python
+````{tab} Simple Custom Reduce
+```python
 class C(Executor):
 
     @requests
@@ -82,8 +82,8 @@ hello 2
 ```
 ````
 
-​````{tab} Custom Reduce with docs_matrix
-​```python
+````{tab} Custom Reduce with docs_matrix
+```python
 class C(Executor):
 
     @requests
@@ -107,10 +107,10 @@ world 2-hello 2
 ```
 ````
 
-​````{tab} Custom Reduce with modification
+````{tab} Custom Reduce with modification
 You can also modify the Documents while merging:
 
-​```python
+```python
 class C(Executor):
 
     @requests
@@ -146,12 +146,12 @@ Few cases require to use `spawn` start method for multiprocessing.
 
     ````{hint}
     There's no need to set this for Windows, as it only supports spawn method for multiprocessing. 
-````
+    ````
 
 - Define & start the Flow via an explicit function call inside `if __name__ == '__main__'`. For example
 
     ````{tab} ✅ Do
-    ​```{code-block} python
+    ```{code-block} python
     ---
     emphasize-lines: 13, 14
     ---
@@ -173,8 +173,8 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
-    ​````{tab} 😔 Don't
-    ​```{code-block} python
+    ````{tab} 😔 Don't
+    ```{code-block} python
     ---
     emphasize-lines: 2
     ---
@@ -211,7 +211,7 @@ Few cases require to use `spawn` start method for multiprocessing.
 - Declare Executors on the top-level of the module 
 
     ````{tab} ✅ Do
-    ​```{code-block} python
+    ```{code-block} python
     ---
     emphasize-lines: 1
     ---
@@ -229,8 +229,8 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
-    ​````{tab} 😔 Don't
-    ​```{code-block} python
+    ````{tab} 😔 Don't
+    ```{code-block} python
     ---
     emphasize-lines: 2
     ---
@@ -247,6 +247,7 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
+
 - **Avoid un-picklable objects**
 
     [Here's a list of types that can be pickled in Python](https://docs.python.org/3/library/pickle.html#what-can-be-pickled-and-unpickled). Since `spawn` relies on pickling, we should avoid using code that cannot be pickled.
@@ -254,7 +255,7 @@ Few cases require to use `spawn` start method for multiprocessing.
     ````{hint}
     Here are a few errors which indicates that you are using some code that is not pickable.
 
-    ​```bash
+    ```bash
     pickle.PicklingError: Can't pickle: it's not the same object
     AssertionError: can only join a started process
     ```
@@ -273,57 +274,55 @@ Few cases require to use `spawn` start method for multiprocessing.
 
 ## Debugging Executor in a Flow
 
-Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip instal epdb` to have acces to this type of breakpoints.
+Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip install epdb` to have acces to this type of breakpoints.
 
 
-- Write `import epdb; epdb.set_trace()` in the line you want to stop the execution.
+````{tab} ✅ Do
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Flow, Executor, requests
+ 
+class CustomExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        a = 25
+        import epdb; epdb.set_trace() 
+        print(f'\n\na={a}\n\n')
+ 
+def main():
+    f = Flow().add(uses=CustomExecutor)
+    with f:
+        f.post(on='')
 
-    ````{tab} ✅ Do
-    ​```{code-block} python
-    ---
-    emphasize-lines: 7
-    ---
-    
-    from jina import Flow, Executor, requests
-     
-    class CustomExecutor(Executor):
-        @requests
-        def foo(self, **kwargs):
-            a = 25
-            import epdb; epdb.set_trace() 
-            print(f'\n\na={a}\n\n')
-    
-    def main():
-        f = Flow().add(uses=CustomExecutor)
-        with f:
-            f.post(on='')
-    
-    if __name__ == '__main__':
-        main()
-    
-    ```
-    ````
-    
-    ​````{tab} 😔 Don't
-    ​```{code-block} python
-    ---
-    emphasize-lines: 7
-    ---
-    from jina import Flow, Executor, requests
-     
-    class CustomExecutor(Executor):
-        @requests
-        def foo(self, **kwargs):
-            a = 25
-            breakpoint()
-            print(f'\n\na={a}\n\n')
-    
-    def main():
-        f = Flow().add(uses=CustomExecutor)
-        with f:
-            f.post(on='')
-     
-    if __name__ == '__main__':
-        main()
-    ```
-    ````
+if __name__ == '__main__':
+    main()
+
+```
+````
+
+````{tab} 😔 Don't
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Flow, Executor, requests
+ 
+class CustomExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        a = 25
+        breakpoint()
+        print(f'\n\na={a}\n\n')
+ 
+def main():
+    f = Flow().add(uses=CustomExecutor)
+    with f:
+        f.post(on='')
+ 
+if __name__ == '__main__':
+    main()
+```
+````
+
