@@ -146,7 +146,8 @@ class ContainerStore(BaseStore, ABC):
                     f'{workspace_id} is not ACTIVE yet. Please retry once it becomes ACTIVE'
                 )
 
-            partiald_port = random_port()
+            partiald_port = self._find_partiald_port()
+
             dockerports = (
                 ports.docker_ports if isinstance(ports, PortMappings) else ports
             )
@@ -222,6 +223,17 @@ class ContainerStore(BaseStore, ABC):
             )
             workspace_store[workspace_id].metadata.managed_objects.add(id)
             return id
+
+    def _find_partiald_port(self):
+        exposed_docker_ports = Dockerizer.exposed_ports()
+        partiald_port = random_port()
+        port_assignment_runs = 0
+        while partiald_port in exposed_docker_ports:
+            if port_assignment_runs >= 2 ** 16:
+                raise OSError('No available ports to new container')
+            partiald_port = random_port()
+            port_assignment_runs += 1
+        return partiald_port
 
     @BaseStore.dump
     async def delete(self, id: DaemonID, **kwargs) -> None:

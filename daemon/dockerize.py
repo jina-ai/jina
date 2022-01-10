@@ -470,3 +470,17 @@ class Dockerizer:
     def _validate(cls):
         # TODO
         pass
+
+    @classmethod
+    def exposed_ports(cls):
+        """
+        Checks the currently running docker containers for ports exposed to the host
+        :return: A set of ports exposed by all currently running docker containers
+        """
+        ports = set()
+
+        for c in cls.client.containers.list():
+            for port_list in c.ports.values():
+                for port_mapping in port_list:
+                    ports.add(port_mapping['HostPort'])
+        return ports
