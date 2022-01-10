@@ -18,13 +18,12 @@ def mock_is_ready(*args):
 @pytest.mark.skip(
     "Does not work for some reason, should be reenabled when jinad is properly implemented"
 )
-@pytest.mark.parametrize('runtime_backend', ['PROCESS', 'THREAD'])
-def test_events(monkeypatch, runtime_backend):
+def test_events(monkeypatch):
     monkeypatch.setattr(JinaDProcessTarget, '_create_remote_pea', mock_sleep)
     monkeypatch.setattr(JinaDProcessTarget, '_terminate_remote_pea', mock_sleep)
     monkeypatch.setattr(JinaDProcessTarget, '_stream_logs', mock_sleep)
     monkeypatch.setattr(jinad, 'is_ready', mock_is_ready)
-    args = set_pea_parser().parse_args(['--runtime-backend', runtime_backend])
+    args = set_pea_parser().parse_args([])
 
     pea = JinaDPea(args)
     assert not pea.is_started.is_set()
