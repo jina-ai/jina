@@ -481,6 +481,7 @@ class Dockerizer:
 
         for c in cls.client.containers.list():
             for port_list in c.ports.values():
-                for port_mapping in port_list:
-                    ports.add(port_mapping['HostPort'])
+                if port_list:
+                    for port_mapping in port_list:
+                        ports.add(port_mapping['HostPort'])
         return ports
