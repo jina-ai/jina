@@ -103,9 +103,8 @@ def test_jinad_process_target(worker_cls, event, pea_args):
     assert not is_pea_ready(pea_args)
 
 
-@pytest.mark.parametrize('runtime_backend', ['PROCESS', 'THREAD'])
-def test_jinad_pea(runtime_backend):
-    args = set_pea_parser().parse_args(['--runtime-backend', runtime_backend])
+def test_jinad_pea():
+    args = set_pea_parser().parse_args([])
     assert not is_pea_ready(args)
 
     with JinaDPea(args):
