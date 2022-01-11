@@ -266,7 +266,6 @@ class Pod(BasePod):
                 new_args.noblock_on_start = True
                 new_args.name = new_args.name[:-1] + f'{i}'
                 new_args.port_in = helper.random_port()
-                new_args.replica_id = i
                 # no exception should happen at create and enter time
                 new_peas.append(PeaFactory.build_pea(new_args).start())
                 new_args_list.append(new_args)
@@ -356,10 +355,6 @@ class Pod(BasePod):
             for _args in self.args:
                 if getattr(self.pod_args, 'noblock_on_start', False):
                     _args.noblock_on_start = True
-                if (
-                    self.pod_args.replicas == 1
-                ):  # keep backwards compatibility with `workspace` in `Executor`
-                    _args.replica_id = -1
                 self._peas.append(PeaFactory.build_pea(_args).start())
             return self
 
@@ -764,7 +759,6 @@ class Pod(BasePod):
             for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
-                _args.replica_id = idx
                 _args.pea_role = PeaRoleType.WORKER
                 _args.identity = random_identity()
 

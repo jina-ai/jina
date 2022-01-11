@@ -130,13 +130,10 @@ class DockerComposeConfig:
         ) -> List[Dict]:
             # One Dict for replica
             replica_configs = []
-            for replica_id in range(self.service_args.replicas):
+            for i_rep in range(self.service_args.replicas):
                 cargs = copy.copy(self.service_args)
-                cargs.replica_id = (
-                    replica_id if self.service_args.replicas > 1 else -1
-                )  # keep backwards compatibility with `workspace` in `Executor`
                 cargs.name = (
-                    f'{cargs.name}/rep-{replica_id}'
+                    f'{cargs.name}/rep-{i_rep}'
                     if self.service_args.replicas > 1
                     else cargs.name
                 )
@@ -253,9 +250,9 @@ class DockerComposeConfig:
             for shard_id in range(shards):
                 shard_name = f'{self.name}-{shard_id}' if shards > 1 else f'{self.name}'
                 connection_list[str(shard_id)] = []
-                for replica_id in range(replicas):
+                for i_rep in range(replicas):
                     replica_name = (
-                        f'{shard_name}/rep-{replica_id}' if replicas > 1 else shard_name
+                        f'{shard_name}/rep-{i_rep}' if replicas > 1 else shard_name
                     )
                     connection_list[str(shard_id)].append(
                         f'{to_compatible_name(replica_name)}:{PORT_IN}'
@@ -267,7 +264,6 @@ class DockerComposeConfig:
             uses_before_cargs = copy.deepcopy(args)
             uses_before_cargs.shard_id = 0
             uses_before_cargs.replicas = 1
-            uses_before_cargs.replica_id = -1
             uses_before_cargs.name = f'{args.name}/uses-before'
             uses_before_cargs.uses = args.uses_before
             uses_before_cargs.uses_before = None
@@ -289,7 +285,6 @@ class DockerComposeConfig:
             uses_after_cargs = copy.deepcopy(args)
             uses_after_cargs.shard_id = 0
             uses_after_cargs.replicas = 1
-            uses_after_cargs.replica_id = -1
             uses_after_cargs.name = f'{args.name}/uses-after'
             uses_after_cargs.uses = args.uses_after
             uses_after_cargs.uses_before = None
