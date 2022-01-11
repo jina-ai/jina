@@ -4,10 +4,10 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from cli import _is_latest_version
-from jina import Executor, __default_endpoint__, Document
+from docarray import Document
+from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
-from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
+from jina.excepts import BadClientCallback, NotSupportedError
 from jina.executors.decorators import requests
 from jina.helper import (
     cached_property,
@@ -18,14 +18,12 @@ from jina.helper import (
     find_request_binding,
     dunder_get,
     get_ci_vendor,
-    batch_iterator,
 )
 from jina.hubble.helper import get_hubble_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina import DocumentArrayMemmap
 from jina.types.request.data import DataRequest
 from tests import random_docs
 
@@ -316,18 +314,3 @@ def test_ci_vendor():
 def test_get_hubble_url():
     for j in range(2):
         assert get_hubble_url().startswith('http')
-
-
-def test_batch_iterator_dam(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
-    for i in range(4):
-        dam.append(Document(id=i))
-    bi = batch_iterator(dam, 2)
-    expected_iterator = iter(range(4))
-    for batch in bi:
-        for doc in batch:
-            assert int(doc.id) == next(expected_iterator)
-
-    # expect that expected_iterator is totally consumed
-    with pytest.raises(StopIteration):
-        next(expected_iterator)

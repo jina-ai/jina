@@ -304,7 +304,6 @@ class JinaResponseModel(BaseModel):
 
     class DataContentModel(BaseModel):
         docs: Optional[List[Dict[str, Any]]] = None
-        groundtruths: Optional[List[Dict[str, Any]]] = None
 
         class Config:
             alias_generator = _to_camel_case

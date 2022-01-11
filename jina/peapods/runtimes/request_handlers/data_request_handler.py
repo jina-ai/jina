@@ -1,12 +1,12 @@
 from typing import Dict, List, TYPE_CHECKING, Optional
 
-from .... import __default_endpoint__, __default_executor__
+from .... import __default_endpoint__
 from ....excepts import (
     ExecutorFailToLoad,
     BadConfigSource,
 )
 from ....executors import BaseExecutor
-from .... import DocumentArray, DocumentArrayMemmap
+from docarray import DocumentArray
 from ....types.request.data import DataRequest
 
 if TYPE_CHECKING:
@@ -80,9 +80,7 @@ class DataRequestHandler:
             )
             return requests[0]
 
-        params = self._parse_params(
-            requests[0].parameters.to_dict(), self._executor.metas.name
-        )
+        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
         docs = DataRequestHandler.get_docs_from_request(
             requests,
             field='docs',
@@ -91,39 +89,25 @@ class DataRequestHandler:
         # executor logic
         r_docs = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
-            docs=DataRequestHandler.get_docs_from_request(requests, field='docs'),
+            docs=docs,
             parameters=params,
             docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
             ),
-            groundtruths=DataRequestHandler.get_docs_from_request(
-                requests,
-                field='groundtruths',
-            ),
-            groundtruths_matrix=DataRequestHandler.get_docs_matrix_from_request(
-                requests,
-                field='groundtruths',
-            ),
         )
         # assigning result back to request
-        # 1. Return none: do nothing
-        # 2. Return nonempty and non-DocumentArray: raise error
-        # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
-        # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
         if r_docs is not None:
-            if isinstance(r_docs, (DocumentArray, DocumentArrayMemmap)):
-                if r_docs != requests[0].docs:
-                    # this means the returned DocArray is a completely new one
-                    DataRequestHandler.replace_docs(requests[0], r_docs)
+            if isinstance(r_docs, DocumentArray):
+                DataRequestHandler.replace_docs(requests[0], r_docs)
             elif isinstance(r_docs, dict):
                 requests[0].parameters.update(r_docs)
             else:
                 raise TypeError(
-                    f'The return type must be DocumentArray / DocumentArrayMemmap / Dict / `None`, '
+                    f'The return type must be DocumentArray / Dict / `None`, '
                     f'but getting {r_docs!r}'
                 )
-        elif len(requests) > 1:
+        else:
             DataRequestHandler.replace_docs(requests[0], docs)
 
         return requests[0]
@@ -135,8 +119,7 @@ class DataRequestHandler:
         :param request: The request object
         :param docs: the new docs to be used
         """
-        request.docs.clear()
-        request.docs.extend(docs)
+        request.data.docs = docs
 
     @staticmethod
     def merge_routes(requests):
@@ -253,5 +236,6 @@ class DataRequestHandler:
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
-        DataRequestHandler.reduce(docs_matrix)
+        da = DataRequestHandler.reduce(docs_matrix)
+        DataRequestHandler.replace_docs(requests[0], da)
         return requests[0]

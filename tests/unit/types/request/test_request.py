@@ -1,5 +1,4 @@
 import copy
-import os
 
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
@@ -8,7 +7,7 @@ from docarray.proto.docarray_pb2 import DocumentProto
 from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
-from jina import DocumentArray, Document
+from docarray import DocumentArray, Document
 from jina.proto.serializer import DataRequestProto
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest, Response
@@ -73,19 +72,10 @@ def test_copy(req):
     assert len(request.docs) != len(copied_req.docs)
 
 
-def test_groundtruth(req):
-    request = DataRequest(request=req)
-    groundtruths = request.groundtruths
-    assert isinstance(groundtruths, DocumentArray)
-    assert len(groundtruths) == 0
-
-
 def test_data_backwards_compatibility(req):
     req = DataRequest(request=req)
     assert len(req.data.docs) == 1
-    assert len(req.data.groundtruths) == 0
     assert len(req.data.docs) == len(req.docs)
-    assert len(req.data.groundtruths) == len(req.groundtruths)
 
 
 def test_command(control_req):
@@ -197,9 +187,9 @@ def test_request_docs_chunks_mutable_iterator():
 def test_lazy_serialization():
     doc_count = 1000
     r = DataRequest()
-    r.docs.extend(
-        [Document(buffer=bytes(bytearray(os.urandom(1024 * 100))))] * doc_count
-    )
+    da = r.docs
+    da.extend([Document(text='534534534er5yr5y645745675675675345')] * doc_count)
+    r.data.docs = da
     byte_array = DataRequestProto.SerializeToString(r)
 
     deserialized_request = DataRequestProto.FromString(byte_array)

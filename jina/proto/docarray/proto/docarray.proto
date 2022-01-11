@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package docarray;
+
+/*
+ this file is just a place holder for the DA coming from docarray dependency
+ */
+message DocumentArrayProto {
+
+}

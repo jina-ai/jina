@@ -21,7 +21,7 @@ def random_docs(
     sparse_embedding=False,
     text='hello world',
 ) -> Iterator['Document']:
-    from jina import Document
+    from docarray import Document
 
     next_chunk_doc_id = start_id + num_docs
     for j in range(num_docs):

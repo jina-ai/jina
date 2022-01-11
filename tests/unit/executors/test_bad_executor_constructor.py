@@ -17,7 +17,7 @@ class GoodExecutor2(Executor):
         pass
 
     @requests
-    def foo(self, docs, parameters, docs_matrix, groundtruths, groundtruths_matrix):
+    def foo(self, docs, parameters, docs_matrix):
         pass
 
 

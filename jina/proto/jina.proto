@@ -123,8 +123,7 @@ message DataRequestProto {
     repeated RouteProto routes = 3; // status info on every routes
 
     message DataContentProto {
-        repeated docarray.DocumentProto docs = 1; // the docs in this request
-        repeated docarray.DocumentProto groundtruths = 2; // a list of groundtruth Documents
+        docarray.DocumentArrayProto docs = 1; // the docs in this request
     }
 
     DataContentProto data = 4; // container for docs and groundtruths

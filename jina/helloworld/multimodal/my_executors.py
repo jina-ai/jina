@@ -6,8 +6,8 @@ import torch
 import torchvision.models as models
 from transformers import AutoModel, AutoTokenizer
 
-from jina import Executor, DocumentArray, requests, Document
-from jina import DocumentArrayMemmap
+from jina import Executor, requests, Document
+from docarray import Document, DocumentArray
 
 
 class Segmenter(Executor):
@@ -147,7 +147,11 @@ class ImageEncoder(Executor):
 class DocVectorIndexer(Executor):
     def __init__(self, index_file_name: str, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + f'/{index_file_name}')
+        self._index_file_name = index_file_name
+        if os.path.exists(self.workspace + f'/{index_file_name}'):
+            self._docs = DocumentArray.load(self.workspace + f'/{index_file_name}')
+        else:
+            self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -162,11 +166,20 @@ class DocVectorIndexer(Executor):
             limit=int(parameters['top_k']),
         )
 
+    def close(self):
+        """
+        Stores the DocumentArray to disk
+        """
+        self._docs.save(self.workspace + f'/{self._index_file_name}')
+
 
 class KeyValueIndexer(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + '/kv-idx')
+        if os.path.exists(self.workspace + '/kv-idx'):
+            self._docs = DocumentArray.load(self.workspace + '/kv-idx')
+        else:
+            self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
@@ -178,6 +191,12 @@ class KeyValueIndexer(Executor):
             for match in doc.matches:
                 extracted_doc = self._docs[match.parent_id]
                 match.update(extracted_doc)
+
+    def close(self):
+        """
+        Stores the DocumentArray to disk
+        """
+        self._docs.save(self.workspace + '/kv-idx')
 
 
 class WeightedRanker(Executor):

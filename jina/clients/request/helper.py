@@ -4,6 +4,7 @@ from typing import Tuple
 from ...enums import DataInputType
 from ...excepts import BadRequestType
 from docarray.document import Document
+from docarray import DocumentArray
 from ...types.request.data import DataRequest
 
 
@@ -12,8 +13,8 @@ def _new_data_request_from_batch(
 ):
     req = _new_data_request(endpoint, target, parameters)
 
-    # add docs, groundtruths fields
-    _add_docs_groundtruths(req, batch, data_type, _kwargs)
+    # add docs fields
+    _add_docs(req, batch, data_type, _kwargs)
 
     return req
 
@@ -55,19 +56,17 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _add_docs_groundtruths(req, batch, data_type, _kwargs):
+def _add_docs(req, batch, data_type, _kwargs):
+    da = DocumentArray()
     for content in batch:
         if isinstance(content, tuple) and len(content) == 2:
-            # content comes in pair,  will take the first as the input and the second as the ground truth
-
-            # note how data_type is cached
             d, data_type = _new_doc_from_data(content[0], data_type, **_kwargs)
             gt, _ = _new_doc_from_data(content[1], data_type, **_kwargs)
-            req.docs.append(d)
-            req.groundtruths.append(gt)
+            da.append(d)
         else:
             d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
-            req.docs.append(d)
+            da.append(d)
+    req.data.docs = da
 
 
 def _add_control_propagate(req, kwargs):

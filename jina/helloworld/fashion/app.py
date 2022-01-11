@@ -12,7 +12,6 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator
 else:
     from .helper import (
         print_result,
@@ -21,7 +20,7 @@ else:
         index_generator,
         query_generator,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
+    from .my_executors import MyEncoder, MyIndexer
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,7 +30,7 @@ def hello_world(args):
     Runs Jina's Hello World.
 
     Usage:
-        Use it via CLI :command:`jina hello-world`.
+        Use it via CLI :command:`jina hello fashion`.
 
     Description:
         It downloads Fashion-MNIST dataset and :term:`Indexer<indexes>` 50,000 images.
@@ -73,7 +72,6 @@ def hello_world(args):
         Flow()
         .add(uses=MyEncoder, replicas=2)
         .add(uses=MyIndexer, workspace=args.workdir)
-        .add(uses=MyEvaluator)
     )
 
     # run it!
@@ -85,9 +83,7 @@ def hello_world(args):
 
         f.post(
             '/eval',
-            query_generator(
-                num_docs=args.num_query, target=targets, with_groundtruth=True
-            ),
+            query_generator(num_docs=args.num_query, target=targets),
             shuffle=True,
             on_done=print_result,
             parameters={'top_k': args.top_k},

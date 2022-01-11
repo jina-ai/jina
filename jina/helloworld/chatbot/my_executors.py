@@ -1,11 +1,12 @@
+import os
 from typing import Dict
 
 import numpy as np
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-from jina import Executor, DocumentArray, requests
-from jina import DocumentArrayMemmap
+from jina import Executor, requests
+from docarray import DocumentArray
 
 
 class MyTransformer(Executor):
@@ -73,7 +74,10 @@ class MyIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
+        if os.path.exists(self.workspace + '/indexer'):
+            self._docs = DocumentArray.load(self.workspace + '/indexer')
+        else:
+            self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -93,3 +97,9 @@ class MyIndexer(Executor):
             normalization=(1, 0),
             limit=1,
         )
+
+    def close(self):
+        """
+        Stores the DocumentArray to disk
+        """
+        self._docs.save(self.workspace + '/indexer')

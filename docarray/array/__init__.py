@@ -1,1 +1,0 @@
-from .document import DocumentArray
