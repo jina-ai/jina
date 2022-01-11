@@ -258,8 +258,11 @@ def test_override_uses_with(docs):
         ret1 = Client(port=exposed_port).search(docs, return_results=True)
         flow.rolling_update(
             'executor1',
-            dump_path='/tmp/dump_path2/',
-            uses_with={'argument1': 'version2', 'argument2': 'version2'},
+            uses_with={
+                'dump_path': '/tmp/dump_path2/',
+                'argument1': 'version2',
+                'argument2': 'version2',
+            },
         )
         ret2 = Client(port=exposed_port).search(docs, return_results=True)
 

@@ -1,11 +1,12 @@
 import os
+import time
 
 import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods import Pea
+from jina.peapods import Pea, runtimes
 
 
 @pytest.fixture()
@@ -108,17 +109,6 @@ def test_gateway_args(protocol, expected):
     assert p.runtime_cls.__name__ == expected
 
 
-def test_pea_set_shard_pea_id():
-    args = set_pea_parser().parse_args(['--shard-id', '1', '--shards', '3'])
-
-    pea = Pea(args)
-    assert pea.args.shard_id == 1
-    assert pea.args.pea_id == 1
-
-    assert pea.args.shards == 3
-    assert pea.args.parallel == 3
-
-
 @pytest.mark.parametrize(
     'protocol, expected',
     [
@@ -215,3 +205,53 @@ def test_failing_head():
     with pytest.raises(RuntimeFailToStart):
         with Pea(args):
             pass
+
+
+@pytest.mark.timeout(4)
+def test_close_before_start(monkeypatch):
+    class SlowFakeRuntime:
+        def __init__(self, *args, **kwargs):
+            time.sleep(5.0)
+
+        def __enter__(self):
+            pass
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+        def run_forever(self):
+            pass
+
+    monkeypatch.setattr(
+        runtimes,
+        'get_runtime',
+        lambda *args, **kwargs: SlowFakeRuntime,
+    )
+    pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
+    pea.start()
+    pea.close()
+
+
+@pytest.mark.timeout(4)
+def test_close_before_start_slow_enter(monkeypatch):
+    class SlowFakeRuntime:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            time.sleep(5.0)
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+        def run_forever(self):
+            pass
+
+    monkeypatch.setattr(
+        runtimes,
+        'get_runtime',
+        lambda *args, **kwargs: SlowFakeRuntime,
+    )
+    pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
+    pea.start()
+    pea.close()

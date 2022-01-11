@@ -6,7 +6,6 @@ import time
 from abc import ABC, abstractmethod
 from typing import Type, Union, Dict, Optional
 
-from ..networking import GrpcConnectionPool
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 from ...jaml import JAML
 from .helper import _get_event, _get_worker, ConditionalEvent
@@ -92,10 +91,11 @@ def run(
             exc_info=not args.quiet_error,
         )
     else:
-        is_started.set()
-        with runtime:
-            is_ready.set()
-            runtime.run_forever()
+        if not is_shutdown.is_set():
+            is_started.set()
+            with runtime:
+                is_ready.set()
+                runtime.run_forever()
     finally:
         _unset_envs()
         is_shutdown.set()
@@ -117,8 +117,6 @@ class BasePea(ABC):
 
         if hasattr(self.args, 'port_expose'):
             self.args.port_in = self.args.port_expose
-        # BACKWARDS COMPATIBILITY
-        self.args.pea_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False
@@ -164,7 +162,7 @@ class BasePea(ABC):
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if not self.is_shutdown.is_set():
+        if not self.is_shutdown.is_set() and self.is_started.is_set():
             try:
                 self.logger.debug(f'terminate')
                 self._terminate()
@@ -190,9 +188,10 @@ class BasePea(ABC):
         else:
             # here shutdown has been set already, therefore `run` will gracefully finish
             self.logger.debug(
-                'shutdown is already set. Runtime will end gracefully on its own'
+                f'{"shutdown is is already set" if self.is_shutdown.is_set() else "Runtime was never started"}. Runtime will end gracefully on its own'
             )
             pass
+        self.is_shutdown.set()
         self.logger.debug(__stop_msg__)
         self.logger.close()
 

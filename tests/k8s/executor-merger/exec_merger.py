@@ -31,6 +31,7 @@ class ExecMerger(Executor):
             doc.tags['pea_id'] = pea_ids
             doc.tags['shards'] = shards
             doc.tags['parallel'] = parallels
+            doc.tags['merged'] = True
 
             result.append(doc)
 

@@ -1,7 +1,6 @@
 import pytest
 
 from jina import Flow, Executor, requests, Document
-from jina.enums import OnErrorStrategy
 from jina.proto import jina_pb2
 from tests import validate_callback
 

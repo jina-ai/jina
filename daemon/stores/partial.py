@@ -4,7 +4,7 @@ from argparse import Namespace
 from typing import Dict, Optional, Type, Union
 
 from jina.helper import colored, random_port
-from jina.peapods.pods.factory import PodFactory
+from jina.peapods.pods import Pod
 from jina.peapods.peas.factory import PeaFactory
 from jina.peapods import BasePod, BasePea
 from jina.peapods.peas.helper import update_runtime_cls
@@ -12,7 +12,6 @@ from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
 from .. import jinad_args, __partial_workspace__
-from ..models import GATEWAY_RUNTIME_DICT
 from ..models.ports import Ports, PortMappings
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
@@ -94,7 +93,7 @@ class PartialPeaStore(PartialStore):
 class PartialPodStore(PartialPeaStore):
     """A Pod store spawned inside partial-daemon container"""
 
-    peapod_constructor = PodFactory.build_pod
+    peapod_constructor = Pod
 
     async def rolling_update(
         self, uses_with: Optional[Dict] = None
@@ -168,14 +167,6 @@ class PartialFlowStore(PartialStore):
                         if pea_args.name in port_mapping.pea_names:
                             for port_name in Ports.__fields__:
                                 self._set_pea_ports(pea_args, port_mapping, port_name)
-                    pod.update_worker_pea_args()
-
-                # avoid setting runs_in_docker for Pods with parallel > 1 and using `WorkerRuntime`
-                # else, replica-peas would try connecting to head/tail-pea via __docker_host__
-                if runtime_cls == 'WorkerRuntime' and (
-                    hasattr(pod.args, 'replicas') and pod.args.replicas > 1
-                ):
-                    pod.args.runs_in_docker = False
                     pod.update_worker_pea_args()
 
             self.object = self.object.__enter__()

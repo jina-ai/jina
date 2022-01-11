@@ -6,7 +6,6 @@ import signal
 import multiprocessing
 import threading
 
-from typing import TYPE_CHECKING, Union
 from typing import Union, Dict, Optional, TYPE_CHECKING
 import asyncio
 
@@ -15,14 +14,12 @@ from ...importer import ImportExtensions
 from . import BasePea
 from .helper import _get_worker
 from .container_helper import get_gpu_device_requests, get_docker_network
-from ...enums import RuntimeBackendType
 from ... import __docker_host__
 from ...logging.logger import JinaLogger
 from ...helper import slugify, random_name
 from ..runtimes.asyncio import AsyncNewLoopRuntime
 
 if TYPE_CHECKING:
-    from docker.models.containers import Container
     from docker.client import DockerClient
 
 
@@ -69,7 +66,6 @@ def _docker_run(
     from ...helper import ArgNamespace
     from pathlib import Path
 
-    args.runs_in_docker = True
     args.native = True
 
     non_defaults = ArgNamespace.get_non_defaults_args(

@@ -143,6 +143,8 @@ class BasePod(ExitStack):
             _head_args.port_in = args.port_in
         _head_args.uses = args.uses
         _head_args.pea_role = PeaRoleType.HEAD
+        _head_args.runtime_cls = 'HeadRuntime'
+        _head_args.replicas = 1
 
         # for now the head is not being scaled, so its always the first head
         if args.name:
@@ -203,11 +205,9 @@ class Pod(BasePod):
             self,
             pod_args: Namespace,
             args: List[Namespace],
-            head_args: Namespace,
             head_pea,
         ):
             self.pod_args = copy.copy(pod_args)
-            self.head_args = head_args
             self.args = args
             self.shard_id = args[0].shard_id
             self._peas = []
@@ -232,9 +232,7 @@ class Pod(BasePod):
             for pea in self._peas:
                 pea.wait_start_success()
 
-        async def rolling_update(
-            self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
-        ):
+        async def rolling_update(self, uses_with: Optional[Dict] = None):
             # TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?
             for i in range(len(self._peas)):
                 _args = self.args[i]
@@ -242,14 +240,11 @@ class Pod(BasePod):
                 await GrpcConnectionPool.deactivate_worker(
                     worker_host=Pod.get_worker_host(_args, old_pea, self.head_pea),
                     worker_port=_args.port_in,
-                    target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                     shard_id=self.shard_id,
                 )
                 old_pea.close()
                 _args.noblock_on_start = True
-                ### BACKWARDS COMPATIBILITY, so THAT DUMP_PATH is in runtime_args
-                _args.dump_path = dump_path
-                ###
                 _args.uses_with = uses_with
                 new_pea = PeaFactory.build_pea(_args)
                 new_pea.__enter__()
@@ -257,7 +252,7 @@ class Pod(BasePod):
                 await GrpcConnectionPool.activate_worker(
                     worker_host=Pod.get_worker_host(_args, new_pea, self.head_pea),
                     worker_port=_args.port_in,
-                    target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                    target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                     shard_id=self.shard_id,
                 )
                 self.args[i] = _args
@@ -284,7 +279,7 @@ class Pod(BasePod):
                             new_args, new_pea, self.head_pea
                         ),
                         worker_port=new_args.port_in,
-                        target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                        target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                         shard_id=self.shard_id,
                     )
                 except (
@@ -317,7 +312,7 @@ class Pod(BasePod):
                             self.args[i], self._peas[i], self.head_pea
                         ),
                         worker_port=self.args[i].port_in,
-                        target_head=f'{self.head_args.host}:{self.head_args.port_in}',
+                        target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
                         shard_id=self.shard_id,
                     )
                     self._peas[i].close()
@@ -385,8 +380,6 @@ class Pod(BasePod):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
         self.args = args
-        # BACKWARDS COMPATIBILITY:
-        self.args.parallel = self.args.shards
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
         )
@@ -619,7 +612,6 @@ class Pod(BasePod):
             self.shards[shard_id] = self._ReplicaSet(
                 self.args,
                 self.peas_args['peas'][shard_id],
-                self.head_args,
                 self.head_pea,
             )
             self.enter_context(self.shards[shard_id])
@@ -699,30 +691,18 @@ class Pod(BasePod):
             [self.shards[shard_id].has_forked_processes for shard_id in self.shards]
         )
 
-    async def rolling_update(
-        self, dump_path: Optional[str] = None, *, uses_with: Optional[Dict] = None
-    ):
+    async def rolling_update(self, uses_with: Optional[Dict] = None):
         """Reload all Peas of this Pod.
 
-        :param dump_path: the dump from which to read the data
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        # BACKWARDS COMPATIBILITY
-        if dump_path is not None:
-            if uses_with is not None:
-                uses_with['dump_path'] = dump_path
-            else:
-                uses_with = {'dump_path': dump_path}
-
         tasks = []
         try:
             import asyncio
 
             for shard_id in self.shards:
                 task = asyncio.create_task(
-                    self.shards[shard_id].rolling_update(
-                        dump_path=dump_path, uses_with=uses_with
-                    )
+                    self.shards[shard_id].rolling_update(uses_with=uses_with)
                 )
                 # it is dangerous to fork new processes (peas) while grpc operations are ongoing
                 # while we use fork, we need to guarantee that forking/grpc status checking is done sequentially
@@ -784,9 +764,6 @@ class Pod(BasePod):
             for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
-                # BACKWARDS COMPATIBILITY:
-                # pea_id used to be shard_id so we keep it this way, even though a pea in a BasePod is a replica
-                _args.pea_id = getattr(_args, 'shard_id', 0)
                 _args.replica_id = idx
                 _args.pea_role = PeaRoleType.WORKER
                 _args.identity = random_identity()

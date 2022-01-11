@@ -65,10 +65,9 @@ def mixin_pea_parser(parser):
 
     gp.add_argument(
         '--shard-id',
-        '--pea-id',
         type=int,
         default=0,
-        help='defines the suffix for the workspace path of the pea`'
+        help='defines the shard identifier for the executor. It is used as suffix for the workspace path of the executor`'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -105,16 +104,13 @@ def mixin_pea_parser(parser):
         '--parallel',
         type=int,
         default=1,
-        help='The number of shards in the pod running at the same time, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/',
+        help='The number of shards in the pod running at the same time. For more details check '
+        'https://docs.jina.ai/fundamentals/flow/topology/',
     )
 
     gp.add_argument(
         '--replicas',
         type=int,
         default=1,
-        help='The number of replicas in the pod, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
+        help='The number of replicas in the pod',
     )

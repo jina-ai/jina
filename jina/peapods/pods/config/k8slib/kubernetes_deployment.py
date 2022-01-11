@@ -1,12 +1,11 @@
 import json
 from argparse import Namespace
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, List
 
-from jina.hubble.helper import parse_hub_uri
-from jina.hubble.hubio import HubIO
-from jina.logging.logger import JinaLogger
-from jina.peapods.networking import K8sGrpcConnectionPool
-from jina.peapods.pods.k8slib import kubernetes_tools
+from .....hubble.helper import parse_hub_uri
+from .....hubble.hubio import HubIO
+from ....networking import K8sGrpcConnectionPool
+from . import kubernetes_tools
 
 
 def to_dns_name(name: str) -> str:
@@ -18,20 +17,17 @@ def to_dns_name(name: str) -> str:
     return name.replace('/', '-').replace('_', '-').lower()
 
 
-def deploy_service(
+def get_deployment_yamls(
     name: str,
     namespace: str,
     image_name: str,
     container_cmd: str,
     container_args: str,
-    logger: JinaLogger,
     replicas: int,
     pull_policy: str,
     jina_pod_name: str,
     pea_type: str,
     shard_id: Optional[int] = None,
-    init_container: Optional[Dict] = None,
-    custom_resource_dir: Optional[str] = None,
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
     gpus: Optional[Union[int, str]] = None,
@@ -41,24 +37,19 @@ def deploy_service(
     container_cmd_uses_after: Optional[str] = None,
     container_args_uses_before: Optional[str] = None,
     container_args_uses_after: Optional[str] = None,
-    replace_deployment: Optional[bool] = False,
-) -> str:
-    """Deploy service on Kubernetes.
+) -> List[Dict]:
+    """Get the yaml description of a service on Kubernetes
 
     :param name: name of the service and deployment
     :param namespace: k8s namespace of the service and deployment
     :param image_name: image for the k8s deployment
     :param container_cmd: command executed on the k8s pods
     :param container_args: arguments used for the k8s pod
-    :param logger: used logger
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
     :param jina_pod_name: Name of the Jina Pod this deployment belongs to
     :param pea_type: type os this pea, can be gateway/head/worker
     :param shard_id: id of this shard, None if shards=1 or this is gateway/head
-    :param init_container: additional arguments used for the init container
-    :param custom_resource_dir: Path to a folder containing the kubernetes yml template files.
-        Defaults to the standard location jina.resources if not specified.
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
@@ -68,10 +59,8 @@ def deploy_service(
     :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
     :param container_args_uses_before: arguments used for uses_before container on the k8s pod
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
-    :param replace_deployment: If set to True the entity name in namespace will be replaced and not created
-    :return: dns name of the created service
+    :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
-
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port_expose:
@@ -109,87 +98,51 @@ def deploy_service(
     if gpus:
         deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
-    if init_container:
-        template_name = 'deployment-init'
-        deployment_params = {**deployment_params, **init_container}
-    elif image_name_uses_before and image_name_uses_after:
+    template_name = 'deployment'
+
+    if image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
     elif image_name_uses_before:
         template_name = 'deployment-uses-before'
     elif image_name_uses_after:
         template_name = 'deployment-uses-after'
-    else:
-        template_name = 'deployment'
 
-    if replace_deployment:
-        logger.debug(
-            f'🔋\tReplace Deployment for "{name}" with exposed port "{port_expose}"'
-        )
-        kubernetes_tools.replace(
-            deployment_name=name,
-            namespace_name=namespace,
-            template=template_name,
-            params=deployment_params,
-            custom_resource_dir=custom_resource_dir,
-        )
-        return f'{name}.{namespace}.svc'
+    yamls = [
+        kubernetes_tools.get_yaml(
+            'connection-pool-role',
+            {
+                'namespace': namespace,
+            },
+        ),
+        kubernetes_tools.get_yaml(
+            'connection-pool-role-binding',
+            {
+                'namespace': namespace,
+            },
+        ),
+        kubernetes_tools.get_yaml(
+            'configmap',
+            {
+                'name': name,
+                'namespace': namespace,
+                'data': env,
+            },
+        ),
+        kubernetes_tools.get_yaml(
+            'service',
+            {
+                'name': name,
+                'target': name,
+                'namespace': namespace,
+                'port_expose': port_expose,
+                'port_in': port_in,
+                'type': 'ClusterIP',
+            },
+        ),
+        kubernetes_tools.get_yaml(template_name, deployment_params),
+    ]
 
-    logger.debug(f'🔋\tCreate Service for "{name}" with exposed port "{port_expose}"')
-    kubernetes_tools.create(
-        'service',
-        {
-            'name': name,
-            'target': name,
-            'namespace': namespace,
-            'port_expose': port_expose,
-            'port_in': port_in,
-            'type': 'ClusterIP',
-        },
-        logger=logger,
-        custom_resource_dir=custom_resource_dir,
-    )
-
-    logger.debug(f'📝\tCreate ConfigMap for deployment.')
-
-    kubernetes_tools.create(
-        'configmap',
-        {
-            'name': name,
-            'namespace': namespace,
-            'data': env,
-        },
-        logger=logger,
-        custom_resource_dir=None,
-    )
-
-    logger.debug(
-        f'🐳\tCreate Deployment for "{name}" with image "{image_name}", replicas {replicas} and init_container {init_container is not None}'
-    )
-
-    kubernetes_tools.create(
-        template_name,
-        deployment_params,
-        logger=logger,
-        custom_resource_dir=custom_resource_dir,
-    )
-
-    logger.debug(f'🔑\tCreate necessary permissions"')
-
-    kubernetes_tools.create(
-        'connection-pool-role',
-        {
-            'namespace': namespace,
-        },
-    )
-
-    kubernetes_tools.create(
-        'connection-pool-role-binding',
-        {
-            'namespace': namespace,
-        },
-    )
-
-    return f'{name}.{namespace}.svc'
+    return yamls
 
 
 def get_cli_params(
@@ -214,9 +167,6 @@ def get_cli_params(
         'uses_after',
         'uses_before',
         'replicas',
-        'k8s_init_container_command',
-        'k8s_uses_init',
-        'k8s_mount_path',
     ] + list(skip_list)
     if port_in:
         arguments.port_in = port_in
@@ -257,7 +207,10 @@ def get_image_name(uses: str) -> str:
         image_name = meta_data.image_name
         return image_name
     except Exception:
-        return uses.replace('docker://', '')
+        if uses.startswith('docker'):
+            # docker:// is a valid requirement and user may want to put its own image
+            return uses.replace('docker://', '')
+        raise
 
 
 def dictionary_to_cli_param(dictionary) -> str:
@@ -267,21 +220,3 @@ def dictionary_to_cli_param(dictionary) -> str:
     :return: string representation of the dictionary
     """
     return json.dumps(dictionary).replace('"', '\\"') if dictionary else ""
-
-
-def get_init_container_args(args) -> Optional[Dict]:
-    """Return the init container arguments for the k8s pod.
-
-    :param args: args of the pod where the init container is used.
-    :return: dictionary of init container arguments
-    """
-    if args.k8s_uses_init:
-        init_container = {
-            'init-name': 'init',
-            'init-image': args.k8s_uses_init,
-            'init-command': f'{args.k8s_init_container_command}',
-            'mount-path': args.k8s_mount_path,
-        }
-    else:
-        init_container = None
-    return init_container

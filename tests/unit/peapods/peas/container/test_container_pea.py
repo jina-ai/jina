@@ -48,17 +48,6 @@ def test_container_pea_pass_envs(env_checker_docker_image_built):
         pea._container
 
 
-def test_container_pea_set_shard_pea_id():
-    args = set_pea_parser().parse_args(['--shard-id', '1', '--shards', '3'])
-
-    pea = ContainerPea(args)
-    assert pea.args.shard_id == 1
-    assert pea.args.pea_id == 1
-
-    assert pea.args.shards == 3
-    assert pea.args.parallel == 3
-
-
 @pytest.fixture(scope='module')
 def fail_start_docker_image_built():
     import docker

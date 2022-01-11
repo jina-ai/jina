@@ -19,22 +19,14 @@ class AsyncPodClient(AsyncPeaClient):
     async def rolling_update(
         self,
         id: Union[str, 'DaemonID'],
-        dump_path: Optional[str] = None,
-        *,
         uses_with: Optional[Dict] = None,
     ) -> str:
         """Update a Flow on remote JinaD (only rolling_update supported)
 
         :param id: Pod ID
-        :param dump_path: path of dump from other flow
         :param uses_with: the uses_with to update the Executor
         :return: Pod ID
         """
-        if dump_path is not None:
-            if uses_with is not None:
-                uses_with['dump_path'] = dump_path
-            else:
-                uses_with = {'dump_path': dump_path}
         async with aiohttp.request(
             method='PUT',
             url=f'{self.store_api}/rolling_update/{daemonize(id, self._kind)}',

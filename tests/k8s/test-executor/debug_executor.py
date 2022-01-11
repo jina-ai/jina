@@ -47,10 +47,21 @@ class TestExecutor(Executor):
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
 
-        from jina.peapods.pods.k8slib.kubernetes_client import K8sClients
+        import kubernetes
+        from kubernetes import client
 
-        client = K8sClients().core_v1
-        pods = client.list_namespaced_pod('test-gpu')  # List[V1Pod]
+        api_client = client.ApiClient()
+        core_client = client.CoreV1Api(api_client=api_client)
+
+        try:
+            # try loading kube config from disk first
+            kubernetes.config.load_kube_config()
+        except kubernetes.config.config_exception.ConfigException:
+            # if the config could not be read from disk, try loading in cluster config
+            # this works if we are running inside k8s
+            kubernetes.config.load_incluster_config()
+
+        pods = core_client.list_namespaced_pod('test-gpu')  # List[V1Pod]
         pod_spec = pods[0].spec  # V1PodSpec
         pod_container = pod_spec.containers[0]  # V1Container
         pod_resources = pod_container.resources  # V1ResourceRequirements
@@ -58,15 +69,11 @@ class TestExecutor(Executor):
         for doc in docs:
             doc.tags['resources']['limits'] = pod_resources.limits
 
-    @requests(on='/search')
-    def read_file(self, docs: DocumentArray, **kwargs):
+    @requests(on='/workspace')
+    def foo_workspace(self, docs: DocumentArray, **kwargs):
         self.logger.debug(
             f'Received doc array in test-executor {self._name} with length {len(docs)}.'
         )
-        key = 'file'
-        file_path = '/shared/test_file.txt'
-
-        with open(file_path, 'r') as text_file:
-            lines = text_file.readlines()
+        self.logger.debug(f'Workspace {self.workspace}.')
         for doc in docs:
-            doc.tags[key] = lines
+            doc.tags['workspace'] = self.workspace
