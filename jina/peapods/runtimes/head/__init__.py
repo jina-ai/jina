@@ -92,7 +92,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             connection_list = json.loads(args.connection_list)
             for shard_id in connection_list:
                 shard_connections = connection_list[shard_id]
-                if isinstance(connection_list, str):
+                if isinstance(shard_connections, str):
                     self.connection_pool.add_connection(
                         pod=self._pod_name,
                         address=shard_connections,

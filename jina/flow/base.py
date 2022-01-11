@@ -1712,7 +1712,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
-                if node == 'gateway' and not k8s_connection_pool
+                if (node == 'gateway' and not k8s_connection_pool)
                 else None,
             )
             configs = k8s_pod.to_k8s_yaml()
