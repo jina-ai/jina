@@ -195,7 +195,7 @@ different purposes.
 
 - **`.metas` are statically defined.** "Static" means, e.g. from hard-coded value in the code, from a YAML file.
 - **`.runtime_args` are dynamically determined during runtime.** Means that you don't know the value before running
-  the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. Those values are often related to the system/network
+  the `Executor`, e.g. `pea_id`, `replicas`. Those values are often related to the system/network
   environment around the `Executor`, and less about the `Executor` itself. They are usually set with the {meth}`~jina.flow.base.Flow.add` 
   method. See the list of options [here](https://docs.jina.ai/cli/#executor).
 
