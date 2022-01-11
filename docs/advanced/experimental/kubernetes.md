@@ -99,7 +99,7 @@ with portforward.forward(
     client.show_progress = True
     indexed_documents = []
     for resp in client.post(
-        '/index', inputs=DocumentArray.from_files('./imgs/*.png'), return_results=True
+        '/index', inputs=DocumentArray.from_files('./imgs/*.jpg'), return_results=True
     ):
         indexed_documents.extend(resp.docs)
 
@@ -148,7 +148,7 @@ import os
 host = os.environ['EXTERNAL_IP']
 port = 80
 url = f'http://{host}:{port}'
-doc = DocumentArray.from_files('./imgs/*.png')[0].dict()
+doc = DocumentArray.from_files('./imgs/*.jpg')[0].dict()
 resp = requests.post(f'{url}/search', json={'data': [doc]})
 closest_match_uri = resp.json()['data']['docs'][0]['matches'][0]['uri']
 print('closest_match_uri: ', closest_match_uri)
