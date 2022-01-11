@@ -271,6 +271,7 @@ class JinaRequestModel(BaseModel):
 
     data: Optional[
         Union[
+            Dict[str, List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]],
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
             List[Dict[str, Any]],
             List[str],
