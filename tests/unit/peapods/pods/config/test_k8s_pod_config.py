@@ -568,6 +568,7 @@ def test_k8s_yaml_regular_pod(
         head_runtime_container_args[head_runtime_container_args.index('--port-in') + 1]
         == '8081'
     )
+    assert '--env' not in head_runtime_container_args
     assert '--pea-role' in head_runtime_container_args
     assert (
         head_runtime_container_args[head_runtime_container_args.index('--pea-role') + 1]

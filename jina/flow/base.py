@@ -221,10 +221,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
+        :param replicas: The number of replicas in the pod
         :param runtime_backend: The parallel backend of the runtime inside the Pea
         :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        :param shards: The number of shards in the pod running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -593,106 +593,110 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
-        :param connection_list: dictionary JSON with a list of connections to configure
-        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
-        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
+                :param connection_list: dictionary JSON with a list of connections to configure
+                :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+                :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
+                  container.
 
-          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
-        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
-        :param env: The map of environment variables that are available inside runtime
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
-        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
-        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
-        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
+                  More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+                :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
+                :param env: The map of environment variables that are available inside runtime
+                :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
+                :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
+                :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
+                :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
-              Note,
-              - To access all gpus, use `--gpus all`.
-              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
-              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
-              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
-              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
-        :param log_config: The YAML config of the logger used in this object.
-        :param name: The name of this object.
+                      Note,
+                      - To access all gpus, use `--gpus all`.
+                      - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
+                      - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+                      - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+                      - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+                :param host: The host address of the runtime, by default it is 0.0.0.0.
+                :param host_in: The host address for binding to, by default it is 0.0.0.0
+                :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
+                :param log_config: The YAML config of the logger used in this object.
+                :param name: The name of this object.
 
-          This will be used in the following places:
-          - how you refer to this object in Python/YAML/CLI
-          - visualization
-          - log message header
-          - ...
+                  This will be used in the following places:
+                  - how you refer to this object in Python/YAML/CLI
+                  - visualization
+                  - log message header
+                  - ...
 
-          When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param peas_hosts: The hosts of the peas when shards greater than 1.
-                  Peas will be evenly distributed among the hosts. By default,
-                  peas are running on host provided by the argument ``host``
-        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Pod or by endpoint.
-              Define per Pod:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
-              Define per Endpoint:
-              JSON dict, {endpoint: PollingType}
-              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
-        :param port_jinad: The port of the remote machine for usage with JinaD.
-        :param pull_latest: Pull the latest image before running
-        :param py_modules: The customized python modules need to be imported before loading the executor
+                  When not given, then the default naming strategy will apply.
+                :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
+                :param peas_hosts: The hosts of the peas when shards greater than 1.
+                          Peas will be evenly distributed among the hosts. By default,
+                          peas are running on host provided by the argument ``host``
+                :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
+                      Can be defined for all endpoints of a Pod or by endpoint.
+                      Define per Pod:
+                      - ANY: only one (whoever is idle) Pea polls the message
+                      - ALL: all Peas poll the message (like a broadcast)
+                      Define per Endpoint:
+                      JSON dict, {endpoint: PollingType}
+                      {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+                :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
+                :param port_jinad: The port of the remote machine for usage with JinaD.
+                :param pull_latest: Pull the latest image before running
+                :param py_modules: The customized python modules need to be imported before loading the executor
 
-          Note that the recommended way is to only import a single module - a simple python file, if your
-          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
-          which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
-        :param quiet: If set, then no log will be emitted from this object.
-        :param quiet_error: If set, then exception stack information will not be added to the log
-        :param quiet_remote_logs: Do not display the streaming of remote logs on local console
-        :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
-        :param runtime_backend: The parallel backend of the runtime inside the Pea
-        :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
-        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
-        :param upload_files: The files on the host to be uploaded to the remote
-          workspace. This can be useful when your Pod has more
-          file dependencies beyond a single YAML file, e.g.
-          Python files, data files.
+                  Note that the recommended way is to only import a single module - a simple python file, if your
+                  executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+                  which should be structured as a python package. For more details, please see the
+                  `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
+                :param quiet: If set, then no log will be emitted from this object.
+                :param quiet_error: If set, then exception stack information will not be added to the log
+                :param quiet_remote_logs: Do not display the streaming of remote logs on local console
+                :param replicas: The number of replicas in the pod
+                :param runtime_backend: The parallel backend of the runtime inside the Pea
+                :param runtime_cls: The runtime class to run inside the Pea
+        <<<<<<< HEAD
+                :param shards: The number of shards in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        =======
+                :param shards: The number of shards in the pod running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        >>>>>>> 379d9726c78a92f8a34a3e42d88660be79c71188
+                :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+                :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
+                :param upload_files: The files on the host to be uploaded to the remote
+                  workspace. This can be useful when your Pod has more
+                  file dependencies beyond a single YAML file, e.g.
+                  Python files, data files.
 
-          Note,
-          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
-          - by default, `--uses` YAML file is always uploaded.
-          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
-        :param uses: The config of the executor, it could be one of the followings:
-                  * an Executor YAML file (.yml, .yaml, .jaml)
-                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
-                  * a docker image (must start with `docker://`)
-                  * the string literal of a YAML config (must start with `!` or `jtype: `)
-                  * the string literal of a JSON config
+                  Note,
+                  - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+                  - by default, `--uses` YAML file is always uploaded.
+                  - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
+                :param uses: The config of the executor, it could be one of the followings:
+                          * an Executor YAML file (.yml, .yaml, .jaml)
+                          * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
+                          * a docker image (must start with `docker://`)
+                          * the string literal of a YAML config (must start with `!` or `jtype: `)
+                          * the string literal of a JSON config
 
-                  When use it under Python, one can use the following values additionally:
-                  - a Python dict that represents the config
-                  - a text file stream has `.read()` interface
-        :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
-        :param uses_after_address: The address of the uses-before runtime
-        :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all shards, accepted type follows `--uses`
-        :param uses_before_address: The address of the uses-before runtime
-        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
-        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
-        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
-        :param volumes: The path on the host to be mounted inside the container.
+                          When use it under Python, one can use the following values additionally:
+                          - a Python dict that represents the config
+                          - a text file stream has `.read()` interface
+                :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
+                :param uses_after_address: The address of the uses-before runtime
+                :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all shards, accepted type follows `--uses`
+                :param uses_before_address: The address of the uses-before runtime
+                :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+                :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
+                :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+                :param volumes: The path on the host to be mounted inside the container.
 
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
-          - All volumes are mounted with read-write mode.
-        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :return: a (new) Flow object with modification
+                  Note,
+                  - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+                  - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+                  - All volumes are mounted with read-write mode.
+                :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+                :return: a (new) Flow object with modification
 
-        .. # noqa: DAR202
-        .. # noqa: DAR101
-        .. # noqa: DAR003
+                .. # noqa: DAR202
+                .. # noqa: DAR101
+                .. # noqa: DAR003
         """
 
     # overload_inject_end_pod
@@ -1712,7 +1716,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
-                if not k8s_connection_pool
+                if node == 'gateway' and not k8s_connection_pool
                 else None,
             )
             configs = k8s_pod.to_k8s_yaml()
