@@ -22,6 +22,7 @@ def Client(
     port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
+    results_as_docarray: Optional[bool] = False,
     **kwargs
 ) -> Union[
     'AsyncWebSocketClient',
@@ -39,6 +40,7 @@ def Client(
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+    :param results_as_docarray: If set, return results as DocArray instead of Request.
     :return: the new Client object
 
     .. # noqa: DAR202

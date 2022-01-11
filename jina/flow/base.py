@@ -94,6 +94,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
+        results_as_docarray: Optional[bool] = False,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
@@ -104,6 +105,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param results_as_docarray: If set, return results as DocArray instead of Request.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -1164,6 +1166,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             host=self.host,
             port=self.port_expose,
             protocol=self.protocol,
+            results_as_docarray=True,
         )
         kwargs.update(self._common_kwargs)
         return Client(**kwargs)

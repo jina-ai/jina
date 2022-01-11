@@ -1,7 +1,9 @@
 import numpy as np
 import pytest
 
-from jina import Document, DocumentArray, Flow, Executor, requests
+from jina import Document, DocumentArray, Flow, Executor, Client, requests
+
+exposed_port = 12345
 
 
 class ShardsExecutor(Executor):
@@ -46,7 +48,7 @@ class DummyExecutor(Executor):
 @pytest.mark.parametrize('n_docs', [3, 5])
 def test_reduce_shards(n_docs):
     n_shards = 3
-    search_flow = Flow().add(
+    search_flow = Flow(port_expose=exposed_port).add(
         uses=ShardsExecutor,
         shards=n_shards,
         polling='all',
@@ -55,7 +57,7 @@ def test_reduce_shards(n_docs):
 
     with search_flow as f:
         da = DocumentArray([Document() for _ in range(5)])
-        resp = f.post('/search', inputs=da, return_results=True)
+        resp = Client(port=exposed_port).post('/search', inputs=da, return_results=True)
 
     assert len(resp[0].docs) == 5
 
@@ -82,7 +84,7 @@ def test_reduce_shards(n_docs):
 @pytest.mark.parametrize('n_shards', [3, 5])
 @pytest.mark.parametrize('n_docs', [3, 5])
 def test_uses_after_no_reduce(n_shards, n_docs):
-    search_flow = Flow().add(
+    search_flow = Flow(port_expose=exposed_port).add(
         uses=ShardsExecutor,
         shards=n_shards,
         uses_after=DummyExecutor,
@@ -92,7 +94,7 @@ def test_uses_after_no_reduce(n_shards, n_docs):
 
     with search_flow as f:
         da = DocumentArray([Document() for _ in range(5)])
-        resp = f.post('/search', inputs=da, return_results=True)
+        resp = Client(port=exposed_port).post('/search', inputs=da, return_results=True)
 
     # assert no reduce happened
     assert len(resp[0].docs) == 1
@@ -123,7 +125,7 @@ class Executor3(Executor):
 
 def test_reduce_needs():
     flow = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -132,7 +134,7 @@ def test_reduce_needs():
 
     with flow as f:
         da = DocumentArray([Document() for _ in range(5)])
-        resp = f.post('/', inputs=da, return_results=True)
+        resp = Client(port=exposed_port).post('/', inputs=da, return_results=True)
 
     assert len(resp[0].docs) == 5
     for doc in resp[0].docs:
@@ -144,7 +146,7 @@ def test_reduce_needs():
 
 def test_uses_before_reduce():
     flow = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -153,7 +155,7 @@ def test_uses_before_reduce():
 
     with flow as f:
         da = DocumentArray([Document() for _ in range(5)])
-        resp = f.post('/', inputs=da, return_results=True)
+        resp = Client(port=exposed_port).post('/', inputs=da, return_results=True)
 
     # assert reduce happened because there is only BaseExecutor as uses_before
     assert len(resp[0].docs) == 5
@@ -161,7 +163,7 @@ def test_uses_before_reduce():
 
 def test_uses_before_no_reduce_real_executor():
     flow = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -170,7 +172,7 @@ def test_uses_before_no_reduce_real_executor():
 
     with flow as f:
         da = DocumentArray([Document() for _ in range(5)])
-        resp = f.post('/', inputs=da, return_results=True)
+        resp = Client(port=exposed_port).post('/', inputs=da, return_results=True)
 
     # assert no reduce happened
     assert len(resp[0].docs) == 1
@@ -179,7 +181,7 @@ def test_uses_before_no_reduce_real_executor():
 
 def test_uses_before_no_reduce_real_executor_uses():
     flow = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -188,7 +190,7 @@ def test_uses_before_no_reduce_real_executor_uses():
 
     with flow as f:
         da = DocumentArray([Document() for _ in range(5)])
-        resp = f.post('/', inputs=da, return_results=True)
+        resp = Client(port=exposed_port).post('/', inputs=da, return_results=True)
 
     # assert no reduce happened
     assert len(resp[0].docs) == 1

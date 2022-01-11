@@ -27,7 +27,11 @@ class BaseClient(ABC):
     :param kwargs: additional parameters that can be accepted by client parser
     """
 
-    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
+    def __init__(
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        **kwargs,
+    ):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:

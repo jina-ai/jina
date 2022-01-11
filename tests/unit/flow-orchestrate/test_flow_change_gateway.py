@@ -12,9 +12,8 @@ def test_change_gateway(protocol, changeto_protocol):
     f = Flow(protocol=protocol).add().add().add(needs='executor1').needs_all()
 
     with f:
-        results = f.post('/', random_docs(10), return_results=True)
-        assert len(results) > 0
-        assert len(results[0].docs) == 10
+        da = f.post('/', random_docs(10), return_results=True)
+        assert len(da) == 10
         with pytest.raises(RuntimeError):
             f.protocol = changeto_protocol
 

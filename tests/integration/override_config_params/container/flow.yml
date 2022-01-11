@@ -1,6 +1,7 @@
 jtype: Flow
 with:
   return_results: True
+  port_expose: 12345
 executors:
   - name: name
     uses: docker://override-config-test

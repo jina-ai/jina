@@ -13,6 +13,7 @@ IMG_NAME = 'jina/scale-executor'
 NUM_CONCURRENT_CLIENTS = 20
 NUM_DOCS_SENT_BY_CLIENTS = 50
 CLOUD_HOST = 'localhost:8000'
+exposed_port = 12345
 
 
 @pytest.fixture
@@ -40,7 +41,7 @@ def docker_image_built():
 @pytest.fixture
 def remote_flow_with_container_runtime(pod_params, docker_image_built):
     num_replicas, scale_to, shards = pod_params
-    return Flow().add(
+    return Flow(port_expose=exposed_port).add(
         name='executor',
         uses=f'docker://{IMG_NAME}',
         replicas=num_replicas,
@@ -68,13 +69,13 @@ def remote_flow_with_runtime(request):
 def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
     num_replicas, scale_to, shards = pod_params
     with remote_flow_with_runtime as f:
-        ret1 = f.index(
+        ret1 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
         f.scale(pod_name='executor', replicas=scale_to)
-        ret2 = f.index(
+        ret2 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,

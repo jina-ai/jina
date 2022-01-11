@@ -13,8 +13,8 @@ class SimplExecutor(Executor):
 def test_simple_routing():
     f = Flow().add(uses=SimplExecutor)
     with f:
-        results = f.post(on='/index', inputs=[Document()], return_results=True)
-        assert results[0].docs[0].text == 'Hello World!'
+        docs = f.post(on='/index', inputs=[Document()], return_results=True)
+        assert docs[0].text == 'Hello World!'
 
 
 class MergeExecutor(Executor):
@@ -32,10 +32,10 @@ def test_expected_messages_routing():
     )
 
     with f:
-        results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
+        docs = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
         # there merge executor actually does not merge despite its name
-        assert len(results[0].docs) == 2
-        assert results[0].docs[0].text == 'merged'
+        assert len(docs) == 2
+        assert docs[0].text == 'merged'
 
 
 class SimpleAddExecutor(Executor):
@@ -48,8 +48,8 @@ def test_shards():
     f = Flow().add(uses=SimpleAddExecutor, shards=2)
 
     with f:
-        results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-        assert len(results[0].docs) == 2
+        docs = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
+        assert len(docs) == 2
 
 
 class MergeDocsExecutor(Executor):
@@ -79,8 +79,8 @@ def test_complex_flow():
     )
 
     with f:
-        results = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
-    assert len(results[0].docs) == 6
+        docs = f.post(on='/index', inputs=[Document(text='1')], return_results=True)
+    assert len(docs) == 6
 
 
 class DynamicPollingExecutorDefaultNames(Executor):
@@ -108,18 +108,18 @@ def test_flow_default_polling_endpoints(polling):
     f = Flow().add(uses=DynamicPollingExecutorDefaultNames, shards=2, polling=polling)
 
     with f:
-        results_index = f.post(
+        docs_index = f.post(
             on='/index', inputs=[Document(text='1')], return_results=True
         )
-        results_search = f.post(
+        docs_search = f.post(
             on='/search', inputs=[Document(text='1')], return_results=True
         )
-        results_custom = f.post(
+        docs_custom = f.post(
             on='/custom', inputs=[Document(text='1')], return_results=True
         )
-    assert len(results_index[0].docs) == 2
-    assert len(results_search[0].docs) == 3
-    assert len(results_custom[0].docs) == 3 if polling == 'all' else 2
+    assert len(docs_index) == 2
+    assert len(docs_search) == 3
+    assert len(docs_custom) == 3 if polling == 'all' else 2
 
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
@@ -132,15 +132,15 @@ def test_flow_default_polling_endpoints(polling):
     )
 
     with f:
-        results_index = f.post(
+        docs_index = f.post(
             on='/index', inputs=[Document(text='1')], return_results=True
         )
-        results_search = f.post(
+        docs_search = f.post(
             on='/search', inputs=[Document(text='1')], return_results=True
         )
-        results_custom = f.post(
+        docs_custom = f.post(
             on='/custom', inputs=[Document(text='1')], return_results=True
         )
-    assert len(results_index[0].docs) == 2
-    assert len(results_search[0].docs) == 2
-    assert len(results_custom[0].docs) == 3
+    assert len(docs_index) == 2
+    assert len(docs_search) == 2
+    assert len(docs_custom) == 3

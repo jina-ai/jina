@@ -1,4 +1,6 @@
-from jina import DocumentArray, Executor, Flow, requests, Document
+from jina import DocumentArray, Executor, Flow, Client, requests, Document
+
+exposed_port = 12345
 
 
 def test_override_requests():
@@ -8,11 +10,14 @@ def test_override_requests():
             for doc in docs:
                 doc.text = 'foo called'
 
-    with Flow().add(uses=FooExecutor, uses_requests={'/non_foo': 'foo'}) as f:
-        resp1 = f.post(
+    with Flow(port_expose=exposed_port).add(
+        uses=FooExecutor, uses_requests={'/non_foo': 'foo'}
+    ) as f:
+        c = Client(port=exposed_port)
+        resp1 = c.post(
             on='/foo', inputs=DocumentArray([Document(text='')]), return_results=True
         )
-        resp2 = f.post(
+        resp2 = c.post(
             on='/non_foo',
             inputs=DocumentArray([Document(text='')]),
             return_results=True,

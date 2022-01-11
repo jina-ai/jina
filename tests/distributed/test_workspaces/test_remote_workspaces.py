@@ -14,6 +14,7 @@ from ..helpers import assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
+exposed_port = 12345
 
 """
 Run below commands for local tests
@@ -32,7 +33,7 @@ def test_upload_via_pymodule(replicas):
     from .mwu_encoder import MWUEncoder
 
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
             uses=MWUEncoder,
@@ -45,7 +46,7 @@ def test_upload_via_pymodule(replicas):
         .add()
     )
     with f:
-        responses = f.index(
+        responses = Client(port=exposed_port).index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
             return_results=True,
         )
@@ -58,7 +59,7 @@ def test_upload_via_pymodule(replicas):
 @pytest.mark.parametrize('replicas', [1, 2])
 def test_upload_via_yaml(replicas):
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
             uses='mwu_encoder.yml',
@@ -69,7 +70,7 @@ def test_upload_via_yaml(replicas):
         .add()
     )
     with f:
-        responses = f.index(
+        responses = Client(port=exposed_port).index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
             return_results=True,
         )
@@ -83,7 +84,7 @@ def test_upload_multiple_workspaces(replicas):
     indexer_workspace = 'tdb_indexer_ws'
 
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(
             name='sklearn_encoder',
             uses='sklearn.yml',
@@ -102,7 +103,7 @@ def test_upload_multiple_workspaces(replicas):
         )
     )
     with f:
-        responses = f.index(
+        responses = Client(port=exposed_port).index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
             return_results=True,
         )
@@ -214,7 +215,7 @@ def docker_compose(request):
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_upload_simple_non_standard_rootworkspace(docker_compose):
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
             uses='mwu_encoder.yml',
@@ -224,7 +225,7 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose):
         .add()
     )
     with f:
-        responses = f.index(
+        responses = Client(port=exposed_port).index(
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
             return_results=True,
         )

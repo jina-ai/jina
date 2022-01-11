@@ -7,7 +7,7 @@ from typing import Union
 import numpy as np
 import pytest
 
-from jina import Flow, Document, Executor, requests, __windows__
+from jina import Flow, Document, DocumentArray, Executor, requests, __windows__
 from jina.enums import FlowBuildLevel, PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
@@ -225,8 +225,8 @@ class DummyOneHotTextEncoder(Executor):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_with_publish_driver(protocol):
-    def validate(req):
-        for d in req.docs:
+    def validate(da):
+        for d in da:
             assert d.embedding is not None
 
     f = (
@@ -237,12 +237,12 @@ def test_flow_with_publish_driver(protocol):
     )
 
     with f:
-        results = f.index(
+        da = f.index(
             [Document(text='text_1'), Document(text='text_2')], return_results=True
         )
         _validate_flow(f)
 
-    validate(results[0])
+    validate(da)
 
 
 @pytest.mark.slow
@@ -335,20 +335,22 @@ def test_flow_with_pod_envs():
 @pytest.mark.slow
 @pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_return_results_sync_flow(return_results, protocol):
+@pytest.mark.parametrize('on_done', [None, lambda x: x])
+def test_return_results_sync_flow(return_results, protocol, on_done):
     with Flow(protocol=protocol).add() as f:
-        r = f.index(
-            from_ndarray(np.random.random([10, 2])), return_results=return_results
+        da = f.index(
+            from_ndarray(np.random.random([10, 2])),
+            return_results=return_results,
+            on_done=on_done,
         )
-        if return_results:
-            assert isinstance(r, list)
-            assert isinstance(r[0].response, Response)
-            assert len(r[0].data.docs) == 10
-            for doc in r[0].data.docs:
+        if return_results or on_done is None:
+            assert isinstance(da, DocumentArray)
+            assert len(da) == 10
+            for doc in da:
                 assert isinstance(doc, Document)
 
         else:
-            assert r is None
+            assert da is None
         _validate_flow(f)
 
 
@@ -570,9 +572,8 @@ def test_flow_routes_list():
     def _time(time: str):
         return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    with Flow().add(name='executor1') as simple_flow:
-        response = simple_flow.index(inputs=Document(), return_results=True)
-        gateway_entry, pod1_entry = json.loads(response[0].json())['routes']
+    def my_cb_one(resp: Response):
+        gateway_entry, pod1_entry = json.loads(resp.json())['routes']
         assert gateway_entry['pod'] == 'gateway'
         assert pod1_entry['pod'].startswith('executor1')
         assert (
@@ -582,11 +583,9 @@ def test_flow_routes_list():
             > _time(gateway_entry['start_time'])
         )
 
-    with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
-        name='merge', needs=['a2', 'b1']
-    ) as shards_flow:
-        response = shards_flow.index(inputs=Document(), return_results=True)
-        routes = json.loads(response[0].json())['routes']
+    def my_cb_two(resp: Response):
+        routes = json.loads(resp.json())['routes']
+        gateway_entry, *pods = routes
         (
             a1_entry,
             a2_entry,
@@ -608,6 +607,14 @@ def test_flow_routes_list():
             > _time(a1_entry['start_time'])
             > _time(gateway_entry['start_time'])
         )
+
+    with Flow().add(name='executor1') as simple_flow:
+        simple_flow.index(inputs=Document(), return_results=True, on_done=my_cb_one)
+
+    with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
+        name='merge', needs=['a2', 'b1']
+    ) as shards_flow:
+        shards_flow.index(inputs=Document(), return_results=True, on_done=my_cb_two)
 
 
 def _extract_route_entries(gateway_entry, routes):
@@ -631,12 +638,13 @@ def test_flow_change_parameters():
         def foo(self, **kwargs):
             return {'a': 1}
 
+    def my_cb(resp: Response):
+        assert resp.parameters['a'] == 1.0
+
     f = Flow().add(uses=MyExec)
     with f:
-        r = f.post('/', parameters={'a': 2}, return_results=True)
-        assert r[0].parameters['a'] == 1.0
-        r = f.post('/', parameters={}, return_results=True)
-        assert r[0].parameters['a'] == 1.0
+        da = f.post('/', parameters={'a': 2}, on_done=my_cb)
+        da = f.post('/', parameters={}, on_done=my_cb)
 
 
 def test_flow_load_executor_yaml_extra_search_paths():
@@ -644,15 +652,15 @@ def test_flow_load_executor_yaml_extra_search_paths():
         uses='config.yml'
     )
     with f:
-        r = f.post('/', inputs=Document(), return_results=True)
-    assert r[0].data.docs[0].text == 'done'
+        da = f.post('/', inputs=Document(), return_results=True)
+    assert da[0].text == 'done'
 
 
 def test_flow_load_yaml_extra_search_paths():
     f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
     with f:
-        r = f.post('/', inputs=Document(), return_results=True)
-    assert r[0].data.docs[0].text == 'done'
+        da = f.post('/', inputs=Document(), return_results=True)
+    assert da[0].text == 'done'
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
