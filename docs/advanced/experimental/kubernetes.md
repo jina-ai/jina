@@ -30,11 +30,19 @@ Then, you can use the `kubectl apply` command to create or update your Flow reso
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
 ```
 
+To generate YAML configurations for Kubernetes from a Jina Flow, one just needs to call:
+
+```python
+flow.to_k8s_yaml('flow_k8s_configuration')
+```
+
+This will create a folder 'flow_k8s_configuration' with a set of Kubernetes yaml configurations for all the deployments composing the Flow
+
 ## Examples
 
 ### Indexing and searching images using CLIP image encoder and PQLiteIndexer
 
-This example shows how to build and deploy a Flow 
+This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
 
 ```python
 from jina import Flow
@@ -87,12 +95,7 @@ config_path = os.environ['KUBECONFIG']
 with portforward.forward(
     'custom-namespace', 'gateway', 8080, 8080, config_path
 ):
-    client_kwargs = dict(
-        host='localhost',
-        port=8080,
-    )
-
-    client = Client(**client_kwargs)
+    client = Client(host='localhost', port=8080)
     client.show_progress = True
     indexed_documents = []
     for resp in client.post(
@@ -146,7 +149,7 @@ host = os.environ['EXTERNAL_IP']
 port = 80
 url = f'http://{host}:{port}'
 doc = DocumentArray.from_files('./imgs/*.png')[0].dict()
-resp = requests.post(f'{url}/index', json={'data': [doc]})
+resp = requests.post(f'{url}/search', json={'data': [doc]})
 closest_match_uri = resp.json()['data']['docs'][0]['matches'][0]['uri']
 print('closest_match_uri: ', closest_match_uri)
 ```
