@@ -35,6 +35,10 @@ class ContainerStore(BaseStore, ABC):
     _kind = 'container'
     _status_model = ContainerStoreStatus
 
+    def __init__(self):
+        super().__init__()
+        self._partiald_ports = set()
+
     @abstractmethod
     async def add_in_partial(self, uri, envs, *args, **kwargs):
         """Implements jina object creation in `partial-daemon`
@@ -229,11 +233,15 @@ class ContainerStore(BaseStore, ABC):
         exposed_docker_ports = Dockerizer.exposed_ports()
         partiald_port = random_port()
         port_assignment_runs = 0
-        while partiald_port in exposed_docker_ports:
+        while (
+            partiald_port in exposed_docker_ports
+            or partiald_port in self._partiald_ports
+        ):
             if port_assignment_runs >= 2 ** 16:
                 raise OSError('No available ports to new container')
             partiald_port = random_port()
             port_assignment_runs += 1
+        self._partiald_ports.add(partiald_port)
         return partiald_port
 
     @BaseStore.dump
