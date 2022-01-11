@@ -2,19 +2,8 @@ import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple, Union, List
 
-from .....hubble.helper import parse_hub_uri
-from .....hubble.hubio import HubIO
 from ....networking import K8sGrpcConnectionPool
 from . import kubernetes_tools
-
-
-def to_dns_name(name: str) -> str:
-    """Converts the pod name to a dns compatible name.
-
-    :param name: name of the pod
-    :return: dns compatible name
-    """
-    return name.replace('/', '-').replace('_', '-').lower()
 
 
 def get_deployment_yamls(
@@ -191,26 +180,6 @@ def get_cli_params(
 
     cli_string = ', '.join(cli_args)
     return cli_string
-
-
-def get_image_name(uses: str) -> str:
-    """The image can be provided in different formats by the user.
-    This function converts it to an image name which can be understood by k8s.
-    It uses the Hub api to get the image name and the latest tag on Docker Hub.
-    :param uses: image name
-
-    :return: normalized image name
-    """
-    try:
-        scheme, name, tag, secret = parse_hub_uri(uses)
-        meta_data, _ = HubIO.fetch_meta(name, tag, secret=secret, force=True)
-        image_name = meta_data.image_name
-        return image_name
-    except Exception:
-        if uses.startswith('docker'):
-            # docker:// is a valid requirement and user may want to put its own image
-            return uses.replace('docker://', '')
-        raise
 
 
 def dictionary_to_cli_param(dictionary) -> str:

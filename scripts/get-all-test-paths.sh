@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-
 set -ex
-
 if [[ $1 == "windows" ]]; then
     # declare -a array1=( "tests/system/*.py" )
     declare -a array2=( $(ls -d tests/{unit,system,docarray}/*/ | grep -v '__pycache__' ))
@@ -17,6 +15,5 @@ else
     dest2=( "${array1[@]}" "${array2[@]}" )
 
     dest=( "${dest1[@]}" "${dest2[@]}" )
-
     printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
 fi

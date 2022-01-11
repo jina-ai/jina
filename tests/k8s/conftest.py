@@ -51,11 +51,8 @@ def image_name_tag_map():
     return {
         'reload-executor': '0.13.1',
         'test-executor': '0.13.1',
-        'executor-merger': '0.1.1',
-        'dummy-dumper': '0.1.1',
         'slow-process-executor': '0.14.1',
-        'slow-init-executor': '0.13.1',
-        'alpine': '3.14',
+        'executor-merger': '0.1.1',
         'jinaai/jina': 'test-pip',
     }
 

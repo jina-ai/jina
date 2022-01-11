@@ -2,31 +2,17 @@ import copy
 from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
-from .... import __default_executor__, __version__
+from .... import __default_executor__
 from ....enums import PeaRoleType
 from .k8slib import kubernetes_deployment
+from .helper import get_image_name, to_compatible_name, get_base_executor_version
 from ...networking import K8sGrpcConnectionPool
 from .. import BasePod
 
 
-def _get_base_executor_version():
-    import requests
-
-    try:
-        url = 'https://registry.hub.docker.com/v1/repositories/jinaai/jina/tags'
-        tags = requests.get(url).json()
-        name_set = {tag['name'] for tag in tags}
-        if __version__ in name_set:
-            return __version__
-        else:
-            return 'master'
-    except:
-        return 'master'
-
-
 class K8sPodConfig:
     """
-    Class that implements the output of configuration files for different cloud-solutions (e.g Kubernetes) for a given Pod.
+    Class that implements the output of configuration files for Kubernetes for a given Pod.
     """
 
     class _K8sDeployment:
@@ -44,7 +30,7 @@ class K8sPodConfig:
             k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
-            self.dns_name = kubernetes_deployment.to_dns_name(name)
+            self.dns_name = to_compatible_name(name)
             self.version = version
             self.pea_type = pea_type
             self.jina_pod_name = jina_pod_name
@@ -68,6 +54,7 @@ class K8sPodConfig:
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
             cargs = copy.copy(self.deployment_args)
+            cargs.env = None
             cargs.pods_addresses = self.k8s_pod_addresses
             from ....helper import ArgNamespace
             from ....parsers import set_gateway_parser
@@ -103,7 +90,13 @@ class K8sPodConfig:
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
                 set_pea_parser(),
-                taboo={'uses_with', 'uses_metas', 'volumes'},
+                taboo={
+                    'uses_with',
+                    'uses_metas',
+                    'volumes',
+                    'uses_before',
+                    'uses_after',
+                },
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['executor'] + _args
@@ -127,7 +120,7 @@ class K8sPodConfig:
             )
 
             if uses is not None and uses != __default_executor__:
-                image_name = kubernetes_deployment.get_image_name(uses)
+                image_name = get_image_name(uses)
 
             return image_name
 
@@ -167,9 +160,15 @@ class K8sPodConfig:
                 uses_before_cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE
                 uses_before_cargs.uses_before_address = None
                 uses_before_cargs.uses_after_address = None
+                uses_before_cargs.uses_before = None
+                uses_before_cargs.uses_after = None
+                uses_before_cargs.uses_with = None
+                uses_before_cargs.uses_metas = None
+                uses_before_cargs.env = None
                 uses_before_cargs.connection_list = None
                 uses_before_cargs.runtime_cls = 'WorkerRuntime'
                 uses_before_cargs.pea_role = PeaRoleType.WORKER
+                uses_before_cargs.polling = None
                 container_args_uses_before = self._get_container_args(
                     uses_before_cargs, PeaRoleType.WORKER
                 )
@@ -182,9 +181,15 @@ class K8sPodConfig:
                 uses_after_cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_USES_AFTER
                 uses_after_cargs.uses_before_address = None
                 uses_after_cargs.uses_after_address = None
+                uses_after_cargs.uses_before = None
+                uses_after_cargs.uses_after = None
+                uses_after_cargs.uses_with = None
+                uses_after_cargs.uses_metas = None
+                uses_after_cargs.env = None
                 uses_after_cargs.connection_list = None
                 uses_after_cargs.runtime_cls = 'WorkerRuntime'
                 uses_after_cargs.pea_role = PeaRoleType.WORKER
+                uses_after_cargs.polling = None
                 container_args_uses_after = self._get_container_args(
                     uses_after_cargs, PeaRoleType.WORKER
                 )
@@ -235,7 +240,7 @@ class K8sPodConfig:
         if self.deployment_args['head_deployment'] is not None:
             self.head_deployment = self._K8sDeployment(
                 name=self.deployment_args['head_deployment'].name,
-                version=_get_base_executor_version(),
+                version=get_base_executor_version(),
                 shard_id=None,
                 jina_pod_name=self.name,
                 common_args=self.args,
@@ -253,7 +258,7 @@ class K8sPodConfig:
             self.worker_deployments.append(
                 self._K8sDeployment(
                     name=name,
-                    version=_get_base_executor_version(),
+                    version=get_base_executor_version(),
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
@@ -263,7 +268,9 @@ class K8sPodConfig:
                     jina_pod_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
-                    k8s_pod_addresses=self.k8s_pod_addresses,
+                    k8s_pod_addresses=self.k8s_pod_addresses
+                    if name == 'gateway'
+                    else None,
                 )
             )
 
@@ -282,6 +289,7 @@ class K8sPodConfig:
             parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
             parsed_args['head_deployment'].uses_with = None
+            parsed_args['head_deployment'].env = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             if not self.k8s_connection_pool:
@@ -290,9 +298,9 @@ class K8sPodConfig:
                 connection_list = {}
                 for i in range(shards):
                     name = (
-                        f'{kubernetes_deployment.to_dns_name(self.name)}-{i}'
+                        f'{to_compatible_name(self.name)}-{i}'
                         if shards > 1
-                        else f'{kubernetes_deployment.to_dns_name(self.name)}'
+                        else f'{to_compatible_name(self.name)}'
                     )
                     connection_list[
                         str(i)
@@ -321,6 +329,8 @@ class K8sPodConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             cargs.port_in = K8sGrpcConnectionPool.K8S_PORT_IN
+            cargs.uses_before_address = None
+            cargs.uses_after_address = None
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':

@@ -453,15 +453,32 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _get_k8s_pod_addresses(self, k8s_namespace: str) -> Dict[str, List[str]]:
         graph_dict = {}
         from ..peapods.networking import K8sGrpcConnectionPool
-        from ..peapods.pods.config.k8slib.kubernetes_deployment import to_dns_name
+        from ..peapods.pods.config.helper import to_compatible_name
 
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
                 continue
-            pod_k8s_address = f'{to_dns_name(v.head_args.name)}.{k8s_namespace}.svc'
+            pod_k8s_address = (
+                f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
+            )
             graph_dict[node] = [
                 f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
             ]
+
+        return graph_dict
+
+    def _get_docker_compose_pod_addresses(self) -> Dict[str, List[str]]:
+        graph_dict = {}
+        from ..peapods.pods.config.docker_compose import PORT_IN
+        from ..peapods.pods.config.helper import to_compatible_name
+
+        for node, v in self._pod_nodes.items():
+            if node == 'gateway':
+                continue
+            pod_docker_compose_address = (
+                f'{to_compatible_name(v.head_args.name)}:{PORT_IN}'
+            )
+            graph_dict[node] = [pod_docker_compose_address]
 
         return graph_dict
 
@@ -1698,9 +1715,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
                 k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
-                if node == 'gateway'
-                else None
-                if not k8s_connection_pool
+                if (node == 'gateway' and not k8s_connection_pool)
                 else None,
             )
             configs = k8s_pod.to_k8s_yaml()
@@ -1712,6 +1727,45 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         yaml.dump(k8s_object, fp)
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
+
+    def to_docker_compose_yaml(
+        self, output_path: Optional[str] = None, network_name: Optional[str] = None
+    ):
+        """
+        Converts the Flow into a yaml file to run with `docker-compose up`
+        :param output_path: The output path for the yaml file
+        :param network_name: The name of the network that will be used by the deployment name
+        """
+        import yaml
+
+        if self._build_level.value < FlowBuildLevel.GRAPH.value:
+            self.build(copy_flow=False)
+
+        output_path = output_path or 'docker-compose.yml'
+        network_name = network_name or 'jina-network'
+
+        from ..peapods.pods.config.docker_compose import DockerComposeConfig
+
+        docker_compose_dict = {
+            'version': '3.3',
+            'networks': {network_name: {'driver': 'bridge'}},
+        }
+
+        services = {}
+
+        for node, v in self._pod_nodes.items():
+            docker_compose_pod = DockerComposeConfig(
+                args=v.args,
+                pod_addresses=self._get_docker_compose_pod_addresses(),
+            )
+            service_configs = docker_compose_pod.to_docker_compose_config()
+            for service_name, service in service_configs:
+                service['networks'] = [network_name]
+                services[service_name] = service
+
+        docker_compose_dict['services'] = services
+        with open(output_path, 'w+') as fp:
+            yaml.dump(docker_compose_dict, fp, sort_keys=False)
 
     def scale(
         self,

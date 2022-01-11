@@ -16,5 +16,6 @@ That said, have fun!
 :hidden:
 
 kubernetes
+docker-compose
 indexers
 ```

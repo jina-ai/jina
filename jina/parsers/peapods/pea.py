@@ -101,7 +101,6 @@ def mixin_pea_parser(parser):
 
     gp.add_argument(
         '--shards',
-        '--parallel',
         type=int,
         default=1,
         help='The number of shards in the pod running at the same time. For more details check '

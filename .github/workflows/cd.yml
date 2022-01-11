@@ -293,6 +293,43 @@ jobs:
           flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
 
+  docker-compose-test:
+    needs: [commit-lint, lint-flake-8, code-injection]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Prepare enviroment
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test docker compose
+        run: |
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/docker_compose/test_*.py
+        timeout-minutes: 30
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
   benchmark-pre-release:
     runs-on: ubuntu-latest
     needs: update-schema
@@ -317,7 +354,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, hub-test, k8s-test, docker-image-test, benchmark-pre-release, update-schema, update-docker]
+    needs: [core-test, hub-test, k8s-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2

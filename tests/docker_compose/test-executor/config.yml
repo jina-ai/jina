@@ -1,4 +1,4 @@
-jtype: SlowInitExecutor
+jtype: TestExecutor
 metas:
   py_modules:
     - debug_executor.py
