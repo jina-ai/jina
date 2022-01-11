@@ -1,5 +1,5 @@
 from functools import partialmethod
-from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING
+from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 
 from ..helper import run_async
 
@@ -26,7 +26,7 @@ class PostMixin:
         continue_on_error: bool = False,
         return_results: bool = False,
         **kwargs,
-    ) -> Optional['DocumentArray']:
+    ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
