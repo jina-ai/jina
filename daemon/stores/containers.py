@@ -146,7 +146,8 @@ class ContainerStore(BaseStore, ABC):
                     f'{workspace_id} is not ACTIVE yet. Please retry once it becomes ACTIVE'
                 )
 
-            partiald_port = self._find_partiald_port()
+            with self._lock:
+                partiald_port = self._find_partiald_port()
 
             dockerports = (
                 ports.docker_ports if isinstance(ports, PortMappings) else ports
