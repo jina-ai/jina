@@ -9,7 +9,7 @@ from ...excepts import BadClient
 from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
 from ...types.request import Request
-from ...peapods.stream import RequestStreamer
+from jina.serve.stream import RequestStreamer
 from ...types.request.data import DataRequest
 
 if TYPE_CHECKING:

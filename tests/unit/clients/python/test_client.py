@@ -10,7 +10,7 @@ from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
-from jina.peapods.peas.factory import PeaFactory
+from jina.orchestrate.peas import PeaFactory
 from docarray.proto.docarray_pb2 import DocumentProto
 from docarray.document.generators import (
     from_csv,

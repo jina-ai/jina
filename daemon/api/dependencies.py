@@ -14,8 +14,8 @@ from jina.enums import (
     PeaRoleType,
 )
 from jina.helper import cached_property
-from jina.peapods.peas.container_helper import get_gpu_device_requests
-from jina.peapods.peas.helper import update_runtime_cls
+from jina.orchestrate.peas import get_gpu_device_requests
+from jina.orchestrate.peas import update_runtime_cls
 from .. import daemon_logger
 from ..helper import get_workspace_path, change_cwd, change_env
 from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT

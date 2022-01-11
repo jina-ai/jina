@@ -12,8 +12,8 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     :param cls: target class
     :return: a tuple of two elements; first is a list of all parsers, second is the legacy parser for default fallback
     """
-    from ...executors import BaseExecutor
-    from ...flow.base import Flow
+    from jina.serve.executors import BaseExecutor
+    from jina.orchestrate.flow.base import Flow
 
     if issubclass(cls, Flow):
         return _get_flow_parser()

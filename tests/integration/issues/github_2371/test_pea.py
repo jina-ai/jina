@@ -1,5 +1,5 @@
 from jina.parsers import set_pea_parser
-from jina.peapods.peas.factory import PeaFactory
+from jina.orchestrate.peas import PeaFactory
 
 
 def test_pea_instantiate_start_same_context():

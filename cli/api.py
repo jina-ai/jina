@@ -1,5 +1,3 @@
-from jina.peapods.runtimes.head import HeadRuntime
-
 if False:
     from argparse import Namespace
 
@@ -10,7 +8,7 @@ def pod(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.pods import Pod
+    from jina.orchestrate.pods import Pod
 
     try:
         with Pod(args) as p:
@@ -25,7 +23,7 @@ def pea(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.peas.factory import PeaFactory
+    from jina.orchestrate.peas.factory import PeaFactory
 
     try:
         with PeaFactory.build_pea(args) as p:
@@ -40,7 +38,8 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.worker import WorkerRuntime
+    from jina.serve.runtimes.worker import WorkerRuntime
+    from jina.serve.runtimes.head import HeadRuntime
 
     if args.runtime_cls == 'WorkerRuntime':
         runtime_cls = WorkerRuntime
@@ -81,7 +80,7 @@ def worker_runtime(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.worker import WorkerRuntime
+    from jina.serve.runtimes.worker import WorkerRuntime
 
     with WorkerRuntime(args) as runtime:
         runtime.logger.success(
@@ -97,7 +96,7 @@ def gateway(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.enums import GatewayProtocolType
-    from jina.peapods.runtimes import get_runtime
+    from jina.serve.runtimes import get_runtime
 
     gateway_runtime_dict = {
         GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',

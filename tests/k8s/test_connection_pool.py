@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.serve.runtimes.networking import K8sGrpcConnectionPool
 
 cur_dir = os.path.dirname(__file__)
 

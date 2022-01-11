@@ -1,8 +1,7 @@
 import pytest
 
-from jina.peapods.pods import Pod
-from jina.peapods.peas.factory import PeaFactory
-from jina.parsers import set_pod_parser, set_pea_parser
+from jina.orchestrate.pods import Pod
+from jina.parsers import set_pod_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.helper import random_port

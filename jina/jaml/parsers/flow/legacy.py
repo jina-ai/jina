@@ -2,7 +2,7 @@ from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
 from ....enums import PodRoleType
-from ....flow.base import Flow
+from jina.orchestrate.flow.base import Flow
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_gateway_parser, set_pod_parser
 

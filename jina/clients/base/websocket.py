@@ -8,7 +8,7 @@ from ..base import BaseClient
 from ..helper import callback_exec
 from ...importer import ImportExtensions
 from ...logging.profile import ProgressBar
-from ...peapods.stream import RequestStreamer
+from jina.serve.stream import RequestStreamer
 from ...helper import get_or_reuse_loop
 
 if TYPE_CHECKING:

@@ -9,11 +9,11 @@ from jina import Document, Client
 from jina.enums import PollingType, PeaRoleType
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods.networking import GrpcConnectionPool
-from jina.peapods.peas.container import ContainerPea
-from jina.peapods.peas import Pea
-from jina.peapods.runtimes.head import HeadRuntime
-from jina.peapods.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.networking import GrpcConnectionPool
+from jina.orchestrate.peas import ContainerPea
+from jina.orchestrate.peas import Pea
+from jina.serve.runtimes import HeadRuntime
+from jina.serve.runtimes import WorkerRuntime
 from jina.types.request.control import ControlRequest
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

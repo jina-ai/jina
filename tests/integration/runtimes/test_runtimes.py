@@ -9,11 +9,11 @@ import pytest
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods.networking import GrpcConnectionPool
-from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.peapods.runtimes.head import HeadRuntime
-from jina.peapods.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve.runtimes import HeadRuntime
+from jina.serve.runtimes import WorkerRuntime
 from jina.types.request.control import ControlRequest
 
 

@@ -13,8 +13,7 @@ class NetworkChecker:
         """
 
         from .logging.profile import TimeContext
-        from jina.peapods.runtimes.worker import WorkerRuntime
-        from google.protobuf.json_format import MessageToJson
+        from jina.serve.runtimes import WorkerRuntime
         import time
 
         ctrl_addr = f'{args.host}:{args.port}'
