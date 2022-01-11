@@ -281,7 +281,7 @@ class JinaRequestModel(BaseModel):
         example=_get_example_data(),
         description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
     )
-    target_peapod: Optional[str] = Field(
+    target_executor: Optional[str] = Field(
         None,
         example='',
         description='A regex string represent the certain peas/pods request targeted.',

@@ -146,12 +146,12 @@ class DataRequestHandler:
         """
         if len(requests) <= 1:
             return
-        existing_pod_routes = [r.pod for r in requests[0].routes]
+        existing_executor_routes = [r.executor for r in requests[0].routes]
         for request in requests[1:]:
             for route in request.routes:
-                if route.pod not in existing_pod_routes:
+                if route.executor not in existing_executor_routes:
                     requests[0].routes.append(route)
-                    existing_pod_routes.append(route.pod)
+                    existing_executor_routes.append(route.executor)
 
     def close(self):
         """ Close the data request handler, by closing the executor """

@@ -29,7 +29,7 @@ def test_bad_flow(mocker, protocol):
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
+        assert bad_routes[0].executor == 'r1'
 
     f = (
         Flow(protocol=protocol)
@@ -56,7 +56,7 @@ def test_bad_flow_customized(mocker, protocol):
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r2'
+        assert bad_routes[0].executor == 'r2'
         assert bad_routes[0].status.exception.name == 'ZeroDivisionError'
 
     f = (
@@ -126,7 +126,7 @@ def test_on_error_callback(mocker, protocol):
         x = x.routes
         assert len(x) == 3  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
-        assert badones[0].pod == 'r3'
+        assert badones[0].executor == 'r3'
 
     f = Flow(protocol=protocol).add(name='r1').add(name='r3', uses=MyExecutor)
 

@@ -131,7 +131,7 @@ def test_pprint_routes(capfd):
     out, err = capfd.readouterr()
     assert '⚪' in out
     assert '🟢' in out
-    assert 'Pod' in out
+    assert 'Executor' in out
     assert 'Time' in out
     assert 'Exception' in out
     assert 'r1' in out
