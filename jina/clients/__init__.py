@@ -21,8 +21,8 @@ def Client(
     https: Optional[bool] = False,
     port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
-    proxy: bool = False,
-    results_as_docarray: bool = False,
+    proxy: Optional[bool] = False,
+    results_as_docarray: Optional[bool] = False,
     **kwargs
 ) -> Union[
     'AsyncWebSocketClient',
