@@ -1,14 +1,13 @@
 import copy
 import asyncio
 
-from typing import List, TYPE_CHECKING, Callable, Union
+from typing import List, TYPE_CHECKING, Callable
 
-from .graph.topology_graph import TopologyGraph
-from ..request_handlers.data_request_handler import DataRequestHandler
-from ...networking import GrpcConnectionPool
+from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.peapods.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
-    from ....types.request import Request
+    from jina.types.request import Request
 
 
 def handle_request(

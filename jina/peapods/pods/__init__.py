@@ -6,21 +6,17 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
-from .. import Pea
-from ..networking import GrpcConnectionPool, host_is_local
-from ..peas.container import ContainerPea
-from ..peas.factory import PeaFactory
-from ..peas.jinad import JinaDPea
-from ... import __default_executor__, __default_host__, __docker_host__
-from ... import helper
-from ...enums import (
-    PodRoleType,
-    PeaRoleType,
-    PollingType,
-)
-from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
-from ...helper import random_identity, CatchAllCleanupContextManager
-from ...jaml.helper import complete_path
+from jina.peapods import Pea
+from jina.peapods.networking import GrpcConnectionPool, host_is_local
+from jina.peapods.peas.container import ContainerPea
+from jina.peapods.peas.factory import PeaFactory
+from jina.peapods.peas.jinad import JinaDPea
+from jina import __default_executor__, __default_host__, __docker_host__
+from jina import helper
+from jina.enums import PodRoleType, PeaRoleType, PollingType
+from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
+from jina.helper import random_identity, CatchAllCleanupContextManager
+from jina.jaml.helper import complete_path
 
 
 class BasePod(ExitStack):

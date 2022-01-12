@@ -4,16 +4,16 @@ from typing import Dict, TYPE_CHECKING
 
 from google.protobuf.json_format import MessageToDict
 
-from ..... import __version__
-from .....clients.request import request_generator
-from .....helper import get_full_version
-from .....importer import ImportExtensions
-from .....logging.logger import JinaLogger
-from .....logging.profile import used_memory_readable
+from jina import __version__
+from jina.clients.request import request_generator
+from jina.helper import get_full_version
+from jina.importer import ImportExtensions
+from jina.logging.logger import JinaLogger
+from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
-    from ..graph.topology_graph import TopologyGraph
-    from ....networking import GrpcConnectionPool
+    from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
+    from jina.peapods.networking import GrpcConnectionPool
 
 
 def get_fastapi_app(
@@ -36,7 +36,7 @@ def get_fastapi_app(
         from starlette.requests import Request
         from fastapi.responses import HTMLResponse
         from fastapi.middleware.cors import CORSMiddleware
-        from .models import (
+        from jina.peapods.runtimes.gateway.http.models import (
             JinaStatusModel,
             JinaRequestModel,
             JinaEndpointRequestModel,
@@ -66,8 +66,11 @@ def get_fastapi_app(
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    from ....stream import RequestStreamer
-    from ..request_handling import handle_request, handle_result
+    from jina.peapods.stream import RequestStreamer
+    from jina.peapods.runtimes.gateway.request_handling import (
+        handle_request,
+        handle_result,
+    )
 
     streamer = RequestStreamer(
         args=args,

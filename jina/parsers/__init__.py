@@ -158,8 +158,6 @@ def get_main_parser():
 
     from jina.parsers.hubble import set_hub_parser
 
-    # from .optimizer import set_optimizer_parser
-
     # create the top-level parser
     parser = set_base_parser()
 

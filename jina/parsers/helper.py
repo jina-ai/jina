@@ -66,7 +66,6 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             self.heading = heading
             self.items = []
 
-        @property
         def format_help(self):
             # format the indented section
             if self.parent is not None:

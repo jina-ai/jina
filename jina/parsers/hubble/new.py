@@ -1,6 +1,6 @@
 """Argparser module for hub new"""
 
-from ..helper import add_arg_group
+from jina.parsers.helper import add_arg_group
 
 
 def mixin_hub_new_parser(parser):

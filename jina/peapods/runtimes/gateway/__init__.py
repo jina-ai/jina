@@ -1,9 +1,9 @@
 from abc import ABC
 
-from .graph.topology_graph import TopologyGraph
-from ...networking import create_connection_pool
+from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.peapods.networking import create_connection_pool
 
-from ..asyncio import AsyncNewLoopRuntime
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 
 
 class GatewayRuntime(AsyncNewLoopRuntime, ABC):

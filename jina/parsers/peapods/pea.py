@@ -1,8 +1,8 @@
 """Argparser module for Pea runtimes"""
 import argparse
 
-from ..helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
-from ...enums import PeaRoleType, RuntimeBackendType
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
+from jina.enums import PeaRoleType, RuntimeBackendType
 
 
 def mixin_pea_parser(parser):

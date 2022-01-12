@@ -8,11 +8,7 @@ from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
-from .....proto.jina_pb2 import (
-    RouteProto,
-    StatusProto,
-    DataRequestProto,
-)
+from jina.proto.jina_pb2 import RouteProto, StatusProto, DataRequestProto
 from docarray.proto.docarray_pb2 import (
     DenseNdArrayProto,
     NdArrayProto,
@@ -259,7 +255,7 @@ class JinaStatusModel(BaseModel):
 
 
 def _get_example_data():
-    from ..... import DocumentArray, Document
+    from jina import DocumentArray, Document
 
     return DocumentArray([Document(text='hello, world!')]).to_list()
 

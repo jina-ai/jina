@@ -1,9 +1,9 @@
 """Argparser module for WorkerRuntime"""
 import argparse
 
-from ...helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
-from .... import __default_host__
-from .... import helper
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
+from jina import __default_host__
+from jina import helper
 
 
 def mixin_worker_runtime_parser(parser):

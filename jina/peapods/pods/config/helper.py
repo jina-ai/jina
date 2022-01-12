@@ -1,6 +1,6 @@
-from .... import __version__
-from ....hubble.helper import parse_hub_uri
-from ....hubble.hubio import HubIO
+from jina import __version__
+from jina.hubble.helper import parse_hub_uri
+from jina.hubble.hubio import HubIO
 
 
 def get_image_name(uses: str) -> str:

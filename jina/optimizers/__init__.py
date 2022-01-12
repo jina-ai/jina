@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 import numpy as np
 import yaml
 
-from .parameters import (
+from jina.optimizers.parameters import (
     IntegerParameter,
     UniformParameter,
     LogUniformParameter,

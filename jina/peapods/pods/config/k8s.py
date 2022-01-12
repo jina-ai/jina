@@ -2,12 +2,16 @@ import copy
 from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
-from .... import __default_executor__
-from ....enums import PeaRoleType
-from .k8slib import kubernetes_deployment
-from .helper import get_image_name, to_compatible_name, get_base_executor_version
-from ...networking import K8sGrpcConnectionPool
-from .. import BasePod
+from jina import __default_executor__
+from jina.enums import PeaRoleType
+from jina.peapods.pods.config.k8slib import kubernetes_deployment
+from jina.peapods.pods.config.helper import (
+    get_image_name,
+    to_compatible_name,
+    get_base_executor_version,
+)
+from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.peapods.pods import BasePod
 
 
 class K8sPodConfig:
@@ -56,8 +60,8 @@ class K8sPodConfig:
             cargs = copy.copy(self.deployment_args)
             cargs.env = None
             cargs.pods_addresses = self.k8s_pod_addresses
-            from ....helper import ArgNamespace
-            from ....parsers import set_gateway_parser
+            from jina.helper import ArgNamespace
+            from jina.parsers import set_gateway_parser
 
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
@@ -84,8 +88,8 @@ class K8sPodConfig:
         @staticmethod
         def _construct_runtime_container_args(cargs, uses_metas, uses_with, pea_type):
             import json
-            from ....helper import ArgNamespace
-            from ....parsers import set_pea_parser
+            from jina.helper import ArgNamespace
+            from jina.parsers import set_pea_parser
 
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,

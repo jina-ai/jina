@@ -203,7 +203,7 @@ class JAML:
         :param resolve_passes: number of rounds to resolve internal reference.
         :return: expanded dict.
         """
-        from ..helper import parse_arg
+        from jina.helper import parse_arg
 
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -435,7 +435,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param data: the data to serialize
         :return: the node's representation
         """
-        from .parsers import get_parser
+        from jina.jaml.parsers import get_parser
 
         tmp = get_parser(cls, version=data._version).dump(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
@@ -452,7 +452,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :return: the parser associated with the class
         """
         data = constructor.construct_mapping(node, deep=True)
-        from .parsers import get_parser
+        from jina.jaml.parsers import get_parser
 
         return get_parser(cls, version=data.get('version', None)).parse(cls, data)
 
@@ -592,7 +592,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     else None,
                 )
 
-            from ..flow.base import Flow
+            from jina.flow.base import Flow
 
             if issubclass(cls, Flow):
                 no_tag_yml_copy = copy.copy(no_tag_yml)

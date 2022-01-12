@@ -1,13 +1,13 @@
 import argparse
 from typing import List, TYPE_CHECKING
 
-from .....importer import ImportExtensions
-from .....logging.logger import JinaLogger
-from .....types.request.data import DataRequest
+from jina.importer import ImportExtensions
+from jina.logging.logger import JinaLogger
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from ..graph.topology_graph import TopologyGraph
-    from ....networking import GrpcConnectionPool
+    from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
+    from jina.peapods.networking import GrpcConnectionPool
 
 
 def get_fastapi_app(
@@ -47,8 +47,11 @@ def get_fastapi_app(
 
     app = FastAPI()
 
-    from ....stream import RequestStreamer
-    from ..request_handling import handle_request, handle_result
+    from jina.peapods.stream import RequestStreamer
+    from jina.peapods.runtimes.gateway.request_handling import (
+        handle_request,
+        handle_result,
+    )
 
     streamer = RequestStreamer(
         args=args,

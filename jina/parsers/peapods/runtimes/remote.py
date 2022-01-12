@@ -1,8 +1,8 @@
 """Argparser module for remote runtime"""
-from ...helper import KVAppendAction, add_arg_group
-from .... import __default_host__
-from .... import helper
-from ....enums import CompressAlgo
+from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina import __default_host__
+from jina import helper
+from jina.enums import CompressAlgo
 
 
 def mixin_remote_runtime_parser(parser):
