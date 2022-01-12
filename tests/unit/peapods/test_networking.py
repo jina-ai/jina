@@ -214,7 +214,7 @@ async def _mock_grpc(mocker, monkeypatch):
     async def close_mock(*args):
         close_mock_object()
 
-    def create_async_channel_mock(*args):
+    def create_async_channel_mock(*args, **kwargs):
         create_mock()
         channel_mock.close = close_mock
         return single_data_stub_mock, data_stub_mock, control_stub_mock, channel_mock
