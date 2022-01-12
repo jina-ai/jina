@@ -7,11 +7,11 @@ from typing import Union, Optional, TYPE_CHECKING
 
 from grpc import RpcError
 
-from jina.peapods.runtimes.base import BaseRuntime
+from jina.serve.runtimes.base import BaseRuntime
 from jina import __windows__
 from jina.importer import ImportExtensions
 
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 

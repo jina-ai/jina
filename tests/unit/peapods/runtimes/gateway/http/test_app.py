@@ -11,10 +11,10 @@ from jina.helper import random_port
 from jina import Executor, requests, Flow, DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
-from jina.peapods.networking import create_connection_pool
-from jina.peapods.runtimes.gateway import TopologyGraph
-from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
-from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
+from jina.serve.networking import create_connection_pool
+from jina.serve.runtimes.gateway import TopologyGraph
+from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
 
 
 @pytest.mark.parametrize('p', [['--default-swagger-ui'], []])

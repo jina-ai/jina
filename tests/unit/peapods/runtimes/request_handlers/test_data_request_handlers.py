@@ -6,7 +6,7 @@ import pytest
 from jina import DocumentArray, Executor, requests, Document, DocumentArrayMemmap
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pea_parser
-from jina.peapods.runtimes.request_handlers.data_request_handler import (
+from jina.serve.runtimes.request_handlers.data_request_handler import (
     DataRequestHandler,
 )
 from jina.clients.request import request_generator

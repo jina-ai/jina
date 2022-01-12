@@ -3,8 +3,8 @@ import asyncio
 
 from typing import List, TYPE_CHECKING, Callable
 
-from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.serve.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
     from jina.types.request import Request

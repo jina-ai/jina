@@ -1,8 +1,8 @@
 import sys
 
-from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.enums import GatewayProtocolType
 
 from jina.parsers import set_gateway_parser

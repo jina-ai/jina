@@ -12,8 +12,8 @@ from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
-    from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
-    from jina.peapods.networking import GrpcConnectionPool
+    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+    from jina.serve.networking import GrpcConnectionPool
 
 
 def get_fastapi_app(
@@ -36,7 +36,7 @@ def get_fastapi_app(
         from starlette.requests import Request
         from fastapi.responses import HTMLResponse
         from fastapi.middleware.cors import CORSMiddleware
-        from jina.peapods.runtimes.gateway.http.models import (
+        from jina.serve.runtimes.gateway.http.models import (
             JinaStatusModel,
             JinaRequestModel,
             JinaEndpointRequestModel,
@@ -66,8 +66,8 @@ def get_fastapi_app(
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    from jina.peapods.stream import RequestStreamer
-    from jina.peapods.runtimes.gateway.request_handling import (
+    from jina.serve.stream import RequestStreamer
+    from jina.serve.runtimes.gateway.request_handling import (
         handle_request,
         handle_result,
     )

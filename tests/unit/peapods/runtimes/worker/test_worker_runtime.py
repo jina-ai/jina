@@ -12,12 +12,12 @@ from docarray import Document
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pea_parser
-from jina.peapods.networking import GrpcConnectionPool
-from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.peapods.runtimes.request_handlers.data_request_handler import (
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.request_handlers.data_request_handler import (
     DataRequestHandler,
 )
-from jina.peapods.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.worker import WorkerRuntime
 from jina.proto import jina_pb2_grpc, jina_pb2
 
 

@@ -6,7 +6,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import Type, Union, Dict, Optional
 
-from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.jaml import JAML
 from jina.orchestrate.peas.helper import _get_event, _get_worker, ConditionalEvent
 from jina import __stop_msg__, __ready_msg__, __windows__
@@ -381,7 +381,7 @@ class Pea(BasePea):
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
         from jina.orchestrate.peas.helper import update_runtime_cls
-        from jina.peapods.runtimes import get_runtime
+        from jina.serve.runtimes import get_runtime
 
         update_runtime_cls(self.args)
         return get_runtime(self.args.runtime_cls)

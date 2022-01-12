@@ -8,7 +8,7 @@ from jina import Flow
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_pod_parser
-from jina.peapods import Pod
+from jina.orchestrate.pods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

@@ -4,7 +4,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional, Dict, Tuple
 
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.data import DataRequest
 
 

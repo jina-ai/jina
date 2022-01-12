@@ -6,7 +6,7 @@ import asyncio
 
 from collections import defaultdict
 
-from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.types.request import Request
 from jina import DocumentArray, Document
 from jina.types.request.data import DataRequest

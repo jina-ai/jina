@@ -11,10 +11,10 @@ from functools import partial
 
 from jina.parsers import set_gateway_parser
 from jina import Document, DocumentArray
-from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
-from jina.peapods import networking
+from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve import networking
 from jina.helper import random_port
 from jina.clients import Client
 

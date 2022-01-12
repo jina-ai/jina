@@ -1,6 +1,6 @@
 import pydantic
 import pytest
-from jina.peapods.runtimes.gateway.http.models import (
+from jina.serve.runtimes.gateway.http.models import (
     PROTO_TO_PYDANTIC_MODELS,
     JinaRequestModel,
 )

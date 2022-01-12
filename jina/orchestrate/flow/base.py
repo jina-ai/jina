@@ -447,7 +447,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _get_k8s_pod_addresses(self, k8s_namespace: str) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.peapods.networking import K8sGrpcConnectionPool
+        from jina.serve.networking import K8sGrpcConnectionPool
         from jina.orchestrate.pods.config.helper import to_compatible_name
 
         for node, v in self._pod_nodes.items():

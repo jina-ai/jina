@@ -11,7 +11,7 @@ from typing import (
     Awaitable,
 )
 
-from jina.peapods.stream.helper import AsyncRequestsIterator
+from jina.serve.stream.helper import AsyncRequestsIterator
 from jina.logging.logger import JinaLogger
 
 __all__ = ['RequestStreamer']

@@ -10,7 +10,7 @@ from jina.hubble.hubio import HubIO
 
 from grpc import RpcError
 
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.control import ControlRequest
 
 if TYPE_CHECKING:

@@ -9,7 +9,7 @@ from cli.api import gateway, executor_native
 from jina import Executor, DocumentArray, Document, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 
 
 class DummyExecutor(Executor):

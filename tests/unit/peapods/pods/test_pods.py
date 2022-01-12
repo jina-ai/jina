@@ -9,7 +9,7 @@ from jina.enums import PollingType, PeaRoleType
 from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
-from jina.peapods import Pod
+from jina.orchestrate.pods import Pod
 from jina import (
     __default_executor__,
     __default_host__,
@@ -18,7 +18,7 @@ from jina import (
     Document,
     DocumentArray,
 )
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

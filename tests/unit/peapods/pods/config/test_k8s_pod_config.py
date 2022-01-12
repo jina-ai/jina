@@ -6,7 +6,7 @@ from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_pod_parser, set_gateway_parser
-from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.serve.networking import K8sGrpcConnectionPool
 from jina.orchestrate.pods.config import K8sPodConfig
 
 

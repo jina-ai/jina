@@ -7,7 +7,7 @@ import pytest
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType
 from jina.parsers import set_gateway_parser, set_pod_parser
-from jina.peapods import Pod
+from jina.orchestrate.pods import Pod
 
 
 @pytest.mark.asyncio

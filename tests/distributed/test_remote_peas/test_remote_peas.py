@@ -10,7 +10,7 @@ from jina import Client, Document, __docker_host__
 from jina.enums import PeaRoleType, PollingType, replace_enum_to_str
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from jina.orchestrate.peas.factory import PeaFactory
 from jina.orchestrate.peas.helper import is_ready
 from jina.orchestrate.peas.jinad import JinaDPea, JinaDProcessTarget

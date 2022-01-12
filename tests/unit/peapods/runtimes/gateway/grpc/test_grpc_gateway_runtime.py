@@ -11,9 +11,9 @@ from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
-from jina.peapods import networking
-from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve import networking
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.types.request.data import DataRequest
 
 

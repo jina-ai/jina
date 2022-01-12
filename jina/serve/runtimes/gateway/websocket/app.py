@@ -6,8 +6,8 @@ from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from jina.peapods.runtimes.gateway.graph.topology_graph import TopologyGraph
-    from jina.peapods.networking import GrpcConnectionPool
+    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+    from jina.serve.networking import GrpcConnectionPool
 
 
 def get_fastapi_app(
@@ -47,8 +47,8 @@ def get_fastapi_app(
 
     app = FastAPI()
 
-    from jina.peapods.stream import RequestStreamer
-    from jina.peapods.runtimes.gateway.request_handling import (
+    from jina.serve.stream import RequestStreamer
+    from jina.serve.runtimes.gateway.request_handling import (
         handle_request,
         handle_result,
     )

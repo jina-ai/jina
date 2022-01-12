@@ -20,7 +20,7 @@ from jina.orchestrate.peas.container_helper import (
 from jina import __docker_host__
 from jina.logging.logger import JinaLogger
 from jina.helper import slugify, random_name
-from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
 if TYPE_CHECKING:
     from docker.client import DockerClient

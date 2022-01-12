@@ -3,7 +3,7 @@ import pytest
 
 from jina import Document
 from jina.helper import Namespace, random_identity
-from jina.peapods.stream import RequestStreamer
+from jina.serve.stream import RequestStreamer
 from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
 

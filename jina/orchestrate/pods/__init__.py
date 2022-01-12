@@ -6,7 +6,7 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
-from jina.peapods.networking import GrpcConnectionPool, host_is_local
+from jina.serve.networking import GrpcConnectionPool, host_is_local
 from jina.orchestrate.peas import Pea
 from jina.orchestrate.peas.container import ContainerPea
 from jina.orchestrate.peas.factory import PeaFactory
@@ -384,7 +384,7 @@ class Pod(BasePod):
             self.args.polling = PollingType.ANY
         self.needs = (
             needs or set()
-        )  #: used in the :class:`jina.orchestrate.flow.Flow` to build the graph
+        )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.uses_before_pea = None
         self.uses_after_pea = None

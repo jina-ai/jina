@@ -1,6 +1,6 @@
 import sys
 
-from jina.peapods.runtimes.head import HeadRuntime
+from jina.serve.runtimes.head import HeadRuntime
 from jina.parsers import set_pea_parser
 
 

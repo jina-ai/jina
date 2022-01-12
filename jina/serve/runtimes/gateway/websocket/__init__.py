@@ -4,14 +4,14 @@ import asyncio
 from jina import __default_host__
 
 from jina.importer import ImportExtensions
-from jina.peapods.runtimes.gateway import GatewayRuntime
-from jina.peapods.runtimes.gateway.http.app import get_fastapi_app
+from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
 
-__all__ = ['HTTPGatewayRuntime']
+__all__ = ['WebSocketGatewayRuntime']
 
 
-class HTTPGatewayRuntime(GatewayRuntime):
-    """Runtime for HTTP interface."""
+class WebSocketGatewayRuntime(GatewayRuntime):
+    """Runtime for Websocket interface."""
 
     async def async_setup(self):
         """
@@ -65,6 +65,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 ),
                 host=__default_host__,
                 port=self.args.port_expose,
+                ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
                 **uvicorn_kwargs
             )

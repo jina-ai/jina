@@ -2,7 +2,7 @@ import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple, Union, List
 
-from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.serve.networking import K8sGrpcConnectionPool
 from jina.orchestrate.pods.config.k8slib import kubernetes_tools
 
 

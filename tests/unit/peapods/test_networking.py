@@ -11,7 +11,7 @@ from jina import DocumentArray, Document
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.helper import random_port
-from jina.peapods.networking import ReplicaList, GrpcConnectionPool
+from jina.serve.networking import ReplicaList, GrpcConnectionPool
 from jina.proto import jina_pb2_grpc
 from jina.types.request.control import ControlRequest
 

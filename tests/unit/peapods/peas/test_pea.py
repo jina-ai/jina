@@ -6,7 +6,8 @@ import pytest
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods import Pea, runtimes
+from jina.orchestrate.peas import Pea
+from jina.serve import runtimes
 
 
 @pytest.fixture()

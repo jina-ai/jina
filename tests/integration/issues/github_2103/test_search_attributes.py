@@ -6,7 +6,7 @@ import pytest
 from urllib import request
 
 from jina import Flow
-from jina.peapods.runtimes.gateway.http.models import _to_camel_case
+from jina.serve.runtimes.gateway.http.models import _to_camel_case
 from docarray.proto import docarray_pb2
 from jina import Document
 from jina import helper

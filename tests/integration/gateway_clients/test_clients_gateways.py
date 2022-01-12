@@ -9,10 +9,10 @@ import pytest
 from jina import Document, DocumentArray
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
-from jina.peapods import networking
-from jina.peapods.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.peapods.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.peapods.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve import networking
+from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.types.request.data import DataRequest
 
 

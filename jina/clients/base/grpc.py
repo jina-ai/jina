@@ -9,7 +9,7 @@ from jina.clients.helper import callback_exec
 from jina.excepts import BadClient, BadClientInput
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2_grpc
-from jina.peapods.networking import GrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
     from jina.clients.base import InputType, CallbackFnType

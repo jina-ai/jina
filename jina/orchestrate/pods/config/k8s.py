@@ -10,7 +10,7 @@ from jina.orchestrate.pods.config.helper import (
     to_compatible_name,
     get_base_executor_version,
 )
-from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.serve.networking import K8sGrpcConnectionPool
 from jina.orchestrate.pods import BasePod
 
 
