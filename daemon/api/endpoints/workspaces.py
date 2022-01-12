@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ..dependencies import WorkspaceDepends
-from ... import Runtime400Exception
-from ...models import DaemonID, WorkspaceItem, WorkspaceStoreStatus
-from ...stores import workspace_store as store
+from daemon.api.dependencies import WorkspaceDepends
+from daemon import Runtime400Exception
+from daemon.models import DaemonID, WorkspaceItem, WorkspaceStoreStatus
+from daemon.stores import workspace_store as store
 
 router = APIRouter(prefix='/workspaces', tags=['workspaces'])
 

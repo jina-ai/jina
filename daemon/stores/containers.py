@@ -12,16 +12,13 @@ import aiohttp
 from jina import __docker_host__
 from jina.helper import colored, random_port
 from jina.enums import RemoteWorkspaceState
-from .base import BaseStore
-from ..dockerize import Dockerizer
-from ..excepts import (
-    PartialDaemon400Exception,
-    PartialDaemonConnectionException,
-)
-from ..helper import if_alive, id_cleaner, error_msg_from
-from ..models import DaemonID
-from ..models.ports import PortMappings
-from ..models.containers import (
+from daemon.stores.base import BaseStore
+from daemon.dockerize import Dockerizer
+from daemon.excepts import PartialDaemon400Exception, PartialDaemonConnectionException
+from daemon.helper import id_cleaner
+from daemon.models import DaemonID
+from daemon.models.ports import PortMappings
+from daemon.models.containers import (
     ContainerArguments,
     ContainerItem,
     ContainerMetadata,
@@ -140,7 +137,7 @@ class ContainerStore(BaseStore, ABC):
         container = None
 
         try:
-            from . import workspace_store
+            from daemon.stores import workspace_store
 
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
@@ -246,7 +243,7 @@ class ContainerStore(BaseStore, ABC):
         else:
             workspace_id = self[id].workspace_id
             del self[id]
-            from . import workspace_store
+            from daemon.stores import workspace_store
 
             Dockerizer.rm_container(id)
             workspace_store[workspace_id].metadata.managed_objects.remove(id)

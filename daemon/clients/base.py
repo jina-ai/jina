@@ -8,12 +8,11 @@ from typing import Dict, Optional, Union
 import aiohttp
 
 from jina import __resources_path__
-from jina.helper import run_async
 from jina.logging.logger import JinaLogger
 
-from .mixin import AsyncToSyncMixin
-from ..models.id import DaemonID, daemonize
-from ..helper import error_msg_from, if_alive
+from daemon.clients.mixin import AsyncToSyncMixin
+from daemon.models.id import DaemonID, daemonize
+from daemon.helper import error_msg_from, if_alive
 
 
 class AsyncBaseClient:

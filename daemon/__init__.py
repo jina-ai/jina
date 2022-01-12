@@ -11,7 +11,7 @@ from uvicorn import Config, Server
 
 from jina import __version__, __resources_path__
 from jina.logging.logger import JinaLogger
-from .excepts import (
+from daemon.excepts import (
     Runtime400Exception,
     RequestValidationError,
     PartialDaemon400Exception,
@@ -19,7 +19,7 @@ from .excepts import (
     partial_daemon_exception_handler,
     validation_exception_handler,
 )
-from .parser import get_main_parser, _get_run_args
+from daemon.parser import get_main_parser, _get_run_args
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
@@ -32,7 +32,7 @@ __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
 
 
 def _get_app(mode=None):
-    from .api.endpoints import router
+    from daemon.api.endpoints import router
 
     app = FastAPI(
         title='JinaD (Daemon)',
@@ -57,7 +57,7 @@ def _get_app(mode=None):
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     if mode is None:
-        from .api.endpoints import flows, pods, peas, logs, workspaces
+        from daemon.api.endpoints import flows, pods, peas, logs, workspaces
 
         app.include_router(logs.router)
         app.include_router(peas.router)
@@ -90,7 +90,7 @@ def _get_app(mode=None):
             ]
         )
     elif mode == 'pod':
-        from .api.endpoints.partial import pod
+        from daemon.api.endpoints.partial import pod
 
         app.include_router(pod.router)
         app.add_exception_handler(
@@ -103,7 +103,7 @@ def _get_app(mode=None):
             }
         )
     elif mode == 'pea':
-        from .api.endpoints.partial import pea
+        from daemon.api.endpoints.partial import pea
 
         app.include_router(pea.router)
         app.add_exception_handler(
@@ -116,7 +116,7 @@ def _get_app(mode=None):
             },
         )
     elif mode == 'flow':
-        from .api.endpoints.partial import flow
+        from daemon.api.endpoints.partial import flow
 
         app.include_router(flow.router)
         app.add_exception_handler(
@@ -161,7 +161,7 @@ def _start_fluentd():
 
 
 def _start_consumer():
-    from .tasks import ConsumerThread
+    from daemon.tasks import ConsumerThread
 
     ConsumerThread().start()
 
