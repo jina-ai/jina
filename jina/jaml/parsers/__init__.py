@@ -13,7 +13,7 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     :return: a tuple of two elements; first is a list of all parsers, second is the legacy parser for default fallback
     """
     from jina.executors import BaseExecutor
-    from jina.flow.base import Flow
+    from jina.orchestrate.flow.base import Flow
 
     if issubclass(cls, Flow):
         return _get_flow_parser()

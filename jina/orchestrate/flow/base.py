@@ -24,7 +24,7 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from jina.flow.builder import allowed_levels, _hanging_pods
+from jina.orchestrate.flow.builder import allowed_levels, _hanging_pods
 from jina import __default_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
@@ -33,7 +33,6 @@ from jina.enums import (
     PodRoleType,
     FlowInspectType,
     GatewayProtocolType,
-    PollingType,
 )
 from jina.excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
 from jina.helper import (
@@ -65,7 +64,7 @@ _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|6
 if TYPE_CHECKING:
     from jina.executors import BaseExecutor
     from jina.clients.base import BaseClient
-    from jina.flow.asyncio import AsyncFlow
+    from jina.orchestrate.flow.asyncio import AsyncFlow
 
 GATEWAY_NAME = 'gateway'
 FALLBACK_PARSERS = [
@@ -349,7 +348,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._common_kwargs.get('asyncio', False) and not isinstance(
             self, AsyncPostMixin
         ):
-            from jina.flow.asyncio import AsyncFlow
+            from jina.orchestrate.flow.asyncio import AsyncFlow
 
             self.__class__ = AsyncFlow
 

@@ -5,7 +5,7 @@ from jina.excepts import FlowBuildLevelError
 
 # noinspection PyUnreachableCode
 if TYPE_CHECKING:
-    from jina.flow.base import Flow
+    from jina.orchestrate.flow.base import Flow
     from jina.enums import FlowBuildLevel
 
 

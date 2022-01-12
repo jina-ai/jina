@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from jina import Document, Flow, Executor, requests
-from jina.flow.asyncio import AsyncFlow
+from jina.orchestrate.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from docarray.document.generators import from_ndarray
 from jina.types.request.data import Response

@@ -203,8 +203,8 @@ from jina.executors import BaseExecutor as Executor
 from jina.executors.decorators import requests
 
 # Flow
-from jina.flow.base import Flow
-from jina.flow.asyncio import AsyncFlow
+from jina.orchestrate.flow.base import Flow
+from jina.orchestrate.flow.asyncio import AsyncFlow
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)
