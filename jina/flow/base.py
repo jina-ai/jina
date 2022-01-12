@@ -555,7 +555,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         external: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
-        protocol: Optional[str] = 'http',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
@@ -610,7 +609,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
-        :param protocol: The protocol gateway should use to connect to the Pod, by default it is http.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
