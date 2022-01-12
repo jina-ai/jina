@@ -4,6 +4,7 @@ from typing import Optional, Dict, TypeVar
 from google.protobuf import json_format
 
 from docarray import DocumentArray
+from docarray.proto.docarray_pb2 import DocumentArrayProto
 from . import Request
 from ...excepts import BadRequestType
 from ...helper import typename, random_identity, cached_property
@@ -34,7 +35,7 @@ class DataRequest(Request):
 
             :param value: a DocumentArray
             """
-            if self:
+            if self and value:
                 self._content.docs.CopyFrom(value.to_protobuf())
 
     """

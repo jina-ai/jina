@@ -127,8 +127,7 @@ class DummyMockConnectionPool:
             new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
             new_docs.append(new_doc)
 
-        response_msg.docs.clear()
-        response_msg.docs.extend(new_docs)
+        response_msg.data.docs = new_docs
 
         async def task_wrapper():
             import random

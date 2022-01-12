@@ -484,8 +484,7 @@ class DummyMockConnectionPool:
             new_docs.append(new_doc)
             self.responded_messages[clientid][pod] = new_doc.text
 
-        response_msg.docs.clear()
-        response_msg.docs.extend(new_docs)
+        response_msg.data.docs = new_docs
 
         async def task_wrapper():
             import random
@@ -520,7 +519,9 @@ class DummyMockGatewayRuntime:
 
 def create_req_from_text(text: str):
     req = DataRequest()
-    req.docs.append(Document(text=text))
+    da = DocumentArray()
+    da.append(Document(text=text))
+    req.data.docs = da
     return req
 
 

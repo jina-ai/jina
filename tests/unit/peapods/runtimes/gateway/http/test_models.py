@@ -144,24 +144,11 @@ def test_repeated():
         == 'array'
     )
     assert (
-        PROTO_TO_PYDANTIC_MODELS.NamedScoreProto().schema()['definitions'][
-            'NamedScoreProto'
-        ]['properties']['operands']['type']
-        == 'array'
-    )
-    assert (
         PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()['definitions'][
             'DocumentProto'
         ]['properties']['chunks']['type']
         == 'array'
     )
-
-
-def test_recursive_schema():
-    """This tests: recursive schmea definions are represented properly"""
-    assert PROTO_TO_PYDANTIC_MODELS.NamedScoreProto().schema()['definitions'][
-        'NamedScoreProto'
-    ]['properties']['operands']['items'] == {'$ref': '#/definitions/NamedScoreProto'}
 
 
 def test_struct():
@@ -194,7 +181,7 @@ def test_jina_document_to_pydantic_document():
     document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
 
     for jina_doc in random_docs(num_docs=10):
-        jina_doc = jina_doc.dict()
+        jina_doc = jina_doc.to_dict()
         pydantic_doc = document_proto_model(**jina_doc)
 
         print(jina_doc['embedding'])
