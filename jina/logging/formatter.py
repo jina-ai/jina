@@ -4,8 +4,8 @@ import re
 from copy import copy
 from logging import Formatter, LogRecord
 
-from ..enums import LogVerbosity
-from ..helper import colored
+from jina.enums import LogVerbosity
+from jina.helper import colored
 
 
 class ColorFormatter(Formatter):
@@ -98,7 +98,7 @@ class ProfileFormatter(Formatter):
         :param record: A LogRecord object.
         :return:: Return JSON formatted log if msg of LogRecord is dict type else return empty.
         """
-        from .profile import used_memory
+        from jina.logging.profile import used_memory
 
         cr = copy(record)
         if isinstance(cr.msg, dict):

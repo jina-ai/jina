@@ -9,12 +9,17 @@ from typing import Dict, Any, Union, TextIO, Optional, List, Tuple
 import yaml
 from yaml.constructor import FullConstructor
 
-from .helper import JinaResolver, JinaLoader, parse_config_source, load_py_modules
+from jina.jaml.helper import (
+    JinaResolver,
+    JinaLoader,
+    parse_config_source,
+    load_py_modules,
+)
 
 __all__ = ['JAML', 'JAMLCompatible']
 
-from ..excepts import BadConfigSource
-from ..helper import expand_env_var
+from jina.excepts import BadConfigSource
+from jina.helper import expand_env_var
 
 subvar_regex = re.compile(
     r'\${{\s*([\w\[\].]+)\s*}}'

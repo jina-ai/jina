@@ -5,10 +5,10 @@ import platform
 import sys
 from typing import Optional
 
-from . import formatter
-from .. import __uptime__, __resources_path__, __windows__
-from ..enums import LogVerbosity
-from ..jaml import JAML
+from jina.logging import formatter
+from jina import __uptime__, __resources_path__, __windows__
+from jina.enums import LogVerbosity
+from jina.jaml import JAML
 
 
 class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
@@ -170,7 +170,7 @@ class JinaLogger:
                 handler = logging.FileHandler(filename, delay=True)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
             elif h == 'FluentHandler':
-                from ..importer import ImportExtensions
+                from jina.importer import ImportExtensions
 
                 with ImportExtensions(required=False, verbose=False):
                     from fluent import asynchandler as fluentasynchandler

@@ -9,9 +9,9 @@ from functools import wraps
 from typing import Optional, Union, Callable
 
 from jina.enums import ProgressBarStatus
-from .logger import JinaLogger
-from .. import __windows__
-from ..helper import colored, get_readable_size, get_readable_time
+from jina.logging.logger import JinaLogger
+from jina import __windows__
+from jina.helper import colored, get_readable_size, get_readable_time
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -54,7 +54,7 @@ def profiling(func):
     :param func: function to be profiled
     :return: arguments wrapper
     """
-    from .predefined import default_logger
+    from jina.logging.predefined import default_logger
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):

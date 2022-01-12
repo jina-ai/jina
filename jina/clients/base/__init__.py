@@ -6,15 +6,15 @@ import os
 from abc import ABC
 from typing import Callable, Union, Optional, Iterator, AsyncIterator, TYPE_CHECKING
 
-from ...excepts import BadClientInput
-from ...helper import typename, ArgNamespace, T
-from ...logging.logger import JinaLogger
-from ...logging.predefined import default_logger
-from ...parsers import set_client_cli_parser
+from jina.excepts import BadClientInput
+from jina.helper import typename, ArgNamespace, T
+from jina.logging.logger import JinaLogger
+from jina.logging.predefined import default_logger
+from jina.parsers import set_client_cli_parser
 
 if TYPE_CHECKING:
-    from ..request import GeneratorSourceType
-    from ...types.request import Request, Response
+    from jina.clients.request import GeneratorSourceType
+    from jina.types.request import Request, Response
 
     InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
     CallbackFnType = Optional[Callable[[Response], None]]
@@ -74,10 +74,10 @@ class BaseClient(ABC):
             )
 
         try:
-            from ..request import request_generator
+            from jina.clients.request import request_generator
 
             r = next(request_generator(**kwargs))
-            from ...types.request import Request
+            from jina.types.request import Request
 
             if not isinstance(r, Request):
                 raise TypeError(f'{typename(r)} is not a valid Request')
@@ -105,11 +105,11 @@ class BaseClient(ABC):
             self._inputs_length = None
 
         if inspect.isasyncgen(self.inputs):
-            from ..request.asyncio import request_generator
+            from jina.clients.request.asyncio import request_generator
 
             return request_generator(**_kwargs)
         else:
-            from ..request import request_generator
+            from jina.clients.request import request_generator
 
             return request_generator(**_kwargs)
 

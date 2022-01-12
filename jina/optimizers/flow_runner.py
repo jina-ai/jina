@@ -3,10 +3,10 @@ import shutil
 from collections.abc import Iterable
 from typing import Union, List, Optional, Callable
 
-from ..helper import colored
-from ..logging.predefined import default_logger as logger
-from ..jaml import JAMLCompatible
-from .. import Flow, DocumentArray
+from jina.helper import colored
+from jina.logging.predefined import default_logger as logger
+from jina.jaml import JAMLCompatible
+from jina import Flow, DocumentArray
 
 
 class FlowRunner(JAMLCompatible):

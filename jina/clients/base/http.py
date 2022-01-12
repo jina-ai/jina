@@ -2,18 +2,18 @@ import asyncio
 from contextlib import nullcontext, AsyncExitStack
 from typing import Optional, TYPE_CHECKING
 
-from .helper import HTTPClientlet
-from ..base import BaseClient
-from ..helper import callback_exec
-from ...excepts import BadClient
-from ...importer import ImportExtensions
-from ...logging.profile import ProgressBar
-from ...types.request import Request
-from ...peapods.stream import RequestStreamer
-from ...types.request.data import DataRequest
+from jina.clients.base.helper import HTTPClientlet
+from jina.clients.base import BaseClient
+from jina.clients.helper import callback_exec
+from jina.excepts import BadClient
+from jina.importer import ImportExtensions
+from jina.logging.profile import ProgressBar
+from jina.types.request import Request
+from jina.peapods.stream import RequestStreamer
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from ..base import InputType, CallbackFnType
+    from jina.clients.base import InputType, CallbackFnType
 
 
 class HTTPBaseClient(BaseClient):
