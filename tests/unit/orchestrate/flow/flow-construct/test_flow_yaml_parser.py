@@ -152,7 +152,7 @@ def test_load_flow_from_cli():
 
 
 def test_load_flow_from_yaml():
-    with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
+    with open(cur_dir.parent.parent.parent / 'yaml' / 'test-flow.yml') as fp:
         _ = Flow.load_config(fp)
 
 
@@ -192,7 +192,9 @@ def test_flow_uses_from_dict():
 def test_flow_yaml_override_with_protocol():
     from jina.enums import GatewayProtocolType
 
-    path = os.path.join(cur_dir.parent, 'yaml/examples/faiss/flow-index.yml')
+    path = os.path.join(
+        cur_dir.parent.parent.parent, 'yaml/examples/faiss/flow-index.yml'
+    )
     f1 = Flow.load_config(path)
     assert f1.protocol == GatewayProtocolType.GRPC
     f2 = Flow.load_config(path, uses_with={'protocol': 'http'})

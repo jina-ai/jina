@@ -11,23 +11,23 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_visualization_with_yml_file_img(tmpdir):
-    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(
-        output=os.path.join(tmpdir, 'flow.svg')
-    )
+    Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/test_flow_visualization.yml')
+    ).plot(output=os.path.join(tmpdir, 'flow.svg'))
     assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
 
 
 def test_visualization_with_yml_file_jpg(tmpdir):
-    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(
-        output=os.path.join(tmpdir, 'flow.jpg')
-    )
+    Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/test_flow_visualization.yml')
+    ).plot(output=os.path.join(tmpdir, 'flow.jpg'))
     assert os.path.exists(os.path.join(tmpdir, 'flow.jpg'))
 
 
 def test_visualization_with_yml_file_jpg_lr(tmpdir):
-    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(
-        output=os.path.join(tmpdir, 'flow-hor.jpg'), vertical_layout=False
-    )
+    Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/test_flow_visualization.yml')
+    ).plot(output=os.path.join(tmpdir, 'flow-hor.jpg'), vertical_layout=False)
     assert os.path.exists(os.path.join(tmpdir, 'flow-hor.jpg'))
 
 

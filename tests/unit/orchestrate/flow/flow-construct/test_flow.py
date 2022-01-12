@@ -72,7 +72,7 @@ def test_simple_flow(protocol):
 
 @pytest.mark.slow
 def test_flow_identical(tmpdir):
-    with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
+    with open(os.path.join(cur_dir, '../../../yaml/test-flow.yml')) as fp:
         a = Flow.load_config(fp)
 
     b = (

@@ -22,26 +22,34 @@ def _validate_flow(f):
 
 @pytest.mark.slow
 def test_index():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faiss/flow-index.yml'))
+    f = Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/examples/faiss/flow-index.yml')
+    )
     with f:
         _validate_flow(f)
 
 
 def test_query():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faiss/flow-query.yml'))
+    f = Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/examples/faiss/flow-query.yml')
+    )
     with f:
         _validate_flow(f)
 
 
 @pytest.mark.slow
 def test_index():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-index.yml'))
+    f = Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/examples/faces/flow-index.yml')
+    )
     with f:
         _validate_flow(f)
 
 
 @pytest.mark.slow
 def test_query():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-query.yml'))
+    f = Flow.load_config(
+        os.path.join(cur_dir, '../../../yaml/examples/faces/flow-query.yml')
+    )
     with f:
         _validate_flow(f)
