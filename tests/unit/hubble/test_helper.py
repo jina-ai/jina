@@ -26,6 +26,9 @@ def test_parse_hub_uri():
     result = helper.parse_hub_uri('jinahub+docker://hello:magic/world')
     assert result == ('jinahub+docker', 'hello', 'world', 'magic')
 
+    result = helper.parse_hub_uri('jinahub+sandbox://hello:magic/world')
+    assert result == ('jinahub+sandbox', 'hello', 'world', 'magic')
+
 
 @pytest.mark.parametrize(
     'uri_path',

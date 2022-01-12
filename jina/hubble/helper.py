@@ -24,10 +24,10 @@ from jina.logging.predefined import default_logger
 
 
 @lru_cache()
-def get_hubble_url() -> str:
-    """Get the Hubble URL from api.jina.ai or os.environ
+def _get_hubble_base_url() -> str:
+    """Get base Hubble Url from api.jina.ai or os.environ
 
-    :return: the Hubble URL
+    :return: base Hubble Url
     """
     if 'JINA_HUBBLE_REGISTRY' in os.environ:
         u = os.environ['JINA_HUBBLE_REGISTRY']
@@ -41,10 +41,31 @@ def get_hubble_url() -> str:
                 u = json.load(resp)['url']
         except:
             default_logger.critical(
-                'Can not fetch the URL of Hubble from `api.jina.ai`'
+                'Can not fetch the Url of Hubble from `api.jina.ai`'
             )
             raise
-    return urljoin(u, '/v1/executors')
+
+    return u
+
+
+def get_hubble_url_v1() -> str:
+    """Get v1 Hubble Url
+
+    :return: v1 Hubble url
+    """
+    u = _get_hubble_base_url()
+    return urljoin(u, '/v1')
+
+
+def get_hubble_url_v2() -> str:
+    """Get v2 Hubble Url
+
+    :return: v2 Hubble url
+    """
+    # TODO: use staging environment for now
+    # u = _get_hubble_base_url()
+    u = 'http://k8s-staging-hubble-447269387e-553627885.us-west-1.elb.amazonaws.com'
+    return urljoin(u, '/v2')
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
@@ -55,7 +76,7 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     """
     parser = urlparse(uri_path)
     scheme = parser.scheme
-    if scheme not in {'jinahub', 'jinahub+docker'}:
+    if scheme not in {'jinahub', 'jinahub+docker', 'jinahub+sandbox'}:
         raise ValueError(f'{uri_path} is not a valid Hub URI.')
 
     items = list(parser.netloc.split(':'))

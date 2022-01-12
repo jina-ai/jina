@@ -20,7 +20,7 @@ from jina.helper import (
     get_ci_vendor,
     batch_iterator,
 )
-from jina.hubble.helper import get_hubble_url
+from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
@@ -313,9 +313,9 @@ def test_ci_vendor():
     assert get_ci_vendor() == 'GITHUB_ACTIONS'
 
 
-def test_get_hubble_url():
+def test_get_hubble_base_url():
     for j in range(2):
-        assert get_hubble_url().startswith('http')
+        assert _get_hubble_base_url().startswith('http')
 
 
 def test_batch_iterator_dam(tmpdir):

@@ -399,8 +399,7 @@ class Pod(BasePod):
             self.peas_args = self._parse_args(self.args)
 
         if self.is_sandbox:
-            # TODO: dynamically fetching
-            host, port = HubIO.deploy_public_sandbox()
+            host, port = HubIO.deploy_public_sandbox(getattr(self.args, 'uses', ''))
             self.first_pea_args.host = host
             self.first_pea_args.port_in = port
             self.peas_args['head'].host = host
@@ -411,7 +410,7 @@ class Pod(BasePod):
         self.peas_args['peas'] = self._set_peas_args(self.args)
 
     @property
-    def is_sandbox(self):
+    def is_sandbox(self) -> bool:
         """
         Check if this pod is a sandbox.
 
