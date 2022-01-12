@@ -81,6 +81,10 @@ class HTTPBaseClient(BaseClient):
                     elif r_status < 200 or r_status > 300:
                         raise ValueError(r_str)
 
+                    # TODO: remove ugly hack
+                    temp = r_str['data']['docs']
+                    r_str['data']['docs'] = {}
+                    r_str['data']['docs']['docs'] = temp
                     resp = DataRequest(r_str)
                     callback_exec(
                         response=resp,
