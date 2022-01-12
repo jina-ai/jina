@@ -592,7 +592,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     else None,
                 )
 
-            from jina.flow.base import Flow
+            from jina.orchestrate.flow.base import Flow
 
             if issubclass(cls, Flow):
                 no_tag_yml_copy = copy.copy(no_tag_yml)

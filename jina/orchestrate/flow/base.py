@@ -48,7 +48,7 @@ from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from jina.parsers.flow import set_flow_parser
-from jina.peapods import Pod
+from jina.orchestrate.pods import Pod
 
 __all__ = ['Flow']
 
@@ -448,7 +448,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _get_k8s_pod_addresses(self, k8s_namespace: str) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.peapods.networking import K8sGrpcConnectionPool
-        from jina.peapods.pods.config.helper import to_compatible_name
+        from jina.orchestrate.pods.config.helper import to_compatible_name
 
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
@@ -464,8 +464,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _get_docker_compose_pod_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.peapods.pods.config.docker_compose import PORT_IN
-        from jina.peapods.pods.config.helper import to_compatible_name
+        from jina.orchestrate.pods.config.docker_compose import PORT_IN
+        from jina.orchestrate.pods.config.helper import to_compatible_name
 
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
@@ -1699,7 +1699,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        from jina.peapods.pods.config.k8s import K8sPodConfig
+        from jina.orchestrate.pods.config.k8s import K8sPodConfig
 
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
@@ -1739,7 +1739,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
-        from jina.peapods.pods.config.docker_compose import DockerComposeConfig
+        from jina.orchestrate.pods.config.docker_compose import DockerComposeConfig
 
         docker_compose_dict = {
             'version': '3.3',

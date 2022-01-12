@@ -10,7 +10,7 @@ def pod(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.pods import Pod
+    from jina.orchestrate.pods import Pod
 
     try:
         with Pod(args) as p:

@@ -12,7 +12,7 @@ from jina.enums import FlowBuildLevel, PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
-from jina.peapods.pods import BasePod
+from jina.orchestrate.pods import BasePod
 from docarray.document.generators import from_ndarray
 from jina.types.request.data import Response
 from docarray.proto import docarray_pb2

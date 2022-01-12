@@ -4,14 +4,14 @@ from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
 from jina.enums import PeaRoleType
-from jina.peapods.pods.config.k8slib import kubernetes_deployment
-from jina.peapods.pods.config.helper import (
+from jina.orchestrate.pods.config.k8slib import kubernetes_deployment
+from jina.orchestrate.pods.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
 )
 from jina.peapods.networking import K8sGrpcConnectionPool
-from jina.peapods.pods import BasePod
+from jina.orchestrate.pods import BasePod
 
 
 class K8sPodConfig:

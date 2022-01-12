@@ -2,12 +2,11 @@ from typing import Union, Dict, Tuple
 import json
 import pytest
 
-from jina import __version__
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_pod_parser, set_gateway_parser
-from jina.peapods.pods.config.docker_compose import DockerComposeConfig
+from jina.orchestrate.pods.config import DockerComposeConfig
 
 
 @pytest.fixture(autouse=True)

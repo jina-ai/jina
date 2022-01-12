@@ -1,6 +1,6 @@
 import pytest
 
-from jina.peapods.pods import Pod
+from jina.orchestrate.pods import Pod
 from jina.parsers import set_pod_parser
 
 

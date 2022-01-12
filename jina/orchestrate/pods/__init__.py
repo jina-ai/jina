@@ -384,7 +384,7 @@ class Pod(BasePod):
             self.args.polling = PollingType.ANY
         self.needs = (
             needs or set()
-        )  #: used in the :class:`jina.flow.Flow` to build the graph
+        )  #: used in the :class:`jina.orchestrate.flow.Flow` to build the graph
 
         self.uses_before_pea = None
         self.uses_after_pea = None
