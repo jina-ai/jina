@@ -366,7 +366,7 @@ async def test_flow_with_configmap(
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert doc.tags['JINA_LOG_LEVEL'] == 'DEBUG'
+        assert doc.tags['JINA_LOG_LEVEL'] == 'INFO'
         assert doc.tags['k1'] == 'v1'
         assert doc.tags['k2'] == 'v2'
         assert doc.tags['env'] == {'k1': 'v1', 'k2': 'v2'}
