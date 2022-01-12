@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
-from .mixin import AiohttpMixin
-from .containers import ContainerStore
+from daemon.stores.mixin import AiohttpMixin
+from daemon.stores.containers import ContainerStore
 
 
 class PeaStore(ContainerStore, AiohttpMixin):

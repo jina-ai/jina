@@ -2,11 +2,11 @@ from typing import Optional, Dict, TYPE_CHECKING, Union, Awaitable
 
 from jina.logging.logger import JinaLogger
 
-from .base import BaseClient, AsyncBaseClient
-from .peas import PeaClient, AsyncPeaClient
-from .pods import PodClient, AsyncPodClient
-from .flows import FlowClient, AsyncFlowClient
-from .workspaces import WorkspaceClient, AsyncWorkspaceClient
+from daemon.clients.base import BaseClient, AsyncBaseClient
+from daemon.clients.peas import PeaClient, AsyncPeaClient
+from daemon.clients.pods import PodClient, AsyncPodClient
+from daemon.clients.flows import FlowClient, AsyncFlowClient
+from daemon.clients.workspaces import WorkspaceClient, AsyncWorkspaceClient
 
 
 __all__ = ['JinaDClient', 'AsyncJinaDClient']

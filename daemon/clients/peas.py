@@ -3,13 +3,13 @@ from typing import Dict, Optional, TYPE_CHECKING, Tuple, Union
 
 import aiohttp
 
-from ..models.id import daemonize
-from .base import AsyncBaseClient
-from .mixin import AsyncToSyncMixin
-from ..helper import error_msg_from, if_alive
+from daemon.models.id import daemonize
+from daemon.clients.base import AsyncBaseClient
+from daemon.clients.mixin import AsyncToSyncMixin
+from daemon.helper import error_msg_from, if_alive
 
 if TYPE_CHECKING:
-    from ..models import DaemonID
+    from daemon.models import DaemonID
 
 
 class AsyncPeaClient(AsyncBaseClient):

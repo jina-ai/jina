@@ -7,14 +7,19 @@ from fastapi import UploadFile
 from jina.enums import RemoteWorkspaceState
 from jina.helper import cached_property, colored
 from jina.logging.logger import JinaLogger
-from . import __task_queue__, daemon_logger, jinad_args
-from .dockerize import Dockerizer
-from .excepts import DockerImageException, DockerNetworkException
-from .files import DaemonFile, store_files_in_workspace
-from .helper import id_cleaner, get_workspace_path
-from .models.id import DaemonID
-from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
-from .stores import workspace_store as store
+
+from daemon import __task_queue__, daemon_logger, jinad_args
+from daemon.dockerize import Dockerizer
+from daemon.excepts import DockerImageException, DockerNetworkException
+from daemon.files import DaemonFile, store_files_in_workspace
+from daemon.helper import id_cleaner, get_workspace_path
+from daemon.models.id import DaemonID
+from daemon.models.workspaces import (
+    WorkspaceArguments,
+    WorkspaceItem,
+    WorkspaceMetadata,
+)
+from daemon.stores import workspace_store as store
 
 
 class DaemonWorker(Thread):

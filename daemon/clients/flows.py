@@ -3,10 +3,10 @@ from typing import Union, TYPE_CHECKING, Dict, Optional
 
 import aiohttp
 
-from ..models.id import daemonize
-from ..helper import if_alive, error_msg_from
-from .base import AsyncBaseClient
-from .mixin import AsyncToSyncMixin
+from daemon.models.id import daemonize
+from daemon.helper import if_alive, error_msg_from
+from daemon.clients.base import AsyncBaseClient
+from daemon.clients.mixin import AsyncToSyncMixin
 
 if TYPE_CHECKING:
     from ..models import DaemonID

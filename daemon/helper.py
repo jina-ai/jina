@@ -5,7 +5,7 @@ from typing import Callable, List, TYPE_CHECKING, Tuple, Dict
 
 import aiohttp
 
-from .excepts import PartialDaemon400Exception
+from daemon.excepts import PartialDaemon400Exception
 
 if TYPE_CHECKING:
     from .models import DaemonID

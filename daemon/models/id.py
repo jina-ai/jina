@@ -1,7 +1,7 @@
 import uuid
 from typing import Dict, Union
 
-from .enums import IDLiterals
+from daemon.models.enums import IDLiterals
 
 
 class DaemonID(str):

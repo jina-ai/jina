@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Dict, Optional
 
 from jina.helper import colored
-from .base import BaseStore
-from .peas import PeaStore
+from daemon.stores.base import BaseStore
+from daemon.stores.peas import PeaStore
 
 if TYPE_CHECKING:
-    from ..models import DaemonID
+    from daemon.models import DaemonID
 
 
 class PodStore(PeaStore):

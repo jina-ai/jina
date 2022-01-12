@@ -4,10 +4,10 @@ from fastapi import APIRouter
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
 
-from ....models import PeaModel
-from ....models.partial import PartialStoreItem
-from ....excepts import PartialDaemon400Exception
-from ....stores import partial_store as store
+from daemon.models import PeaModel
+from daemon.models.partial import PartialStoreItem
+from daemon.excepts import PartialDaemon400Exception
+from daemon.stores import partial_store as store
 
 router = APIRouter(prefix='/pea', tags=['pea'])
 

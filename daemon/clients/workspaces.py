@@ -17,15 +17,15 @@ from jina.helper import colored
 from jina.jaml.helper import complete_path
 from jina.enums import RemoteWorkspaceState
 
-from ..models.id import daemonize
-from .base import AsyncBaseClient
-from .mixin import AsyncToSyncMixin
-from ..models.workspaces import WorkspaceItem
-from ..helper import error_msg_from, if_alive, change_cwd
+from daemon.models.id import daemonize
+from daemon.clients.base import AsyncBaseClient
+from daemon.clients.mixin import AsyncToSyncMixin
+from daemon.models.workspaces import WorkspaceItem
+from daemon.helper import error_msg_from, if_alive, change_cwd
 
 
 if TYPE_CHECKING:
-    from ..models import DaemonID
+    from daemon.models import DaemonID
     from rich.status import Status
     from jina.logging.logger import JinaLogger
 
