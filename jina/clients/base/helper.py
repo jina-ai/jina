@@ -2,13 +2,13 @@ import asyncio
 from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
-from ...types.request import Request
-from ...importer import ImportExtensions
-from ...types.request.data import DataRequest
+from jina.types.request import Request
+from jina.importer import ImportExtensions
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from ...types.request import Response
-    from ...logging.logger import JinaLogger
+    from jina.types.request import Response
+    from jina.logging.logger import JinaLogger
 
 
 class AioHttpClientlet(ABC):

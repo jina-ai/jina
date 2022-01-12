@@ -9,15 +9,18 @@ import threading
 from typing import Union, Dict, Optional, TYPE_CHECKING
 import asyncio
 
-from ... import __windows__
-from ...importer import ImportExtensions
-from . import BasePea
-from .helper import _get_worker
-from .container_helper import get_gpu_device_requests, get_docker_network
-from ... import __docker_host__
-from ...logging.logger import JinaLogger
-from ...helper import slugify, random_name
-from ..runtimes.asyncio import AsyncNewLoopRuntime
+from jina import __windows__
+from jina.importer import ImportExtensions
+from jina.peapods.peas import BasePea
+from jina.peapods.peas.helper import _get_worker
+from jina.peapods.peas.container_helper import (
+    get_gpu_device_requests,
+    get_docker_network,
+)
+from jina import __docker_host__
+from jina.logging.logger import JinaLogger
+from jina.helper import slugify, random_name
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 
 if TYPE_CHECKING:
     from docker.client import DockerClient
@@ -35,7 +38,7 @@ def _docker_run(
     # heavy copy into new process memory space
     import docker
     import warnings
-    from ...excepts import BadImageNameError, DockerVersionError
+    from jina.excepts import BadImageNameError, DockerVersionError
 
     docker_version = client.version().get('Version')
     if not docker_version:
@@ -62,8 +65,8 @@ def _docker_run(
     # the image arg should be ignored otherwise it keeps using ContainerPea in the container
     # basically all args in Pea-docker arg group should be ignored.
     # this prevent setting containerPea twice
-    from ...parsers import set_pea_parser
-    from ...helper import ArgNamespace
+    from jina.parsers import set_pea_parser
+    from jina.helper import ArgNamespace
     from pathlib import Path
 
     args.native = True

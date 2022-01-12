@@ -1,6 +1,6 @@
 """Argparser module for Flow"""
-from .base import set_base_parser
-from .helper import add_arg_group, KVAppendAction
+from jina.parsers.base import set_base_parser
+from jina.parsers.helper import add_arg_group, KVAppendAction
 
 
 def mixin_flow_features_parser(parser):
@@ -8,7 +8,7 @@ def mixin_flow_features_parser(parser):
 
     :param parser: the parser configure
     """
-    from ..enums import FlowInspectType
+    from jina.enums import FlowInspectType
 
     gp = add_arg_group(parser, title='Flow Feature')
 
@@ -41,7 +41,7 @@ def set_flow_parser(parser=None, with_identity=False):
     :param with_identity: if to include identity in the parser
     :return: the parser
     """
-    from .peapods.base import mixin_base_ppr_parser
+    from jina.parsers.peapods.base import mixin_base_ppr_parser
 
     if not parser:
         parser = set_base_parser()

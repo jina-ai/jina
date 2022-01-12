@@ -1,5 +1,4 @@
 import traceback
-from collections import namedtuple
 from typing import Optional
 
 from jina.executors import BaseExecutor

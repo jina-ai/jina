@@ -1,12 +1,12 @@
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 
-from ..helper import run_async
+from jina.helper import run_async
 
 if TYPE_CHECKING:
-    from .base import CallbackFnType, InputType
-    from ..types.request import Response
-    from .. import DocumentArray
+    from jina.clients.base import CallbackFnType, InputType
+    from jina.types.request import Response
+    from jina import DocumentArray
 
 
 class PostMixin:

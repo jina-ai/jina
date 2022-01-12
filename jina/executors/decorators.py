@@ -5,8 +5,8 @@ import inspect
 from functools import wraps
 from typing import Callable, Union, List, Optional, Dict, Sequence, TYPE_CHECKING
 
-from .metas import get_default_metas
-from ..helper import convert_tuple_to_list, iscoroutinefunction
+from jina.executors.metas import get_default_metas
+from jina.helper import convert_tuple_to_list, iscoroutinefunction
 
 if TYPE_CHECKING:
     from jina import DocumentArray
@@ -87,7 +87,7 @@ def requests(
     :param on: the endpoint string, by convention starts with `/`
     :return: decorated function
     """
-    from .. import __default_endpoint__, __args_executor_func__
+    from jina import __default_endpoint__, __args_executor_func__
 
     class FunctionMapper:
         def __init__(self, fn):

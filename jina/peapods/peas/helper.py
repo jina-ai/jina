@@ -4,14 +4,14 @@ from copy import deepcopy
 from functools import partial
 from typing import Callable, Dict, Union, TYPE_CHECKING
 
-from ...enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
-from ...hubble.helper import is_valid_huburi
-from ...hubble.hubio import HubIO
+from jina.enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
+from jina.hubble.helper import is_valid_huburi
+from jina.hubble.hubio import HubIO
 
 from grpc import RpcError
 
-from ..networking import GrpcConnectionPool
-from ...types.request.control import ControlRequest
+from jina.peapods.networking import GrpcConnectionPool
+from jina.types.request.control import ControlRequest
 
 if TYPE_CHECKING:
     from argparse import Namespace

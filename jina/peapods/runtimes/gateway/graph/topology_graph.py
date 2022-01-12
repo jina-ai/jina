@@ -4,8 +4,8 @@ from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional, Dict, Tuple
 
-from ....networking import GrpcConnectionPool
-from .....types.request.data import DataRequest
+from jina.peapods.networking import GrpcConnectionPool
+from jina.types.request.data import DataRequest
 
 
 class TopologyGraph:

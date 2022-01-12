@@ -1,5 +1,5 @@
 """Argparser module for hub push"""
-from ..helper import add_arg_group
+from jina.parsers.helper import add_arg_group
 
 
 def mixin_hub_pull_options_parser(parser):
@@ -29,7 +29,7 @@ def mixin_hub_pull_parser(parser):
     """
 
     def hub_uri(uri: str) -> str:
-        from ...hubble.helper import parse_hub_uri
+        from jina.hubble.helper import parse_hub_uri
 
         parse_hub_uri(uri)
         return uri

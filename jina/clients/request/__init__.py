@@ -11,16 +11,16 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from .helper import _new_data_request_from_batch, _new_data_request
-from ...enums import DataInputType
-from ...helper import batch_iterator
-from ...logging.predefined import default_logger
+from jina.clients.request.helper import _new_data_request_from_batch, _new_data_request
+from jina.enums import DataInputType
+from jina.helper import batch_iterator
+from jina.logging.predefined import default_logger
 
 if TYPE_CHECKING:
-    from ... import Document
+    from jina import Document
     from docarray.document import DocumentSourceType
     from docarray.document.mixins.content import DocumentContentType
-    from ...types.request import Request
+    from jina.types.request import Request
 
     SingletonDataType = Union[
         DocumentContentType,

@@ -1,5 +1,5 @@
-from ..base import set_base_parser
-from ..helper import _chf
+from jina.parsers.base import set_base_parser
+from jina.parsers.helper import _chf
 
 
 def mixin_hub_usage_parser(parser):
@@ -22,7 +22,7 @@ def set_hub_push_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from .push import mixin_hub_push_parser
+    from jina.parsers.hubble.push import mixin_hub_push_parser
 
     mixin_hub_usage_parser(parser)
     mixin_hub_push_parser(parser)
@@ -37,7 +37,7 @@ def set_hub_pull_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from .pull import mixin_hub_pull_parser
+    from jina.parsers.hubble.pull import mixin_hub_pull_parser
 
     mixin_hub_usage_parser(parser)
     mixin_hub_pull_parser(parser)
@@ -52,7 +52,7 @@ def set_hub_new_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from .new import mixin_hub_new_parser
+    from jina.parsers.hubble.new import mixin_hub_new_parser
 
     mixin_hub_new_parser(parser)
     return parser

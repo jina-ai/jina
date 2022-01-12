@@ -7,7 +7,7 @@ def mixin_comm_protocol_parser(parser):
     :param parser: the parser configure
     """
 
-    from ..enums import GatewayProtocolType
+    from jina.enums import GatewayProtocolType
 
     parser.add_argument(
         '--protocol',

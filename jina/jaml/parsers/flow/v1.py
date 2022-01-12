@@ -2,11 +2,11 @@ import os
 import argparse
 from typing import Dict, Any
 
-from ..base import VersionedYAMLParser
-from .... import Flow
-from ....enums import PodRoleType
-from ....helper import expand_env_var, ArgNamespace
-from ....parsers import set_pod_parser, set_gateway_parser
+from jina.jaml.parsers.base import VersionedYAMLParser
+from jina import Flow
+from jina.enums import PodRoleType
+from jina.helper import expand_env_var, ArgNamespace
+from jina.parsers import set_pod_parser, set_gateway_parser
 
 
 def _get_taboo(parser: argparse.ArgumentParser):

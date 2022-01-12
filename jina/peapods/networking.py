@@ -8,11 +8,11 @@ from grpc.aio import AioRpcError
 
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
-from ..enums import PollingType
-from ..helper import get_or_reuse_loop
-from ..types.request import Request
-from ..types.request.control import ControlRequest
-from ..types.request.data import DataRequest
+from jina.enums import PollingType
+from jina.helper import get_or_reuse_loop
+from jina.types.request import Request
+from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import kubernetes

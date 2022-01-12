@@ -1,7 +1,7 @@
 import argparse
 
-from ...excepts import RuntimeTerminated
-from ...logging.logger import JinaLogger
+from jina.excepts import RuntimeTerminated
+from jina.logging.logger import JinaLogger
 
 
 class BaseRuntime:

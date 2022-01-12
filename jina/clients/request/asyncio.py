@@ -2,14 +2,14 @@
 
 from typing import AsyncIterator, Optional, Dict, TYPE_CHECKING
 
-from .helper import _new_data_request_from_batch, _new_data_request
-from ...enums import DataInputType
-from ...importer import ImportExtensions
-from ...logging.predefined import default_logger
-from ...types.request import Request
+from jina.clients.request.helper import _new_data_request_from_batch, _new_data_request
+from jina.enums import DataInputType
+from jina.importer import ImportExtensions
+from jina.logging.predefined import default_logger
+from jina.types.request import Request
 
 if TYPE_CHECKING:
-    from . import GeneratorSourceType
+    from jina.clients.request import GeneratorSourceType
 
 
 async def request_generator(

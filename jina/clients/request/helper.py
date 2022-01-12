@@ -1,10 +1,11 @@
 """Module for helper functions for clients."""
 from typing import Tuple
 
-from ...enums import DataInputType
-from ...excepts import BadRequestType
 from docarray.document import Document
-from ...types.request.data import DataRequest
+
+from jina.enums import DataInputType
+from jina.excepts import BadRequestType
+from jina.types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
@@ -71,7 +72,7 @@ def _add_docs_groundtruths(req, batch, data_type, _kwargs):
 
 
 def _add_control_propagate(req, kwargs):
-    from ...proto import jina_pb2
+    from jina.proto import jina_pb2
 
     extra_kwargs = kwargs[
         'extra_kwargs'

@@ -1,17 +1,14 @@
 from typing import Dict, List, TYPE_CHECKING, Optional
 
-from .... import __default_endpoint__, __default_executor__
-from ....excepts import (
-    ExecutorFailToLoad,
-    BadConfigSource,
-)
-from ....executors import BaseExecutor
-from .... import DocumentArray, DocumentArrayMemmap
-from ....types.request.data import DataRequest
+from jina import __default_endpoint__
+from jina.excepts import ExecutorFailToLoad, BadConfigSource
+from jina.executors import BaseExecutor
+from jina import DocumentArray, DocumentArrayMemmap
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import argparse
-    from ....logging.logger import JinaLogger
+    from jina.logging.logger import JinaLogger
 
 
 class DataRequestHandler:

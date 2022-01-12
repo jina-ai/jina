@@ -2,9 +2,9 @@ import inspect
 from functools import reduce
 from typing import Dict, Type, Set
 
-from ..base import VersionedYAMLParser
-from ....executors import BaseExecutor
-from ....executors.metas import get_default_metas
+from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.executors import BaseExecutor
+from jina.executors.metas import get_default_metas
 
 
 class LegacyParser(VersionedYAMLParser):
@@ -57,7 +57,7 @@ class LegacyParser(VersionedYAMLParser):
         :param data: flow yaml file loaded as python dict
         :return: the Flow YAML parser given the syntax version number
         """
-        from ....logging.predefined import default_logger
+        from jina.logging.predefined import default_logger
 
         _meta_config = get_default_metas()
         _meta_config.update(data.get('metas', {}))
