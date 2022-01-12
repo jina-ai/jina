@@ -3,7 +3,7 @@ import time
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 from jina import Flow
 from jina.logging.profile import TimeContext
 

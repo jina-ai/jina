@@ -199,8 +199,8 @@ from jina.clients import Client
 from docarray import Document, DocumentArray, DocumentArrayMemmap
 
 # Executor
-from jina.executors import BaseExecutor as Executor
-from jina.executors.decorators import requests
+from jina.serve.executors import BaseExecutor as Executor
+from jina.serve.executors.decorators import requests
 
 # Flow
 from jina.orchestrate.flow.base import Flow

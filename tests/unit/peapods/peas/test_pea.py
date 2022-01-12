@@ -4,7 +4,7 @@ import time
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.orchestrate.peas import Pea
 from jina.serve import runtimes

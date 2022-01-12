@@ -1,4 +1,4 @@
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 
 
 class DummyExternalIndexer(BaseExecutor):

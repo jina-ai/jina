@@ -62,7 +62,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 if TYPE_CHECKING:
-    from jina.executors import BaseExecutor
+    from jina.serve.executors import BaseExecutor
     from jina.clients.base import BaseClient
     from jina.orchestrate.flow.asyncio import AsyncFlow
 

@@ -4,8 +4,8 @@ from copy import deepcopy
 import pytest
 
 from jina import Executor, requests, DocumentArray, Document, DocumentArrayMemmap
-from jina.executors import ReducerExecutor
-from jina.executors.metas import get_default_metas
+from jina.serve.executors import ReducerExecutor
+from jina.serve.executors.metas import get_default_metas
 
 
 def test_executor_load_from_hub():

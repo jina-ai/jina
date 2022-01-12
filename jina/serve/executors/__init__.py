@@ -5,7 +5,7 @@ import os
 from types import SimpleNamespace
 from typing import Dict, Optional, Type, List
 
-from jina.executors.decorators import store_init_kwargs, wrap_func, requests
+from jina.serve.executors.decorators import store_init_kwargs, wrap_func, requests
 from jina import __default_endpoint__, __args_executor_init__
 from jina.helper import (
     typename,
@@ -142,7 +142,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     )
 
     def _add_metas(self, _metas: Optional[Dict]):
-        from jina.executors.metas import get_default_metas
+        from jina.serve.executors.metas import get_default_metas
 
         tmp = get_default_metas()
 

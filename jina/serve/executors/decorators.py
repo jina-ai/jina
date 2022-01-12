@@ -5,7 +5,7 @@ import inspect
 from functools import wraps
 from typing import Callable, Union, List, Optional, Dict, Sequence, TYPE_CHECKING
 
-from jina.executors.metas import get_default_metas
+from jina.serve.executors.metas import get_default_metas
 from jina.helper import convert_tuple_to_list, iscoroutinefunction
 
 if TYPE_CHECKING:

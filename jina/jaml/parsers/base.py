@@ -2,7 +2,7 @@ from typing import Dict, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from jina.orchestrate.flow.base import Flow
-    from jina.executors import BaseExecutor
+    from jina.serve.executors import BaseExecutor
 
 
 class VersionedYAMLParser:

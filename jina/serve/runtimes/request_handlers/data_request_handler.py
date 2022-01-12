@@ -2,7 +2,7 @@ from typing import Dict, List, TYPE_CHECKING, Optional
 
 from jina import __default_endpoint__
 from jina.excepts import ExecutorFailToLoad, BadConfigSource
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 from jina import DocumentArray, DocumentArrayMemmap
 from jina.types.request.data import DataRequest
 

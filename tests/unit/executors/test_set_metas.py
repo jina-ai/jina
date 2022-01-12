@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 
 
 def test_exec_from_python():

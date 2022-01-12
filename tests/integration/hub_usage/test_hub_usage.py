@@ -1,12 +1,10 @@
 import os
-import json
 from pathlib import Path
-import requests
 import pytest
 
 from jina import Flow
 from jina.excepts import RuntimeFailToStart
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 from jina.parsers import set_pod_parser
 from jina.orchestrate.pods import Pod
 
