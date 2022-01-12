@@ -30,14 +30,14 @@ def handle_request(
         tasks_to_ignore = []
         endpoint = request.header.exec_endpoint
         r = request.routes.add()
-        r.pod = 'gateway'
+        r.executor = 'gateway'
         r.start_time.GetCurrentTime()
         # If the request is targeting a specific pod, we can send directly to the pod instead of querying the graph
-        if request.header.target_peapod:
+        if request.header.target_executor:
             tasks_to_respond.extend(
                 connection_pool.send_request(
                     request=request,
-                    pod=request.header.target_peapod,
+                    pod=request.header.target_executor,
                     head=True,
                     endpoint=endpoint,
                 )
@@ -89,6 +89,6 @@ def handle_result(result: 'Request'):
     :return: Returns a request to be returned to the client
     """
     for route in result.routes:
-        if route.pod == 'gateway':
+        if route.executor == 'gateway':
             route.end_time.GetCurrentTime()
     return result

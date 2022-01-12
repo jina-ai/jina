@@ -574,8 +574,8 @@ def test_flow_routes_list():
 
     def my_cb_one(resp: Response):
         gateway_entry, pod1_entry = json.loads(resp.json())['routes']
-        assert gateway_entry['pod'] == 'gateway'
-        assert pod1_entry['pod'].startswith('executor1')
+        assert gateway_entry['executor'] == 'gateway'
+        assert pod1_entry['executor'].startswith('executor1')
         assert (
             _time(gateway_entry['end_time'])
             > _time(pod1_entry['end_time'])
@@ -593,11 +593,11 @@ def test_flow_routes_list():
             gateway_entry,
             merge_entry,
         ) = _extract_route_entries(gateway_entry, routes)
-        assert gateway_entry['pod'] == 'gateway'
-        assert a1_entry['pod'].startswith('a1')
-        assert a2_entry['pod'].startswith('a2')
-        assert b1_entry['pod'].startswith('b1')
-        assert merge_entry['pod'].startswith('merge')
+        assert gateway_entry['executor'] == 'gateway'
+        assert a1_entry['executor'].startswith('a1')
+        assert a2_entry['executor'].startswith('a2')
+        assert b1_entry['executor'].startswith('b1')
+        assert merge_entry['executor'].startswith('merge')
         assert (
             _time(gateway_entry['end_time'])
             > _time(merge_entry['end_time'])
@@ -619,15 +619,15 @@ def test_flow_routes_list():
 
 def _extract_route_entries(gateway_entry, routes):
     for route in routes:
-        if route['pod'] == 'gateway':
+        if route['executor'] == 'gateway':
             gateway_entry = route
-        elif route['pod'] == 'a1':
+        elif route['executor'] == 'a1':
             a1_entry = route
-        elif route['pod'] == 'a2':
+        elif route['executor'] == 'a2':
             a2_entry = route
-        elif route['pod'] == 'b1':
+        elif route['executor'] == 'b1':
             b1_entry = route
-        elif route['pod'] == 'merge':
+        elif route['executor'] == 'merge':
             merge_entry = route
     return a1_entry, a2_entry, b1_entry, gateway_entry, merge_entry
 
@@ -643,8 +643,8 @@ def test_flow_change_parameters():
 
     f = Flow().add(uses=MyExec)
     with f:
-        da = f.post('/', parameters={'a': 2}, on_done=my_cb)
-        da = f.post('/', parameters={}, on_done=my_cb)
+        f.post('/', parameters={'a': 2}, on_done=my_cb)
+        f.post('/', parameters={}, on_done=my_cb)
 
 
 def test_flow_load_executor_yaml_extra_search_paths():

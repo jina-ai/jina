@@ -119,7 +119,7 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
                     client_dbms.post(
                         on='/dump',
                         inputs=docs,
-                        target_peapod='dump_exec',
+                        target_executor='dump_exec',
                         parameters={'dump_path': dump_path, 'shards': shards},
                     )
 

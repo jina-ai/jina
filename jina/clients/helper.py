@@ -23,7 +23,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
     from rich import box
 
     table = Table(box=box.SIMPLE)
-    for v in ('Pod', 'Time', 'Exception'):
+    for v in ('Executor', 'Time', 'Exception'):
         table.add_column(v)
 
     for route in routes:
@@ -34,7 +34,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
             status_icon = '⚪'
 
         table.add_row(
-            f'{status_icon} {route.pod}',
+            f'{status_icon} {route.executor}',
             f'{route.start_time.ToMilliseconds() - routes[0].start_time.ToMilliseconds()}ms',
             ''.join(route.status.exception.stacks[-stack_limit:]),
         )

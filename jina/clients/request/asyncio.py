@@ -17,7 +17,7 @@ async def request_generator(
     data: 'GeneratorSourceType',
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
-    target_peapod: Optional[str] = None,
+    target_executor: Optional[str] = None,
     parameters: Optional[Dict] = None,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> AsyncIterator['Request']:
@@ -29,7 +29,7 @@ async def request_generator(
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
     :param parameters: the kwargs that will be sent to the executor
-    :param target_peapod: a regex string. Only matching Executors will process the request.
+    :param target_executor: a regex string. Only matching Executors will process the request.
     :param kwargs: additional arguments
     :yield: request
     """
@@ -40,7 +40,7 @@ async def request_generator(
         if data is None:
             # this allows empty inputs, i.e. a data request with only parameters
             yield _new_data_request(
-                endpoint=exec_endpoint, target=target_peapod, parameters=parameters
+                endpoint=exec_endpoint, target=target_executor, parameters=parameters
             )
         else:
             with ImportExtensions(required=True):
@@ -52,7 +52,7 @@ async def request_generator(
                     batch=batch,
                     data_type=data_type,
                     endpoint=exec_endpoint,
-                    target=target_peapod,
+                    target=target_executor,
                     parameters=parameters,
                 )
     except Exception as ex:

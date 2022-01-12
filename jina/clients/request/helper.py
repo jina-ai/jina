@@ -25,7 +25,7 @@ def _new_data_request(endpoint, target, parameters):
     if endpoint:
         req.header.exec_endpoint = endpoint
     if target:
-        req.header.target_peapod = target
+        req.header.target_executor = target
     # add parameters field
     if parameters:
         req.parameters = parameters

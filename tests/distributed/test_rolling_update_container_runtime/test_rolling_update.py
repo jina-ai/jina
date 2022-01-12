@@ -81,7 +81,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     Client(host=HOST, port=REST_PORT_DBMS, protocol='http').post(
         on='/dump',
         parameters={'shards': SHARDS, 'dump_path': DUMP_PATH},
-        target_peapod='indexer_dbms',
+        target_executor='indexer_dbms',
     )
 
     # rolling_update on Query Flow
