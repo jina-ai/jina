@@ -1,8 +1,8 @@
 """Argparser module for Optimizer"""
 from typing import Optional, TYPE_CHECKING
 
-from .base import set_base_parser
-from .peapods.base import mixin_base_ppr_parser
+from jina.parsers.base import set_base_parser
+from jina.parsers.peapods.base import mixin_base_ppr_parser
 
 # noinspection PyUnreachableCode
 if TYPE_CHECKING:

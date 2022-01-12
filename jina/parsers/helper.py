@@ -1,8 +1,7 @@
 """Module for helper functions in the parser"""
 import argparse
 import os
-import warnings
-from typing import Tuple, List
+from typing import Tuple
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
@@ -40,8 +39,9 @@ class KVAppendAction(argparse.Action):
         :param values: the values to add to the parser
         :param option_string: inherited, not used
         """
-        import json, re
-        from ..helper import parse_arg
+        import json
+        import re
+        from jina.helper import parse_arg
 
         d = getattr(args, self.dest) or {}
         for value in values:
@@ -66,6 +66,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             self.heading = heading
             self.items = []
 
+        @property
         def format_help(self):
             # format the indented section
             if self.parent is not None:
@@ -81,7 +82,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
             # add the heading if the section was non-empty
             if self.heading is not argparse.SUPPRESS and self.heading is not None:
-                from ..helper import colored
+                from jina.helper import colored
 
                 current_indent = self.formatter._current_indent
                 captial_heading = ' '.join(
@@ -108,7 +109,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         help_string = ''
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
-                from ..helper import colored
+                from jina.helper import colored
 
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
@@ -211,7 +212,8 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         :return: list of paragraphs
         """
 
-        import textwrap, re
+        import textwrap
+        import re
 
         text = textwrap.dedent(text).strip()
         text = re.sub('\n\n[\n]+', '\n\n', text)

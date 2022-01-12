@@ -1,5 +1,5 @@
 """Argparser module for the export API"""
-from .base import set_base_parser
+from jina.parsers.base import set_base_parser
 
 
 def set_export_api_parser(parser=None):

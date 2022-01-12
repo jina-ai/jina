@@ -3,12 +3,13 @@ from typing import Optional, Dict, TypeVar
 
 from google.protobuf import json_format
 
-from . import Request
 from docarray.simple import StructView
-from ... import DocumentArray
-from ...excepts import BadRequestType
-from ...helper import typename, random_identity, cached_property
-from ...proto import jina_pb2
+
+from jina.types.request import Request
+from jina import DocumentArray
+from jina.excepts import BadRequestType
+from jina.helper import typename, random_identity, cached_property
+from jina.proto import jina_pb2
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes

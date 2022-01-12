@@ -44,7 +44,7 @@ class EnumType(EnumMeta):
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        from .jaml import JAML
+        from jina.jaml import JAML
 
         JAML.register(cls)
         return cls
