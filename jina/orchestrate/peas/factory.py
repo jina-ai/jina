@@ -3,16 +3,16 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Type
 
 from jina import __default_host__
-from jina.peapods.peas import Pea
-from jina.peapods.peas.jinad import JinaDPea
-from jina.peapods.peas.container import ContainerPea
+from jina.orchestrate.peas import Pea
+from jina.orchestrate.peas.jinad import JinaDPea
+from jina.orchestrate.peas.container import ContainerPea
 from jina.enums import PeaRoleType
 
 from jina.hubble.helper import is_valid_huburi
 from jina.hubble.hubio import HubIO
 
 if TYPE_CHECKING:
-    from jina.peapods.peas import BasePea
+    from jina.orchestrate.peas import BasePea
 
 
 class PeaFactory:

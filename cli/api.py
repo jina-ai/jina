@@ -25,7 +25,7 @@ def pea(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.peas.factory import PeaFactory
+    from jina.orchestrate.peas import PeaFactory
 
     try:
         with PeaFactory.build_pea(args) as p:

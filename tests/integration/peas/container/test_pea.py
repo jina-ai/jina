@@ -10,8 +10,8 @@ from jina.enums import PollingType, PeaRoleType
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods.networking import GrpcConnectionPool
-from jina.peapods.peas.container import ContainerPea
-from jina.peapods.peas import Pea
+from jina.orchestrate.peas.container import ContainerPea
+from jina.orchestrate.peas import Pea
 from jina.peapods.runtimes.head import HeadRuntime
 from jina.peapods.runtimes.worker import WorkerRuntime
 from jina.types.request.control import ControlRequest

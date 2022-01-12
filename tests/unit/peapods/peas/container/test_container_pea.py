@@ -4,7 +4,7 @@ import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
-from jina.peapods.peas.container import ContainerPea
+from jina.orchestrate.peas.container import ContainerPea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

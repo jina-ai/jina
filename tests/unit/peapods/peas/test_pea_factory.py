@@ -1,4 +1,4 @@
-from jina.peapods.peas.factory import PeaFactory
+from jina.orchestrate.peas.factory import PeaFactory
 
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_pea_parser

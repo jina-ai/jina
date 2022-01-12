@@ -8,7 +8,7 @@ from typing import Type, Union, Dict, Optional
 
 from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.jaml import JAML
-from jina.peapods.peas.helper import _get_event, _get_worker, ConditionalEvent
+from jina.orchestrate.peas.helper import _get_event, _get_worker, ConditionalEvent
 from jina import __stop_msg__, __ready_msg__, __windows__
 from jina.enums import PeaRoleType, RuntimeBackendType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
@@ -380,7 +380,7 @@ class Pea(BasePea):
             self.logger.debug(f'runtime thread properly canceled')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
-        from jina.peapods.peas.helper import update_runtime_cls
+        from jina.orchestrate.peas.helper import update_runtime_cls
         from jina.peapods.runtimes import get_runtime
 
         update_runtime_cls(self.args)

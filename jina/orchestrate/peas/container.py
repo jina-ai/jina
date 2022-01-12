@@ -11,9 +11,9 @@ import asyncio
 
 from jina import __windows__
 from jina.importer import ImportExtensions
-from jina.peapods.peas import BasePea
-from jina.peapods.peas.helper import _get_worker
-from jina.peapods.peas.container_helper import (
+from jina.orchestrate.peas import BasePea
+from jina.orchestrate.peas import _get_worker
+from jina.orchestrate.peas.container_helper import (
     get_gpu_device_requests,
     get_docker_network,
 )

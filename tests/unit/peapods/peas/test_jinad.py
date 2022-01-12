@@ -2,8 +2,8 @@ import random
 import asyncio
 import pytest
 from jina.parsers import set_pea_parser
-from jina.peapods.peas import jinad
-from jina.peapods.peas.jinad import JinaDProcessTarget, JinaDPea
+from jina.orchestrate.peas import jinad
+from jina.orchestrate.peas.jinad import JinaDProcessTarget, JinaDPea
 
 
 async def mock_sleep(*args):

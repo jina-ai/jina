@@ -5,9 +5,9 @@ from typing import Dict, Optional, Type, Union
 
 from jina.helper import colored, random_port
 from jina.orchestrate.pods import Pod
-from jina.peapods.peas.factory import PeaFactory
+from jina.orchestrate.peas import PeaFactory
 from jina.peapods import BasePod, BasePea
-from jina.peapods.peas.helper import update_runtime_cls
+from jina.orchestrate.peas import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 

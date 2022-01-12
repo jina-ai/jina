@@ -6,11 +6,11 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, Union, Set, List, Optional
 
-from jina.peapods import Pea
 from jina.peapods.networking import GrpcConnectionPool, host_is_local
-from jina.peapods.peas.container import ContainerPea
-from jina.peapods.peas.factory import PeaFactory
-from jina.peapods.peas.jinad import JinaDPea
+from jina.orchestrate.peas import Pea
+from jina.orchestrate.peas.container import ContainerPea
+from jina.orchestrate.peas.factory import PeaFactory
+from jina.orchestrate.peas.jinad import JinaDPea
 from jina import __default_executor__, __default_host__, __docker_host__
 from jina import helper
 from jina.enums import PodRoleType, PeaRoleType, PollingType

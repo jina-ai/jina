@@ -11,7 +11,7 @@ from jina.checker import NetworkChecker
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser, set_pea_parser
 from jina.parsers.ping import set_ping_parser
-from jina.peapods.peas.factory import PeaFactory
+from jina.orchestrate.peas.factory import PeaFactory
 
 
 def test_export_api(tmpdir):

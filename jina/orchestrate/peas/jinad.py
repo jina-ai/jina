@@ -6,8 +6,8 @@ import multiprocessing
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Union, Optional
 
-from jina.peapods.peas import BasePea
-from jina.peapods.peas.helper import _get_worker, is_ready
+from jina.orchestrate.peas import BasePea
+from jina.orchestrate.peas.helper import _get_worker, is_ready
 from jina.helper import run_async
 from jina.jaml.helper import complete_path
 from jina.importer import ImportExtensions
