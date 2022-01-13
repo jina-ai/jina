@@ -14,9 +14,9 @@ class CrudIndexer(Executor):
         super().__init__(**kwargs)
         self.logger = JinaLogger('CrudIndexer')
         self._docs = DocumentArray()
-        self._dump_location = os.path.join(self.metas.workspace, 'docs')
+        self._dump_location = os.path.join(self.metas.workspace, 'docs.json')
         if os.path.exists(self._dump_location):
-            self._docs = DocumentArray.load(self._dump_location)
+            self._docs = DocumentArray.load_json(self._dump_location)
             self.logger.info(f'Loaded {len(self._docs)} from {self._dump_location}')
         else:
             self.logger.info(f'No data found at {self._dump_location}')
@@ -32,7 +32,7 @@ class CrudIndexer(Executor):
 
     def close(self) -> None:
         self.logger.info(f'Dumping {len(self._docs)} to {self._dump_location}')
-        self._docs.save(self._dump_location)
+        self._docs.save_json(self._dump_location)
 
     @requests(on='/delete')
     def delete(self, docs: 'DocumentArray', **kwargs):
@@ -58,7 +58,7 @@ class CrudIndexer(Executor):
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
-                d.scores['cosine'] = 1 - _dist
+                d.scores['cosine'].value = 1 - _dist
                 _q.matches.append(d)
 
     @staticmethod

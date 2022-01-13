@@ -87,7 +87,7 @@ def test_crud(tmpdir, rest):
         assert len(matches) == 5
 
     updated_docs = list(
-        random_docs(5, chunks_per_doc=5, start_id=5, text=b'hello again')
+        random_docs(5, chunks_per_doc=5, start_id=5, text='hello again')
     )
 
     with Flow.load_config('flow.yml') as f:
@@ -115,7 +115,7 @@ def test_crud(tmpdir, rest):
 
         for match, updated_doc in zip(matches, updated_docs):
             if isinstance(match, dict):
-                match = Document(match)
+                match = Document.from_dict(match)
 
             assert updated_doc.id == match.id
             assert updated_doc.text == match.text

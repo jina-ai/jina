@@ -46,6 +46,8 @@ def _new_doc_from_data(
         if isinstance(data, Document):
             # if incoming is already primitive type Document, then all good, best practice!
             return data, DataInputType.DOCUMENT
+        elif isinstance(data, dict):
+            return Document.from_dict(data), DataInputType.DICT
         try:
             d = Document(data, **kwargs)
             return d, DataInputType.DOCUMENT
