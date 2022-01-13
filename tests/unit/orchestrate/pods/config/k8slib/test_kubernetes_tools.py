@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest
 
-from jina.orchestrate.pods.config import get_yaml
+from jina.orchestrate.pods.config.k8slib.kubernetes_tools import get_yaml
 
 
 @pytest.mark.parametrize(

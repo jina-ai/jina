@@ -19,7 +19,7 @@ def test_executor_load_from_hub():
 
 
 def test_executor_import_with_external_dependencies(capsys):
-    ex = Executor.load_config('../hubble-executor/config.yml')
+    ex = Executor.load_config('../../hubble-executor/config.yml')
     assert ex.bar == 123
     ex.foo()
     out, err = capsys.readouterr()

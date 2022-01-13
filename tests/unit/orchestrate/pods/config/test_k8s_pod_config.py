@@ -7,7 +7,7 @@ from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.serve.networking import K8sGrpcConnectionPool
-from jina.orchestrate.pods.config import K8sPodConfig
+from jina.orchestrate.pods.config.k8s import K8sPodConfig
 
 
 @pytest.fixture(autouse=True)
