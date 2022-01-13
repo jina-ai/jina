@@ -119,7 +119,7 @@ def get_fastapi_app(
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
-            response_model=JinaResponseModel,
+            # response_model=JinaResponseModel, #TODO: Get back the Pydantic models in general
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
@@ -143,9 +143,11 @@ def get_fastapi_app(
             from jina.enums import DataInputType
 
             bd = body.dict()  # type: Dict
-            bd['data'] = bd['data']['docs']
-            bd['data_type'] = DataInputType.DICT
-            return await _get_singleton_result(request_generator(**bd))
+            if bd is not None and bd['data'] is not None:
+                bd['data'] = bd['data']['docs']
+                bd['data_type'] = DataInputType.DICT
+            result = await _get_singleton_result(request_generator(**bd))
+            return result
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
         """Exposing an executor endpoint to http endpoint
@@ -227,7 +229,8 @@ def get_fastapi_app(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`
             # we dont want to nest the documents in the DA when returning to the user, so flatten by on level here
-            request_dict['data']['docs'] = request_dict['data']['docs']['docs']
+            if 'data' in request_dict:
+                request_dict['data']['docs'] = request_dict['data']['docs']['docs']
             return request_dict
 
     return app

@@ -107,7 +107,7 @@ class MimeExec(Executor):
     @req
     def foo(self, docs: 'DocumentArray', **kwargs):
         for d in docs:
-            d.convert_uri_to_buffer()
+            d.load_uri_to_buffer()
 
 
 @pytest.mark.skipif(__windows__, reason='For windows, passes locally, but fails on CI')

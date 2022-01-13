@@ -80,13 +80,14 @@ class SlowExecutor(Executor):
 
 def on_done(response, final_da: DocumentArray):
     print(f' receiving response {response._pb_body.header.request_id}')
-    for doc in response.docs:
+    docs = response.docs
+    for doc in docs:
         doc.tags['on_done'] = time.time()
         print(
             f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}, {doc.tags["on_done"]}',
             flush=True,
         )
-    final_da.extend(response.docs)
+    final_da.extend(docs)
 
 
 @pytest.mark.parametrize(
