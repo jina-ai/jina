@@ -620,3 +620,25 @@ def _create_test_data_message(endpoint='/'):
     return list(request_generator(endpoint, DocumentArray([Document(text='client')])))[
         0
     ]
+
+
+@pytest.mark.parametrize('num_shards, num_replicas', [(1, 1), (1, 2), (2, 1), (3, 2)])
+def test_pod_remote_pea_replicas_host(num_shards, num_replicas):
+    args = set_pod_parser().parse_args(
+        [
+            '--shards',
+            str(num_shards),
+            '--replicas',
+            str(num_replicas),
+            '--host',
+            __default_host__,
+        ]
+    )
+    assert args.host == __default_host__
+    with Pod(args) as pod:
+        assert pod.num_peas == num_shards * num_replicas + 1
+        peas_args = dict(pod.peas_args['peas'])
+        for k, replica_args in peas_args.items():
+            assert len(replica_args) == num_replicas
+            for replica_arg in replica_args:
+                assert replica_arg.host == __default_host__
