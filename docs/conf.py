@@ -192,6 +192,12 @@ ogp_custom_meta_tags = [
   if (!('fragmentDirective' in Location.prototype) &&
       !('fragmentDirective' in document)) {
     import('https://cdn.jsdelivr.net/npm/text-fragments-polyfill');
+
+    // Monkeypatch before the polyfill publish its next version 
+    // https://github.com/GoogleChromeLabs/text-fragments-polyfill/pull/109
+    if (!('fragmentDirective' in document)){
+        document.fragmentDirective = {};
+    }
   }
 </script>
     ''',
