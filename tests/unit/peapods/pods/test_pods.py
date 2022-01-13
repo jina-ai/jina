@@ -4,20 +4,13 @@ from multiprocessing import Process
 
 import pytest
 
+from jina import (Document, DocumentArray, Executor, __default_executor__,
+                  __default_host__, requests)
 from jina.clients.request import request_generator
-from jina.enums import PollingType, PeaRoleType
+from jina.enums import PollingType
 from jina.helper import get_internal_ip
-from jina.parsers import set_gateway_parser
-from jina.parsers import set_pod_parser
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.peapods import Pod
-from jina import (
-    __default_executor__,
-    __default_host__,
-    Executor,
-    requests,
-    Document,
-    DocumentArray,
-)
 from jina.peapods.networking import GrpcConnectionPool
 from tests.unit.test_helper import MyDummyExecutor
 
@@ -381,47 +374,6 @@ def test_pod_remote_pea_replicas_pea_host_set_partially(
                         assert pea_arg.host == pea1_host
                     else:
                         assert pea_arg.host == args.host
-
-
-@pytest.mark.parametrize(
-    'pod_host, peas_hosts, expected_host_in, expected_host_out',
-    [
-        (
-            __default_host__,
-            ['0.0.0.1', '0.0.0.2'],
-            get_internal_ip(),
-            get_internal_ip(),
-        ),
-        ('0.0.0.1', ['0.0.0.2', '0.0.0.3'], '0.0.0.1', '0.0.0.1'),
-        ('0.0.0.1', [__default_host__, '0.0.0.2'], '0.0.0.1', '0.0.0.1'),
-    ],
-)
-def test_pod_remote_pea_replicas_pea_host_set_completely(
-    pod_host,
-    peas_hosts,
-    expected_host_in,
-    expected_host_out,
-):
-    args = set_pod_parser().parse_args(
-        [
-            '--peas-hosts',
-            f'{peas_hosts[0]}',
-            f'{peas_hosts[1]}',
-            '--replicas',
-            str(2),
-            '--host',
-            pod_host,
-        ]
-    )
-    assert args.host == pod_host
-    pod = Pod(args)
-    for k, v in pod.peas_args.items():
-        if k in ['head', 'tail']:
-            assert v.host == args.host
-        elif v is not None:
-            for shard_id in v:
-                for pea_arg, pea_host in zip(v[shard_id], peas_hosts):
-                    assert pea_arg.host == pea_host
 
 
 @pytest.mark.parametrize('replicas', [1])
