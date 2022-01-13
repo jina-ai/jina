@@ -6,11 +6,9 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, List, Optional, Set, Union
 
-from jina import (__default_executor__, __default_host__, __docker_host__,
-                  helper)
+from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import PeaRoleType, PodRoleType, PollingType
-from jina.excepts import (RuntimeFailToStart, RuntimeRunForeverEarlyError,
-                          ScalingFails)
+from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from jina.helper import CatchAllCleanupContextManager, random_identity
 from jina.jaml.helper import complete_path
 from jina.peapods import Pea
