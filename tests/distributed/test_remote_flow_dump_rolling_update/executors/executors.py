@@ -53,8 +53,8 @@ class CompoundQueryExecutor(Executor):
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters, **kwargs):
         if len(self._docs) > 0:
-            a = np.stack(docs.get_attributes('embedding'))
-            b = np.stack(self._docs.get_attributes('embedding'))
+            a = np.stack(docs[:, 'embedding'])
+            b = np.stack(self._docs[:, 'embedding'])
             q_emb = _ext_A(_norm(a))
             d_emb = _ext_B(_norm(b))
             dists = _cosine(q_emb, d_emb)

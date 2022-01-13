@@ -72,7 +72,7 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     replica_ids = set()
     for r in ret1:
-        for replica_id in r.docs.get_attributes('tags__replica_id'):
+        for replica_id in r.docs[:, 'tags__replica_id']:
             replica_ids.add(replica_id)
 
     assert len(set(replica_ids)) == replicas
@@ -87,7 +87,7 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     replica_ids = set()
     for r in ret2:
-        for replica_id in r.docs.get_attributes('tags__replica_id'):
+        for replica_id in r.docs[:, 'tags__replica_id']:
             replica_ids.add(replica_id)
 
     assert len(set(replica_ids)) == scale_to
@@ -124,7 +124,7 @@ async def test_scale_remote_flow_async(
 
     replica_ids = set()
     async for r in ret1:
-        for replica_id in r.docs.get_attributes('tags__replica_id'):
+        for replica_id in r.docs[:, 'tags__replica_id']:
             replica_ids.add(replica_id)
 
     assert len(set(replica_ids)) == replicas
@@ -141,7 +141,7 @@ async def test_scale_remote_flow_async(
 
     replica_ids = set()
     async for r in ret2:
-        for replica_id in r.docs.get_attributes('tags__replica_id'):
+        for replica_id in r.docs[:, 'tags__replica_id']:
             replica_ids.add(replica_id)
 
     assert len(set(replica_ids)) == scale_to

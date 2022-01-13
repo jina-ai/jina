@@ -306,14 +306,14 @@ def test_scale_after_rolling_update(
 
     replica_ids = set()
     for r in ret1:
-        for replica_id in r.docs.get_attributes('tags__replica'):
+        for replica_id in r.docs[:, 'tags__replica']:
             replica_ids.add(replica_id)
 
     assert replica_ids == expected_before_scale
 
     replica_ids = set()
     for r in ret2:
-        for replica_id in r.docs.get_attributes('tags__replica'):
+        for replica_id in r.docs[:, 'tags__replica']:
             replica_ids.add(replica_id)
     assert replica_ids == expected_after_scale
 

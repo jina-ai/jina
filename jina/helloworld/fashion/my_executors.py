@@ -70,7 +70,7 @@ class MyEncoder(Executor):
         :param kwargs: other keyword arguments
         """
         # reduce dimension to 50 by random orthogonal projection
-        content = np.stack(docs.get_attributes('content'))
+        content = np.stack(docs[:, 'content'])
         content = content[:, :, :, 0].reshape(-1, 784)
         embeds = ((content / 255) @ self.oth_mat).astype(np.float32)
         for doc, embed, cont in zip(docs, embeds, content):

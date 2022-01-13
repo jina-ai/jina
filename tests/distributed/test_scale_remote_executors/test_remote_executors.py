@@ -85,7 +85,7 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
         replica_ids = set()
         for r in ret1:
             assert len(r.docs) == 10
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
+            for replica_id in r.docs[:, 'tags__replica_id']:
                 replica_ids.add(replica_id)
 
         assert replica_ids == set(range(num_replicas))
@@ -94,7 +94,7 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
         replica_ids = set()
         for r in ret2:
             assert len(r.docs) == 10
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
+            for replica_id in r.docs[:, 'tags__replica_id']:
                 replica_ids.add(replica_id)
 
         assert replica_ids == set(range(scale_to))

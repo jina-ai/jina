@@ -11,7 +11,7 @@ class TinyDBIndexer(Executor):
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
-        self.db.insert_multiple(docs.get_attributes('tags'))
+        self.db.insert_multiple(docs[:, 'tags'])
 
     @requests(on='/search')
     def search(self, docs: DocumentArray, **kwargs):

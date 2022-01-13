@@ -46,9 +46,9 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
     shard_ids = set()
     for r in ret1:
         assert len(r.docs) == 10
-        for replica_id in r.docs.get_attributes('tags__replica_id'):
+        for replica_id in r.docs[:, 'tags__replica_id']:
             replica_ids.add(replica_id)
-        for shard_id in r.docs.get_attributes('tags__shard_id'):
+        for shard_id in r.docs[:, 'tags__shard_id']:
             shard_ids.add(shard_id)
         for doc in r.docs:
             assert doc.tags['shards'] == shards

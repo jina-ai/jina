@@ -69,9 +69,7 @@ class DummyMockConnectionPool:
                 else:
                     response_msg.docs.clear()
                     response_msg.docs.extend(
-                        DocumentArray(
-                            Document(tags={'ids': self._docs.get_attributes('id')})
-                        )
+                        DocumentArray(Document(tags={'ids': self._docs[:, 'id']}))
                     )
                 return response_msg
             else:

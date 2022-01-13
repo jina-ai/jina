@@ -67,7 +67,7 @@ class TextEncoder(Executor):
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
             input_tokens = self.tokenizer(
-                docs.get_attributes('content'),
+                docs[:, 'content'],
                 padding='longest',
                 truncation=True,
                 return_tensors='pt',

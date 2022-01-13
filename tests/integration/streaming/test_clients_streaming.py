@@ -193,7 +193,7 @@ class Indexer(Executor):
     @requests(on='/status')
     def status(self, **kwargs):
         # returns ids of all docs in tags
-        return DocumentArray(Document(tags={'ids': self.docs.get_attributes('id')}))
+        return DocumentArray(Document(tags={'ids': self.docs[:, 'id']}))
 
 
 @pytest.mark.parametrize('prefetch', [0, 5])
