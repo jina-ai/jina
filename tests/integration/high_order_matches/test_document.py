@@ -45,8 +45,8 @@ def test_multi_executor():
 
     f = (
         Flow(port_expose=exposed_port)
-        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': ['r']}})
-        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': ['m']}})
+        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'r'}})
+        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'm'}})
     )
 
     with f:

@@ -79,6 +79,8 @@ class BaseClient(ABC):
             r = next(request_generator(**kwargs))
             from jina.types.request import Request
 
+            print(f' r {r}')
+
             if not isinstance(r, Request):
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:

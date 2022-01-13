@@ -6,7 +6,7 @@ import torch
 import torchvision.models as models
 from transformers import AutoModel, AutoTokenizer
 
-from jina import Executor, requests, Document
+from jina import Executor, requests
 from docarray import Document, DocumentArray
 
 
@@ -216,24 +216,25 @@ class WeightedRanker(Executor):
         for d_mod1, d_mod2 in zip(*docs_matrix):
 
             final_matches = {}  # type: Dict[str, Document]
-
             for m in d_mod1.matches:
-                m.scores['relevance'] = m.scores['cosine'].value * d_mod1.weight
+                m.scores['relevance'].value = m.scores['cosine'].value * d_mod1.weight
                 final_matches[m.parent_id] = Document(m, copy=True)
 
             for m in d_mod2.matches:
                 if m.parent_id in final_matches:
-                    final_matches[m.parent_id].scores['relevance'] = final_matches[
-                        m.parent_id
-                    ].scores['relevance'].value + (
+                    final_matches[m.parent_id].scores[
+                        'relevance'
+                    ].value = final_matches[m.parent_id].scores['relevance'].value + (
                         m.scores['cosine'].value * d_mod2.weight
                     )
                 else:
-                    m.scores['relevance'] = m.scores['cosine'].value * d_mod2.weight
+                    m.scores['relevance'].value = (
+                        m.scores['cosine'].value * d_mod2.weight
+                    )
                     final_matches[m.parent_id] = Document(m, copy=True)
 
             da = DocumentArray(list(final_matches.values()))
-            da.sort(key=lambda ma: ma.scores['relevance'].value, reverse=True)
+            da = sorted(da, key=lambda ma: ma.scores['relevance'].value, reverse=True)
             d = Document(matches=da[: int(parameters['top_k'])])
             result_da.append(d)
         return result_da

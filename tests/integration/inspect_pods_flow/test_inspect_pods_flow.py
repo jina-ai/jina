@@ -2,7 +2,6 @@ import os
 
 import pytest
 
-from docarray.simple import NamedScoreMap
 from jina import Flow, Executor, DocumentArray, Client, requests
 from tests import random_docs
 
@@ -134,7 +133,7 @@ class AddEvaluationExecutor(Executor):
 
         time.sleep(0.5)
         for doc in docs:
-            doc.evaluations['evaluate'] = 10.0
+            doc.evaluations['evaluate'].value = 10.0
 
 
 @pytest.mark.repeat(5)
@@ -147,8 +146,8 @@ def test_flow_returned_collect(protocol):
         num_evaluations = 0
         scores = set()
         for doc in resp.data.docs:
-            num_evaluations += len(NamedScoreMap(doc.evaluations))
-            scores.add(NamedScoreMap(doc.evaluations)['evaluate'].value)
+            num_evaluations += len(doc.evaluations)
+            scores.add(doc.evaluations['evaluate'].value)
         assert num_evaluations == 1
         assert 10.0 in scores
 
@@ -173,7 +172,7 @@ def test_flow_returned_collect(protocol):
 def test_flow_not_returned(inspect, protocol):
     def validate_func(resp):
         for doc in resp.data.docs:
-            assert len(NamedScoreMap(doc.evaluations)) == 0
+            assert len(doc.evaluations) == 0
 
     f = (
         Flow(protocol=protocol, inspect=inspect, port_expose=exposed_port)

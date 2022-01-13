@@ -107,13 +107,13 @@ class DummyMockConnectionPool:
         request = requests[0]
         response_msg = copy.deepcopy(request)
         new_docs = DocumentArray()
-        for doc in request.docs:
+        docs = request.docs
+        for doc in docs:
             clientid = doc.text[0:7]
             new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
             new_docs.append(new_doc)
 
-        response_msg.docs.clear()
-        response_msg.docs.extend(new_docs)
+        response_msg.data.docs = new_docs
 
         async def task_wrapper():
             import random

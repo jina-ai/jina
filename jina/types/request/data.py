@@ -46,8 +46,6 @@ class DataRequest(Request):
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
-            bla = self._content.WhichOneof('documents')
-            print(bla)
             return self._content.docs_bytes
 
         @docs_bytes.setter

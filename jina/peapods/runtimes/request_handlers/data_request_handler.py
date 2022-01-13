@@ -99,7 +99,9 @@ class DataRequestHandler:
             if isinstance(r_docs, DocumentArray):
                 DataRequestHandler.replace_docs(requests[0], r_docs)
             elif isinstance(r_docs, dict):
-                requests[0].parameters.update(r_docs)
+                params = requests[0].parameters
+                params.update(r_docs)
+                requests[0].parameters = params
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / Dict / `None`, '
