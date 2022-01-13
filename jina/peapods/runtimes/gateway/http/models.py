@@ -222,17 +222,17 @@ def protobuf_to_pydantic_model(
     return model
 
 
-for proto in (
-    NamedScoreProto,
-    DenseNdArrayProto,
-    NdArrayProto,
-    SparseNdArrayProto,
-    DocumentProto,
-    RouteProto,
-    StatusProto,
-    DataRequestProto,
-):
-    protobuf_to_pydantic_model(proto)
+# for proto in (
+#     NamedScoreProto,
+#     DenseNdArrayProto,
+#     NdArrayProto,
+#     SparseNdArrayProto,
+#     DocumentProto,
+#     RouteProto,
+#     StatusProto,
+#     DataRequestProto,
+# ):
+#     protobuf_to_pydantic_model(proto)
 
 
 def _to_camel_case(snake_str: str) -> str:
@@ -267,8 +267,9 @@ class JinaRequestModel(BaseModel):
 
     data: Optional[
         Union[
-            Dict[str, List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]],
-            List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
+            # Dict[str, List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]],
+            # List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
+            Dict[str, Any],
             List[Dict[str, Any]],
             List[str],
             List[bytes],

@@ -109,6 +109,21 @@ def test_lazy_serialization():
     assert deserialized_request.is_decompressed
 
 
+def test_lazy_serialization_bytes():
+    doc_count = 1000
+    r = DataRequest()
+    da = r.docs
+    da.extend([Document(text='534534534er5yr5y645745675675675345')] * doc_count)
+    r.data.docs_bytes = da.to_bytes()
+    byte_array = DataRequestProto.SerializeToString(r)
+
+    deserialized_request = DataRequestProto.FromString(byte_array)
+    assert not deserialized_request.is_decompressed
+    assert len(deserialized_request.docs) == doc_count
+    assert deserialized_request.docs == r.docs
+    assert deserialized_request.is_decompressed
+
+
 def test_status():
     r = DataRequest()
     r.docs.extend([Document()])

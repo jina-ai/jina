@@ -27,7 +27,10 @@ class DataRequest(Request):
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
-            return DocumentArray.from_protobuf(self._content.docs)
+            if self._content.WhichOneof('documents') == 'docs_bytes':
+                return DocumentArray.from_bytes(self._content.docs_bytes)
+            else:
+                return DocumentArray.from_protobuf(self._content.docs)
 
         @docs.setter
         def docs(self, value: DocumentArray):
@@ -35,8 +38,26 @@ class DataRequest(Request):
 
             :param value: a DocumentArray
             """
-            if self and value:
+            if value:
                 self._content.docs.CopyFrom(value.to_protobuf())
+
+        @property
+        def docs_bytes(self) -> bytes:
+            """Get the :class: `DocumentArray` with sequence `data.docs` as content.
+
+            .. # noqa: DAR201"""
+            bla = self._content.WhichOneof('documents')
+            print(bla)
+            return self._content.docs_bytes
+
+        @docs_bytes.setter
+        def docs_bytes(self, value: bytes):
+            """Overide the DocumentArray with the provided one
+
+            :param value: a DocumentArray
+            """
+            if value:
+                self._content.docs_bytes = value
 
     """
     :class:`DataRequest` is one of the **primitive data type** in Jina.

@@ -121,7 +121,10 @@ message DataRequestProto {
     repeated RouteProto routes = 3; // status info on every routes
 
     message DataContentProto {
-        docarray.DocumentArrayProto docs = 1; // the docs in this request
+        oneof documents {
+            docarray.DocumentArrayProto docs = 1; // the docs in this request
+            bytes docs_bytes = 2; // the docs in this request as bytes
+        }
     }
 
     DataContentProto data = 4; // container for docs and groundtruths
