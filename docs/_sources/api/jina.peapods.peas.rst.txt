@@ -7,7 +7,11 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.peapods.peas.container
+   jina.peapods.peas.container_helper
+   jina.peapods.peas.factory
    jina.peapods.peas.helper
+   jina.peapods.peas.jinad
 
 Module contents
 ---------------

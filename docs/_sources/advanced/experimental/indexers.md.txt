@@ -109,7 +109,7 @@ Looking at the [test](https://github.com/jina-ai/executors/tree/main/tests/integ
 ```python
 flow_storage.post(
      on='/dump',
-     target_peapod='indexer_storage',
+     target_executor='indexer_storage',
      parameters={
          'dump_path': dump_path,
          'shards': shards,
@@ -121,14 +121,14 @@ flow_storage.post(
 where
 
 - `flow_storage` is the Flow with the storage Indexer
-- `target_peapod` is the name of the Executor, defined in your `flow.yml`
+- `target_executor` is the name of the Executor, defined in your `flow.yml`
 - `dump_path` is the path (on local disk) where you want the data to be stored. **NOTE** The folder needs to be empty. Otherwise, the dump will be cancelled. 
 - `shards` is the number of shards you have in your search Flow. **NOTE** This doesn't change the value in the Flow. You need to keep track of how you configured your search Flow
 
 For performing the **rolling update**, we can see the usage in the same test:
 
 ```python
-flow_query.rolling_update(pod_name='indexer_query', dump_path=dump_path)
+flow_query.rolling_update(pod_name='indexer_query', uses_with={'dump_path': dump_path})
 ```
 
 where

@@ -70,7 +70,7 @@ Read more about {ref}`how Reducing works <reduce>`.
 ````
 
 If you don't want to use the default `Reduce` logic, you can implement a custom reducing logic in an Executor and 
-specify it with `uses_before`:
+specify it with `uses` or `uses_before`:
 
 ```python
 import itertools
@@ -88,13 +88,13 @@ f = (Flow()
      .add(name='p1', needs='gateway')
      .add(name='p2', needs='gateway')
      .add(name='p3', needs='gateway')
-     .needs(['p1', 'p2', 'p3'], name='r1', uses_before=CustomReducerExecutor))
+     .needs(['p1', 'p2', 'p3'], name='r1', uses=CustomReducerExecutor))
 ```
 
 ````{admonition} Note
 :class: note
 If there is no pod that needs all 3 pods `p1`, `p2` and `p3`, there will be no reduce logic.
-If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses_before='BaseExecutor'`.
+If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses='BaseExecutor'`.
 ````
 
 
@@ -218,7 +218,12 @@ This is helpful in two situations:
 
 Then splitting the load across two or more machines yields better results.
 
-For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. By default `polling` is set to `ANY`, which means only one shard will receive a request. If `polling` is to `ALL` it means that all Shards will receive a request.
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request.
+Polling can be configured per endpoint (like `/index`) and Executor.
+By default the following `polling` is applied:
+- `ANY` for endpoints at `/index`
+- `ALL` for endpoints at `/search`
+- `ANY` for all other endpoints
 
 When you shard your index, the request handling usually differs between index and search requests:
 
@@ -231,9 +236,16 @@ For searching, you probably need to send the search request to all Shards, becau
 ```python Usage
 from jina import Flow
 
-index_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='any')
-search_flow = Flow().add(name='ExecutorWithShards', shards=3, polling='all')
+flow = Flow().add(name='ExecutorWithShards', shards=3, polling={'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'})
 ```
+
+The example above will result in a Flow having the Executor `ExecutorWithShards` with the following polling options configured
+- `/index` has polling `ANY` (the default value is not changed here)
+- `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
+- `/custom` has polling `ALL`
+- all other endpoints will have polling `ANY` due to the usage of `*` as a wildcard to catch all other cases
+
+
 
 ### Merging search results
 

@@ -7,9 +7,18 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   jina.peapods.runtimes.gateway.graph
    jina.peapods.runtimes.gateway.grpc
    jina.peapods.runtimes.gateway.http
    jina.peapods.runtimes.gateway.websocket
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.peapods.runtimes.gateway.request_handling
 
 Module contents
 ---------------

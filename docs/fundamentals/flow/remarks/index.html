@@ -8,7 +8,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/remarks.html" />
   <meta property="og:site_name" content="Jina 2.6.5 Documentation" />
-  <meta property="og:description" content="Joining/Merging: Combining docs from multiple requests is already done by the ZEDRuntime before feeding them to the Executor’s function. Hence, simple joining is just returning this docs. Complicated joining should be implemented at Document/ DocumentArray You can also modify the Documents while ..." />
+  <meta property="og:description" content="Joining/Reducing: If you have multiple Executors running in parallel and one pod that needs them, merging of the resulting Documents is applied automatically if you don’t specify uses or uses_before. You can also customize the default reducing logic using a Merger Executor in uses_before or uses...." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina 2.6.5 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -150,13 +150,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/279857968/">🚀 Learn more about RocketQA and building a multimodal fashion search at our Engineering All Hands on 11th Jan, 4 PM CET  ✨</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -326,6 +320,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../advanced/experimental/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Experimental Features</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/kubernetes/">Jina on Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../advanced/experimental/docker-compose/">Jina with Docker Compose</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../advanced/experimental/indexers/">Indexers on Jina Hub</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../advanced/experimental/indexers-benchmark/">Indexers Benchmark</a></li>
 </ul>
@@ -439,9 +434,9 @@
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.head/">jina.parsers.peapods.runtimes.head module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.zed/">jina.parsers.peapods.runtimes.zed module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.zmq/">jina.parsers.peapods.runtimes.zmq module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.parsers.peapods.runtimes.worker/">jina.parsers.peapods.runtimes.worker module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.parsers.peapods.base/">jina.parsers.peapods.base module</a></li>
@@ -461,63 +456,61 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.grpc/">jina.peapods.grpc package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.peas.container/">jina.peapods.peas.container module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.peas.container_helper/">jina.peapods.peas.container_helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.peas.factory/">jina.peapods.peas.factory module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.peas.jinad/">jina.peapods.peas.jinad module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.pods.k8slib/">jina.peapods.pods.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.pods.k8slib.kubernetes_client/">jina.peapods.pods.k8slib.kubernetes_client module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.pods.k8slib.kubernetes_deployment/">jina.peapods.pods.k8slib.kubernetes_deployment module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.pods.k8slib.kubernetes_tools/">jina.peapods.pods.k8slib.kubernetes_tools module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.pods.config/">jina.peapods.pods.config package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../api/jina.peapods.pods.config.k8slib/">jina.peapods.pods.config.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../api/jina.peapods.pods.config.k8slib.kubernetes_deployment/">jina.peapods.pods.config.k8slib.kubernetes_deployment module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../api/jina.peapods.pods.config.k8slib.kubernetes_tools/">jina.peapods.pods.config.k8slib.kubernetes_tools module</a></li>
 </ul>
 </li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.pods.k8s/">jina.peapods.pods.k8s module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.pods.config.docker_compose/">jina.peapods.pods.config.docker_compose module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.pods.config.helper/">jina.peapods.pods.config.helper module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.pods.config.k8s/">jina.peapods.pods.config.k8s module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.container.helper/">jina.peapods.runtimes.container.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway/">jina.peapods.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.graph/">jina.peapods.runtimes.gateway.graph package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.graph.topology_graph/">jina.peapods.runtimes.gateway.graph.topology_graph module</a></li>
+</ul>
+</li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.grpc/">jina.peapods.runtimes.gateway.grpc package</a></li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.http/">jina.peapods.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.http.app/">jina.peapods.runtimes.gateway.http.app module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.http.models/">jina.peapods.runtimes.gateway.http.models module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.websocket/">jina.peapods.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.websocket.app/">jina.peapods.runtimes.gateway.websocket.app module</a></li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.gateway.request_handling/">jina.peapods.runtimes.gateway.request_handling module</a></li>
 </ul>
 </li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.grpc/">jina.peapods.runtimes.grpc package</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.head/">jina.peapods.runtimes.head package</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.request_handlers/">jina.peapods.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.request_handlers.data_request_handler/">jina.peapods.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq.asyncio/">jina.peapods.runtimes.zmq.asyncio module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
-</ul>
-</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.worker/">jina.peapods.runtimes.worker package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio/">jina.peapods.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.stream/">jina.peapods.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.stream.base/">jina.peapods.stream.base module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.stream.client/">jina.peapods.stream.client module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.stream.gateway/">jina.peapods.stream.gateway module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.stream.helper/">jina.peapods.stream.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
@@ -536,18 +529,9 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" role="switch" type="checkbox"/><label for="toctree-checkbox-55"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" role="switch" type="checkbox"/><label for="toctree-checkbox-56"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.message.common/">jina.types.message.common module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" role="switch" type="checkbox"/><label for="toctree-checkbox-56"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -560,10 +544,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/docarray/">docarray package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.array/">docarray.array package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/docarray.array.mixins/">docarray.array.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/docarray.array.mixins.io/">docarray.array.mixins.io package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/docarray/">docarray package</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" role="switch" type="checkbox"/><label for="toctree-checkbox-57"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.array/">docarray.array package</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" role="switch" type="checkbox"/><label for="toctree-checkbox-58"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/docarray.array.mixins/">docarray.array.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" role="switch" type="checkbox"/><label for="toctree-checkbox-59"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/docarray.array.mixins.io/">docarray.array.mixins.io package</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" role="switch" type="checkbox"/><label for="toctree-checkbox-60"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/docarray.array.mixins.io.binary/">docarray.array.mixins.io.binary module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/docarray.array.mixins.io.common/">docarray.array.mixins.io.common module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/docarray.array.mixins.io.csv/">docarray.array.mixins.io.csv module</a></li>
@@ -595,8 +579,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.array.types/">docarray.array.types module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.document/">docarray.document package</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/docarray.document.mixins/">docarray.document.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" role="switch" type="checkbox"/><label for="toctree-checkbox-64"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.document/">docarray.document package</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" role="switch" type="checkbox"/><label for="toctree-checkbox-61"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/docarray.document.mixins/">docarray.document.mixins package</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" role="switch" type="checkbox"/><label for="toctree-checkbox-62"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/docarray.document.mixins.attribute/">docarray.document.mixins.attribute module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/docarray.document.mixins.audio/">docarray.document.mixins.audio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/docarray.document.mixins.buffer/">docarray.document.mixins.buffer module</a></li>
@@ -616,8 +600,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.document.generators/">docarray.document.generators module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.math/">docarray.math package</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" role="switch" type="checkbox"/><label for="toctree-checkbox-65"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/docarray.math.distance/">docarray.math.distance package</a><input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" role="switch" type="checkbox"/><label for="toctree-checkbox-66"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.math/">docarray.math package</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" role="switch" type="checkbox"/><label for="toctree-checkbox-63"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/docarray.math.distance/">docarray.math.distance package</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" role="switch" type="checkbox"/><label for="toctree-checkbox-64"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/docarray.math.distance.numpy/">docarray.math.distance.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/docarray.math.distance.paddle/">docarray.math.distance.paddle module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/docarray.math.distance.tensorflow/">docarray.math.distance.tensorflow module</a></li>
@@ -629,16 +613,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.math.helper/">docarray.math.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.memmap/">docarray.memmap package</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.memmap/">docarray.memmap package</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" role="switch" type="checkbox"/><label for="toctree-checkbox-65"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.memmap.bpm/">docarray.memmap.bpm module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/docarray.ndarray/">docarray.ndarray package</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.proto/">docarray.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-68" name="toctree-checkbox-68" role="switch" type="checkbox"/><label for="toctree-checkbox-68"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.proto/">docarray.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" role="switch" type="checkbox"/><label for="toctree-checkbox-66"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.proto.docarray_pb2/">docarray.proto.docarray_pb2 module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.simple/">docarray.simple package</a><input class="toctree-checkbox" id="toctree-checkbox-69" name="toctree-checkbox-69" role="switch" type="checkbox"/><label for="toctree-checkbox-69"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/docarray.simple/">docarray.simple package</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" role="switch" type="checkbox"/><label for="toctree-checkbox-67"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.simple.list/">docarray.simple.list module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.simple.map/">docarray.simple.map module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/docarray.simple.score/">docarray.simple.score module</a></li>
@@ -649,10 +633,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/docarray.helper/">docarray.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/daemon/">daemon package</a><input class="toctree-checkbox" id="toctree-checkbox-70" name="toctree-checkbox-70" role="switch" type="checkbox"/><label for="toctree-checkbox-70"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.api/">daemon.api package</a><input class="toctree-checkbox" id="toctree-checkbox-71" name="toctree-checkbox-71" role="switch" type="checkbox"/><label for="toctree-checkbox-71"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints/">daemon.api.endpoints package</a><input class="toctree-checkbox" id="toctree-checkbox-72" name="toctree-checkbox-72" role="switch" type="checkbox"/><label for="toctree-checkbox-72"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><input class="toctree-checkbox" id="toctree-checkbox-73" name="toctree-checkbox-73" role="switch" type="checkbox"/><label for="toctree-checkbox-73"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/daemon/">daemon package</a><input class="toctree-checkbox" id="toctree-checkbox-68" name="toctree-checkbox-68" role="switch" type="checkbox"/><label for="toctree-checkbox-68"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.api/">daemon.api package</a><input class="toctree-checkbox" id="toctree-checkbox-69" name="toctree-checkbox-69" role="switch" type="checkbox"/><label for="toctree-checkbox-69"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints/">daemon.api.endpoints package</a><input class="toctree-checkbox" id="toctree-checkbox-70" name="toctree-checkbox-70" role="switch" type="checkbox"/><label for="toctree-checkbox-70"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><input class="toctree-checkbox" id="toctree-checkbox-71" name="toctree-checkbox-71" role="switch" type="checkbox"/><label for="toctree-checkbox-71"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.flow/">daemon.api.endpoints.partial.flow module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.pea/">daemon.api.endpoints.partial.pea module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.pod/">daemon.api.endpoints.partial.pod module</a></li>
@@ -668,7 +652,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.api.dependencies/">daemon.api.dependencies module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.clients/">daemon.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-74" name="toctree-checkbox-74" role="switch" type="checkbox"/><label for="toctree-checkbox-74"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.clients/">daemon.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-72" name="toctree-checkbox-72" role="switch" type="checkbox"/><label for="toctree-checkbox-72"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.base/">daemon.clients.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.flows/">daemon.clients.flows module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.mixin/">daemon.clients.mixin module</a></li>
@@ -677,7 +661,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.workspaces/">daemon.clients.workspaces module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.models/">daemon.models package</a><input class="toctree-checkbox" id="toctree-checkbox-75" name="toctree-checkbox-75" role="switch" type="checkbox"/><label for="toctree-checkbox-75"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.models/">daemon.models package</a><input class="toctree-checkbox" id="toctree-checkbox-73" name="toctree-checkbox-73" role="switch" type="checkbox"/><label for="toctree-checkbox-73"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.base/">daemon.models.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.containers/">daemon.models.containers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.custom/">daemon.models.custom module</a></li>
@@ -688,7 +672,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.workspaces/">daemon.models.workspaces module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.stores/">daemon.stores package</a><input class="toctree-checkbox" id="toctree-checkbox-76" name="toctree-checkbox-76" role="switch" type="checkbox"/><label for="toctree-checkbox-76"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.stores/">daemon.stores package</a><input class="toctree-checkbox" id="toctree-checkbox-74" name="toctree-checkbox-74" role="switch" type="checkbox"/><label for="toctree-checkbox-74"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.base/">daemon.stores.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.containers/">daemon.stores.containers module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.flows/">daemon.stores.flows module</a></li>
@@ -707,7 +691,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.tasks/">daemon.tasks module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-77" name="toctree-checkbox-77" role="switch" type="checkbox"/><label for="toctree-checkbox-77"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-75" name="toctree-checkbox-75" role="switch" type="checkbox"/><label for="toctree-checkbox-75"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.export/">cli.export module</a></li>
@@ -772,21 +756,20 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="remarks">
 <h1>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h1>
-<section id="joining-merging">
-<h2>Joining/Merging<a class="headerlink" href="#joining-merging" title="Permalink to this headline">¶</a></h2>
-<p>Combining <code class="docutils literal notranslate"><span class="pre">docs</span></code> from multiple requests is already done by the <code class="docutils literal notranslate"><span class="pre">ZEDRuntime</span></code> before feeding them to the Executor’s
-function. Hence, simple joining is just returning this <code class="docutils literal notranslate"><span class="pre">docs</span></code>. Complicated joining should be implemented at <code class="docutils literal notranslate"><span class="pre">Document</span></code>
-/<code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code></p>
+<section id="joining-reducing">
+<h2>Joining/Reducing<a class="headerlink" href="#joining-reducing" title="Permalink to this headline">¶</a></h2>
+<p>If you have multiple Executors running in parallel and one pod that needs them, merging of the
+resulting Documents is applied automatically if you don’t specify <code class="docutils literal notranslate"><span class="pre">uses</span></code> or <code class="docutils literal notranslate"><span class="pre">uses_before</span></code>. You can also customize the
+default reducing logic using a Merger Executor in <code class="docutils literal notranslate"><span class="pre">uses_before</span></code> or <code class="docutils literal notranslate"><span class="pre">uses</span></code>.</p>
+<p>Combining <code class="docutils literal notranslate"><span class="pre">docs</span></code> from multiple requests is already done before feeding them to the Executor’s
+function. Hence, simple joining is just returning this <code class="docutils literal notranslate"><span class="pre">docs</span></code>. However, if you wish to perform more complex logic, you
+can make your endpoints expect a <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> object which is a list of DocumentArrays coming from all Executors. You
+can then process them and return the resulting DocumentArray</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 
-
-<span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># 6 docs</span>
-        <span class="k">return</span> <span class="n">docs</span>
-
+<span class="k">def</span> <span class="nf">print_fn</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 
@@ -806,14 +789,74 @@ function. Hence, simple joining is just returning this <code class="docutils lit
             <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'world </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">'</span>
 
 
+</pre></div>
+</div>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Default Reduce</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor0'</span><span class="p">,</span> <span class="s1">'executor1'</span><span class="p">])</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/some_endpoint'</span><span class="p">,</span>
+           <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+           <span class="n">on_done</span><span class="o">=</span><span class="n">print_fn</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello 0
+hello 1
+hello 2
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Simple Custom Reduce</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># 6 docs</span>
+        <span class="k">return</span> <span class="n">docs</span>
+
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor0'</span><span class="p">,</span> <span class="s1">'executor1'</span><span class="p">])</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/some_endpoint'</span><span class="p">,</span>
            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
-           <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
+           <span class="n">on_done</span><span class="o">=</span><span class="n">print_fn</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>world 0
+world 1
+world 2
+hello 0
+hello 1
+hello 2
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">Custom Reduce with docs_matrix</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">'</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">da</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor0'</span><span class="p">,</span> <span class="s1">'executor1'</span><span class="p">])</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/some_endpoint'</span><span class="p">,</span>
+           <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+           <span class="n">on_done</span><span class="o">=</span><span class="n">print_fn</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>world 0-hello 0
+world 1-hello 1
+world 2-hello 2
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--4" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--4">Custom Reduce with modification</label><div class="tab-content docutils">
 <p>You can also modify the Documents while merging:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 
@@ -823,7 +866,23 @@ function. Hence, simple joining is just returning this <code class="docutils lit
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">'!!!'</span>
         <span class="k">return</span> <span class="n">docs</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'executor0'</span><span class="p">,</span> <span class="s1">'executor1'</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/some_endpoint'</span><span class="p">,</span>
+           <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+           <span class="n">on_done</span><span class="o">=</span><span class="n">print_fn</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello 0!!!
+hello 1!!!
+hello 2!!!
+world 0!!!
+world 1!!!
+world 2!!!
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="multiprocessing-spawn">
@@ -839,7 +898,7 @@ function. Hence, simple joining is just returning this <code class="docutils lit
 </li>
 <li><p>Define &amp; start the Flow via an explicit function call inside <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">'__main__'</span></code>. For example</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 <span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -857,7 +916,7 @@ function. Hence, simple joining is just returning this <code class="docutils lit
 </span></pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">😔 Don’t</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">😔 Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="hll">
 </span><span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -890,7 +949,7 @@ function. Hence, simple joining is just returning this <code class="docutils lit
 </li>
 <li><p>Declare Executors on the top-level of the module</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 </span>    <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -903,7 +962,7 @@ function. Hence, simple joining is just returning this <code class="docutils lit
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">😔 Don’t</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">😔 Don’t</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
 <span class="hll">    <span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 </span>        <span class="nd">@requests</span>
@@ -937,56 +996,48 @@ AssertionError: can only join a started process
 </section>
 <section id="debugging-executor-in-a-flow">
 <h2>Debugging Executor in a Flow<a class="headerlink" href="#debugging-executor-in-a-flow" title="Permalink to this headline">¶</a></h2>
-<p>Standard Python breakpoints will not work inside <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods when called inside a Flow context manager. Nevertheless, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">epdb;</span> <span class="pre">epdb.set_trace()</span></code> will work just as a native python breakpoint. Note that you need to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">instal</span> <span class="pre">epdb</span></code> to have acces to this type of breakpoints.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>````{tab} ✅ Do
-```{code-block} python
----
-emphasize-lines: 7
----
-from jina import Flow, Executor, requests
+<p>Standard Python breakpoints will not work inside <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods when called inside a Flow context manager. Nevertheless, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">epdb;</span> <span class="pre">epdb.set_trace()</span></code> will work just as a native python breakpoint. Note that you need to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">epdb</span></code> to have acces to this type of breakpoints.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">✅ Do</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
  
-class CustomExecutor(Executor):
-    @requests
-    def foo(self, **kwargs):
-        a = 25
-        import epdb; epdb.set_trace() 
-        print(f'\n\na={a}\n\n')
+<span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="hll">        <span class="kn">import</span> <span class="nn">epdb</span><span class="p">;</span> <span class="n">epdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span> 
+</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n\n</span><span class="s1">a=</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span>
  
-def main():
-    f = Flow().add(uses=CustomExecutor)
-    with f:
-        f.post(on='')
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">CustomExecutor</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
 
-if __name__ == '__main__':
-    main()
-
-```
-````
-
-````{tab} 😔 Don't
-```{code-block} python
----
-emphasize-lines: 7
----
-from jina import Flow, Executor, requests
- 
-class CustomExecutor(Executor):
-    @requests
-    def foo(self, **kwargs):
-        a = 25
-        breakpoint()
-        print(f'\n\na={a}\n\n')
- 
-def main():
-    f = Flow().add(uses=CustomExecutor)
-    with f:
-        f.post(on='')
- 
-if __name__ == '__main__':
-    main()
-```
-````
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">😔 Don’t</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+ 
+<span class="k">class</span> <span class="nc">CustomExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="hll">        <span class="nb">breakpoint</span><span class="p">()</span>
+</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n\n</span><span class="s1">a=</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span>
+ 
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">CustomExecutor</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+ 
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 </section>
@@ -1023,7 +1074,7 @@ if __name__ == '__main__':
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jan 06, 2022.
+                    Last updated on Jan 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1049,7 +1100,7 @@ if __name__ == '__main__':
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Remarks</a><ul>
-<li><a class="reference internal" href="#joining-merging">Joining/Merging</a></li>
+<li><a class="reference internal" href="#joining-reducing">Joining/Reducing</a></li>
 <li><a class="reference internal" href="#multiprocessing-spawn">multiprocessing Spawn</a></li>
 <li><a class="reference internal" href="#debugging-executor-in-a-flow">Debugging Executor in a Flow</a></li>
 </ul>

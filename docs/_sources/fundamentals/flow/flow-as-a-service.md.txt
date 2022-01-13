@@ -1,6 +1,6 @@
 # Serving Flow
 
-If you come to this page, most likely you have already built some cool stuff with Jina and now want to share it to the world. This cookbook will
+If you come to this page, most likely you have already built some cool stuff with Jina and now you want to share it with the world. This cookbook will
 guide you from basic serving for demo purpose to advanced serving in production.
 
 ## Minimum working example
@@ -43,7 +43,7 @@ Many times we need to use `Flow` & `Client` in a more explicit way, often due to
 
 - `Flow` and `Client` are on different machines: one on GPU, one on CPU;
 - `Flow` and `Client` have different lifetime: one lives longer, one lives shorter;
-- Multiple `Client` want to access one `Flow`;
+- Multiple `Client`s want to access one `Flow`;
 - One `Client` want to interleave its access to multiple `Flow`;
 - `Client` is browser/curl/Postman.
 
@@ -52,15 +52,15 @@ Flow in an explicit C/S style.
 
 ## Supported communication protocols
 
-Jina supports `grpc`, `websocket`, `http` three communication protocols between `Flow` and `Client`.
+Jina supports the three communication protocols `grpc`, `websocket`, and `http` between `Flow` and `Client`.
 
 | Protocol    | Requirements                      | Description                                                                                      | Performance on large data |
-| ----------- | --------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------- |
+| ----------- | --------------------------------- |--------------------------------------------------------------------------------------------------| ------------------------- |
 | `grpc`      | -                                 | Default gRPC protocol, mainly for streaming data                                                 | Super                     |
-| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend language that supports websocket, mainly for streaming data | Super                     |
-| `http`      | `pip install "jina[client,http]"` | HTTP protocol, mainly for allow any client to have HTTP access                                   | Good                      |
+| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend languages that support websocket, mainly for streaming data | Super                     |
+| `http`      | `pip install "jina[client,http]"` | HTTP protocol, mainly for allowing any client to have HTTP access                                | Good                      |
 
-The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
+The protocol is controlled by the `protocol=` argument in `Flow`/`Client`'s constructor.
 
 ```{figure} ../../../.github/2.0/client-server.svg
 :align: center
@@ -68,7 +68,7 @@ The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s construc
 
 ### via gRPC
 
-On the server-side, create an empty Flow and use `.block` to prevent the process exiting.
+On the server-side, create an empty Flow and use `.block` to prevent the process from exiting.
 
 ```python
 from jina import Flow
@@ -88,7 +88,7 @@ with Flow(port_expose=12345) as f:
 
 Note that the host address is `192.168.1.15` and `port_expose` is `12345`.
 
-While keep this server open, let's create a client on a different machine:
+While keeping this server open, let's create a client on a different machine:
 
 ```python
 from jina import Client
@@ -128,7 +128,7 @@ with f:
 	🌐 Public address:	197.26.36.43:12345
 ```
 
-This will serve the Flow with WebSocket, so any Client connects to it should follow the WebSocket protocol as well.
+This will serve the Flow with WebSocket, so any Client connecting to it should follow the WebSocket protocol as well.
 
 ```python
 from jina import Client
@@ -143,7 +143,7 @@ WebSocketClient@14574[S]:connected to the gateway at 0.0.0.0:12345!
 
 ### via HTTP
 
-To enable a Flow to receive from HTTP requests, you can add `protocol='http'` in the Flow constructor.
+To enable a Flow to receive HTTP requests, you can add `protocol='http'` in the Flow constructor.
 
 ```python
 from jina import Flow
@@ -167,7 +167,7 @@ with f:
 
 ### Switch between communication protocols
 
-You can switch to other protocol also via `.protocol` property setter. This setter works even in Flow runtime.
+You can switch to other protocol also via the `.protocol` property setter. This setter works even in Flow runtime.
 
 ```python
 from jina import Flow, Document
@@ -184,7 +184,7 @@ with f:
 
 ### Enable cross-origin-resources-sharing (CORS)
 
-CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
+CORS is by default disabled for security. That means you can not access the service from a webpage with a different domain. To override this, simply do:
 
 ```python
 from jina import Flow

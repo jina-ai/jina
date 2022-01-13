@@ -9,9 +9,9 @@ Submodules
 
    jina.parsers.peapods.runtimes.container
    jina.parsers.peapods.runtimes.distributed
+   jina.parsers.peapods.runtimes.head
    jina.parsers.peapods.runtimes.remote
-   jina.parsers.peapods.runtimes.zed
-   jina.parsers.peapods.runtimes.zmq
+   jina.parsers.peapods.runtimes.worker
 
 Module contents
 ---------------

@@ -2,7 +2,7 @@
 
 # Executor File Structure
 
-Besides organizing your Executor code inline-ly (i.e. with `Flow.add()` in the same file), you can also write it as "extern" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
+Besides organizing your Executor code inline-ly (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
 
 ````{tab} Inline manner
 

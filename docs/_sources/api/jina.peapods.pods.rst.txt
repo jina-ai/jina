@@ -7,17 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   jina.peapods.pods.k8slib
-
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 4
-
-   jina.peapods.pods.compound
-   jina.peapods.pods.factory
-   jina.peapods.pods.k8s
+   jina.peapods.pods.config
 
 Module contents
 ---------------
