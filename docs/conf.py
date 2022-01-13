@@ -188,18 +188,6 @@ ogp_custom_meta_tags = [
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.3"></script>
-<script type="module">
-  if (!('fragmentDirective' in Location.prototype) &&
-      !('fragmentDirective' in document)) {
-    import('https://cdn.jsdelivr.net/npm/text-fragments-polyfill');
-
-    // Monkeypatch before the polyfill publish its next version 
-    // https://github.com/GoogleChromeLabs/text-fragments-polyfill/pull/109
-    if (!('fragmentDirective' in document)){
-        document.fragmentDirective = {};
-    }
-  }
-</script>
     ''',
 ]
 
