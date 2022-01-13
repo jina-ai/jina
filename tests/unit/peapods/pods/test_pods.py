@@ -14,7 +14,6 @@ from jina import (
 )
 from jina.clients.request import request_generator
 from jina.enums import PollingType
-from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.peapods import Pod
 from jina.peapods.networking import GrpcConnectionPool
@@ -349,37 +348,6 @@ def test_pod_args_remove_uses_ba():
     )
     with Pod(args) as p:
         assert p.num_peas == 3
-
-
-@pytest.mark.parametrize(
-    'pod_host, pea1_host, expected_host_in, expected_host_out',
-    [
-        (__default_host__, '0.0.0.1', get_internal_ip(), get_internal_ip()),
-        ('0.0.0.1', '0.0.0.2', '0.0.0.1', '0.0.0.1'),
-        ('0.0.0.1', __default_host__, '0.0.0.1', '0.0.0.1'),
-    ],
-)
-def test_pod_remote_pea_replicas_pea_host_set_partially(
-    pod_host,
-    pea1_host,
-    expected_host_in,
-    expected_host_out,
-):
-    args = set_pod_parser().parse_args(
-        ['--peas-hosts', f'{pea1_host}', '--replicas', str(2), '--host', pod_host]
-    )
-    assert args.host == pod_host
-    pod = Pod(args)
-    for k, v in pod.peas_args.items():
-        if k in ['head', 'tail']:
-            assert v.host == args.host
-        elif v is not None:
-            for shard_id in v:
-                for pea_arg in v[shard_id]:
-                    if pea_arg.shard_id in (0, 1):
-                        assert pea_arg.host == pea1_host
-                    else:
-                        assert pea_arg.host == args.host
 
 
 @pytest.mark.parametrize('replicas', [1])
