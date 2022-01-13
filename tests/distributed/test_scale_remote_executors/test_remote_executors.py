@@ -82,22 +82,23 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
         )
 
         assert len(ret1) == 20
-        replica_ids = set()
+        replicas = set()
         for r in ret1:
             assert len(r.docs) == 10
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
-                replica_ids.add(replica_id)
+            # replicas are identified via their docker id
+            for id in r.docs.get_attributes('tags__docker_id'):
+                replicas.add(id)
 
-        assert replica_ids == set(range(num_replicas))
+        assert len(replicas) == num_replicas * shards
 
         assert len(ret2) == 20
-        replica_ids = set()
+        replicas = set()
         for r in ret2:
             assert len(r.docs) == 10
-            for replica_id in r.docs.get_attributes('tags__replica_id'):
-                replica_ids.add(replica_id)
+            for id in r.docs.get_attributes('tags__docker_id'):
+                replicas.add(id)
 
-        assert replica_ids == set(range(scale_to))
+        assert len(replicas) == scale_to * shards
 
 
 @pytest.mark.parametrize(
