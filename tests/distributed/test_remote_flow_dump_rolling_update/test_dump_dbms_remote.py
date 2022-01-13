@@ -145,7 +145,7 @@ def _send_rest_request(
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
         yield Document(
-            id=i,
+            id=str(i),
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

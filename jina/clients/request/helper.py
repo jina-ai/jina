@@ -39,6 +39,9 @@ def _new_doc_from_data(
     def _build_doc_from_content():
         return Document(content=data, **kwargs), DataInputType.CONTENT
 
+    if data_type == DataInputType.DICT:
+        doc = Document.from_dict(data)
+        return doc, DataInputType.DICT
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
         if isinstance(data, Document):
             # if incoming is already primitive type Document, then all good, best practice!

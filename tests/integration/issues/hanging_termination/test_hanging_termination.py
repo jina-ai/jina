@@ -24,9 +24,9 @@ class DumpExecutor(Executor):
         shard_size = len(docs) / shards
         os.makedirs(dump_path, exist_ok=True)
         for i in range(shards):
-            dump_file = f'{dump_path}/{i}.ndjson'
+            dump_file = f'{dump_path}/{i}.json'
             docs_to_be_dumped = docs[int(i * shard_size) : int((i + 1) * shard_size)]
-            docs_to_be_dumped.save(dump_file)
+            docs_to_be_dumped.save_json(dump_file)
 
 
 class ErrorExecutor(Executor):
@@ -39,11 +39,10 @@ class ErrorExecutor(Executor):
 class ReloadExecutor(Executor):
     def __init__(self, dump_path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # backwards compatibility
         if dump_path is not None:
-            shard_id = getattr(self.runtime_args, 'pea_id', None)
-            shard_dump_path = os.path.join(dump_path, f'{shard_id}.ndjson')
-            self._docs = DocumentArray.load(shard_dump_path)
+            shard_id = getattr(self.runtime_args, 'shard_id', None)
+            shard_dump_path = os.path.join(dump_path, f'{shard_id}.json')
+            self._docs = DocumentArray.load_json(shard_dump_path)
         else:
             self._docs = DocumentArray()
 
@@ -73,7 +72,7 @@ def get_client(port):
 def get_documents(count=10, emb_size=7):
     for i in range(count):
         yield Document(
-            id=i,
+            id=str(i),
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

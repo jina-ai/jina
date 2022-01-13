@@ -140,8 +140,11 @@ def get_fastapi_app(
             .. # noqa: DAR101
             """
             # The above comment is written in Markdown for better rendering in FastAPI
+            from jina.enums import DataInputType
 
             bd = body.dict()  # type: Dict
+            bd['data'] = bd['data']['docs']
+            bd['data_type'] = DataInputType.DICT
             return await _get_singleton_result(request_generator(**bd))
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
@@ -166,6 +169,7 @@ def get_fastapi_app(
         async def foo(body: JinaRequestModel):
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
+
             return await _get_singleton_result(request_generator(**bd))
 
     if not args.no_crud_endpoints:
