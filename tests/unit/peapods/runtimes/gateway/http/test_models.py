@@ -8,12 +8,14 @@ from jina import Document
 from tests import random_docs
 
 
+@pytest.mark.skip
 def test_schema_invocation():
     for k, v in vars(PROTO_TO_PYDANTIC_MODELS).items():
         v.schema()
         v.schema_json()
 
 
+@pytest.mark.skip
 def test_existing_definitions():
     """This tests: all internal schema definitions are part of parent"""
     for i in [
@@ -25,6 +27,7 @@ def test_existing_definitions():
         )
 
 
+@pytest.mark.skip
 def test_enum_definitions():
     """This tests: all enums are defined properly as different levels"""
     status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
@@ -33,6 +36,7 @@ def test_enum_definitions():
     assert status_code_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
 
 
+@pytest.mark.skip
 def test_all_fields_in_document_proto():
     """This tests: all fields are picked from the proto definition"""
     document_proto_properties = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema(
@@ -65,6 +69,7 @@ def test_all_fields_in_document_proto():
         assert i in document_proto_properties_alias
 
 
+@pytest.mark.skip
 def test_oneof_text():
     """This tests: oneof field is correctly represented as `anyOf`"""
 
@@ -74,6 +79,7 @@ def test_oneof_text():
     assert 'buffer' not in doc.dict()
 
 
+@pytest.mark.skip
 def test_oneof_buffer():
     """This tests: oneof field is correctly represented as `anyOf`"""
 
@@ -83,6 +89,7 @@ def test_oneof_buffer():
     assert 'blob' not in doc.dict()
 
 
+@pytest.mark.skip
 def test_oneof_blob():
     """This tests: oneof field is correctly represented as `anyOf`"""
 
@@ -92,6 +99,7 @@ def test_oneof_blob():
     assert 'buffer' not in doc.dict()
 
 
+@pytest.mark.skip
 def test_oneof_validation_error():
     """This tests validation error for invalid fields"""
 
@@ -106,6 +114,7 @@ def test_oneof_validation_error():
     assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
 
 
+@pytest.mark.skip
 def test_tags_document():
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world')
     assert doc.tags == {'hello': 'world'}
@@ -135,6 +144,7 @@ def test_tags_document():
         assert Document(doc.dict()).tags != {{'key': [1, 2, 3]}}
 
 
+@pytest.mark.skip
 def test_repeated():
     """This tests: repeated fields are represented as `array`"""
     assert (
@@ -151,6 +161,7 @@ def test_repeated():
     )
 
 
+@pytest.mark.skip
 def test_struct():
     """This tests: google.protobuf.Struct are represented as `object`"""
     assert (
@@ -161,6 +172,7 @@ def test_struct():
     )
 
 
+@pytest.mark.skip
 def test_timestamp():
     """This tests: google.protobuf.Timestamp are represented as date-time"""
     assert (
@@ -177,6 +189,7 @@ def test_timestamp():
     )
 
 
+@pytest.mark.skip
 def test_jina_document_to_pydantic_document():
     document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
 
@@ -200,6 +213,7 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
 
 
+@pytest.mark.skip
 def test_jina_document_to_pydantic_document_sparse():
     document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
 
@@ -222,6 +236,7 @@ def test_jina_document_to_pydantic_document_sparse():
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
 
 
+@pytest.mark.skip
 def test_pydatic_document_to_jina_document():
     document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
 
@@ -234,6 +249,7 @@ def test_pydatic_document_to_jina_document():
     assert jina_doc.content == 'abc'
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize('top_k', [5, 10])
 def test_model_with_top_k(top_k):
     m = JinaRequestModel(data=['abc'], parameters={'top_k': top_k})
