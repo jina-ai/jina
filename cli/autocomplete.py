@@ -313,7 +313,6 @@ ac_table = {
             '--uses-before',
             '--uses-after',
             '--external',
-            '--peas-hosts',
             '--pod-role',
         ],
         'client': [
