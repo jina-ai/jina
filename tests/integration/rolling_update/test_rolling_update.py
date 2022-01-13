@@ -36,7 +36,7 @@ class DummyMarkExecutor(Executor):
     @requests
     def foo(self, docs, *args, **kwargs):
         for doc in docs:
-            doc.tags['replica'] = self.runtime_args.replica_id
+            doc.tags['replica'] = os.getpid()
             doc.tags['shard'] = self.runtime_args.shard_id
 
     def close(self) -> None:
@@ -193,7 +193,6 @@ def test_workspace(config, tmpdir, docs):
         name='executor1',
         uses=DummyMarkExecutor,
         workspace=str(tmpdir),
-        replicas=2,
         shards=3,
     ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
@@ -202,13 +201,7 @@ def test_workspace(config, tmpdir, docs):
 
     # validate created workspaces
     assert set(os.listdir(str(tmpdir))) == {'dummy'}
-    assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1'}
-    for replica_id in {'0', '1'}:
-        assert set(os.listdir(os.path.join(tmpdir, 'dummy', replica_id))) == {
-            '0',
-            '1',
-            '2',
-        }
+    assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1', '2'}
 
 
 def test_num_peas(config):
@@ -283,12 +276,10 @@ def test_override_uses_with(docs):
 
 @pytest.mark.timeout(60)
 @pytest.mark.parametrize(
-    'replicas, scale_to, expected_before_scale, expected_after_scale',
-    [(2, 3, {0, 1}, {0, 1, 2}), (3, 2, {0, 1, 2}, {0, 1})],
+    'replicas, scale_to',
+    [(2, 3), (3, 2)],
 )
-def test_scale_after_rolling_update(
-    docs, replicas, scale_to, expected_before_scale, expected_after_scale
-):
+def test_scale_after_rolling_update(docs, replicas, scale_to):
     flow = Flow(port_expose=exposed_port).add(
         name='executor1',
         uses=DummyMarkExecutor,
@@ -304,18 +295,18 @@ def test_scale_after_rolling_update(
             docs, return_results=True, request_size=1
         )
 
-    replica_ids = set()
+    replicas_before = set()
     for r in ret1:
         for replica_id in r.docs.get_attributes('tags__replica'):
-            replica_ids.add(replica_id)
+            replicas_before.add(replica_id)
 
-    assert replica_ids == expected_before_scale
+    assert len(replicas_before) == replicas
 
-    replica_ids = set()
+    replicas_after = set()
     for r in ret2:
         for replica_id in r.docs.get_attributes('tags__replica'):
-            replica_ids.add(replica_id)
-    assert replica_ids == expected_after_scale
+            replicas_after.add(replica_id)
+    assert len(replicas_after) == scale_to
 
 
 def send_requests(
