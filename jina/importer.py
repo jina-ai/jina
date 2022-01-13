@@ -4,7 +4,7 @@ import warnings
 from types import SimpleNamespace
 from typing import Optional
 
-from . import __resources_path__
+from jina import __resources_path__
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
@@ -56,7 +56,7 @@ class ImportExtensions:
                         break
 
             if self._tags:
-                from .helper import colored
+                from jina.helper import colored
 
                 req_msg = colored('fallback to default behavior', color='yellow')
                 if self._required:
@@ -139,7 +139,7 @@ class PathImporter:
 
         :param paths: Paths of the modules.
         """
-        from .jaml.helper import complete_path
+        from jina.jaml.helper import complete_path
 
         paths = [complete_path(m) for m in paths]
 

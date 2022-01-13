@@ -19,7 +19,7 @@ def test_bad_flow_skip_handle(mocker, protocol):
         ]
         assert len(bad_routes) == 1
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
+        assert bad_routes[0].executor == 'r1'
 
     f = (
         Flow(protocol=protocol)
@@ -47,7 +47,7 @@ def test_bad_flow_skip_handle_join(mocker, protocol):
         ]
         assert len(bad_routes) == 1
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
+        assert bad_routes[0].executor == 'r1'
 
     f = (
         Flow(protocol=protocol)

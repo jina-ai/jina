@@ -18,9 +18,9 @@ from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 from contextlib import nullcontext
 
-from .. import __resources_path__
-from ..importer import ImportExtensions
-from ..logging.predefined import default_logger
+from jina import __resources_path__
+from jina.importer import ImportExtensions
+from jina.logging.predefined import default_logger
 
 
 @lru_cache()

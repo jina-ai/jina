@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Optional
 from urllib.parse import urlencode
 
-from . import HubExecutor
-from .helper import (
+from jina.hubble import HubExecutor
+from jina.hubble.helper import (
     archive_package,
     download_with_resume,
     parse_hub_uri,
@@ -18,7 +18,7 @@ from .helper import (
     upload_file,
     disk_cache_offline,
 )
-from .hubapi import (
+from jina.hubble.hubapi import (
     install_local,
     get_dist_path_of_executor,
     load_secret,
@@ -26,11 +26,11 @@ from .hubapi import (
     get_lockfile,
     install_package_dependencies,
 )
-from .. import __resources_path__
-from ..helper import ArgNamespace, colored, get_request_header
-from ..importer import ImportExtensions
-from ..logging.logger import JinaLogger
-from ..parsers.hubble import set_hub_parser
+from jina import __resources_path__
+from jina.helper import ArgNamespace, colored, get_request_header
+from jina.importer import ImportExtensions
+from jina.logging.logger import JinaLogger
+from jina.parsers.hubble import set_hub_parser
 
 _cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
@@ -634,7 +634,7 @@ with f:
             import docker
             from docker import APIClient
 
-            from .. import __windows__
+            from jina import __windows__
 
             try:
                 self._client = docker.from_env()

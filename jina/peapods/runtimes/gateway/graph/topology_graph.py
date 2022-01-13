@@ -4,8 +4,8 @@ from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional, Dict, Tuple
 
-from ....networking import GrpcConnectionPool
-from .....types.request.data import DataRequest
+from jina.peapods.networking import GrpcConnectionPool
+from jina.types.request.data import DataRequest
 
 
 class TopologyGraph:
@@ -132,14 +132,14 @@ class TopologyGraph:
 
             def _find_route(request):
                 for r in request.routes:
-                    if r.pod == self.name:
+                    if r.executor == self.name:
                         return r
                 return None
 
             r = _find_route(request)
             if r is None and self.start_time:
                 r = request.routes.add()
-                r.pod = self.name
+                r.executor = self.name
                 r.start_time.FromDatetime(self.start_time)
                 if self.end_time:
                     r.end_time.FromDatetime(self.end_time)

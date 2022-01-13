@@ -1,8 +1,8 @@
 from typing import Optional
 
-from . import Request
-from ...helper import typename, random_identity
-from ...proto import jina_pb2
+from jina.types.request import Request
+from jina.helper import typename, random_identity
+from jina.proto import jina_pb2
 
 _available_commands = dict(jina_pb2.ControlRequestProto.DESCRIPTOR.enum_values_by_name)
 

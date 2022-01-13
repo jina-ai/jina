@@ -3,10 +3,10 @@ from typing import Union, Dict, Optional
 
 import aiohttp
 
-from .peas import AsyncPeaClient
-from .mixin import AsyncToSyncMixin
-from ..helper import if_alive, error_msg_from
-from ..models.id import DaemonID, daemonize
+from daemon.clients.peas import AsyncPeaClient
+from daemon.clients.mixin import AsyncToSyncMixin
+from daemon.helper import if_alive, error_msg_from
+from daemon.models.id import DaemonID, daemonize
 
 
 class AsyncPodClient(AsyncPeaClient):

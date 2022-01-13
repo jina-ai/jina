@@ -1,19 +1,20 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
+
 from contextlib import nullcontext, AsyncExitStack
 from typing import Optional, TYPE_CHECKING, Dict
 
-from .helper import WebsocketClientlet
-from ..base import BaseClient
-from ..helper import callback_exec
-from ...importer import ImportExtensions
-from ...logging.profile import ProgressBar
-from ...peapods.stream import RequestStreamer
-from ...helper import get_or_reuse_loop
+from jina.clients.base.helper import WebsocketClientlet
+from jina.clients.base import BaseClient
+from jina.clients.helper import callback_exec
+from jina.importer import ImportExtensions
+from jina.logging.profile import ProgressBar
+from jina.peapods.stream import RequestStreamer
+from jina.helper import get_or_reuse_loop
 
 if TYPE_CHECKING:
-    from ...types.request import Request
-    from ..base import CallbackFnType, InputType
+    from jina.types.request import Request
+    from jina.clients.base import CallbackFnType, InputType
 
 
 class WebSocketBaseClient(BaseClient):

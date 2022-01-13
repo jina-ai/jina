@@ -3,10 +3,11 @@ from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
-from ....excepts import PartialDaemon400Exception
-from ....models import PodModel
-from ....models.partial import PartialStoreItem
-from ....stores import partial_store as store
+
+from daemon.excepts import PartialDaemon400Exception
+from daemon.models import PodModel
+from daemon.models.partial import PartialStoreItem
+from daemon.stores import partial_store as store
 
 router = APIRouter(prefix='/pod', tags=['pod'])
 

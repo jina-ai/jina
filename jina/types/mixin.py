@@ -1,9 +1,9 @@
-from typing import Dict, Tuple
+from typing import Dict
 
-from ..helper import typename, T, TYPE_CHECKING, deprecate_by
+from jina.helper import typename, T, TYPE_CHECKING, deprecate_by
 
 if TYPE_CHECKING:
-    from ..proto import jina_pb2
+    from jina.proto import jina_pb2
 
 
 class ProtoTypeMixin:

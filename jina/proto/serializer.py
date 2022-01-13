@@ -1,8 +1,8 @@
 from typing import List, Union, Iterable
 
-from . import jina_pb2
-from ..types.request.control import ControlRequest
-from ..types.request.data import DataRequest
+from jina.proto import jina_pb2
+from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest
 
 
 class ControlRequestProto:

@@ -2,17 +2,17 @@ from argparse import Namespace
 from copy import deepcopy
 from typing import TYPE_CHECKING, Type
 
-from ... import __default_host__
-from . import Pea
-from .jinad import JinaDPea
-from .container import ContainerPea
-from ...enums import PeaRoleType
+from jina import __default_host__
+from jina.peapods.peas import Pea
+from jina.peapods.peas.jinad import JinaDPea
+from jina.peapods.peas.container import ContainerPea
+from jina.enums import PeaRoleType
 
-from ...hubble.helper import is_valid_huburi
-from ...hubble.hubio import HubIO
+from jina.hubble.helper import is_valid_huburi
+from jina.hubble.hubio import HubIO
 
 if TYPE_CHECKING:
-    from . import BasePea
+    from jina.peapods.peas import BasePea
 
 
 class PeaFactory:

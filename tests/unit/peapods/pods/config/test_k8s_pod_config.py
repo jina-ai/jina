@@ -316,7 +316,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
         config_map,
         'gateway',
         {
-            'JINA_LOG_LEVEL': 'DEBUG',
+            'JINA_LOG_LEVEL': 'INFO',
             'pythonunbuffered': '1',
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
         },
@@ -483,7 +483,7 @@ def test_k8s_yaml_regular_pod(
         config_map,
         'executor-head-0',
         {
-            'JINA_LOG_LEVEL': 'DEBUG',
+            'JINA_LOG_LEVEL': 'INFO',
             'pythonunbuffered': '1',
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
         },
@@ -692,7 +692,7 @@ def test_k8s_yaml_regular_pod(
             name,
             {
                 'ENV_VAR': 'ENV_VALUE',
-                'JINA_LOG_LEVEL': 'DEBUG',
+                'JINA_LOG_LEVEL': 'INFO',
                 'pythonunbuffered': '1',
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },

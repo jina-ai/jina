@@ -1,5 +1,5 @@
-from .base.websocket import WebSocketBaseClient
-from .mixin import AsyncPostMixin, PostMixin
+from jina.clients.base.websocket import WebSocketBaseClient
+from jina.clients.mixin import AsyncPostMixin, PostMixin
 
 
 class WebSocketClient(WebSocketBaseClient, PostMixin):

@@ -145,7 +145,7 @@ def test_dealer_routing(mocker):
     mock.assert_called()
 
 
-def test_target_peapod(mocker):
+def test_target_executor(mocker):
     class Foo(Executor):
         @requests(on='/hello')
         def foo(self, **kwargs):
@@ -163,7 +163,7 @@ def test_target_peapod(mocker):
         fail_mock = mocker.Mock()
         Client(port=1234).post(
             '/hello',
-            target_peapod='p0',
+            target_executor='p0',
             inputs=Document(),
             on_done=success_mock,
             on_error=fail_mock,
@@ -178,7 +178,7 @@ def test_target_peapod(mocker):
         fail_mock.assert_not_called()
 
 
-def test_target_peapod_with_overlaped_name(mocker):
+def test_target_executor_with_overlaped_name(mocker):
     class FailExecutor(Executor):
         @requests
         def fail(self, **kwargs):
@@ -199,24 +199,24 @@ def test_target_peapod_with_overlaped_name(mocker):
         # both pods are called, create no error
         mock = mocker.Mock()
         Client(port=1234).post(
-            on='/foo', target_peapod='foo', inputs=Document(), on_done=mock
+            on='/foo', target_executor='foo', inputs=Document(), on_done=mock
         )
         mock.assert_called()
 
 
-def test_target_peapod_with_one_pathways():
+def test_target_executor_with_one_pathways():
     f = Flow(port_expose=1234).add().add(name='my_target')
     with f:
         results = Client(port=1234).post(
             on='/search',
             inputs=Document(),
             return_results=True,
-            target_peapod='my_target',
+            target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1
 
 
-def test_target_peapod_with_two_pathways():
+def test_target_executor_with_two_pathways():
     f = (
         Flow(port_expose=1234)
         .add()
@@ -227,12 +227,12 @@ def test_target_peapod_with_two_pathways():
             on='/search',
             inputs=Document(),
             return_results=True,
-            target_peapod='my_target',
+            target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1
 
 
-def test_target_peapod_with_two_pathways_one_skip():
+def test_target_executor_with_two_pathways_one_skip():
     f = (
         Flow(port_expose=1234)
         .add()
@@ -244,18 +244,18 @@ def test_target_peapod_with_two_pathways_one_skip():
             on='/search',
             inputs=Document(),
             return_results=True,
-            target_peapod='my_target',
+            target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1
 
 
-def test_target_peapod_with_shards():
+def test_target_executor_with_shards():
     f = Flow(port_expose=1234).add(shards=2).add(name='my_target')
     with f:
         results = Client(port=1234).post(
             on='/search',
             inputs=Document(),
             return_results=True,
-            target_peapod='my_target',
+            target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1

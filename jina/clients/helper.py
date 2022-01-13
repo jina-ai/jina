@@ -3,12 +3,10 @@
 from functools import wraps
 from typing import Callable
 
-from ..excepts import BadClientCallback
-from ..helper import colored
-from ..importer import ImportExtensions
-from ..logging.logger import JinaLogger
-from ..proto import jina_pb2
-from ..types.request.data import Response
+from jina.excepts import BadClientCallback
+from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2
+from jina.types.request.data import Response
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
@@ -23,7 +21,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
     from rich import box
 
     table = Table(box=box.SIMPLE)
-    for v in ('Pod', 'Time', 'Exception'):
+    for v in ('Executor', 'Time', 'Exception'):
         table.add_column(v)
 
     for route in routes:
@@ -34,7 +32,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
             status_icon = '⚪'
 
         table.add_row(
-            f'{status_icon} {route.pod}',
+            f'{status_icon} {route.executor}',
             f'{route.start_time.ToMilliseconds() - routes[0].start_time.ToMilliseconds()}ms',
             ''.join(route.status.exception.stacks[-stack_limit:]),
         )

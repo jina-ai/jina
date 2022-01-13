@@ -3,7 +3,7 @@ import warnings
 from enum import Enum
 from typing import List
 
-from ..helper import classproperty
+from daemon.helper import classproperty
 
 
 class DaemonEnum(str, Enum):

@@ -12,9 +12,9 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
-from ..excepts import BadConfigSource
-from ..helper import is_yaml_filepath
-from ..importer import PathImporter
+from jina.excepts import BadConfigSource
+from jina.helper import is_yaml_filepath
+from jina.importer import PathImporter
 
 
 class JinaConstructor(FullConstructor):
@@ -139,7 +139,7 @@ def parse_config_source(
     if not path:
         raise BadConfigSource
     elif allow_dict and isinstance(path, dict):
-        from . import JAML
+        from jina.jaml import JAML
 
         tmp = JAML.dump(path)
         return io.StringIO(tmp), None
@@ -158,7 +158,7 @@ def parse_config_source(
         return io.StringIO(f'!{path}'), None
     elif allow_json and isinstance(path, str):
         try:
-            from . import JAML
+            from jina.jaml import JAML
 
             tmp = json.loads(path)
             tmp = JAML.dump(tmp)

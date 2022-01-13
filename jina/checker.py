@@ -1,5 +1,6 @@
-from .logging.predefined import default_logger
 import argparse
+
+from jina.logging.predefined import default_logger
 
 
 class NetworkChecker:
@@ -12,9 +13,8 @@ class NetworkChecker:
         :param args: args provided by the CLI.
         """
 
-        from .logging.profile import TimeContext
+        from jina.logging.profile import TimeContext
         from jina.peapods.runtimes.worker import WorkerRuntime
-        from google.protobuf.json_format import MessageToJson
         import time
 
         ctrl_addr = f'{args.host}:{args.port}'

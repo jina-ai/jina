@@ -7,13 +7,13 @@ from typing import Union, Optional, TYPE_CHECKING
 
 from grpc import RpcError
 
-from .base import BaseRuntime
-from ... import __windows__
-from ...importer import ImportExtensions
+from jina.peapods.runtimes.base import BaseRuntime
+from jina import __windows__
+from jina.importer import ImportExtensions
 
-from ..networking import GrpcConnectionPool
-from ...types.request.control import ControlRequest
-from ...types.request.data import DataRequest
+from jina.peapods.networking import GrpcConnectionPool
+from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import multiprocessing

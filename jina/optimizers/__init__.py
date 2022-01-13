@@ -5,23 +5,22 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 import numpy as np
 import yaml
 
-from .parameters import (
+from jina.optimizers.parameters import (
     IntegerParameter,
     UniformParameter,
     LogUniformParameter,
     CategoricalParameter,
     DiscreteUniformParameter,
 )
-from .parameters import load_optimization_parameters
-from ..helper import colored
-from ..importer import ImportExtensions
-from ..jaml import JAMLCompatible, JAML
-from ..logging.predefined import default_logger as logger
-from ..types.request.data import Response
-
+from jina.optimizers.parameters import load_optimization_parameters
+from jina.helper import colored
+from jina.importer import ImportExtensions
+from jina.jaml import JAMLCompatible, JAML
+from jina.logging.predefined import default_logger as logger
+from jina.types.request.data import Response
 
 if TYPE_CHECKING:
-    from .flow_runner import FlowRunner
+    from jina.optimizers.flow_runner import FlowRunner
     import optuna
     from optuna.trial import Trial
     from argparse import Namespace
@@ -262,7 +261,7 @@ def run_optimizer_cli(args: 'Namespace'):
     :param args: arguments passed via cli
     """
     # The following import is needed to initialize the JAML parser
-    from .flow_runner import SingleFlowRunner, MultiFlowRunner
+    from jina.optimizers.flow_runner import SingleFlowRunner, MultiFlowRunner
 
     with open(args.uses) as f:
         optimizer = JAML.load(f)

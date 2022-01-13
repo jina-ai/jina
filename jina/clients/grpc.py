@@ -1,5 +1,5 @@
-from .base.grpc import GRPCBaseClient
-from .mixin import AsyncPostMixin, PostMixin
+from jina.clients.base.grpc import GRPCBaseClient
+from jina.clients.mixin import AsyncPostMixin, PostMixin
 
 
 class GRPCClient(GRPCBaseClient, PostMixin):

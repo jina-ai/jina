@@ -2,12 +2,12 @@ def get_full_schema() -> dict:
     """Get full schema
     :return: the full schema for Jina core as a dict.
     """
-    from .. import __version__
-    from ..importer import IMPORTED
-    from .executor import schema_all_executors
-    from .flow import schema_flow
-    from .meta import schema_metas
-    from .pod import schema_pod
+    from jina import __version__
+    from jina.importer import IMPORTED
+    from jina.schemas.executor import schema_all_executors
+    from jina.schemas.flow import schema_flow
+    from jina.schemas.meta import schema_metas
+    from jina.schemas.pod import schema_pod
 
     definitions = {}
     for s in [

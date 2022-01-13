@@ -2,9 +2,9 @@
 import argparse
 import os
 
-from ..helper import add_arg_group, _SHOW_ALL_ARGS
-from ...enums import PollingType
-from ...helper import random_identity
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.enums import PollingType
+from jina.helper import random_identity
 
 
 def mixin_base_ppr_parser(parser, with_identity: bool = True):
@@ -37,7 +37,7 @@ When not given, then the default naming strategy will apply.
         'If not set, then derive from its parent `workspace`.',
     )
 
-    from ... import __resources_path__
+    from jina import __resources_path__
 
     gp.add_argument(
         '--log-config',

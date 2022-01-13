@@ -12,7 +12,7 @@ package jina;
  * thus end_time - start_time includes Executor computation, runtime overhead, serialization and network
  */
 message RouteProto {
-    string pod = 1; // the name of the BasePod
+    string executor = 1; // the name of the BasePod
     google.protobuf.Timestamp start_time = 2; // time when the Gateway starts sending to the Pod
     google.protobuf.Timestamp end_time = 3; // time when the Gateway received it from the Pod
     StatusProto status = 4; // the status of the execution
@@ -33,7 +33,7 @@ message HeaderProto {
 
     optional string exec_endpoint = 3;  // the endpoint specified by `@requests(on='/abc')`
 
-    optional string target_peapod = 4; // if set, the request is targeted to certain peas/pods, regex strings
+    optional string target_executor = 4; // if set, the request is targeted to certain executor, regex strings
 
     optional uint32 timeout = 5; // epoch time in seconds after which the request should be dropped
 }
@@ -72,8 +72,6 @@ message StatusProto {
 
         // the name of the executor bind to that peapod (if applicable)
         string executor = 4;
-
-
     }
 
     // the details of the error

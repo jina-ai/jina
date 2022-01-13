@@ -4,11 +4,11 @@ from fastapi import APIRouter
 from jina.helper import ArgNamespace
 from jina.parsers.flow import set_flow_parser
 
-from ....models import FlowModel
-from ....models.ports import PortMappings
-from ....models.partial import PartialFlowItem
-from ....excepts import PartialDaemon400Exception
-from ....stores import partial_store as store
+from daemon.models import FlowModel
+from daemon.models.ports import PortMappings
+from daemon.models.partial import PartialFlowItem
+from daemon.excepts import PartialDaemon400Exception
+from daemon.stores import partial_store as store
 
 router = APIRouter(prefix='/flow', tags=['flow'])
 

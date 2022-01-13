@@ -4,12 +4,12 @@ from typing import overload, Optional, Union, TYPE_CHECKING
 
 __all__ = ['Client']
 
-from ..enums import GatewayProtocolType
+from jina.enums import GatewayProtocolType
 
 if TYPE_CHECKING:
-    from .grpc import GRPCClient, AsyncGRPCClient
-    from .websocket import WebSocketClient, AsyncWebSocketClient
-    from .http import HTTPClient, AsyncHTTPClient
+    from jina.clients.grpc import GRPCClient, AsyncGRPCClient
+    from jina.clients.websocket import WebSocketClient, AsyncWebSocketClient
+    from jina.clients.http import HTTPClient, AsyncHTTPClient
 
 
 # overload_inject_start_client
@@ -77,28 +77,28 @@ def Client(
 
     if protocol == GatewayProtocolType.GRPC:
         if is_async:
-            from .grpc import AsyncGRPCClient
+            from jina.clients.grpc import AsyncGRPCClient
 
             return AsyncGRPCClient(args, **kwargs)
         else:
-            from .grpc import GRPCClient
+            from jina.clients.grpc import GRPCClient
 
             return GRPCClient(args, **kwargs)
     elif protocol == GatewayProtocolType.WEBSOCKET:
         if is_async:
-            from .websocket import AsyncWebSocketClient
+            from jina.clients.websocket import AsyncWebSocketClient
 
             return AsyncWebSocketClient(args, **kwargs)
         else:
-            from .websocket import WebSocketClient
+            from jina.clients.websocket import WebSocketClient
 
             return WebSocketClient(args, **kwargs)
     elif protocol == GatewayProtocolType.HTTP:
         if is_async:
-            from .http import AsyncHTTPClient
+            from jina.clients.http import AsyncHTTPClient
 
             return AsyncHTTPClient(args, **kwargs)
         else:
-            from .http import HTTPClient
+            from jina.clients.http import HTTPClient
 
             return HTTPClient(args, **kwargs)

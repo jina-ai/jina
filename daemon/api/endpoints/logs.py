@@ -10,10 +10,10 @@ from starlette.websockets import WebSocketState
 from websockets import ConnectionClosedOK
 from websockets.exceptions import ConnectionClosedError
 
-from ... import daemon_logger, jinad_args
-from ...helper import get_log_file_path
-from ...models import DaemonID
-from ...stores import get_store_from_id
+from daemon import daemon_logger, jinad_args
+from daemon.helper import get_log_file_path
+from daemon.models import DaemonID
+from daemon.stores import get_store_from_id
 
 router = APIRouter(tags=['logs'])
 

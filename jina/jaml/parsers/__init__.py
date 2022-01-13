@@ -1,9 +1,9 @@
 import warnings
 from typing import List, Optional, Type
 
-from .base import VersionedYAMLParser
-from .. import JAMLCompatible
-from ...excepts import BadYAMLVersion
+from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.jaml import JAMLCompatible
+from jina.excepts import BadYAMLVersion
 
 
 def _get_all_parser(cls: Type['JAMLCompatible']):
@@ -12,8 +12,8 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     :param cls: target class
     :return: a tuple of two elements; first is a list of all parsers, second is the legacy parser for default fallback
     """
-    from ...executors import BaseExecutor
-    from ...flow.base import Flow
+    from jina.executors import BaseExecutor
+    from jina.flow.base import Flow
 
     if issubclass(cls, Flow):
         return _get_flow_parser()
@@ -24,20 +24,20 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
 
 
 def _get_flow_parser():
-    from .flow.legacy import LegacyParser
-    from .flow.v1 import V1Parser
+    from jina.jaml.parsers.flow.legacy import LegacyParser
+    from jina.jaml.parsers.flow.v1 import V1Parser
 
     return [V1Parser, LegacyParser], V1Parser
 
 
 def _get_exec_parser():
-    from .executor.legacy import LegacyParser
+    from jina.jaml.parsers.executor.legacy import LegacyParser
 
     return [LegacyParser], LegacyParser
 
 
 def _get_default_parser():
-    from .default.v1 import V1Parser
+    from jina.jaml.parsers.default.v1 import V1Parser
 
     return [V1Parser], V1Parser
 

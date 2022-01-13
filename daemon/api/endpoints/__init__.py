@@ -2,8 +2,9 @@ from fastapi import APIRouter
 
 from jina.helper import get_public_ip, get_internal_ip, get_full_version
 from jina.logging.profile import used_memory_readable
-from ...models import DaemonStatus
-from ...stores import workspace_store, pea_store, pod_store, flow_store
+
+from daemon.models import DaemonStatus
+from daemon.stores import workspace_store, pea_store, pod_store, flow_store
 
 router = APIRouter(tags=['daemon'])
 
@@ -11,7 +12,7 @@ router = APIRouter(tags=['daemon'])
 @router.on_event('startup')
 async def startup():
     """Start the process"""
-    from ... import daemon_logger, jinad_args
+    from daemon import daemon_logger, jinad_args
 
     daemon_logger.info(
         f'''

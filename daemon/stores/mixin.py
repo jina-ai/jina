@@ -4,8 +4,8 @@ from typing import Dict, Optional
 import aiohttp
 from jina.helper import T
 
-from ..excepts import PartialDaemon400Exception
-from ..helper import if_alive, error_msg_from
+from daemon.excepts import PartialDaemon400Exception
+from daemon.helper import if_alive, error_msg_from
 
 
 class AiohttpMixin:

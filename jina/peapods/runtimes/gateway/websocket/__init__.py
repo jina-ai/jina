@@ -3,9 +3,9 @@ import asyncio
 
 from jina import __default_host__
 
-from .....importer import ImportExtensions
-from .. import GatewayRuntime
-from .app import get_fastapi_app
+from jina.importer import ImportExtensions
+from jina.peapods.runtimes.gateway import GatewayRuntime
+from jina.peapods.runtimes.gateway.websocket.app import get_fastapi_app
 
 __all__ = ['WebSocketGatewayRuntime']
 
@@ -48,7 +48,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
                 """
                 await self.main_loop()
 
-        from .....helper import extend_rest_interface
+        from jina.helper import extend_rest_interface
 
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
         self._set_topology_graph()

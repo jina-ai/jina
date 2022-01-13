@@ -1,11 +1,11 @@
 """Module for helper functions for clients."""
 from typing import Tuple
 
-from ...enums import DataInputType
-from ...excepts import BadRequestType
-from docarray.document import Document
-from docarray import DocumentArray
-from ...types.request.data import DataRequest
+from docarray import DocumentArray, Document
+
+from jina.enums import DataInputType
+from jina.excepts import BadRequestType
+from jina.types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
@@ -26,7 +26,7 @@ def _new_data_request(endpoint, target, parameters):
     if endpoint:
         req.header.exec_endpoint = endpoint
     if target:
-        req.header.target_peapod = target
+        req.header.target_executor = target
     # add parameters field
     if parameters:
         req.parameters = parameters
@@ -70,7 +70,7 @@ def _add_docs(req, batch, data_type, _kwargs):
 
 
 def _add_control_propagate(req, kwargs):
-    from ...proto import jina_pb2
+    from jina.proto import jina_pb2
 
     extra_kwargs = kwargs[
         'extra_kwargs'
