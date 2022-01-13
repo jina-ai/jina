@@ -6,7 +6,7 @@ from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_pod_parser, set_gateway_parser
-from jina.orchestrate.pods.config import DockerComposeConfig
+from jina.orchestrate.pods.config.docker_compose import DockerComposeConfig
 
 
 @pytest.fixture(autouse=True)

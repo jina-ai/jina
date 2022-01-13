@@ -1,7 +1,7 @@
 import pytest
 
 from jina import __version__
-from jina.orchestrate.pods.config import (
+from jina.orchestrate.pods.config.helper import (
     get_base_executor_version,
     to_compatible_name,
 )
