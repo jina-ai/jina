@@ -82,9 +82,10 @@ class HTTPBaseClient(BaseClient):
                         raise ValueError(r_str)
 
                     # TODO: remove ugly hack
-                    temp = r_str['data']['docs']
-                    r_str['data']['docs'] = {}
-                    r_str['data']['docs']['docs'] = temp
+                    if 'data' in r_str and 'docs' in r_str['data']:
+                        temp = r_str['data']['docs']
+                        r_str['data']['docs'] = {}
+                        r_str['data']['docs']['docs'] = temp
                     resp = DataRequest(r_str)
                     callback_exec(
                         response=resp,

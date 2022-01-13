@@ -4,20 +4,14 @@ import time
 import pytest
 import requests
 
-from jina import Executor, DocumentArray, requests as req
+from jina import Executor, requests as req
 from jina import Flow, __windows__
 from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
 from jina.peapods.peas.factory import PeaFactory
-from docarray.proto.docarray_pb2 import DocumentProto
-from docarray.document.generators import (
-    from_csv,
-    from_ndjson,
-    from_files,
-    from_huggingface_datasets,
-)
+from docarray import Document, DocumentArray
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +43,7 @@ def test_img_2():
 
 
 @pytest.mark.parametrize(
-    'inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])]
+    'inputs', [iter([b'1234', b'45467']), iter([Document(), Document()])]
 )
 def test_check_input_success(inputs):
     client = Client(host='localhost', port_jinad=12345)
