@@ -188,9 +188,11 @@ class KeyValueIndexer(Executor):
     @requests(on='/search')
     def query(self, docs: DocumentArray, **kwargs):
         for doc in docs:
+            new_matches = DocumentArray()
             for match in doc.matches:
                 extracted_doc = self._docs[match.parent_id]
-                match.update(extracted_doc)
+                new_matches.append(extracted_doc)
+            doc.matches = new_matches
 
     def close(self):
         """
@@ -217,10 +219,17 @@ class WeightedRanker(Executor):
 
             final_matches = {}  # type: Dict[str, Document]
             for m in d_mod1.matches:
-                m.scores['relevance'].value = m.scores['cosine'].value * d_mod1.weight
+                print(f' match d_mod1 = {m.to_dict()}')
+                relevance_score = m.scores['cosine'].value * d_mod1.weight
+                print(f' relevance_score = {relevance_score}')
+                print(f' type m {type(m)}')
+                print(f' type scores {type(m.scores)}')
+                m.scores['relevance'] = m.scores['cosine']
+                m.scores['relevance'].value = relevance_score
                 final_matches[m.parent_id] = Document(m, copy=True)
 
             for m in d_mod2.matches:
+                print(f' match d_mod2 = {m.to_dict()}')
                 if m.parent_id in final_matches:
                     final_matches[m.parent_id].scores[
                         'relevance'
@@ -228,6 +237,7 @@ class WeightedRanker(Executor):
                         m.scores['cosine'].value * d_mod2.weight
                     )
                 else:
+                    m.scores['relevance'] = m.scores['cosine']
                     m.scores['relevance'].value = (
                         m.scores['cosine'].value * d_mod2.weight
                     )
