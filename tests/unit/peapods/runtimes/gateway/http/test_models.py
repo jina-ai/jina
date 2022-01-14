@@ -197,7 +197,6 @@ def test_jina_document_to_pydantic_document():
         jina_doc = jina_doc.to_dict()
         pydantic_doc = document_proto_model(**jina_doc)
 
-        print(jina_doc['embedding'])
         assert jina_doc['text'] == pydantic_doc.text
         assert jina_doc['mime_type'] == pydantic_doc.mime_type
         assert jina_doc['embedding'] == pydantic_doc.embedding

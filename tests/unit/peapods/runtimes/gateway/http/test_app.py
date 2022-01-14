@@ -6,9 +6,9 @@ import pytest
 import requests as req
 from fastapi.testclient import TestClient
 
-from jina import Document, Client
+from docarray import DocumentArray, Document
 from jina.helper import random_port
-from jina import Executor, requests, Flow, DocumentArray
+from jina import Executor, requests, Flow, Client
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
 from jina.peapods.networking import create_connection_pool
@@ -37,17 +37,18 @@ class TestExecutor(Executor):
 
 
 def test_tag_update():
-    PORT_EXPOSE = random_port()
+    port_expose = random_port()
 
-    f = Flow(port_expose=PORT_EXPOSE, protocol='http').add(uses=TestExecutor)
-
+    f = Flow(port_expose=port_expose, protocol='http').add(uses=TestExecutor)
+    d1 = Document(id='1', prop1='val')
+    d2 = Document(id='2', prop2='val')
     with f:
-        d1 = {"data": [{"id": "1", "prop1": "val"}]}
-        d2 = {"data": [{"id": "2", "prop2": "val"}]}
-        r1 = req.post(f'http://localhost:{PORT_EXPOSE}/index', json=d1)
-        assert r1.json()['data']['docs'][0]['tags'] == {'prop1': 'val'}
-        r2 = req.post(f'http://localhost:{PORT_EXPOSE}/index', json=d2)
-        assert r2.json()['data']['docs'][0]['tags'] == {'prop2': 'val'}
+        d1 = {'data': {'docs': [d1.to_dict()]}}
+        d2 = {'data': {'docs': [d2.to_dict()]}}
+        r1 = req.post(f'http://localhost:{port_expose}/index', json=d1)
+        r2 = req.post(f'http://localhost:{port_expose}/index', json=d2)
+    assert r1.json()['data']['docs'][0]['tags'] == {'prop1': 'val'}
+    assert r2.json()['data']['docs'][0]['tags'] == {'prop2': 'val'}
 
 
 @pytest.fixture

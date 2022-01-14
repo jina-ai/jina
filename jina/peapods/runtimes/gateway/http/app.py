@@ -169,8 +169,14 @@ def get_fastapi_app(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
         )
         async def foo(body: JinaRequestModel):
+            from jina.enums import DataInputType
+
+            print(f' body {body}')
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
+            if bd['data'] is not None:
+                bd['data'] = bd['data']['docs']
+                bd['data_type'] = DataInputType.DICT
 
             return await _get_singleton_result(request_generator(**bd))
 
