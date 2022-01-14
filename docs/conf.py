@@ -183,7 +183,7 @@ ogp_custom_meta_tags = [
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.2"></script>
+<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.3"></script>
     ''',
 ]
 
