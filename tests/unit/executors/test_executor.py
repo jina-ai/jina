@@ -45,9 +45,6 @@ def workspace(self) -> str:
     )
 
 
-@pytest.fixture
-def replica_id(request):
-    return request.param
 
 
 @pytest.fixture
@@ -70,11 +67,10 @@ def test_bad_metas_workspace(tmpdir):
 
 
 @pytest.fixture
-def test_metas_workspace_replica_peas(tmpdir, replica_id, shard_id):
+def test_metas_workspace_replica_peas(tmpdir, shard_id):
     metas = get_default_metas()
     metas['workspace'] = str(tmpdir)
     metas['name'] = 'test'
-    metas['replica_id'] = replica_id
     metas['shard_id'] = shard_id
     return metas
 
@@ -108,24 +104,23 @@ def test_executor_workspace_simple_workspace(tmpdir):
 
     executor = Executor(
         metas={'name': name, 'workspace': workspace},
-        runtime_args={'shard_id': 1, 'replica_id': 2},
+        runtime_args={'shard_id': 1},
     )
     assert executor.workspace == os.path.abspath(
-        os.path.join(workspace, name, '2', '1')
+        os.path.join(workspace, name, '1')
     )
 
     executor = Executor(
         metas={'name': name},
-        runtime_args={'workspace': workspace, 'shard_id': 1, 'replica_id': 2},
+        runtime_args={'workspace': workspace, 'shard_id': 1},
     )
     assert executor.workspace == os.path.abspath(
-        os.path.join(workspace, name, '2', '1')
+        os.path.join(workspace, name, '1')
     )
 
 
-@pytest.mark.parametrize('replica_id', [0, 1, 2], indirect=True)
 @pytest.mark.parametrize('shard_id', [0, 1, 2], indirect=True)
-def test_executor_workspace(test_metas_workspace_replica_peas, replica_id, shard_id):
+def test_executor_workspace(test_metas_workspace_replica_peas, shard_id):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_peas['name']},
         runtime_args=test_metas_workspace_replica_peas,
@@ -134,16 +129,14 @@ def test_executor_workspace(test_metas_workspace_replica_peas, replica_id, shard
         os.path.join(
             test_metas_workspace_replica_peas['workspace'],
             test_metas_workspace_replica_peas['name'],
-            str(replica_id),
             str(shard_id),
         )
     )
 
 
-@pytest.mark.parametrize('replica_id', [0, 1, 2], indirect=True)
 @pytest.mark.parametrize('shard_id', [None, -1], indirect=True)
 def test_executor_workspace_parent_replica_nopea(
-    test_metas_workspace_replica_peas, replica_id, shard_id
+    test_metas_workspace_replica_peas, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_peas['name']},
@@ -153,15 +146,13 @@ def test_executor_workspace_parent_replica_nopea(
         os.path.join(
             test_metas_workspace_replica_peas['workspace'],
             test_metas_workspace_replica_peas['name'],
-            str(replica_id),
         )
     )
 
 
-@pytest.mark.parametrize('replica_id', [None, -1], indirect=True)
 @pytest.mark.parametrize('shard_id', [0, 1, 2], indirect=True)
 def test_executor_workspace_parent_noreplica_pea(
-    test_metas_workspace_replica_peas, replica_id, shard_id
+    test_metas_workspace_replica_peas, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_peas['name']},
@@ -176,10 +167,9 @@ def test_executor_workspace_parent_noreplica_pea(
     )
 
 
-@pytest.mark.parametrize('replica_id', [None, -1], indirect=True)
 @pytest.mark.parametrize('shard_id', [None, -1], indirect=True)
 def test_executor_workspace_parent_noreplica_nopea(
-    test_metas_workspace_replica_peas, replica_id, shard_id
+    test_metas_workspace_replica_peas, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_peas['name']},
