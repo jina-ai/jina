@@ -76,7 +76,7 @@ def test_dump_dbms_remote(docker_compose):
         data=[],
         exec_endpoint='/dump',
         params={'shards': SHARDS, 'dump_path': DUMP_PATH_DOCKER},
-        target_peapod='indexer_dbms',
+        target_executor='indexer_dbms',
     )
 
     container_id = client.flows.get(dbms_flow_id)['metadata']['container_id']
@@ -119,15 +119,15 @@ def _send_rest_request(
     data,
     exec_endpoint=None,
     params=None,
-    target_peapod=None,
+    target_executor=None,
     timeout=13,
     ip='0.0.0.0',
 ):
     json = {'data': data}
     if params:
         json['parameters'] = params
-    if target_peapod:
-        json['target_peapod'] = target_peapod
+    if target_executor:
+        json['target_executor'] = target_executor
     url = f'http://{ip}:{port}/{endpoint}'
     if endpoint == 'post':
         json['exec_endpoint'] = exec_endpoint

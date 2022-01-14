@@ -2,8 +2,8 @@ import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple, Union, List
 
-from ....networking import K8sGrpcConnectionPool
-from . import kubernetes_tools
+from jina.peapods.networking import K8sGrpcConnectionPool
+from jina.peapods.pods.config.k8slib import kubernetes_tools
 
 
 def get_deployment_yamls(

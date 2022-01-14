@@ -1,5 +1,5 @@
 """Argparser module for container runtimes"""
-from ...helper import add_arg_group, KVAppendAction
+from jina.parsers.helper import add_arg_group, KVAppendAction
 
 
 def mixin_container_runtime_parser(parser):

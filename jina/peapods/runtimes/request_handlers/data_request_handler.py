@@ -1,17 +1,14 @@
 from typing import Dict, List, TYPE_CHECKING, Optional
 
-from .... import __default_endpoint__, __default_executor__
-from ....excepts import (
-    ExecutorFailToLoad,
-    BadConfigSource,
-)
-from ....executors import BaseExecutor
-from .... import DocumentArray, DocumentArrayMemmap
-from ....types.request.data import DataRequest
+from jina import __default_endpoint__
+from jina.excepts import ExecutorFailToLoad, BadConfigSource
+from jina.executors import BaseExecutor
+from jina import DocumentArray, DocumentArrayMemmap
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import argparse
-    from ....logging.logger import JinaLogger
+    from jina.logging.logger import JinaLogger
 
 
 class DataRequestHandler:
@@ -146,12 +143,12 @@ class DataRequestHandler:
         """
         if len(requests) <= 1:
             return
-        existing_pod_routes = [r.pod for r in requests[0].routes]
+        existing_executor_routes = [r.executor for r in requests[0].routes]
         for request in requests[1:]:
             for route in request.routes:
-                if route.pod not in existing_pod_routes:
+                if route.executor not in existing_executor_routes:
                     requests[0].routes.append(route)
-                    existing_pod_routes.append(route.pod)
+                    existing_executor_routes.append(route.executor)
 
     def close(self):
         """ Close the data request handler, by closing the executor """

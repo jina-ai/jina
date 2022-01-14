@@ -2,7 +2,7 @@ from typing import Dict
 
 from pydantic import Field
 
-from .base import StoreItem, StoreStatus
+from daemon.models.base import StoreItem, StoreStatus
 
 
 class PartialStoreItem(StoreItem):

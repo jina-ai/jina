@@ -6,14 +6,14 @@ import multiprocessing
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Union, Optional
 
-from . import BasePea
-from .helper import _get_worker, is_ready
-from ...helper import run_async
-from ...jaml.helper import complete_path
-from ...importer import ImportExtensions
-from ...enums import replace_enum_to_str
-from ...logging.logger import JinaLogger
-from ...excepts import (
+from jina.peapods.peas import BasePea
+from jina.peapods.peas.helper import _get_worker, is_ready
+from jina.helper import run_async
+from jina.jaml.helper import complete_path
+from jina.importer import ImportExtensions
+from jina.enums import replace_enum_to_str
+from jina.logging.logger import JinaLogger
+from jina.excepts import (
     DaemonConnectivityError,
     DaemonPeaCreationFailed,
     DaemonWorkspaceCreationFailed,

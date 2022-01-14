@@ -1,6 +1,6 @@
 from typing import Any, Optional, Sequence, List, Dict, Union, TYPE_CHECKING
 
-from ..jaml import JAML, JAMLCompatible
+from jina.jaml import JAML, JAMLCompatible
 
 if TYPE_CHECKING:
     from optuna.trial import Trial

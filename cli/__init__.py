@@ -47,7 +47,7 @@ def _get_run_args(print_args: bool = True):
 
 
 def _quick_ac_lookup():
-    from .autocomplete import ac_table
+    from cli.autocomplete import ac_table
 
     if len(sys.argv) > 1:
         if sys.argv[1] == 'commands':
@@ -104,7 +104,7 @@ def main():
     """The main entrypoint of the CLI """
     _quick_ac_lookup()
 
-    from . import api
+    from cli import api
 
     args = _get_run_args()
 

@@ -4,14 +4,14 @@ import grpc
 
 from jina import __default_host__
 
-from .....proto import jina_pb2_grpc
-from .. import GatewayRuntime
-from ....stream import RequestStreamer
-from ..request_handling import handle_request, handle_result
+from jina.proto import jina_pb2_grpc
+from jina.peapods.runtimes.gateway import GatewayRuntime
+from jina.peapods.stream import RequestStreamer
+from jina.peapods.runtimes.gateway.request_handling import handle_request, handle_result
 
 __all__ = ['GRPCGatewayRuntime']
 
-from .....types.request.control import ControlRequest
+from jina.types.request.control import ControlRequest
 
 
 class GRPCGatewayRuntime(GatewayRuntime):

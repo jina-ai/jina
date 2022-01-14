@@ -24,23 +24,19 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from .builder import allowed_levels, _hanging_pods
-from .. import __default_host__, helper
-from ..clients import Client
-from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import (
+from jina.flow.builder import allowed_levels, _hanging_pods
+from jina import __default_host__, helper
+from jina.clients import Client
+from jina.clients.mixin import AsyncPostMixin, PostMixin
+from jina.enums import (
     FlowBuildLevel,
     PodRoleType,
     FlowInspectType,
     GatewayProtocolType,
     PollingType,
 )
-from ..excepts import (
-    FlowTopologyError,
-    FlowMissingPodError,
-    RuntimeFailToStart,
-)
-from ..helper import (
+from jina.excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
+from jina.helper import (
     colored,
     get_public_ip,
     get_internal_ip,
@@ -49,11 +45,11 @@ from ..helper import (
     download_mermaid_url,
     CatchAllCleanupContextManager,
 )
-from ..jaml import JAMLCompatible
-from ..logging.logger import JinaLogger
-from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
-from ..parsers.flow import set_flow_parser
-from ..peapods import Pod
+from jina.jaml import JAMLCompatible
+from jina.logging.logger import JinaLogger
+from jina.parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
+from jina.parsers.flow import set_flow_parser
+from jina.peapods import Pod
 
 __all__ = ['Flow']
 
@@ -67,9 +63,9 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 if TYPE_CHECKING:
-    from ..executors import BaseExecutor
-    from ..clients.base import BaseClient
-    from .asyncio import AsyncFlow
+    from jina.executors import BaseExecutor
+    from jina.clients.base import BaseClient
+    from jina.flow.asyncio import AsyncFlow
 
 GATEWAY_NAME = 'gateway'
 FALLBACK_PARSERS = [
@@ -333,8 +329,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger = JinaLogger(self.__class__.__name__, **self._common_kwargs)
 
     def _update_args(self, args, **kwargs):
-        from ..parsers.flow import set_flow_parser
-        from ..helper import ArgNamespace
+        from jina.parsers.flow import set_flow_parser
+        from jina.helper import ArgNamespace
 
         _flow_parser = set_flow_parser()
         if args is None:
@@ -353,7 +349,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._common_kwargs.get('asyncio', False) and not isinstance(
             self, AsyncPostMixin
         ):
-            from .asyncio import AsyncFlow
+            from jina.flow.asyncio import AsyncFlow
 
             self.__class__ = AsyncFlow
 
@@ -452,8 +448,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _get_k8s_pod_addresses(self, k8s_namespace: str) -> Dict[str, List[str]]:
         graph_dict = {}
-        from ..peapods.networking import K8sGrpcConnectionPool
-        from ..peapods.pods.config.helper import to_compatible_name
+        from jina.peapods.networking import K8sGrpcConnectionPool
+        from jina.peapods.pods.config.helper import to_compatible_name
 
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
@@ -469,8 +465,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _get_docker_compose_pod_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from ..peapods.pods.config.docker_compose import PORT_IN
-        from ..peapods.pods.config.helper import to_compatible_name
+        from jina.peapods.pods.config.docker_compose import PORT_IN
+        from jina.peapods.pods.config.helper import to_compatible_name
 
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
@@ -565,7 +561,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
         port_in: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
@@ -628,9 +623,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param peas_hosts: The hosts of the peas when shards greater than 1.
-                  Peas will be evenly distributed among the hosts. By default,
-                  peas are running on host provided by the argument ``host``
         :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Pod or by endpoint.
               Define per Pod:
@@ -1679,7 +1671,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param pod_name: pod to update
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
-        from ..helper import run_async
+        from jina.helper import run_async
 
         run_async(
             self._pod_nodes[pod_name].rolling_update,
@@ -1704,7 +1696,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        from ..peapods.pods.config.k8s import K8sPodConfig
+        from jina.peapods.pods.config.k8s import K8sPodConfig
 
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
@@ -1744,7 +1736,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
-        from ..peapods.pods.config.docker_compose import DockerComposeConfig
+        from jina.peapods.pods.config.docker_compose import DockerComposeConfig
 
         docker_compose_dict = {
             'version': '3.3',
@@ -1781,7 +1773,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # TODO when replicas-host is ready, needs to be passed here
 
-        from ..helper import run_async
+        from jina.helper import run_async
 
         run_async(
             self._pod_nodes[pod_name].scale,

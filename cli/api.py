@@ -142,7 +142,7 @@ def export_api(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     import json
-    from .export import api_to_dict
+    from cli.export import api_to_dict
     from jina.jaml import JAML
     from jina import __version__
     from jina.logging.predefined import default_logger
@@ -242,6 +242,6 @@ def help(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from .lookup import lookup_and_print
+    from cli.lookup import lookup_and_print
 
     lookup_and_print(args.query.lower())

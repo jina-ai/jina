@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING, Optional
 
 import grpc
 
-from ..base import BaseClient
-from ..helper import callback_exec
-from ...excepts import BadClient, BadClientInput
-from ...logging.profile import ProgressBar
-from ...proto import jina_pb2_grpc
-from ...peapods.networking import GrpcConnectionPool
+from jina.clients.base import BaseClient
+from jina.clients.helper import callback_exec
+from jina.excepts import BadClient, BadClientInput
+from jina.logging.profile import ProgressBar
+from jina.proto import jina_pb2_grpc
+from jina.peapods.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
-    from . import InputType, CallbackFnType
+    from jina.clients.base import InputType, CallbackFnType
 
 
 class GRPCBaseClient(BaseClient):

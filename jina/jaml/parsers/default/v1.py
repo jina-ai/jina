@@ -1,7 +1,7 @@
 from typing import Dict, Type
 
-from ..base import VersionedYAMLParser
-from ... import JAMLCompatible, JAML
+from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.jaml import JAMLCompatible, JAML
 
 
 class V1Parser(VersionedYAMLParser):

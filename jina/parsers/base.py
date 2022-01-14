@@ -1,7 +1,7 @@
 """Module containing the base parser for arguments of Jina."""
 import argparse
 
-from .helper import _chf
+from jina.parsers.helper import _chf
 
 
 def set_base_parser():
@@ -9,8 +9,8 @@ def set_base_parser():
 
     :return: the parser
     """
-    from .. import __version__
-    from ..helper import colored, get_full_version, format_full_version_info
+    from jina import __version__
+    from jina.helper import colored, get_full_version, format_full_version_info
 
     # create the top-level parser
     urls = {

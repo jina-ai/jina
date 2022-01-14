@@ -1,5 +1,5 @@
-from .base.http import HTTPBaseClient
-from .mixin import AsyncPostMixin, PostMixin
+from jina.clients.base.http import HTTPBaseClient
+from jina.clients.mixin import AsyncPostMixin, PostMixin
 
 
 class HTTPClient(HTTPBaseClient, PostMixin):

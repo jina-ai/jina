@@ -6,7 +6,7 @@ from jina import __resources_path__, __default_host__
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 from jina.parsers.peapods.base import mixin_base_ppr_parser
-from .models.enums import PartialDaemonModes
+from daemon.models.enums import PartialDaemonModes
 
 
 def mixin_daemon_parser(parser):
@@ -98,7 +98,7 @@ def _get_run_args(print_args: bool = True):
     :return: jinad args
     """
     from jina.helper import colored
-    from . import daemon_logger
+    from daemon import daemon_logger
 
     parser = get_main_parser()
     from argparse import _StoreAction, _StoreTrueAction

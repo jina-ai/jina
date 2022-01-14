@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING, Dict, Optional
 
 from jina.helper import colored
-from .base import BaseStore
-from .mixin import AiohttpMixin
-from .containers import ContainerStore
+from daemon.stores.base import BaseStore
+from daemon.stores.mixin import AiohttpMixin
+from daemon.stores.containers import ContainerStore
 
 if TYPE_CHECKING:
-    from ..models import DaemonID
+    from daemon.models import DaemonID
 
 
 class FlowStore(ContainerStore, AiohttpMixin):

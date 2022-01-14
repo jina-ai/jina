@@ -1,5 +1,5 @@
 """Argparser module for pinging"""
-from .base import set_base_parser
+from jina.parsers.base import set_base_parser
 
 
 def set_ping_parser(parser=None):

@@ -5,10 +5,16 @@ import os
 from types import SimpleNamespace
 from typing import Dict, Optional, Type, List
 
-from .decorators import store_init_kwargs, wrap_func, requests
-from .. import __default_endpoint__, __args_executor_init__
-from ..helper import typename, ArgNamespace, T, iscoroutinefunction, run_in_threadpool
-from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
+from jina.executors.decorators import store_init_kwargs, wrap_func, requests
+from jina import __default_endpoint__, __args_executor_init__
+from jina.helper import (
+    typename,
+    ArgNamespace,
+    T,
+    iscoroutinefunction,
+    run_in_threadpool,
+)
+from jina.jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
 
 if TYPE_CHECKING:
@@ -136,7 +142,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     )
 
     def _add_metas(self, _metas: Optional[Dict]):
-        from .metas import get_default_metas
+        from jina.executors.metas import get_default_metas
 
         tmp = get_default_metas()
 
@@ -273,12 +279,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param kwargs: other kwargs accepted by the CLI ``jina hub pull``
         :return: the Hub Executor object.
         """
-        from ..hubble.helper import is_valid_huburi
+        from jina.hubble.helper import is_valid_huburi
 
         _source = None
         if is_valid_huburi(uri):
-            from ..hubble.hubio import HubIO
-            from ..parsers.hubble import set_hub_pull_parser
+            from jina.hubble.hubio import HubIO
+            from jina.parsers.hubble import set_hub_pull_parser
 
             _args = ArgNamespace.kwargs2namespace(
                 {'no_usage': True, **kwargs},

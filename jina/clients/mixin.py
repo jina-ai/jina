@@ -1,12 +1,12 @@
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 
-from ..helper import run_async
+from jina.helper import run_async
 
 if TYPE_CHECKING:
-    from .base import CallbackFnType, InputType
-    from ..types.request import Response
-    from .. import DocumentArray
+    from jina.clients.base import CallbackFnType, InputType
+    from jina.types.request import Response
+    from jina import DocumentArray
 
 
 class PostMixin:
@@ -20,7 +20,7 @@ class PostMixin:
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
         parameters: Optional[Dict] = None,
-        target_peapod: Optional[str] = None,
+        target_executor: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
         continue_on_error: bool = False,
@@ -35,7 +35,7 @@ class PostMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
-        :param target_peapod: a regex string. Only matching Executors will process the request.
+        :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
@@ -44,8 +44,8 @@ class PostMixin:
         :return: None or DocumentArray containing all response Documents
 
         .. warning::
-            ``target_peapod`` uses ``re.match`` for checking if the pattern is matched.
-             ``target_peapod=='foo'`` will match both pods with the name ``foo`` and ``foo_what_ever_suffix``.
+            ``target_executor`` uses ``re.match`` for checking if the pattern is matched.
+             ``target_executor=='foo'`` will match both pods with the name ``foo`` and ``foo_what_ever_suffix``.
         """
 
         async def _get_results(*args, **kwargs):
@@ -77,7 +77,7 @@ class PostMixin:
             on_error=on_error,
             on_always=on_always,
             exec_endpoint=on,
-            target_peapod=target_peapod,
+            target_executor=target_executor,
             parameters=parameters,
             request_size=request_size,
             **kwargs,
@@ -101,7 +101,7 @@ class AsyncPostMixin:
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
         parameters: Optional[Dict] = None,
-        target_peapod: Optional[str] = None,
+        target_executor: Optional[str] = None,
         request_size: int = 100,
         show_progress: bool = False,
         continue_on_error: bool = False,
@@ -115,7 +115,7 @@ class AsyncPostMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
-        :param target_peapod: a regex string. Only matching Executors will process the request.
+        :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
@@ -131,7 +131,7 @@ class AsyncPostMixin:
             on_error=on_error,
             on_always=on_always,
             exec_endpoint=on,
-            target_peapod=target_peapod,
+            target_executor=target_executor,
             parameters=parameters,
             request_size=request_size,
             **kwargs,

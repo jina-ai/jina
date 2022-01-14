@@ -10,14 +10,16 @@ from typing import Optional, Union, List, Tuple, Dict
 
 import grpc
 
-from ..asyncio import AsyncNewLoopRuntime
-from ..request_handlers.data_request_handler import DataRequestHandler
-from ...networking import create_connection_pool, K8sGrpcConnectionPool
-from ....enums import PollingType
-from ....proto import jina_pb2_grpc
-from ....types.request.control import ControlRequest
-from ....types.request.data import DataRequest
-from .... import __default_executor__
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.peapods.runtimes.request_handlers.data_request_handler import (
+    DataRequestHandler,
+)
+from jina.peapods.networking import create_connection_pool, K8sGrpcConnectionPool
+from jina.enums import PollingType
+from jina.proto import jina_pb2_grpc
+from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest
+from jina import __default_executor__
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):

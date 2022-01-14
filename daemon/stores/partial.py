@@ -11,9 +11,9 @@ from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
-from .. import jinad_args, __partial_workspace__
-from ..models.ports import Ports, PortMappings
-from ..models.partial import PartialFlowItem, PartialStoreItem
+from daemon import jinad_args, __partial_workspace__
+from daemon.models.ports import Ports, PortMappings
+from daemon.models.partial import PartialFlowItem, PartialStoreItem
 
 
 class PartialStore(ABC):

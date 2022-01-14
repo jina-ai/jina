@@ -11,13 +11,13 @@ from typing import (
     Awaitable,
 )
 
-from .helper import AsyncRequestsIterator
-from ...logging.logger import JinaLogger
+from jina.peapods.stream.helper import AsyncRequestsIterator
+from jina.logging.logger import JinaLogger
 
 __all__ = ['RequestStreamer']
 
 if TYPE_CHECKING:
-    from ...types.request import Request
+    from jina.types.request import Request
 
 
 class RequestStreamer:

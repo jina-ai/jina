@@ -9,10 +9,10 @@ from fastapi import UploadFile
 
 from jina.logging.logger import JinaLogger
 from jina.excepts import DaemonInvalidDockerfile
-from . import __rootdir__, __dockerfiles__, jinad_args
-from .helper import get_workspace_path
-from .models import DaemonID
-from .models.enums import DaemonDockerfile, PythonVersion
+from daemon import __rootdir__, __dockerfiles__, jinad_args
+from daemon.helper import get_workspace_path
+from daemon.models import DaemonID
+from daemon.models.enums import DaemonDockerfile, PythonVersion
 
 
 def store_files_in_workspace(

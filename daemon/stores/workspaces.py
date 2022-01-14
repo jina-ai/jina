@@ -5,10 +5,10 @@ from typing import Union
 
 from jina.enums import RemoteWorkspaceState
 from jina.helper import colored
-from .base import BaseStore
-from ..dockerize import Dockerizer
-from ..models import DaemonID
-from ..models.workspaces import (
+from daemon.stores.base import BaseStore
+from daemon.dockerize import Dockerizer
+from daemon.models import DaemonID
+from daemon.models.workspaces import (
     WorkspaceArguments,
     WorkspaceItem,
     WorkspaceMetadata,
@@ -166,7 +166,7 @@ class WorkspaceStore(BaseStore):
 
         # Peas/Pods/Flows need to be deleted before networks, files etc can be deleted
         if everything and self[id].metadata:
-            from . import get_store_from_id
+            from daemon.stores import get_store_from_id
 
             ids_to_delete = list(self[id].metadata.managed_objects)
             for managed_object in ids_to_delete:

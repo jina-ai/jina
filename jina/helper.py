@@ -32,7 +32,7 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from . import __windows__
+from jina import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -80,7 +80,7 @@ def deprecated_alias(**aliases):
     :param aliases: maps aliases to new arguments
     :return: wrapper
     """
-    from .excepts import NotSupportedError
+    from jina.excepts import NotSupportedError
 
     def _rename_kwargs(func_name: str, kwargs, aliases):
         """
@@ -691,7 +691,7 @@ def warn_unknown_args(unknown_args: List[str]):
     warn_strs = []
     for arg in unknown_args:
         if arg.replace('--', '') not in all_args:
-            from .parsers.deprecated import get_deprecated_replacement
+            from jina.parsers.deprecated import get_deprecated_replacement
 
             new_arg = get_deprecated_replacement(arg)
             if new_arg:
@@ -718,7 +718,7 @@ class ArgNamespace:
         :return: argument list
         """
         args = []
-        from .executors import BaseExecutor
+        from jina.executors import BaseExecutor
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
@@ -824,7 +824,7 @@ def is_valid_local_config_source(path: str) -> bool:
     :return: True if the path is valid else False.
     """
     try:
-        from .jaml import parse_config_source
+        from jina.jaml import parse_config_source
 
         parse_config_source(path)
         return True
@@ -839,7 +839,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     :return: Version information and environment variables
     """
     import os, grpc, google.protobuf, yaml, platform
-    from . import (
+    from jina import (
         __version__,
         __proto_version__,
         __docarray_version__,
@@ -1228,7 +1228,7 @@ def run_async(func, *args, **kwargs):
             try:
                 return thread.result
             except AttributeError:
-                from .excepts import BadClient
+                from jina.excepts import BadClient
 
                 raise BadClient(
                     'something wrong when running the eventloop, result can not be retrieved'
@@ -1298,7 +1298,7 @@ def find_request_binding(target):
     :return: a dictionary with key as request type and value as method name
     """
     import ast, inspect
-    from . import __default_endpoint__
+    from jina import __default_endpoint__
 
     res = {}
 

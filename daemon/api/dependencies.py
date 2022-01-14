@@ -8,19 +8,20 @@ from fastapi import HTTPException, UploadFile, File, Query, Depends
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 
+from jina.peapods.peas.container_helper import get_gpu_device_requests
+from jina.peapods.peas.helper import update_runtime_cls
 from jina import Flow
 from jina.enums import (
     RemoteWorkspaceState,
     PeaRoleType,
 )
 from jina.helper import cached_property
-from jina.peapods.peas.container_helper import get_gpu_device_requests
-from jina.peapods.peas.helper import update_runtime_cls
-from .. import daemon_logger
-from ..helper import get_workspace_path, change_cwd, change_env
-from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
-from ..models.ports import Ports, PortMapping, PortMappings
-from ..stores import workspace_store as store
+
+from daemon import daemon_logger
+from daemon.helper import get_workspace_path, change_cwd, change_env
+from daemon.models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
+from daemon.models.ports import Ports, PortMapping, PortMappings
+from daemon.stores import workspace_store as store
 
 
 class Environment:
@@ -283,7 +284,7 @@ class WorkspaceDepends:
         self.id = id if id else DaemonID('jworkspace')
         self.files = files
 
-        from ..tasks import __task_queue__
+        from daemon.tasks import __task_queue__
 
         if self.id not in store:
             # when id doesn't exist in store, create it.

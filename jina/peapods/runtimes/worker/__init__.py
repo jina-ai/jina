@@ -7,13 +7,13 @@ from typing import Optional, Union, List
 
 import grpc
 
-from ..asyncio import AsyncNewLoopRuntime
-from ..request_handlers.data_request_handler import (
+from jina.peapods.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.peapods.runtimes.request_handlers.data_request_handler import (
     DataRequestHandler,
 )
-from ....proto import jina_pb2_grpc
-from ....types.request.control import ControlRequest
-from ....types.request.data import DataRequest
+from jina.proto import jina_pb2_grpc
+from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
