@@ -297,15 +297,15 @@ def test_scale_after_rolling_update(docs, replicas, scale_to):
 
     replicas_before = set()
     for r in ret1:
-        for replica_id in r.docs.get_attributes('tags__replica'):
-            replicas_before.add(replica_id)
+        for replica in r.docs.get_attributes('tags__replica'):
+            replicas_before.add(replica)
 
     assert len(replicas_before) == replicas
 
     replicas_after = set()
     for r in ret2:
-        for replica_id in r.docs.get_attributes('tags__replica'):
-            replicas_after.add(replica_id)
+        for replica in r.docs.get_attributes('tags__replica'):
+            replicas_after.add(replica)
     assert len(replicas_after) == scale_to
 
 
