@@ -42,20 +42,16 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
         )
 
     assert len(ret1) == 20
-    replica_ids = set()
+    unique_replicas = set()
     shard_ids = set()
     for r in ret1:
         assert len(r.docs) == 10
-        for replica_id in r.docs.get_attributes('tags__replica_id'):
-            replica_ids.add(replica_id)
+        for replica in r.docs.get_attributes('tags__replica'):
+            unique_replicas.add(replica)
         for shard_id in r.docs.get_attributes('tags__shard_id'):
             shard_ids.add(shard_id)
         for doc in r.docs:
             assert doc.tags['shards'] == shards
 
     assert shard_ids == set(range(shards))
-
-    if replicas > 1:
-        assert replica_ids == set(range(replicas))
-    else:
-        assert replica_ids == {-1.0}
+    assert len(unique_replicas) == replicas * shards
