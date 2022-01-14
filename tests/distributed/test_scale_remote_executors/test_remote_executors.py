@@ -159,7 +159,5 @@ def test_scale_with_concurrent_client(
 
     assert len(rv) == 5
 
-    replicas = []
     for r in rv:
         assert len(r.docs) == 1
-        replicas.append(r.docs[0].tags['replica_id'])
