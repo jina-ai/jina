@@ -54,6 +54,7 @@ class MockExecutor(Executor):
             doc.tags['tag'] = 'test'
 
 
+@pytest.mark.skip('to get back when pydantic models are back')
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
     with Flow(

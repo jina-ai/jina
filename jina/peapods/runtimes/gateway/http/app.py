@@ -171,7 +171,6 @@ def get_fastapi_app(
         async def foo(body: JinaRequestModel):
             from jina.enums import DataInputType
 
-            print(f' body {body}')
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
             if bd['data'] is not None:

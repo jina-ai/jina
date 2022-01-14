@@ -13,7 +13,7 @@ PARAMS = {'top_k': 10}
 
 
 def rest_post(f, endpoint, documents):
-    data = [d.to_dict() for d in documents]
+    data = {'docs': [d.to_dict() for d in documents]}
     if endpoint == 'delete':
         method = 'delete'
     elif endpoint == 'update':

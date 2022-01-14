@@ -18,6 +18,31 @@ num_docs_evaluated = 0
 evaluation_value = defaultdict(float)
 
 
+def get_groundtruths(target, pseudo_match=False):
+    # group doc_ids by their labels
+    a = np.squeeze(target['index-labels']['data'])
+    a = np.stack([a, np.arange(len(a))], axis=1)
+    a = a[a[:, 0].argsort()]
+    lbl_group = np.split(a[:, 1], np.unique(a[:, 0], return_index=True)[1][1:])
+
+    # each label has one groundtruth, i.e. all docs that have the same label are considered as matches
+    groundtruths = {lbl: Document(tags={'id': -1}) for lbl in range(10)}
+    for lbl, doc_ids in enumerate(lbl_group):
+        if not pseudo_match:
+            # full-match, each doc has 6K matches
+            for doc_id in doc_ids:
+                match = Document()
+                match.tags['id'] = int(doc_id)
+                groundtruths[lbl].matches.append(match)
+        else:
+            # pseudo-match, each doc has only one match, but this match's id is a list of 6k elements
+            match = Document()
+            match.tags['id'] = doc_ids.tolist()
+            groundtruths[lbl].matches.append(match)
+
+    return groundtruths
+
+
 def index_generator(num_docs: int, target: dict):
     """
     Generate the index data.
@@ -51,24 +76,47 @@ def query_generator(num_docs: int, target: dict):
         x_blackwhite = 255 - target['query']['data'][idx]
         # x_color.shape is (28,28,3)
         x_color = np.stack((x_blackwhite,) * 3, axis=-1)
-        d = Document(content=x_color)
+        d = Document(
+            content=x_color,
+            tags={
+                'id': -1,
+                'query_label': float(target['query-labels']['data'][idx][0]),
+            },
+        )
 
         yield d
 
 
-def print_result(resp):
+def print_result(groundtruths, resp):
+    from docarray import DocumentArray
+
+    global top_k
+    global evaluation_value
     """
     Callback function to receive results.
 
     :param resp: returned response with data
     """
-    global top_k
-    global evaluation_value
-    for d in resp.docs:
-        vi = d.uri
+    queries = DocumentArray()
+    queries.extend(resp.docs)
+
+    gts = DocumentArray()
+    for query in queries:
+        gt = groundtruths[query.tags['query_label']]
+        gts.append(gt)
+
+    queries.evaluate(
+        gts, metric='recall_at_k', hash_fn=lambda d: d.tags['id'], top_k=50
+    )
+    queries.evaluate(
+        gts, metric='precision_at_k', hash_fn=lambda d: d.tags['id'], top_k=50
+    )
+    for query in queries:
+        vi = query.uri
+
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
-        top_k = len(d.matches)
-        for kk in d.matches:
+        top_k = len(query.matches)
+        for kk in query.matches:
             kmi = kk.uri
             result_html.append(
                 f'<img src="{kmi}" style="opacity:{kk.scores["cosine"].value}"/>'
@@ -77,7 +125,7 @@ def print_result(resp):
 
         # update evaluation values
         # as evaluator set to return running avg, here we can simply replace the value
-        for k, evaluation in d.evaluations.items():
+        for k, evaluation in query.evaluations.items():
             evaluation_value[k] = evaluation.value
 
 
@@ -95,11 +143,11 @@ def write_html(html_path):
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
         t = t.replace(
             '{% PRECISION_EVALUATION %}',
-            '{:.2f}%'.format(evaluation_value['Precision'] * 100.0),
+            '{:.2f}%'.format(evaluation_value['precision_at_k'] * 100.0),
         )
         t = t.replace(
             '{% RECALL_EVALUATION %}',
-            '{:.2f}%'.format(evaluation_value['Recall'] * 100.0),
+            '{:.2f}%'.format(evaluation_value['recall_at_k'] * 100.0),
         )
         t = t.replace('{% TOP_K %}', str(top_k))
         fw.write(t)

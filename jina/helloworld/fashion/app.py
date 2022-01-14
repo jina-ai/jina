@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from functools import partial
 
 from jina import Flow
 from jina.parsers.helloworld import set_hw_parser
@@ -11,6 +12,7 @@ if __name__ == '__main__':
         download_data,
         index_generator,
         query_generator,
+        get_groundtruths,
     )
 else:
     from .helper import (
@@ -19,6 +21,7 @@ else:
         download_data,
         index_generator,
         query_generator,
+        get_groundtruths,
     )
     from .my_executors import MyEncoder, MyIndexer
 
@@ -81,11 +84,14 @@ def hello_world(args):
             show_progress=True,
         )
 
+        groundtruths = get_groundtruths(targets)
+        evaluate_print_callback = partial(print_result, groundtruths)
+        evaluate_print_callback.__name__ = 'evaluate_print_callback'
         f.post(
-            '/eval',
+            '/search',
             query_generator(num_docs=args.num_query, target=targets),
             shuffle=True,
-            on_done=print_result,
+            on_done=evaluate_print_callback,
             parameters={'top_k': args.top_k},
             show_progress=True,
         )
