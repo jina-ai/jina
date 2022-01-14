@@ -11,7 +11,10 @@ class ReplicatedExec(Executor):
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-            doc.tags['replica'] = self.docker_id  # identify replicas via docker container id
+            doc.tags[
+                'replica'
+            ] = self.docker_id  # identify replicas via docker container id
+
             doc.tags['shard_id'] = self.shard_id
             doc.tags['shards'] = self.shards
 

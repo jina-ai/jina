@@ -45,8 +45,6 @@ def workspace(self) -> str:
     )
 
 
-
-
 @pytest.fixture
 def shard_id(request):
     return request.param
@@ -106,17 +104,13 @@ def test_executor_workspace_simple_workspace(tmpdir):
         metas={'name': name, 'workspace': workspace},
         runtime_args={'shard_id': 1},
     )
-    assert executor.workspace == os.path.abspath(
-        os.path.join(workspace, name, '1')
-    )
+    assert executor.workspace == os.path.abspath(os.path.join(workspace, name, '1'))
 
     executor = Executor(
         metas={'name': name},
         runtime_args={'workspace': workspace, 'shard_id': 1},
     )
-    assert executor.workspace == os.path.abspath(
-        os.path.join(workspace, name, '1')
-    )
+    assert executor.workspace == os.path.abspath(os.path.join(workspace, name, '1'))
 
 
 @pytest.mark.parametrize('shard_id', [0, 1, 2], indirect=True)
@@ -125,6 +119,7 @@ def test_executor_workspace(test_metas_workspace_replica_peas, shard_id):
         metas={'name': test_metas_workspace_replica_peas['name']},
         runtime_args=test_metas_workspace_replica_peas,
     )
+
     assert executor.workspace == os.path.abspath(
         os.path.join(
             test_metas_workspace_replica_peas['workspace'],
