@@ -143,7 +143,8 @@ def get_fastapi_app(
             from jina.enums import DataInputType
 
             bd = body.dict()  # type: Dict
-            if bd is not None and bd['data'] is not None:
+            bd['data_type'] = DataInputType.CONTENT
+            if bd is not None and bd['data'] is not None and 'docs' in bd['data']:
                 bd['data'] = bd['data']['docs']
                 bd['data_type'] = DataInputType.DICT
             result = await _get_singleton_result(request_generator(**bd))
@@ -173,7 +174,8 @@ def get_fastapi_app(
 
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
-            if bd['data'] is not None:
+            bd['data_type'] = DataInputType.CONTENT
+            if bd['data'] is not None and 'docs' in bd['data']:
                 bd['data'] = bd['data']['docs']
                 bd['data_type'] = DataInputType.DICT
 
