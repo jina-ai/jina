@@ -56,11 +56,11 @@ def test_data_type_builder_auto(input_type):
 
     d, t = _new_doc_from_data(b'123', input_type)
     assert t == DataInputType.CONTENT
-    assert d.buffer == b'123'
+    assert d.blob == b'123'
 
     c = np.random.random([10, 10])
     d, t = _new_doc_from_data(c, input_type)
-    np.testing.assert_equal(d.blob, c)
+    np.testing.assert_equal(d.tensor, c)
     assert t == DataInputType.CONTENT
 
 
@@ -192,12 +192,12 @@ def test_request_generate_numpy_arrays():
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)
 
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)
 
 
 def test_request_generate_numpy_arrays_iterator():
@@ -212,9 +212,9 @@ def test_request_generate_numpy_arrays_iterator():
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)
 
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)

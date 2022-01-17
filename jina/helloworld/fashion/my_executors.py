@@ -76,22 +76,22 @@ class MyEncoder(Executor):
         for doc, embed, cont in zip(docs, embeds, content):
             doc.embedding = embed
             doc.content = cont
-            doc.convert_image_blob_to_uri()
-            doc.pop('blob')
+            doc.convert_image_tensor_to_uri()
+            doc.pop('tensor')
 
 
 class MyConverter(Executor):
     """
-    Convert DocumentArrays removing blob and reshaping blob as image
+    Convert DocumentArrays removing tensor and reshaping tensor as image
     """
 
     @requests
     def convert(self, docs: 'DocumentArray', **kwargs):
         """
-        Remove blob and reshape documents as squared images
+        Remove tensor and reshape documents as squared images
         :param docs: documents to modify
         :param kwargs: other keyword arguments
         """
         for doc in docs:
-            doc.convert_image_blob_to_uri()
-            doc.pop('blob')
+            doc.convert_image_tensor_to_uri()
+            doc.pop('tensor')

@@ -76,9 +76,9 @@ def test_no_matches_rest(query_dict):
 
         for field in _document_fields:
             if field not in IGNORED_FIELDS + [
-                'buffer',
-                'content',
                 'blob',
+                'content',
+                'tensor',
                 'uri',
                 'graph',
             ]:

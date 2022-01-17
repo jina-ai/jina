@@ -208,7 +208,7 @@ def test_multiple_clients(prefetch, protocol):
     def get_document(i):
         return Document(
             id=f'{current_process().name}_{i}',
-            buffer=bytes(bytearray(os.urandom(512 * 4))),
+            blob=bytes(bytearray(os.urandom(512 * 4))),
         )
 
     async def good_client_gen():

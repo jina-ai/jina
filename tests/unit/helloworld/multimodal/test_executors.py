@@ -111,15 +111,15 @@ def test_image_crafter_index(encoder_doc_array, tmpdir):
     and the `craft` method in the ``ImageCrafter`` returns chunks.
     In the ``ImageCrafter``, we filtered out all the modalities and only kept `image/jpeg`.
     So the 2 chunks should left only 1 chunk.
-    And the blob value of the ``Document`` is not empty once we finished crafting since
-    we converted image uri/datauri to blob.
+    And the tensor value of the ``Document`` is not empty once we finished crafting since
+    we converted image uri/datauri to tensor.
     """
 
     def validate(resp):
         assert len(resp.data.docs) == 1
         doc = resp.data.docs[0]
         assert doc.mime_type == 'image/jpeg'
-        assert doc.blob is not None
+        assert doc.tensor is not None
 
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=ImageCrafter) as f:
@@ -131,7 +131,7 @@ def test_image_crafter_search(encoder_doc_array_for_search, tmpdir):
         assert len(resp.data.docs) == 1
         chunk = resp.data.docs[0]
         assert chunk.mime_type == 'image/jpeg'
-        assert chunk.blob is not None
+        assert chunk.tensor is not None
         assert chunk.uri.startswith('data')
 
     with Flow().add(uses=ImageCrafter) as f:

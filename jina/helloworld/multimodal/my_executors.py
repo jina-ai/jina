@@ -102,9 +102,9 @@ class ImageCrafter(Executor):
         )
         target_size = 224
         for doc in filtered_docs:
-            doc.load_uri_to_image_blob()
-            doc.set_image_blob_shape(shape=(target_size, target_size))
-            doc.set_image_blob_channel_axis(-1, 0)
+            doc.load_uri_to_image_tensor()
+            doc.set_image_tensor_shape(shape=(target_size, target_size))
+            doc.set_image_tensor_channel_axis(-1, 0)
         return filtered_docs
 
 
@@ -137,7 +137,7 @@ class ImageEncoder(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
         with torch.inference_mode():
-            _input = torch.from_numpy(docs.blobs.astype('float32'))
+            _input = torch.from_numpy(docs.tensors.astype('float32'))
             _features = self._get_features(_input).detach()
             _features = _features.numpy()
             _features = self._get_pooling(_features)
