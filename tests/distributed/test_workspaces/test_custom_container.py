@@ -55,7 +55,7 @@ def test_update_custom_container():
     assert container_id
     image_id = workspace_details.metadata.image_id
     assert image_id
-    assert len(workspace_details.arguments.requirements.split()) == 2
+    assert len(workspace_details.arguments.requirements.split()) == 3
 
     workspace_id = client.workspaces.update(
         id=workspace_id,

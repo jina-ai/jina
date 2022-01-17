@@ -197,9 +197,9 @@ async def test_custom_project():
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
     ):
-        fields = resp.data.docs[0].matches[0].tags.fields
-        assert fields['first'].string_value == 's'
-        assert fields['second'].string_value == 't'
+        tags = resp.data.docs[0].matches[0].tags
+        assert tags['first'] == 's'
+        assert tags['second'] == 't'
     print(f'Deleting workspace {workspace_id}')
     assert await client.workspaces.delete(workspace_id)
 
