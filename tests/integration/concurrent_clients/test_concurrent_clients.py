@@ -21,16 +21,18 @@ class MyExecutor(Executor):
 @pytest.mark.parametrize('prefetch', [1, 10])
 @pytest.mark.parametrize('concurrent', [15])
 def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, reraise):
-    def pong(peer_hash, resp: Response):
+    def pong(peer_hash, queue, resp: Response):
         with reraise:
             for d in resp.docs:
-                assert d.text == peer_hash
+                queue.put((peer_hash, d.text))
 
-    def peer_client(port, protocal, peer_hash):
-        c = Client(protocol=protocal, port=port)
+    def peer_client(port, protocol, peer_hash, queue):
+        c = Client(protocol=protocol, port=port)
         for _ in range(5):
             c.post(
-                '/ping', Document(text=peer_hash), on_done=lambda r: pong(peer_hash, r)
+                '/ping',
+                Document(text=peer_hash),
+                on_done=lambda r: pong(peer_hash, queue, r),
             )
 
     f = Flow(protocol=protocol, prefetch=prefetch).add(
@@ -38,16 +40,23 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
     )
 
     with f:
+        pqueue = multiprocessing.Queue()
         port_expose = f.port_expose
 
         process_pool = []
         for peer_id in range(concurrent):
-            t = multiprocessing.Process(
-                target=partial(peer_client, port_expose, protocol, str(peer_id)),
+            p = multiprocessing.Process(
+                target=partial(
+                    peer_client, port_expose, protocol, str(peer_id), pqueue
+                ),
                 daemon=True,
             )
-            t.start()
-            process_pool.append(t)
+            p.start()
+            process_pool.append(p)
 
-        for t in process_pool:
-            t.join()
+        for p in process_pool:
+            p.join()
+
+        while not pqueue.empty():
+            peer_hash, text = pqueue.get()
+            assert peer_hash == text
