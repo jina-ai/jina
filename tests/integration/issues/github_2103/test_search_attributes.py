@@ -54,7 +54,6 @@ class MockExecutor(Executor):
             doc.tags['tag'] = 'test'
 
 
-@pytest.mark.skip('to get back when pydantic models are back')
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
     with Flow(
@@ -72,14 +71,6 @@ def test_no_matches_rest(query_dict):
         )
         resp = request.urlopen(req).read().decode('utf8')
         doc = json.loads(resp)['data']['docs'][0]
-        present_keys = sorted(doc.keys())
 
-        for field in _document_fields:
-            if field not in IGNORED_FIELDS + [
-                'blob',
-                'content',
-                'tensor',
-                'uri',
-                'graph',
-            ]:
-                assert field in present_keys
+    assert len(Document.from_dict(doc).matches) == 0
+    assert Document.from_dict(doc).tags['tag'] == 'test'

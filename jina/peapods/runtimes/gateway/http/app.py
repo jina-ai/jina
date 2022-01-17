@@ -41,7 +41,6 @@ def get_fastapi_app(
             JinaRequestModel,
             JinaEndpointRequestModel,
             JinaResponseModel,
-            PROTO_TO_PYDANTIC_MODELS,
         )
 
     docs_url = '/docs'
@@ -119,7 +118,7 @@ def get_fastapi_app(
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
-            # response_model=JinaResponseModel, #TODO: Get back the Pydantic models in general
+            # response_model=JinaResponseModel,
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
@@ -143,11 +142,16 @@ def get_fastapi_app(
             from jina.enums import DataInputType
 
             bd = body.dict()  # type: Dict
-            bd['data_type'] = DataInputType.CONTENT
-            if bd is not None and bd['data'] is not None and 'docs' in bd['data']:
-                bd['data'] = bd['data']['docs']
-                bd['data_type'] = DataInputType.DICT
-            result = await _get_singleton_result(request_generator(**bd))
+            req_generator_input = bd
+            req_generator_input['data_type'] = DataInputType.CONTENT
+            if bd['data'] is not None and 'docs' in bd['data']:
+                req_generator_input['data'] = (
+                    bd['data']['docs'] if 'docs' in bd['data'] else None
+                )
+                req_generator_input['data_type'] = DataInputType.DICT
+            result = await _get_singleton_result(
+                request_generator(**req_generator_input)
+            )
             return result
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
@@ -174,12 +178,15 @@ def get_fastapi_app(
 
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
-            bd['data_type'] = DataInputType.CONTENT
+            req_generator_input = bd
+            req_generator_input['data_type'] = DataInputType.CONTENT
             if bd['data'] is not None and 'docs' in bd['data']:
-                bd['data'] = bd['data']['docs']
-                bd['data_type'] = DataInputType.DICT
+                req_generator_input['data'] = (
+                    bd['data']['docs'] if 'docs' in bd['data'] else None
+                )
+                req_generator_input['data_type'] = DataInputType.DICT
 
-            return await _get_singleton_result(request_generator(**bd))
+            return await _get_singleton_result(request_generator(**req_generator_input))
 
     if not args.no_crud_endpoints:
         openapi_tags.append(
@@ -238,6 +245,7 @@ def get_fastapi_app(
             # we dont want to nest the documents in the DA when returning to the user, so flatten by on level here
             if 'data' in request_dict:
                 request_dict['data']['docs'] = request_dict['data']['docs']['docs']
+
             return request_dict
 
     return app
