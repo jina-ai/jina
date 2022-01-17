@@ -17,8 +17,8 @@ class KeyValueDBMSIndexer(Executor):
     def index(self, docs: 'DocumentArray', *args, **kwargs):
         self._docs.extend(docs)
 
-    # TODO endpoint in tests.distributed.test_remote_flow_dump_rolling_update.test_dump_dbms_remote.test_dump_dbms_remote
-    # ends up being http://0.0.0.0:9000/post/dump
+    # TODO endpoint in tests.distributed.test_remote_flow_dump_rolling_update.test_dump_dbms_remote
+    #  .test_dump_dbms_remote ends up being http://0.0.0.0:9000/post/dump
     @requests(on='/dump')
     def dump(self, parameters, *args, **kwargs):
         dump_path = parameters['dump_path']
@@ -62,7 +62,7 @@ class CompoundQueryExecutor(Executor):
             for _q, _ids, _dists in zip(docs, idx, dist):
                 for _id, _dist in zip(_ids, _dists):
                     d = Document(self._docs[int(_id)], copy=True)
-                    d.scores['cosine'] = 1 - _dist
+                    d.scores['cosine'].value = 1 - _dist
                     _q.matches.append(d)
 
 
