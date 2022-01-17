@@ -8,6 +8,8 @@ from functools import partial
 
 from jina.types.request.data import Response
 
+NUM_REQUESTS = 5
+
 
 class MyExecutor(Executor):
     @requests(on='/ping')
@@ -28,7 +30,7 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
 
     def peer_client(port, protocol, peer_hash, queue):
         c = Client(protocol=protocol, port=port)
-        for _ in range(5):
+        for _ in range(NUM_REQUESTS):
             c.post(
                 '/ping',
                 Document(text=peer_hash),
@@ -57,6 +59,9 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
         for p in process_pool:
             p.join()
 
+        queue_len = 0
         while not pqueue.empty():
             peer_hash, text = pqueue.get()
             assert peer_hash == text
+            queue_len += 1
+        assert queue_len == concurrent * NUM_REQUESTS
