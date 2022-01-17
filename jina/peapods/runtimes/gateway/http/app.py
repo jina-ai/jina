@@ -118,7 +118,7 @@ def get_fastapi_app(
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
-            # response_model=JinaResponseModel,
+            response_model=JinaResponseModel,
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
