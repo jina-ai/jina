@@ -18,13 +18,13 @@ exposed_port = 12345
 class ScalableExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.replica_id = self.runtime_args.replica_id
+        self.process_id = os.getpid()
         self.shard_id = self.runtime_args.shard_id
 
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-            doc.tags['replica_id'] = self.replica_id
+            doc.tags['process_id'] = self.process_id
             doc.tags['shard_id'] = self.shard_id
 
 
@@ -102,22 +102,32 @@ def test_scale_success(flow_with_runtime, pod_params):
         )
 
         assert len(ret1) == 20
-        replica_ids = set()
-        for r in ret1:
+        process_ids = set()
+        docker_ids = set()
+        for i_r, r in enumerate(ret1):
             assert len(r.docs) == 10
-            for replica_id in r.docs[:, 'tags__replica_id']:
-                replica_ids.add(replica_id)
+            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__docker_id']]
+            process_ids = process_ids.union(set(p_ids))
+            docker_ids = docker_ids.union(set(d_ids))
 
-        assert replica_ids == set(range(num_replicas))
+        assert (
+            len(process_ids) == num_replicas * shards
+            or len(docker_ids) == num_replicas * shards
+        )
 
         assert len(ret2) == 20
-        replica_ids = set()
+        process_ids = set()
+        docker_ids = set()
         for r in ret2:
             assert len(r.docs) == 10
-            for replica_id in r.docs[:, 'tags__replica_id']:
-                replica_ids.add(replica_id)
+            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__docker_id']]
+            process_ids = process_ids.union(set(p_ids))
+            docker_ids = docker_ids.union(set(d_ids))
 
-        assert replica_ids == set(range(scale_to))
+        assert (
+            len(process_ids) == scale_to * shards
+            or len(docker_ids) == scale_to * shards
+        )
 
 
 @pytest.mark.parametrize(
@@ -175,7 +185,5 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
 
     assert len(rv) == 5
 
-    replicas = []
     for r in rv:
         assert len(r.docs) == 1
-        replicas.append(r.docs[0].tags['replica_id'])

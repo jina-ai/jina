@@ -70,12 +70,12 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
         request_size=10,
     )
 
-    replica_ids = set()
+    process_ids = set()
     for r in ret1:
-        for replica_id in r.docs[:, 'tags__replica_id']:
-            replica_ids.add(replica_id)
+        for p_id in rr.docs[:, 'tags__process_id']:
+            process_ids.add(p_id)  # identify replicas by the process they run in
 
-    assert len(set(replica_ids)) == replicas
+    assert len(process_ids) == replicas * shards
 
     jinad_client.flows.scale(id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to)
 
@@ -85,12 +85,11 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
         request_size=10,
     )
 
-    replica_ids = set()
+    process_ids = set()
     for r in ret2:
-        for replica_id in r.docs[:, 'tags__replica_id']:
-            replica_ids.add(replica_id)
-
-    assert len(set(replica_ids)) == scale_to
+        for p_id in r.docs[:, 'tags__process_id']:
+            process_ids.add(p_id)
+    assert len(process_ids) == scale_to * shards
     assert jinad_client.flows.delete(flow_id)
     assert jinad_client.workspaces.delete(workspace_id)
 
@@ -122,12 +121,12 @@ async def test_scale_remote_flow_async(
         request_size=10,
     )
 
-    replica_ids = set()
+    process_ids = set()
     async for r in ret1:
-        for replica_id in r.docs[:, 'tags__replica_id']:
-            replica_ids.add(replica_id)
+        for p_id in r.docs[:, 'tags__process_id']:
+            process_ids.add(p_id)  # identify replicas by the process they run in
 
-    assert len(set(replica_ids)) == replicas
+    assert len(set(process_ids)) == replicas * shards
 
     await async_jinad_client.flows.scale(
         id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to
@@ -139,11 +138,11 @@ async def test_scale_remote_flow_async(
         request_size=10,
     )
 
-    replica_ids = set()
+    process_ids = set()
     async for r in ret2:
-        for replica_id in r.docs[:, 'tags__replica_id']:
-            replica_ids.add(replica_id)
+        for p_id in r.docs[:, 'tags__process_id']:
+            process_ids.add(p_id)
 
-    assert len(set(replica_ids)) == scale_to
+    assert len(set(process_ids)) == scale_to * shards
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)

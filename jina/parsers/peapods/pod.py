@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import PodRoleType
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
 
 
 def mixin_base_pod_parser(parser):
@@ -31,15 +31,6 @@ def mixin_base_pod_parser(parser):
         default=False,
         help='The Pod will be considered an external Pod that has been started independently from the Flow.'
         'This Pod will not be context managed by the Flow.',
-    )
-
-    gp.add_argument(
-        '--peas-hosts',
-        nargs='+',
-        type=str,
-        help='''The hosts of the peas when shards greater than 1.
-        Peas will be evenly distributed among the hosts. By default,
-        peas are running on host provided by the argument ``host``''',
     )
 
     # hidden CLI used for internal only
