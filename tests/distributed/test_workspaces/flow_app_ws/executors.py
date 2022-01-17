@@ -18,7 +18,8 @@ class TinyDBIndexer(Executor):
         for doc in docs:
             r = self.db.search(where(doc.tags['key']) == doc.tags['value'])
             if len(r) > 0:
-                doc.matches = [Document(tags=r[0])]
+                doc.matches = DocumentArray()
+                doc.matches.append(Document(tags=r[0]))
 
 
 class SklearnExecutor(Executor):

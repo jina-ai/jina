@@ -72,7 +72,7 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     process_ids = set()
     for r in ret1:
-        for p_id in rr.docs[:, 'tags__process_id']:
+        for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)  # identify replicas by the process they run in
 
     assert len(process_ids) == replicas * shards
