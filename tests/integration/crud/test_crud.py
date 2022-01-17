@@ -30,7 +30,7 @@ def rest_post(f, endpoint, documents):
     return response.json()
 
 
-@pytest.mark.parametrize('rest', [False, True])
+@pytest.mark.parametrize('rest', [True, False])
 def test_crud(tmpdir, rest):
     os.environ['RESTFUL'] = 'http' if rest else 'grpc'
     os.environ['WORKSPACE'] = str(tmpdir)
@@ -52,11 +52,15 @@ def test_crud(tmpdir, rest):
         if rest:
             results = rest_post(f, 'search', inputs)
             matches = results['data']['docs'][0]['matches']
+            for doc in results['data']['docs']:
+                assert Document.from_dict(doc).text == 'hello world'
         else:
             results = c.post(
                 on='/search', inputs=inputs, parameters=PARAMS, return_results=True
             )
             matches = results[0].docs[0].matches
+            for doc in results[0].docs:
+                assert doc.text == 'hello world'
 
         assert len(matches) == 10
 

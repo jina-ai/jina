@@ -239,12 +239,14 @@ def get_fastapi_app(
         :return: the first result from the request iterator
         """
         async for k in streamer.stream(request_iterator=request_iterator):
+            docs = k.docs
+            k.docs._content = None
             request_dict = MessageToDict(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`
             # we dont want to nest the documents in the DA when returning to the user, so flatten by on level here
             if 'data' in request_dict:
-                request_dict['data']['docs'] = request_dict['data']['docs']['docs']
+                request_dict['data']['docs'] = docs.to_dict()
 
             return request_dict
 
