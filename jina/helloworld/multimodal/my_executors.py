@@ -220,7 +220,6 @@ class WeightedRanker(Executor):
             final_matches = {}  # type: Dict[str, Document]
             for m in d_mod1.matches:
                 relevance_score = m.scores['cosine'].value * d_mod1.weight
-                m.scores['relevance'] = m.scores['cosine']
                 m.scores['relevance'].value = relevance_score
                 final_matches[m.parent_id] = Document(m, copy=True)
 
@@ -232,7 +231,6 @@ class WeightedRanker(Executor):
                         m.scores['cosine'].value * d_mod2.weight
                     )
                 else:
-                    m.scores['relevance'] = m.scores['cosine']
                     m.scores['relevance'].value = (
                         m.scores['cosine'].value * d_mod2.weight
                     )

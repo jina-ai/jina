@@ -16,7 +16,7 @@ class TinyDBIndexer(Executor):
     @requests(on='/search')
     def search(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            r = self.db.search(where(doc.tags__key) == doc.tags__value)
+            r = self.db.search(where(doc.tags['key']) == doc.tags['value'])
             if len(r) > 0:
                 doc.matches = [Document(tags=r[0])]
 
