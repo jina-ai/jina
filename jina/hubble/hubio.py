@@ -600,41 +600,53 @@ with f:
         :return: the host and port of the sandbox
         """
         scheme, name, tag, secret = parse_hub_uri(uses)
+        payload = {
+            'name': name,
+            'tag': tag if tag else 'latest',
+            'jina': __version__,
+        }
 
         from rich.progress import Console
+        import requests
 
         console = Console()
 
-        with console.status("[bold green]Deploying sandbox...") as status:
-            import requests
+        host = None
+        try:
+            res = requests.get(
+                url=get_hubble_url_v2() + '/rpc/sandbox.get',
+                params=payload,
+                headers=get_request_header(),
+            ).json()
+            if res.get('code') == 200:
+                host = res.get('data', {}).get('host', None)
 
-            create_url = get_hubble_url_v2() + '/rpc/sandbox.create'
+        except Exception:
+            raise
 
+        if host:
+            return host, 443
+
+        with console.status("[bold green]Deploying sandbox since no existed one..."):
             try:
                 json = requests.post(
-                    url=create_url,
-                    json={
-                        'name': name,
-                        'tag': tag if tag else 'latest',
-                        'jina': __version__,
-                    },
+                    url=get_hubble_url_v2() + '/rpc/sandbox.create',
+                    json=payload,
                     headers=get_request_header(),
                 ).json()
 
                 host = json.get('data', {}).get('host', None)
+                livetime = json.get('data', {}).get('livetime', '15 mins')
                 if not host:
                     raise Exception(f'Failed to deploy sandbox: {json}')
 
                 console.log(f"Deployment completed: {host}")
+                console.log(
+                    f"[bold green]This sandbox will be removed when no traffic during {livetime}"
+                )
             except:
                 console.log("Deployment failed")
                 raise
-
-        with console.status("[bold green]Wait for effecting route...") as status:
-            # TODO: remove sleep
-            import time
-
-            time.sleep(15)
 
         return host, 443
 
