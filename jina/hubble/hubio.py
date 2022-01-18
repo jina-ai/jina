@@ -27,19 +27,11 @@ from jina.hubble.hubapi import (
     get_lockfile,
     install_package_dependencies,
 )
-<<<<<<< HEAD
 from jina import __resources_path__
 from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.parsers.hubble import set_hub_parser
-=======
-from .. import __resources_path__, __version__
-from ..helper import ArgNamespace, colored, get_request_header
-from ..importer import ImportExtensions
-from ..logging.logger import JinaLogger
-from ..parsers.hubble import set_hub_parser
->>>>>>> 1f2fae321c (feat(sandbox): fetch host dynamically)
 
 _cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
