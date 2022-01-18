@@ -27,7 +27,7 @@ from jina.hubble.hubapi import (
     get_lockfile,
     install_package_dependencies,
 )
-from jina import __resources_path__
+from jina import __resources_path__, __version__
 from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
