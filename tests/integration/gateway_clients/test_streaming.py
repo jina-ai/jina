@@ -312,7 +312,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
     def get_document(i):
         return Document(
             id=f'{multiprocessing.current_process().name}_{i}',
-            blob=bytes(bytearray(os.urandom(512 * 4))),
+            blob=str(bytes(bytearray(os.urandom(512 * 4)))),
         )
 
     async def good_client_gen():
