@@ -131,8 +131,10 @@ def protobuf_to_pydantic_model(
         if field_type is Enum:
             # Proto Field Type: enum
             enum_dict = {}
+
             for enum_field in f.enum_type.values:
                 enum_dict[enum_field.name] = enum_field.number
+
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:
@@ -182,6 +184,7 @@ def protobuf_to_pydantic_model(
     )
     model.update_forward_refs()
     PROTO_TO_PYDANTIC_MODELS.__setattr__(model_name, model)
+
     return model
 
 
@@ -267,18 +270,9 @@ class JinaResponseModel(BaseModel):
             alias_generator = _to_camel_case
             allow_population_by_field_name = True
 
-    class HeaderModel(BaseModel):
-        request_id: str = Field(
-            ...,
-            example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
-            description='The ID given by Jina service',
-        )
-
-        class Config:
-            alias_generator = _to_camel_case
-            allow_population_by_field_name = True
-
-    header: HeaderModel = None
+    header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
+    parameters: Dict = None
+    routes: List[PROTO_TO_PYDANTIC_MODELS.RouteProto] = None
     data: Optional[DataContentModel] = Field(None, description='Returned Documents')
 
     class Config:

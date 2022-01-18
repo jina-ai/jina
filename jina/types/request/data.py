@@ -138,8 +138,7 @@ class DataRequest(Request):
         from google.protobuf.json_format import MessageToDict
 
         d = MessageToDict(
-            self.proto,
-            preserving_proto_field_name=True,
+            self.proto, preserving_proto_field_name=True, use_integers_for_enums=True
         )
         d['data'] = {'docs': da.to_dict()}
         return d

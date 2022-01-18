@@ -128,12 +128,13 @@ def test_request_generate_dict():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
             doc = {
+                'id': 'root',
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
                 'tags': {'id': 1000},
                 'chunks': [
-                    {'text': f'i\'m chunk 1', 'modality': 'text'},
-                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                    {'id': 'c1', 'text': f'i\'m chunk 1', 'modality': 'text'},
+                    {'id': 'c2', 'text': f'i\'m chunk 2', 'modality': 'image'},
                 ],
             }
             yield doc
@@ -159,12 +160,13 @@ def test_request_generate_dict_str():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
             doc = {
+                'id': 'root',
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
                 'tags': {'id': 1000},
                 'chunks': [
-                    {'text': f'i\'m chunk 1', 'modality': 'text'},
-                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                    {'id': 'c1', 'text': f'i\'m chunk 1', 'modality': 'text'},
+                    {'id': 'c2', 'text': f'i\'m chunk 2', 'modality': 'image'},
                 ],
             }
             yield doc

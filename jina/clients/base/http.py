@@ -75,6 +75,7 @@ class HTTPBaseClient(BaseClient):
                 )
                 async for response in streamer.stream(request_iterator):
                     r_status = response.status
+
                     r_str = await response.json()
                     if r_status == 404:
                         raise BadClient(f'no such endpoint {url}')
@@ -82,7 +83,11 @@ class HTTPBaseClient(BaseClient):
                         raise ValueError(r_str)
 
                     # TODO: remove ugly hack
-                    if 'data' in r_str and 'docs' in r_str['data']:
+                    if (
+                        'data' in r_str
+                        and r_str['data'] is not None
+                        and 'docs' in r_str['data']
+                    ):
                         from docarray import DocumentArray
 
                         temp = r_str['data']['docs']

@@ -46,7 +46,7 @@ numpy:                      core
 protobuf>=3.19.1:           core
 grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
-docarray>=0.3.0:            core
+docarray>=0.3.1:            core
 pytest:                     test
 pytest-timeout:             test
 pytest-mock:                test

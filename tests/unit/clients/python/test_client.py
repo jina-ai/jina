@@ -50,9 +50,7 @@ def test_check_input_success(inputs):
     client.check_input(inputs)
 
 
-@pytest.mark.parametrize(
-    'inputs', [iter([list(), list(), {12, 2, 3}]), iter([set(), set()])]
-)
+@pytest.mark.parametrize('inputs', [iter([list(), list(), {12, 2, 3}])])
 def test_check_input_fail(inputs):
     client = Client(host='localhost', port_jinad=12345)
     with pytest.raises(BadClientInput):
