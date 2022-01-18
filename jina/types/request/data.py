@@ -124,6 +124,26 @@ class DataRequest(Request):
         self._pb_body.ParseFromString(self.buffer)
         self.buffer = None
 
+    def to_dict(self) -> Dict:
+        """Return the object in Python dictionary.
+
+        .. note::
+            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
+            will be converted to Python list.
+
+        :return: dict representation of the object
+        """
+        da = self.docs
+        self.proto.data.docs.CopyFrom(DocumentArray().to_protobuf())
+        from google.protobuf.json_format import MessageToDict
+
+        d = MessageToDict(
+            self.proto,
+            preserving_proto_field_name=True,
+        )
+        d['data'] = {'docs': da.to_dict()}
+        return d
+
     @property
     def docs(self) -> 'DocumentArray':
         """Get the :class: `DocumentArray` with sequence `data.docs` as content.

@@ -145,10 +145,8 @@ def get_fastapi_app(
             req_generator_input = bd
             req_generator_input['data_type'] = DataInputType.CONTENT
             if bd['data'] is not None and 'docs' in bd['data']:
-                req_generator_input['data'] = (
-                    bd['data']['docs'] if 'docs' in bd['data'] else None
-                )
                 req_generator_input['data_type'] = DataInputType.DICT
+                req_generator_input['data'] = req_generator_input['data']['docs']
             result = await _get_singleton_result(
                 request_generator(**req_generator_input)
             )
@@ -180,10 +178,11 @@ def get_fastapi_app(
             bd['exec_endpoint'] = exec_endpoint
             req_generator_input = bd
             req_generator_input['data_type'] = DataInputType.CONTENT
-            if bd['data'] is not None and 'docs' in bd['data']:
-                req_generator_input['data'] = (
-                    bd['data']['docs'] if 'docs' in bd['data'] else None
-                )
+            if (
+                req_generator_input['data'] is not None
+                and 'docs' in req_generator_input['data']
+            ):
+                req_generator_input['data'] = req_generator_input['data']['docs']
                 req_generator_input['data_type'] = DataInputType.DICT
 
             return await _get_singleton_result(request_generator(**req_generator_input))

@@ -83,9 +83,15 @@ class HTTPBaseClient(BaseClient):
 
                     # TODO: remove ugly hack
                     if 'data' in r_str and 'docs' in r_str['data']:
+                        from docarray import DocumentArray
+
                         temp = r_str['data']['docs']
                         r_str['data']['docs'] = {}
-                        r_str['data']['docs']['docs'] = temp
+                        r_str['data']['docs'] = {
+                            'docs': DocumentArray.from_dict(temp).to_dict(
+                                protocol='protobuf'
+                            )
+                        }
                     resp = DataRequest(r_str)
                     callback_exec(
                         response=resp,
