@@ -511,7 +511,7 @@ emphasize-lines: 7, 8
 
 class MyIndexer(Executor):
     animals = ['cat', 'dog', 'turtle']
-    @requests
+    @request
     def foo(self, docs, parameters: dict, **kwargs):
         for doc in docs:
             # need to cast to int since list indices must be integers not float
@@ -532,7 +532,7 @@ emphasize-lines: 7, 8
 
 class MyIndexer(Executor):
     animals = ['cat', 'dog', 'turtle']
-    @requests
+    @request
     def foo(self, docs, parameters: dict, **kwargs):
         for doc in docs:
             # ERROR: list indices must be integer not float
@@ -552,8 +552,7 @@ with Flow().add(uses=MyExecutor) as f:
 
 ## Serialization
 
-You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.to_dict` or binary string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_bytes`:
-
+You can serialize a `Document` into JSON string via {meth}`~jina.types.mixin.ProtoTypeMixin.to_json` or Python dict via {meth}`~jina.types.mixin.ProtoTypeMixin.to_dict` or binary string via {meth}`bytes`:
 ````{tab} JSON
 ```python
 from jina import Document

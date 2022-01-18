@@ -193,7 +193,7 @@ This is an experimental feature introduced in Jina `2.5.4`. The behavior of this
 Since Jina `2.5.4` we introduce a new IO feature: {meth}`~jina.types.arrays.mixins.io.pushpull.PushPullMixin.push` and {meth}`~jina.types.arrays.mixins.io.pushpull.PushPullMixin.pull`, 
 which allows you to share a DocumentArray object across machines.
 
-Consider you are working on a GPU machine via Google Colab/Jupyter. After preprocessing and embedding, you got everything you need in a DocumentArray. You can easily transfer it to the local laptop via:
+Considering you are working on a GPU machine via Google Colab/Jupyter. After preprocessing and embedding, you got everything you need in a DocumentArray. You can easily transfer it to the local laptop via:
 
 ```python
 from jina import DocumentArray
@@ -215,7 +215,7 @@ Now you can continue the work at local, analyzing `da` or visualizing it. Your f
 For more information of this feature, please refer to {class}`~jina.types.arrays.mixins.io.pushpull.PushPullMixin`.
 
 ```{danger}
-The lifetime of the storage is not promised at the moment: could be a day, could be a week. Do not use it for persistence in production. Only consider this as temporary transmission or a clipboard.
+The lifetime of the storage is not promised at the momennt: could be a day, could be a week. Do not use it for persistence in production. Only consider this as temporary transmission or a clipboard.
 ```
 
 
@@ -641,7 +641,7 @@ And then in just use `.match(da)`.
 
 ### Evaluate matches
 
-You can easily evaluate the performance of matches via {func}`~jina.types.arrays.mixins.evaluation.EvaluationMixin.evaluate`, provided that you have the ground truth of the matches.
+You can easily evaluate the performance of matches via {func}`~jina.types.arrays.mixins.evaluation.EvaluationMixin.evaluate`, provide that you have the groundtruth of the matches.
 
 Jina provides some common metrics used in the information retrieval community that allows one to evaluate the nearest-neighbour matches. These metrics include: precision, recall, R-precision, hit rate, NDCG, etc. The full list of functions can be found in {class}`~jina.math.evaluation`.
 
@@ -656,7 +656,7 @@ da.embeddings = np.random.random([10, 3])
 da.match(da, exclude_self=True)
 ```
 
-Now `da.matches` contains the matches. Let's use it as the ground truth. Now let's create imperfect matches by mixing in ten "noise Documents" to every `d.matches`.
+Now `da.matches` contains the matches. Let's use it as the groundtruth. Now let's create imperfect matches by mixing in ten "noise Documents" to every `d.matches`.
 
 ```python
 da2 = copy.deepcopy(da)
