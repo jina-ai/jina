@@ -163,21 +163,16 @@ Finally, it prints the uri of the closest matches.
 
 ```python
 import requests
-from jina import DocumentArray, Document
+from jina import DocumentArray
 import os
 host = os.environ['EXTERNAL_IP']
 port = 80
 url = f'http://{host}:{port}'
 
-def preproc(d: Document):
-    d.tags['uri'] = d.uri
-    d.load_uri_to_image_blob()
-    return d
-
-doc = DocumentArray.from_files('./imgs/*.jpg').apply(preproc)[0].dict()
+doc = DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob())[0].to_dict()
 resp = requests.post(f'{url}/search', json={'data': [doc]})
-closest_match_uri = resp.json()['data']['docs'][0]['matches'][0]['tags']['uri']
-print('closest_match_uri: ', closest_match_uri)
+matches = resp.json()['data']['docs'][0]['matches']
+print(f'Matched documents: {len(matches)}')
 ```
 
 ## Scaling Executors on Kubernetes
