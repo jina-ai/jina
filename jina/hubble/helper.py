@@ -62,9 +62,7 @@ def get_hubble_url_v2() -> str:
 
     :return: v2 Hubble url
     """
-    # TODO: use staging environment for now
-    # u = _get_hubble_base_url()
-    u = 'http://k8s-staging-hubble-447269387e-553627885.us-west-1.elb.amazonaws.com'
+    u = _get_hubble_base_url()
     return urljoin(u, '/v2')
 
 
