@@ -64,26 +64,24 @@ docker-compose up -f docker-compose.yml
 Once we see that all the Services in the Flow are ready, we can start sending index and search requests.
 
 ```python
-import os
-
 from jina.clients import Client
 from jina import DocumentArray
 
 client = Client(host='localhost', port=8080)
 client.show_progress = True
-indexing_documents = DocumentArray.from_files('./imgs/*.jpg')
-indexed_documents = []
-for resp in client.post(
-    '/index', inputs=indexing_documents, return_results=True
-):
-    indexed_documents.extend(resp.docs)
+indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob())
 
-print(f' Indexed documents: {[doc.uri for doc in indexed_documents]}')
+docs = client.post(
+    '/index', inputs=indexing_documents, return_results=True
+)
+
+print(f'Indexed documents: {len(docs)}')
+
 query_doc = indexing_documents[0]
 query_responses = client.post(
     '/search', inputs=query_doc, return_results=True
 )
 
-closest_match_uri = query_responses[0].docs[0].matches[0].uri
-print('closest_match_uri: ', closest_match_uri)
+matches = query_responses[0].data.docs[0].matches
+print(f'Matched documents: {len(matches)}')
 ```

@@ -674,10 +674,12 @@ def test_gateway_only_flows_no_error(capsys, protocol):
 
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
-    adresses = f._get_pod_addresses()
+    addresses = f._get_pod_addresses()
     for name, pod in f:
         if name != 'gateway':
-            assert adresses[name][0] == f'{pod.host}:{pod.head_port_in}'
+            assert (
+                addresses[name][0] == f'{pod.protocol}://{pod.host}:{pod.head_port_in}'
+            )
             for n in pod.needs:
                 assert name in graph_dict[n if n != 'gateway' else 'start-gateway']
         else:

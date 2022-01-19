@@ -264,7 +264,7 @@ def test_grpc_gateway_runtime_lazy_request_access(linear_graph_dict, monkeypatch
     p.terminate()
     p.join()
     assert (
-        call_counts.qsize() == NUM_PARALLEL_CLIENTS * 2
+        _queue_length(call_counts) == NUM_PARALLEL_CLIENTS * 2
     )  # request should be decompressed at start and end only
     for cp in client_processes:
         assert cp.exitcode == 0
@@ -465,3 +465,14 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     p.join()
     for cp in client_processes:
         assert cp.exitcode == 0
+
+
+def _queue_length(queue: 'multiprocessing.Queue'):
+    # Pops elements from the queue and counts them
+    # Used if the underlying queue is sensitive to ordering
+    # This is used instead of multiprocessing.Queue.qsize() since it is not supported on MacOS
+    length = 0
+    while not queue.empty():
+        queue.get()
+        length += 1
+    return length

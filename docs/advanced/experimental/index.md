@@ -17,5 +17,6 @@ That said, have fun!
 
 kubernetes
 docker-compose
+sandbox
 indexers
 ```

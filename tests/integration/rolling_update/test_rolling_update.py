@@ -144,7 +144,7 @@ def test_search_while_updating(docs, reraise, docker_image, uses):
         client_process.join()
 
     total_docs = 0
-    while result_queue.qsize():
+    while not result_queue.empty():
         total_docs += len(result_queue.get())
     assert total_docs == len(docs) * request_count
 
@@ -183,7 +183,7 @@ def test_vector_indexer_thread(config, docs, reraise):
         client_process.join()
 
     total_docs = 0
-    while result_queue.qsize():
+    while not result_queue.empty():
         total_docs += len(result_queue.get())
     assert total_docs == len(docs) * 40
 

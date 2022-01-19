@@ -176,7 +176,6 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
             [Document() for _ in range(5)], request_size=1, return_results=True
         )
 
-    assert queue.qsize() == NUM_CONCURRENT_CLIENTS * NUM_DOCS_SENT_BY_CLIENTS
     all_docs = []
     while not queue.empty():
         all_docs.append(queue.get())
