@@ -627,7 +627,9 @@ with f:
         if host:
             return host, 443
 
-        with console.status("[bold green]Deploying sandbox since no existed one..."):
+        with console.status(
+            f"[bold green]Deploying sandbox for ({name}) since no existing one..."
+        ):
             try:
                 json = requests.post(
                     url=get_hubble_url_v2() + '/rpc/sandbox.create',
