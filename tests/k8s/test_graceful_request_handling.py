@@ -230,7 +230,7 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
         process.join()
 
         responses_list = []
-        while received_responses.qsize():
+        while not received_responses.empty():
             responses_list.append(int(received_responses.get()))
 
         logger.debug(f'Got the following responses {sorted(responses_list)}')
@@ -343,7 +343,7 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
         process.join()
 
         responses_list = []
-        while received_responses.qsize():
+        while not received_responses.empty():
             responses_list.append(int(received_responses.get()))
 
         logger.debug(f'Got the following responses {sorted(responses_list)}')
@@ -421,7 +421,7 @@ async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
         import numpy as np
 
         response_times = []
-        while response_arrival_times.qsize():
+        while not response_arrival_times.empty():
             response_times.append(response_arrival_times.get())
         mean_response_time = np.mean(response_times)
         logger.debug(
@@ -430,7 +430,7 @@ async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
         assert mean_response_time < 0.4
 
         responses_list = []
-        while received_responses.qsize():
+        while not received_responses.empty():
             responses_list.append(int(received_responses.get()))
 
         logger.debug(f'Got the following responses {sorted(responses_list)}')
