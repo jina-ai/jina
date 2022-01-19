@@ -442,7 +442,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
                 continue
-            graph_dict[node] = [f'{v.host}:{v.head_port_in}']
+            graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port_in}']
 
         return graph_dict
 
@@ -1031,7 +1031,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 os.environ[k] = str(v)
 
         for k, v in self:
-            if not getattr(v.args, 'external', False):
+            if not v.external:
                 self.enter_context(v)
 
         self._wait_until_all_ready()
@@ -1046,7 +1046,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         def _wait_ready(_pod_name, _pod):
             try:
-                if not getattr(_pod.args, 'external', False):
+                if not _pod.external:
                     results[_pod_name] = 'pending'
                     _pod.wait_start_success()
                     results[_pod_name] = 'done'
@@ -1220,9 +1220,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                 _s_role = self._pod_nodes[need].role
                 _e_role = self._pod_nodes[node].role
-                if getattr(self._pod_nodes[need].args, 'external', False):
+                if self._pod_nodes[need].external:
                     _s_role = 'EXTERNAL'
-                if getattr(self._pod_nodes[node].args, 'external', False):
+                if self._pod_nodes[node].external:
                     _e_role = 'EXTERNAL'
                 line_st = '-->'
                 if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:

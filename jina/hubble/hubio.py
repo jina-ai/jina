@@ -7,14 +7,15 @@ import os
 import random
 from pathlib import Path
 from typing import Optional
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
     download_with_resume,
+    get_hubble_url_v2,
     parse_hub_uri,
-    get_hubble_url,
+    get_hubble_url_v1,
     upload_file,
     disk_cache_offline,
 )
@@ -26,7 +27,7 @@ from jina.hubble.hubapi import (
     get_lockfile,
     install_package_dependencies,
 )
-from jina import __resources_path__
+from jina import __resources_path__, __version__
 from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
@@ -379,7 +380,7 @@ metas:
                 method = 'put' if ('force' in form_data) else 'post'
 
                 st.update(f'Connecting to Jina Hub ...')
-                hubble_url = get_hubble_url()
+                hubble_url = get_hubble_url_v1() + '/executors'
 
                 # upload the archived executor to Jina Hub
                 st.update(f'Uploading...')
@@ -562,7 +563,7 @@ with f:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = get_hubble_url() + f'/{name}/?'
+        pull_url = get_hubble_url_v1() + f'/executors/{name}/?'
         path_params = {}
         if secret:
             path_params['secret'] = secret
@@ -589,6 +590,67 @@ with f:
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
         )
+
+    @staticmethod
+    def deploy_public_sandbox(uses: str):
+        """
+        Deploy a public sandbox to Jina Hub.
+        :param uses: the executor uses string
+
+        :return: the host and port of the sandbox
+        """
+        scheme, name, tag, secret = parse_hub_uri(uses)
+        payload = {
+            'name': name,
+            'tag': tag if tag else 'latest',
+            'jina': __version__,
+        }
+
+        from rich.progress import Console
+        import requests
+
+        console = Console()
+
+        host = None
+        try:
+            res = requests.get(
+                url=get_hubble_url_v2() + '/rpc/sandbox.get',
+                params=payload,
+                headers=get_request_header(),
+            ).json()
+            if res.get('code') == 200:
+                host = res.get('data', {}).get('host', None)
+
+        except Exception:
+            raise
+
+        if host:
+            return host, 443
+
+        with console.status(
+            f"[bold green]Deploying sandbox for ({name}) since no existing one..."
+        ):
+            try:
+                json = requests.post(
+                    url=get_hubble_url_v2() + '/rpc/sandbox.create',
+                    json=payload,
+                    headers=get_request_header(),
+                ).json()
+
+                host = json.get('data', {}).get('host', None)
+                livetime = json.get('data', {}).get('livetime', '15 mins')
+                if not host:
+                    raise Exception(f'Failed to deploy sandbox: {json}')
+
+                console.log(f"Deployment completed: {host}")
+                console.log(
+                    f"[bold green]This sandbox will be removed when no traffic during {livetime}"
+                )
+            except:
+                console.log("Deployment failed")
+                raise
+
+        return host, 443
 
     def _pull_with_progress(self, log_streams, console):
         from rich.progress import Progress, DownloadColumn, BarColumn
