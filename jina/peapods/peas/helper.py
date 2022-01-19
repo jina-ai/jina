@@ -2,7 +2,7 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
-from typing import Callable, Dict, Union, TYPE_CHECKING
+from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 
 from jina.enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
 from jina.hubble.helper import is_valid_huburi
@@ -18,13 +18,13 @@ if TYPE_CHECKING:
 
 
 def _get_worker(
-    args, target: Callable, kwargs: Dict
+    args, target: Callable, kwargs: Dict, name: Optional[str] = None
 ) -> Union['threading.Thread', 'multiprocessing.Process']:
     return {
         RuntimeBackendType.THREAD: threading.Thread,
         RuntimeBackendType.PROCESS: multiprocessing.Process,
     }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
-        target=target, kwargs=kwargs
+        target=target, name=name, kwargs=kwargs
     )
 
 

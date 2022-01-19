@@ -341,9 +341,11 @@ class Pea(BasePea):
                 'runtime_cls': self.runtime_cls,
                 'jaml_classes': JAML.registered_classes(),
             },
+            name=self.name,
         )
 
     def start(self):
+
         """Start the Pea.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
