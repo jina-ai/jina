@@ -21,16 +21,24 @@ class DataRequest(Request):
     class _DataContent:
         def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
             self._content = content
+            self._loaded_doc_array = None
 
         @property
         def docs(self) -> 'DocumentArray':
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
-            if self._content.WhichOneof('documents') == 'docs_bytes':
-                return DocumentArray.from_bytes(self._content.docs_bytes)
-            else:
-                return DocumentArray.from_protobuf(self._content.docs)
+            if not self._loaded_doc_array:
+                if self._content.WhichOneof('documents') == 'docs_bytes':
+                    self._loaded_doc_array = DocumentArray.from_bytes(
+                        self._content.docs_bytes
+                    )
+                else:
+                    self._loaded_doc_array = DocumentArray.from_protobuf(
+                        self._content.docs
+                    )
+
+            return self._loaded_doc_array
 
         @docs.setter
         def docs(self, value: DocumentArray):
@@ -39,6 +47,7 @@ class DataRequest(Request):
             :param value: a DocumentArray
             """
             if value:
+                self._loaded_doc_array = None
                 self._content.docs.CopyFrom(value.to_protobuf())
 
         @property
@@ -55,6 +64,7 @@ class DataRequest(Request):
             :param value: a DocumentArray
             """
             if value:
+                self._loaded_doc_array = None
                 self._content.docs_bytes = value
 
     """
