@@ -1046,7 +1046,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         def _wait_ready(_pod_name, _pod):
             try:
-                if not getattr(_pod.args, 'external', False):
+                if not _pod.external:
                     results[_pod_name] = 'pending'
                     _pod.wait_start_success()
                     results[_pod_name] = 'done'
