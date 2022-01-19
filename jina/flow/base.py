@@ -1220,9 +1220,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                 _s_role = self._pod_nodes[need].role
                 _e_role = self._pod_nodes[node].role
-                if getattr(self._pod_nodes[need].args, 'external', False):
+                if self._pod_nodes[need].external:
                     _s_role = 'EXTERNAL'
-                if getattr(self._pod_nodes[node].args, 'external', False):
+                if self._pod_nodes[node].external:
                     _e_role = 'EXTERNAL'
                 line_st = '-->'
                 if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:

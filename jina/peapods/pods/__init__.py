@@ -878,9 +878,7 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         mermaid_graph = []
-        if self.role != PodRoleType.GATEWAY and not getattr(
-            self.args, 'external', False
-        ):
+        if self.role != PodRoleType.GATEWAY and self.external:
             mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
 
             uses_before_name = (
