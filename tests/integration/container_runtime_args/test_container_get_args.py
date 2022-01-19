@@ -36,12 +36,12 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
     )
     with f:
         ret1 = Client(port=exposed_port).index(
-            inputs=DocumentArray([Document() for _ in range(200)]),
+            inputs=DocumentArray([Document() for _ in range(2000)]),
             return_results=True,
             request_size=10,
         )
 
-    assert len(ret1) == 20
+    assert len(ret1) == 200
     unique_replicas = set()
     shard_ids = set()
     for r in ret1:
