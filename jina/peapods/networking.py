@@ -1,3 +1,4 @@
+import os
 import asyncio
 import ipaddress
 from threading import Thread
@@ -135,6 +136,10 @@ class GrpcConnectionPool:
             self._pods: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
             # dict stores last entity id used for a particular pod, used for round robin
             self._access_count: Dict[str, int] = {}
+
+            if os.name != 'nt':
+                os.unsetenv('http_proxy')
+                os.unsetenv('https_proxy')
 
         def add_replica(self, pod: str, shard_id: int, address: str):
             self._add_connection(pod, shard_id, address, 'shards')
@@ -522,6 +527,11 @@ class GrpcConnectionPool:
         activate_request.add_related_entity(
             'worker', worker_host, worker_port, shard_id
         )
+
+        if os.name != 'nt':
+            os.unsetenv('http_proxy')
+            os.unsetenv('https_proxy')
+
         return GrpcConnectionPool.send_request_sync(activate_request, target_head)
 
     @staticmethod
