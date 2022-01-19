@@ -1031,7 +1031,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 os.environ[k] = str(v)
 
         for k, v in self:
-            if not getattr(v.args, 'external', False) and not v.is_sandbox:
+            if not v.external:
                 self.enter_context(v)
 
         self._wait_until_all_ready()

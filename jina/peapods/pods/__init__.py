@@ -421,6 +421,15 @@ class Pod(BasePod):
         return is_sandbox
 
     @property
+    def external(self) -> bool:
+        """
+        Check if this pod is external.
+
+        :return: True if this pod is provided as an external pod, False otherwise
+        """
+        return getattr(self.args, 'external', False) or self.is_sandbox
+
+    @property
     def protocol(self):
         """
         :return: the protocol of this pod, https or http

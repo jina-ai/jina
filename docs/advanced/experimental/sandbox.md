@@ -43,11 +43,11 @@ If the Jina version of Gateway is later than the latest released Jina version (t
 
 ## Version Consistency
 
-The Jina version inside the Sandbox will be the same as the one in the Gateway. The Gateway means the place where the Flow was run.
+The Jina version inside the Sandbox will be the same as the one in the place where the Flow was run. For example, if you run the Flow in your local machine, then it's the version of Jina in your local pip packages.
 
-## Mixed with local Executors
+## Mixed with non-sandbox Executors
 
-It can also be mixed with local Executors.
+It can also be mixed with non-sandbox Executors. For example, pure Python class.
 
 ```python
 from jina import Flow, Document, DocumentArray, Executor, requests
