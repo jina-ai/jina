@@ -3,8 +3,7 @@ import os
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
-from itertools import cycle
-from typing import Dict, Union, Set, List, Optional
+from typing import Dict, List, Optional, Set, Union
 
 from jina.serve.networking import GrpcConnectionPool, host_is_local
 from jina.orchestrate.peas import Pea
@@ -262,7 +261,6 @@ class Pod(BasePod):
                 new_args.noblock_on_start = True
                 new_args.name = new_args.name[:-1] + f'{i}'
                 new_args.port_in = helper.random_port()
-                new_args.replica_id = i
                 # no exception should happen at create and enter time
                 new_peas.append(PeaFactory.build_pea(new_args).start())
                 new_args_list.append(new_args)
@@ -352,10 +350,6 @@ class Pod(BasePod):
             for _args in self.args:
                 if getattr(self.pod_args, 'noblock_on_start', False):
                     _args.noblock_on_start = True
-                if (
-                    self.pod_args.replicas == 1
-                ):  # keep backwards compatibility with `workspace` in `Executor`
-                    _args.replica_id = -1
                 self._peas.append(PeaFactory.build_pea(_args).start())
             return self
 
@@ -746,33 +740,24 @@ class Pod(BasePod):
     @staticmethod
     def _set_peas_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
-        _host_list = (
-            args.peas_hosts
-            if hasattr(args, 'peas_hosts') and args.peas_hosts
-            else [
-                args.host,
-            ]
-        )
-
         sharding_enabled = args.shards and args.shards > 1
         for shard_id in range(args.shards):
             replica_args = []
-            for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
+            for replica_id in range(args.replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
-                _args.replica_id = idx
                 _args.pea_role = PeaRoleType.WORKER
                 _args.identity = random_identity()
 
-                _args.host = pea_host
+                _args.host = args.host
                 if _args.name:
                     _args.name += (
-                        f'/shard-{shard_id}/rep-{idx}'
+                        f'/shard-{shard_id}/rep-{replica_id}'
                         if sharding_enabled
-                        else f'/rep-{idx}'
+                        else f'/rep-{replica_id}'
                     )
                 else:
-                    _args.name = f'{idx}'
+                    _args.name = f'{replica_id}'
 
                 _args.port_in = helper.random_port()
 

@@ -560,7 +560,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
         port_in: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
@@ -623,9 +622,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param peas_hosts: The hosts of the peas when shards greater than 1.
-                  Peas will be evenly distributed among the hosts. By default,
-                  peas are running on host provided by the argument ``host``
         :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Pod or by endpoint.
               Define per Pod:

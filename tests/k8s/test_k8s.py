@@ -522,4 +522,4 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
-        assert doc.tags['workspace'] == '/shared/TestExecutor/0/0'
+        assert doc.tags['workspace'] == '/shared/TestExecutor/0'

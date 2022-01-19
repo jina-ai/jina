@@ -121,9 +121,9 @@ def test_parse_args(
             candidate_connection_list = {}
             for shard_id in range(shards):
                 candidate_connection_list[str(shard_id)] = []
-                for replica_id in range(replicas):
+                for replica in range(replicas):  # TODO
                     candidate_connection_list[str(shard_id)].append(
-                        f'executor-{shard_id}-rep-{replica_id}:8081'
+                        f'executor-{shard_id}-rep-{replica}:8081'
                     )
 
     else:
@@ -131,8 +131,8 @@ def test_parse_args(
             candidate_connection_list = {'0': [f'executor:8081']}
         else:
             candidate_connection_list = {'0': []}
-            for replica_id in range(replicas):
-                candidate_connection_list['0'].append(f'executor-rep-{replica_id}:8081')
+            for replica in range(replicas):  # TODO
+                candidate_connection_list['0'].append(f'executor-rep-{replica}:8081')
 
     assert pod_config.services_args['head_service'].connection_list == json.dumps(
         candidate_connection_list
@@ -154,7 +154,6 @@ def test_parse_args(
         assert pod_config.services_args['uses_before_service'].uses_with is None
         assert pod_config.services_args['uses_before_service'].shard_id == 0
         assert pod_config.services_args['uses_before_service'].replicas == 1
-        assert pod_config.services_args['uses_before_service'].replica_id == -1
 
     if uses_after is not None:
         assert (
@@ -171,7 +170,6 @@ def test_parse_args(
         assert pod_config.services_args['uses_after_service'].uses_with is None
         assert pod_config.services_args['uses_after_service'].shard_id == 0
         assert pod_config.services_args['uses_after_service'].replicas == 1
-        assert pod_config.services_args['uses_after_service'].replica_id == -1
 
     for i, depl_arg in enumerate(pod_config.services_args['services']):
         import copy
@@ -251,7 +249,6 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
     assert pod_config.services_args['uses_before_service'].uses_with is None
     assert pod_config.services_args['uses_before_service'].shard_id == 0
     assert pod_config.services_args['uses_before_service'].replicas == 1
-    assert pod_config.services_args['uses_before_service'].replica_id == -1
 
     assert pod_config.services_args['uses_after_service'].name == 'executor/uses-after'
     assert pod_config.services_args['uses_after_service'].runtime_cls == 'WorkerRuntime'
@@ -262,7 +259,6 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
     assert pod_config.services_args['uses_after_service'].uses_with is None
     assert pod_config.services_args['uses_after_service'].shard_id == 0
     assert pod_config.services_args['uses_after_service'].replicas == 1
-    assert pod_config.services_args['uses_after_service'].replica_id == -1
 
     for i, depl_arg in enumerate(pod_config.services_args['services']):
         import copy
@@ -450,9 +446,9 @@ def test_docker_compose_yaml_regular_pod(
             candidate_connection_list = {}
             for shard_id in range(shards):
                 candidate_connection_list[str(shard_id)] = []
-                for replica_id in range(replicas):
+                for replica in range(replicas):
                     candidate_connection_list[str(shard_id)].append(
-                        f'executor-{shard_id}-rep-{replica_id}:8081'
+                        f'executor-{shard_id}-rep-{replica}:8081'
                     )
     else:
         if shards == 1:
@@ -460,9 +456,9 @@ def test_docker_compose_yaml_regular_pod(
                 candidate_connection_list = {'0': [f'executor:8081']}
             else:
                 candidate_connection_list = {'0': []}
-                for replica_id in range(replicas):
+                for replica in range(replicas):
                     candidate_connection_list['0'].append(
-                        f'executor-rep-{replica_id}:8081'
+                        f'executor-rep-{replica}:8081'
                     )
 
     assert connection_list_string == json.dumps(candidate_connection_list)
@@ -519,15 +515,15 @@ def test_docker_compose_yaml_regular_pod(
         replicas_configs = shards_replicas_configs[
             shard_id * replicas : shard_id * replicas + replicas
         ]
-        for replica_id, (replica_name, replica_config) in enumerate(replicas_configs):
+        for i_replica, (replica_name, replica_config) in enumerate(replicas_configs):
             expected_name = 'executor'
             expected_arg_name = 'executor'
             if shards > 1:
                 expected_name += f'-{shard_id}'
                 expected_arg_name += f'-{shard_id}'
             if replicas > 1:
-                expected_name += f'-rep-{replica_id}'
-                expected_arg_name += f'/rep-{replica_id}'
+                expected_name += f'-rep-{i_replica}'
+                expected_arg_name += f'/rep-{i_replica}'
             assert replica_name == expected_name
             assert (
                 replica_config['image'] == 'docker_image:latest'

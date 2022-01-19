@@ -117,8 +117,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert executor0_service['entrypoint'] == ['jina']
     assert 'expose' not in executor0_service
     executor0_args = executor0_service['command']
-    assert '--replica-id' in executor0_args
-    assert executor0_args[executor0_args.index('--replica-id') + 1] == '-1'
     assert executor0_args[0] == 'executor'
     assert '--name' in executor0_args
     assert executor0_args[executor0_args.index('--name') + 1] == 'executor0'
@@ -169,10 +167,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     executor1_shard0_args = executor1_0_service['command']
     assert executor1_shard0_args[0] == 'executor'
     assert '--name' in executor1_shard0_args
-    assert '--replica-id' in executor1_shard0_args
-    assert (
-        executor1_shard0_args[executor1_shard0_args.index('--replica-id') + 1] == '-1'
-    )
     assert (
         executor1_shard0_args[executor1_shard0_args.index('--name') + 1]
         == 'executor1-0'
@@ -200,10 +194,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     executor1_shard1_args = executor1_1_service['command']
     assert executor1_shard1_args[0] == 'executor'
     assert '--name' in executor1_shard1_args
-    assert '--replica-id' in executor1_shard1_args
-    assert (
-        executor1_shard1_args[executor1_shard1_args.index('--replica-id') + 1] == '-1'
-    )
     assert (
         executor1_shard1_args[executor1_shard1_args.index('--name') + 1]
         == 'executor1-1'
@@ -310,8 +300,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         executor2_rep_1_args[executor2_rep_1_args.index('--uses-metas') + 1]
         == '{"pea_id": 0}'
     )
-    assert '--replica-id' in executor2_rep_1_args
-    assert executor2_rep_1_args[executor2_rep_1_args.index('--replica-id') + 1] == '1'
     assert '--native' in executor2_rep_1_args
     assert '--pea-role' not in executor2_rep_1_args
     assert '--runtime-cls' not in executor2_rep_1_args
