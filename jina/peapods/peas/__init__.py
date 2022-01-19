@@ -257,6 +257,7 @@ class BasePea(ABC):
             self._check_failed_to_start()
             self.logger.debug(__ready_msg__)
         else:
+            print('test')
             self._fail_start_timeout(_timeout)
 
     async def async_wait_start_success(self):
