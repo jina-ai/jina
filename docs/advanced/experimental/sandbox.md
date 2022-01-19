@@ -6,8 +6,8 @@ Jina Sandbox allows you to try out different Jina Executors online and see how t
 
 ## Prerequisites
 
-- Knowledge about ref`Jina Executor <executor>`
-- Knowledge about ref`Jina Hub <hub>`
+- Knowledge about Jina Executor
+- Knowledge about Jina Hub
 
 ## Start a Flow using Jina Sandbox
 
