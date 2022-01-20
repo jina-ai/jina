@@ -3,6 +3,7 @@ from typing import Dict, Optional, TYPE_CHECKING, Tuple, Union
 
 import aiohttp
 
+from daemon.dockerize import Dockerizer
 from daemon.models.id import daemonize
 from daemon.clients.base import AsyncBaseClient
 from daemon.clients.mixin import AsyncToSyncMixin
@@ -62,6 +63,20 @@ class AsyncPeaClient(AsyncBaseClient):
                 self._logger.success(
                     f'successfully created a {self._kind.title()} {response_json} in workspace {workspace_id}'
                 )
+                self._logger.warning(
+                    f'success: currently there are these ports occupied {Dockerizer.exposed_ports()}'
+                )
+
+                async with aiohttp.request(
+                    method='GET',
+                    url=f'{self.store_api}/{response_json}',
+                    timeout=self.timeout,
+                ) as response:
+                    response_json = await response.json()
+                    self._logger.warning(
+                        f'created pea has these params {response_json}'
+                    )
+
                 return True, response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
                 field_msg = (
@@ -76,6 +91,9 @@ class AsyncPeaClient(AsyncBaseClient):
                 error_msg = error_msg_from(response_json)
                 self._logger.error(
                     f'{self._kind.title()} creation failed as: {error_msg}'
+                )
+                self._logger.warning(
+                    f'fail: currently there are these ports occupied {Dockerizer.exposed_ports()}'
                 )
                 return False, error_msg
 
