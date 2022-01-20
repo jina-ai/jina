@@ -154,6 +154,7 @@ def _start_uvicorn(app: 'FastAPI'):
         loop='uvloop',
         log_level='error',
     )
+    daemon_logger.warning(f'Start jinad on port {jinad_args.port}')
     server = Server(config=config)
     server.run()
 

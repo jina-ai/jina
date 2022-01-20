@@ -403,7 +403,7 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
-assigned_ports = set()
+assigned_ports = []
 unassigned_ports = []
 DEFAULT_MIN_PORT = 49153
 MAX_PORT = 65535
@@ -417,7 +417,6 @@ def random_port() -> Optional[int]:
     """
 
     def _random_port():
-        from contextlib import closing
         import socket
 
         def _get_unassigned_ports():
@@ -429,14 +428,14 @@ def random_port() -> Optional[int]:
                     os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT))
                 )
             max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
-            return set(range(min_port, max_port + 1)) - assigned_ports
+            return set(range(min_port, max_port + 1)) - set(assigned_ports)
 
-        def _get_port(port):
-            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        def _check_bind(port):
+            with socket.socket() as s:
                 try:
                     s.bind(('', port))
                     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    return s.getsockname()[1]
+                    return port
                 except OSError:
                     return None
 
@@ -444,16 +443,16 @@ def random_port() -> Optional[int]:
         if len(unassigned_ports) == 0:
             unassigned_ports.extend(_get_unassigned_ports())
             random.shuffle(unassigned_ports)
-        for port_idx, _port in enumerate(unassigned_ports):
-            if _get_port(_port) is not None:
+        for _port in unassigned_ports:
+            if _check_bind(_port) is not None:
                 break
         else:
             raise OSError(
                 f'can not find an available port in {len(unassigned_ports)} unassigned ports, assigned already {len(assigned_ports)} ports'
             )
         int_port = int(_port)
-        unassigned_ports.pop(port_idx)
-        assigned_ports.add(int_port)
+        unassigned_ports.remove(_port)
+        assigned_ports.append(int_port)
         return int_port
 
     try:
