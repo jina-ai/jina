@@ -48,6 +48,7 @@ async def create_all_flow_pods_and_wait_ready(
     # wait for all the pods to be up
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
+        print(namespaced_pods.items)
         if namespaced_pods.items is not None and len(namespaced_pods.items) == sum(
             deployment_replicas_expected.values()
         ):
@@ -574,8 +575,8 @@ async def test_flow_connection_pool(
         deployment_replicas_expected={
             'gateway': 1,
             'test-executor-head-0': 1,
-            'test-executor-0': 2,
-            'test-executor-1': 2,
+            'test-executor-0': 1,
+            'test-executor-1': 1,
         },
     )
 
