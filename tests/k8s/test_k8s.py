@@ -48,7 +48,6 @@ async def create_all_flow_pods_and_wait_ready(
     # wait for all the pods to be up
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
-        print(namespaced_pods.items)
         if namespaced_pods.items is not None and len(namespaced_pods.items) == sum(
             deployment_replicas_expected.values()
         ):
@@ -547,7 +546,9 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-connection-pool')
     namespace = 'test-flow-connection-pool'
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_k8s_yaml(
+        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
+    )
 
     from kubernetes import client
 
