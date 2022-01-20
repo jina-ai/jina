@@ -22,11 +22,11 @@ class BaseStore(MutableMapping):
 
     _kind = ''
     _status_model = StoreStatus
+    _lock = multiprocessing.Lock()
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         self.status = self.__class__._status_model()
-        self._lock = multiprocessing.Lock()
 
     def add(self, *args, **kwargs) -> DaemonID:
         """Add a new element to the store. This method needs to be overridden by the subclass

@@ -36,9 +36,6 @@ class ContainerStore(BaseStore, ABC):
     _status_model = ContainerStoreStatus
     _partiald_ports = set()
 
-    def __init__(self):
-        super().__init__()
-
     @abstractmethod
     async def add_in_partial(self, uri, envs, *args, **kwargs):
         """Implements jina object creation in `partial-daemon`
