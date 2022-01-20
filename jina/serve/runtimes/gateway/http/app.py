@@ -183,7 +183,8 @@ def get_fastapi_app(
                 req_generator_input['data'] = req_generator_input['data']['docs']
                 req_generator_input['data_type'] = DataInputType.DICT
 
-            return await _get_singleton_result(request_generator(**req_generator_input))
+            res = await _get_singleton_result(request_generator(**req_generator_input))
+            return res
 
     if not args.no_crud_endpoints:
         openapi_tags.append(

@@ -18,7 +18,7 @@ class Segmenter(Executor):
             uri = f'{os.environ["HW_WORKDIR"]}/people-img/{doc.tags["image"]}'
             chunk_text = Document(text=text, mime_type='text/plain')
             chunk_uri = Document(uri=uri, mime_type='image/jpeg')
-            doc.chunks = [chunk_text, chunk_uri]
+            doc.chunks = DocumentArray([chunk_text, chunk_uri])
             doc.uri = uri
             doc.convert_uri_to_datauri()
 
@@ -191,6 +191,7 @@ class KeyValueIndexer(Executor):
             new_matches = DocumentArray()
             for match in doc.matches:
                 extracted_doc = self._docs[match.parent_id]
+                extracted_doc.scores = match.scores
                 new_matches.append(extracted_doc)
             doc.matches = new_matches
 
