@@ -84,7 +84,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     import docker
 
     mocker.patch(
-        'jina.peapods.runtimes.asyncio.AsyncNewLoopRuntime.is_ready',
+        'jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready',
         return_value=True,
     )
 
