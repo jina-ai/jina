@@ -202,18 +202,6 @@ def k8s_flow_with_needs(docker_images):
     return flow
 
 
-@pytest.fixture()
-def k8s_flow_with_connection_pool(docker_images):
-    flow = Flow(
-        name='test-flow-with-connection-pool', port_expose=9090, protocol='http'
-    ).add(
-        name='test_executor',
-        replicas=2,
-        uses=f'docker://{docker_images[0]}',
-    )
-    return flow
-
-
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('k8s_connection_pool', [True, False])
@@ -542,24 +530,24 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
 
 
-@pytest.mark.timeout(3600)
 @pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor']],
+    [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-@pytest.mark.parametrize('connection_pool', [True, False])
-async def test_flow_connection_pool(
-    k8s_flow_with_connection_pool, connection_pool, docker_images, tmpdir
-):
-    dump_path = os.path.join(
-        str(tmpdir), f'test-flow-connection-pool-{connection_pool}'
+async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, tmpdir):
+    flow = Flow(name='k8s_flow_connection_pool', port_expose=9090, protocol='http').add(
+        name='test_executor',
+        replicas=2,
+        uses=f'docker://{docker_images[0]}',
     )
-    namespace = f'test-flow-connection-pool-{connection_pool}'
-    k8s_flow_with_connection_pool.to_k8s_yaml(
-        dump_path, k8s_namespace=namespace, k8s_connection_pool=True
-    )
+
+    dump_path = os.path.join(str(tmpdir), 'test-flow-connection-pool')
+    namespace = 'test-flow-connection-pool'
+    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -580,7 +568,7 @@ async def test_flow_connection_pool(
     )
 
     resp = await run_test(
-        flow=k8s_flow_with_connection_pool,
+        flow=flow,
         namespace=namespace,
         core_client=core_client,
         endpoint='/debug',
@@ -594,7 +582,7 @@ async def test_flow_connection_pool(
         for doc in r.docs:
             visited.add(doc.tags['hostname'])
 
-    if connection_pool:
+    if k8s_connection_pool:
         assert len(visited) == 2
     else:
         assert len(visited) == 1
