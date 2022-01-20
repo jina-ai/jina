@@ -631,7 +631,7 @@ def _extract_route_entries(gateway_entry, routes):
 
 
 def test_flow_change_parameters():
-    class MyExec(Executor):
+    class ChangeParamExec(Executor):
         @requests
         def foo(self, **kwargs):
             return {'a': 1}
@@ -639,9 +639,9 @@ def test_flow_change_parameters():
     def my_cb(resp: Response):
         assert resp.parameters['a'] == 1.0
 
-    f = Flow().add(uses=MyExec)
+    f = Flow().add(uses=ChangeParamExec)
     with f:
-        f.post('/', parameters={'a': 2}, on_done=my_cb)
+        f.post('/', parameters={'a': 3}, on_done=my_cb)
         f.post('/', parameters={}, on_done=my_cb)
 
 
@@ -672,10 +672,12 @@ def test_gateway_only_flows_no_error(capsys, protocol):
 
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
-    adresses = f._get_pod_addresses()
+    addresses = f._get_pod_addresses()
     for name, pod in f:
         if name != 'gateway':
-            assert adresses[name][0] == f'{pod.host}:{pod.head_port_in}'
+            assert (
+                addresses[name][0] == f'{pod.protocol}://{pod.host}:{pod.head_port_in}'
+            )
             for n in pod.needs:
                 assert name in graph_dict[n if n != 'gateway' else 'start-gateway']
         else:

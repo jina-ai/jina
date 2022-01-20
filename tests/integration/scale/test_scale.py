@@ -106,7 +106,7 @@ def test_scale_success(flow_with_runtime, pod_params):
         docker_ids = set()
         for i_r, r in enumerate(ret1):
             assert len(r.docs) == 10
-            p_ids, d_ids = r.docs.get_attributes('tags__process_id', 'tags__docker_id')
+            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__docker_id']]
             process_ids = process_ids.union(set(p_ids))
             docker_ids = docker_ids.union(set(d_ids))
 
@@ -120,7 +120,7 @@ def test_scale_success(flow_with_runtime, pod_params):
         docker_ids = set()
         for r in ret2:
             assert len(r.docs) == 10
-            p_ids, d_ids = r.docs.get_attributes('tags__process_id', 'tags__docker_id')
+            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__docker_id']]
             process_ids = process_ids.union(set(p_ids))
             docker_ids = docker_ids.union(set(d_ids))
 
@@ -176,7 +176,6 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
             [Document() for _ in range(5)], request_size=1, return_results=True
         )
 
-    assert queue.qsize() == NUM_CONCURRENT_CLIENTS * NUM_DOCS_SENT_BY_CLIENTS
     all_docs = []
     while not queue.empty():
         all_docs.append(queue.get())

@@ -113,7 +113,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
         yield Document(
-            id=str(i),
+            id=f'I am document {i}',
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

@@ -86,7 +86,7 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
         for r in ret1:
             assert len(r.docs) == 10
             # replicas are identified via their docker id
-            for id in r.docs.get_attributes('tags__docker_id'):
+            for id in r.docs[:, 'tags__docker_id']:
                 replicas.add(id)
 
         assert len(replicas) == num_replicas * shards
@@ -95,7 +95,7 @@ def test_scale_success(remote_flow_with_runtime: Flow, pod_params):
         replicas = set()
         for r in ret2:
             assert len(r.docs) == 10
-            for id in r.docs.get_attributes('tags__docker_id'):
+            for id in r.docs[:, 'tags__docker_id']:
                 replicas.add(id)
 
         assert len(replicas) == scale_to * shards
@@ -150,7 +150,6 @@ def test_scale_with_concurrent_client(
             [Document() for _ in range(5)], request_size=1, return_results=True
         )
 
-    assert queue.qsize() == NUM_CONCURRENT_CLIENTS * NUM_DOCS_SENT_BY_CLIENTS
     all_docs = []
     while not queue.empty():
         all_docs.append(queue.get())

@@ -215,17 +215,6 @@ def flow(args: 'Namespace'):
         raise ValueError('start a flow from CLI requires a valid `--uses`')
 
 
-def optimizer(args: 'Namespace'):
-    """
-    Start an optimization from a YAML file
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.optimizers import run_optimizer_cli
-
-    run_optimizer_cli(args)
-
-
 def hub(args: 'Namespace'):
     """
     Start a hub builder for push, pull

@@ -77,10 +77,6 @@ class BadRequestType(TypeError, BaseJinaExeception):
     """Exception when can not construct a request object from given data."""
 
 
-class BadNamedScoreType(TypeError, BaseJinaExeception):
-    """Exception when can not construct a named score from the given data."""
-
-
 class BadImageNameError(Exception, BaseJinaExeception):
     """Exception when an image name can not be found either local & remote"""
 

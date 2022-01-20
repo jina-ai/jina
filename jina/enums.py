@@ -265,6 +265,7 @@ class DataInputType(BetterEnum):
     AUTO = 0  # auto inference the input type from data (!WARN: could be slow as it relies on try-execept)
     DOCUMENT = 1  # the input is a full document
     CONTENT = 2  # the input is just the content of the document
+    DICT = 3  # the input is a dictionary representing a Document, needed while pydantic model not available
 
 
 class RuntimeBackendType(BetterEnum):

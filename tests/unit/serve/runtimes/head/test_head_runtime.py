@@ -1,6 +1,7 @@
 import asyncio
 import json
 import multiprocessing
+from copy import copy, deepcopy
 from multiprocessing import Process
 from typing import List
 
@@ -85,7 +86,7 @@ def test_message_merging():
         _create_test_data_message(), f'{args.host}:{args.port_in}'
     )
     assert result
-    assert handle_queue.qsize() == 3
+    assert _queue_length(handle_queue) == 3
     assert len(result.response.docs) == 1
 
     _destroy_runtime(args, cancel_event, runtime_thread)
@@ -108,14 +109,14 @@ def test_uses_before_uses_after():
         _create_test_data_message(), f'{args.host}:{args.port_in}'
     )
     assert result
-    assert handle_queue.qsize() == 5  # uses_before + 3 workers + uses_after
+    assert _queue_length(handle_queue) == 5  # uses_before + 3 workers + uses_after
     assert len(result.response.docs) == 1
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
 def test_decompress(monkeypatch):
-    call_counts = multiprocessing.Queue()
+    call_counts = multiprocessing.Manager().Queue()
 
     def decompress(self):
         call_counts.put_nowait('called')
@@ -146,9 +147,9 @@ def test_decompress(monkeypatch):
 
     assert response
     assert 'is-error' in dict(call.trailing_metadata())
-    assert call_counts.qsize() == 0
+    assert _queue_length_copy(call_counts) == 0
     assert len(response.docs) == 1
-    assert call_counts.qsize() == 1
+    assert _queue_length_copy(call_counts) == 1
     assert not handle_queue.empty()
 
     _destroy_runtime(args, cancel_event, runtime_thread)
@@ -181,7 +182,7 @@ def test_dynamic_polling(polling):
         )
 
     assert response
-    assert handle_queue.qsize() == 2
+    assert _queue_length(handle_queue) == 2
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port_in}',
@@ -193,7 +194,7 @@ def test_dynamic_polling(polling):
         )
 
     assert response
-    assert handle_queue.qsize() == 3
+    assert _queue_length(handle_queue) == 3
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
@@ -223,7 +224,7 @@ def test_base_polling(polling):
         )
 
     assert response
-    assert handle_queue.qsize() == 2 if polling == 'all' else 1
+    assert _queue_length(handle_queue) == 2 if polling == 'all' else 1
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port_in}',
@@ -235,7 +236,7 @@ def test_base_polling(polling):
         )
 
     assert response
-    assert handle_queue.qsize() == 4 if polling == 'all' else 2
+    assert _queue_length(handle_queue) == 4 if polling == 'all' else 2
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
@@ -303,3 +304,28 @@ def _destroy_runtime(args, cancel_event, runtime_thread):
     cancel_event.set()
     runtime_thread.join()
     assert not HeadRuntime.is_ready(f'{args.host}:{args.port_in}')
+
+
+def _queue_length(queue: 'multiprocessing.Queue'):
+    # Pops elements from the queue and counts them
+    # This is used instead of multiprocessing.Queue.qsize() since it is not supported on MacOS
+    length = 0
+    q_elements = []
+    while not queue.empty():
+        q_elements.append(queue.get())
+        length += 1
+    for e in q_elements:
+        queue.put_nowait(e)
+    return length
+
+
+def _queue_length_copy(queue: 'multiprocessing.Manager().Queue'):
+    # Copies the queue and counts the elements in the copy
+    # Used if the original queue needs to be preserved
+    # This is used instead of multiprocessing.Queue.qsize() since it is not supported on MacOS
+    c_queue = copy(queue)
+    length = 0
+    while not c_queue.empty():
+        c_queue.get()
+        length += 1
+    return length

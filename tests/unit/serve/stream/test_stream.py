@@ -1,10 +1,9 @@
 import asyncio
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArray
 from jina.helper import Namespace, random_identity
 from jina.serve.stream import RequestStreamer
-from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
 
 
@@ -21,7 +20,9 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
 
         async def task():
             await asyncio.sleep(0.5)
-            request.docs[0].tags['request_handled'] = True
+            docs = request.docs
+            docs[0].tags['request_handled'] = True
+            request.data.docs = docs
             return request
 
         future = asyncio.ensure_future(task())
@@ -30,7 +31,9 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
     def result_handle_fn(result):
         results_handled.append(result)
         assert isinstance(result, DataRequest)
-        result.docs[0].tags['result_handled'] = True
+        docs = result.docs
+        docs[0].tags['result_handled'] = True
+        result.data.docs = docs
         return result
 
     def end_of_iter_fn():
@@ -42,14 +45,18 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
         for i in range(num_requests):
             req = DataRequest()
             req.header.request_id = random_identity()
-            req.docs.append(Document())
+            da = DocumentArray()
+            da.append(Document())
+            req.data.docs = da
             yield req
 
     async def _get_async_requests_iterator(num_requests):
         for i in range(num_requests):
             req = DataRequest()
             req.header.request_id = random_identity()
-            req.docs.append(Document())
+            da = DocumentArray()
+            da.append(Document())
+            req.data.docs = da
             yield req
             await asyncio.sleep(0.1)
 

@@ -16,6 +16,7 @@ from jina.enums import PodRoleType, PeaRoleType, PollingType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from jina.helper import random_identity, CatchAllCleanupContextManager
 from jina.jaml.helper import complete_path
+from jina.hubble.hubio import HubIO
 
 
 class BasePod(ExitStack):
@@ -398,9 +399,44 @@ class Pod(BasePod):
         else:
             self.peas_args = self._parse_args(self.args)
 
+        if self.is_sandbox:
+            host, port = HubIO.deploy_public_sandbox(getattr(self.args, 'uses', ''))
+            self.first_pea_args.host = host
+            self.first_pea_args.port_in = port
+            self.peas_args['head'].host = host
+            self.peas_args['head'].port_in = port
+
     def update_worker_pea_args(self):
         """ Update args of all its worker peas based on Pod args. Does not touch head and tail"""
         self.peas_args['peas'] = self._set_peas_args(self.args)
+
+    @property
+    def is_sandbox(self) -> bool:
+        """
+        Check if this pod is a sandbox.
+
+        :return: True if this pod is provided as a sandbox, False otherwise
+        """
+        uses = getattr(self.args, 'uses', '')
+        is_sandbox = uses.startswith('jinahub+sandbox://')
+        return is_sandbox
+
+    @property
+    def external(self) -> bool:
+        """
+        Check if this pod is external.
+
+        :return: True if this pod is provided as an external pod, False otherwise
+        """
+        return getattr(self.args, 'external', False) or self.is_sandbox
+
+    @property
+    def protocol(self):
+        """
+        :return: the protocol of this pod, https or http
+        """
+        protocol = getattr(self.args, 'protocol', 'http')
+        return 'https' if self.is_sandbox else protocol
 
     @property
     def first_pea_args(self) -> Namespace:
@@ -843,9 +879,7 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         mermaid_graph = []
-        if self.role != PodRoleType.GATEWAY and not getattr(
-            self.args, 'external', False
-        ):
+        if self.role != PodRoleType.GATEWAY and self.external:
             mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
 
             uses_before_name = (

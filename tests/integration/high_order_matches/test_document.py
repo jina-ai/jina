@@ -14,7 +14,7 @@ def validate_results(results):
 
 
 class MatchAdder(Executor):
-    def __init__(self, traversal_paths=('r',), **kwargs):
+    def __init__(self, traversal_paths='r', **kwargs):
         super().__init__(**kwargs)
         self._traversal_paths = traversal_paths
 
@@ -29,7 +29,7 @@ class MatchAdder(Executor):
 def test_single_executor():
 
     f = Flow(port_expose=exposed_port).add(
-        uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': ['r', 'm']}}
+        uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'r,m'}}
     )
 
     with f:
@@ -45,8 +45,8 @@ def test_multi_executor():
 
     f = (
         Flow(port_expose=exposed_port)
-        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': ['r']}})
-        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': ['m']}})
+        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'r'}})
+        .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'm'}})
     )
 
     with f:

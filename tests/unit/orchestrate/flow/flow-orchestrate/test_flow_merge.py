@@ -15,8 +15,8 @@ class DummySegment(Executor):
     def segment(self, docs, *args, **kwargs):
         for d in docs:
             d.chunks = [
-                Document(buffer=f'aa{self._label}'.encode()),
-                Document(buffer=f'bb{self._label}'.encode()),
+                Document(blob=f'aa{self._label}'.encode()),
+                Document(blob=f'bb{self._label}'.encode()),
             ]
 
 

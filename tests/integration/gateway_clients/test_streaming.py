@@ -67,18 +67,18 @@ class DummyMockConnectionPool:
                     time.sleep(0.1)
                     self._docs.extend(request.docs)
                 else:
-                    response_msg.docs.clear()
-                    response_msg.docs.extend(
-                        DocumentArray(
-                            Document(tags={'ids': self._docs.get_attributes('id')})
-                        )
+                    docs = response_msg.docs
+                    docs.clear()
+                    docs.extend(
+                        DocumentArray(Document(tags={'ids': self._docs[:, 'id']}))
                     )
+                    response_msg.data.docs = docs
                 return response_msg
             else:
                 if pod == 'slow-executor':
                     await asyncio.sleep(SLOW_EXECUTOR_SLEEP_TIME)
                 for doc in request.docs:
-                    new_doc = Document(obj=doc, copy=True)
+                    new_doc = Document(doc, copy=True)
                     new_doc.tags['executor'] = time.time()
                     print(
                         f'in {pod}, {new_doc.id} => time: {readable_time_from(new_doc.tags["executor"])}, {new_doc.tags["executor"]}',
@@ -86,8 +86,10 @@ class DummyMockConnectionPool:
                     )
                     new_docs.append(new_doc)
 
-                response_msg.docs.clear()
-                response_msg.docs.extend(new_docs)
+                docs = response_msg.docs
+                docs.clear()
+                docs.extend(new_docs)
+                response_msg.data.docs = docs
                 return response_msg
 
         async def task_wrapper():
@@ -136,13 +138,14 @@ async def slow_async_gen():
 
 
 def on_done(response, final_da: DocumentArray):
-    for doc in response.docs:
+    docs = response.docs
+    for doc in docs:
         doc.tags['on_done'] = time.time()
         print(
             f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}',
             flush=True,
         )
-    final_da.extend(response.docs)
+    final_da.extend(docs)
 
 
 def create_runtime(graph_dict: Dict, protocol: str, port_in: int, prefetch: int = 0):
@@ -309,7 +312,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
     def get_document(i):
         return Document(
             id=f'{multiprocessing.current_process().name}_{i}',
-            buffer=bytes(bytearray(os.urandom(512 * 4))),
+            text=str(bytes(bytearray(os.urandom(512 * 4)))),
         )
 
     async def good_client_gen():

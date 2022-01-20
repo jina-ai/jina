@@ -15,7 +15,7 @@ class DummySegment(Executor):
     def segment(self, docs, *args, **kwargs):
         """create a dummy segment of two values."""
         for d in docs:
-            d.chunks = [Document(buffer=b'aa'), Document(buffer=b'bb')]
+            d.chunks = [Document(blob=b'aa'), Document(blob=b'bb')]
 
 
 def validate(req):

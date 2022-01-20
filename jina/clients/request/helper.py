@@ -1,7 +1,7 @@
 """Module for helper functions for clients."""
 from typing import Tuple
 
-from docarray.document import Document
+from docarray import DocumentArray, Document
 
 from jina.enums import DataInputType
 from jina.excepts import BadRequestType
@@ -13,8 +13,8 @@ def _new_data_request_from_batch(
 ):
     req = _new_data_request(endpoint, target, parameters)
 
-    # add docs, groundtruths fields
-    _add_docs_groundtruths(req, batch, data_type, _kwargs)
+    # add docs fields
+    _add_docs(req, batch, data_type, _kwargs)
 
     return req
 
@@ -39,10 +39,15 @@ def _new_doc_from_data(
     def _build_doc_from_content():
         return Document(content=data, **kwargs), DataInputType.CONTENT
 
+    if data_type == DataInputType.DICT:
+        doc = Document.from_dict(data)
+        return doc, DataInputType.DICT
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
         if isinstance(data, Document):
             # if incoming is already primitive type Document, then all good, best practice!
             return data, DataInputType.DOCUMENT
+        elif isinstance(data, dict):
+            return Document.from_dict(data), DataInputType.DICT
         try:
             d = Document(data, **kwargs)
             return d, DataInputType.DOCUMENT
@@ -56,19 +61,17 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _add_docs_groundtruths(req, batch, data_type, _kwargs):
+def _add_docs(req, batch, data_type, _kwargs):
+    da = DocumentArray()
     for content in batch:
         if isinstance(content, tuple) and len(content) == 2:
-            # content comes in pair,  will take the first as the input and the second as the ground truth
-
-            # note how data_type is cached
             d, data_type = _new_doc_from_data(content[0], data_type, **_kwargs)
             gt, _ = _new_doc_from_data(content[1], data_type, **_kwargs)
-            req.docs.append(d)
-            req.groundtruths.append(gt)
+            da.append(d)
         else:
             d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
-            req.docs.append(d)
+            da.append(d)
+    req.data.docs = da
 
 
 def _add_control_propagate(req, kwargs):

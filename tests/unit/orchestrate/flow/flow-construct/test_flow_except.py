@@ -22,7 +22,7 @@ class BadExecutor(Executor):
         raise NotImplementedError
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
 def test_bad_flow(mocker, protocol):
     def validate(req):
         bad_routes = [

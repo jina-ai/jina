@@ -294,7 +294,7 @@ jobs:
           fail_ci_if_error: false
 
   docker-compose-test:
-    needs: [commit-lint, lint-flake-8, code-injection]
+    needs: update-schema
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -47,7 +47,9 @@ def test_upload_via_pymodule(replicas):
     )
     with f:
         responses = Client(port=exposed_port).index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             return_results=True,
         )
     assert len(responses) > 0
@@ -71,7 +73,9 @@ def test_upload_via_yaml(replicas):
     )
     with f:
         responses = Client(port=exposed_port).index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             return_results=True,
         )
     assert len(responses) > 0
@@ -104,7 +108,9 @@ def test_upload_multiple_workspaces(replicas):
     )
     with f:
         responses = Client(port=exposed_port).index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             return_results=True,
         )
     assert len(responses) > 0
@@ -191,9 +197,9 @@ async def test_custom_project():
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
     ):
-        fields = resp.data.docs[0].matches[0].tags.fields
-        assert fields['first'].string_value == 's'
-        assert fields['second'].string_value == 't'
+        tags = resp.data.docs[0].matches[0].tags
+        assert tags['first'] == 's'
+        assert tags['second'] == 't'
     print(f'Deleting workspace {workspace_id}')
     assert await client.workspaces.delete(workspace_id)
 
@@ -226,7 +232,9 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose):
     )
     with f:
         responses = Client(port=exposed_port).index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             return_results=True,
         )
     assert len(responses) > 0

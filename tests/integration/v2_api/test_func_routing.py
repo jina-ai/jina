@@ -5,10 +5,9 @@ def test_func_simple_routing():
     class MyExecutor(Executor):
         @requests(on='/search')
         def foo(self, **kwargs):
-            for j in ('docs', 'groundtruths', 'parameters'):
+            for j in ('docs', 'parameters'):
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
-            assert len(kwargs['groundtruths']) == 3
             assert kwargs['parameters']['hello'] == 'world'
             assert kwargs['parameters']['topk'] == 10
             kwargs['docs'][0].tags['hello'] = 'world'
@@ -56,7 +55,7 @@ def test_func_default_routing():
     class MyExecutor(Executor):
         @requests
         def foo(self, **kwargs):
-            for j in ('docs', 'groundtruths', 'parameters'):
+            for j in ('docs', 'parameters'):
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
 

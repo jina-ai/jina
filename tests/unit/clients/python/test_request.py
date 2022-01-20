@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from docarray.proto.docarray_pb2 import DocumentProto
-from jina import Document, Flow
+from docarray import Document
+from jina import Flow
 from jina.clients.request import request_generator
 from jina.clients.request.helper import _new_doc_from_data
 from jina.enums import DataInputType
@@ -25,30 +25,23 @@ def test_on_bad_iterator():
 
 
 @pytest.mark.parametrize(
-    'builder',
+    'builder, input_data_type, output_data_type',
     [
-        lambda x: x.SerializeToString(),
-        lambda x: MessageToJson(x),
-        lambda x: MessageToDict(x),
-        lambda x: Document(x),
+        (lambda x: x.to_dict(), DataInputType.AUTO, DataInputType.DICT),
+        (lambda x: x, DataInputType.DOCUMENT, DataInputType.DOCUMENT),
+        (lambda x: x, DataInputType.AUTO, DataInputType.DOCUMENT),
+        (lambda x: x.text, DataInputType.CONTENT, DataInputType.CONTENT),
     ],
 )
-def test_data_type_builder_doc(builder):
-    a = DocumentProto()
+def test_data_type_builder_doc(builder, input_data_type, output_data_type):
+    a = Document()
     a.id = 'a236cbb0eda62d58'
-    d, t = _new_doc_from_data(builder(a), DataInputType.DOCUMENT)
-    assert d.id == a.id
-    assert t == DataInputType.DOCUMENT
-
-
-def test_data_type_builder_doc_bad():
-    a = DocumentProto()
-    a.id = 'a236cbb0eda62d58'
-    with pytest.raises(ValueError):
-        _new_doc_from_data(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
-
-    with pytest.raises(ValueError):
-        _new_doc_from_data(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
+    a.text = 'text test'
+    d, t = _new_doc_from_data(builder(a), input_data_type)
+    if input_data_type != DataInputType.CONTENT:
+        assert d.id == a.id
+    assert d.text == a.text
+    assert t == output_data_type
 
 
 @pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
@@ -63,11 +56,11 @@ def test_data_type_builder_auto(input_type):
 
     d, t = _new_doc_from_data(b'123', input_type)
     assert t == DataInputType.CONTENT
-    assert d.buffer == b'123'
+    assert d.blob == b'123'
 
     c = np.random.random([10, 10])
     d, t = _new_doc_from_data(c, input_type)
-    np.testing.assert_equal(d.blob, c)
+    np.testing.assert_equal(d.tensor, c)
     assert t == DataInputType.CONTENT
 
 
@@ -114,7 +107,7 @@ def test_request_generate_bytes():
 def test_request_generate_docs():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
-            doc = DocumentProto()
+            doc = Document()
             doc.text = f'i\'m dummy doc {j}'
             doc.offset = 1000
             doc.tags['id'] = 1000  # this will be ignored
@@ -135,12 +128,13 @@ def test_request_generate_dict():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
             doc = {
+                'id': 'root',
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
                 'tags': {'id': 1000},
                 'chunks': [
-                    {'text': f'i\'m chunk 1', 'modality': 'text'},
-                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                    {'id': 'c1', 'text': f'i\'m chunk 1', 'modality': 'text'},
+                    {'id': 'c2', 'text': f'i\'m chunk 2', 'modality': 'image'},
                 ],
             }
             yield doc
@@ -166,15 +160,16 @@ def test_request_generate_dict_str():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
             doc = {
+                'id': 'root',
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
                 'tags': {'id': 1000},
                 'chunks': [
-                    {'text': f'i\'m chunk 1', 'modality': 'text'},
-                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                    {'id': 'c1', 'text': f'i\'m chunk 1', 'modality': 'text'},
+                    {'id': 'c2', 'text': f'i\'m chunk 2', 'modality': 'image'},
                 ],
             }
-            yield json.dumps(doc)
+            yield doc
 
     req = request_generator('', data=random_docs(100), request_size=100)
 
@@ -199,12 +194,12 @@ def test_request_generate_numpy_arrays():
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)
 
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)
 
 
 def test_request_generate_numpy_arrays_iterator():
@@ -219,9 +214,9 @@ def test_request_generate_numpy_arrays_iterator():
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)
 
     request = next(req)
     assert len(request.docs) == 5
     for index, doc in enumerate(request.docs, 1):
-        assert doc.blob.shape == (10,)
+        assert doc.tensor.shape == (10,)

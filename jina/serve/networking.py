@@ -1,7 +1,9 @@
+import os
 import asyncio
 import ipaddress
 from threading import Thread
 from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
+from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
@@ -35,13 +37,20 @@ class ReplicaList:
         :param address: Target address of this connection
         """
         if address not in self._address_to_connection_idx:
+            try:
+                parsed_address = urlparse(address)
+                address = parsed_address.netloc if parsed_address.netloc else address
+                use_https = parsed_address.scheme == 'https'
+            except:
+                use_https = False
+
             self._address_to_connection_idx[address] = len(self._connections)
             (
                 single_data_stub,
                 data_stub,
                 control_stub,
                 channel,
-            ) = GrpcConnectionPool.create_async_channel_stub(address)
+            ) = GrpcConnectionPool.create_async_channel_stub(address, https=use_https)
             self._address_to_channel[address] = channel
 
             self._connections.append((single_data_stub, data_stub, control_stub))
@@ -135,6 +144,10 @@ class GrpcConnectionPool:
             self._pods: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
             # dict stores last entity id used for a particular pod, used for round robin
             self._access_count: Dict[str, int] = {}
+
+            if os.name != 'nt':
+                os.unsetenv('http_proxy')
+                os.unsetenv('https_proxy')
 
         def add_replica(self, pod: str, shard_id: int, address: str):
             self._add_connection(pod, shard_id, address, 'shards')
@@ -522,6 +535,11 @@ class GrpcConnectionPool:
         activate_request.add_related_entity(
             'worker', worker_host, worker_port, shard_id
         )
+
+        if os.name != 'nt':
+            os.unsetenv('http_proxy')
+            os.unsetenv('https_proxy')
+
         return GrpcConnectionPool.send_request_sync(activate_request, target_head)
 
     @staticmethod
@@ -788,6 +806,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     async def _process_item(self, item):
         try:
             jina_pod_name = item.metadata.labels['jina_pod_name']
+
             is_head = item.metadata.labels['pea_type'].lower() == 'head'
             shard_id = (
                 int(item.metadata.labels['shard_id'])

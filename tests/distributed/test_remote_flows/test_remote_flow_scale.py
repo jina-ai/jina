@@ -72,7 +72,7 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     process_ids = set()
     for r in ret1:
-        for p_id in r.docs.get_attributes('tags__process_id'):
+        for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)  # identify replicas by the process they run in
 
     assert len(process_ids) == replicas * shards
@@ -87,7 +87,7 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     process_ids = set()
     for r in ret2:
-        for p_id in r.docs.get_attributes('tags__process_id'):
+        for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)
     assert len(process_ids) == scale_to * shards
     assert jinad_client.flows.delete(flow_id)
@@ -123,7 +123,7 @@ async def test_scale_remote_flow_async(
 
     process_ids = set()
     async for r in ret1:
-        for p_id in r.docs.get_attributes('tags__process_id'):
+        for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)  # identify replicas by the process they run in
 
     assert len(set(process_ids)) == replicas * shards
@@ -140,7 +140,7 @@ async def test_scale_remote_flow_async(
 
     process_ids = set()
     async for r in ret2:
-        for p_id in r.docs.get_attributes('tags__process_id'):
+        for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)
 
     assert len(set(process_ids)) == scale_to * shards

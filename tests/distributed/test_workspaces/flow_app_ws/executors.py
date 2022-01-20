@@ -1,7 +1,8 @@
 import numpy as np
 from tinydb import TinyDB, where
 from sklearn.utils import shuffle
-from jina import requests, Document, DocumentArray, Executor
+from docarray import Document, DocumentArray
+from jina import requests, Executor
 
 
 class TinyDBIndexer(Executor):
@@ -11,14 +12,15 @@ class TinyDBIndexer(Executor):
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
-        self.db.insert_multiple(docs.get_attributes('tags'))
+        self.db.insert_multiple(docs[:, 'tags'])
 
     @requests(on='/search')
     def search(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            r = self.db.search(where(doc.tags__key) == doc.tags__value)
+            r = self.db.search(where(doc.tags['key']) == doc.tags['value'])
             if len(r) > 0:
-                doc.matches = [Document(tags=r[0])]
+                doc.matches = DocumentArray()
+                doc.matches.append(Document(tags=r[0]))
 
 
 class SklearnExecutor(Executor):
