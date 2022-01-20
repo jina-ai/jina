@@ -551,7 +551,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
 )
 @pytest.mark.parametrize('connection_pool', [True, False])
 async def test_flow_connection_pool(
-    k8s_flow_with_connection_pool, connection_pool, tmpdir
+    k8s_flow_with_connection_pool, connection_pool, docker_images, tmpdir
 ):
     dump_path = os.path.join(
         str(tmpdir), f'test-flow-connection-pool-{connection_pool}'
