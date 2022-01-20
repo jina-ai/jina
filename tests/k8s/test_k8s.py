@@ -541,47 +541,6 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
 
 
-def make_requests(flow, core_client, namespace, endpoint, n_docs=10, request_size=100):
-    from jina.clients import Client
-
-    gateway_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=gateway'
-        )
-        .items[0]
-        .metadata.name
-    )
-    config_path = os.environ['KUBECONFIG']
-    import portforward
-
-    with portforward.forward(
-        namespace, gateway_pod_name, flow.port_expose, flow.port_expose, config_path
-    ):
-        client_kwargs = dict(
-            host='localhost',
-            port=flow.port_expose,
-            asyncio=True,
-        )
-        client_kwargs.update(flow._common_kwargs)
-
-        client = Client(**client_kwargs)
-        client.show_progress = True
-        visited = set()
-        for _ in range(20):
-            resp = client.post(
-                endpoint,
-                inputs=DocumentArray([Document() for _ in range(n_docs)]),
-                return_results=True,
-                request_size=request_size,
-            )
-
-            for r in resp:
-                for doc in r.data.docs:
-                    visited.add(doc.tags['hostname'])
-
-    return visited
-
-
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
