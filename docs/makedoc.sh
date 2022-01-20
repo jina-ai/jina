@@ -5,13 +5,12 @@ set -ex
 if [[ $1 == "local-only" ]]; then 
   rm -rf api && make clean
 
-  cp $(pwd)/../docarray/proto/docarray.proto $(pwd)/../jina/proto
+  cp $(pwd)/../jina/proto
   docker run --rm \
     -v $(pwd)/proto:/out \
     -v $(pwd)/../jina/proto:/protos \
     ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
 
-  rm $(pwd)/../jina/proto/docarray.proto
   make dirhtml
 else
   export NUM_RELEASES=${NUM_RELEASES:-10}
@@ -46,12 +45,10 @@ else
   echo -e "Branches to whitelist: ${SMV_BRANCH_WHITELIST}"
   echo -e "Tags to whitelist: ${SMV_TAG_WHITELIST}"
 
-  cp $(pwd)/../docarray/proto/docarray.proto $(pwd)/../jina/proto
   docker run --rm \
     -v $(pwd)/proto:/out \
     -v $(pwd)/../jina/proto:/protos \
     ghcr.io/jina-ai/protoc-gen-doc --doc_opt=markdown,docs.md
-  rm $(pwd)/../jina/proto/docarray.proto
 
   sphinx-multiversion . ${BUILD_DIR} -b dirhtml
   mv -v _build/dirhtml/${LATEST_JINA_VERSION}/* _build/dirhtml

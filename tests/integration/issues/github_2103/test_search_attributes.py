@@ -7,20 +7,12 @@ from urllib import request
 
 from jina import Flow
 from jina.serve.runtimes.gateway.http.models import _to_camel_case
-from docarray.proto import docarray_pb2
 from jina import Document
 from jina import helper
 from jina import Executor, requests
 from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-
-_document_fields = sorted(
-    set(
-        _to_camel_case(k)
-        for k in list(docarray_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
-    )
-)
 
 # check if this can be bypassed
 IGNORED_FIELDS = ['embedding', 'scores', 'graphInfo', 'evaluations']
