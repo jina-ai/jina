@@ -575,8 +575,7 @@ async def test_flow_connection_pool(
         deployment_replicas_expected={
             'gateway': 1,
             'test-executor-head-0': 1,
-            'test-executor-0': 1,
-            'test-executor-1': 1,
+            'test-executor': 2,
         },
     )
 
