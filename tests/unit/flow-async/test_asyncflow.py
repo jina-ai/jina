@@ -16,7 +16,7 @@ num_docs = 5
 
 def validate(req):
     assert len(req.docs) == num_docs
-    assert req.docs[0].blob.ndim == 1
+    assert req.docs[0].tensor.ndim == 1
 
 
 def documents(start_index, end_index):

@@ -80,13 +80,14 @@ class SlowExecutor(Executor):
 
 def on_done(response, final_da: DocumentArray):
     print(f' receiving response {response._pb_body.header.request_id}')
-    for doc in response.docs:
+    docs = response.docs
+    for doc in docs:
         doc.tags['on_done'] = time.time()
         print(
             f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}, {doc.tags["on_done"]}',
             flush=True,
         )
-    final_da.extend(response.docs)
+    final_da.extend(docs)
 
 
 @pytest.mark.parametrize(
@@ -193,7 +194,7 @@ class Indexer(Executor):
     @requests(on='/status')
     def status(self, **kwargs):
         # returns ids of all docs in tags
-        return DocumentArray(Document(tags={'ids': self.docs.get_attributes('id')}))
+        return DocumentArray(Document(tags={'ids': self.docs[:, 'id']}))
 
 
 @pytest.mark.parametrize('prefetch', [0, 5])
@@ -207,7 +208,7 @@ def test_multiple_clients(prefetch, protocol):
     def get_document(i):
         return Document(
             id=f'{current_process().name}_{i}',
-            buffer=bytes(bytearray(os.urandom(512 * 4))),
+            text=str(bytes(bytearray(os.urandom(512 * 4)))),
         )
 
     async def good_client_gen():

@@ -22,15 +22,18 @@ def flow_with_exception_request():
 
 @pytest.mark.asyncio
 async def test_http_clientlet():
-    with Flow(port_expose=12345, protocol='http').add():
+    from jina.helper import random_port
+
+    port = random_port()
+    with Flow(port_expose=port, protocol='http').add():
         async with HTTPClientlet(
-            url='http://localhost:12345/post', logger=logger
+            url=f'http://localhost:{port}/post', logger=logger
         ) as iolet:
             request = _new_data_request('/', None, {'a': 'b'})
             r = await iolet.send_message(request)
             response = DataRequest(await r.json())
-            assert response.header.exec_endpoint == '/'
-            assert response.parameters == {'a': 'b'}
+    assert response.header.exec_endpoint == '/'
+    assert response.parameters == {'a': 'b'}
 
 
 @pytest.mark.asyncio

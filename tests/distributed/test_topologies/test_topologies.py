@@ -178,7 +178,9 @@ def test_remote_flow_local_executors(mocker, replicas):
             protocol=args['protocol'],
         ).post(
             on='/',
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             on_done=response_mock,
             show_progress=True,
         )

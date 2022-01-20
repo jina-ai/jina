@@ -1,7 +1,0 @@
-!DummyCrafterOption2
-with:
-  param4: ${{JINA_DUMMYCRAFTER_PARAM4_VAR}}
-  param5: ${{JINA_DUMMYCRAFTER_PARAM5_VAR}}
-  param6: ${{JINA_DUMMYCRAFTER_PARAM6_VAR}}
-metas:
-  py_modules: 'dummy_crafter_pod_choice.py'

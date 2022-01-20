@@ -13,7 +13,7 @@ PARAMS = {'top_k': 10}
 
 
 def rest_post(f, endpoint, documents):
-    data = [d.dict() for d in documents]
+    data = {'docs': [d.to_dict() for d in documents]}
     if endpoint == 'delete':
         method = 'delete'
     elif endpoint == 'update':
@@ -30,7 +30,7 @@ def rest_post(f, endpoint, documents):
     return response.json()
 
 
-@pytest.mark.parametrize('rest', [False, True])
+@pytest.mark.parametrize('rest', [True, False])
 def test_crud(tmpdir, rest):
     os.environ['RESTFUL'] = 'http' if rest else 'grpc'
     os.environ['WORKSPACE'] = str(tmpdir)
@@ -52,11 +52,15 @@ def test_crud(tmpdir, rest):
         if rest:
             results = rest_post(f, 'search', inputs)
             matches = results['data']['docs'][0]['matches']
+            for doc in results['data']['docs']:
+                assert Document.from_dict(doc).text == 'hello world'
         else:
             results = c.post(
                 on='/search', inputs=inputs, parameters=PARAMS, return_results=True
             )
             matches = results[0].docs[0].matches
+            for doc in results[0].docs:
+                assert doc.text == 'hello world'
 
         assert len(matches) == 10
 
@@ -87,7 +91,7 @@ def test_crud(tmpdir, rest):
         assert len(matches) == 5
 
     updated_docs = list(
-        random_docs(5, chunks_per_doc=5, start_id=5, text=b'hello again')
+        random_docs(5, chunks_per_doc=5, start_id=5, text='hello again')
     )
 
     with Flow.load_config('flow.yml') as f:
@@ -115,7 +119,7 @@ def test_crud(tmpdir, rest):
 
         for match, updated_doc in zip(matches, updated_docs):
             if isinstance(match, dict):
-                match = Document(match)
+                match = Document.from_dict(match)
 
             assert updated_doc.id == match.id
             assert updated_doc.text == match.text

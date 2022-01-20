@@ -4,20 +4,14 @@ import time
 import pytest
 import requests
 
-from jina import Executor, DocumentArray, requests as req
+from jina import Executor, requests as req
 from jina import Flow, __windows__
 from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
 from jina.peapods.peas.factory import PeaFactory
-from docarray.proto.docarray_pb2 import DocumentProto
-from docarray.document.generators import (
-    from_csv,
-    from_ndjson,
-    from_files,
-    from_huggingface_datasets,
-)
+from docarray import Document, DocumentArray
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,16 +43,14 @@ def test_img_2():
 
 
 @pytest.mark.parametrize(
-    'inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])]
+    'inputs', [iter([b'1234', b'45467']), iter([Document(), Document()])]
 )
 def test_check_input_success(inputs):
     client = Client(host='localhost', port_jinad=12345)
     client.check_input(inputs)
 
 
-@pytest.mark.parametrize(
-    'inputs', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])]
-)
+@pytest.mark.parametrize('inputs', [iter([list(), list(), {12, 2, 3}])])
 def test_check_input_fail(inputs):
     client = Client(host='localhost', port_jinad=12345)
     with pytest.raises(BadClientInput):
@@ -101,70 +93,6 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         assert 'data' in resp
         assert len(resp['data']['docs']) == 2
         assert resp['data']['docs'][0]['text'] == test_img_1
-
-
-class MimeExec(Executor):
-    @req
-    def foo(self, docs: 'DocumentArray', **kwargs):
-        for d in docs:
-            d.convert_uri_to_buffer()
-
-
-@pytest.mark.skipif(__windows__, reason='For windows, passes locally, but fails on CI')
-@pytest.mark.slow
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_mime_type(protocol):
-    f = Flow(protocol=protocol).add(uses=MimeExec)
-
-    def validate_mime_type(req):
-        for d in req.data.docs:
-            assert d.mime_type == 'text/x-python'
-
-    with f:
-        f.index(from_files('*.py'), validate_mime_type)
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize('func_name', ['index', 'search'])
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_ndjson(protocol, mocker, func_name):
-    with Flow(protocol=protocol).add() as f, open(
-        os.path.join(cur_dir, 'docs.jsonlines')
-    ) as fp:
-        mock = mocker.Mock()
-        getattr(f, f'{func_name}')(from_ndjson(fp), on_done=mock)
-        mock.assert_called_once()
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize('func_name', ['index', 'search'])
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_csv(protocol, mocker, func_name):
-    with Flow(protocol=protocol).add() as f, open(
-        os.path.join(cur_dir, 'docs.csv')
-    ) as fp:
-        mock = mocker.Mock()
-        getattr(f, f'{func_name}')(from_csv(fp), on_done=mock)
-        mock.assert_called_once()
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize('func_name', ['index', 'search'])
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_huggingface_datasets(protocol, mocker, func_name):
-    with Flow(protocol=protocol).add() as f:
-        mock = mocker.Mock()
-        getattr(f, f'{func_name}')(
-            from_huggingface_datasets(
-                dataset_path='adversarial_qa',
-                size=2,
-                name='adversarialQA',
-                split='test',
-                field_resolver={'question': 'text'},
-            ),
-            on_done=mock,
-        )
-        mock.assert_called_once()
 
 
 # Timeout is necessary to fail in case of hanging client requests

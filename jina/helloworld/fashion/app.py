@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from functools import partial
 
 from jina import Flow
 from jina.parsers.helloworld import set_hw_parser
@@ -11,8 +12,8 @@ if __name__ == '__main__':
         download_data,
         index_generator,
         query_generator,
+        get_groundtruths,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator
 else:
     from .helper import (
         print_result,
@@ -20,8 +21,9 @@ else:
         download_data,
         index_generator,
         query_generator,
+        get_groundtruths,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
+    from .my_executors import MyEncoder, MyIndexer
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,7 +33,7 @@ def hello_world(args):
     Runs Jina's Hello World.
 
     Usage:
-        Use it via CLI :command:`jina hello-world`.
+        Use it via CLI :command:`jina hello fashion`.
 
     Description:
         It downloads Fashion-MNIST dataset and :term:`Indexer<indexes>` 50,000 images.
@@ -73,7 +75,6 @@ def hello_world(args):
         Flow()
         .add(uses=MyEncoder, replicas=2)
         .add(uses=MyIndexer, workspace=args.workdir)
-        .add(uses=MyEvaluator)
     )
 
     # run it!
@@ -83,13 +84,14 @@ def hello_world(args):
             show_progress=True,
         )
 
+        groundtruths = get_groundtruths(targets)
+        evaluate_print_callback = partial(print_result, groundtruths)
+        evaluate_print_callback.__name__ = 'evaluate_print_callback'
         f.post(
-            '/eval',
-            query_generator(
-                num_docs=args.num_query, target=targets, with_groundtruth=True
-            ),
+            '/search',
+            query_generator(num_docs=args.num_query, target=targets),
             shuffle=True,
-            on_done=print_result,
+            on_done=evaluate_print_callback,
             parameters={'top_k': args.top_k},
             show_progress=True,
         )

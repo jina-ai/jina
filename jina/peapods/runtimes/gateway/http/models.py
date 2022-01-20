@@ -9,13 +9,8 @@ from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 from jina.proto.jina_pb2 import RouteProto, StatusProto, DataRequestProto
-from docarray.proto.docarray_pb2 import (
-    DenseNdArrayProto,
-    NdArrayProto,
-    SparseNdArrayProto,
-    NamedScoreProto,
-    DocumentProto,
-)
+
+from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -92,25 +87,6 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
     return root_validator(pre=False, allow_reuse=True)(oneof_setter)
 
 
-def _get_tags_updater() -> Callable:
-    """
-    Pydantic root validator (pre) classmethod generator to update tags
-
-    :return: classmethod for updating tags in DocumentProto Pydantic model
-    """
-
-    def tags_updater(cls, values):
-        extra_fields = {k: values[k] for k in set(values).difference(cls.__fields__)}
-        if extra_fields:
-            if 'tags' not in values:
-                values['tags'] = {}
-            if isinstance(values['tags'], Dict):
-                values['tags'].update(extra_fields)
-        return values
-
-    return root_validator(pre=True, allow_reuse=True)(tags_updater)
-
-
 def protobuf_to_pydantic_model(
     protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
 ) -> BaseModel:
@@ -155,8 +131,10 @@ def protobuf_to_pydantic_model(
         if field_type is Enum:
             # Proto Field Type: enum
             enum_dict = {}
+
             for enum_field in f.enum_type.values:
                 enum_dict[enum_field.name] = enum_field.number
+
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:
@@ -168,9 +146,6 @@ def protobuf_to_pydantic_model(
                 # Proto Field Type: google.protobuf.Timestamp
                 field_type = datetime
                 default_factory = datetime.now
-            elif f.message_type.name == 'NdArrayProto':
-                field_type = List
-                default_factory = None
             else:
                 # Proto field type: Proto message defined in jina.proto
                 if f.message_type.name == model_name:
@@ -191,13 +166,6 @@ def protobuf_to_pydantic_model(
             else Field(default=default_value),
         )
 
-        # some fixes on Doc.scores and Doc.evaluations
-        if field_name in ('scores', 'evaluations'):
-            all_fields[field_name] = (
-                Dict[str, PROTO_TO_PYDANTIC_MODELS.NamedScoreProto],
-                Field(default={}),
-            )
-
     # Post-processing (Handle oneof fields)
     for oneof_k, oneof_v_list in oneof_fields.items():
         oneof_field_validators[f'oneof_validator_{oneof_k}'] = _get_oneof_validator(
@@ -206,9 +174,6 @@ def protobuf_to_pydantic_model(
         oneof_field_validators[f'oneof_setter_{oneof_k}'] = _get_oneof_setter(
             oneof_fields=oneof_v_list, oneof_key=oneof_k
         )
-
-    if model_name == 'DocumentProto':
-        oneof_field_validators['tags_validator'] = _get_tags_updater()
 
     CustomConfig.fields = camel_case_fields
     model = create_model(
@@ -219,15 +184,11 @@ def protobuf_to_pydantic_model(
     )
     model.update_forward_refs()
     PROTO_TO_PYDANTIC_MODELS.__setattr__(model_name, model)
+
     return model
 
 
 for proto in (
-    NamedScoreProto,
-    DenseNdArrayProto,
-    NdArrayProto,
-    SparseNdArrayProto,
-    DocumentProto,
     RouteProto,
     StatusProto,
     DataRequestProto,
@@ -257,7 +218,9 @@ class JinaStatusModel(BaseModel):
 def _get_example_data():
     from jina import DocumentArray, Document
 
-    return DocumentArray([Document(text='hello, world!')]).to_list()
+    docs = DocumentArray()
+    docs.append(Document(text='hello, world!'))
+    return docs.to_list()
 
 
 class JinaRequestModel(BaseModel):
@@ -267,7 +230,9 @@ class JinaRequestModel(BaseModel):
 
     data: Optional[
         Union[
-            List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
+            PydanticDocumentArray,
+            List[PydanticDocument],
+            Dict[str, Any],
             List[Dict[str, Any]],
             List[str],
             List[bytes],
@@ -299,25 +264,15 @@ class JinaResponseModel(BaseModel):
     """
 
     class DataContentModel(BaseModel):
-        docs: Optional[List[Dict[str, Any]]] = None
-        groundtruths: Optional[List[Dict[str, Any]]] = None
+        docs: Optional[PydanticDocumentArray] = None
 
         class Config:
             alias_generator = _to_camel_case
             allow_population_by_field_name = True
 
-    class HeaderModel(BaseModel):
-        request_id: str = Field(
-            ...,
-            example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
-            description='The ID given by Jina service',
-        )
-
-        class Config:
-            alias_generator = _to_camel_case
-            allow_population_by_field_name = True
-
-    header: HeaderModel = None
+    header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
+    parameters: Dict = None
+    routes: List[PROTO_TO_PYDANTIC_MODELS.RouteProto] = None
     data: Optional[DataContentModel] = Field(None, description='Returned Documents')
 
     class Config:

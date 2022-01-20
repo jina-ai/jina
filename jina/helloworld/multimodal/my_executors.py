@@ -6,8 +6,8 @@ import torch
 import torchvision.models as models
 from transformers import AutoModel, AutoTokenizer
 
-from jina import Executor, DocumentArray, requests, Document
-from jina import DocumentArrayMemmap
+from jina import Executor, requests
+from docarray import Document, DocumentArray
 
 
 class Segmenter(Executor):
@@ -67,7 +67,7 @@ class TextEncoder(Executor):
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
             input_tokens = self.tokenizer(
-                docs.get_attributes('content'),
+                docs[:, 'content'],
                 padding='longest',
                 truncation=True,
                 return_tensors='pt',
@@ -102,9 +102,9 @@ class ImageCrafter(Executor):
         )
         target_size = 224
         for doc in filtered_docs:
-            doc.load_uri_to_image_blob()
-            doc.set_image_blob_shape(shape=(target_size, target_size))
-            doc.set_image_blob_channel_axis(-1, 0)
+            doc.load_uri_to_image_tensor()
+            doc.set_image_tensor_shape(shape=(target_size, target_size))
+            doc.set_image_tensor_channel_axis(-1, 0)
         return filtered_docs
 
 
@@ -137,7 +137,7 @@ class ImageEncoder(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
         with torch.inference_mode():
-            _input = torch.from_numpy(docs.blobs.astype('float32'))
+            _input = torch.from_numpy(docs.tensors.astype('float32'))
             _features = self._get_features(_input).detach()
             _features = _features.numpy()
             _features = self._get_pooling(_features)
@@ -147,7 +147,11 @@ class ImageEncoder(Executor):
 class DocVectorIndexer(Executor):
     def __init__(self, index_file_name: str, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + f'/{index_file_name}')
+        self._index_file_name = index_file_name
+        if os.path.exists(self.workspace + f'/{index_file_name}'):
+            self._docs = DocumentArray.load(self.workspace + f'/{index_file_name}')
+        else:
+            self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -162,11 +166,20 @@ class DocVectorIndexer(Executor):
             limit=int(parameters['top_k']),
         )
 
+    def close(self):
+        """
+        Stores the DocumentArray to disk
+        """
+        self._docs.save(self.workspace + f'/{self._index_file_name}')
+
 
 class KeyValueIndexer(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + '/kv-idx')
+        if os.path.exists(self.workspace + '/kv-idx'):
+            self._docs = DocumentArray.load(self.workspace + '/kv-idx')
+        else:
+            self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
@@ -175,9 +188,17 @@ class KeyValueIndexer(Executor):
     @requests(on='/search')
     def query(self, docs: DocumentArray, **kwargs):
         for doc in docs:
+            new_matches = DocumentArray()
             for match in doc.matches:
                 extracted_doc = self._docs[match.parent_id]
-                match.update(extracted_doc)
+                new_matches.append(extracted_doc)
+            doc.matches = new_matches
+
+    def close(self):
+        """
+        Stores the DocumentArray to disk
+        """
+        self._docs.save(self.workspace + '/kv-idx')
 
 
 class WeightedRanker(Executor):
@@ -197,24 +218,26 @@ class WeightedRanker(Executor):
         for d_mod1, d_mod2 in zip(*docs_matrix):
 
             final_matches = {}  # type: Dict[str, Document]
-
             for m in d_mod1.matches:
-                m.scores['relevance'] = m.scores['cosine'].value * d_mod1.weight
+                relevance_score = m.scores['cosine'].value * d_mod1.weight
+                m.scores['relevance'].value = relevance_score
                 final_matches[m.parent_id] = Document(m, copy=True)
 
             for m in d_mod2.matches:
                 if m.parent_id in final_matches:
-                    final_matches[m.parent_id].scores['relevance'] = final_matches[
-                        m.parent_id
-                    ].scores['relevance'].value + (
+                    final_matches[m.parent_id].scores[
+                        'relevance'
+                    ].value = final_matches[m.parent_id].scores['relevance'].value + (
                         m.scores['cosine'].value * d_mod2.weight
                     )
                 else:
-                    m.scores['relevance'] = m.scores['cosine'].value * d_mod2.weight
+                    m.scores['relevance'].value = (
+                        m.scores['cosine'].value * d_mod2.weight
+                    )
                     final_matches[m.parent_id] = Document(m, copy=True)
 
             da = DocumentArray(list(final_matches.values()))
-            da.sort(key=lambda ma: ma.scores['relevance'].value, reverse=True)
+            da = sorted(da, key=lambda ma: ma.scores['relevance'].value, reverse=True)
             d = Document(matches=da[: int(parameters['top_k'])])
             result_da.append(d)
         return result_da

@@ -633,7 +633,7 @@ def _extract_route_entries(gateway_entry, routes):
 
 
 def test_flow_change_parameters():
-    class MyExec(Executor):
+    class ChangeParamExec(Executor):
         @requests
         def foo(self, **kwargs):
             return {'a': 1}
@@ -641,9 +641,9 @@ def test_flow_change_parameters():
     def my_cb(resp: Response):
         assert resp.parameters['a'] == 1.0
 
-    f = Flow().add(uses=MyExec)
+    f = Flow().add(uses=ChangeParamExec)
     with f:
-        f.post('/', parameters={'a': 2}, on_done=my_cb)
+        f.post('/', parameters={'a': 3}, on_done=my_cb)
         f.post('/', parameters={}, on_done=my_cb)
 
 

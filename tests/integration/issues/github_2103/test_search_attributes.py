@@ -71,14 +71,6 @@ def test_no_matches_rest(query_dict):
         )
         resp = request.urlopen(req).read().decode('utf8')
         doc = json.loads(resp)['data']['docs'][0]
-        present_keys = sorted(doc.keys())
 
-        for field in _document_fields:
-            if field not in IGNORED_FIELDS + [
-                'buffer',
-                'content',
-                'blob',
-                'uri',
-                'graph',
-            ]:
-                assert field in present_keys
+    assert len(Document.from_dict(doc).matches) == 0
+    assert Document.from_dict(doc).tags['tag'] == 'test'

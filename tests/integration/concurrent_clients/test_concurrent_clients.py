@@ -13,7 +13,7 @@ NUM_REQUESTS = 5
 
 class MyExecutor(Executor):
     @requests(on='/ping')
-    def ping(self, docs: DocumentArray, **kwargs):
+    def ping(self, **kwargs):
         time.sleep(0.1 * random.random())
 
 
@@ -24,9 +24,8 @@ class MyExecutor(Executor):
 @pytest.mark.parametrize('concurrent', [15])
 def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, reraise):
     def pong(peer_hash, queue, resp: Response):
-        with reraise:
-            for d in resp.docs:
-                queue.put((peer_hash, d.text))
+        for d in resp.docs:
+            queue.put((peer_hash, d.text))
 
     def peer_client(port, protocol, peer_hash, queue):
         c = Client(protocol=protocol, port=port)
@@ -41,10 +40,11 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
         uses=MyExecutor, shards=shards, polling=polling
     )
 
+    set_of_clients_served = set()
+
     with f:
         pqueue = multiprocessing.Queue()
         port_expose = f.port_expose
-
         process_pool = []
         for peer_id in range(concurrent):
             p = multiprocessing.Process(

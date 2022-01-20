@@ -3,10 +3,9 @@ from typing import Optional, Dict, TypeVar
 
 from google.protobuf import json_format
 
-from docarray.simple import StructView
+from docarray import DocumentArray
 
 from jina.types.request import Request
-from jina import DocumentArray
 from jina.excepts import BadRequestType
 from jina.helper import typename, random_identity, cached_property
 from jina.proto import jina_pb2
@@ -22,20 +21,51 @@ class DataRequest(Request):
     class _DataContent:
         def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
             self._content = content
+            self._loaded_doc_array = None
 
-        @cached_property
+        @property
         def docs(self) -> 'DocumentArray':
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
-            return DocumentArray(self._content.docs)
+            if not self._loaded_doc_array:
+                if self._content.WhichOneof('documents') == 'docs_bytes':
+                    self._loaded_doc_array = DocumentArray.from_bytes(
+                        self._content.docs_bytes
+                    )
+                else:
+                    self._loaded_doc_array = DocumentArray.from_protobuf(
+                        self._content.docs
+                    )
 
-        @cached_property
-        def groundtruths(self) -> 'DocumentArray':
+            return self._loaded_doc_array
+
+        @docs.setter
+        def docs(self, value: DocumentArray):
+            """Overide the DocumentArray with the provided one
+
+            :param value: a DocumentArray
+            """
+            if value:
+                self._loaded_doc_array = None
+                self._content.docs.CopyFrom(value.to_protobuf())
+
+        @property
+        def docs_bytes(self) -> bytes:
             """Get the :class: `DocumentArray` with sequence `data.docs` as content.
 
             .. # noqa: DAR201"""
-            return DocumentArray(self._content.groundtruths)
+            return self._content.docs_bytes
+
+        @docs_bytes.setter
+        def docs_bytes(self, value: bytes):
+            """Overide the DocumentArray with the provided one
+
+            :param value: a DocumentArray
+            """
+            if value:
+                self._loaded_doc_array = None
+                self._content.docs_bytes = value
 
     """
     :class:`DataRequest` is one of the **primitive data type** in Jina.
@@ -104,6 +134,25 @@ class DataRequest(Request):
         self._pb_body.ParseFromString(self.buffer)
         self.buffer = None
 
+    def to_dict(self) -> Dict:
+        """Return the object in Python dictionary.
+
+        .. note::
+            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
+            will be converted to Python list.
+
+        :return: dict representation of the object
+        """
+        da = self.docs
+        self.proto.data.docs.CopyFrom(DocumentArray().to_protobuf())
+        from google.protobuf.json_format import MessageToDict
+
+        d = MessageToDict(
+            self.proto, preserving_proto_field_name=True, use_integers_for_enums=True
+        )
+        d['data'] = {'docs': da.to_dict()}
+        return d
+
     @property
     def docs(self) -> 'DocumentArray':
         """Get the :class: `DocumentArray` with sequence `data.docs` as content.
@@ -111,28 +160,21 @@ class DataRequest(Request):
         .. # noqa: DAR201"""
         return self.data.docs
 
-    @property
-    def groundtruths(self) -> 'DocumentArray':
-        """Get the :class: `DocumentArray` with sequence `data.groundtruths` as content.
-
-        .. # noqa: DAR201"""
-        return self.data.groundtruths
-
     @cached_property
     def data(self) -> 'DataRequest._DataContent':
         """Get the data contaned in this data request
 
-        :return: the data content as an instance of _DataContent wrapping docs and groundtruths
+        :return: the data content as an instance of _DataContent wrapping docs
         """
         return DataRequest._DataContent(self.proto.data)
 
     @property
-    def parameters(self) -> StructView:
+    def parameters(self) -> Dict:
         """Return the `parameters` field of this DataRequest as a Python dict
         :return: a Python dict view of the parameters.
         """
         # if u get this u need to have it decompressed
-        return StructView(self.proto.parameters)
+        return json_format.MessageToDict(self.proto.parameters)
 
     @parameters.setter
     def parameters(self, value: Dict):

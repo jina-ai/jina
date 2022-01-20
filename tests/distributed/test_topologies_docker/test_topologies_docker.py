@@ -120,7 +120,9 @@ def test_l_r_l_docker(replicas, docker_image, mocker):
     )
     with f:
         f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             on_done=response_mock,
         )
     response_mock.assert_called()
@@ -150,7 +152,9 @@ def test_remote_flow_containerized_executors(docker_image, mocker):
             protocol=args['protocol'],
         ).post(
             on='/',
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
             on_done=response_mock,
         )
         response_mock.assert_called()

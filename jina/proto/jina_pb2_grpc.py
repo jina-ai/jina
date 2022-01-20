@@ -17,10 +17,10 @@ class JinaControlRequestRPCStub(object):
             channel: A grpc.Channel.
         """
         self.process_control = channel.unary_unary(
-            '/jina.JinaControlRequestRPC/process_control',
-            request_serializer=jina__pb2.ControlRequestProto.SerializeToString,
-            response_deserializer=jina__pb2.ControlRequestProto.FromString,
-        )
+                '/jina.JinaControlRequestRPC/process_control',
+                request_serializer=jina__pb2.ControlRequestProto.SerializeToString,
+                response_deserializer=jina__pb2.ControlRequestProto.FromString,
+                )
 
 
 class JinaControlRequestRPCServicer(object):
@@ -29,7 +29,8 @@ class JinaControlRequestRPCServicer(object):
     """
 
     def process_control(self, request, context):
-        """Used for passing ControlRequests to the Executors"""
+        """Used for passing ControlRequests to the Executors
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -37,52 +38,39 @@ class JinaControlRequestRPCServicer(object):
 
 def add_JinaControlRequestRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'process_control': grpc.unary_unary_rpc_method_handler(
-            servicer.process_control,
-            request_deserializer=jina__pb2.ControlRequestProto.FromString,
-            response_serializer=jina__pb2.ControlRequestProto.SerializeToString,
-        ),
+            'process_control': grpc.unary_unary_rpc_method_handler(
+                    servicer.process_control,
+                    request_deserializer=jina__pb2.ControlRequestProto.FromString,
+                    response_serializer=jina__pb2.ControlRequestProto.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'jina.JinaControlRequestRPC', rpc_method_handlers
-    )
+            'jina.JinaControlRequestRPC', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
-# This class is part of an EXPERIMENTAL API.
+ # This class is part of an EXPERIMENTAL API.
 class JinaControlRequestRPC(object):
     """*
     jina gRPC service for ControlRequests.
     """
 
     @staticmethod
-    def process_control(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
+    def process_control(request,
             target,
-            '/jina.JinaControlRequestRPC/process_control',
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/jina.JinaControlRequestRPC/process_control',
             jina__pb2.ControlRequestProto.SerializeToString,
             jina__pb2.ControlRequestProto.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
 class JinaDataRequestRPCStub(object):
@@ -97,10 +85,10 @@ class JinaDataRequestRPCStub(object):
             channel: A grpc.Channel.
         """
         self.process_data = channel.unary_unary(
-            '/jina.JinaDataRequestRPC/process_data',
-            request_serializer=jina__pb2.DataRequestListProto.SerializeToString,
-            response_deserializer=jina__pb2.DataRequestProto.FromString,
-        )
+                '/jina.JinaDataRequestRPC/process_data',
+                request_serializer=jina__pb2.DataRequestListProto.SerializeToString,
+                response_deserializer=jina__pb2.DataRequestProto.FromString,
+                )
 
 
 class JinaDataRequestRPCServicer(object):
@@ -109,7 +97,8 @@ class JinaDataRequestRPCServicer(object):
     """
 
     def process_data(self, request, context):
-        """Used for passing DataRequests to the Executors"""
+        """Used for passing DataRequests to the Executors
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -117,52 +106,39 @@ class JinaDataRequestRPCServicer(object):
 
 def add_JinaDataRequestRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'process_data': grpc.unary_unary_rpc_method_handler(
-            servicer.process_data,
-            request_deserializer=jina__pb2.DataRequestListProto.FromString,
-            response_serializer=jina__pb2.DataRequestProto.SerializeToString,
-        ),
+            'process_data': grpc.unary_unary_rpc_method_handler(
+                    servicer.process_data,
+                    request_deserializer=jina__pb2.DataRequestListProto.FromString,
+                    response_serializer=jina__pb2.DataRequestProto.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'jina.JinaDataRequestRPC', rpc_method_handlers
-    )
+            'jina.JinaDataRequestRPC', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
-# This class is part of an EXPERIMENTAL API.
+ # This class is part of an EXPERIMENTAL API.
 class JinaDataRequestRPC(object):
     """*
     jina gRPC service for DataRequests.
     """
 
     @staticmethod
-    def process_data(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
+    def process_data(request,
             target,
-            '/jina.JinaDataRequestRPC/process_data',
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/jina.JinaDataRequestRPC/process_data',
             jina__pb2.DataRequestListProto.SerializeToString,
             jina__pb2.DataRequestProto.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
 class JinaSingleDataRequestRPCStub(object):
@@ -178,10 +154,10 @@ class JinaSingleDataRequestRPCStub(object):
             channel: A grpc.Channel.
         """
         self.process_single_data = channel.unary_unary(
-            '/jina.JinaSingleDataRequestRPC/process_single_data',
-            request_serializer=jina__pb2.DataRequestProto.SerializeToString,
-            response_deserializer=jina__pb2.DataRequestProto.FromString,
-        )
+                '/jina.JinaSingleDataRequestRPC/process_single_data',
+                request_serializer=jina__pb2.DataRequestProto.SerializeToString,
+                response_deserializer=jina__pb2.DataRequestProto.FromString,
+                )
 
 
 class JinaSingleDataRequestRPCServicer(object):
@@ -191,7 +167,8 @@ class JinaSingleDataRequestRPCServicer(object):
     """
 
     def process_single_data(self, request, context):
-        """Used for passing DataRequests to the Executors"""
+        """Used for passing DataRequests to the Executors
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -199,19 +176,18 @@ class JinaSingleDataRequestRPCServicer(object):
 
 def add_JinaSingleDataRequestRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'process_single_data': grpc.unary_unary_rpc_method_handler(
-            servicer.process_single_data,
-            request_deserializer=jina__pb2.DataRequestProto.FromString,
-            response_serializer=jina__pb2.DataRequestProto.SerializeToString,
-        ),
+            'process_single_data': grpc.unary_unary_rpc_method_handler(
+                    servicer.process_single_data,
+                    request_deserializer=jina__pb2.DataRequestProto.FromString,
+                    response_serializer=jina__pb2.DataRequestProto.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'jina.JinaSingleDataRequestRPC', rpc_method_handlers
-    )
+            'jina.JinaSingleDataRequestRPC', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
-# This class is part of an EXPERIMENTAL API.
+ # This class is part of an EXPERIMENTAL API.
 class JinaSingleDataRequestRPC(object):
     """*
     jina gRPC service for DataRequests.
@@ -219,33 +195,21 @@ class JinaSingleDataRequestRPC(object):
     """
 
     @staticmethod
-    def process_single_data(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
+    def process_single_data(request,
             target,
-            '/jina.JinaSingleDataRequestRPC/process_single_data',
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/jina.JinaSingleDataRequestRPC/process_single_data',
             jina__pb2.DataRequestProto.SerializeToString,
             jina__pb2.DataRequestProto.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
 
 class JinaRPCStub(object):
@@ -260,10 +224,10 @@ class JinaRPCStub(object):
             channel: A grpc.Channel.
         """
         self.Call = channel.stream_stream(
-            '/jina.JinaRPC/Call',
-            request_serializer=jina__pb2.DataRequestProto.SerializeToString,
-            response_deserializer=jina__pb2.DataRequestProto.FromString,
-        )
+                '/jina.JinaRPC/Call',
+                request_serializer=jina__pb2.DataRequestProto.SerializeToString,
+                response_deserializer=jina__pb2.DataRequestProto.FromString,
+                )
 
 
 class JinaRPCServicer(object):
@@ -272,7 +236,8 @@ class JinaRPCServicer(object):
     """
 
     def Call(self, request_iterator, context):
-        """Pass in a Request and a filled Request with matches will be returned."""
+        """Pass in a Request and a filled Request with matches will be returned.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -280,49 +245,36 @@ class JinaRPCServicer(object):
 
 def add_JinaRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'Call': grpc.stream_stream_rpc_method_handler(
-            servicer.Call,
-            request_deserializer=jina__pb2.DataRequestProto.FromString,
-            response_serializer=jina__pb2.DataRequestProto.SerializeToString,
-        ),
+            'Call': grpc.stream_stream_rpc_method_handler(
+                    servicer.Call,
+                    request_deserializer=jina__pb2.DataRequestProto.FromString,
+                    response_serializer=jina__pb2.DataRequestProto.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'jina.JinaRPC', rpc_method_handlers
-    )
+            'jina.JinaRPC', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
-# This class is part of an EXPERIMENTAL API.
+ # This class is part of an EXPERIMENTAL API.
 class JinaRPC(object):
     """*
     jina Gateway gRPC service.
     """
 
     @staticmethod
-    def Call(
-        request_iterator,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.stream_stream(
-            request_iterator,
+    def Call(request_iterator,
             target,
-            '/jina.JinaRPC/Call',
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/jina.JinaRPC/Call',
             jina__pb2.DataRequestProto.SerializeToString,
             jina__pb2.DataRequestProto.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

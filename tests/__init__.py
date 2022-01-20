@@ -21,11 +21,11 @@ def random_docs(
     sparse_embedding=False,
     text='hello world',
 ) -> Iterator['Document']:
-    from jina import Document
+    from docarray import Document
 
     next_chunk_doc_id = start_id + num_docs
     for j in range(num_docs):
-        doc_id = start_id + j
+        doc_id = str(start_id + j)
 
         d = Document(id=doc_id)
         d.text = text
@@ -43,10 +43,10 @@ def random_docs(
                 )
 
         for _ in range(chunks_per_doc):
-            chunk_doc_id = next_chunk_doc_id
+            chunk_doc_id = str(next_chunk_doc_id)
 
             c = Document(id=chunk_doc_id)
-            c.text = 'i\'m chunk %d from doc %d' % (chunk_doc_id, doc_id)
+            c.text = 'i\'m chunk %s from doc %s' % (chunk_doc_id, doc_id)
             if embedding:
                 c.embedding = np.random.random(
                     [embed_dim + np.random.randint(0, jitter)]

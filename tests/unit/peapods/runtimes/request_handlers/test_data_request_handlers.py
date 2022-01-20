@@ -1,9 +1,7 @@
-import asyncio
-import time
-
 import pytest
 
-from jina import DocumentArray, Executor, requests, Document, DocumentArrayMemmap
+from docarray import Document, DocumentArray
+from jina import Executor, requests
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pea_parser
 from jina.peapods.runtimes.request_handlers.data_request_handler import (
@@ -92,31 +90,6 @@ async def test_data_request_handler_change_docs(logger):
     assert len(response.docs) == 10
     for doc in response.docs:
         assert doc.text == 'changed document'
-
-
-@pytest.mark.asyncio
-async def test_data_request_handler_change_docs_dam(logger, tmpdir):
-    class MemmapExecutor(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            dam = DocumentArrayMemmap(tmpdir + '/dam')
-            dam.extend(docs)
-            return dam
-
-    args = set_pea_parser().parse_args(['--uses', 'MemmapExecutor'])
-    handler = DataRequestHandler(args, logger)
-
-    req = list(
-        request_generator(
-            '/', DocumentArray([Document(text='input document') for _ in range(10)])
-        )
-    )[0]
-    assert len(req.docs) == 10
-    response = await handler.handle(requests=[req])
-
-    assert len(response.docs) == 10
-    for doc in response.docs:
-        assert doc.text == 'input document'
 
 
 @pytest.mark.asyncio

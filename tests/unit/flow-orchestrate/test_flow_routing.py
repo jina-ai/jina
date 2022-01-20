@@ -1,5 +1,5 @@
-from docarray import DocumentArray
-from jina import Document, Executor, Flow, requests
+from docarray import Document, DocumentArray
+from jina import Executor, Flow, requests
 
 import pytest
 
@@ -123,7 +123,7 @@ def test_flow_default_polling_endpoints(polling):
 
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
-def test_flow_default_polling_endpoints(polling):
+def test_flow_default_custom_polling_endpoints(polling):
     custom_polling_config = {'/custom': 'ALL', '/search': 'ANY', '*': polling}
     f = Flow().add(
         uses=DynamicPollingExecutorDefaultNames,
