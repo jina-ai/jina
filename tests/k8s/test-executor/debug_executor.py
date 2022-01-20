@@ -1,6 +1,7 @@
 import os
 
 from jina import Executor, requests, DocumentArray
+import socket
 
 
 class TestExecutor(Executor):
@@ -28,6 +29,7 @@ class TestExecutor(Executor):
             doc.tags['shards'] = self.runtime_args.shards
             doc.tags['shard_id'] = self.runtime_args.shard_id
             doc.tags['pea_id'] = self.runtime_args.pea_id
+            doc.tags['hostname'] = socket.gethostname()
 
     @requests(on='/env')
     def env(self, docs: DocumentArray, **kwargs):

@@ -5,6 +5,7 @@ import asyncio
 
 from pytest_kind import cluster
 
+from docarray import DocumentArray
 from jina import Flow, Document
 
 cluster.KIND_VERSION = 'v0.11.1'
@@ -75,7 +76,7 @@ async def create_all_flow_pods_and_wait_ready(
         await asyncio.sleep(1.0)
 
 
-async def run_test(flow, core_client, namespace, endpoint):
+async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_size=100):
     # start port forwarding
     from jina.clients import Client
 
@@ -103,7 +104,10 @@ async def run_test(flow, core_client, namespace, endpoint):
         client.show_progress = True
         responses = []
         async for resp in client.post(
-            endpoint, inputs=[Document() for _ in range(10)], return_results=True
+            endpoint,
+            inputs=[Document() for _ in range(n_docs)],
+            return_results=True,
+            request_size=request_size,
         ):
             responses.append(resp)
 
@@ -523,3 +527,63 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize('k8s_connection_pool', [True, False])
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, tmpdir):
+    flow = Flow(name='k8s_flow_connection_pool', port_expose=9090, protocol='http').add(
+        name='test_executor',
+        replicas=2,
+        uses=f'docker://{docker_images[0]}',
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test-flow-connection-pool')
+    namespace = 'test-flow-connection-pool'
+    flow.to_k8s_yaml(
+        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
+    )
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor-head-0': 1,
+            'test-executor': 2,
+        },
+    )
+
+    resp = await run_test(
+        flow=flow,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/debug',
+        n_docs=100,
+        request_size=5,
+    )
+
+    core_client.delete_namespace(namespace)
+    visited = set()
+    for r in resp:
+        for doc in r.docs:
+            visited.add(doc.tags['hostname'])
+
+    if k8s_connection_pool:
+        assert len(visited) == 2
+    else:
+        assert len(visited) == 1
