@@ -7,10 +7,9 @@ from jina.enums import PollingType
 from jina.helper import random_identity
 
 
-def mixin_base_ppr_parser(parser, with_identity: bool = True):
+def mixin_base_ppr_parser(parser):
     """Mixing in arguments required by pea/pod/runtime module into the given parser.
     :param parser: the parser instance to which we add arguments
-    :param with_identity: if to include identity in the parser
     """
 
     gp = add_arg_group(parser, title='Essential')
@@ -59,17 +58,6 @@ When not given, then the default naming strategy will apply.
         default=False,
         help='If set, then exception stack information will not be added to the log',
     )
-
-    # hidden CLI used for internal only
-    if with_identity:
-        gp.add_argument(
-            '--identity',
-            type=str,
-            default=random_identity(),
-            help='A UUID string to represent the logger identity of this object'
-            if _SHOW_ALL_ARGS
-            else argparse.SUPPRESS,
-        )
 
     gp.add_argument(
         '--workspace-id',

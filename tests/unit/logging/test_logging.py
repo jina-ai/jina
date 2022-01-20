@@ -75,31 +75,6 @@ def test_logging_file(monkeypatch):
         os.remove(f)
 
 
-@pytest.mark.parametrize('log_config', [os.path.join(cur_dir, 'yaml/fluent.yml'), None])
-def test_logging_fluentd(monkeypatch, log_config):
-    from fluent import asynchandler as fluentasynchandler
-
-    with JinaLogger(
-        'test_logger',
-        log_config=log_config,
-        identity='test_log_id',
-        workspace_path='/tmp/test/',
-    ) as logger:
-
-        def mock_emit(obj, record):
-            msg = obj.format(record)
-            assert msg['workspace_path'] == '/tmp/test/'
-            assert msg['log_id'] == 'test_log_id'
-            assert msg['context'] == 'test_logger'
-            assert msg['name'] == 'test_logger'
-            assert msg['type'] == 'INFO'
-            assert msg['message'] == 'logging progress'
-            datetime.fromisoformat(msg['uptime'])
-
-        monkeypatch.setattr(fluentasynchandler.FluentHandler, 'emit', mock_emit)
-        logger.info('logging progress')
-
-
 @pytest.mark.slow
 def test_logging_quiet(caplog):
     # no way to capture logs in multiprocessing

@@ -129,7 +129,7 @@ class BasePea(ABC):
                 f'specially dangerous to mix `Executors` running in different types of `RuntimeBackends`.'
             )
 
-        self._envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.identity}
+        self._envs = {'JINA_POD_NAME': self.name}
         if self.args.quiet:
             self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:

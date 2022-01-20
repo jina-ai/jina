@@ -34,11 +34,10 @@ def mixin_flow_features_parser(parser):
     )
 
 
-def set_flow_parser(parser=None, with_identity=False):
+def set_flow_parser(parser=None):
     """Set the parser for the flow
 
     :param parser: an (optional) initial parser to build upon
-    :param with_identity: if to include identity in the parser
     :return: the parser
     """
     from jina.parsers.peapods.base import mixin_base_ppr_parser
@@ -46,7 +45,7 @@ def set_flow_parser(parser=None, with_identity=False):
     if not parser:
         parser = set_base_parser()
 
-    mixin_base_ppr_parser(parser, with_identity=with_identity)
+    mixin_base_ppr_parser(parser)
 
     parser.set_defaults(workspace='./')
 

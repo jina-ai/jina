@@ -14,7 +14,7 @@ from jina import __default_executor__, __default_host__, __docker_host__
 from jina import helper
 from jina.enums import PodRoleType, PeaRoleType, PollingType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
-from jina.helper import random_identity, CatchAllCleanupContextManager
+from jina.helper import CatchAllCleanupContextManager
 from jina.jaml.helper import complete_path
 from jina.hubble.hubio import HubIO
 
@@ -783,7 +783,6 @@ class Pod(BasePod):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
                 _args.pea_role = PeaRoleType.WORKER
-                _args.identity = random_identity()
 
                 _args.host = args.host
                 if _args.name:
@@ -809,7 +808,6 @@ class Pod(BasePod):
 
         _args = copy.deepcopy(args)
         _args.pea_role = PeaRoleType.WORKER
-        _args.identity = random_identity()
         _args.host = __default_host__
         _args.port_in = helper.random_port()
 

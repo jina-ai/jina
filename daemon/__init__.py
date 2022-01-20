@@ -140,26 +140,6 @@ def _update_default_args():
     )
 
 
-def _start_fluentd():
-    daemon_logger.info('starting fluentd...')
-    cfg = os.path.join(__resources_path__, 'fluent.conf')
-    try:
-        fluentd_proc = subprocess.Popen(
-            ['fluentd', '-c', cfg],
-            stdout=subprocess.PIPE,
-            stdin=subprocess.PIPE,
-            bufsize=0,
-            universal_newlines=True,
-        )
-        # avoid printing debug logs for partial daemon (jinad_args is set)
-        if jinad_args.mode is None:
-            for line in fluentd_proc.stdout:
-                daemon_logger.debug(f'fluentd: {line.strip()}')
-    except FileNotFoundError:
-        daemon_logger.warning('fluentd not found locally, jinad cannot stream logs!')
-        jinad_args.no_fluentd = True
-
-
 def _start_consumer():
     from daemon.tasks import ConsumerThread
 
@@ -182,8 +162,6 @@ def setup():
     """Setup steps for JinaD"""
     _update_default_args()
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
-    if not jinad_args.no_fluentd:
-        Thread(target=_start_fluentd, daemon=True).start()
     _start_consumer()
     _start_uvicorn(app=_get_app(mode=jinad_args.mode))
 
