@@ -10,7 +10,7 @@ from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
-from jina.peapods.peas.factory import PeaFactory
+from jina.orchestrate.peas.factory import PeaFactory
 from docarray import Document, DocumentArray
 from tests import random_docs
 

@@ -3,8 +3,8 @@ from functools import reduce
 from typing import Dict, Type, Set
 
 from jina.jaml.parsers.base import VersionedYAMLParser
-from jina.executors import BaseExecutor
-from jina.executors.metas import get_default_metas
+from jina.serve.executors import BaseExecutor
+from jina.serve.executors.metas import get_default_metas
 
 
 class LegacyParser(VersionedYAMLParser):

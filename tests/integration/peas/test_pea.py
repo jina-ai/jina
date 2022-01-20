@@ -7,8 +7,8 @@ import pytest
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType, PeaRoleType
 from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.peapods.networking import GrpcConnectionPool
-from jina.peapods.peas import Pea
+from jina.serve.networking import GrpcConnectionPool
+from jina.orchestrate.peas import Pea
 from jina.types.request.control import ControlRequest
 
 

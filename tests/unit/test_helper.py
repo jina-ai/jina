@@ -4,11 +4,13 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
+
 from docarray import Document
+
 from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
-from jina.executors.decorators import requests
+from jina.serve.executors.decorators import requests
 from jina.helper import (
     cached_property,
     convert_tuple_to_list,

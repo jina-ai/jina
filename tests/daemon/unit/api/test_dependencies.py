@@ -5,7 +5,7 @@ from contextlib import nullcontext
 import pytest
 from fastapi import HTTPException
 
-from jina.flow.base import Flow
+from jina.orchestrate.flow.base import Flow
 from jina.enums import GatewayProtocolType
 from daemon.api import dependencies
 from daemon.helper import change_cwd

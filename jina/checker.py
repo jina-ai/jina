@@ -14,7 +14,7 @@ class NetworkChecker:
         """
 
         from jina.logging.profile import TimeContext
-        from jina.peapods.runtimes.worker import WorkerRuntime
+        from jina.serve.runtimes.worker import WorkerRuntime
         import time
 
         ctrl_addr = f'{args.host}:{args.port}'

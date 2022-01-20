@@ -1,6 +1,6 @@
 import pytest
 
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 from jina.jaml import JAML, JAMLCompatible
 from jina import __default_executor__, requests
 

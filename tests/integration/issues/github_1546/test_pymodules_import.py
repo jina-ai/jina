@@ -1,6 +1,6 @@
 import pytest
 
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 
 
 def test_import_with_new_module_structure_should_pass():

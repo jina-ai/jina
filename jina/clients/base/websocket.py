@@ -9,7 +9,7 @@ from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
-from jina.peapods.stream import RequestStreamer
+from jina.serve.stream import RequestStreamer
 from jina.helper import get_or_reuse_loop
 
 if TYPE_CHECKING:

@@ -8,8 +8,8 @@ from fastapi import HTTPException, UploadFile, File, Query, Depends
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 
-from jina.peapods.peas.container_helper import get_gpu_device_requests
-from jina.peapods.peas.helper import update_runtime_cls
+from jina.orchestrate.peas.container_helper import get_gpu_device_requests
+from jina.orchestrate.peas.helper import update_runtime_cls
 from jina import Flow
 from jina.enums import (
     RemoteWorkspaceState,

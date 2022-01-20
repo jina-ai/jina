@@ -141,7 +141,7 @@ class FlowBuildLevel(BetterEnum):
     """
     The enum for representing a flow's build level.
 
-    Some :class:`jina.flow.Flow` class functions require certain build level to run.
+    Some :class:`jina.orchestrate.flow.Flow` class functions require certain build level to run.
     """
 
     EMPTY = 0  #: Nothing is built

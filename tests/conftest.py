@@ -22,7 +22,7 @@ def random_workspace_name():
 
 @pytest.fixture(scope='function')
 def test_metas(tmpdir, random_workspace_name):
-    from jina.executors.metas import get_default_metas
+    from jina.serve.executors.metas import get_default_metas
 
     os.environ[random_workspace_name] = str(tmpdir)
     metas = get_default_metas()

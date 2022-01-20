@@ -4,7 +4,7 @@ import pytest
 import yaml
 
 from jina import __default_executor__
-from jina.executors import BaseExecutor
+from jina.serve.executors import BaseExecutor
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML

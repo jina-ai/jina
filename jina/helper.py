@@ -718,7 +718,7 @@ class ArgNamespace:
         :return: argument list
         """
         args = []
-        from jina.executors import BaseExecutor
+        from jina.serve.executors import BaseExecutor
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
