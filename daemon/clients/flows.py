@@ -3,11 +3,10 @@ from typing import Union, TYPE_CHECKING, Dict, Optional
 
 import aiohttp
 
-from ..models.id import daemonize
-from ..models.enums import UpdateOperation
-from ..helper import if_alive, error_msg_from
-from .base import AsyncBaseClient
-from .mixin import AsyncToSyncMixin
+from daemon.models.id import daemonize
+from daemon.helper import if_alive, error_msg_from
+from daemon.clients.base import AsyncBaseClient
+from daemon.clients.mixin import AsyncToSyncMixin
 
 if TYPE_CHECKING:
     from ..models import DaemonID
@@ -73,26 +72,50 @@ class AsyncFlowClient(AsyncBaseClient):
             return response_json
 
     @if_alive
-    async def update(
-        self, id: Union[str, 'DaemonID'], pod_name: str, dump_path: str, *args, **kwargs
+    async def rolling_update(
+        self,
+        id: Union[str, 'DaemonID'],
+        pod_name: str,
+        uses_with: Optional[Dict] = None,
     ) -> str:
-        """Update a Flow on remote JinaD (only rolling_update supported)
+        """Perform `rolling_update` on a remote Flow
 
         :param id: flow id
         :param pod_name: pod name for rolling update
-        :param dump_path: path of dump from other flow
-        :param args: positional args
-        :param kwargs: keyword args
+        :param uses_with: the uses with to override the Executors params
         :return: flow id
         """
         async with aiohttp.request(
             method='PUT',
-            url=f'{self.store_api}/{daemonize(id, self._kind)}',
-            params={
-                'kind': UpdateOperation.ROLLING_UPDATE.value,
-                'pod_name': pod_name,
-                'dump_path': dump_path,
-            },
+            url=f'{self.store_api}/rolling_update/{daemonize(id, self._kind)}',
+            params={'pod_name': pod_name},
+            json=uses_with,
+            timeout=self.timeout,
+        ) as response:
+            response_json = await response.json()
+            if response.status != HTTPStatus.OK:
+                error_msg = error_msg_from(response_json)
+                self._logger.error(
+                    f'{self._kind.title()} update failed as: {error_msg}'
+                )
+                return error_msg
+            return response_json
+
+    @if_alive
+    async def scale(
+        self, id: Union[str, 'DaemonID'], pod_name: str, replicas: int
+    ) -> str:
+        """Scale a Pod on a remote Flow
+
+        :param id: flow id
+        :param pod_name: pod name for rolling update
+        :param replicas: The number of replicas to scale to
+        :return: flow id
+        """
+        async with aiohttp.request(
+            method='PUT',
+            url=f'{self.store_api}/scale/{daemonize(id, self._kind)}',
+            params={'pod_name': pod_name, 'replicas': replicas},
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()

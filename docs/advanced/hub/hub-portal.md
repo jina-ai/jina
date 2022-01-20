@@ -1,63 +1,53 @@
 # Hub Portal
 
-Hub is a marketplace for Executors. It allows everyone to share their Executors and use others' Executors. You can check the next {ref}`tutorials <create-hub-executor>` if you want to know more about the creation of an Executor.
+Jina Hub is a marketplace for Executors. Here you can upload the Executors you have created or use the ones already developed by the community. If it's the first time you'll develop your Executor you can start by checking our {ref}`tutorials <create-hub-executor>` that will guide you through the process
+ 
+Let's see the [Hub portal](https://hub.jina.ai) in detail
 
-[Hub portal](https://hub.jina.ai) gives you a bird's eye view of all Hub Executors. You can explore and find Executors that can help you to build your neural search applications.
+## Catalog page
 
-## Catalogue Page
-
-The very first and main page is a list of all Executors created by all Jina developers all over the world.
+The main page contains a list of all Executors created by Jina developers all over the world. By default, you will see the Editors Pick first at the top of the list. Those are the Executors that were Highlighted by the Jina team. 
 
 ```{figure} ../../../.github/hub-website-list.png
 :align: center
 ```
 
-You can sort by switching the tab. 
-
-- Popular: based on how much people like it and how many downloads it has.
-- Recent: based on recent update time.
-
-If you want to search some specific Executor or some Executors for specific domain, then search is the right thing to use.
-
-You can type plain text to the search input to search specific Executor:
-
-```{figure} ../../../.github/hub-website-search-1.png
-:align: center
-```
-
-You can also type some text prefixed with character `:`, such as `:image` to search all Executors that are related to image search domain.
+You can sort the list of displayed Executors by *Trending* and *Recent* using the drop-down menu on the top. Otherwise, if you want to search for a specific Executor, you can use the search box on the top or use the tags for specific keywords such as Image, Video, TensorFlow, and so on:
 
 ```{figure} ../../../.github/hub-website-search-2.png
 :align: center
 ```
 
-## Detail Page
+## Detail page
 
-Congrats! You have found some Executors that interest you! Then how do you get more detail about these Executors? Such as description and parameters of this Executor. You can find it all in Detail Page. 
+After you found an Executor that interests you, you can get more detail about it by clicking on it. You will then see a description of the Executor with basic information, usage, parameters, etc. If you need more in-depth details you can click on "More" and you will be directed to a new page with all information available about that Executor. 
 
 ```{figure} ../../../.github/hub-website-detail.png
 :align: center
 ```
 
-There are several tabs you can explore: README, Arguments, Tag and Dependencies.
-
-README introduces basic information about this Executor, how this Executor works internally, its basic usage.
-
-Arguments describes detailed API of this Executor. It's generated automatically from Python docstrings. So it's always in sync with the code base. And the Executor producers don't need to write it themselves.
+There are several tabs you can explore: **README**, **Arguments**, **Tag** and **Dependencies**.
 
 ```{figure} ../../../.github/hub-website-detail-arguments.png
 :align: center
 ```
 
-Tag lists all the available tags this Executor has. You can choose one of them. It also gives a code snippet to simplify your usage.
+1. **README** introduces basic information about this Executor, how it works internally, and its basic usage.
+
+2. **Arguments** describes the detailed API of this Executor. This is generated automatically from the Python docstrings of the Executor so it's always in sync with the code base, and Executor developers don't need to write it themselves.
+
+3. **Tags** will show you the possible tags available for this Executor. For example `latest`, `latest-gpu` and so on. It also gives a code snippet to simplify your usage.
 
 ```{figure} ../../../.github/hub-website-detail-tag.png
 :align: center
 ```
 
-Dependencies lists all Python dependencies this Executor introduces.
+4. **Dependencies** lists all the required Python dependencies to use this Executor
 
-```{figure} ../../../.github/hub-website-detail-dep.png
+On the right side, you will see two possible ways to use this Executor. Either via Docker Image or Source Code
+
+```{figure} ../../../.github/hub-website-usage.png
 :align: center
 ```
 
+That's it, now you have an overview of what the [Hub portal](https://hub.jina.ai) is and how to navigate it. 

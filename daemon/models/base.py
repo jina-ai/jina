@@ -3,7 +3,7 @@ from typing import Dict
 
 from pydantic import BaseModel, Field
 
-from .id import DaemonID
+from daemon.models.id import DaemonID
 
 
 class StoreItem(BaseModel):

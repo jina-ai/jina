@@ -13,7 +13,7 @@
 </label>
 
 {% if theme_announcement -%}
-<div class="announcement">
+<div class="announcement" id="announcement">
     <aside class="announcement-content">
         {% block announcement %} {{ theme_announcement }} {% endblock announcement %}
     </aside>
@@ -21,7 +21,7 @@
 {%- endif %}
 
 <div class="page">
-    <header class="mobile-header">
+    <header class="mobile-header" id="mobile-header">
         <div class="header-left">
             <label class="nav-overlay-icon" for="__navigation">
                 <div class="visually-hidden">Toggle site navigation sidebar</div>
@@ -62,7 +62,7 @@
             </label>
         </div>
     </header>
-    <aside class="sidebar-drawer">
+    <aside class="sidebar-drawer" id="sidebar-drawer">
         <div class="sidebar-container">
             {% block left_sidebar %}
             <div class="sidebar-sticky">
@@ -166,7 +166,7 @@
                 {% endblock footer %}
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer" id="toc-drawer">
             {% block right_sidebar %}
 
             <div class="toc-sticky toc-scroll">
@@ -182,7 +182,16 @@
                     </div>
                 </div>
                 {% endif %}
-                {% include "docbot.html" %}
+                <qa-bot
+                    style="position: fixed; width: 15em;"
+                    theme="follow"
+                    animate-by="position"
+                >
+                    <dt>You can ask questions about our docs. Try:</dt>
+                    <dd>Does Jina support Kubernetes?</dd>
+                    <dd>How can I traverse a nested DocumentArray?</dd>
+                    <dd>What are the basic concepts in Jina?</dd>
+                </qa-bot>
             </div>
 
             {% endblock right_sidebar %}

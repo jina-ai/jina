@@ -2,12 +2,13 @@ import asyncio
 from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
-from ...types.request import Request
-from ...importer import ImportExtensions
+from jina.types.request import Request
+from jina.importer import ImportExtensions
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from ...types.request import Response
-    from ...logging.logger import JinaLogger
+    from jina.types.request import Response
+    from jina.logging.logger import JinaLogger
 
 
 class AioHttpClientlet(ABC):
@@ -74,9 +75,9 @@ class HTTPClientlet(AioHttpClientlet):
         :param request: request as dict
         :return: send post message
         """
-        req_dict = request.dict()
+        req_dict = request.to_dict()
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
-        req_dict['data'] = req_dict['data'].get('docs', None)
+
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
     async def recv_message(self):
@@ -128,8 +129,8 @@ class WebsocketClientlet(AioHttpClientlet):
         """
         async for response in self.websocket:
             response_bytes = response.data
-            resp = Request(response_bytes)
-            yield resp.as_typed_request(resp.request_type).as_response()
+            resp = DataRequest(response_bytes)
+            yield resp
 
     async def __aenter__(self):
         await super().__aenter__()

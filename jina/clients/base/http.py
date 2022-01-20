@@ -1,14 +1,19 @@
-from typing import Callable, Optional
+import asyncio
 from contextlib import nullcontext, AsyncExitStack
+from typing import Optional, TYPE_CHECKING
 
-from ...excepts import BadClient
-from .helper import HTTPClientlet
-from ..helper import callback_exec
-from ...types.request import Request
-from ...importer import ImportExtensions
-from ..base import BaseClient, InputType
-from ...logging.profile import ProgressBar
-from ...peapods.stream.client import HTTPClientStreamer
+from jina.clients.base.helper import HTTPClientlet
+from jina.clients.base import BaseClient
+from jina.clients.helper import callback_exec
+from jina.excepts import BadClient
+from jina.importer import ImportExtensions
+from jina.logging.profile import ProgressBar
+from jina.types.request import Request
+from jina.serve.stream import RequestStreamer
+from jina.types.request.data import DataRequest
+
+if TYPE_CHECKING:
+    from jina.clients.base import InputType, CallbackFnType
 
 
 class HTTPBaseClient(BaseClient):
@@ -16,10 +21,10 @@ class HTTPBaseClient(BaseClient):
 
     async def _get_results(
         self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Optional[Callable] = None,
-        on_always: Optional[Callable] = None,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         **kwargs,
     ):
         """
@@ -51,17 +56,48 @@ class HTTPBaseClient(BaseClient):
                     HTTPClientlet(url=url, logger=self.logger)
                 )
 
-                streamer = HTTPClientStreamer(self.args, iolet=iolet)
+                def _request_handler(request: 'Request') -> 'asyncio.Future':
+                    """
+                    For HTTP Client, for each request in the iterator, we `send_message` using
+                    http POST request and add it to the list of tasks which is awaited and yielded.
+                    :param request: current request in the iterator
+                    :return: asyncio Task for sending message
+                    """
+                    return asyncio.ensure_future(iolet.send_message(request=request))
+
+                def _result_handler(result):
+                    return result
+
+                streamer = RequestStreamer(
+                    self.args,
+                    request_handler=_request_handler,
+                    result_handler=_result_handler,
+                )
                 async for response in streamer.stream(request_iterator):
                     r_status = response.status
+
                     r_str = await response.json()
                     if r_status == 404:
                         raise BadClient(f'no such endpoint {url}')
                     elif r_status < 200 or r_status > 300:
                         raise ValueError(r_str)
 
-                    resp = Request(r_str)
-                    resp = resp.as_typed_request(resp.request_type).as_response()
+                    # TODO: remove ugly hack
+                    if (
+                        'data' in r_str
+                        and r_str['data'] is not None
+                        and 'docs' in r_str['data']
+                    ):
+                        from docarray import DocumentArray
+
+                        temp = r_str['data']['docs']
+                        r_str['data']['docs'] = {}
+                        r_str['data']['docs'] = {
+                            'docs': DocumentArray.from_dict(temp).to_dict(
+                                protocol='protobuf'
+                            )
+                        }
+                    resp = DataRequest(r_str)
                     callback_exec(
                         response=resp,
                         on_error=on_error,

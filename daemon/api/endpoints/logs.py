@@ -10,10 +10,10 @@ from starlette.websockets import WebSocketState
 from websockets import ConnectionClosedOK
 from websockets.exceptions import ConnectionClosedError
 
-from ... import daemon_logger, jinad_args
-from ...helper import get_log_file_path
-from ...models import DaemonID
-from ...stores import get_store_from_id
+from daemon import daemon_logger, jinad_args
+from daemon.helper import get_log_file_path
+from daemon.models import DaemonID
+from daemon.stores import get_store_from_id
 
 router = APIRouter(tags=['logs'])
 
@@ -117,7 +117,7 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 60):
             not Path(filepath).is_file()
             and websocket.application_state == WebSocketState.CONNECTED
         ):
-            if n % 10 == 0:
+            if n % 30 == 0:
                 daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1

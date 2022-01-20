@@ -1,19 +1,18 @@
 import asyncio
 from contextlib import nullcontext
-from typing import Callable, Union, Optional
+from typing import TYPE_CHECKING, Optional
 
 import grpc
 
-from ..base import BaseClient
-from ..helper import callback_exec
-from ..request import GeneratorSourceType
-from ...excepts import BadClient, BadClientInput
-from ...logging.profile import ProgressBar
-from ...proto import jina_pb2_grpc
-from ...types.request import Response
+from jina.clients.base import BaseClient
+from jina.clients.helper import callback_exec
+from jina.excepts import BadClient, BadClientInput
+from jina.logging.profile import ProgressBar
+from jina.proto import jina_pb2_grpc
+from jina.serve.networking import GrpcConnectionPool
 
-InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
-CallbackFnType = Optional[Callable[[Response], None]]
+if TYPE_CHECKING:
+    from jina.clients.base import InputType, CallbackFnType
 
 
 class GRPCBaseClient(BaseClient):
@@ -24,21 +23,19 @@ class GRPCBaseClient(BaseClient):
 
     async def _get_results(
         self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Callable = None,
-        on_always: Callable = None,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         **kwargs,
     ):
         try:
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
-            async with grpc.aio.insecure_channel(
+            async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
+                asyncio=True,
+                https=self.args.https,
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
@@ -51,8 +48,6 @@ class GRPCBaseClient(BaseClient):
 
                 with cm1 as p_bar:
                     async for resp in stub.Call(req_iter):
-                        resp.as_typed_request(resp.request_type)
-                        resp = resp.as_response()
                         callback_exec(
                             response=resp,
                             on_error=on_error,

@@ -1,240 +1,23 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
-import "google/protobuf/empty.proto";
+import "docarray.proto";
 
 package jina;
 
 /**
- * Represents a (quantized) dense n-dim array
- */
-message DenseNdArrayProto {
-    // the actual array data, in bytes
-    bytes buffer = 1;
-
-    // the shape (dimensions) of the array
-    repeated uint32 shape = 2;
-
-    // the data type of the array
-    string dtype = 3;
-
-    enum QuantizationMode {
-        NONE = 0; // no quantization is performed, stored in the original ``dtype``
-        FP16 = 1; // 4x smaller if original dtype FP64, lossy
-        UINT8 = 2; // 4x smaller if original dtype FP32, lossy
-        FP32 = 3; // 2x smaller if dtype is set to FP64
-    }
-
-    // quantization mode
-    QuantizationMode quantization = 4;
-
-    float max_val = 5; // the max value of the ndarray
-    float min_val = 6; // the min value of the ndarray
-    float scale = 7; // the scale of the ndarray
-    string original_dtype = 8; // the original dtype of the array
-}
-
-/**
- * Represents a general n-dim array, can be either dense or sparse
- */
-message NdArrayProto {
-    oneof content {
-        DenseNdArrayProto dense = 1; // dense representation of the ndarray
-        SparseNdArrayProto sparse = 2; // sparse representation of the ndarray
-    }
-}
-
-/**
- * Represents a sparse ndarray
- */
-message SparseNdArrayProto {
-    // A 2-D int64 tensor of shape [N, ndims], which specifies the indices of the elements in the sparse tensor that contain nonzero values (elements are zero-indexed)
-    DenseNdArrayProto indices = 1;
-
-    // A 1-D tensor of any type and shape [N], which supplies the values for each element in indices.
-    DenseNdArrayProto values = 2;
-
-    // A 1-D int64 tensor of shape [ndims], which specifies the shape of the sparse tensor.
-    repeated uint32 shape = 3;
-}
-
-/**
- * Represents the relevance model to `ref_id`
- */
-message NamedScoreProto {
-    float value = 1; // value
-    string op_name = 2; // the name of the operator/score function
-    string description = 3; // text description of the score
-    repeated NamedScoreProto operands = 4; // the score can be nested
-    string ref_id = 5; // the score is computed between doc `id` and `ref_id`
-}
-
-
-/**
- * Represents a Graph
- */
-message GraphProto {
-    SparseNdArrayProto adjacency = 1; // adjacency list
-    google.protobuf.Struct edge_features = 2; // Container structure to store edge features
-    bool undirected = 3; //Flag indicating if the graph is to be interpreted as an undirected graph
-}
-
-/**
- * Represents a Document
- */
-message DocumentProto {
-    // A hexdigest that represents a unique document ID
-    string id = 1;
-
-    // the depth of the recursive chunk structure
-    uint32 granularity = 14;
-
-    // the width of the recursive match structure
-    uint32 adjacency = 22;
-
-    // the parent id from the previous granularity
-    string parent_id = 16;
-
-    oneof content {
-        // the raw binary content of this document, which often represents the original document when comes into jina
-        bytes buffer = 3;
-
-        // the ndarray of the image/audio/video document
-        NdArrayProto blob = 12;
-
-        // a text document
-        string text = 13;
-
-        // Related information to be used when a Document represents a graph with its chunks as nodes
-        GraphProto graph = 27;
-    }
-
-    // list of the sub-documents of this document (recursive structure)
-    repeated DocumentProto chunks = 4;
-
-    // The weight of this document
-    float weight = 5;
-
-    // the matched documents on the same level (recursive structure)
-    repeated DocumentProto matches = 8;
-
-    // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
-    string uri = 9;
-
-    // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
-    string mime_type = 10;
-
-    // a structured data value, consisting of field which map to dynamically typed values.
-    google.protobuf.Struct tags = 11;
-
-    // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
-    repeated uint32 location = 17;
-
-    // the offset of this doc in the previous granularity document
-    uint32 offset = 18;
-
-    // the embedding `ndarray` of this document
-    NdArrayProto embedding = 19;
-
-    // Scores performed on the document, each element corresponds to a metric
-    map<string, NamedScoreProto> scores = 28;
-
-    // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
-    string modality = 21;
-
-    // Evaluations performed on the document, each element corresponds to a metric
-    map<string, NamedScoreProto> evaluations = 29;
-}
-
-/**
- * Represents a the route paths of this message
+ * Represents a the route paths of this message as perceived by the Gateway
+ * start_time is set when the Gateway sends a message to a Pod
+ * end_time is set when the Gateway receives a message from a Pod
+ * thus end_time - start_time includes Executor computation, runtime overhead, serialization and network
  */
 message RouteProto {
-    string pod = 1; // the name of the BasePod
-    string pod_id = 2; // the id of the BasePod
-    google.protobuf.Timestamp start_time = 3; // receiving time
-    google.protobuf.Timestamp end_time = 4; // sending (out) time
-    StatusProto status = 5; // the status of the execution
+    string executor = 1; // the name of the BasePod
+    google.protobuf.Timestamp start_time = 2; // time when the Gateway starts sending to the Pod
+    google.protobuf.Timestamp end_time = 3; // time when the Gateway received it from the Pod
+    StatusProto status = 4; // the status of the execution
 }
 
-message TargetPodProto{
-    string host = 1; // the host HeadPea of the BasePod
-    uint32 port = 2; // the port HeadPea of the BasePod
-    uint32 port_out = 6; // the port TailPea of the BasePod
-    uint32 expected_parts = 3; // the number of parts the pod should expect
-    repeated RoutingEdgeProto out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
-    string target_identity = 5;
-}
-
-message RoutingEdgeProto {
-    string pod = 1;
-    bool send_as_bind = 2;
-}
-
-message RoutingTableProto {
-    // Pods that get visited during a Flow. Gateway should be both the first and the last entry.
-    map<string, TargetPodProto>  pods = 1;
-
-    // The currently active Pod. Needed for ZMQ.
-    string active_pod = 2;
-}
-
-/**
- * Represents a Envelope, a part of the ``Message``.
- */
-message EnvelopeProto {
-    // unique id of the sender of the message
-    string sender_id = 1;
-
-    // unique id of the receiver of the message, only used in router-dealer pattern
-    string receiver_id = 2;
-
-    // unique id of the request
-    string request_id = 3;
-
-    // timeout in second until this message is dropped
-    uint32 timeout = 4;
-
-    /**
-     * Represents a the version information
-     */
-    message VersionProto {
-        string jina = 1; // jina's version
-        string proto = 2; // protobuf's version
-        string vcs = 3; // vcs's version
-    }
-
-    VersionProto version = 6; // version info
-
-    string request_type = 7; // type of the request: DataRequest, ControlRequest
-
-    bool check_version = 8; // check local Protobuf version on every Pod that this message flows to
-
-    /**
-     * Represents a config for the compression algorithm
-     */
-    message CompressConfigProto {
-        string algorithm = 1;  // compress algorithm used for request
-
-        uint64 min_bytes = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
-
-        float min_ratio = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
-
-        google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
-    }
-
-
-    CompressConfigProto compression = 9; // compress configuration used for request
-
-    repeated RouteProto routes = 10; // status info on every routes
-
-    RoutingTableProto routing_table = 13;  // the routing table contains information to the next pods
-
-    StatusProto status = 11; // status info
-
-    HeaderProto header = 12; // header contains meta info defined by the user, copied from Request, for lazy serialization
-
-}
 
 /**
  * Represents a Header.
@@ -244,12 +27,15 @@ message EnvelopeProto {
  * - While returning, copy envelope.header back to request.header
  */
 message HeaderProto {
-    string exec_endpoint = 1;  // the endpoint specified by `@requests(on='/abc')`
+    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
 
-    string target_peapod = 2; // if set, the request is targeted to certain peas/pods, regex strings
+    StatusProto status = 2; // status info
 
-    bool no_propagate = 3; // if set, then this request is not propagate over the Flow topology
+    optional string exec_endpoint = 3;  // the endpoint specified by `@requests(on='/abc')`
 
+    optional string target_executor = 4; // if set, the request is targeted to certain executor, regex strings
+
+    optional uint32 timeout = 5; // epoch time in seconds after which the request should be dropped
 }
 
 
@@ -286,80 +72,78 @@ message StatusProto {
 
         // the name of the executor bind to that peapod (if applicable)
         string executor = 4;
-
-
     }
 
     // the details of the error
     ExceptionProto exception = 3;
 }
 
-/**
- * Represents a Message
- */
-message MessageProto {
-    EnvelopeProto envelope = 1; // the envelope of the message, used internally in jina, dropped when returning to client
-    RequestProto request = 2; // the request body
-}
-
-message DocumentArrayProto {
-    repeated DocumentProto docs = 1; // a list of Documents
-}
 
 /**
- * Represents a Request
+ * Represents an entity (like an ExecutorRuntime)
  */
-message RequestProto {
+message RelatedEntity {
+    string id = 1; // unique id of the entity, like the name of a pea
+    string address = 2; // address of the entity, could be an IP address, domain name etc, does not include port
+    uint32 port = 3; // port this entity is listening on
+    optional uint32 shard_id = 4; // the id of the shard it belongs to, if it is a shard
+}
 
-    string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
 
-    oneof body {
-        ControlRequestProto control = 2; // a control request
-        DataRequestProto data = 3; // a data request
+/**
+ * Represents a ControlRequest
+ */
+message ControlRequestProto {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    enum Command {
+            STATUS = 0; // check the status of the BasePod
+            ACTIVATE = 1; // used to add Peas to a Pod
+            DEACTIVATE = 2; // used to remove Peas from a Pod
     }
 
-    /**
-     * Represents a general data request
-     */
-    message DataRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to query
-        repeated DocumentProto groundtruths = 2; // a list of groundtruth Document you want to evaluate it with
-    }
+    Command command = 2; // the control command
 
-    /**
-     * Represents a control request used to control the BasePod
-     */
-    message ControlRequestProto {
-        enum Command {
-            TERMINATE = 0; // shutdown the BasePod
-            STATUS = 1; // check the status of the BasePod
-            IDLE = 2; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
-            CANCEL = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
-            SCALE = 4; // scale up/down a Pod
-            ACTIVATE = 5; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
-            DEACTIVATE = 6; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
+    repeated RelatedEntity relatedEntities = 3; // list of entities this ControlMessage is related to
+}
+
+
+/**
+ * Represents a DataRequest
+ */
+message DataRequestProto {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+    message DataContentProto {
+        oneof documents {
+            docarray.DocumentArrayProto docs = 1; // the docs in this request
+            bytes docs_bytes = 2; // the docs in this request as bytes
         }
-        Command command = 1; // the control command
     }
 
-    HeaderProto header = 4; // header contains meta info defined by the user
-
-    google.protobuf.Struct parameters = 5; // extra kwargs that will be used in executor
-
-    repeated RouteProto routes = 6; // status info on every routes
-
-    StatusProto status = 7; // status info
-
-
+    DataContentProto data = 4; // container for docs and groundtruths
 }
 
+/**
+ * Represents a list of data requests
+ * This should be replaced by streaming
+ */
+message DataRequestListProto {
+    repeated DataRequestProto requests = 1; // requests in this list
+}
 
 /**
- * jina gRPC service.
+ * jina gRPC service for ControlRequests.
  */
-service JinaRPC {
-    // Pass in a Request and a filled Request with matches will be returned.
-    rpc Call (stream RequestProto) returns (stream RequestProto) {
+service JinaControlRequestRPC {
+    // Used for passing ControlRequests to the Executors
+    rpc process_control (ControlRequestProto) returns (ControlRequestProto) {
     }
 }
 
@@ -367,8 +151,27 @@ service JinaRPC {
  * jina gRPC service for DataRequests.
  */
 service JinaDataRequestRPC {
-    // Pass in a Message, wrapping a DataRequest
-    rpc Call (MessageProto) returns (google.protobuf.Empty) {
+    // Used for passing DataRequests to the Executors
+    rpc process_data (DataRequestListProto) returns (DataRequestProto) {
+    }
+}
+
+/**
+ * jina gRPC service for DataRequests.
+ * This is used to send requests to Executors when a list of requests is not needed
+ */
+service JinaSingleDataRequestRPC {
+    // Used for passing DataRequests to the Executors
+    rpc process_single_data (DataRequestProto) returns (DataRequestProto) {
+    }
+}
+
+/**
+ * jina Gateway gRPC service.
+ */
+service JinaRPC {
+    // Pass in a Request and a filled Request with matches will be returned.
+    rpc Call (stream DataRequestProto) returns (stream DataRequestProto) {
     }
 }
 

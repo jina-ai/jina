@@ -1,8 +1,8 @@
 """Argparser module for remote runtime"""
-from ...helper import KVAppendAction, add_arg_group
-from .... import __default_host__
-from .... import helper
-from ....enums import CompressAlgo
+from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina import __default_host__
+from jina import helper
+from jina.enums import CompressAlgo
 
 
 def mixin_remote_runtime_parser(parser):
@@ -56,6 +56,20 @@ def mixin_gateway_parser(parser):
         type=int,
         default=helper.random_port(),
         help='The port that the gateway exposes for clients for GRPC connections.',
+    )
+
+    parser.add_argument(
+        '--graph-description',
+        type=str,
+        help='Routing graph for the gateway',
+        default='{}',
+    )
+
+    parser.add_argument(
+        '--pods-addresses',
+        type=str,
+        help='dictionary JSON with the input addresses of each Pod',
+        default='{}',
     )
 
 

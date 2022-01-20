@@ -1,7 +1,6 @@
-import argparse
-
 from jina.parsers.client import mixin_comm_protocol_parser
-from .helper import _SHOW_ALL_ARGS
+from jina.parsers.helper import _SHOW_ALL_ARGS
+from jina.parsers.peapods.runtimes.head import mixin_head_parser
 
 
 def set_pea_parser(parser=None):
@@ -11,27 +10,28 @@ def set_pea_parser(parser=None):
     :return: the parser
     """
     if not parser:
-        from .base import set_base_parser
+        from jina.parsers.base import set_base_parser
 
         parser = set_base_parser()
 
-    from .peapods.base import mixin_base_ppr_parser
-    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
-    from .peapods.runtimes.zed import mixin_zed_runtime_parser
-    from .peapods.runtimes.container import mixin_container_runtime_parser
-    from .peapods.runtimes.remote import mixin_remote_runtime_parser
-    from .peapods.pea import mixin_pea_parser
-    from .peapods.runtimes.distributed import mixin_distributed_feature_parser
-    from .hubble.pull import mixin_hub_pull_options_parser
+    from jina.parsers.peapods.base import mixin_base_ppr_parser
+    from jina.parsers.peapods.runtimes.worker import mixin_worker_runtime_parser
+    from jina.parsers.peapods.runtimes.container import mixin_container_runtime_parser
+    from jina.parsers.peapods.runtimes.remote import mixin_remote_runtime_parser
+    from jina.parsers.peapods.pea import mixin_pea_parser
+    from jina.parsers.peapods.runtimes.distributed import (
+        mixin_distributed_feature_parser,
+    )
+    from jina.parsers.hubble.pull import mixin_hub_pull_options_parser
 
     mixin_base_ppr_parser(parser)
-    mixin_zmq_runtime_parser(parser)
-    mixin_zed_runtime_parser(parser)
+    mixin_worker_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
     mixin_hub_pull_options_parser(parser)
+    mixin_head_parser(parser)
 
     return parser
 
@@ -43,16 +43,15 @@ def set_pod_parser(parser=None):
     :return: the parser
     """
     if not parser:
-        from .base import set_base_parser
+        from jina.parsers.base import set_base_parser
 
         parser = set_base_parser()
 
     set_pea_parser(parser)
 
-    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
+    from jina.parsers.peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
-    mixin_k8s_pod_parser(parser)
 
     return parser
 
@@ -64,41 +63,36 @@ def set_gateway_parser(parser=None):
     :return: the parser
     """
     if not parser:
-        from .base import set_base_parser
+        from jina.parsers.base import set_base_parser
 
         parser = set_base_parser()
 
-    from .peapods.base import mixin_base_ppr_parser
-    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
-    from .peapods.runtimes.zed import mixin_zed_runtime_parser
-    from .peapods.runtimes.remote import (
+    from jina.parsers.peapods.base import mixin_base_ppr_parser
+    from jina.parsers.peapods.runtimes.worker import mixin_worker_runtime_parser
+    from jina.parsers.peapods.runtimes.remote import (
         mixin_gateway_parser,
         mixin_prefetch_parser,
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
-    from .peapods.pod import mixin_base_pod_parser, mixin_k8s_pod_parser
-    from .peapods.pea import mixin_pea_parser
+    from jina.parsers.peapods.pod import mixin_base_pod_parser
+    from jina.parsers.peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
-    mixin_zmq_runtime_parser(parser)
-    mixin_zed_runtime_parser(parser)
+    mixin_worker_runtime_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pea_parser(parser)
-    mixin_k8s_pod_parser(parser)
+    mixin_head_parser(parser)
 
-    from ..enums import SocketType, PodRoleType
+    from jina.enums import PodRoleType
 
     parser.set_defaults(
         name='gateway',
-        socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
-        socket_out=SocketType.PUSH_CONNECT,
-        ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-        runtime_cls='GRPCRuntime',
+        runtime_cls='GRPCGatewayRuntime',
         pod_role=PodRoleType.GATEWAY,
     )
 
@@ -112,14 +106,15 @@ def set_client_cli_parser(parser=None):
     :return: the parser
     """
     if not parser:
-        from .base import set_base_parser
+        from jina.parsers.base import set_base_parser
 
         parser = set_base_parser()
 
-    from .peapods.runtimes.remote import (
-        mixin_client_gateway_parser,
+    from jina.parsers.peapods.runtimes.remote import mixin_client_gateway_parser
+    from jina.parsers.client import (
+        mixin_client_features_parser,
+        mixin_comm_protocol_parser,
     )
-    from .client import mixin_client_features_parser, mixin_comm_protocol_parser
 
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
@@ -136,7 +131,7 @@ def set_help_parser(parser=None):
     """
 
     if not parser:
-        from .base import set_base_parser
+        from jina.parsers.base import set_base_parser
 
         parser = set_base_parser()
 
@@ -153,17 +148,15 @@ def get_main_parser():
 
     :return: the parser
     """
-    from .base import set_base_parser
-    from .helloworld import set_hello_parser
-    from .helper import _chf, _SHOW_ALL_ARGS
+    from jina.parsers.base import set_base_parser
+    from jina.parsers.helloworld import set_hello_parser
+    from jina.parsers.helper import _chf, _SHOW_ALL_ARGS
 
-    from .export_api import set_export_api_parser
-    from .flow import set_flow_parser
-    from .ping import set_ping_parser
+    from jina.parsers.export_api import set_export_api_parser
+    from jina.parsers.flow import set_flow_parser
+    from jina.parsers.ping import set_ping_parser
 
-    from .hubble import set_hub_parser
-
-    # from .optimizer import set_optimizer_parser
+    from jina.parsers.hubble import set_hub_parser
 
     # create the top-level parser
     parser = set_base_parser()

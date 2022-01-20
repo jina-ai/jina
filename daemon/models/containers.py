@@ -2,8 +2,8 @@ from typing import Dict
 
 from pydantic import BaseModel, Field
 
-from .base import StoreItem, StoreStatus
-from .id import DaemonID
+from daemon.models.base import StoreItem, StoreStatus
+from daemon.models.id import DaemonID
 
 
 class ContainerArguments(BaseModel):

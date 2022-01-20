@@ -1,0 +1,11 @@
+jtype: Flow
+version: '1'
+with:
+  protocol: http
+  port_expose: 9000
+  cors: true
+executors:
+  - name: counter
+    uses: executors/simple_executor/config.yml
+    shards: ${{ num_shards }}
+    replicas: ${{ num_replicas }}

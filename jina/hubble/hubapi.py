@@ -6,9 +6,13 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
-from . import HubExecutor
-from .helper import unpack_package, install_requirements, is_requirements_installed
-from ..helper import random_identity
+from jina.hubble import HubExecutor
+from jina.hubble.helper import (
+    unpack_package,
+    install_requirements,
+    is_requirements_installed,
+)
+from jina.helper import random_identity
 
 _hub_root = Path(
     os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina', 'hub-packages'))

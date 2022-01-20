@@ -7,13 +7,13 @@ from collections.abc import MutableMapping
 from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
 
 from jina.logging.logger import JinaLogger
-from .. import jinad_args, __root_workspace__
-from ..models import DaemonID
-from ..models.base import StoreItem, StoreStatus
+from daemon import jinad_args, __root_workspace__
+from daemon.models import DaemonID
+from daemon.models.base import StoreItem, StoreStatus
 
 if TYPE_CHECKING:
-    from ..models.workspaces import WorkspaceItem
-    from ..models.containers import ContainerItem
+    from daemon.models.workspaces import WorkspaceItem
+    from daemon.models.containers import ContainerItem
 
 
 class BaseStore(MutableMapping):

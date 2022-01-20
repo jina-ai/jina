@@ -18,7 +18,6 @@ from jina.helloworld.fashion.helper import (
 )
 from jina.logging.logger import JinaLogger
 from jina.parsers.helloworld import set_hw_parser
-from jina.types.arrays.memmap import DocumentArrayMemmap
 from packaging import version
 from pkg_resources import resource_filename
 
@@ -73,35 +72,6 @@ def _benchmark_avg_flow_time() -> Dict[str, float]:
     log.info('Average flow time: %f seconds', avg_flow_time)
 
     return {'avg_flow_time': avg_flow_time}
-
-
-def _benchmark_dam_extend_qps() -> Dict[str, float]:
-    """Benchmark on adding 1M documents to DocumentArrayMemmap.
-
-    Returns:
-        A dict mapping of dam extend time in seconds as float number.
-    """
-    dlist = []
-    dam_size = 1000000
-    dam = DocumentArrayMemmap(os.path.join(os.getcwd(), 'MyMemMap'))
-
-    for i in range(dam_size):
-        dlist.append(
-            Document(
-                text=f'This is the document number: {i}',
-            )
-        )
-
-    log.info('Benchmarking DAM extend')
-    st = time.perf_counter()
-    dam.extend(dlist)
-    dam_extend_time = time.perf_counter() - st
-    log.info('%d qps within %d seconds', dam_size / dam_extend_time, dam_extend_time)
-
-    return {
-        'dam_extend_time': dam_extend_time,
-        'dam_extend_qps': dam_size / dam_extend_time,
-    }
 
 
 def _benchmark_qps() -> Dict[str, float]:
@@ -189,7 +159,6 @@ def benchmark() -> Dict[str, str]:
     """
     stats = {'version': __version__}
     stats.update(_benchmark_import_time())
-    stats.update(_benchmark_dam_extend_qps())
     stats.update(_benchmark_qps())
     stats.update(_benchmark_avg_flow_time())
 

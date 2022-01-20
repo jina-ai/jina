@@ -67,10 +67,6 @@ html_theme_options = {
 
     # start-announce
 
-    "announcement": '''
-    <a href="https://github.com/jina-ai/finetuner">Check out <b>Finetuner</b> - tuning any DNN for better embedding on neural search tasks</a>
-    ''',
-        
     # end-announce
 }
 
@@ -81,7 +77,7 @@ html_css_files = [
     'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
 ]
-html_js_files = ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js', 'docbot.js']
+html_js_files = []
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_favicon = '_static/favicon.ico'
@@ -167,7 +163,7 @@ ogp_image = 'https://docs.jina.ai/_static/banner.png'
 ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'
-ogp_site_name = 'Jina Documentation'
+ogp_site_name = f'Jina {os.environ.get("SPHINX_MULTIVERSION_VERSION", version)} Documentation'
 
 ogp_custom_meta_tags = [
     '<meta name="twitter:card" content="summary_large_image">',
@@ -187,14 +183,19 @@ ogp_custom_meta_tags = [
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.3"></script>
     ''',
 ]
 
 
-def add_server_address(app):
-    # This makes variable `server_address` available to docbot.js
+def set_qa_server_address(app):
+    # This sets the server address to <qa-bot>
     server_address = app.config['server_address']
-    js_text = "var server_address = '%s';" % server_address
+    js_text = """
+        document.addEventListener("DOMContentLoaded", function() { 
+            document.querySelector("qa-bot").setAttribute("server", "%s");
+        });
+        """ % server_address
     app.add_js_file(None, body=js_text)
 
 
@@ -229,4 +230,4 @@ def setup(app):
         default=os.getenv('JINA_DOCSBOT_SERVER', 'https://docsbot.jina.ai'),
         rebuild='',
     )
-    app.connect('builder-inited', add_server_address)
+    app.connect('builder-inited', set_qa_server_address)

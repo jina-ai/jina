@@ -1,28 +1,27 @@
 import os
-from pathlib import Path
-from http import HTTPStatus
 from contextlib import ExitStack
+from http import HTTPStatus
+from pathlib import Path
 from typing import Dict, List, Optional
 
+from fastapi import HTTPException, UploadFile, File, Query, Depends
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
-from fastapi import HTTPException, UploadFile, File, Query, Depends
 
-from jina import Flow, __docker_host__
-from jina.helper import cached_property
-from jina.peapods import CompoundPod
-from jina.peapods.peas.helper import update_runtime_cls
-from jina.peapods.runtimes.container.helper import get_gpu_device_requests
+from jina.orchestrate.peas.container_helper import get_gpu_device_requests
+from jina.orchestrate.peas.helper import update_runtime_cls
+from jina import Flow
 from jina.enums import (
-    PeaRoleType,
-    SocketType,
     RemoteWorkspaceState,
+    PeaRoleType,
 )
-from .. import daemon_logger
-from ..models.ports import Ports, PortMapping, PortMappings
-from ..models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
-from ..helper import get_workspace_path, change_cwd, change_env
-from ..stores import workspace_store as store
+from jina.helper import cached_property
+
+from daemon import daemon_logger
+from daemon.helper import get_workspace_path, change_cwd, change_env
+from daemon.models import DaemonID, FlowModel, PodModel, PeaModel, GATEWAY_RUNTIME_DICT
+from daemon.models.ports import Ports, PortMapping, PortMappings
+from daemon.stores import workspace_store as store
 
 
 class Environment:
@@ -90,13 +89,28 @@ class FlowDepends:
             )
 
     @property
+    def newname(self) -> str:
+        """Return newfile path in following format
+        `flow.yml` -> `<root-workspace>/<workspace-id>/<flow-id>_flow.yml`
+        `flow1.yml` -> `<root-workspace>/<workspace-id>/<flow-id>_flow1.yml`
+        `src/flow.yml` -> `<root-workspace>/<workspace-id>/src/<flow-id>_flow.yml`
+        `src/abc/flow.yml` -> `<root-workspace>/<workspace-id>/src/abc/<flow-id>_flow.yml`
+
+        :return: newname for the flow yaml file
+        """
+        parts = Path(self.filename).parts
+        if len(parts) == 1:
+            return f'{self.id}_{self.filename}'
+        else:
+            return os.path.join(*parts[:-1], f'{self.id}_{parts[-1]}')
+
+    @property
     def newfile(self) -> str:
-        """return newfile path in format
-        `<root-workspace>/<workspace-id>/<flow-id>_<original-filename>`
+        """Return newfile path fetched from newname
 
         :return: return filepath to save flow config in
         """
-        return get_workspace_path(self.workspace_id, f'{self.id}_{self.filename}')
+        return get_workspace_path(self.workspace_id, self.newname)
 
     def load_and_dump(self) -> None:
         """
@@ -110,7 +124,6 @@ class FlowDepends:
             - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)
             - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
             - Pod level args for ports are enough, as we don't need to publish Pea ports
-            - all the above Pods also run in docker, hence we set `runs_in_docker`
         3. `save` the Flow config.
             - saves port configs of all `executors` into the new yaml.
             - set `JINA_FULL_CLI` envvar, so that `gateway` args are also added.
@@ -120,16 +133,14 @@ class FlowDepends:
         with ExitStack() as stack:
             # set env vars
             stack.enter_context(change_env('JINA_FULL_CLI', 'true'))
-            if self.envs:
-                for key, val in self.envs.items():
-                    stack.enter_context(change_env(key, val))
 
             # change directory to `workspace`
             stack.enter_context(change_cwd(get_workspace_path(self.workspace_id)))
 
             # load and build
-            f: Flow = Flow.load_config(str(self.localpath())).build()
-
+            f: Flow = Flow.load_config(
+                str(self.localpath()), substitute=True, context=self.envs
+            ).build()
             # get & set the ports mapping, set `runs_in_docker`
             port_mapping = []
             port_mapping.append(
@@ -141,52 +152,32 @@ class FlowDepends:
             )
             for pod_name, pod in f._pod_nodes.items():
                 runtime_cls = update_runtime_cls(pod.args, copy=True).runtime_cls
-                if isinstance(pod, CompoundPod):
-                    if (
-                        runtime_cls
-                        in [
-                            'ZEDRuntime',
-                            'GRPCDataRuntime',
-                            'ContainerRuntime',
-                        ]
-                        + list(GATEWAY_RUNTIME_DICT.values())
-                    ):
-                        # For a `CompoundPod`, publish ports for head Pea & tail Pea
-                        # Check daemon.stores.partial.PartialFlowStore.add() for addtional logic
-                        # to handle `CompoundPod` inside partial-daemon.
-                        for pea_args in [pod.head_args, pod.tail_args]:
-                            pea_args.runs_in_docker = False
-                            self._update_port_mapping(pea_args, pod_name, port_mapping)
-                else:
-                    if runtime_cls in ['ZEDRuntime', 'GRPCDataRuntime'] + list(
-                        GATEWAY_RUNTIME_DICT.values()
-                    ):
-                        pod.args.runs_in_docker = True
-                        current_ports = Ports()
-                        for port_name in Ports.__fields__:
-                            setattr(
-                                current_ports,
-                                port_name,
-                                getattr(pod.args, port_name, None),
-                            )
-
-                        port_mapping.append(
-                            PortMapping(
-                                pod_name=pod_name, pea_name='', ports=current_ports
-                            )
+                if runtime_cls in ['WorkerRuntime'] + list(
+                    GATEWAY_RUNTIME_DICT.values()
+                ):
+                    current_ports = Ports()
+                    for port_name in Ports.__fields__:
+                        setattr(
+                            current_ports,
+                            port_name,
+                            getattr(pod.args, port_name, None),
                         )
-                    elif (
-                        runtime_cls in ['ContainerRuntime']
-                        and hasattr(pod.args, 'replicas')
-                        and pod.args.replicas > 1
-                    ):
-                        for pea_args in [pod.peas_args['head'], pod.peas_args['tail']]:
-                            self._update_port_mapping(pea_args, pod_name, port_mapping)
+
+                    port_mapping.append(
+                        PortMapping(pod_name=pod_name, pea_name='', ports=current_ports)
+                    )
+                elif (
+                    runtime_cls in ['ContainerRuntime']
+                    and hasattr(pod.args, 'replicas')
+                    and pod.args.replicas > 1
+                ):
+                    for pea_args in [pod.peas_args['head']]:
+                        self._update_port_mapping(pea_args, pod_name, port_mapping)
 
             self.ports = port_mapping
             # save to a new file & set it for partial-daemon
             f.save_config(filename=self.newfile)
-            self.params.uses = os.path.basename(self.newfile)
+            self.params.uses = self.newname
 
     def _update_port_mapping(self, pea_args, pod_name, port_mapping):
         current_ports = Ports()
@@ -236,37 +227,7 @@ class PeaDepends:
         self.params = pea
         self.id = DaemonID('jpea')
         self.envs = envs.vars
-        self.validate()
-
-    @property
-    def host_in(self) -> str:
-        """
-        host_in for the pea/pod
-
-        :return: host_in
-        """
-        # TAIL & SINGLETON peas are handled by dynamic routing
-        return (
-            __docker_host__
-            if PeaRoleType.from_string(self.params.pea_role)
-            in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
-            else self.params.host_in
-        )
-
-    @property
-    def host_out(self) -> str:
-        """
-        host_out for the pea/pod
-
-        :return: host_out
-        """
-        # TAIL & SINGLETON peas are handled by dynamic routing
-        return (
-            __docker_host__
-            if PeaRoleType.from_string(self.params.pea_role)
-            in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
-            else self.params.host_in
-        )
+        self.update_args()
 
     @cached_property
     def ports(self) -> Dict:
@@ -275,75 +236,24 @@ class PeaDepends:
 
         :return: dict of port mappings
         """
-        _mapping = {
-            'port_in': 'socket_in',
-            'port_out': 'socket_out',
-            'port_ctrl': 'socket_ctrl',
-        }
-        # Map only "bind" ports for HEAD, TAIL & SINGLETON
-        if self.params.runtime_cls == 'ContainerRuntime':
-            # For `ContainerRuntime`, port mapping gets handled internally
+        # Container peas are started in separate docker containers, so we should not expose port_in here
+        if (
+            (
+                self.params.pea_role
+                and PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.HEAD
+            )
+            and self.params.uses
+            and self.params.uses.startswith('docker://')
+        ):
             return {}
-        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
-            return {
-                f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
-                for i in self.params.__fields__
-                if i in _mapping
-                and SocketType.from_string(
-                    getattr(self.params, _mapping[i], 'PAIR_BIND')
-                ).is_bind
-            }
         else:
-            return {f'{self.params.port_ctrl}/tcp': self.params.port_ctrl}
+            return {f'{self.params.port_in}/tcp': self.params.port_in}
 
-    def validate(self):
-        """
-        # TODO (deepankar): These docs would need changes after dynamic routing changes.
-        Validates and sets arguments to be used in store
-        DOCKER_HOST = 'host.docker.internal'
-
-        SINGLETON
-        =========
-        `runtime_cls`: `ZEDRuntime`
-            `host_in`, `host_out`: set to `DOCKER_HOST`, as it would talk to gateway/other pods
-            `ports`: map `port_in` & `port_out` if `socket_in` & `socket_out` are BIND.
-                     map `port_ctrl`, ignore `port_exppse`
-
-        `runtime_cls`: `ContainerRuntime`
-            `host_in`,`host_out`: don't change. Handled interally in `jina pod`
-            `ports`: handled internally in `ContainerRuntime`
-
-        PARALLEL
-        ========
-        `runtime_cls`: `ZEDRuntime`
-            `host_in`, `host_out`: set to `DOCKERHOST`
-                host config handled interally in `jina pod` wouldn't work here, as they need to talk to head/tail
-                peas which are on `DOCKER_HOST`
-            `ports`: don't map `port_in` & `port_out` as they're always CONNECT.
-                     map `port_ctrl`??, ignore `port_exppse`
-
-        `runtime_cls`: `ContainerRuntime` or `ZEDRuntime`
-            `host_in`, `host_out`: set to `DOCKERHOST`
-                host config handled interally in `jina pod` wouldn't work here, as they need to talk to head/tail
-                peas which are on `DOCKER_HOST`
-            `ports`: handled internally in `ContainerRuntime`
-
-        HEAD/TAIL
-        =========
-        `runtime_cls`:  `ZEDRuntime` (always??)
-            `host_in`, `host_out`: set to `DOCKER_HOST`, as they would talk to gateway/other pods.
-            `ports`: map `port_in` & `port_out` if `socket_in` & `socket_out` are BIND.
-                     map `port_ctrl`, ignore `port_exppse`
-
-        TODO: check the host_in/host_out for CONNECT sockets
-        TODO: HEAD/TAIL - can `uses_before` or `uses_after` be `docker://`
-        """
+    def update_args(self):
+        """TODO: update docs"""
         # Each pea is inside a container
-        self.params.host_in = self.host_in
-        self.params.host_out = self.host_out
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
-        self.params.runs_in_docker = True
         self.device_requests = (
             get_gpu_device_requests(self.params.gpus) if self.params.gpus else None
         )
@@ -362,7 +272,7 @@ class PodDepends(PeaDepends):
         self.params = pod
         self.id = DaemonID('jpod')
         self.envs = envs.vars
-        self.validate()
+        self.update_args()
 
 
 class WorkspaceDepends:
@@ -374,7 +284,7 @@ class WorkspaceDepends:
         self.id = id if id else DaemonID('jworkspace')
         self.files = files
 
-        from ..tasks import __task_queue__
+        from daemon.tasks import __task_queue__
 
         if self.id not in store:
             # when id doesn't exist in store, create it.

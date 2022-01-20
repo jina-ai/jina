@@ -14,6 +14,7 @@ from ..helpers import assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
+exposed_port = 12345
 
 """
 Run below commands for local tests
@@ -28,92 +29,92 @@ NUM_DOCS = 100
 
 
 @pytest.mark.parametrize('replicas', [1, 2])
-def test_upload_via_pymodule(replicas, mocker):
+def test_upload_via_pymodule(replicas):
     from .mwu_encoder import MWUEncoder
 
-    response_mock = mocker.Mock()
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
             uses=MWUEncoder,
             uses_with={'greetings': 'hi'},
             host=CLOUD_HOST,
             replicas=replicas,
-            py_modules=[os.path.join(cur_dir, 'mwu_encoder.py')],
+            py_modules='mwu_encoder.py',
+            upload_files=cur_dir,
         )
         .add()
     )
     with f:
-        f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+        responses = Client(port=exposed_port).index(
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
+    for doc in responses[0].docs:
+        assert doc.tags['greetings'] == 'hi'
 
 
 @pytest.mark.parametrize('replicas', [1, 2])
-def test_upload_via_yaml(replicas, mocker):
-    response_mock = mocker.Mock()
+def test_upload_via_yaml(replicas):
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
-            uses=[os.path.join(cur_dir, 'mwu_encoder.yml')],
+            uses='mwu_encoder.yml',
             host=CLOUD_HOST,
             replicas=replicas,
-            upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
+            upload_files=cur_dir,
         )
         .add()
     )
     with f:
-        f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+        responses = Client(port=exposed_port).index(
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
 
 
 @pytest.mark.parametrize('replicas', [2])
-def test_upload_multiple_workspaces(replicas, mocker):
-    response_mock = mocker.Mock()
+def test_upload_multiple_workspaces(replicas):
     encoder_workspace = 'sklearn_encoder_ws'
     indexer_workspace = 'tdb_indexer_ws'
 
-    def _path(dir, filename):
-        return os.path.join(cur_dir, dir, filename)
-
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add(
             name='sklearn_encoder',
-            uses=_path(encoder_workspace, 'sklearn.yml'),
+            uses='sklearn.yml',
             host=CLOUD_HOST,
             replicas=replicas,
-            py_modules=[_path(encoder_workspace, 'encoder.py')],
-            upload_files=[
-                _path(encoder_workspace, '.jinad'),
-                _path(encoder_workspace, 'requirements.txt'),
-            ],
+            py_modules='encoder.py',
+            upload_files=encoder_workspace,
         )
         .add(
             name='tdb_indexer',
-            uses=_path(indexer_workspace, 'tdb.yml'),
+            uses='tdb.yml',
             host=CLOUD_HOST,
             replicas=replicas,
-            py_modules=[_path(indexer_workspace, 'tdb_indexer.py')],
-            upload_files=[
-                _path(indexer_workspace, '.jinad'),
-                _path(indexer_workspace, 'requirements.txt'),
-            ],
+            py_modules='tdb_indexer.py',
+            upload_files=indexer_workspace,
         )
     )
     with f:
-        f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+        responses = Client(port=exposed_port).index(
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0
 
 
 def test_remote_flow():
@@ -196,9 +197,9 @@ async def test_custom_project():
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
     ):
-        fields = resp.data.docs[0].matches[0].tags.fields
-        assert fields['first'].string_value == 's'
-        assert fields['second'].string_value == 't'
+        tags = resp.data.docs[0].matches[0].tags
+        assert tags['first'] == 's'
+        assert tags['second'] == 't'
     print(f'Deleting workspace {workspace_id}')
     assert await client.workspaces.delete(workspace_id)
 
@@ -218,21 +219,23 @@ def docker_compose(request):
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
-    response_mock = mocker.Mock()
+def test_upload_simple_non_standard_rootworkspace(docker_compose):
     f = (
-        Flow()
+        Flow(port_expose=exposed_port)
         .add()
         .add(
-            uses=[os.path.join(cur_dir, 'mwu_encoder.yml')],
+            uses='mwu_encoder.yml',
             host='localhost:9000',
-            upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
+            upload_files=cur_dir,
         )
         .add()
     )
     with f:
-        f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
+        responses = Client(port=exposed_port).index(
+            inputs=(
+                Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
+            ),
+            return_results=True,
         )
-    response_mock.assert_called()
+    assert len(responses) > 0
+    assert len(responses[0].docs) > 0

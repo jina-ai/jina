@@ -6,4 +6,4 @@ with:
 executors:
   - name: indexer_dbms
     uses: docker://dbms-executor
-    volumes: $JINAD_WORKSPACE:/jinad_workspace
+    volumes: ${{ JINAD_WORKSPACE }}:/jinad_workspace

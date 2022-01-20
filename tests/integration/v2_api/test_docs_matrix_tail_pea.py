@@ -1,7 +1,7 @@
 import pytest
 from collections import OrderedDict
-from jina import Document, DocumentArray, Executor, Flow, requests
-from jina.types.arrays.chunk import ChunkArray
+from jina import Document, DocumentArray, Executor, Flow, Client, requests
+from docarray.array.chunk import ChunkArray
 
 
 class DummyExecutor(Executor):
@@ -53,14 +53,14 @@ class ChunkMerger(Executor):
 def test_sharding_tail_pea(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
 
-    f = Flow().add(
+    f = Flow(port_expose=1234).add(
         uses=DummyExecutor,
         replicas=num_replicas,
         shards=num_shards,
         uses_after=MatchMerger,
     )
     with f:
-        results = f.post(
+        results = Client(port=1234).post(
             on='/search',
             inputs=Document(matches=[Document()]),
             return_results=True,
@@ -77,7 +77,7 @@ def test_merging_head_pea():
             yield document
 
     f = (
-        Flow()
+        Flow(port_expose=1234)
         .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='executor1')
         .add(
             uses={'jtype': 'DummyExecutor', 'with': {'mode': '2'}},
@@ -89,7 +89,7 @@ def test_merging_head_pea():
         )
     )
     with f:
-        results = f.post(
+        results = Client(port=1234).post(
             on='/search',
             inputs=multimodal_generator(),
             return_results=True,

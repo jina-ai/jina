@@ -3,7 +3,7 @@ import warnings
 from enum import Enum
 from typing import List
 
-from ..helper import classproperty
+from daemon.helper import classproperty
 
 
 class DaemonEnum(str, Enum):
@@ -77,12 +77,3 @@ class PartialDaemonModes(DaemonEnum):
     PEA = 'pea'
     POD = 'pod'
     FLOW = 'flow'
-
-
-class UpdateOperation(DaemonEnum):
-    """
-    Represents the type of operation to perform in the update
-    We consider these an `update` operation since they **change** the underlying state
-    """
-
-    ROLLING_UPDATE = 'rolling_update'

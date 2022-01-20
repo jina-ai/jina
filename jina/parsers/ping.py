@@ -1,5 +1,5 @@
 """Argparser module for pinging"""
-from .base import set_base_parser
+from jina.parsers.base import set_base_parser
 
 
 def set_ping_parser(parser=None):
@@ -29,11 +29,5 @@ Timeout in millisecond of one check
         type=int,
         default=3,
         help='The max number of tried health checks before exit with exit code 1',
-    )
-    parser.add_argument(
-        '--print-response',
-        action='store_true',
-        default=False,
-        help='If set, print the response when received',
     )
     return parser

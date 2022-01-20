@@ -2,11 +2,11 @@ import os
 import argparse
 from typing import Dict, Any
 
-from ..base import VersionedYAMLParser
-from .... import Flow
-from ....enums import PodRoleType
-from ....helper import expand_env_var, ArgNamespace
-from ....parsers import set_pod_parser, set_gateway_parser
+from jina.jaml.parsers.base import VersionedYAMLParser
+from jina import Flow
+from jina.enums import PodRoleType
+from jina.helper import expand_env_var, ArgNamespace
+from jina.parsers import set_pod_parser, set_gateway_parser
 
 
 def _get_taboo(parser: argparse.ArgumentParser):
@@ -57,6 +57,7 @@ class V1Parser(VersionedYAMLParser):
         :return: the Flow YAML parser given the syntax version number
         """
         p = data.get('with', {})  # type: Dict[str, Any]
+
         a = p.pop('args') if 'args' in p else ()
         k = p.pop('kwargs') if 'kwargs' in p else {}
         # maybe there are some hanging kwargs in "parameters"

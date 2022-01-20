@@ -1,9 +1,6 @@
 """Argparser module for Flow"""
-import argparse
-
-from .base import set_base_parser
-from .helper import add_arg_group, KVAppendAction, _SHOW_ALL_ARGS
-from ..enums import InfrastructureType
+from jina.parsers.base import set_base_parser
+from jina.parsers.helper import add_arg_group, KVAppendAction
 
 
 def mixin_flow_features_parser(parser):
@@ -11,7 +8,7 @@ def mixin_flow_features_parser(parser):
 
     :param parser: the parser configure
     """
-    from ..enums import FlowInspectType
+    from jina.enums import FlowInspectType
 
     gp = add_arg_group(parser, title='Flow Feature')
 
@@ -37,23 +34,6 @@ def mixin_flow_features_parser(parser):
     )
 
 
-def mixin_k8s_parser(parser):
-    """Add the arguments for the Kubernetes features to the parser
-
-    :param parser: the parser configure
-    """
-    gp = add_arg_group(parser, title='Kubernetes Feature')
-    gp.add_argument(
-        '--infrastructure',
-        type=InfrastructureType.from_string,
-        choices=list(InfrastructureType),
-        default=InfrastructureType.JINA,
-        help='Infrastructure where the Flow runs on. Currently, `local` and `k8s` are supported'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-
 def set_flow_parser(parser=None, with_identity=False):
     """Set the parser for the flow
 
@@ -61,7 +41,7 @@ def set_flow_parser(parser=None, with_identity=False):
     :param with_identity: if to include identity in the parser
     :return: the parser
     """
-    from .peapods.base import mixin_base_ppr_parser
+    from jina.parsers.peapods.base import mixin_base_ppr_parser
 
     if not parser:
         parser = set_base_parser()
@@ -71,7 +51,5 @@ def set_flow_parser(parser=None, with_identity=False):
     parser.set_defaults(workspace='./')
 
     mixin_flow_features_parser(parser)
-
-    mixin_k8s_parser(parser)
 
     return parser

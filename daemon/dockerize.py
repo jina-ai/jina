@@ -9,24 +9,20 @@ import docker
 from jina import __docker_host__
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
-from jina.peapods.runtimes.container.helper import get_gpu_device_requests
-from . import (
-    jinad_args,
-    __root_workspace__,
-    __partial_workspace__,
-)
-from .excepts import (
+
+from daemon import jinad_args, __root_workspace__, __partial_workspace__
+from daemon.excepts import (
     DockerNotFoundException,
     DockerImageException,
     DockerNetworkException,
     DockerContainerException,
 )
-from .helper import id_cleaner, classproperty, is_error_message
-from .models import DaemonID
-from .models.enums import IDLiterals
+from daemon.helper import id_cleaner, classproperty, is_error_message
+from daemon.models import DaemonID
+from daemon.models.enums import IDLiterals
 
 if TYPE_CHECKING:
-    from .files import DaemonFile
+    from daemon.files import DaemonFile
     from docker.models.networks import Network
     from docker.models.containers import Container
     from docker.client import APIClient, DockerClient
@@ -101,7 +97,7 @@ class Dockerizer:
         if workspace_id in cls.networks:
             network = cls.client.networks.get(network_id=workspace_id)
         else:
-            from .stores import workspace_store
+            from daemon.stores import workspace_store
 
             new_subnet_start = (
                 workspace_store.status.ip_range_start
@@ -235,7 +231,7 @@ class Dockerizer:
         def _validate_device_request(error: str) -> bool:
             return True if 'could not select device driver' in error else False
 
-        from .stores import workspace_store
+        from daemon.stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata
         if not metadata:
@@ -363,7 +359,6 @@ class Dockerizer:
         """
         return {
             'JINA_LOG_WORKSPACE': os.path.join(__partial_workspace__, 'logs'),
-            'JINA_RANDOM_PORT_MIN': '49153',
             'JINA_LOG_LEVEL': os.getenv('JINA_LOG_LEVEL') or 'INFO',
             'JINA_HUB_ROOT': os.path.join(
                 __partial_workspace__, '.jina', 'hub-packages'

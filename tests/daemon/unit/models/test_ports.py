@@ -4,12 +4,12 @@ d = [
     {
         'pod_name': 'query_indexer',
         'pea_name': 'query_indexer/head',
-        'ports': {'port_in': 1234, 'port_out': 2345},
+        'ports': {'port_in': 1234},
     },
     {
         'pod_name': 'query_indexer',
         'pea_name': 'query_indexer/tail',
-        'ports': {'port_in': 3456, 'port_out': 4567},
+        'ports': {'port_in': 3456},
     },
     {
         'pod_name': 'encoder',
@@ -33,4 +33,4 @@ def test_port_mappings():
     assert 'query_indexer/head' in p.pea_names
     assert 'query_indexer/tail' in p.pea_names
     assert p['encoder/pea-0'].ports.port_in == 12345
-    assert p.ports == [1234, 2345, 3456, 4567, 12345]
+    assert p.ports == [1234, 3456, 12345]

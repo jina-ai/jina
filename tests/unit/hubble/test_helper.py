@@ -26,6 +26,9 @@ def test_parse_hub_uri():
     result = helper.parse_hub_uri('jinahub+docker://hello:magic/world')
     assert result == ('jinahub+docker', 'hello', 'world', 'magic')
 
+    result = helper.parse_hub_uri('jinahub+sandbox://hello:magic/world')
+    assert result == ('jinahub+sandbox', 'hello', 'world', 'magic')
+
 
 @pytest.mark.parametrize(
     'uri_path',
@@ -82,18 +85,21 @@ def test_install_requirements():
 
 def test_is_requirement_installed(tmpfile):
     with open(tmpfile, 'w') as f:
-        f.writelines(['jina==0.0.1', 'pytest=0.0.1'])
+        f.write('jina==0.0.1\npydatest==0.0.1\nfinefinetuner==0.0.1')
     assert not helper.is_requirements_installed(tmpfile)
+
+    with open(tmpfile, 'w') as f:
+        f.write('pytest==0.0.1')
     with pytest.warns(None, match='VersionConflict') as record:
-        assert not helper.is_requirements_installed(tmpfile, show_warning=True)
+        assert helper.is_requirements_installed(tmpfile, show_warning=True)
     assert len(record) == 1
 
     with pytest.warns(None) as record:
-        assert not helper.is_requirements_installed(tmpfile, show_warning=False)
+        assert helper.is_requirements_installed(tmpfile, show_warning=False)
     assert len(record) == 0
 
     with open(tmpfile, 'w') as f:
-        f.writelines(['jina-awesome-nonexist'])
+        f.write('jina-awesome-nonexist')
     assert not helper.is_requirements_installed(tmpfile)
     with pytest.warns(None) as record:
         assert not helper.is_requirements_installed(tmpfile, show_warning=True)
@@ -130,16 +136,16 @@ def test_disk_cache(tmpfile):
 
     raise_exception = False
     # returns latest, saves result in cache
-    assert _myfunc() == 1
+    assert _myfunc() == (1, False)
 
     result = 2
     # does not return latest, defaults to cache since force == False
-    assert _myfunc() == 1
+    assert _myfunc() == (1, True)
 
     # returns latest since force == True
-    assert _myfunc(force=True) == 2
+    assert _myfunc(force=True) == (2, False)
 
     raise_exception = True
     result = 3
     # does not return latest and exception is not raised, defaults to cache
-    assert _myfunc(force=True) == 2
+    assert _myfunc(force=True) == (2, True)

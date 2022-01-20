@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pytest
 import requests
+from daemon.models.id import DaemonID
 
 from jina import Document
 from jina.logging.logger import JinaLogger
@@ -58,7 +59,7 @@ def test_dump_dbms_remote(docker_compose):
         REST_PORT_QUERY,
         'search',
         'post',
-        [doc.dict() for doc in docs[:nr_search]],
+        {'docs': [doc.to_dict() for doc in docs[:nr_search]]},
     )
     # TODO some times it was None
     assert (
@@ -66,7 +67,9 @@ def test_dump_dbms_remote(docker_compose):
         or r['data']['docs'][0].get('matches') == []
     )
 
-    _send_rest_request(REST_PORT_DBMS, 'index', 'post', [doc.dict() for doc in docs])
+    _send_rest_request(
+        REST_PORT_DBMS, 'index', 'post', {'docs': [doc.to_dict() for doc in docs]}
+    )
 
     _send_rest_request(
         REST_PORT_DBMS,
@@ -75,7 +78,7 @@ def test_dump_dbms_remote(docker_compose):
         data=[],
         exec_endpoint='/dump',
         params={'shards': SHARDS, 'dump_path': DUMP_PATH_DOCKER},
-        target_peapod='indexer_dbms',
+        target_executor='indexer_dbms',
     )
 
     container_id = client.flows.get(dbms_flow_id)['metadata']['container_id']
@@ -84,11 +87,15 @@ def test_dump_dbms_remote(docker_compose):
     logger.info(f'dump path size size: {dir_size}')
 
     # jinad is used for ctrl requests
-    client.flows.update(
-        id=query_flow_id,
-        kind='rolling_update',
-        pod_name='indexer_query',
-        dump_path=DUMP_PATH_DOCKER,
+    assert (
+        DaemonID(
+            client.flows.rolling_update(
+                id=query_flow_id,
+                pod_name='indexer_query',
+                uses_with={'dump_path': DUMP_PATH_DOCKER},
+            )
+        )
+        == DaemonID(query_flow_id)
     )
 
     # data request goes to client
@@ -96,7 +103,7 @@ def test_dump_dbms_remote(docker_compose):
         REST_PORT_QUERY,
         'search',
         'post',
-        [doc.dict() for doc in docs[:nr_search]],
+        {'docs': [doc.to_dict() for doc in docs[:nr_search]]},
         params={'top_k': 100},
     )
     for doc in r['data']['docs']:
@@ -114,15 +121,15 @@ def _send_rest_request(
     data,
     exec_endpoint=None,
     params=None,
-    target_peapod=None,
+    target_executor=None,
     timeout=13,
     ip='0.0.0.0',
 ):
     json = {'data': data}
     if params:
         json['parameters'] = params
-    if target_peapod:
-        json['target_peapod'] = target_peapod
+    if target_executor:
+        json['target_executor'] = target_executor
     url = f'http://{ip}:{port}/{endpoint}'
     if endpoint == 'post':
         json['exec_endpoint'] = exec_endpoint
@@ -140,7 +147,7 @@ def _send_rest_request(
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
         yield Document(
-            id=i,
+            id=f'I am document {i}',
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

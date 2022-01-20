@@ -3,12 +3,10 @@
 from functools import wraps
 from typing import Callable
 
-from ..excepts import BadClientCallback
-from ..helper import colored
-from ..importer import ImportExtensions
-from ..logging.logger import JinaLogger
-from ..proto import jina_pb2
-from ..types.request import Response
+from jina.excepts import BadClientCallback
+from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2
+from jina.types.request.data import Response
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
@@ -17,18 +15,14 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
     :param resp: the :class:`Response` object
     :param stack_limit: traceback limit
     """
-    from textwrap import fill
-
     routes = resp.routes
 
-    header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
+    from rich.table import Table
+    from rich import box
 
-    with ImportExtensions(required=False):
-        from prettytable import PrettyTable, ALL
-
-        table = PrettyTable(field_names=header, align='l', hrules=ALL)
-        add_row = table.add_row
-        visualize = print
+    table = Table(box=box.SIMPLE)
+    for v in ('Executor', 'Time', 'Exception'):
+        table.add_column(v)
 
     for route in routes:
         status_icon = '🟢'
@@ -37,20 +31,16 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
         elif route.status.code == jina_pb2.StatusProto.ERROR_CHAINED:
             status_icon = '⚪'
 
-        add_row(
-            [
-                f'{status_icon} {route.pod}',
-                f'{route.start_time.ToMilliseconds() - routes[0].start_time.ToMilliseconds()}ms',
-                fill(
-                    ''.join(route.status.exception.stacks[-stack_limit:]),
-                    width=50,
-                    break_long_words=False,
-                    replace_whitespace=False,
-                ),
-            ]
+        table.add_row(
+            f'{status_icon} {route.executor}',
+            f'{route.start_time.ToMilliseconds() - routes[0].start_time.ToMilliseconds()}ms',
+            ''.join(route.status.exception.stacks[-stack_limit:]),
         )
 
-    visualize(table)
+    from rich.console import Console
+
+    console = Console()
+    console.print(table)
 
 
 def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
@@ -85,9 +75,9 @@ def callback_exec(
     :param continue_on_error: whether to continue on error
     :param logger: a logger instance
     """
-    if on_error and response.status.code >= jina_pb2.StatusProto.ERROR:
+    if on_error and response.header.status.code >= jina_pb2.StatusProto.ERROR:
         _safe_callback(on_error, continue_on_error, logger)(response)
-    elif on_done:
+    elif on_done and response.header.status.code == jina_pb2.StatusProto.SUCCESS:
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
         _safe_callback(on_always, continue_on_error, logger)(response)

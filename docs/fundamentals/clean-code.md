@@ -12,7 +12,7 @@ is often all you need. Copy-paste it as the first line of your code.
 
 ## Generator as Flow input
 
-Use [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. Generator can lazily build `Document` one at a time, instead of building all at once. This can greatly speedup the overall performance and reduces the memory footprint.
+Use a [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. A generator can lazily build `Document`s one at a time, instead of building them all at once. This can greatly speed up overall performance and reduce the memory footprint.
 ````{tab} ✅ Do
 ```{code-block} python
 ---
@@ -44,7 +44,7 @@ with f:
 
 ## Set `request_size`
 
-`request_size` decides how many Documents in each request. When combining with Generator, `request_size` determines how long will it take before sending the first request. You can change `request_size` to overlap the time of request generation and Flow computation.
+`request_size` defines how many Documents to send in each request. When combined with a Generator, `request_size` determines how long it will take before sending the first request. You can change `request_size` to overlap the time of request generation and Flow computation.
 
 ````{tab} ✅ Do
 ```{code-block} python
@@ -114,7 +114,7 @@ class MyExecutor(Executor):
 
 ## Skip unnecessary `@requests(on=...)`
    
-Use `@requests` without specifying `on=` if your function mean to work on all requests. You can use it for catching all requests that are not for this Executor.
+Use `@requests` without specifying `on=` if your function is meant to work on all requests. You can use it for catching all requests that are not for this Executor.
 ````{tab} ✅ Do
 ```python
 from jina import Executor, requests
@@ -224,7 +224,7 @@ with Flow().add(uses=MyExec) as f:
 
 ## Send `parameters`-only request
    
-Send `parameters` only request to a Flow if you don't need `docs`.
+Send a `parameters`-only request to a Flow if you don't need `docs`.
 
 ````{tab} ✅ Do
 ```{code-block} python
@@ -266,12 +266,12 @@ with f:
 ```
 ````
 
-## Heavylifting in the Flow, not in the Client
+## Heavy lifting in the Flow, not in the Client
    
-Heavylifting jobs should be put into an `Executor` if possible.
-For instance, sending high resolution images to the Flow
-can be time-consuming. Putting it into an Executor could leverage Flow to scale it.
-It also reduce the network overhead.
+Heavy-lifting jobs should be put into an `Executor` if possible.
+For instance, sending high-resolution images to the Flow
+can be time-consuming. Putting it into an Executor can leverage the Flow to scale it.
+It also reduces the network overhead.
 
 ````{tab} ✅ Do
 ```python
@@ -284,9 +284,9 @@ class MyExecutor(Executor):
     @requests
     def to_blob_conversion(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.convert_image_uri_to_blob()  # conversion happens inside Flow
+            doc.load_uri_to_image_blob()  # conversion happens inside Flow
 
-f = Flow().add(uses=MyExecutor, parallel=2)
+f = Flow().add(uses=MyExecutor, replicas=2)
 
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')
@@ -308,7 +308,7 @@ def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
-        doc.convert_image_uri_to_blob()  # time consuming job at client side
+        doc.load_uri_to_image_blob()  # time consuming-job on client side
         yield doc
 
 f = Flow().add()
@@ -321,8 +321,8 @@ with f:
 
 ## Keep only necessary fields
 
-Sometimes you do not want to pass the full Document to the sequel Executors due to efficiency reason. 
-You can simply use `.pop` method to remove those fields.
+Sometimes you do not want to pass the full Document to subsequent Executors for reasons of efficiency. 
+You can simply use the `.pop` method to remove those fields.
 
 When using Jina with an HTTP frontend, the frontend often does not need `ndarray` or binary content. Hence, 
 fields such as `blob`, `embedding`, and `buffer` can often be removed at the last Executor before returning the final results to the frontend.
@@ -368,7 +368,7 @@ class SecondExecutor(Executor):
     
     @requests
     def bar(self, docs, **kwargs):
-        # do follow up processing, even though `.embedding` and `.blob` is never used 
+        # do follow up processing, even though `.embedding` and `.blob` are never used 
 ```
 
 ````

@@ -1,0 +1,12 @@
+jtype: Flow
+with:
+  return_results: True
+  port_expose: 12345
+executors:
+  - name: name
+    uses: default_config.yml
+    uses_with:
+      param1: 50
+      param2: 30
+    uses_metas:
+      workspace: 'different_workspace'

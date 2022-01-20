@@ -16,17 +16,18 @@ from pathlib import Path
 from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
+from contextlib import nullcontext
 
-from .. import __resources_path__
-from ..importer import ImportExtensions
-from ..logging.predefined import default_logger
+from jina import __resources_path__
+from jina.importer import ImportExtensions
+from jina.logging.predefined import default_logger
 
 
 @lru_cache()
-def get_hubble_url() -> str:
-    """Get the Hubble URL from api.jina.ai or os.environ
+def _get_hubble_base_url() -> str:
+    """Get base Hubble Url from api.jina.ai or os.environ
 
-    :return: the Hubble URL
+    :return: base Hubble Url
     """
     if 'JINA_HUBBLE_REGISTRY' in os.environ:
         u = os.environ['JINA_HUBBLE_REGISTRY']
@@ -40,10 +41,29 @@ def get_hubble_url() -> str:
                 u = json.load(resp)['url']
         except:
             default_logger.critical(
-                'Can not fetch the URL of Hubble from `api.jina.ai`'
+                'Can not fetch the Url of Hubble from `api.jina.ai`'
             )
             raise
-    return urljoin(u, '/v1/executors')
+
+    return u
+
+
+def get_hubble_url_v1() -> str:
+    """Get v1 Hubble Url
+
+    :return: v1 Hubble url
+    """
+    u = _get_hubble_base_url()
+    return urljoin(u, '/v1')
+
+
+def get_hubble_url_v2() -> str:
+    """Get v2 Hubble Url
+
+    :return: v2 Hubble url
+    """
+    u = _get_hubble_base_url()
+    return urljoin(u, '/v2')
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
@@ -54,7 +74,7 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     """
     parser = urlparse(uri_path)
     scheme = parser.scheme
-    if scheme not in {'jinahub', 'jinahub+docker'}:
+    if scheme not in {'jinahub', 'jinahub+docker', 'jinahub+sandbox'}:
         raise ValueError(f'{uri_path} is not a valid Hub URI.')
 
     items = list(parser.netloc.split(':'))
@@ -217,7 +237,12 @@ def download_with_resume(
     _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
-        raise RuntimeError('MD5 checksum failed.')
+        raise RuntimeError(
+            'MD5 checksum failed.'
+            'Might happen when the network is unstable, please retry.'
+            'If still not work, feel free to raise an issue.'
+            'https://github.com/jina-ai/jina/issues/new'
+        )
 
     return filepath
 
@@ -277,38 +302,54 @@ def disk_cache_offline(
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
 
             pickle_protocol = 4
+            file_lock = nullcontext()
+            with ImportExtensions(
+                required=False,
+                help_text=f'FileLock is needed to guarantee non-concurrent access to the'
+                f'cache_file {cache_file}',
+            ):
+                import filelock
 
-            try:
-                cache_db = shelve.open(
-                    cache_file, protocol=pickle_protocol, writeback=True
-                )
-            except Exception as ex:
-                if os.path.exists(cache_file):
-                    # cache is in an unsupported format, reset the cache
-                    os.remove(cache_file)
+                file_lock = filelock.FileLock(f'{cache_file}.lock', timeout=-1)
+
+            cache_db = None
+            with file_lock:
+                try:
                     cache_db = shelve.open(
                         cache_file, protocol=pickle_protocol, writeback=True
                     )
-                else:
-                    raise
+                except Exception:
+                    if os.path.exists(cache_file):
+                        # cache is in an unsupported format, reset the cache
+                        os.remove(cache_file)
+                        cache_db = shelve.open(
+                            cache_file, protocol=pickle_protocol, writeback=True
+                        )
 
-            with cache_db as dict_db:
-                try:
-                    if call_hash in dict_db and not kwargs.get('force', False):
-                        return dict_db[call_hash]
+            if cache_db is None:
+                # if we failed to load cache, do not raise, it is only an optimization thing
+                return func(*args, **kwargs), False
+            else:
+                with cache_db as dict_db:
+                    try:
+                        if call_hash in dict_db and not kwargs.get('force', False):
+                            return dict_db[call_hash], True
 
-                    result = func(*args, **kwargs)
-                    dict_db[call_hash] = result
-                except urllib.error.URLError:
-                    if call_hash in dict_db:
-                        default_logger.warning(message.format(func_name=func.__name__))
-                        return dict_db[call_hash]
-                    else:
-                        raise
-            return result
+                        result = func(*args, **kwargs)
+                        dict_db[call_hash] = result
+                    except urllib.error.URLError:
+                        if call_hash in dict_db:
+                            default_logger.warning(
+                                message.format(func_name=func.__name__)
+                            )
+                            return dict_db[call_hash], True
+                        else:
+                            raise
+                return result, False
 
         return wrapper
 
@@ -321,7 +362,7 @@ def is_requirements_installed(
     """Return True if requirements.txt is installed locally
     :param requirements_file: the requirements.txt file
     :param show_warning: if to show a warning when a dependency is not satisfied
-    :return: True of False if not satisfied
+    :return: True or False if not satisfied
     """
     from pkg_resources import (
         DistributionNotFound,
@@ -330,38 +371,53 @@ def is_requirements_installed(
     )
     import pkg_resources
 
+    install_reqs, install_options = _get_install_options(requirements_file)
+
+    if len(install_reqs) == 0:
+        return True
+
     try:
-        with requirements_file.open() as requirements:
-            pkg_resources.require(requirements)
+        pkg_resources.require('\n'.join(install_reqs))
     except (DistributionNotFound, VersionConflict, RequirementParseError) as ex:
         if show_warning:
-            warnings.warn(str(ex), UserWarning)
-        return False
+            warnings.warn(repr(ex))
+        return isinstance(ex, VersionConflict)
     return True
 
 
-def install_requirements(
-    requirements_file: 'Path', timeout: int = 1000, excludes: Tuple[str] = ('jina',)
-):
-    """Install modules included in requirments file
-    :param requirements_file: the requirements.txt file
-    :param timeout: the socket timeout (default = 1000s)
-    :param excludes: the excluded module dependencies
-    """
+def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     import pkg_resources
 
     with requirements_file.open() as requirements:
-        install_reqs = [
-            str(req)
-            for req in pkg_resources.parse_requirements(requirements)
-            if req.project_name not in excludes or len(req.extras) > 0
-        ]
+        install_options = []
+        install_reqs = []
+        for req in requirements:
+            req = req.strip()
+            if (not req) or req.startswith('#'):
+                continue
+            elif req.startswith('-'):
+                install_options.extend(req.split(' '))
+            else:
+                for req_spec in pkg_resources.parse_requirements(req):
+                    if (
+                        req_spec.project_name not in excludes
+                        or len(req_spec.extras) > 0
+                    ):
+                        install_reqs.append(req)
 
-    if len(install_reqs) == 0:
-        return
+    return install_reqs, install_options
+
+
+def install_requirements(requirements_file: 'Path', timeout: int = 1000):
+    """Install modules included in requirments file
+    :param requirements_file: the requirements.txt file
+    :param timeout: the socket timeout (default = 1000s)
+    """
 
     if is_requirements_installed(requirements_file):
         return
+
+    install_reqs, install_options = _get_install_options(requirements_file)
 
     subprocess.check_call(
         [
@@ -373,4 +429,5 @@ def install_requirements(
             f'--default-timeout={timeout}',
         ]
         + install_reqs
+        + install_options
     )

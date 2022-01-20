@@ -3,7 +3,7 @@
 import argparse
 import os
 
-from ..helper import add_arg_group
+from jina.parsers.helper import add_arg_group
 
 
 def mixin_hub_push_parser(parser):
@@ -43,6 +43,7 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
     )
 
     gp.add_argument(
+        '--force-update',
         '--force',
         type=str,
         help='If set, push will overwrite the Executor on the Hub that shares the same NAME or UUID8 identifier',

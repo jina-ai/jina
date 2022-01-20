@@ -9,7 +9,7 @@ from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
-from jina.types.document.generators import from_csv
+from jina import DocumentArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -60,7 +60,7 @@ def hello_world(args):
     f = Flow.load_config('flow-index.yml')
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
-        f.index(inputs=from_csv(fp), request_size=10, show_progress=True)
+        f.index(inputs=DocumentArray.from_csv(fp), request_size=10, show_progress=True)
 
     # search it!
     f = Flow.load_config('flow-search.yml')

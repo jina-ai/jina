@@ -127,11 +127,18 @@ An Executor can be loaded from and stored to a YAML file. The YAML file has the 
 ```yaml
 jtype: MyExecutor
 with:
-  ...
+  parameter_1: foo
+  parameter_2: bar
 metas:
-  ...
+  name: MyExecutor
+  description: "MyExecutor does a thing to the stuff in your Documents"
+  workspace: workspace
+  py_modules:
+    - executor.py
 requests:
-  ...
+  index: MyExecutor_index_method
+  search: MyExecutor_search_method
+  random: MyExecutor_other_method
 ```
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
@@ -188,15 +195,16 @@ different purposes.
 
 - **`.metas` are statically defined.** "Static" means, e.g. from hard-coded value in the code, from a YAML file.
 - **`.runtime_args` are dynamically determined during runtime.** Means that you don't know the value before running
-  the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. Those values are often related to the system/network
-  environment around the `Executor`, and less about the `Executor` itself.
+  the `Executor`, e.g. `shard_id`, `replicas`. Those values are often related to the system/network
+  environment around the `Executor`, and less about the `Executor` itself. They are usually set with the {meth}`~jina.flow.base.Flow.add` 
+  method. See the list of options [here](https://docs.jina.ai/cli/#executor).
 
 The following fields are valid for `metas` and `runtime_args`:
 
-| Attribute | Fields |
-| --- | --- |
-| `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
-| `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts`, `proxy`, `uses_metas`, `external`, `gpus`, `zmq_identity`, `hosts_in_connect`, `uses_with` |
+| Attribute | Fields                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `shard_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role``, `proxy`, `uses_metas`, `external`, `gpus`, `zmq_identity`, `hosts_in_connect`, `uses_with` |
 
 
 ````{admonition} Note

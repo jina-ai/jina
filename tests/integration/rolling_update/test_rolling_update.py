@@ -1,14 +1,16 @@
 import collections
+import multiprocessing
 import os
-import time
 import threading
+import time
 
 import numpy as np
 import pytest
 
-from jina import Document, Flow, Executor, requests
+from jina import Document, Flow, Executor, requests, Client
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+exposed_port = 12345
 
 
 @pytest.fixture
@@ -34,7 +36,7 @@ class DummyMarkExecutor(Executor):
     @requests
     def foo(self, docs, *args, **kwargs):
         for doc in docs:
-            doc.tags['replica'] = self.runtime_args.replica_id
+            doc.tags['replica'] = os.getpid()
             doc.tags['shard'] = self.runtime_args.shard_id
 
     def close(self) -> None:
@@ -72,7 +74,8 @@ def test_normal(docs):
     shards = [s for r, s in replica_shards]
 
     assert len(set(replicas)) == NUM_REPLICAS
-    assert len(set(shards)) == NUM_SHARDS
+    # shard results are reduced
+    assert len(set(shards)) == 1
 
 
 @pytest.mark.timeout(60)
@@ -91,58 +94,70 @@ def test_simple_run(docs):
 
 @pytest.fixture()
 def docker_image():
-    docker_file = os.path.join(cur_dir, 'Dockerfile')
-    os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
-    time.sleep(3)
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir), tag='test_rolling_update_docker')
+    client.close()
     yield
-    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
-@pytest.mark.repeat(5)
+# TODO: this should be repeatable, but its not due to head/gateway not being containerized
+# @pytest.mark.repeat(5)
 @pytest.mark.timeout(60)
 @pytest.mark.parametrize('uses', ['docker://test_rolling_update_docker'])
-def test_thread_run(docs, mocker, reraise, docker_image, uses):
-    def update_rolling(flow, pod_name):
+def test_search_while_updating(docs, reraise, docker_image, uses):
+    request_count = 50
+    shards = 2
+
+    def update_rolling(flow, pod_name, start_event):
+        start_event.wait()
         with reraise:
             flow.rolling_update(pod_name)
 
-    error_mock = mocker.Mock()
-    total_responses = []
     with Flow().add(
         uses=uses,
         name='executor1',
         replicas=2,
-        shards=2,
+        shards=shards,
         timeout_ready=5000,
     ) as flow:
-        x = threading.Thread(
-            target=update_rolling,
+        start_event = multiprocessing.Event()
+        result_queue = multiprocessing.Queue()
+
+        client_process = multiprocessing.Process(
+            target=send_requests,
             args=(
-                flow,
-                'executor1',
+                flow.port_expose,
+                start_event,
+                result_queue,
+                len(docs),
+                request_count,
             ),
         )
-        for i in range(50):
-            responses = flow.search(
-                docs, on_error=error_mock, request_size=10, return_results=True
-            )
-            total_responses.extend(responses)
-            if i == 5:
-                x.start()
-        x.join()
-    error_mock.assert_not_called()
-    assert len(total_responses) == (len(docs) * 50 / 10)
+        client_process.start()
+        update_rolling(flow, 'executor1', start_event)
+        client_process.join()
+
+    total_docs = 0
+    while not result_queue.empty():
+        total_docs += len(result_queue.get())
+    assert total_docs == len(docs) * request_count
 
 
-@pytest.mark.repeat(5)
+# TODO: this should be repeatable, but its not due to head/gateway not being containerized
+# @pytest.mark.repeat(5)
 @pytest.mark.timeout(60)
-def test_vector_indexer_thread(config, docs, mocker, reraise):
-    def update_rolling(flow, pod_name):
+def test_vector_indexer_thread(config, docs, reraise):
+    def update_rolling(flow, pod_name, start_event):
+        start_event.wait()
         with reraise:
             flow.rolling_update(pod_name)
 
-    error_mock = mocker.Mock()
-    total_responses = []
     with Flow().add(
         name='executor1',
         uses=DummyMarkExecutor,
@@ -150,25 +165,27 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
         shards=3,
         timeout_ready=5000,
     ) as flow:
-        for i in range(5):
-            flow.search(docs, on_error=error_mock)
-        x = threading.Thread(
-            target=update_rolling,
-            args=(
-                flow,
-                'executor1',
-            ),
+        start_event = multiprocessing.Event()
+
+        client_process = multiprocessing.Process(
+            target=send_requests,
+            args=(flow.port_expose, start_event, multiprocessing.Queue(), len(docs), 5),
         )
-        for i in range(40):
-            responses = flow.search(
-                docs, on_error=error_mock, request_size=10, return_results=True
-            )
-            total_responses.extend(responses)
-            if i == 5:
-                x.start()
-        x.join()
-    error_mock.assert_not_called()
-    assert len(total_responses) == (len(docs) * 40 / 10)
+        client_process.start()
+        client_process.join()
+        result_queue = multiprocessing.Queue()
+        client_process = multiprocessing.Process(
+            target=send_requests,
+            args=(flow.port_expose, start_event, result_queue, len(docs), 40),
+        )
+        client_process.start()
+        update_rolling(flow, 'executor1', start_event)
+        client_process.join()
+
+    total_docs = 0
+    while not result_queue.empty():
+        total_docs += len(result_queue.get())
+    assert total_docs == len(docs) * 40
 
 
 def test_workspace(config, tmpdir, docs):
@@ -176,7 +193,6 @@ def test_workspace(config, tmpdir, docs):
         name='executor1',
         uses=DummyMarkExecutor,
         workspace=str(tmpdir),
-        replicas=2,
         shards=3,
     ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
@@ -185,83 +201,7 @@ def test_workspace(config, tmpdir, docs):
 
     # validate created workspaces
     assert set(os.listdir(str(tmpdir))) == {'dummy'}
-    assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1'}
-    for replica_id in {'0', '1'}:
-        assert set(os.listdir(os.path.join(tmpdir, 'dummy', replica_id))) == {
-            '0',
-            '1',
-            '2',
-        }
-
-
-@pytest.mark.parametrize(
-    'replicas_and_shards',
-    (
-        ((3, 1),),
-        ((2, 3),),
-        ((2, 3), (3, 4), (2, 2), (2, 1)),
-    ),
-)
-def test_port_configuration(replicas_and_shards):
-    def validate_ports_replica(shard, replica_port_in, replica_port_out, shards):
-        assert replica_port_in == shard.args.port_in
-        assert shard.args.port_out == replica_port_out
-        peas_args = shard.peas_args
-        peas = peas_args['peas']
-        assert len(peas) == shards
-        if shards == 1:
-            assert peas_args['head'] is None
-            assert peas_args['tail'] is None
-            assert peas[0].port_in == replica_port_in
-            assert peas[0].port_out == replica_port_out
-        else:
-            shard_head = peas_args['head']
-            shard_tail = peas_args['tail']
-            assert shard.args.port_in == shard_head.port_in
-            assert shard.args.port_out == shard_tail.port_out
-            for pea in peas:
-                assert shard_head.port_out == pea.port_in
-                assert pea.port_out == shard_tail.port_in
-
-    flow = Flow()
-    for i, (replicas, shards) in enumerate(replicas_and_shards):
-        flow.add(
-            name=f'pod{i}',
-            replicas=replicas,
-            shards=shards,
-            copy_flow=False,
-        )
-
-    with flow:
-        pods = flow._pod_nodes
-
-        for pod_name, pod in pods.items():
-            if pod_name == 'gateway':
-                continue
-            if pod.args.replicas == 1:
-                if int(pod.args.shards) == 1:
-                    assert len(pod.peas_args['peas']) == 1
-                else:
-                    assert len(pod.peas_args) == 3
-                shard_port_in = pod.args.port_in
-                shard_port_out = pod.args.port_out
-            else:
-                shard_port_in = pod.head_args.port_out
-                shard_port_out = pod.tail_args.port_in
-
-            assert pod.head_args.port_in == pod.args.port_in
-            assert pod.head_args.port_out == shard_port_in
-            assert pod.tail_args.port_in == shard_port_out
-            assert pod.tail_args.port_out == pod.args.port_out
-            if pod.args.shards > 1:
-                for shard in pod.shards:
-                    validate_ports_replica(
-                        shard,
-                        shard_port_in,
-                        shard_port_out,
-                        getattr(pod.args, 'replicas', 1),
-                    )
-        assert pod
+    assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1', '2'}
 
 
 def test_num_peas(config):
@@ -272,10 +212,7 @@ def test_num_peas(config):
         shards=4,
     ) as flow:
         assert flow.num_peas == (
-            4 * (3 + 1 + 1)  # shards 4  # replicas 3  # pod head  # pod tail
-            + 1  # compound pod head
-            + 1  # compound pod tail1
-            + 1  # gateway
+            4 * 3 + 1 + 1  # shards 4  # replicas 3  # pod head  # gateway
         )
 
 
@@ -303,7 +240,7 @@ class UpdateExecutor(Executor):
 
 @pytest.mark.timeout(60)
 def test_override_uses_with(docs):
-    flow = Flow().add(
+    flow = Flow(port_expose=exposed_port).add(
         name='executor1',
         uses=UpdateExecutor,
         replicas=2,
@@ -311,13 +248,16 @@ def test_override_uses_with(docs):
     )
     with flow:
         # test rolling update does not hang
-        ret1 = flow.search(docs, return_results=True)
+        ret1 = Client(port=exposed_port).search(docs, return_results=True)
         flow.rolling_update(
             'executor1',
-            dump_path='/tmp/dump_path2/',
-            uses_with={'argument1': 'version2', 'argument2': 'version2'},
+            uses_with={
+                'dump_path': '/tmp/dump_path2/',
+                'argument1': 'version2',
+                'argument2': 'version2',
+            },
         )
-        ret2 = flow.search(docs, return_results=True)
+        ret2 = Client(port=exposed_port).search(docs, return_results=True)
 
     assert len(ret1) > 0
     assert len(ret1[0].docs) > 0
@@ -332,3 +272,60 @@ def test_override_uses_with(docs):
         assert doc.tags['dump_path'] == '/tmp/dump_path2/'
         assert doc.tags['arg1'] == 'version2'
         assert doc.tags['arg2'] == 'version2'
+
+
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize(
+    'replicas, scale_to',
+    [(2, 3), (3, 2)],
+)
+def test_scale_after_rolling_update(docs, replicas, scale_to):
+    flow = Flow(port_expose=exposed_port).add(
+        name='executor1',
+        uses=DummyMarkExecutor,
+        replicas=replicas,
+    )
+    with flow:
+        ret1 = Client(port=exposed_port).search(
+            docs, return_results=True, request_size=1
+        )
+        flow.rolling_update('executor1', None)
+        flow.scale('executor1', replicas=scale_to)
+        ret2 = Client(port=exposed_port).search(
+            docs, return_results=True, request_size=1
+        )
+
+    replicas_before = set()
+    for r in ret1:
+        for replica in r.docs[:, 'tags__replica']:
+            replicas_before.add(replica)
+
+    assert len(replicas_before) == replicas
+
+    replicas_after = set()
+    for r in ret2:
+        for replica in r.docs[:, 'tags__replica']:
+            replicas_after.add(replica)
+    assert len(replicas_after) == scale_to
+
+
+def send_requests(
+    port_expose,
+    start_rolling_update_event: multiprocessing.Event,
+    result_queue: multiprocessing.Queue,
+    doc_count: int,
+    request_count: int,
+):
+    client = Client(port=port_expose)
+    for i in range(request_count):
+        responses = client.search(
+            [Document(id=f'{idx}', text=f'doc{idx}') for idx in range(doc_count)],
+            request_size=10,
+            return_results=True,
+        )
+        for r in responses:
+            result_queue.put(r.docs.texts)
+        if i == 5:
+            start_rolling_update_event.set()
+            # give the rolling update some time to kick in
+            time.sleep(0.1)

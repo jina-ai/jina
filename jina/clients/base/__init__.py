@@ -4,18 +4,20 @@ import argparse
 import inspect
 import os
 from abc import ABC
-from typing import Callable, Union, Optional, Iterator, AsyncIterator
+from typing import Callable, Union, Optional, Iterator, AsyncIterator, TYPE_CHECKING
 
-from ..request import GeneratorSourceType
-from ...excepts import BadClientInput, ValidationError
-from ...helper import typename, ArgNamespace
-from ...logging.logger import JinaLogger
-from ...logging.predefined import default_logger
-from ...parsers import set_client_cli_parser
-from ...types.request import Request, Response
+from jina.excepts import BadClientInput
+from jina.helper import typename, ArgNamespace, T
+from jina.logging.logger import JinaLogger
+from jina.logging.predefined import default_logger
+from jina.parsers import set_client_cli_parser
 
-InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
-CallbackFnType = Optional[Callable[[Response], None]]
+if TYPE_CHECKING:
+    from jina.clients.request import GeneratorSourceType
+    from jina.types.request import Request, Response
+
+    InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
+    CallbackFnType = Optional[Callable[[Response], None]]
 
 
 class BaseClient(ABC):
@@ -25,7 +27,11 @@ class BaseClient(ABC):
     :param kwargs: additional parameters that can be accepted by client parser
     """
 
-    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
+    def __init__(
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        **kwargs,
+    ):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
@@ -44,7 +50,7 @@ class BaseClient(ABC):
         self._inputs = None
 
     @staticmethod
-    def check_input(inputs: Optional[InputType] = None, **kwargs) -> None:
+    def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
         """Validate the inputs and print the first request if success.
 
         :param inputs: the inputs
@@ -63,14 +69,16 @@ class BaseClient(ABC):
         kwargs['exec_endpoint'] = '/'
 
         if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
-            raise ValidationError(
+            raise BadClientInput(
                 'checking the validity of an async generator is not implemented yet'
             )
 
         try:
-            from ..request import request_generator
+            from jina.clients.request import request_generator
 
             r = next(request_generator(**kwargs))
+            from jina.types.request import Request
+
             if not isinstance(r, Request):
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:
@@ -97,16 +105,16 @@ class BaseClient(ABC):
             self._inputs_length = None
 
         if inspect.isasyncgen(self.inputs):
-            from ..request.asyncio import request_generator
+            from jina.clients.request.asyncio import request_generator
 
             return request_generator(**_kwargs)
         else:
-            from ..request import request_generator
+            from jina.clients.request import request_generator
 
             return request_generator(**_kwargs)
 
     @property
-    def inputs(self) -> InputType:
+    def inputs(self) -> 'InputType':
         """
         An iterator of bytes, each element represents a Document's raw content.
 
@@ -117,7 +125,7 @@ class BaseClient(ABC):
         return self._inputs
 
     @inputs.setter
-    def inputs(self, bytes_gen: InputType) -> None:
+    def inputs(self, bytes_gen: 'InputType') -> None:
         """
         Set the input data.
 
@@ -131,16 +139,16 @@ class BaseClient(ABC):
     @abc.abstractmethod
     async def _get_results(
         self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Callable = None,
-        on_always: Callable = None,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
         **kwargs,
     ):
         ...
 
     @property
-    def client(self) -> 'BaseClient':
+    def client(self: T) -> T:
         """Return the client object itself
 
         :return: the Client object

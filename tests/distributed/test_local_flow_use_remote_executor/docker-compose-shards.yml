@@ -15,7 +15,7 @@ services:
         ipv4_address: 10.1.0.100
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    entrypoint: "jina pod --port-in 45678 --port-out 45679 --parallel 2"
+    entrypoint: "jina pod --port-in 45678 --parallel 2"
 networks:
   test:
     driver: bridge

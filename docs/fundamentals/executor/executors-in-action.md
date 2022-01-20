@@ -75,9 +75,10 @@ class PLMwuAutoEncoder(Executor):
 
 ## Paddle
 
-The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder. The Executor load
-pre-trained Ernie family of tokenizer and model. Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as
-embedding. As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
+The example below uses the PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as the encoder. The
+Executor loads the pre-trained Ernie tokenizer and model, converts Jina Documents' ``doc.text`` into Paddle Tensors and
+encodes the text as embeddings. As a result, each `Document` in the `DocumentArray` will have an `embedding` after
+`encode()` has completed.
 
 ```python
 import paddle as P  # paddle==2.1.0
@@ -190,7 +191,7 @@ a [TF-IDF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_ext
 feature vector to generate sparse embeddings for text search.
 
 The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that it is fitted with a dataset already
-present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document
+present in `sklearn`. The executor provides an `encode` method that receives a `DocumentArray` and updates each document
 in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the
 document.
 

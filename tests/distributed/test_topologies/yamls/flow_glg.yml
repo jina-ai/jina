@@ -5,4 +5,4 @@ with:
   protocol: http
 executors:
   - name: local
-    replicas: $REPLICAS
+    replicas: ${{ REPLICAS }}

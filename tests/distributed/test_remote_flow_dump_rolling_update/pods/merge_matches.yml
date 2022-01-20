@@ -1,4 +1,0 @@
-jtype: MergeMatchesExecutor
-metas:
-  name: merge_matches
-  py_modules: [executors.py]

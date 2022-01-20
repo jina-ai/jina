@@ -172,7 +172,7 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', None)
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', None)
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.name == 'alias_dummy'
@@ -180,10 +180,10 @@ def test_fetch(mocker, monkeypatch):
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
 
-    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', '')
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '')
     assert executor.tag == 'v0'
 
-    executor = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1')
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1')
     assert executor.tag == 'v0.1'
 
 
@@ -206,14 +206,17 @@ def test_pull(test_envs, mocker, monkeypatch):
 
     def _mock_fetch(name, tag=None, secret=None, force=False):
         mock(name=name)
-        return HubExecutor(
-            uuid='dummy_mwu_encoder',
-            name='alias_dummy',
-            tag='v0',
-            image_name='jinahub/pod.dummy_mwu_encoder',
-            md5sum=None,
-            visibility=True,
-            archive_url=None,
+        return (
+            HubExecutor(
+                uuid='dummy_mwu_encoder',
+                name='alias_dummy',
+                tag='v0',
+                image_name='jinahub/pod.dummy_mwu_encoder',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
         )
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
@@ -314,7 +317,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
 
-    args.force = False
+    args.force_update = False
     fail_meta_fetch = False
     version = 'v2'
     # expect successful but outdated pull because force == False
@@ -412,7 +415,7 @@ def test_new_with_arguments(
         '--description',
         'args description',
         '--keywords',
-        'args keywords',
+        'args,keywords',
         '--url',
         'args url',
     ]
@@ -465,5 +468,5 @@ def test_new_with_arguments(
             temp = yaml.load(fp, Loader=yaml.FullLoader)
             assert temp['name'] == 'argsExecutor'
             assert temp['description'] == 'args description'
-            assert temp['keywords'] == 'args keywords'
+            assert temp['keywords'] == ['args', 'keywords']
             assert temp['url'] == 'args url'

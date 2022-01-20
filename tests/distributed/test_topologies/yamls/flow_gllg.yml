@@ -5,6 +5,6 @@ with:
   protocol: http
 executors:
   - name: local1
-    replicas: $REPLICAS
+    replicas: ${{ REPLICAS }}
   - name: local2
-    replicas: $REPLICAS
+    replicas: ${{ REPLICAS }}

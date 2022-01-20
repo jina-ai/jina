@@ -20,8 +20,8 @@ jina hello chatbot
 :align: center
 ```
 
-This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer
-pairs with MPNet. The index process takes about 1 minute on CPU. Then it opens a web page where you can input questions
+This downloads the [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer
+pairs with MPNet. The indexing process takes about one minute on CPU. Then it opens a web page where you can input questions
 and ask Jina.
 
 ```{figure} ../../../.github/2.0/hello-chatbot-2.png

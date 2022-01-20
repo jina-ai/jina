@@ -15,9 +15,8 @@ That said, have fun!
 ```{toctree}
 :hidden:
 
-windows
 kubernetes
+docker-compose
+sandbox
 indexers
-compound-executor
-graph-document
 ```

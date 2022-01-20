@@ -18,14 +18,15 @@ class DummyRedisIndexer(Executor):
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, *args, **kwargs):
-        self.handler.mset({doc.text: doc.SerializeToString() for doc in docs})
+        self.handler.mset({doc.text: doc.to_base64() for doc in docs})
 
     @requests(on='/search')
     def search(self, docs: DocumentArray, *args, **kwargs):
         for doc in docs:
             result = self.handler.get(doc.text)
             if result:
-                doc.matches = [Document(result)]
+                doc.matches = DocumentArray()
+                doc.matches.append(Document.from_base64(result))
 
     def close(self) -> None:
         self.redis_server.kill()

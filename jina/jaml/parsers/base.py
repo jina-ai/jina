@@ -1,8 +1,8 @@
-from typing import Dict, Union
+from typing import Dict, Union, TYPE_CHECKING
 
-if False:
-    from ...flow.base import Flow
-    from ...executors import BaseExecutor
+if TYPE_CHECKING:
+    from jina.orchestrate.flow.base import Flow
+    from jina.serve.executors import BaseExecutor
 
 
 class VersionedYAMLParser:

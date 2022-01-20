@@ -1,8 +1,6 @@
-from .logging.predefined import default_logger
+import argparse
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    import argparse
+from jina.logging.predefined import default_logger
 
 
 class NetworkChecker:
@@ -14,12 +12,12 @@ class NetworkChecker:
 
         :param args: args provided by the CLI.
         """
-        from .peapods.zmq import send_ctrl_message
-        from .logging.profile import TimeContext
-        from google.protobuf.json_format import MessageToJson
+
+        from jina.logging.profile import TimeContext
+        from jina.serve.runtimes.worker import WorkerRuntime
         import time
 
-        ctrl_addr = f'tcp://{args.host}:{args.port}'
+        ctrl_addr = f'{args.host}:{args.port}'
         try:
             total_time = 0
             total_success = 0
@@ -27,7 +25,7 @@ class NetworkChecker:
                 with TimeContext(
                     f'ping {ctrl_addr} at {j} round', default_logger
                 ) as tc:
-                    r = send_ctrl_message(ctrl_addr, 'STATUS', timeout=args.timeout)
+                    r = WorkerRuntime.is_ready(ctrl_addr)
                     if not r:
                         default_logger.warning(
                             'not responding, retry (%d/%d) in 1s'
@@ -35,8 +33,6 @@ class NetworkChecker:
                         )
                     else:
                         total_success += 1
-                        if args.print_response:
-                            default_logger.info(f'returns {MessageToJson(r.proto)}')
                 total_time += tc.duration
                 time.sleep(1)
             if total_success < args.retries:

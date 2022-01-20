@@ -7,7 +7,7 @@ services:
       JINA_LOG_LEVEL: DEBUG
     container_name: test_remote_flow_dump_reload
     ports:
-      - "8000:8000"
+      - "8003:8000"
       - "45678:45678"
     expose:
       - 10000-60000

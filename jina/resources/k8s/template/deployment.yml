@@ -17,24 +17,33 @@ spec:
     metadata:
       labels:
         app: {name}
+        jina_pod_name: {jina_pod_name}
+        shard_id: {shard_id}
+        pea_type: {pea_type}
         ns: {namespace}
     spec:
       containers:
-      - name: executor
-        image: {image}
-        imagePullPolicy: {pull_policy}
-        command: {command}
-        args: {args}
-        ports:
-          - containerPort: {port_expose}
-          - containerPort: {port_in}
-          - containerPort: {port_out}
-          - containerPort: {port_ctrl}
-        envFrom:
+        - name: executor
+          image: {image}
+          imagePullPolicy: {pull_policy}
+          command: {command}
+          args: {args}
+          ports:
+            - containerPort: {port_expose}
+            - containerPort: {port_in}
+          envFrom:
           - configMapRef:
               name: {name}-configmap
-        readinessProbe:
-          tcpSocket:
-            port: {port_in}
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: JINA_POD_NAME
+            value: {jina_pod_name}
+
+          readinessProbe:
+            tcpSocket:
+              port: {port_ready_probe}
+            initialDelaySeconds: 5
+            periodSeconds: 10

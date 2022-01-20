@@ -13,16 +13,20 @@ from jina import DocumentArray, Executor, requests
 
 
 class DumpExecutor(Executor):
+    def __init__(self, dump_path=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dump_path = dump_path
+
     @requests
     def dump(self, docs: DocumentArray, parameters: Dict, **kwargs):
         shards = int(parameters['shards'])
-        dump_path = parameters['dump_path']
+        dump_path = parameters.get('dump_path', self.dump_path)
         shard_size = len(docs) / shards
         os.makedirs(dump_path, exist_ok=True)
         for i in range(shards):
-            dump_file = f'{dump_path}/{i}.ndjson'
+            dump_file = f'{dump_path}/{i}.json'
             docs_to_be_dumped = docs[int(i * shard_size) : int((i + 1) * shard_size)]
-            docs_to_be_dumped.save(dump_file)
+            docs_to_be_dumped.save_json(dump_file)
 
 
 class ErrorExecutor(Executor):
@@ -35,12 +39,10 @@ class ErrorExecutor(Executor):
 class ReloadExecutor(Executor):
     def __init__(self, dump_path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # backwards compatibility
-        assert 'dump_path' in kwargs['runtime_args'].keys()
         if dump_path is not None:
-            shard_id = getattr(self.runtime_args, 'pea_id', None)
-            shard_dump_path = os.path.join(dump_path, f'{shard_id}.ndjson')
-            self._docs = DocumentArray.load(shard_dump_path)
+            shard_id = getattr(self.runtime_args, 'shard_id', None)
+            shard_dump_path = os.path.join(dump_path, f'{shard_id}.json')
+            self._docs = DocumentArray.load_json(shard_dump_path)
         else:
             self._docs = DocumentArray()
 
@@ -70,7 +72,7 @@ def get_client(port):
 def get_documents(count=10, emb_size=7):
     for i in range(count):
         yield Document(
-            id=i,
+            id=str(i),
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},
@@ -84,7 +86,6 @@ def path_size(dump_path):
     return dir_size
 
 
-@pytest.mark.repeat(20)
 @pytest.mark.parametrize('shards', [5, 3, 1])
 @pytest.mark.parametrize('nr_docs', [7])
 @pytest.mark.parametrize('emb_size', [10])
@@ -117,7 +118,7 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
                     client_dbms.post(
                         on='/dump',
                         inputs=docs,
-                        target_peapod='dump_exec',
+                        target_executor='dump_exec',
                         parameters={'dump_path': dump_path, 'shards': shards},
                     )
 
@@ -125,7 +126,9 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
 
                 with TimeContext(f'### rolling update on {len(docs)}'):
                     # flow object is used for ctrl requests
-                    flow_reload.rolling_update('reload_exec', dump_path)
+                    flow_reload.rolling_update(
+                        'reload_exec', uses_with={'dump_path': dump_path}
+                    )
 
                 for i in range(5):
                     result = client_query.post(

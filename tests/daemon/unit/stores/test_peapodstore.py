@@ -1,15 +1,17 @@
 import os
+from typing import Type
 
 import pytest
 
 from daemon.models import DaemonID, PeaModel, PodModel
 from daemon.stores import PeaStore, PodStore
+from daemon.stores.partial import PartialStore
 from jina import Executor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='module')
 def workspace():
     from tests.conftest import _create_workspace_directly, _clean_up_workspace
 
@@ -25,10 +27,10 @@ def workspace():
     'model, store, id',
     [
         (PeaModel(), PeaStore, DaemonID(f'jpea')),
-        (PodModel(), PodStore, DaemonID(f'jpod')),
+        # (PodModel(), PodStore, DaemonID(f'jpod')),
     ],
 )
-async def test_peastore_add(model, store, id, workspace):
+async def test_peapod_store_add(model, store, id, workspace):
     s = store()
     await s.add(id=id, params=model, workspace_id=workspace, ports={})
     assert len(s) == 1
@@ -39,9 +41,13 @@ async def test_peastore_add(model, store, id, workspace):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'model, store, type', [(PeaModel(), PeaStore, 'pea'), (PodModel(), PodStore, 'pod')]
+    'model, store, type',
+    [
+        (PeaModel(), PeaStore, 'pea'),
+        # (PodModel(), PodStore, 'pod')
+    ],
 )
-async def test_peastore_multi_add(model, store, type, workspace):
+async def test_peapod_store_multi_add(model, store, type, workspace):
     s = store()
     for j in range(5):
         id = DaemonID(f'j{type}')
@@ -58,7 +64,7 @@ async def test_peastore_multi_add(model, store, type, workspace):
     'model, store, id',
     [
         (PeaModel(), PeaStore, DaemonID(f'jpea')),
-        (PodModel(), PodStore, DaemonID(f'jpod')),
+        # (PodModel(), PodStore, DaemonID(f'jpod')),
     ],
 )
 async def test_peapod_store_add_bad(model, store, id, workspace):
@@ -71,4 +77,30 @@ async def test_peapod_store_add_bad(model, store, id, workspace):
     s = store()
     with pytest.raises(Exception):
         await s.add(id=id, params=model, workspace_id=workspace, ports={})
+    assert not s
+
+
+@pytest.mark.asyncio
+async def test_podstore_rolling_update(workspace):
+    id = DaemonID('jpod')
+    s = PodStore()
+    await s.add(id=id, params=PodModel(), workspace_id=workspace, ports={})
+    assert len(s) == 1
+    assert id in s
+    await s.rolling_update(id=id, uses_with={'a': 'b'})
+    await s.delete(id)
+    assert not s
+
+
+@pytest.mark.asyncio
+async def test_podstore_scale(workspace):
+    id = DaemonID('jpod')
+    s = PodStore()
+    await s.add(
+        id=id, params=PodModel(replicas=2, shards=2), workspace_id=workspace, ports={}
+    )
+    assert len(s) == 1
+    assert id in s
+    await s.scale(id=id, replicas=3)
+    await s.delete(id)
     assert not s

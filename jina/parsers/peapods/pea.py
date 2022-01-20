@@ -1,12 +1,12 @@
 """Argparser module for Pea runtimes"""
 import argparse
 
-from ..helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
-from ...enums import PeaRoleType, RuntimeBackendType
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
+from jina.enums import PeaRoleType, RuntimeBackendType
 
 
 def mixin_pea_parser(parser):
-    """Mixing in arguments required by :class:`BasePea` into the given parser.
+    """Mixing in arguments required by :class:`Pea` into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 
@@ -32,7 +32,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--runtime-cls',
         type=str,
-        default='ZEDRuntime',
+        default='WorkerRuntime',
         help='The runtime class to run inside the Pea',
     )
 
@@ -65,10 +65,18 @@ def mixin_pea_parser(parser):
 
     gp.add_argument(
         '--shard-id',
-        '--pea-id',
         type=int,
         default=0,
-        help='defines the suffix for the workspace path of the pea`'
+        help='defines the shard identifier for the executor. It is used as suffix for the workspace path of the executor`'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--replica-id',
+        type=int,
+        default=0,
+        help='the id of the replica of an executor'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -77,7 +85,7 @@ def mixin_pea_parser(parser):
         '--pea-role',
         type=PeaRoleType.from_string,
         choices=list(PeaRoleType),
-        default=PeaRoleType.SINGLETON,
+        default=PeaRoleType.WORKER,
         help='The role of this Pea in a Pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 
@@ -93,19 +101,15 @@ def mixin_pea_parser(parser):
 
     gp.add_argument(
         '--shards',
-        '--parallel',
         type=int,
         default=1,
-        help='The number of shards in the pod running at the same time, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
+        help='The number of shards in the pod running at the same time. For more details check '
+        'https://docs.jina.ai/fundamentals/flow/topology/',
     )
 
     gp.add_argument(
         '--replicas',
         type=int,
         default=1,
-        help='The number of replicas in the pod, '
-        '`port_in` and `port_out` will be set to random, '
-        'and routers will be added automatically when necessary',
+        help='The number of replicas in the pod',
     )

@@ -1,8 +1,9 @@
+import os
 from typing import Dict
 
 import numpy as np
-from jina import Executor, DocumentArray, requests
-from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Executor, requests
+from docarray import DocumentArray
 
 
 class MyIndexer(Executor):
@@ -12,7 +13,10 @@ class MyIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
+        if os.path.exists(self.workspace + '/indexer'):
+            self._docs = DocumentArray.load(self.workspace + '/indexer')
+        else:
+            self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -38,6 +42,12 @@ class MyIndexer(Executor):
             limit=int(parameters['top_k']),
         )
 
+    def close(self):
+        """
+        Stores the DocumentArray to disk
+        """
+        self._docs.save(self.workspace + '/indexer')
+
 
 class MyEncoder(Executor):
     """
@@ -60,91 +70,28 @@ class MyEncoder(Executor):
         :param kwargs: other keyword arguments
         """
         # reduce dimension to 50 by random orthogonal projection
-        content = np.stack(docs.get_attributes('content'))
+        content = np.stack(docs[:, 'content'])
         content = content[:, :, :, 0].reshape(-1, 784)
-        embeds = (content / 255) @ self.oth_mat
+        embeds = ((content / 255) @ self.oth_mat).astype(np.float32)
         for doc, embed, cont in zip(docs, embeds, content):
             doc.embedding = embed
             doc.content = cont
-            doc.convert_image_blob_to_uri(width=28, height=28)
-            doc.pop('blob')
+            doc.convert_image_tensor_to_uri()
+            doc.pop('tensor')
 
 
 class MyConverter(Executor):
     """
-    Convert DocumentArrays removing blob and reshaping blob as image
+    Convert DocumentArrays removing tensor and reshaping tensor as image
     """
 
     @requests
     def convert(self, docs: 'DocumentArray', **kwargs):
         """
-        Remove blob and reshape documents as squared images
+        Remove tensor and reshape documents as squared images
         :param docs: documents to modify
         :param kwargs: other keyword arguments
         """
         for doc in docs:
-            doc.convert_image_blob_to_uri(width=28, height=28)
-            doc.pop('blob')
-
-
-class MyEvaluator(Executor):
-    """
-    Executor that evaluates precision and recall
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.eval_at = 50
-        self.num_docs = 0
-        self.total_precision = 0
-        self.total_recall = 0
-
-    @property
-    def avg_precision(self):
-        """
-        Computes precision
-        :return: precision values
-        """
-        return self.total_precision / self.num_docs
-
-    @property
-    def avg_recall(self):
-        """
-        Computes recall
-        :return: np.ndarray with recall values
-        """
-        return self.total_recall / self.num_docs
-
-    def _precision(self, actual, desired):
-        if self.eval_at == 0:
-            return 0.0
-        actual_at_k = actual[: self.eval_at] if self.eval_at else actual
-        ret = len(set(actual_at_k).intersection(set(desired)))
-        sub = len(actual_at_k)
-        return ret / sub if sub != 0 else 0.0
-
-    def _recall(self, actual, desired):
-        if self.eval_at == 0:
-            return 0.0
-        actual_at_k = actual[: self.eval_at] if self.eval_at else actual
-        ret = len(set(actual_at_k).intersection(set(desired)))
-        return ret / len(desired)
-
-    @requests(on='/eval')
-    def evaluate(self, docs: 'DocumentArray', groundtruths: 'DocumentArray', **kwargs):
-        """Evaluate documents using the class values from ground truths
-
-        :param docs: documents to evaluate
-        :param groundtruths: ground truth for the documents
-        :param kwargs: other keyword arguments
-        """
-        for doc, groundtruth in zip(docs, groundtruths):
-            self.num_docs += 1
-            actual = [match.tags['id'] for match in doc.matches]
-            desired = groundtruth.matches[0].tags['id']  # pseudo_match
-            self.total_precision += self._precision(actual, desired)
-            self.total_recall += self._recall(actual, desired)
-            doc.evaluations['Precision'] = self.avg_precision
-            doc.evaluations['Precision'].op_name = 'Precision'
-            doc.evaluations['Recall'] = self.avg_recall
-            doc.evaluations['Recall'].op_name = 'Recall'
+            doc.convert_image_tensor_to_uri()
+            doc.pop('tensor')

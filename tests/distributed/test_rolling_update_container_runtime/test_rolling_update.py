@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 import pytest
+from daemon.models.id import DaemonID
 
 from jina import Document, Client, __default_host__
 from jina.logging.logger import JinaLogger
@@ -12,7 +13,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
 HOST = __default_host__
-JINAD_PORT = 8000
+JINAD_PORT = 8003
 REST_PORT_DBMS = 9000
 REST_PORT_QUERY = 9001
 DUMP_PATH = '/jinad_workspace/dump'
@@ -26,16 +27,20 @@ EMB_SIZE = 10
 
 @pytest.fixture
 def executor_images():
+    import docker
+
+    client = docker.from_env()
+
     dbms_dir = os.path.join(cur_dir, 'pods', 'dbms')
-    dbms_docker_file = os.path.join(dbms_dir, 'Dockerfile')
-    os.system(f"docker build -f {dbms_docker_file} -t dbms-executor {dbms_dir}")
     query_dir = os.path.join(cur_dir, 'pods', 'query')
-    query_docker_file = os.path.join(query_dir, 'Dockerfile')
-    os.system(f"docker build -f {query_docker_file} -t query-executor {query_dir}")
-    time.sleep(3)
+    client.images.build(path=dbms_dir, tag='dbms-executor')
+    client.images.build(path=query_dir, tag='query-executor')
+    client.close()
     yield
-    os.system(f"docker rmi $(docker images | grep 'dbms-executor')")
-    os.system(f"docker rmi $(docker images | grep 'query-executor')")
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+    client.close()
 
 
 def _create_flows():
@@ -76,15 +81,19 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     Client(host=HOST, port=REST_PORT_DBMS, protocol='http').post(
         on='/dump',
         parameters={'shards': SHARDS, 'dump_path': DUMP_PATH},
-        target_peapod='indexer_dbms',
+        target_executor='indexer_dbms',
     )
 
     # rolling_update on Query Flow
-    client.flows.update(
-        id=query_flow_id,
-        kind='rolling_update',
-        pod_name='indexer_query',
-        dump_path=DUMP_PATH,
+    assert (
+        DaemonID(
+            client.flows.rolling_update(
+                id=query_flow_id,
+                pod_name='indexer_query',
+                uses_with={'dump_path': DUMP_PATH},
+            )
+        )
+        == DaemonID(query_flow_id)
     )
 
     # validate that there are matches now
@@ -104,7 +113,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
         yield Document(
-            id=i,
+            id=f'I am document {i}',
             text=f'hello world {i}',
             embedding=np.random.random(emb_size),
             tags={'tag_field': f'tag data {i}'},

@@ -7,7 +7,7 @@ def mixin_comm_protocol_parser(parser):
     :param parser: the parser configure
     """
 
-    from ..enums import GatewayProtocolType
+    from jina.enums import GatewayProtocolType
 
     parser.add_argument(
         '--protocol',
@@ -29,4 +29,11 @@ def mixin_client_features_parser(parser):
         action='store_true',
         default=False,
         help='If set, then the input and output of this Client work in an asynchronous manner. ',
+    )
+
+    parser.add_argument(
+        '--results-as-docarray',
+        action='store_true',
+        default=False,
+        help="If set, return results as DocArray instead of Request.",
     )

@@ -10,7 +10,7 @@ from jina import Flow, Document, DocumentArray, Executor, requests, Client
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
-SLOW_EXECUTOR_SLEEP_TIME = 3
+SLOW_EXECUTOR_SLEEP_TIME = 5
 
 
 def readable_time_from(t):
@@ -19,8 +19,8 @@ def readable_time_from(t):
 
 def get_document(i, name):
     t = time.time()
-    print(f'in {name}, time: {readable_time_from(t)}', flush=True)
-    return Document(id=i, tags={'input_gen': t})
+    print(f'in {name} {i}, time: {readable_time_from(t)}, {t}', flush=True)
+    return Document(id=f'id-{i}', tags={'input_gen': t})
 
 
 def blocking_gen():
@@ -59,7 +59,7 @@ class FastExecutor(Executor):
         for doc in docs:
             doc.tags['executor'] = time.time()
             print(
-                f'in FastExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}',
+                f'in FastExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}, {doc.tags["executor"]}',
                 flush=True,
             )
 
@@ -73,22 +73,23 @@ class SlowExecutor(Executor):
         for doc in docs:
             doc.tags['executor'] = time.time()
             print(
-                f'in SlowExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}',
+                f'in SlowExecutor: {doc.id}, time: {readable_time_from(doc.tags["executor"])}, {doc.tags["executor"]}',
                 flush=True,
             )
 
 
 def on_done(response, final_da: DocumentArray):
-    for doc in response.docs:
+    print(f' receiving response {response._pb_body.header.request_id}')
+    docs = response.docs
+    for doc in docs:
         doc.tags['on_done'] = time.time()
         print(
-            f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}',
+            f'in on_done {doc.id}, time: {readable_time_from(doc.tags["on_done"])}, {doc.tags["on_done"]}',
             flush=True,
         )
-    final_da.extend(response.docs)
+    final_da.extend(docs)
 
 
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
@@ -106,18 +107,13 @@ def on_done(response, final_da: DocumentArray):
         ('http', slow_blocking_gen),
     ],
 )
-def test_disable_prefetch_slow_client_fast_executor(
-    grpc_data_requests, protocol, inputs
-):
+def test_disable_prefetch_slow_client_fast_executor(protocol, inputs):
     print(
         f'\n\nRunning disable prefetch, slow client, fast Executor test for \n'
-        f'protocol: {protocol}, input: {inputs.__name__}, grpc_data_req: {grpc_data_requests}'
+        f'protocol: {protocol}, input: {inputs.__name__}'
     )
-    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
-    with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
-        uses=FastExecutor
-    ) as f:
+    with Flow(protocol=protocol).add(uses=FastExecutor) as f:
         f.post(
             on='/',
             inputs=inputs,
@@ -127,20 +123,19 @@ def test_disable_prefetch_slow_client_fast_executor(
 
     assert len(final_da) == INPUT_LEN
     # Since the input_gen is slow, order will always be gen -> exec -> on_done for every request
-    assert final_da[0].tags['input_gen'] < final_da[0].tags['executor']
-    assert final_da[0].tags['executor'] < final_da[0].tags['on_done']
-    assert final_da[0].tags['on_done'] < final_da[1].tags['input_gen']
-    assert final_da[1].tags['input_gen'] < final_da[1].tags['executor']
-    assert final_da[1].tags['executor'] < final_da[1].tags['on_done']
-    assert final_da[1].tags['on_done'] < final_da[2].tags['input_gen']
-    assert final_da[2].tags['input_gen'] < final_da[2].tags['executor']
-    assert final_da[2].tags['executor'] < final_da[2].tags['on_done']
-    assert final_da[2].tags['on_done'] < final_da[3].tags['input_gen']
-    assert final_da[3].tags['input_gen'] < final_da[3].tags['executor']
-    assert final_da[3].tags['executor'] < final_da[3].tags['on_done']
+    assert final_da['id-0'].tags['input_gen'] < final_da['id-0'].tags['executor']
+    assert final_da['id-0'].tags['executor'] < final_da['id-0'].tags['on_done']
+    assert final_da['id-0'].tags['on_done'] < final_da['id-1'].tags['input_gen']
+    assert final_da['id-1'].tags['input_gen'] < final_da['id-1'].tags['executor']
+    assert final_da['id-1'].tags['executor'] < final_da['id-1'].tags['on_done']
+    assert final_da['id-1'].tags['on_done'] < final_da['id-2'].tags['input_gen']
+    assert final_da['id-2'].tags['input_gen'] < final_da['id-2'].tags['executor']
+    assert final_da['id-2'].tags['executor'] < final_da['id-2'].tags['on_done']
+    assert final_da['id-2'].tags['on_done'] < final_da['id-3'].tags['input_gen']
+    assert final_da['id-3'].tags['input_gen'] < final_da['id-3'].tags['executor']
+    assert final_da['id-3'].tags['executor'] < final_da['id-3'].tags['on_done']
 
 
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
 @pytest.mark.parametrize(
     'protocol, inputs',
     [
@@ -152,18 +147,13 @@ def test_disable_prefetch_slow_client_fast_executor(
         ('http', blocking_gen),
     ],
 )
-def test_disable_prefetch_fast_client_slow_executor(
-    grpc_data_requests, protocol, inputs
-):
+def test_disable_prefetch_fast_client_slow_executor(protocol, inputs):
     print(
         f'\n\nRunning disable prefetch, fast client, slow Executor test for \n'
-        f'protocol: {protocol}, input: {inputs.__name__}, grpc_data_req: {grpc_data_requests}'
+        f'protocol: {protocol}, input: {inputs.__name__}'
     )
-    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
     final_da = DocumentArray()
-    with Flow(protocol=protocol, grpc_data_requests=grpc_data_requests).add(
-        uses=SlowExecutor
-    ) as f:
+    with Flow(protocol=protocol).add(uses=SlowExecutor) as f:
         f.post(
             on='/',
             inputs=inputs,
@@ -173,10 +163,19 @@ def test_disable_prefetch_fast_client_slow_executor(
 
     assert len(final_da) == INPUT_LEN
     # since Executor is slow, all client inputs should be read before 1st request exits from Executor.
-    assert final_da[0].tags['input_gen'] < final_da[1].tags['input_gen']
-    assert final_da[1].tags['input_gen'] < final_da[2].tags['input_gen']
-    assert final_da[2].tags['input_gen'] < final_da[3].tags['input_gen']
-    assert final_da[3].tags['input_gen'] < final_da[0].tags['executor']
+    assert (
+        final_da['id-0'].id < final_da['id-1'].id
+    ), f'ids are not ordered with times {final_da["id-0"].tags["input_gen"]} and {final_da["id-1"].tags["input_gen"]}'
+    assert (
+        final_da['id-1'].id < final_da['id-2'].id
+    ), f'ids are not ordered with times {final_da["id-1"].tags["input_gen"]} and {final_da["id-2"].tags["input_gen"]}'
+    assert (
+        final_da['id-2'].id < final_da['id-3'].id
+    ), f'ids are not ordered with times {final_da["id-2"].tags["input_gen"]} and {final_da["id-3"].tags["input_gen"]}'
+    assert final_da['id-0'].tags['input_gen'] < final_da['id-1'].tags['input_gen']
+    assert final_da['id-1'].tags['input_gen'] < final_da['id-2'].tags['input_gen']
+    assert final_da['id-2'].tags['input_gen'] < final_da['id-3'].tags['input_gen']
+    assert final_da['id-3'].tags['input_gen'] < final_da['id-0'].tags['executor']
     # At least 1 request should reache `on_done` before all requests are processed in the Executor.
     # Validates that the requests are not pending at the Executor
     first_on_done_time = min(i.tags['on_done'] for i in final_da)
@@ -195,13 +194,12 @@ class Indexer(Executor):
     @requests(on='/status')
     def status(self, **kwargs):
         # returns ids of all docs in tags
-        return DocumentArray(Document(tags={'ids': self.docs.get_attributes('id')}))
+        return DocumentArray(Document(tags={'ids': self.docs[:, 'id']}))
 
 
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-@pytest.mark.parametrize('grpc_data_requests', [False, True])
-def test_multiple_clients(prefetch, protocol, grpc_data_requests):
+def test_multiple_clients(prefetch, protocol):
     os.environ['JINA_LOG_LEVEL'] = 'INFO'
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
@@ -210,7 +208,7 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
     def get_document(i):
         return Document(
             id=f'{current_process().name}_{i}',
-            buffer=bytes(bytearray(os.urandom(512 * 4))),
+            text=str(bytes(bytearray(os.urandom(512 * 4)))),
         )
 
     async def good_client_gen():
@@ -228,9 +226,7 @@ def test_multiple_clients(prefetch, protocol, grpc_data_requests):
         )
 
     pool: List[Process] = []
-    f = Flow(
-        protocol=protocol, prefetch=prefetch, grpc_data_requests=grpc_data_requests
-    ).add(uses=Indexer)
+    f = Flow(protocol=protocol, prefetch=prefetch).add(uses=Indexer)
     with f:
         # We have 5 good clients connecting to the same gateway. They have controlled requests.
         # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.

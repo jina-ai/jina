@@ -1,3 +1,5 @@
+from jina.serve.runtimes.head import HeadRuntime
+
 if False:
     from argparse import Namespace
 
@@ -8,10 +10,10 @@ def pod(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.pods.factory import PodFactory
+    from jina.orchestrate.pods import Pod
 
     try:
-        with PodFactory.build_pod(args) as p:
+        with Pod(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass
@@ -23,10 +25,10 @@ def pea(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods import Pea
+    from jina.orchestrate.peas.factory import PeaFactory
 
     try:
-        with Pea(args) as p:
+        with PeaFactory.build_pea(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass
@@ -34,26 +36,28 @@ def pea(args: 'Namespace'):
 
 def executor_native(args: 'Namespace'):
     """
-    Starts an Executor in ZEDRuntime or GRPCDataRuntime depending on the `runtime_cls`
+    Starts an Executor in a WorkerRuntime
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.zmq.zed import ZEDRuntime
-    from jina.peapods.runtimes.grpc import GRPCDataRuntime
+    from jina.serve.runtimes.worker import WorkerRuntime
 
-    if args.runtime_cls == 'GRPCDataRuntime' or args.grpc_data_requests:
-        runtime_cls = GRPCDataRuntime
-    elif args.runtime_cls == 'ZEDRuntime':
-        runtime_cls = ZEDRuntime
+    if args.runtime_cls == 'WorkerRuntime':
+        runtime_cls = WorkerRuntime
+    elif args.runtime_cls == 'HeadRuntime':
+        runtime_cls = HeadRuntime
     else:
         raise RuntimeError(
-            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `ZEDRuntime` and `GRPCDataRuntime` are supported'
+            f' runtime_cls {args.runtime_cls} is not supported with `--native` argument. `WorkerRuntime` is supported'
         )
 
     with runtime_cls(args) as rt:
-        rt.logger.success(
-            f' Executor {rt._data_request_handler._executor.metas.name} started'
+        name = (
+            rt._data_request_handler._executor.metas.name
+            if hasattr(rt, '_data_request_handler')
+            else rt.name
         )
+        rt.logger.success(f' Executor {name} started')
         rt.run_forever()
 
 
@@ -63,7 +67,7 @@ def executor(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
 
-    :returns: return the same as `pea` or `zed_runtime`
+    :returns: return the same as `pea` or `worker_runtime`
     """
     if args.native:
         return executor_native(args)
@@ -71,23 +75,19 @@ def executor(args: 'Namespace'):
         return pea(args)
 
 
-def grpc_data_runtime(args: 'Namespace'):
+def worker_runtime(args: 'Namespace'):
     """
-    Starts a GRPCDataRuntime
+    Starts a WorkerRuntime
 
     :param args: arguments coming from the CLI.
     """
-    from jina.peapods.runtimes.grpc import GRPCDataRuntime
+    from jina.serve.runtimes.worker import WorkerRuntime
 
-    with GRPCDataRuntime(args) as runtime:
+    with WorkerRuntime(args) as runtime:
         runtime.logger.success(
             f' Executor {runtime._data_request_handler._executor.metas.name} started'
         )
         runtime.run_forever()
-
-
-# alias
-grpc_executor = grpc_data_runtime
 
 
 def gateway(args: 'Namespace'):
@@ -97,12 +97,12 @@ def gateway(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.enums import GatewayProtocolType
-    from jina.peapods.runtimes import get_runtime
+    from jina.serve.runtimes import get_runtime
 
     gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCRuntime',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-        GatewayProtocolType.HTTP: 'HTTPRuntime',
+        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
+        GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }
     runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
 
@@ -142,7 +142,7 @@ def export_api(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     import json
-    from .export import api_to_dict
+    from cli.export import api_to_dict
     from jina.jaml import JAML
     from jina import __version__
     from jina.logging.predefined import default_logger
@@ -215,17 +215,6 @@ def flow(args: 'Namespace'):
         raise ValueError('start a flow from CLI requires a valid `--uses`')
 
 
-def optimizer(args: 'Namespace'):
-    """
-    Start an optimization from a YAML file
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.optimizers import run_optimizer_cli
-
-    run_optimizer_cli(args)
-
-
 def hub(args: 'Namespace'):
     """
     Start a hub builder for push, pull
@@ -242,6 +231,6 @@ def help(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from .lookup import lookup_and_print
+    from cli.lookup import lookup_and_print
 
     lookup_and_print(args.query.lower())
