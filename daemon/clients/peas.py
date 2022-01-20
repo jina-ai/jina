@@ -67,16 +67,6 @@ class AsyncPeaClient(AsyncBaseClient):
                     f'success: currently there are these ports occupied {Dockerizer.exposed_ports()}'
                 )
 
-                async with aiohttp.request(
-                    method='GET',
-                    url=f'{self.store_api}/{response_json}',
-                    timeout=self.timeout,
-                ) as response:
-                    response_json = await response.json()
-                    self._logger.warning(
-                        f'created pea has these params {response_json}'
-                    )
-
                 return True, response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
                 field_msg = (
