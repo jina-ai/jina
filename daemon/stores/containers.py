@@ -34,10 +34,10 @@ class ContainerStore(BaseStore, ABC):
 
     _kind = 'container'
     _status_model = ContainerStoreStatus
+    _partiald_ports = set()
 
     def __init__(self):
         super().__init__()
-        self._partiald_ports = set()
 
     @abstractmethod
     async def add_in_partial(self, uri, envs, *args, **kwargs):
