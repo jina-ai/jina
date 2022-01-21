@@ -285,10 +285,14 @@ class Dockerizer:
                 run_kwargs.pop('device_requests')
                 container: 'Container' = cls.client.containers.run(**run_kwargs)
             else:
-                msg += ' ' + _validate_port_conflict(str(e))
-                msg += f"tried to allocate the following ports {ports} and currently in use are {cls.exposed_ports()}"
-                msg += f'helper has assigned ports {helper.assigned_ports} and unassigned {helper.unassigned_ports}'
-                raise DockerContainerException(msg)
+                # try again
+                try:
+                    container: 'Container' = cls.client.containers.run(**run_kwargs)
+                except:
+                    msg += ' ' + _validate_port_conflict(str(e))
+                    msg += f"tried to allocate the following ports {ports} and currently in use are {cls.exposed_ports()}"
+                    msg += f'helper has assigned ports {helper.assigned_ports} and unassigned {helper.unassigned_ports}'
+                    raise DockerContainerException(msg)
         except docker.errors.APIError as e:
             msg = f'API Error while starting the docker container{e}'
             msg += _validate_port_conflict(str(e))
