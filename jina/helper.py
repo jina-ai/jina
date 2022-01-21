@@ -435,6 +435,18 @@ def random_port() -> Optional[int]:
                 try:
                     s.bind(('', port))
                     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                    with socket.socket() as cs:
+                        try:
+                            cs.connect(('127.0.0.1', port))
+                            return None
+                        except:
+                            pass
+                    with socket.socket() as cs:
+                        try:
+                            cs.connect(('host.docker.internal', port))
+                            return None
+                        except:
+                            pass
                     return port
                 except OSError:
                     return None
