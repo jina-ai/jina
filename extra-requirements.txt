@@ -80,3 +80,4 @@ trimesh:                    cicd
 paddlepaddle==2.2.0:        cicd
 onnx:                       cicd
 onnxruntime:                cicd
+psutil:                     cicd, daemon, devel

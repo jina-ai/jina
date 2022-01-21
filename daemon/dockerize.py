@@ -5,6 +5,7 @@ import platform
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
+import psutil
 
 from jina import __docker_host__, helper
 from jina.helper import colored
@@ -288,6 +289,8 @@ class Dockerizer:
                 msg += ' ' + _validate_port_conflict(str(e))
                 msg += f"tried to allocate the following ports {ports} and currently in use are {cls.exposed_ports()}"
                 msg += f'helper has assigned ports {helper.assigned_ports} and unassigned {helper.unassigned_ports}'
+                msg += f'running stuff {cls._get_running()}'
+
                 raise DockerContainerException(msg)
         except docker.errors.APIError as e:
             msg = f'API Error while starting the docker container{e}'
@@ -295,6 +298,20 @@ class Dockerizer:
             raise DockerContainerException(msg)
         # TODO: network & ports return can be avoided?
         return container, network, ports
+
+    @classmethod
+    def _get_running(cls):
+        cons = psutil.net_connections(kind='tcp4')
+        filtered = list(
+            filter(lambda c: c.status == 'LISTEN' and c.pid is not None, cons)
+        )
+        reduced = [(r.laddr, r.pid) for r in filtered]
+        processes = []
+        for r in reduced:
+            processes.append(psutil.Process(pid=r[1]))
+        running = []
+        for c, p in zip(reduced, processes):
+            running.append(f'{p.name()}/{c[0].port}')
 
     @classmethod
     def logs(cls, id: str) -> str:
