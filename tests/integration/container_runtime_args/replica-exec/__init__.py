@@ -10,6 +10,7 @@ class ReplicatedExec(Executor):
 
     @requests
     def foo(self, docs, **kwargs):
+        print(f' self.docker_id {self.docker_id}')
         for doc in docs:
             doc.tags[
                 'replica'

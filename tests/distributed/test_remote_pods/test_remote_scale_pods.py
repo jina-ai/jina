@@ -56,13 +56,11 @@ def test_scale_remote_pod(pod_params, jinad_client):
     assert success
 
     remote_pod_args = jinad_client.pods.get(pod_id)['arguments']['object']['arguments']
-    assert remote_pod_args['identity'] == pod_id
     assert remote_pod_args['replicas'] == num_replicas
     assert remote_pod_args['shards'] == shards
 
     jinad_client.pods.scale(id=pod_id, replicas=scale_to)
     remote_pod_args = jinad_client.pods.get(pod_id)['arguments']['object']['arguments']
-    assert remote_pod_args['identity'] == pod_id
     assert remote_pod_args['replicas'] == scale_to
     assert remote_pod_args['shards'] == shards
     assert jinad_client.pods.delete(pod_id)
@@ -95,14 +93,12 @@ async def test_scale_remote_pod_async(pod_params, async_jinad_client, slow_down_
 
     resp = await async_jinad_client.pods.get(pod_id)
     remote_pod_args = resp['arguments']['object']['arguments']
-    assert remote_pod_args['identity'] == pod_id
     assert remote_pod_args['replicas'] == num_replicas
     assert remote_pod_args['shards'] == shards
 
     await async_jinad_client.pods.scale(id=pod_id, replicas=scale_to)
     resp = await async_jinad_client.pods.get(pod_id)
     remote_pod_args = resp['arguments']['object']['arguments']
-    assert remote_pod_args['identity'] == pod_id
     assert remote_pod_args['replicas'] == scale_to
     assert remote_pod_args['shards'] == shards
     assert await async_jinad_client.pods.delete(pod_id)

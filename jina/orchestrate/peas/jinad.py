@@ -58,7 +58,6 @@ class JinaDProcessTarget:
         self.is_ready = is_ready
         self.is_cancelled = is_cancelled
         self.pea_id = None
-        self.logstream = None
         self._logger = JinaLogger('RemotePea', **vars(args))
         run_async(self._run)
 
@@ -77,13 +76,8 @@ class JinaDProcessTarget:
         else:
             self.is_started.set()
             self.is_ready.set()
-            self.logstream: asyncio.Task = asyncio.create_task(self._stream_logs())
             await self._wait_until_cancelled()
         finally:
-            if self.logstream is not None and (
-                not self.logstream.done() or not self.logstream.cancelled()
-            ):
-                self.logstream.cancel()
             await self._terminate_remote_pea()
             self.is_shutdown.set()
 
@@ -128,18 +122,6 @@ class JinaDProcessTarget:
         else:
             self.pea_id = response
 
-    async def _stream_logs(self):
-        """Streams log messages from remote server
-
-        :return: logstreaming task
-        """
-        if self.pea_id is not None:
-            return (
-                self._sleep_forever()
-                if self.args.quiet_remote_logs
-                else self.client.logs(id=self.pea_id)
-            )
-
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)
@@ -149,9 +131,7 @@ class JinaDProcessTarget:
             await asyncio.sleep(0.1)
 
     async def _terminate_remote_pea(self):
-        """Cancels the logstream task, removes the remote Pea"""
-        if self.logstream is not None:
-            self.logstream.cancel()
+        """Removes the remote Pea"""
         if self.pea_id is not None:
             if await self.client.peas.delete(id=self.pea_id):
                 self._logger.success(
