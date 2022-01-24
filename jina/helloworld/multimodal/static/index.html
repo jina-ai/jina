@@ -139,27 +139,29 @@
                 t_id = uuidv4()
                 i_id = uuidv4()
                 return {
-                    data: [{
-                        id: p_id,
-                        chunks: [
-                            {
-                                id: t_id,
-                                weight: this.textWeight,
-                                mimeType: "text/plain",
-                                text: this.query.text,
-                                granularity: 1,
-                                parentId: p_id
-                            },
-                            {
-                                id: i_id,
-                                weight: this.imageWeight,
-                                mimeType: "image/jpeg",
-                                uri: this.query.uri,
-                                granularity: 1,
-                                parentId: p_id
-                            }
-                        ]
-                    }],
+                    data: {
+                        docs: [{
+                            id: p_id,
+                            chunks: [
+                                {
+                                    id: t_id,
+                                    weight: this.textWeight,
+                                    mimeType: "text/plain",
+                                    text: this.query.text,
+                                    granularity: 1,
+                                    parentId: p_id
+                                },
+                                {
+                                    id: i_id,
+                                    weight: this.imageWeight,
+                                    mimeType: "image/jpeg",
+                                    uri: this.query.uri,
+                                    granularity: 1,
+                                    parentId: p_id
+                                }
+                            ]
+                            }]
+                        },
                     exec_endpoint: '/search',
                     parameters: {top_k: 20}
                 }
