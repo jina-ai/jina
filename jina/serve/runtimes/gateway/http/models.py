@@ -228,7 +228,16 @@ class JinaRequestModel(BaseModel):
     Jina HTTP request model.
     """
 
-    data: Optional[Union[PydanticDocumentArray, List[PydanticDocument]]] = Field(
+    # the dict one is only for compatibility.
+    # So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}
+    data: Optional[
+        Union[
+            PydanticDocumentArray,
+            List[PydanticDocument],
+            Dict[str, PydanticDocumentArray],
+            Dict[str, List[PydanticDocument]],
+        ]
+    ] = Field(
         None,
         example=_get_example_data(),
         description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
@@ -254,17 +263,10 @@ class JinaResponseModel(BaseModel):
     Jina HTTP Response model. Only `request_id` and `data` are preserved.
     """
 
-    class DataContentModel(BaseModel):
-        docs: Optional[PydanticDocumentArray] = None
-
-        class Config:
-            alias_generator = _to_camel_case
-            allow_population_by_field_name = True
-
     header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
     parameters: Dict = None
     routes: List[PROTO_TO_PYDANTIC_MODELS.RouteProto] = None
-    data: Optional[DataContentModel] = Field(None, description='Returned Documents')
+    data: Optional[PydanticDocumentArray] = None
 
     class Config:
         alias_generator = _to_camel_case

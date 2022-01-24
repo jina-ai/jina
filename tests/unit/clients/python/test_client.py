@@ -85,7 +85,7 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         time.sleep(0.5)
         r = requests.post(
             f'http://localhost:{flow_with_http.port_expose}/index',
-            json={'data': [test_img_1, test_img_2]},
+            json={'data': {'docs': {[{'uri': test_img_1}, {'uri': test_img_2}]}}},
         )
 
         assert r.status_code == 200

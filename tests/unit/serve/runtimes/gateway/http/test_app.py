@@ -43,8 +43,8 @@ def test_tag_update():
     d1 = Document(id='1', prop1='val')
     d2 = Document(id='2', prop2='val')
     with f:
-        d1 = {'data': {'docs': [d1.to_dict()]}}
-        d2 = {'data': {'docs': [d2.to_dict()]}}
+        d1 = {'data': [d1.to_dict()]}
+        d2 = {'data': [d2.to_dict()]}
         r1 = req.post(f'http://localhost:{port_expose}/index', json=d1)
         r2 = req.post(f'http://localhost:{port_expose}/index', json=d2)
     assert r1.json()['data']['docs'][0]['tags'] == {'prop1': 'val'}
@@ -207,3 +207,26 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
             '''certificate verify failed: self signed certificate'''
             in capsys.readouterr().out
         )
+
+
+da = DocumentArray(docs=[Document(text='text_input')])
+
+
+@pytest.mark.parametrize(
+    'docs_input',
+    [
+        {'data': [{'text': 'text_input'}]},
+        {'data': {'docs': [{'text': 'text_input'}]}},
+        {'data': da.to_dict()},
+        {'data': {'docs': da.to_dict()}},
+        {'data': [da[0].to_dict()]},
+        {'data': {'docs': [da[0].to_dict()]}},
+    ],
+)
+def test_app_models_acceptance(docs_input):
+    f = Flow(protocol='http').add()
+
+    with f:
+        r = req.post(f'http://localhost:{f.port_expose}/index', json=docs_input)
+
+    assert DocumentArray.from_dict(r.json()['data'])[0].text == 'text_input'
