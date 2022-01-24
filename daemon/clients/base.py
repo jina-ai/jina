@@ -39,7 +39,6 @@ class AsyncBaseClient:
         )
         self.http_uri = f'http://{uri}'
         self.store_api = f'{self.http_uri}{self._endpoint}'
-        self.logstream_api = f'ws://{uri}/logstream'
 
     @if_alive
     async def alive(self) -> bool:
@@ -161,58 +160,6 @@ class AsyncBaseClient:
         # noqa: DAR102
         """
         raise NotImplementedError
-
-    async def logstream(self, id: 'DaemonID', timeout: float = None):
-        """Websocket log stream from remote Workspace/Flow/Pea/Pod
-
-        :param id: identity of the Workspace/Flow/Pea/Pod
-        :param timeout: timeout in seconds for the logstream
-        """
-        remote_log_config = os.path.join(__resources_path__, 'logging.remote.yml')
-        remote_loggers: Dict[str, 'JinaLogger'] = {}
-        try:
-            id = daemonize(id)
-        except TypeError:
-            self._logger.error(f'invalid id {id} passed for logstreaming, exiting..')
-            return
-        url = f'{self.logstream_api}/{id}'
-        try:
-            async with aiohttp.ClientSession() as session:
-                while True:
-                    try:
-                        async with session.ws_connect(url) as websocket:
-                            async for log_line in websocket:
-                                try:
-                                    if not log_line:
-                                        continue
-                                    json_log_line = log_line.json()
-                                    name = json_log_line.get('name')
-                                    if name not in remote_loggers:
-                                        remote_loggers[name] = JinaLogger(
-                                            context=json_log_line.get('host'),
-                                            log_config=remote_log_config,
-                                        )
-
-                                    remote_loggers[name].debug(
-                                        '{host} {name} {type} {message}'.format_map(
-                                            json_log_line
-                                        )
-                                    )
-                                except json.decoder.JSONDecodeError:
-                                    continue
-                    except aiohttp.WSServerHandshakeError as e:
-                        self._logger.error(
-                            f'log streaming failed, you won\'t see logs on the remote\n Reason: {e!r}'
-                        )
-                        continue
-                    except asyncio.CancelledError:
-                        self._logger.debug(
-                            f'successfully cancelled log streaming task for {id}'
-                        )
-                        break
-        finally:
-            for logger in remote_loggers.values():
-                logger.close()
 
 
 class BaseClient(AsyncToSyncMixin, AsyncBaseClient):

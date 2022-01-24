@@ -44,7 +44,6 @@ def test_remote_jinad_pod(pod_args, jinad_client):
     assert success
     # get pod status
     remote_pod_args = jinad_client.pods.get(pod_id)['arguments']['object']['arguments']
-    assert remote_pod_args['identity'] == pod_id
     # delete pod
     assert jinad_client.pods.delete(pod_id)
     resp = jinad_client.pods.get(pod_id)
@@ -67,7 +66,6 @@ async def test_remote_jinad_pod_async(pod_args, async_jinad_client):
     # get pod status
     resp = await async_jinad_client.pods.get(pod_id)
     remote_pod_args = resp['arguments']['object']['arguments']
-    assert remote_pod_args['identity'] == pod_id
     # delete pod
     assert await async_jinad_client.pods.delete(pod_id)
     resp = await async_jinad_client.pods.get(pod_id)

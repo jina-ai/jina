@@ -17,12 +17,6 @@ def mixin_daemon_parser(parser):
     """
     gp = add_arg_group(parser, title='Daemon')
     gp.add_argument(
-        '--no-fluentd',
-        action='store_true',
-        default=False,
-        help='do not start fluentd, no log streaming',
-    )
-    gp.add_argument(
         '--no-store',
         action='store_true',
         default=False,

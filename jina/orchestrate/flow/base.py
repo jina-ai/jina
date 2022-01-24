@@ -1579,27 +1579,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, v in self:
             v.args.env = value
 
-    @property
-    def identity(self) -> Dict[str, str]:
-        """Get all Pods' ``identity`` values in a dict
-
-
-        .. # noqa: DAR201
-        """
-        return {k: p.args.identity for k, p in self}
-
-    @identity.setter
-    def identity(self, value: str):
-        """Set all Pods' ``identity`` to ``value``
-
-        :param value: a hexadecimal UUID string
-        """
-        uuid.UUID(value)
-        # Re-initiating logger with new identity
-        self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
-        for _, p in self:
-            p.args.identity = value
-
     @overload
     def expose_endpoint(self, exec_endpoint: str, path: Optional[str] = None):
         """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.

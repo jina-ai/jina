@@ -62,9 +62,7 @@ class FlowDepends:
         self.workspace_id = workspace_id
         self.filename = filename
         self.id = DaemonID('jflow')
-        self.params = FlowModel(
-            uses=self.filename, workspace_id=self.workspace_id.jid, identity=self.id
-        )
+        self.params = FlowModel(uses=self.filename, workspace_id=self.workspace_id.jid)
         self.envs = envs.vars
         self._ports = {}
         self.load_and_dump()
@@ -252,7 +250,6 @@ class PeaDepends:
     def update_args(self):
         """TODO: update docs"""
         # Each pea is inside a container
-        self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
         self.device_requests = (
             get_gpu_device_requests(self.params.gpus) if self.params.gpus else None

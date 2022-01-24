@@ -105,7 +105,7 @@ jinaai/jina:{version}{python_version}{extra}
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-standard`: Jina is installed inside the image via `pip install jina`. It includes all recommended dependencies;  
     - `-devel`: Jina is installed inside the image via `pip install "jina[devel]"`. It includes `standard` plus some extra dependencies;
-    - `-daemon`: Jina is installed inside the image via `pip install "jina[dameon]"` along with `fluentd`; **and the entrypoint is set to `jinad`**.
+    - `-daemon`: Jina is installed inside the image via `pip install "jina[dameon]"`; **and the entrypoint is set to `jinad`**.
 
 Examples:
 
