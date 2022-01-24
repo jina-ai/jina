@@ -25,7 +25,7 @@ PLUGIN_PATH=${1}  # /Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plug
 
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 
-protoc -I ${SRC_DIR} -I ${SRC_DIR}/docarray/proto --python_out=${SRC_DIR} --grpc_python_out=${SRC_DIR} --plugin=protoc-gen-grpc_python=${PLUGIN_PATH} ${SRC_DIR}${SRC_NAME}
+protoc -I ${SRC_DIR} --python_out=${SRC_DIR} --grpc_python_out=${SRC_DIR} --plugin=protoc-gen-grpc_python=${PLUGIN_PATH} ${SRC_DIR}${SRC_NAME}
 
 printf "\e[1;33mfixing grpc import\e[0m\n"
 printf "using linux sed syntax, if you are running this on mac, you may want to comment out the sed for linux"
