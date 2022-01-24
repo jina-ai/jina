@@ -36,21 +36,17 @@ class JinaLogger:
 
     :param context: The context identifier of the class, module or method.
     :param log_config: The configuration file for the logger.
-    :param identity: The id of the group the messages from this logger will belong, used by fluentd default
     configuration to group logs by pod.
-    :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
     :return:: an executor object.
     """
 
-    supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
+    supported = {'FileHandler', 'StreamHandler', 'SysLogHandler'}
 
     def __init__(
         self,
         context: str,
         name: Optional[str] = None,
         log_config: Optional[str] = None,
-        identity: Optional[str] = None,
-        workspace_path: Optional[str] = None,
         quiet: bool = False,
         **kwargs,
     ):
@@ -63,9 +59,6 @@ class JinaLogger:
 
         if quiet or os.getenv('JINA_LOG_CONFIG', None) == 'QUIET':
             log_config = os.path.join(__resources_path__, 'logging.quiet.yml')
-
-        if not identity:
-            identity = os.getenv('JINA_LOG_ID', None)
 
         if not name:
             name = os.getenv('JINA_POD_NAME', context)
@@ -81,11 +74,7 @@ class JinaLogger:
             'name': name,
             'uptime': __uptime__,
             'context': context,
-            'workspace_path': workspace_path
-            or os.getenv('JINA_LOG_WORKSPACE', '/tmp/jina/'),
         }
-        if identity:
-            context_vars['log_id'] = identity
 
         self.add_handlers(log_config, **context_vars)
         self.success = lambda *x: self.logger.log(LogVerbosity.SUCCESS, *x)
@@ -169,23 +158,6 @@ class JinaLogger:
                     filename = filename.replace(':', '.')
                 handler = logging.FileHandler(filename, delay=True)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
-            elif h == 'FluentHandler':
-                from jina.importer import ImportExtensions
-
-                with ImportExtensions(required=False, verbose=False):
-                    from fluent import asynchandler as fluentasynchandler
-                    from fluent.handler import FluentRecordFormatter
-
-                    handler = fluentasynchandler.FluentHandler(
-                        cfg['tag'],
-                        host=cfg['host'],
-                        port=cfg['port'],
-                        queue_circular=True,
-                    )
-
-                    cfg['format'].update(kwargs)
-                    fmt = FluentRecordFormatter(cfg['format'])
-                    handler.setFormatter(fmt)
 
             if handler:
                 self.logger.addHandler(handler)

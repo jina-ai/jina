@@ -231,7 +231,6 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         :param sleep: sleep time between each check, defaults to 2
         :return: True if workspace creation succeeds
         """
-        logstream = asyncio.create_task(self.logstream(id=id)) if logs else None
         while True:
             try:
                 response = (
@@ -249,21 +248,10 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                     await asyncio.sleep(sleep)
                     continue
                 elif state == RemoteWorkspaceState.ACTIVE:
-                    if logstream:
-                        self._logger.info(f'{colored(id, "cyan")} created successfully')
-                        logstream.cancel()
                     return True
                 elif state == RemoteWorkspaceState.FAILED:
-                    if logstream:
-                        self._logger.critical(
-                            f'{colored(id, "red")} creation failed. please check logs'
-                        )
-                        logstream.cancel()
                     return False
             except ValueError as e:
-                if logstream:
-                    self._logger.error(f'invalid response from remote: {e!r}')
-                    logstream.cancel()
                 return False
 
     @if_alive

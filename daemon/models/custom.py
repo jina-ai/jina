@@ -88,7 +88,6 @@ def build_pydantic_model(model_name: str, module: str):
         parser = set_pea_parser
     elif module == 'flow':
         parser = set_flow_parser
-        kwargs = {'with_identity': True}
     else:
         raise TypeError(f'{module} is not supported')
 

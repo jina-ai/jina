@@ -119,7 +119,6 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             assert 'ports' in kwargs
             assert 'environment' in kwargs
             envs = kwargs['environment']
-            assert 'JINA_LOG_ID' in envs
             assert 'JINA_POD_NAME' in envs
             assert 'VAR1' in envs
             assert envs['VAR1'] == 'BAR'

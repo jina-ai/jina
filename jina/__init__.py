@@ -85,7 +85,6 @@ __jina_env__ = (
     'JINA_HUB_ROOT',
     'JINA_K8S_USE_TEST_PIP',
     'JINA_LOG_CONFIG',
-    'JINA_LOG_ID',
     'JINA_LOG_LEVEL',
     'JINA_LOG_NO_COLOR',
     'JINA_LOG_WORKSPACE',

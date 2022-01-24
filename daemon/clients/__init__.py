@@ -99,11 +99,3 @@ class AsyncJinaDClient(JinaDClient):
     _pod_cls = AsyncPodClient
     _flow_cls = AsyncFlowClient
     _workspace_cls = AsyncWorkspaceClient
-
-    async def logs(self, id: 'DaemonID') -> Awaitable:
-        """Stream logs
-
-        :param id: id of the JinaD object
-        :return: logs coroutine to be awaited
-        """
-        return await self._base_cls(**self.kwargs).logstream(id=id)
