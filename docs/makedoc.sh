@@ -5,7 +5,6 @@ set -ex
 if [[ $1 == "local-only" ]]; then 
   rm -rf api && make clean
 
-  cp $(pwd)/../jina/proto
   docker run --rm \
     -v $(pwd)/proto:/out \
     -v $(pwd)/../jina/proto:/protos \
