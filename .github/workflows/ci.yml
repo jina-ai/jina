@@ -260,6 +260,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JINA_DAEMON_DOCKERFILE: DEVEL
+      JINA_RANDOM_PORT_MIN: 16384
     strategy:
       fail-fast: false
       matrix:

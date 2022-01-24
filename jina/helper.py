@@ -403,8 +403,8 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
-assigned_ports = []
-unassigned_ports = []
+assigned_ports = set()
+unassigned_ports = set()
 DEFAULT_MIN_PORT = 49153
 MAX_PORT = 65535
 
@@ -428,7 +428,9 @@ def random_port() -> Optional[int]:
                     os.environ.get('JINA_RANDOM_PORT_MIN', str(DEFAULT_MIN_PORT))
                 )
             max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', str(MAX_PORT)))
-            return set(range(min_port, max_port + 1)) - set(assigned_ports)
+            all_ports = list(range(min_port, max_port + 1))
+            random.shuffle(all_ports)
+            return set(all_ports) - assigned_ports
 
         def _check_bind(port):
             with socket.socket() as s:
@@ -453,8 +455,7 @@ def random_port() -> Optional[int]:
 
         _port = None
         if len(unassigned_ports) == 0:
-            unassigned_ports.extend(_get_unassigned_ports())
-            random.shuffle(unassigned_ports)
+            unassigned_ports.update(_get_unassigned_ports())
         for _port in unassigned_ports:
             if _check_bind(_port) is not None:
                 break
@@ -464,7 +465,7 @@ def random_port() -> Optional[int]:
             )
         int_port = int(_port)
         unassigned_ports.remove(_port)
-        assigned_ports.append(int_port)
+        assigned_ports.add(int_port)
         return int_port
 
     try:
