@@ -228,16 +228,7 @@ class JinaRequestModel(BaseModel):
     Jina HTTP request model.
     """
 
-    data: Optional[
-        Union[
-            PydanticDocumentArray,
-            List[PydanticDocument],
-            Dict[str, Any],
-            List[Dict[str, Any]],
-            List[str],
-            List[bytes],
-        ]
-    ] = Field(
+    data: Optional[Union[PydanticDocumentArray, List[PydanticDocument]]] = Field(
         None,
         example=_get_example_data(),
         description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
