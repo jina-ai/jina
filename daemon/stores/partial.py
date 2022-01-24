@@ -69,7 +69,6 @@ class PartialPeaStore(PartialStore):
         :return: Item describing the Pea object
         """
         try:
-            _id = args.identity
             # This is set so that ContainerRuntime sets host_ctrl to __docker_host__
             # and on linux machines, we can access dockerhost inside containers
             if args.runtime_cls == 'ContainerRuntime':
@@ -86,7 +85,7 @@ class PartialPeaStore(PartialStore):
             raise
         else:
             self.item = PartialStoreItem(arguments=vars(args))
-            self._logger.success(f'{colored(_id, "cyan")} is created!')
+            self._logger.success(f'{colored(args.name, "cyan")} is created!')
             return self.item
 
 
