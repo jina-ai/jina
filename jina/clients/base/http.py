@@ -82,22 +82,17 @@ class HTTPBaseClient(BaseClient):
                     elif r_status < 200 or r_status > 300:
                         raise ValueError(r_str)
 
-                    # TODO: remove ugly hack
-                    if (
-                        'data' in r_str
-                        and r_str['data'] is not None
-                        and 'docs' in r_str['data']
-                    ):
+                    da = None
+                    if 'data' in r_str and r_str['data'] is not None:
                         from docarray import DocumentArray
 
-                        temp = r_str['data']['docs']
-                        r_str['data']['docs'] = {}
-                        r_str['data']['docs'] = {
-                            'docs': DocumentArray.from_dict(temp).to_dict(
-                                protocol='protobuf'
-                            )
-                        }
+                        da = DocumentArray.from_dict(r_str['data'])
+                        del r_str['data']
+
                     resp = DataRequest(r_str)
+                    if da is not None:
+                        resp.data.docs = da
+
                     callback_exec(
                         response=resp,
                         on_error=on_error,

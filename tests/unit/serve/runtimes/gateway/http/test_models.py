@@ -38,8 +38,22 @@ def test_timestamp():
 
 @pytest.mark.parametrize('top_k', [5, 10])
 def test_model_with_top_k(top_k):
-    m = JinaRequestModel(data=['abc'], parameters={'top_k': top_k})
+    m = JinaRequestModel(data=[{'text': 'abc'}], parameters={'top_k': top_k})
     assert m.parameters['top_k'] == top_k
 
     m = JinaRequestModel(parameters={'top_k': top_k})
     assert m.parameters['top_k'] == top_k
+
+
+def test_models_with_docs():
+    _ = JinaRequestModel(data={'docs': [{'text': 'abc'}]})
+
+
+@pytest.mark.parametrize(
+    'bad_docs', ['pure_text', {'docs': {'docs': {'text': 'input'}}}]
+)
+def test_models_fail(bad_docs):
+    import pydantic
+
+    with pytest.raises(pydantic.error_wrappers.ValidationError):
+        _ = JinaRequestModel(data=bad_docs)

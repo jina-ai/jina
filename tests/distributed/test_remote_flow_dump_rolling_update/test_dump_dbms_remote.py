@@ -59,13 +59,10 @@ def test_dump_dbms_remote(docker_compose):
         REST_PORT_QUERY,
         'search',
         'post',
-        {'docs': [doc.to_dict() for doc in docs[:nr_search]]},
+        [doc.to_dict() for doc in docs[:nr_search]],
     )
     # TODO some times it was None
-    assert (
-        r['data']['docs'][0].get('matches') is None
-        or r['data']['docs'][0].get('matches') == []
-    )
+    assert r['data'][0].get('matches') is None or r['data'][0].get('matches') == []
 
     _send_rest_request(
         REST_PORT_DBMS, 'index', 'post', {'docs': [doc.to_dict() for doc in docs]}
@@ -103,10 +100,10 @@ def test_dump_dbms_remote(docker_compose):
         REST_PORT_QUERY,
         'search',
         'post',
-        {'docs': [doc.to_dict() for doc in docs[:nr_search]]},
+        [doc.to_dict() for doc in docs[:nr_search]],
         params={'top_k': 100},
     )
-    for doc in r['data']['docs']:
+    for doc in r['data']:
         assert len(doc.get('matches')) == nr_docs
 
     assert client.flows.delete(dbms_flow_id)

@@ -139,8 +139,7 @@
                 t_id = uuidv4()
                 i_id = uuidv4()
                 return {
-                    data: {
-                        docs: [{
+                    data: [{
                             id: p_id,
                             chunks: [
                                 {
@@ -160,8 +159,7 @@
                                     parentId: p_id
                                 }
                             ]
-                            }]
-                        },
+                            }],
                     exec_endpoint: '/search',
                     parameters: {top_k: 20}
                 }

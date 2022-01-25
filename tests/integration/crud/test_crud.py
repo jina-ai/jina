@@ -13,7 +13,7 @@ PARAMS = {'top_k': 10}
 
 
 def rest_post(f, endpoint, documents):
-    data = {'docs': [d.to_dict() for d in documents]}
+    data = [d.to_dict() for d in documents]
     if endpoint == 'delete':
         method = 'delete'
     elif endpoint == 'update':
@@ -51,8 +51,8 @@ def test_crud(tmpdir, rest):
         inputs = list(random_docs(1))
         if rest:
             results = rest_post(f, 'search', inputs)
-            matches = results['data']['docs'][0]['matches']
-            for doc in results['data']['docs']:
+            matches = results['data'][0]['matches']
+            for doc in results['data']:
                 assert Document.from_dict(doc).text == 'hello world'
         else:
             results = c.post(
@@ -80,7 +80,7 @@ def test_crud(tmpdir, rest):
 
         if rest:
             results = rest_post(f, 'search', inputs)
-            matches = results['data']['docs'][0]['matches']
+            matches = results['data'][0]['matches']
 
         else:
             results = c.post(
@@ -107,7 +107,7 @@ def test_crud(tmpdir, rest):
         if rest:
             results = rest_post(f, 'search', inputs)
             matches = sorted(
-                results['data']['docs'][0]['matches'], key=lambda match: match['id']
+                results['data'][0]['matches'], key=lambda match: match['id']
             )
         else:
             results = c.post(
