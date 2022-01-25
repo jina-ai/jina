@@ -5,7 +5,6 @@ import platform
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
-import psutil
 
 from jina import __docker_host__, helper
 from jina.helper import colored
