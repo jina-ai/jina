@@ -179,7 +179,7 @@
                     document.getElementById("search-animation").style.display = 'none';
                     document.getElementById("search-button").disabled = false;
                     console.log(data)
-                    app.results = data['data']['docs'][0]['matches']
+                    app.results = data['data'][0]['matches']
                 }).fail(function () {
                     console.error("bad connection!")
                 });

@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Any, Optional, List, Union
+from typing import Callable, Dict, Optional, List, Union
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
@@ -10,7 +10,7 @@ from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 from jina.proto.jina_pb2 import RouteProto, StatusProto, DataRequestProto
 
-from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
+from docarray.document.pydantic_model import PydanticDocumentArray
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -233,9 +233,7 @@ class JinaRequestModel(BaseModel):
     data: Optional[
         Union[
             PydanticDocumentArray,
-            List[PydanticDocument],
             Dict[str, PydanticDocumentArray],
-            Dict[str, List[PydanticDocument]],
         ]
     ] = Field(
         None,
