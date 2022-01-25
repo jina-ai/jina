@@ -74,32 +74,11 @@ def register_ac():
         pass
 
 
-def rescue_docarray():
-    """Upgrading from 2.x to 3.x is broken (https://github.com/jina-ai/jina/issues/4194)
-    This function checks if docarray is broken and if so attempts to rescue it
-    """
-    try:
-        import docarray as docarray
-
-        __docarray_version__ = docarray.__version__
-
-    except AttributeError:
-        # Being here means docarray is not installed correctly, attempt to reinstall it
-        # as recommended by pip https://pip.pypa.io/en/latest/user_guide/#using-pip-from-your-program
-        import subprocess
-
-        subprocess.check_call(
-            [sys.executable, '-m', 'pip', 'uninstall', '--yes', 'docarray']
-        )
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'docarray'])
-
-
 class PostDevelopCommand(develop):
     """Post-installation for development mode."""
 
     def run(self):
         develop.run(self)
-        rescue_docarray()
         register_ac()
 
 
@@ -108,7 +87,6 @@ class PostInstallCommand(install):
 
     def run(self):
         install.run(self)
-        rescue_docarray()
         register_ac()
 
 
