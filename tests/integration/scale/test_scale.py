@@ -103,31 +103,28 @@ def test_scale_success(flow_with_runtime, pod_params):
 
         assert len(ret1) == 20
         process_ids = set()
-        docker_ids = set()
+        uids = set()
         for i_r, r in enumerate(ret1):
             assert len(r.docs) == 10
-            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__docker_id']]
+            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__uid']]
             process_ids = process_ids.union(set(p_ids))
-            docker_ids = docker_ids.union(set(d_ids))
+            uids = uids.union(set(d_ids))
 
         assert (
             len(process_ids) == num_replicas * shards
-            or len(docker_ids) == num_replicas * shards
+            or len(uids) == num_replicas * shards
         )
 
         assert len(ret2) == 20
         process_ids = set()
-        docker_ids = set()
+        uids = set()
         for r in ret2:
             assert len(r.docs) == 10
-            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__docker_id']]
+            p_ids, d_ids = r.docs[:, ['tags__process_id', 'tags__uid']]
             process_ids = process_ids.union(set(p_ids))
-            docker_ids = docker_ids.union(set(d_ids))
+            uids = uids.union(set(d_ids))
 
-        assert (
-            len(process_ids) == scale_to * shards
-            or len(docker_ids) == scale_to * shards
-        )
+        assert len(process_ids) == scale_to * shards or len(uids) == scale_to * shards
 
 
 @pytest.mark.parametrize(
