@@ -165,21 +165,6 @@ with f:
 	📚 Redoc:		http://localhost:12345/redoc
 ```
 
-### Switch between communication protocols
-
-You can switch to other protocol also via the `.protocol` property setter. This setter works even in Flow runtime.
-
-```python
-from jina import Flow, Document
-
-f = Flow(protocol='grpc')
-
-with f:
-    f.post('/', Document())
-    f.protocol = 'http'  # switch to HTTP protocol request
-    f.block()
-```
-
 ## Flow with HTTP protocol
 
 ### Enable cross-origin-resources-sharing (CORS)
@@ -189,7 +174,9 @@ CORS is by default disabled for security. That means you can not access the serv
 ```python
 from jina import Flow
 
-f = Flow(cors=True, protocol='http')
+f = Flow(cors=True, protocol='http', port_expose=12345)
+with f:
+    f.block()
 ```
 
 ### Use swagger UI to send HTTP request
@@ -208,53 +195,43 @@ Now you can send data request via `curl`/Postman:
 $ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
 
 {
-  "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
-  "data": {
-    "docs": [
+   "header":{
+      "requestId":"3a10f4a3711b441982ea17a162dec176",
+      "status":null,
+      "execEndpoint":"/index"
+   },
+   "parameters":null,
+   "routes":[
       {
-        "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
-        "granularity": 0,
-        "adjacency": 0,
-        "parentId": "",
-        "text": "hello world",
-        "chunks": [],
-        "weight": 0.0,
-        "matches": [],
-        "mimeType": "",
-        "tags": {
-          "mimeType": "",
-          "parentId": ""
-        },
-        "location": [],
-        "offset": 0,
-        "embedding": null,
-        "scores": {},
-        "modality": "",
-        "evaluations": {}
+         "executor":"gateway",
+         "startTime":"2022-01-26T10:40:43.988564+00:00",
+         "endTime":"2022-01-26T10:40:43.989243+00:00",
+         "status":null
       }
-    ],
-    "groundtruths": []
-  },
-  "header": {
-    "execEndpoint": "/index",
-    "targetPeapod": "",
-    "noPropagate": false
-  },
-  "parameters": {},
-  "routes": [
-    {
-      "pod": "gateway",
-      "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
-      "startTime": "2021-08-05T07:26:58.636258+00:00",
-      "endTime": "2021-08-05T07:26:58.636910+00:00",
-      "status": null
-    }
-  ],
-  "status": {
-    "code": 0,
-    "description": "",
-    "exception": null
-  }
+   ],
+   "data":[
+      {
+         "id":"69f99b5a7e9411ec91f1e86a64801cb1",
+         "parent_id":null,
+         "granularity":null,
+         "adjacency":null,
+         "blob":null,
+         "tensor":null,
+         "mime_type":"text/plain",
+         "text":"hello world",
+         "weight":null,
+         "uri":null,
+         "tags":null,
+         "offset":null,
+         "location":null,
+         "embedding":null,
+         "modality":null,
+         "evaluations":null,
+         "scores":null,
+         "chunks":null,
+         "matches":null
+      }
+   ]
 }
 ```
 
