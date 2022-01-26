@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Dict, List, Union, Optional
 
 from jina.orchestrate.peas import BasePea
 from jina.orchestrate.peas.helper import _get_worker, is_ready
-from jina.helper import run_async
 from jina.jaml.helper import complete_path
 from jina.importer import ImportExtensions
 from jina.enums import replace_enum_to_str
@@ -59,7 +58,7 @@ class JinaDProcessTarget:
         self.is_cancelled = is_cancelled
         self.pea_id = None
         self._logger = JinaLogger('RemotePea', **vars(args))
-        run_async(self._run)
+        asyncio.run(self._run())
 
     async def _run(self):
         """Manage a remote Pea"""
