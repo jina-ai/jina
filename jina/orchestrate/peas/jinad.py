@@ -265,17 +265,8 @@ class JinaDPea(BasePea):
         :param kwargs: extra keyword arguments to pass to join
         """
         self.logger.debug(f' Joining the JinaD process')
-        # At this point the worker is supposed to have been terminated successfully
-        # There is no good reason for this join to hang
-        self.worker.join(timeout=1.0)
-        exit_code = self.worker.exitcode if hasattr(self.worker, 'exitcode') else 0
-        if exit_code is None:
-            self.logger.warning(
-                'Failed to join the JinaD process. The process will be killed.'
-            )
-            self.worker.kill()
-        else:
-            self.logger.debug('Successfully joined the JinaD process')
+        self.worker.join(*args, **kwargs)
+        self.logger.debug(f' Successfully joined the JinaD process')
 
     def _terminate(self):
         """Terminate the Pea.
