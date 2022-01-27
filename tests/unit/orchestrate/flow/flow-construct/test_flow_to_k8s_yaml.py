@@ -553,3 +553,71 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--pea-role' not in executor2_args
     assert '--runtime-cls' not in executor2_args
     assert '--connection-list' not in executor2_args
+
+
+@pytest.mark.parametrize('k8s_connection_pool', [False, True])
+@pytest.mark.parametrize('has_external', [False, True])
+def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external):
+
+    flow = Flow(name='test-flow', port_expose=8080).add(
+        name='executor0',
+    )
+
+    if has_external:
+        flow = flow.add(
+            name='external_executor', external=True, host='1.2.3.4', port_in=9090
+        )
+    else:
+        flow = flow.add(name='external_executor')
+
+    dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
+
+    namespace = 'test-flow-ns'
+    flow.to_k8s_yaml(
+        output_base_path=dump_path,
+        k8s_namespace=namespace,
+        k8s_connection_pool=k8s_connection_pool,
+    )
+
+    yaml_dicts_per_deployment = {
+        'gateway': [],
+        'executor0': [],
+        'executor0-head-0': [],
+    }
+    assert len(set(os.listdir(dump_path))) == 2 if has_external else 3
+    for pod_name in set(os.listdir(dump_path)):
+        file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
+        for file in file_set:
+            with open(os.path.join(dump_path, pod_name, file)) as f:
+                yml_document_all = list(yaml.safe_load_all(f))
+            yaml_dicts_per_deployment[file[:-4]] = yml_document_all
+
+    gateway_objects = yaml_dicts_per_deployment['gateway']
+    gateway_args = gateway_objects[4]['spec']['template']['spec']['containers'][0][
+        'args'
+    ]
+    assert (
+        gateway_args[gateway_args.index('--graph-description') + 1]
+        == '{"executor0": ["external_executor"], "start-gateway": ["executor0"], "external_executor": ["end-gateway"]}'
+    )
+
+    if k8s_connection_pool is False and has_external:
+        assert '--pods-addresses' in gateway_args
+        assert (
+            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["1.2.3.4:9090"]}'
+        )
+    elif k8s_connection_pool and has_external:
+        assert '--pods-addresses' in gateway_args
+        assert (
+            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            == '{"external_executor": ["1.2.3.4:9090"]}'
+        )
+    elif k8s_connection_pool and not has_external:
+        assert '--pods-addresses' not in gateway_args
+    elif not k8s_connection_pool and not has_external:
+        assert '--pods-addresses' in gateway_args
+        assert (
+            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["external-executor-head-0.test-flow-ns.svc:8081"]}'
+        )

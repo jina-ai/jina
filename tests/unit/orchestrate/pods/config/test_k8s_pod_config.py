@@ -804,3 +804,10 @@ def test_k8s_yaml_regular_pod(
         assert shard_container_runtime_container_args[
             shard_container_runtime_container_args.index('--uses-metas') + 1
         ] == json.dumps(expected_uses_metas)
+
+
+def test_external_pod_is_ignored():
+    args = set_pod_parser().parse_args(['--external'])
+    pod_config = K8sPodConfig(args)
+    yaml_configs = pod_config.to_k8s_yaml()
+    assert len(yaml_configs) == 0

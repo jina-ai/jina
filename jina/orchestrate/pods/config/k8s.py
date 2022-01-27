@@ -229,8 +229,6 @@ class K8sPodConfig:
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
         self.k8s_pod_addresses = k8s_pod_addresses
-        if self.k8s_connection_pool is True:
-            self.k8s_pod_addresses = None
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
@@ -354,7 +352,9 @@ class K8sPodConfig:
             .. # noqa: DAR201
             .. # noqa: DAR101
         """
-        if self.name == 'gateway':
+        if hasattr(self.args, 'external') and self.args.external:
+            return []
+        elif self.name == 'gateway':
             return [
                 (
                     'gateway',

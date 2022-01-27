@@ -445,7 +445,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return graph_dict
 
-    def _get_k8s_pod_addresses(self, k8s_namespace: str) -> Dict[str, List[str]]:
+    def _get_k8s_pod_addresses(
+        self, k8s_namespace: str, k8s_connection_pool: bool
+    ) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.serve.networking import K8sGrpcConnectionPool
         from jina.orchestrate.pods.config.helper import to_compatible_name
@@ -453,14 +455,23 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._pod_nodes.items():
             if node == 'gateway':
                 continue
-            pod_k8s_address = (
-                f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
-            )
-            graph_dict[node] = [
-                f'{pod_k8s_address}:{K8sGrpcConnectionPool.K8S_PORT_IN}'
-            ]
 
-        return graph_dict
+            if hasattr(v.args, 'external') and v.args.external:
+                pod_is_external = True
+                pod_k8s_address = f'{v.host}'
+            else:
+                pod_is_external = False
+                pod_k8s_address = (
+                    f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
+                )
+
+            # we only need hard coded addresses if the k8s connection pool is disabled or if this pod is external
+            if not k8s_connection_pool or pod_is_external:
+                graph_dict[node] = [
+                    f'{pod_k8s_address}:{v.head_port_in if pod_is_external else K8sGrpcConnectionPool.K8S_PORT_IN}'
+                ]
+
+        return graph_dict if graph_dict else None
 
     def _get_docker_compose_pod_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -1679,13 +1690,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
         for node, v in self._pod_nodes.items():
+            if hasattr(v.args, 'external') and v.args.external:
+                continue
             pod_base = os.path.join(output_base_path, node)
             k8s_pod = K8sPodConfig(
                 args=v.args,
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
-                k8s_pod_addresses=self._get_k8s_pod_addresses(k8s_namespace)
-                if (node == 'gateway' and not k8s_connection_pool)
+                k8s_pod_addresses=self._get_k8s_pod_addresses(
+                    k8s_namespace, k8s_connection_pool
+                )
+                if node == 'gateway'
                 else None,
             )
             configs = k8s_pod.to_k8s_yaml()

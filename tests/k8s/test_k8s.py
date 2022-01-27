@@ -6,7 +6,9 @@ import asyncio
 from pytest_kind import cluster
 
 from docarray import DocumentArray
-from jina import Flow, Document
+from jina import Executor, Flow, Document, requests
+from jina.orchestrate.pods import Pod
+from jina.parsers import set_pod_parser
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -587,3 +589,58 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
         assert len(visited) == 2
     else:
         assert len(visited) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_external_pod(logger, docker_images, tmpdir):
+    class DocReplaceExecutor(Executor):
+        @requests
+        def add(self, **kwargs):
+            return DocumentArray(
+                [Document(text='executor was here') for _ in range(100)]
+            )
+
+    args = set_pod_parser().parse_args(['--uses', 'DocReplaceExecutor'])
+    with Pod(args) as external_pod:
+        flow = Flow(name='k8s_flow-with_external_pod', port_expose=9090).add(
+            name='external_executor',
+            external=True,
+            host=f'172.17.0.1',
+            port_in=external_pod.head_port_in,
+        )
+
+        namespace = 'test-flow-with-external-pod'
+        dump_path = os.path.join(str(tmpdir), namespace)
+        flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+        from kubernetes import client
+
+        api_client = client.ApiClient()
+        core_client = client.CoreV1Api(api_client=api_client)
+        app_client = client.AppsV1Api(api_client=api_client)
+        await create_all_flow_pods_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'gateway': 1,
+            },
+        )
+        resp = await run_test(
+            flow=flow,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/',
+        )
+    docs = resp[0].docs
+    assert len(docs) == 100
+    for doc in docs:
+        assert doc.text == 'executor was here'
