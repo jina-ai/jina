@@ -1,0 +1,20 @@
+codecov:
+  # https://docs.codecov.io/docs/comparing-commits
+  allow_coverage_offsets: true
+ignore:
+  - "jina/resources"
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+        target: auto  # auto compares coverage to the previous base commit
+        flags:
+          - jina
+          - daemon
+  comment:
+    layout: "reach, diff, flags, files"
+    behavior: default
+    require_changes: false  # if true: only post the comment if coverage changes
+    branches:               # branch names that can post comment
+      - "master"
