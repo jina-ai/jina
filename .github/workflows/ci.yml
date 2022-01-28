@@ -191,7 +191,7 @@ jobs:
       - name: Test k8s
         run: |
           pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 ./tests/k8s/test_*.py
-        timeout-minutes: 40
+        timeout-minutes: 30
 
   docker-compose-test:
     needs: [commit-lint, lint-flake-8, code-injection]
