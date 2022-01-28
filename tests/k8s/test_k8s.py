@@ -262,6 +262,7 @@ async def test_flow_with_needs(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -379,6 +380,7 @@ async def test_flow_with_configmap(
         assert doc.tags['k1'] == 'v1'
         assert doc.tags['k2'] == 'v2'
         assert doc.tags['env'] == {'k1': 'v1', 'k2': 'v2'}
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -419,6 +421,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['resources']['limits'] == {'nvidia.com/gpu:': 1}
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -484,6 +487,7 @@ async def test_rolling_update_simple(
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['argument'] == 'value2'
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -532,6 +536,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -647,6 +652,7 @@ async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
     assert len(docs) == 100
     for doc in docs:
         assert doc.text == 'executor was here'
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -686,6 +692,7 @@ async def test_flow_with_external_k8s_pod(logger, docker_images, tmpdir):
             'gateway': 1,
         },
     )
+
     resp = await run_test(
         flow=flow,
         namespace=namespace,
@@ -737,13 +744,4 @@ async def _create_external_pod(api_client, app_client, docker_images, tmpdir):
         except:
             pass
 
-    api_response = app_client.read_namespaced_deployment(
-        name='external-pod-head-0', namespace=namespace
-    )
-    while True:
-        if (
-            api_response.status.ready_replicas is not None
-            and api_response.status.ready_replicas == 1
-        ):
-            return
-        await asyncio.sleep(0.1)
+    await asyncio.sleep(1.0)
