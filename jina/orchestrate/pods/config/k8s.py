@@ -226,6 +226,8 @@ class K8sPodConfig:
         k8s_connection_pool: bool = True,
         k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
     ):
+        # External Pods should be ignored in a K8s based Flow
+        assert not (hasattr(args, 'external') and args.external)
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
         self.k8s_pod_addresses = k8s_pod_addresses
@@ -352,9 +354,7 @@ class K8sPodConfig:
             .. # noqa: DAR201
             .. # noqa: DAR101
         """
-        if hasattr(self.args, 'external') and self.args.external:
-            return []
-        elif self.name == 'gateway':
+        if self.name == 'gateway':
             return [
                 (
                     'gateway',

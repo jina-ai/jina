@@ -3,12 +3,15 @@ import pytest
 import os
 import asyncio
 
+import yaml
 from pytest_kind import cluster
 
 from docarray import DocumentArray
 from jina import Executor, Flow, Document, requests
 from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.config.k8s import K8sPodConfig
 from jina.parsers import set_pod_parser
+from jina.serve.networking import K8sGrpcConnectionPool
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -598,7 +601,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
     [['jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_external_pod(logger, docker_images, tmpdir):
+async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
     class DocReplaceExecutor(Executor):
         @requests
         def add(self, **kwargs):
@@ -644,3 +647,103 @@ async def test_flow_with_external_pod(logger, docker_images, tmpdir):
     assert len(docs) == 100
     for doc in docs:
         assert doc.text == 'executor was here'
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_external_k8s_pod(logger, docker_images, tmpdir):
+    namespace = 'test-flow-with-external-k8s-pod'
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+
+    await _create_external_pod(api_client, app_client, docker_images, tmpdir)
+
+    flow = Flow(name='k8s_flow-with_external_pod', port_expose=9090).add(
+        name='external_executor',
+        external=True,
+        host='external-pod-head-0.external-pod-ns.svc',
+        port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
+    )
+
+    dump_path = os.path.join(str(tmpdir), namespace)
+    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+        },
+    )
+    resp = await run_test(
+        flow=flow,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/workspace',
+    )
+    docs = resp[0].docs
+    for doc in docs:
+        assert 'workspace' in doc.tags
+
+
+async def _create_external_pod(api_client, app_client, docker_images, tmpdir):
+    namespace = 'external-pod-ns'
+    args = set_pod_parser().parse_args(
+        ['--uses', f'docker://{docker_images[0]}', '--name', 'external-pod']
+    )
+    external_pod_config = K8sPodConfig(args=args, k8s_namespace=namespace)
+    configs = external_pod_config.to_k8s_yaml()
+    pod_base = os.path.join(tmpdir, 'external-pod')
+    filenames = []
+    for name, k8s_objects in configs:
+        filename = os.path.join(pod_base, f'{name}.yml')
+        os.makedirs(pod_base, exist_ok=True)
+        with open(filename, 'w+') as fp:
+            filenames.append(filename)
+            for i, k8s_object in enumerate(k8s_objects):
+                yaml.dump(k8s_object, fp)
+                if i < len(k8s_objects) - 1:
+                    fp.write('---\n')
+    from kubernetes import utils
+
+    namespace_object = {
+        'apiVersion': 'v1',
+        'kind': 'Namespace',
+        'metadata': {'name': f'{namespace}'},
+    }
+    try:
+        utils.create_from_dict(api_client, namespace_object)
+    except:
+        pass
+
+    for filename in filenames:
+        try:
+            utils.create_from_yaml(
+                api_client,
+                yaml_file=filename,
+                namespace=namespace,
+            )
+        except:
+            pass
+
+    api_response = app_client.read_namespaced_deployment(
+        name='external-pod-head-0', namespace=namespace
+    )
+    while True:
+        if (
+            api_response.status.ready_replicas is not None
+            and api_response.status.ready_replicas == 1
+        ):
+            return
+        await asyncio.sleep(0.1)
