@@ -50,6 +50,7 @@ pytest:                     test
 pytest-timeout:             test
 pytest-mock:                test
 pytest-cov:                 test
+coverage==6.2:              test
 pytest-repeat:              test
 pytest-asyncio:             test
 pytest-reraise:             test
