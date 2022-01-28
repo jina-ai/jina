@@ -456,19 +456,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if node == 'gateway':
                 continue
 
-            if hasattr(v.args, 'external') and v.args.external:
-                pod_is_external = True
+            if v.external:
                 pod_k8s_address = f'{v.host}'
             else:
-                pod_is_external = False
                 pod_k8s_address = (
                     f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
                 )
 
             # we only need hard coded addresses if the k8s connection pool is disabled or if this pod is external
-            if not k8s_connection_pool or pod_is_external:
+            if not k8s_connection_pool or v.external:
                 graph_dict[node] = [
-                    f'{pod_k8s_address}:{v.head_port_in if pod_is_external else K8sGrpcConnectionPool.K8S_PORT_IN}'
+                    f'{pod_k8s_address}:{v.head_port_in if v.external else K8sGrpcConnectionPool.K8S_PORT_IN}'
                 ]
 
         return graph_dict if graph_dict else None
@@ -1690,7 +1688,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
         for node, v in self._pod_nodes.items():
-            if hasattr(v.args, 'external') and v.args.external:
+            if v.external:
                 continue
             pod_base = os.path.join(output_base_path, node)
             k8s_pod = K8sPodConfig(
