@@ -122,6 +122,15 @@ class DataRequestHandler:
         request.data.docs = docs
 
     @staticmethod
+    def replace_parameters(request, parameters):
+        """Replaces the parameters in a message with new Documents.
+
+        :param request: The request object
+        :param parameters: the new parameters to be used
+        """
+        request.parameters = parameters
+
+    @staticmethod
     def merge_routes(requests):
         """Merges all routes found in requests into the first message
 
@@ -163,6 +172,20 @@ class DataRequestHandler:
         len_r = sum(len(r) for r in result)
         if len_r:
             return result
+
+    @staticmethod
+    def get_parameters_dict_from_request(
+        requests: List['DataRequest'],
+    ) -> List['Dict']:
+        """
+        Returns a parameters dict from a list of DataRequest objects.
+        :param requests: List of DataRequest objects
+        :return: parameters matrix: list of parameters (Dict) objects
+        """
+        return {
+            f"request-{i}": getattr(request, "parameters")
+            for i, request in enumerate(requests)
+        }
 
     @staticmethod
     def get_docs_from_request(
@@ -238,4 +261,8 @@ class DataRequestHandler:
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = DataRequestHandler.reduce(docs_matrix)
         DataRequestHandler.replace_docs(requests[0], da)
+
+        params = DataRequestHandler.get_parameters_dict_from_request(requests)
+        DataRequestHandler.replace_parameters(requests[0], params)
+
         return requests[0]
