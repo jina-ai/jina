@@ -80,6 +80,7 @@ class JinaDProcessTarget:
         finally:
             await self._terminate_remote_pea()
             self.is_shutdown.set()
+            self._logger.debug('JinaDProcessTarget terminated')
 
     async def _create_remote_pea(self):
         """Create Workspace, Pea on remote JinaD server"""
