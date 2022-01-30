@@ -141,10 +141,10 @@ def get_fastapi_app(
 
             bd = body.dict()  # type: Dict
             req_generator_input = bd
-            req_generator_input['data_type'] = DataInputType.CONTENT
+            req_generator_input['data_type'] = DataInputType.DICT
             if bd['data'] is not None and 'docs' in bd['data']:
-                req_generator_input['data_type'] = DataInputType.DICT
                 req_generator_input['data'] = req_generator_input['data']['docs']
+
             result = await _get_singleton_result(
                 request_generator(**req_generator_input)
             )
@@ -175,16 +175,14 @@ def get_fastapi_app(
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
             req_generator_input = bd
-            req_generator_input['data_type'] = DataInputType.CONTENT
-            if (
-                req_generator_input['data'] is not None
-                and 'docs' in req_generator_input['data']
-            ):
+            req_generator_input['data_type'] = DataInputType.DICT
+            if bd['data'] is not None and 'docs' in bd['data']:
                 req_generator_input['data'] = req_generator_input['data']['docs']
-                req_generator_input['data_type'] = DataInputType.DICT
 
-            res = await _get_singleton_result(request_generator(**req_generator_input))
-            return res
+            result = await _get_singleton_result(
+                request_generator(**req_generator_input)
+            )
+            return result
 
     if not args.no_crud_endpoints:
         openapi_tags.append(

@@ -116,7 +116,7 @@ async def test_scale_remote_flow_async(
     assert flow_id
 
     ret1 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=True).index(
-        inputs=DocumentArray([Document() for _ in range(200)]),
+        inputs=DocumentArray([Document() for _ in range(1000)]),
         return_results=True,
         request_size=10,
     )
@@ -126,14 +126,14 @@ async def test_scale_remote_flow_async(
         for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)  # identify replicas by the process they run in
 
-    assert len(set(process_ids)) == replicas * shards
+    assert len(process_ids) == replicas * shards
 
     await async_jinad_client.flows.scale(
         id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to
     )
 
     ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=True).index(
-        inputs=DocumentArray([Document() for _ in range(200)]),
+        inputs=DocumentArray([Document() for _ in range(1000)]),
         return_results=True,
         request_size=10,
     )
@@ -143,6 +143,6 @@ async def test_scale_remote_flow_async(
         for p_id in r.docs[:, 'tags__process_id']:
             process_ids.add(p_id)
 
-    assert len(set(process_ids)) == scale_to * shards
+    assert len(process_ids) == scale_to * shards
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)

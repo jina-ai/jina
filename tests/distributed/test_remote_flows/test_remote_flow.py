@@ -114,15 +114,11 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
+    num_items_in_response = 0
     async for item in resp:
+        num_items_in_response += 1
         assert len(item.data.docs) == NUM_DOCS
-    resp = Client(host=HOST, port=MINI_FLOW2_PORT, protocol='http', asyncio=True).post(
-        on='/',
-        inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
-        return_results=True,
-    )
-    async for item in resp:
-        assert len(item.data.docs) == NUM_DOCS
+    assert num_items_in_response > 0
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)
 
@@ -147,13 +143,16 @@ async def test_remote_jinad_flow_get_delete_all(async_jinad_client):
     # get all flows
     remote_flow_args = await async_jinad_client.flows.list()
     assert len(remote_flow_args.keys()) == 2
-    resp = Client(host=HOST, port=MINI_FLOW1_PORT, protocol='http', asyncio=True).post(
+    resp = Client(host=HOST, port=MINI_FLOW2_PORT, protocol='http', asyncio=True).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
+    num_items_in_response = 0
     async for item in resp:
+        num_items_in_response += 1
         assert len(item.data.docs) == NUM_DOCS
+    assert num_items_in_response > 0
     await async_jinad_client.flows.clear()
     remote_flow_args = await async_jinad_client.flows.list()
     assert len(remote_flow_args.keys()) == 0
@@ -183,7 +182,10 @@ async def test_jinad_flow_container_runtime(async_jinad_client, executor_image):
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
     )
+    num_items_in_response = 0
     async for item in resp:
+        num_items_in_response += 1
         assert len(item.data.docs) == NUM_DOCS
+    assert num_items_in_response > 0
     assert await async_jinad_client.flows.delete(flow_id)
     assert await async_jinad_client.workspaces.delete(workspace_id)

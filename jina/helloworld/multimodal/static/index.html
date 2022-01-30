@@ -139,8 +139,7 @@
                 t_id = uuidv4()
                 i_id = uuidv4()
                 return {
-                    data: {
-                        docs: [{
+                    data: [{
                             id: p_id,
                             chunks: [
                                 {
@@ -160,8 +159,7 @@
                                     parentId: p_id
                                 }
                             ]
-                            }]
-                        },
+                            }],
                     exec_endpoint: '/search',
                     parameters: {top_k: 20}
                 }
@@ -181,7 +179,7 @@
                     document.getElementById("search-animation").style.display = 'none';
                     document.getElementById("search-button").disabled = false;
                     console.log(data)
-                    app.results = data['data']['docs'][0]['matches']
+                    app.results = data['data'][0]['matches']
                 }).fail(function () {
                     console.error("bad connection!")
                 });

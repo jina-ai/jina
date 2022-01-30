@@ -32,12 +32,12 @@ def test_flow_expose_endpoints():
 
     with f1:
         r = requests.get(f'http://localhost:{f1.port_expose}/foo')
-        assert r.status_code == 404
+    assert r.status_code == 404
 
     f1.expose_endpoint('/foo')
     with f1:
         r = requests.post(
             f'http://localhost:{f1.port_expose}/foo',
-            json={'data': ['hello', 'world']},
+            json={'data': [{'text': 'hello'}, {'text': 'world'}]},
         )
-        assert r.status_code == 200
+    assert r.status_code == 200

@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Any, Optional, List, Union
+from typing import Callable, Dict, Optional, List, Union
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
@@ -10,7 +10,7 @@ from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 from jina.proto.jina_pb2 import RouteProto, StatusProto, DataRequestProto
 
-from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
+from docarray.document.pydantic_model import PydanticDocumentArray
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -228,14 +228,12 @@ class JinaRequestModel(BaseModel):
     Jina HTTP request model.
     """
 
+    # the dict one is only for compatibility.
+    # So we will accept data: {[Doc1.to_dict, Doc2...]} and data: {docs: [[Doc1.to_dict, Doc2...]}
     data: Optional[
         Union[
             PydanticDocumentArray,
-            List[PydanticDocument],
-            Dict[str, Any],
-            List[Dict[str, Any]],
-            List[str],
-            List[bytes],
+            Dict[str, PydanticDocumentArray],
         ]
     ] = Field(
         None,
@@ -263,17 +261,10 @@ class JinaResponseModel(BaseModel):
     Jina HTTP Response model. Only `request_id` and `data` are preserved.
     """
 
-    class DataContentModel(BaseModel):
-        docs: Optional[PydanticDocumentArray] = None
-
-        class Config:
-            alias_generator = _to_camel_case
-            allow_population_by_field_name = True
-
     header: PROTO_TO_PYDANTIC_MODELS.HeaderProto = None
     parameters: Dict = None
     routes: List[PROTO_TO_PYDANTIC_MODELS.RouteProto] = None
-    data: Optional[DataContentModel] = Field(None, description='Returned Documents')
+    data: Optional[PydanticDocumentArray] = None
 
     class Config:
         alias_generator = _to_camel_case

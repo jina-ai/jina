@@ -77,7 +77,7 @@ def test_gateway_ready(port_expose, route, status_code):
     with PeaFactory.build_pea(p):
         time.sleep(0.5)
         a = requests.get(f'http://localhost:{p.port_expose}{route}')
-        assert a.status_code == status_code
+    assert a.status_code == status_code
 
 
 def test_gateway_index(flow_with_http, test_img_1, test_img_2):
@@ -85,14 +85,14 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
         time.sleep(0.5)
         r = requests.post(
             f'http://localhost:{flow_with_http.port_expose}/index',
-            json={'data': [test_img_1, test_img_2]},
+            json={'data': {'docs': [{'uri': test_img_1}, {'uri': test_img_2}]}},
         )
 
-        assert r.status_code == 200
-        resp = r.json()
-        assert 'data' in resp
-        assert len(resp['data']['docs']) == 2
-        assert resp['data']['docs'][0]['text'] == test_img_1
+    assert r.status_code == 200
+    resp = r.json()
+    assert 'data' in resp
+    assert len(resp['data']) == 2
+    assert resp['data'][0]['uri'] == test_img_1
 
 
 # Timeout is necessary to fail in case of hanging client requests
@@ -142,7 +142,7 @@ class MyExec(Executor):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_all_sync_clients(protocol, mocker):
     f = Flow(protocol=protocol).add(uses=MyExec)
     docs = list(random_docs(1000))

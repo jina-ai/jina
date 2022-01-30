@@ -77,12 +77,12 @@ function jinaMessage(question) {
     $.ajax({
         type: "POST",
         url: $('#jina-server-addr').val() + "/search",
-        data: JSON.stringify({"data": [question], "top_k": 3}),
+        data: JSON.stringify({"data": [{"text": question}], "top_k": 3}),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
     }).success(function (data, textStatus, jqXHR) {
         console.info(data)
-        var top_answer = data['data']['docs'][0]['matches'][0]
+        var top_answer = data['data'][0]['matches'][0]
         $('.message.loading').remove();
         $('<div class="message new">' +
             '<figure class="avatar">' +

@@ -150,7 +150,7 @@ class DataRequest(Request):
         d = MessageToDict(
             self.proto, preserving_proto_field_name=True, use_integers_for_enums=True
         )
-        d['data'] = {'docs': da.to_dict()}
+        d['data'] = da.to_dict()
         return d
 
     @property
