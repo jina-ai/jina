@@ -27,7 +27,7 @@
 
 scipy>=1.6.1:               devel
 fastapi:                    standard, daemon, devel, demo
-uvicorn[standard]>=0.14.0:  standard, daemon, devel, demo
+uvicorn[standard]>=0.14.0,<=0.16.0:  standard, daemon, devel, demo
 docker:                     standard, daemon, devel
 pathspec:                   standard, daemon, devel
 rich:                       standard, daemon, devel
