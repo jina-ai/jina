@@ -24,7 +24,9 @@ from jina.helper import expand_env_var
 subvar_regex = re.compile(
     r'\${{\s*([\w\[\].]+)\s*}}'
 )  #: regex for substituting variables
-internal_var_regex = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
+internal_var_regex = re.compile(
+    r'{{.+}}|\$[a-zA-Z0-9_]*\b'
+)  # detects exp's of the form {{ var }} or $var
 
 
 class JAML:
