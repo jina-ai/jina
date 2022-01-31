@@ -38,6 +38,14 @@ async def create_all_flow_pods_and_wait_ready(
     except:
         pass
 
+    while True:
+        ns_items = core_client.list_namespace().items()
+        if any(item.metadata.name == namespace for item in ns_items):
+            logger.info(f'created Namespace {namespace}')
+            break
+        logger.info(f'waiting for Namespace {namespace}')
+        await asyncio.sleep(1.0)
+
     pod_set = set(os.listdir(flow_dump_path))
     for pod_name in pod_set:
         file_set = set(os.listdir(os.path.join(flow_dump_path, pod_name)))
