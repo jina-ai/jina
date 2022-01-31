@@ -1,8 +1,10 @@
+import os
+
 import pytest
 
 from jina.serve.executors import BaseExecutor
 from jina.jaml import JAML, JAMLCompatible
-from jina import __default_executor__, requests
+from jina import __default_executor__, requests, Flow
 
 
 class MyExecutor(BaseExecutor):
@@ -138,3 +140,34 @@ def test_override_yml_params(field_name, override_field):
     if override_field == 'metas' and 'py_modules' in override_field:
         assert 'py_modules' in updated_raw_yaml['metas']
         assert 'py_modules' not in updated_raw_yaml
+
+
+class EnvironmentVarCtxtManager:
+    def __init__(self, envs):
+        self._env_keys_added = envs
+
+    def __enter__(self):
+        for key, val in self._env_keys_added.items():
+            os.environ[key] = str(val)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        for key in self._env_keys_added.keys():
+            os.unsetenv(key)
+
+
+def test_parsing_brackets_in_envvar():
+    flow_yaml = '''
+    jtype: Flow
+    executors:
+    - name: a
+      env:
+        var1: ${{ VAR1 }}
+    '''
+
+    with EnvironmentVarCtxtManager(
+        envs={
+            'VAR1': '{"1": "2"}',
+        }
+    ):
+        f = Flow.load_config(flow_yaml)
+        assert '{"1": "2"}' in JAML.dump(f)
