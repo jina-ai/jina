@@ -183,7 +183,7 @@ class DataRequestHandler:
         :return: parameters matrix: list of parameters (Dict) objects
         """
         return {
-            f"request-{i}": getattr(request, "parameters")
+            f'request-{i}': getattr(request, 'parameters')
             for i, request in enumerate(requests)
         }
 
