@@ -34,14 +34,17 @@ def test_override_requests_uses_after():
             for doc in docs:
                 doc.text = 'foo called'
 
-    class AfterExecutor(Executor):
+    class OtherExecutor(Executor):
         @requests(on='/bar')
         def bar(self, docs, **kwargs):
             for doc in docs:
                 doc.text = 'bar called'
 
     with Flow(port_expose=exposed_port).add(
-        uses=FooExecutor, uses_requests={'/foo': 'foo'}, uses_after=AfterExecutor
+        uses=FooExecutor,
+        uses_requests={'/foo': 'foo'},
+        uses_after=OtherExecutor,
+        uses_before=OtherExecutor,
     ) as f:
         c = Client(port=exposed_port)
         resp1 = c.post(
