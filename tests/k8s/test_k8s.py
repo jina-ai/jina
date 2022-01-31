@@ -48,18 +48,25 @@ async def create_all_flow_pods_and_wait_ready(
                     yaml_file=os.path.join(flow_dump_path, pod_name, file),
                     namespace=namespace,
                 )
-            except Exception:
+            except Exception as e:
                 # some objects are not successfully created since they exist from previous files
+                logger.info(
+                    f'Did not create ressource from {file} for pod {pod_name} due to {e} '
+                )
                 pass
 
     # wait for all the pods to be up
+    expected_deployments = sum(deployment_replicas_expected.values())
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
-        if namespaced_pods.items is not None and len(namespaced_pods.items) == sum(
-            deployment_replicas_expected.values()
+        if (
+            namespaced_pods.items is not None
+            and len(namespaced_pods.items) == expected_deployments
         ):
             break
-        logger.info('Waiting for all Pods to be created')
+        logger.info(
+            f'Waiting for all {expected_deployments} Deployments to be created, only got {len(namespaced_pods.items) if namespaced_pods.items is not None else None}'
+        )
         await asyncio.sleep(1.0)
 
     # wait for all the pods to be up
