@@ -23,6 +23,7 @@ async def create_all_flow_pods_and_wait_ready(
     app_client,
     core_client,
     deployment_replicas_expected,
+    logger,
 ):
     from kubernetes import utils
 
@@ -32,6 +33,7 @@ async def create_all_flow_pods_and_wait_ready(
         'metadata': {'name': f'{namespace}'},
     }
     try:
+        logger.info(f'create Namespace {namespace}')
         utils.create_from_dict(api_client, namespace_object)
     except:
         pass
@@ -57,6 +59,7 @@ async def create_all_flow_pods_and_wait_ready(
             deployment_replicas_expected.values()
         ):
             break
+        logger.info('Waiting for all Pods to be created')
         await asyncio.sleep(1.0)
 
     # wait for all the pods to be up
@@ -78,6 +81,7 @@ async def create_all_flow_pods_and_wait_ready(
 
         for deployment_name in deployments_ready:
             deployment_names.remove(deployment_name)
+        logger.info(f'Waiting for {deployment_names} to be ready')
         await asyncio.sleep(1.0)
 
 
@@ -245,6 +249,7 @@ async def test_flow_with_needs(
             'merger-head-0': 1,
             'merger': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_with_needs,
@@ -275,7 +280,7 @@ async def test_flow_with_needs(
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_flow_with_sharding(
-    k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir
+    k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir, logger
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
     namespace = f'test-flow-with-sharding-{polling}-{k8s_connection_pool}'.lower()
@@ -300,6 +305,7 @@ async def test_flow_with_sharding(
             'test-executor-0': 2,
             'test-executor-1': 2,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_with_sharding,
@@ -341,7 +347,7 @@ async def test_flow_with_sharding(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
 async def test_flow_with_configmap(
-    k8s_flow_configmap, k8s_connection_pool, docker_images, tmpdir
+    k8s_flow_configmap, k8s_connection_pool, docker_images, tmpdir, logger
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-configmap')
     namespace = f'test-flow-with-configmap-{k8s_connection_pool}'.lower()
@@ -365,6 +371,7 @@ async def test_flow_with_configmap(
             'test-executor-head-0': 1,
             'test-executor': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_configmap,
@@ -389,7 +396,7 @@ async def test_flow_with_configmap(
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
+async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-gpu')
     namespace = f'test-flow-with-gpu'
     k8s_flow_gpu.to_k8s_yaml(dump_path, k8s_namespace=namespace)
@@ -410,6 +417,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
             'test-executor-head-0': 1,
             'test-executor': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_gpu,
@@ -430,7 +438,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
     'docker_images', [['reload-executor', 'jinaai/jina']], indirect=True
 )
 async def test_rolling_update_simple(
-    k8s_flow_with_reload_executor, docker_images, tmpdir
+    k8s_flow_with_reload_executor, docker_images, tmpdir, logger
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-reload')
     namespace = f'test-flow-with-reload-executor'
@@ -452,6 +460,7 @@ async def test_rolling_update_simple(
             'test-executor-head-0': 1,
             'test-executor': 2,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_with_reload_executor,
@@ -525,6 +534,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
             'test-executor-head-0': 1,
             'test-executor': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=flow,
@@ -576,6 +586,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
             'test-executor-head-0': 1,
             'test-executor': 2,
         },
+        logger=logger,
     )
 
     resp = await run_test(
@@ -641,6 +652,7 @@ async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
             deployment_replicas_expected={
                 'gateway': 1,
             },
+            logger=logger,
         )
         resp = await run_test(
             flow=flow,
@@ -691,6 +703,7 @@ async def test_flow_with_external_k8s_pod(logger, docker_images, tmpdir):
         deployment_replicas_expected={
             'gateway': 1,
         },
+        logger=logger,
     )
 
     resp = await run_test(

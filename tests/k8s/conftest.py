@@ -40,14 +40,14 @@ def test_dir() -> str:
     return cur_dir
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def logger():
     return JinaLogger('kubernetes-testing')
 
 
 @pytest.fixture(scope='session')
-def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
-    return KindClusterWrapper(kind_cluster, logger)
+def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
+    return KindClusterWrapper(kind_cluster, JinaLogger('kubernetes-cluster-logger'))
 
 
 @pytest.fixture
