@@ -40,7 +40,7 @@ def test_dir() -> str:
     return cur_dir
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def logger():
     return JinaLogger('kubernetes-testing')
 
