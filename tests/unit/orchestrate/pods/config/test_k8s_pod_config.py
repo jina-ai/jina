@@ -388,11 +388,9 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
     assert args[args.index('--pea-role') + 1] == 'GATEWAY'
     if not k8s_connection_pool_call:
         assert args[-1] == '--k8s-disable-connection-pool'
-    if pod_addresses is not None and k8s_connection_pool_call is False:
+    if pod_addresses is not None:
         assert '--pods-addresses' in args
         assert args[args.index('--pods-addresses') + 1] == json.dumps(pod_addresses)
-    else:
-        assert '--pods-addresses' not in args
 
 
 def assert_port_config(port_dict: Dict, name: str, port: int):

@@ -3,10 +3,15 @@ import pytest
 import os
 import asyncio
 
+import yaml
 from pytest_kind import cluster
 
 from docarray import DocumentArray
-from jina import Flow, Document
+from jina import Executor, Flow, Document, requests
+from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.config.k8s import K8sPodConfig
+from jina.parsers import set_pod_parser
+from jina.serve.networking import K8sGrpcConnectionPool
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -18,18 +23,29 @@ async def create_all_flow_pods_and_wait_ready(
     app_client,
     core_client,
     deployment_replicas_expected,
+    logger,
 ):
     from kubernetes import utils
 
+    namespace = namespace.lower()
     namespace_object = {
         'apiVersion': 'v1',
         'kind': 'Namespace',
         'metadata': {'name': f'{namespace}'},
     }
     try:
+        logger.info(f'create Namespace {namespace}')
         utils.create_from_dict(api_client, namespace_object)
     except:
         pass
+
+    while True:
+        ns_items = core_client.list_namespace().items
+        if any(item.metadata.name == namespace for item in ns_items):
+            logger.info(f'created Namespace {namespace}')
+            break
+        logger.info(f'waiting for Namespace {namespace}')
+        await asyncio.sleep(1.0)
 
     pod_set = set(os.listdir(flow_dump_path))
     for pod_name in pod_set:
@@ -41,17 +57,25 @@ async def create_all_flow_pods_and_wait_ready(
                     yaml_file=os.path.join(flow_dump_path, pod_name, file),
                     namespace=namespace,
                 )
-            except Exception:
+            except Exception as e:
                 # some objects are not successfully created since they exist from previous files
+                logger.info(
+                    f'Did not create ressource from {file} for pod {pod_name} due to {e} '
+                )
                 pass
 
     # wait for all the pods to be up
+    expected_deployments = sum(deployment_replicas_expected.values())
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
-        if namespaced_pods.items is not None and len(namespaced_pods.items) == sum(
-            deployment_replicas_expected.values()
+        if (
+            namespaced_pods.items is not None
+            and len(namespaced_pods.items) == expected_deployments
         ):
             break
+        logger.info(
+            f'Waiting for all {expected_deployments} Deployments to be created, only got {len(namespaced_pods.items) if namespaced_pods.items is not None else None}'
+        )
         await asyncio.sleep(1.0)
 
     # wait for all the pods to be up
@@ -73,6 +97,7 @@ async def create_all_flow_pods_and_wait_ready(
 
         for deployment_name in deployments_ready:
             deployment_names.remove(deployment_name)
+        logger.info(f'Waiting for {deployment_names} to be ready')
         await asyncio.sleep(1.0)
 
 
@@ -240,6 +265,7 @@ async def test_flow_with_needs(
             'merger-head-0': 1,
             'merger': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_with_needs,
@@ -257,6 +283,7 @@ async def test_flow_with_needs(
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -269,7 +296,7 @@ async def test_flow_with_needs(
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_flow_with_sharding(
-    k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir
+    k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir, logger
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
     namespace = f'test-flow-with-sharding-{polling}-{k8s_connection_pool}'.lower()
@@ -294,6 +321,7 @@ async def test_flow_with_sharding(
             'test-executor-0': 2,
             'test-executor-1': 2,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_with_sharding,
@@ -335,7 +363,7 @@ async def test_flow_with_sharding(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
 async def test_flow_with_configmap(
-    k8s_flow_configmap, k8s_connection_pool, docker_images, tmpdir
+    k8s_flow_configmap, k8s_connection_pool, docker_images, tmpdir, logger
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-configmap')
     namespace = f'test-flow-with-configmap-{k8s_connection_pool}'.lower()
@@ -359,6 +387,7 @@ async def test_flow_with_configmap(
             'test-executor-head-0': 1,
             'test-executor': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_configmap,
@@ -374,6 +403,7 @@ async def test_flow_with_configmap(
         assert doc.tags['k1'] == 'v1'
         assert doc.tags['k2'] == 'v2'
         assert doc.tags['env'] == {'k1': 'v1', 'k2': 'v2'}
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -382,7 +412,7 @@ async def test_flow_with_configmap(
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
+async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-gpu')
     namespace = f'test-flow-with-gpu'
     k8s_flow_gpu.to_k8s_yaml(dump_path, k8s_namespace=namespace)
@@ -403,6 +433,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
             'test-executor-head-0': 1,
             'test-executor': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_gpu,
@@ -414,6 +445,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['resources']['limits'] == {'nvidia.com/gpu:': 1}
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -422,7 +454,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir):
     'docker_images', [['reload-executor', 'jinaai/jina']], indirect=True
 )
 async def test_rolling_update_simple(
-    k8s_flow_with_reload_executor, docker_images, tmpdir
+    k8s_flow_with_reload_executor, docker_images, tmpdir, logger
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-reload')
     namespace = f'test-flow-with-reload-executor'
@@ -444,6 +476,7 @@ async def test_rolling_update_simple(
             'test-executor-head-0': 1,
             'test-executor': 2,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=k8s_flow_with_reload_executor,
@@ -479,6 +512,7 @@ async def test_rolling_update_simple(
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['argument'] == 'value2'
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -497,7 +531,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     )
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-workspace')
-    namespace = f'test-flow-with-workspace'
+    namespace = f'test-flow-with-workspace-{k8s_connection_pool}'.lower()
     flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
@@ -516,6 +550,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
             'test-executor-head-0': 1,
             'test-executor': 1,
         },
+        logger=logger,
     )
     resp = await run_test(
         flow=flow,
@@ -527,6 +562,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -545,7 +581,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
     )
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-connection-pool')
-    namespace = 'test-flow-connection-pool'
+    namespace = f'test-flow-connection-pool-{k8s_connection_pool}'.lower()
     flow.to_k8s_yaml(
         dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
     )
@@ -566,6 +602,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
             'test-executor-head-0': 1,
             'test-executor': 2,
         },
+        logger=logger,
     )
 
     resp = await run_test(
@@ -587,3 +624,153 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
         assert len(visited) == 2
     else:
         assert len(visited) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
+    class DocReplaceExecutor(Executor):
+        @requests
+        def add(self, **kwargs):
+            return DocumentArray(
+                [Document(text='executor was here') for _ in range(100)]
+            )
+
+    args = set_pod_parser().parse_args(['--uses', 'DocReplaceExecutor'])
+    with Pod(args) as external_pod:
+        flow = Flow(name='k8s_flow-with_external_pod', port_expose=9090).add(
+            name='external_executor',
+            external=True,
+            host=f'172.17.0.1',
+            port_in=external_pod.head_port_in,
+        )
+
+        namespace = 'test-flow-with-external-pod'
+        dump_path = os.path.join(str(tmpdir), namespace)
+        flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+        from kubernetes import client
+
+        api_client = client.ApiClient()
+        core_client = client.CoreV1Api(api_client=api_client)
+        app_client = client.AppsV1Api(api_client=api_client)
+        await create_all_flow_pods_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'gateway': 1,
+            },
+            logger=logger,
+        )
+        resp = await run_test(
+            flow=flow,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/',
+        )
+    docs = resp[0].docs
+    assert len(docs) == 100
+    for doc in docs:
+        assert doc.text == 'executor was here'
+    core_client.delete_namespace(namespace)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_external_k8s_pod(logger, docker_images, tmpdir):
+    namespace = 'test-flow-with-external-k8s-pod'
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+
+    await _create_external_pod(api_client, app_client, docker_images, tmpdir)
+
+    flow = Flow(name='k8s_flow-with_external_pod', port_expose=9090).add(
+        name='external_executor',
+        external=True,
+        host='external-pod-head-0.external-pod-ns.svc',
+        port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
+    )
+
+    dump_path = os.path.join(str(tmpdir), namespace)
+    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+    await create_all_flow_pods_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+        },
+        logger=logger,
+    )
+
+    resp = await run_test(
+        flow=flow,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/workspace',
+    )
+    docs = resp[0].docs
+    for doc in docs:
+        assert 'workspace' in doc.tags
+
+
+async def _create_external_pod(api_client, app_client, docker_images, tmpdir):
+    namespace = 'external-pod-ns'
+    args = set_pod_parser().parse_args(
+        ['--uses', f'docker://{docker_images[0]}', '--name', 'external-pod']
+    )
+    external_pod_config = K8sPodConfig(args=args, k8s_namespace=namespace)
+    configs = external_pod_config.to_k8s_yaml()
+    pod_base = os.path.join(tmpdir, 'external-pod')
+    filenames = []
+    for name, k8s_objects in configs:
+        filename = os.path.join(pod_base, f'{name}.yml')
+        os.makedirs(pod_base, exist_ok=True)
+        with open(filename, 'w+') as fp:
+            filenames.append(filename)
+            for i, k8s_object in enumerate(k8s_objects):
+                yaml.dump(k8s_object, fp)
+                if i < len(k8s_objects) - 1:
+                    fp.write('---\n')
+    from kubernetes import utils
+
+    namespace_object = {
+        'apiVersion': 'v1',
+        'kind': 'Namespace',
+        'metadata': {'name': f'{namespace}'},
+    }
+    try:
+        utils.create_from_dict(api_client, namespace_object)
+    except:
+        pass
+
+    for filename in filenames:
+        try:
+            utils.create_from_yaml(
+                api_client,
+                yaml_file=filename,
+                namespace=namespace,
+            )
+        except:
+            pass
+
+    await asyncio.sleep(1.0)

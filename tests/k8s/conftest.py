@@ -19,6 +19,7 @@ class KindClusterWrapper:
         )
         self._log = logger
         self._set_kube_config()
+        self._loaded_images = set()
 
     def _set_kube_config(self):
         self._log.debug(f'Setting KUBECONFIG to {self._kube_config_path}')
@@ -26,9 +27,12 @@ class KindClusterWrapper:
 
     def load_docker_images(self, images, image_tag_map):
         for image in images:
-            if image != 'alpine' and image != 'jinaai/jina':
-                build_docker_image(image, image_tag_map)
-            self._cluster.load_docker_image(image + ':' + image_tag_map[image])
+            full_image_name = image + ':' + image_tag_map[image]
+            if full_image_name not in self._loaded_images:
+                if image != 'alpine' and image != 'jinaai/jina':
+                    build_docker_image(image, image_tag_map)
+                self._cluster.load_docker_image(full_image_name)
+                self._loaded_images.add(full_image_name)
 
 
 @pytest.fixture()
@@ -41,9 +45,9 @@ def logger():
     return JinaLogger('kubernetes-testing')
 
 
-@pytest.fixture
-def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
-    return KindClusterWrapper(kind_cluster, logger)
+@pytest.fixture(scope='session')
+def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
+    return KindClusterWrapper(kind_cluster, JinaLogger('kubernetes-cluster-logger'))
 
 
 @pytest.fixture

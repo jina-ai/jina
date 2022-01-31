@@ -226,11 +226,11 @@ class K8sPodConfig:
         k8s_connection_pool: bool = True,
         k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
     ):
+        # External Pods should be ignored in a K8s based Flow
+        assert not (hasattr(args, 'external') and args.external)
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
         self.k8s_pod_addresses = k8s_pod_addresses
-        if self.k8s_connection_pool is True:
-            self.k8s_pod_addresses = None
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
