@@ -39,7 +39,7 @@ async def create_all_flow_pods_and_wait_ready(
         pass
 
     while True:
-        ns_items = core_client.list_namespace().items()
+        ns_items = core_client.list_namespace().items
         if any(item.metadata.name == namespace for item in ns_items):
             logger.info(f'created Namespace {namespace}')
             break
