@@ -55,6 +55,10 @@ def test_override_requests_uses_after():
             inputs=DocumentArray([Document(text='')]),
             return_results=True,
         )
+        resp3 = c.post(
+            on='/bar', inputs=DocumentArray([Document(text='')]), return_results=True
+        )
 
     assert resp1[0].docs[0].text == 'foo called'
     assert resp2[0].docs[0].text == ''
+    assert resp3[0].docs[0].text == 'bar called'
