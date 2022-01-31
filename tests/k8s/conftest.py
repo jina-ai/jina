@@ -45,7 +45,7 @@ def logger():
     return JinaLogger('kubernetes-testing')
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def k8s_cluster(kind_cluster: KindCluster, logger: JinaLogger) -> KindClusterWrapper:
     return KindClusterWrapper(kind_cluster, logger)
 
