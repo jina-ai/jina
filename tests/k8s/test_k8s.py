@@ -522,7 +522,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     )
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-workspace')
-    namespace = f'test-flow-with-workspace'
+    namespace = f'test-flow-with-workspace-{k8s_connection_pool}'
     flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
@@ -572,7 +572,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
     )
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-connection-pool')
-    namespace = 'test-flow-connection-pool'
+    namespace = f'test-flow-connection-pool-{k8s_connection_pool}'
     flow.to_k8s_yaml(
         dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
     )
