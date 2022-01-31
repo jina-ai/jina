@@ -27,6 +27,7 @@ async def create_all_flow_pods_and_wait_ready(
 ):
     from kubernetes import utils
 
+    namespace = namespace.lower()
     namespace_object = {
         'apiVersion': 'v1',
         'kind': 'Namespace',
