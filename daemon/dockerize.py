@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
 
-from jina import __docker_host__
+from jina import __docker_host__, helper
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
 
@@ -470,3 +470,18 @@ class Dockerizer:
     def _validate(cls):
         # TODO
         pass
+
+    @classmethod
+    def exposed_ports(cls):
+        """
+        Checks the currently running docker containers for ports exposed to the host
+        :return: A set of ports exposed by all currently running docker containers
+        """
+        ports = set()
+
+        for c in cls.client.containers.list():
+            for port_list in c.ports.values():
+                if port_list:
+                    for port_mapping in port_list:
+                        ports.add(int(port_mapping['HostPort']))
+        return ports

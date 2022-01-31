@@ -20,6 +20,7 @@ from jina.helper import (
     find_request_binding,
     dunder_get,
     get_ci_vendor,
+    reset_ports,
 )
 from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
@@ -257,18 +258,20 @@ def config():
 
 
 def test_random_port(config):
+    reset_ports()
     assert os.environ['JINA_RANDOM_PORT_MIN']
     port = random_port()
     assert 49153 <= port <= 65535
 
 
 def test_random_port_unique(config):
+    reset_ports()
     assert os.environ['JINA_RANDOM_PORT_MIN']
     generated_ports = set()
     for i in range(1000):
         port = random_port()
         assert port not in generated_ports
-        assert 49153 <= port <= 65535
+        assert int(os.environ['JINA_RANDOM_PORT_MIN']) <= port <= 65535
         generated_ports.add(port)
 
 

@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import pickle
 import shutil
@@ -21,6 +22,7 @@ class BaseStore(MutableMapping):
 
     _kind = ''
     _status_model = StoreStatus
+    _lock = multiprocessing.Lock()
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))

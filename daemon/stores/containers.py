@@ -34,6 +34,7 @@ class ContainerStore(BaseStore, ABC):
 
     _kind = 'container'
     _status_model = ContainerStoreStatus
+    _exposed_ports = set()
 
     @abstractmethod
     async def add_in_partial(self, uri, envs, *args, **kwargs):
@@ -146,10 +147,13 @@ class ContainerStore(BaseStore, ABC):
                     f'{workspace_id} is not ACTIVE yet. Please retry once it becomes ACTIVE'
                 )
 
-            partiald_port = random_port()
             dockerports = (
                 ports.docker_ports if isinstance(ports, PortMappings) else ports
             )
+            with self._lock:
+                for port in dockerports.values():
+                    self._exposed_ports.add(port)
+                partiald_port = self._find_partiald_port()
             dockerports.update({f'{partiald_port}/tcp': partiald_port})
             uri = self._uri(partiald_port)
             entrypoint = self._entrypoint(partiald_port, workspace_id)
@@ -222,6 +226,21 @@ class ContainerStore(BaseStore, ABC):
             )
             workspace_store[workspace_id].metadata.managed_objects.add(id)
             return id
+
+    def _find_partiald_port(self):
+        exposed_docker_ports = Dockerizer.exposed_ports()
+        partiald_port = random_port()
+        port_assignment_runs = 0
+        while (
+            partiald_port in exposed_docker_ports
+            or partiald_port in self._exposed_ports
+        ):
+            if port_assignment_runs >= 2 ** 16:
+                raise OSError('No available ports to new container')
+            partiald_port = random_port()
+            port_assignment_runs += 1
+        self._exposed_ports.add(partiald_port)
+        return partiald_port
 
     @BaseStore.dump
     async def delete(self, id: DaemonID, **kwargs) -> None:
