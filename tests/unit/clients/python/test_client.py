@@ -70,7 +70,7 @@ def test_gateway_ready(port_expose, route, status_code):
             'http',
             '--graph-description',
             '{}',
-            '--pods-addresses',
+            '--deployments-addresses',
             '{}',
         ]
     )

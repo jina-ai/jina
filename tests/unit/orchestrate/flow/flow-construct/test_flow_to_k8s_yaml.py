@@ -107,9 +107,9 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         == '{"executor0": ["executor1"], "start-gateway": ["executor0"], "executor1": ["executor2"], "executor2": ["end-gateway"]}'
     )
     if k8s_connection_pool is False:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "executor1": ["executor1-head-0.test-flow-ns.svc:8081"], "executor2": ["executor2-head-0.test-flow-ns.svc:8081"]}'
         )
     assert '--pea-role' in gateway_args

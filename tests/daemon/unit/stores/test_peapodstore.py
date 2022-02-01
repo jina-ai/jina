@@ -3,8 +3,8 @@ from typing import Type
 
 import pytest
 
-from daemon.models import DaemonID, PeaModel, PodModel
-from daemon.stores import PeaStore, PodStore
+from daemon.models import DaemonID, PeaModel, DeploymentModel
+from daemon.stores import PeaStore, DeploymentStore
 from daemon.stores.partial import PartialStore
 from jina import Executor
 
@@ -82,9 +82,9 @@ async def test_peapod_store_add_bad(model, store, id, workspace):
 
 @pytest.mark.asyncio
 async def test_podstore_rolling_update(workspace):
-    id = DaemonID('jpod')
-    s = PodStore()
-    await s.add(id=id, params=PodModel(), workspace_id=workspace, ports={})
+    id = DaemonID('jdeployment')
+    s = DeploymentStore()
+    await s.add(id=id, params=DeploymentModel(), workspace_id=workspace, ports={})
     assert len(s) == 1
     assert id in s
     await s.rolling_update(id=id, uses_with={'a': 'b'})
@@ -94,10 +94,13 @@ async def test_podstore_rolling_update(workspace):
 
 @pytest.mark.asyncio
 async def test_podstore_scale(workspace):
-    id = DaemonID('jpod')
-    s = PodStore()
+    id = DaemonID('jdeployment')
+    s = DeploymentStore()
     await s.add(
-        id=id, params=PodModel(replicas=2, shards=2), workspace_id=workspace, ports={}
+        id=id,
+        params=DeploymentModel(replicas=2, shards=2),
+        workspace_id=workspace,
+        ports={},
     )
     assert len(s) == 1
     assert id in s

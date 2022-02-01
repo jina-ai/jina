@@ -68,9 +68,9 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         gateway_args[gateway_args.index('--graph-description') + 1]
         == '{"executor0": ["executor1"], "start-gateway": ["executor0"], "executor1": ["executor2"], "executor2": ["end-gateway"]}'
     )
-    assert '--pods-addresses' in gateway_args
+    assert '--deployments-addresses' in gateway_args
     assert (
-        gateway_args[gateway_args.index('--pods-addresses') + 1]
+        gateway_args[gateway_args.index('--deployments-addresses') + 1]
         == '{"executor0": ["executor0-head-0:8081"], "executor1": ["executor1-head-0:8081"], "executor2": ["executor2-head-0:8081"]}'
     )
     assert '--pea-role' in gateway_args

@@ -24,9 +24,9 @@ class PeaFactory:
     def build_pea(args: 'Namespace') -> Type['BasePea']:
         """Build an implementation of a `BasePea` interface
 
-        :param args: pod arguments parsed from the CLI.
+        :param args: deployment arguments parsed from the CLI.
 
-        :return: the created BasePod
+        :return: the created BaseDeployment
         """
         # copy to update but forward original
         cargs = deepcopy(args)

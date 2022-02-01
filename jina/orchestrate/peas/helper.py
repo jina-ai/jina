@@ -93,7 +93,7 @@ class ConditionalEvent:
 def update_runtime_cls(args, copy=False) -> 'Namespace':
     """Get runtime_cls as a string from args
 
-    :param args: pea/pod namespace args
+    :param args: pea/deployment namespace args
     :param copy: True if args shouldn't be modified in-place
     :return: runtime class as a string
     """

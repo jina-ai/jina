@@ -159,7 +159,7 @@ def create_runtime(
                 f'{port_in}',
                 '--graph-description',
                 f'{graph_description}',
-                '--pods-addresses',
+                '--deployments-addresses',
                 '{}',
             ]
         )

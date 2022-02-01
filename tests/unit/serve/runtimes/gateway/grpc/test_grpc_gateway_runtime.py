@@ -30,7 +30,7 @@ def test_grpc_gateway_runtime_init_close():
                     str(port_expose),
                     '--graph-description',
                     '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{"pod0": ["0.0.0.0:'
                     + f'{pod0_port}'
                     + '", "0.0.0.0:'
@@ -154,7 +154,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
                     f'{port_in}',
                     '--graph-description',
                     f'{json.dumps(linear_graph_dict)}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{}',
                 ]
             )
@@ -201,7 +201,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                     f'{port_in}',
                     '--graph-description',
                     f'{json.dumps(bifurcation_graph_dict)}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{}',
                 ]
             )
@@ -249,7 +249,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                     f'{port_in}',
                     '--graph-description',
                     f'{json.dumps(merge_graph_dict_directly_merge_in_gateway)}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{}',
                 ]
             )
@@ -301,7 +301,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
                     f'{port_in}',
                     '--graph-description',
                     f'{json.dumps(merge_graph_dict_directly_merge_in_last_pod)}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{}',
                 ]
             )
@@ -353,7 +353,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                     f'{port_in}',
                     '--graph-description',
                     f'{json.dumps(complete_graph_dict)}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{}',
                 ]
             )
@@ -403,7 +403,7 @@ def test_grpc_gateway_runtime_handle_empty_graph():
                     f'{port_in}',
                     '--graph-description',
                     f'{json.dumps({})}',
-                    '--pods-addresses',
+                    '--deployments-addresses',
                     '{}',
                 ]
             )

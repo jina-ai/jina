@@ -4,17 +4,17 @@ if False:
     from argparse import Namespace
 
 
-def pod(args: 'Namespace'):
+def deployment(args: 'Namespace'):
     """
-    Start a Pod
+    Start a Deployment
 
     :param args: arguments coming from the CLI.
     """
-    from jina.orchestrate.pods import Pod
+    from jina.orchestrate.deployments import Deployment
 
     try:
-        with Pod(args) as p:
-            p.join()
+        with Deployment(args) as d:
+            d.join()
     except KeyboardInterrupt:
         pass
 
@@ -92,7 +92,7 @@ def worker_runtime(args: 'Namespace'):
 
 def gateway(args: 'Namespace'):
     """
-    Start a Gateway Pod
+    Start a Gateway Deployment
 
     :param args: arguments coming from the CLI.
     """

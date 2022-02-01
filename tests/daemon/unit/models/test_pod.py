@@ -1,9 +1,9 @@
-from daemon.models import PodModel
+from daemon.models import DeploymentModel
 
 
 def test_single_no_exceptions():
-    PodModel()
+    DeploymentModel()
     # this gets executed while verifying inputs
-    PodModel().dict()
+    DeploymentModel().dict()
     # this gets executed while creating docs
-    PodModel().schema()
+    DeploymentModel().schema()

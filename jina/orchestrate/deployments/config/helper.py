@@ -24,9 +24,9 @@ def get_image_name(uses: str) -> str:
 
 
 def to_compatible_name(name: str) -> str:
-    """Converts the pod name to a valid name for K8s and docker compose.
+    """Converts the deployment name to a valid name for K8s and docker compose.
 
-    :param name: name of the pod
+    :param name: name of the deployment
     :return: compatible name
     """
     return name.replace('/', '-').replace('_', '-').lower()

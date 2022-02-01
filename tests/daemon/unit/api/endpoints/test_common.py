@@ -22,21 +22,21 @@ def workspace():
     _clean_up_workspace(image_id, network_id, workspace_id, workspace_store)
 
 
-@pytest.mark.parametrize('api', ['/peas', '/pods', '/flows'])
+@pytest.mark.parametrize('api', ['/peas', '/deployments', '/flows'])
 def test_args(api, fastapi_client):
     response = fastapi_client.get(f'{api}/arguments')
     assert response.status_code == 200
     assert response.json()
 
 
-@pytest.mark.parametrize('api', ['/peas', '/pods', '/flows', '/workspaces'])
+@pytest.mark.parametrize('api', ['/peas', '/deployments', '/flows', '/workspaces'])
 def test_status(api, fastapi_client):
     response = fastapi_client.get(f'{api}')
     assert response.status_code == 200
     assert response.json()
 
 
-@pytest.mark.parametrize('api', ['/peas', '/pods', '/flows'])
+@pytest.mark.parametrize('api', ['/peas', '/deployments', '/flows'])
 def test_delete(api, fastapi_client):
     response = fastapi_client.delete(f'{api}')
     assert response.status_code == 200
@@ -63,9 +63,9 @@ def _validate_response(response, payload, id, workspace_id):
             },
         ),
         (
-            '/pods',
+            '/deployments',
             {
-                'json': {'name': 'my_pod'},
+                'json': {'name': 'my_deployment'},
             },
         ),
     ],
@@ -107,9 +107,9 @@ def test_add_same_del_all(api, payload, fastapi_client, workspace):
             },
         ),
         (
-            '/pods',
+            '/deployments',
             {
-                'json': {'name': 'my_pod'},
+                'json': {'name': 'my_deployment'},
             },
         ),
         (
@@ -154,7 +154,7 @@ def test_add_success(api, payload, fastapi_client, workspace):
     'api, payload',
     [
         ('/peas', {'json': {'name': 'my_pea', 'uses': 'BAD'}}),
-        ('/pods', {'json': {'name': 'my_pod', 'uses': 'BAD'}}),
+        ('/deployments', {'json': {'name': 'my_deployment', 'uses': 'BAD'}}),
         (
             '/flows',
             {'params': {'filename': 'bad_flow.yml'}},

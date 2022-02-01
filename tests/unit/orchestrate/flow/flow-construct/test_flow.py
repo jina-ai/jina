@@ -11,7 +11,7 @@ from jina.enums import FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.serve.executors import BaseExecutor
 from jina.helper import random_identity
-from jina.orchestrate.pods import BasePod
+from jina.orchestrate.deployments import BaseDeployment
 from docarray.document.generators import from_ndarray
 from jina.types.request.data import Response
 from tests import random_docs
@@ -464,8 +464,8 @@ def test_flow_equalities():
 
 def test_flow_get_item():
     f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
-    assert isinstance(f1[1], BasePod)
-    assert isinstance(f1['executor0'], BasePod)
+    assert isinstance(f1[1], BaseDeployment)
+    assert isinstance(f1['executor0'], BaseDeployment)
 
 
 class CustomizedExecutor(BaseExecutor):

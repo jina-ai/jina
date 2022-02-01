@@ -2,7 +2,7 @@ DEPRECATED_ARGS_MAPPING = {
     'override_with': 'uses_with',
     'override_metas': 'uses_metas',
     'override_requests': 'uses_requests',
-    'port_expose': 'One of "port" (when starting JinaD or when starting a Client) or "port_jinad" (for a remote Pod)',
+    'port_expose': 'One of "port" (when starting JinaD or when starting a Client) or "port_jinad" (for a remote Deployment)',
     'parallel': 'One of "shards" (when dividing data in indexers) or "replicas" (replicating Executors for performance and reliability)',
 }
 

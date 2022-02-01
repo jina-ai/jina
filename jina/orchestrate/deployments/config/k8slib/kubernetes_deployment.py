@@ -3,7 +3,7 @@ from argparse import Namespace
 from typing import Dict, Optional, Tuple, Union, List
 
 from jina.serve.networking import K8sGrpcConnectionPool
-from jina.orchestrate.pods.config.k8slib import kubernetes_tools
+from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 
 
 def get_deployment_yamls(
@@ -14,7 +14,7 @@ def get_deployment_yamls(
     container_args: str,
     replicas: int,
     pull_policy: str,
-    jina_pod_name: str,
+    jina_deployment_name: str,
     pea_type: str,
     shard_id: Optional[int] = None,
     port_expose: Optional[int] = None,
@@ -36,7 +36,7 @@ def get_deployment_yamls(
     :param container_args: arguments used for the k8s pod
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
-    :param jina_pod_name: Name of the Jina Pod this deployment belongs to
+    :param jina_deployment_name: Name of the Jina Deployment this deployment belongs to
     :param pea_type: type os this pea, can be gateway/head/worker
     :param shard_id: id of this shard, None if shards=1 or this is gateway/head
     :param port_expose: port which will be exposed by the deployed containers
@@ -78,7 +78,7 @@ def get_deployment_yamls(
         'image_uses_before': image_name_uses_before,
         'image_uses_after': image_name_uses_after,
         'pull_policy': pull_policy,
-        'jina_pod_name': jina_pod_name,
+        'jina_deploy,emt_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pea_type': pea_type,
         'port_ready_probe': port_ready_probe,

@@ -502,7 +502,7 @@ def _create_gateway_pea(graph_description, pod_addresses, port_expose):
             [
                 '--graph-description',
                 graph_description,
-                '--pods-addresses',
+                '--deployments-addresses',
                 pod_addresses,
                 '--port-expose',
                 str(port_expose),

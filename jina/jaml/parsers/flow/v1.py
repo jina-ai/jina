@@ -4,14 +4,14 @@ from typing import Dict, Any
 
 from jina.jaml.parsers.base import VersionedYAMLParser
 from jina import Flow
-from jina.enums import PodRoleType
+from jina.enums import DeploymentRoleType
 from jina.helper import expand_env_var, ArgNamespace
-from jina.parsers import set_pod_parser, set_gateway_parser
+from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
 def _get_taboo(parser: argparse.ArgumentParser):
     """
-    :param parser: pod or gateway parser
+    :param parser: deployment or gateway parser
     :return: set of keys that should not be dumped
     """
     return {k.dest for k in parser._actions if k.help == argparse.SUPPRESS}
@@ -21,9 +21,9 @@ class V1Parser(VersionedYAMLParser):
     """V1Parser introduces new syntax and features:
 
         - It has a top-level field ``version``
-        - ``pods`` is now a List of Dict (rather than a Dict as prev.)
+        - ``deployments`` is now a List of Dict (rather than a Dict as prev.)
         - ``name`` is now optional
-        - new field ``method`` can be used to specify how to add this Pod into the Flow, availables are:
+        - new field ``method`` can be used to specify how to add this Deployment into the Flow, availables are:
             - ``add``: (default) equal to `Flow.add(...)`
             - ``needs``: (default) equal to `Flow.needs(...)`
             - ``inspect``: (default) equal to `Flow.inspect(...)`
@@ -34,7 +34,7 @@ class V1Parser(VersionedYAMLParser):
 
             !Flow
             version: '1.0'
-            pods:
+            deployments:
               - name: executor0  # notice the change here, name is now an attribute
                 method: add  # by default method is always add, available: add, needs, inspect
                 needs: gateway
@@ -65,15 +65,17 @@ class V1Parser(VersionedYAMLParser):
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
         obj = cls(*tmp_a, **tmp_p)
 
-        pp = data.get('executors', data.get('pods', []))
-        for pods in pp:
-            p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pods.items()}
+        pp = data.get('executors', data.get('deployments', []))
+        for deployments in pp:
+            p_deployment_attr = {
+                kk: expand_env_var(vv) for kk, vv in deployments.items()
+            }
             # in v1 YAML, flow is an optional argument
-            if p_pod_attr.get('name', None) != 'gateway':
+            if p_deployment_attr.get('name', None) != 'gateway':
                 # ignore gateway when reading, it will be added during build()
-                method = p_pod_attr.get('method', 'add')
+                method = p_deployment_attr.get('method', 'add')
                 # support methods: add, needs, inspect
-                getattr(obj, method)(**p_pod_attr, copy_flow=False)
+                getattr(obj, method)(**p_deployment_attr, copy_flow=False)
 
         return obj
 
@@ -94,19 +96,19 @@ class V1Parser(VersionedYAMLParser):
         if data._common_kwargs:
             r['with'].update(data._common_kwargs)
 
-        if data._pod_nodes:
+        if data._deployment_nodes:
             r['executors'] = []
 
         last_name = 'gateway'
-        for k, v in data._pod_nodes.items():
+        for k, v in data._deployment_nodes.items():
             kwargs = {}
-            # only add "needs" when the value is not the last pod name
+            # only add "needs" when the value is not the last deployment name
             if list(v.needs) != [last_name]:
                 kwargs = {'needs': list(v.needs)}
 
             # get nondefault kwargs
-            parser = set_pod_parser()
-            if v.role == PodRoleType.GATEWAY:
+            parser = set_deployment_parser()
+            if v.role == DeploymentRoleType.GATEWAY:
                 parser = set_gateway_parser()
 
             non_default_kw = ArgNamespace.get_non_defaults_args(v.args, parser)

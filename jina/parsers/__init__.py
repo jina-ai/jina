@@ -36,8 +36,8 @@ def set_pea_parser(parser=None):
     return parser
 
 
-def set_pod_parser(parser=None):
-    """Set the parser for the Pod
+def set_deployment_parser(parser=None):
+    """Set the parser for the Deployment
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -49,9 +49,9 @@ def set_pod_parser(parser=None):
 
     set_pea_parser(parser)
 
-    from jina.parsers.peapods.pod import mixin_base_pod_parser
+    from jina.parsers.peapods.deployment import mixin_base_deployment_parser
 
-    mixin_base_pod_parser(parser)
+    mixin_base_deployment_parser(parser)
 
     return parser
 
@@ -75,7 +75,7 @@ def set_gateway_parser(parser=None):
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
-    from jina.parsers.peapods.pod import mixin_base_pod_parser
+    from jina.parsers.peapods.deployment import mixin_base_deployment_parser
     from jina.parsers.peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
@@ -88,12 +88,12 @@ def set_gateway_parser(parser=None):
     mixin_pea_parser(parser)
     mixin_head_parser(parser)
 
-    from jina.enums import PodRoleType
+    from jina.enums import DeploymentRoleType
 
     parser.set_defaults(
         name='gateway',
         runtime_cls='GRPCGatewayRuntime',
-        pod_role=PodRoleType.GATEWAY,
+        deployment_role=DeploymentRoleType.GATEWAY,
     )
 
     return parser
@@ -202,7 +202,7 @@ def get_main_parser():
         sp.add_parser(
             'ping',
             help='Ping an Executor',
-            description='Ping a Pod and check its network connectivity.',
+            description='Ping a Deployment and check its network connectivity.',
             formatter_class=_chf,
         )
     )
@@ -246,14 +246,14 @@ def get_main_parser():
         )
     )
 
-    set_pod_parser(
+    set_deployment_parser(
         sp.add_parser(
-            'pod',
-            description='Start a Pod. '
+            'deployment',
+            description='Start a Deployment. '
             'You should rarely use this directly unless you '
             'are doing low-level orchestration',
             formatter_class=_chf,
-            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
+            **(dict(help='Start a Deployment')) if _SHOW_ALL_ARGS else {},
         )
     )
 

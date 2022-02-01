@@ -6,7 +6,7 @@ from daemon.clients import JinaDClient, AsyncJinaDClient
 
 from jina import __default_host__
 from jina.helper import ArgNamespace
-from jina.parsers import set_pod_parser
+from jina.parsers import set_deployment_parser
 from jina.enums import replace_enum_to_str
 
 HOST = __default_host__
@@ -16,7 +16,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def pod_args():
-    return set_pod_parser().parse_args(['--uses-with', '{"foo": "bar"}'])
+    return set_deployment_parser().parse_args(['--uses-with', '{"foo": "bar"}'])
 
 
 @pytest.fixture
@@ -35,15 +35,15 @@ async def test_rolloing_update_remote_pod(async_jinad_client, pod_args):
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
-    success, pod_id = await async_jinad_client.pods.create(
+    success, pod_id = await async_jinad_client.deployments.create(
         workspace_id=workspace_id, payload=payload
     )
     assert success
-    await async_jinad_client.pods.rolling_update(
+    await async_jinad_client.deployments.rolling_update(
         id=pod_id, uses_with={'foo': 'bar-new', 'dump_path': 'test'}
     )
     # TODO: HOW TO CHECK PEA ARGS IN JINAD? ROLLING UPDATE WON'T CHANGE POD ARGS
     # TODO: PEA_STORE IS EMPTY
-    _ = await async_jinad_client.pods.get(pod_id)
-    assert async_jinad_client.pods.delete(pod_id)
+    _ = await async_jinad_client.deployments.get(pod_id)
+    assert async_jinad_client.deployments.delete(pod_id)
     assert async_jinad_client.workspaces.delete(workspace_id)

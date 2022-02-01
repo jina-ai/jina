@@ -28,7 +28,7 @@ def test_flow_api(monkeypatch, partial_flow_client):
     rolling_update_response = partial_flow_client.put(
         f'{api}/rolling_update',
         params={
-            'pod_name': 'dummy_executor',
+            'deployment_name': 'dummy_executor',
             'uses_with': {},
         },
     )

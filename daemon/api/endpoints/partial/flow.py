@@ -50,7 +50,7 @@ async def _create(
     response_model=PartialFlowItem,
 )
 async def rolling_update(
-    pod_name: str,
+    deployment_name: str,
     uses_with: Optional[Dict[str, Any]] = None,
 ):
     """
@@ -59,24 +59,26 @@ async def rolling_update(
     .. #noqa: DAR201
     """
     try:
-        return await store.rolling_update(pod_name=pod_name, uses_with=uses_with)
+        return await store.rolling_update(
+            deployment_name=deployment_name, uses_with=uses_with
+        )
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 
 
 @router.put(
     path='/scale',
-    summary='Scale a Pod in the running Flow',
+    summary='Scale a Deployment in the running Flow',
     response_model=PartialFlowItem,
 )
-async def scale(pod_name: str, replicas: int):
+async def scale(deployment_name: str, replicas: int):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201
     """
     try:
-        return await store.scale(pod_name=pod_name, replicas=replicas)
+        return await store.scale(deployment_name=deployment_name, replicas=replicas)
     except ValueError as ex:
         raise PartialDaemon400Exception from ex
 

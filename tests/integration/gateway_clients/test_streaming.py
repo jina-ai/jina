@@ -165,7 +165,7 @@ def create_runtime(graph_dict: Dict, protocol: str, port_in: int, prefetch: int 
             f'{port_in}',
             '--graph-description',
             f'{graph_description}',
-            '--pods-addresses',
+            '--deployments-addresses',
             '{}',
             '--prefetch',
             f'{prefetch}',

@@ -88,7 +88,7 @@ def test_dump_dbms_remote(docker_compose):
         DaemonID(
             client.flows.rolling_update(
                 id=query_flow_id,
-                pod_name='indexer_query',
+                deployment_name='indexer_query',
                 uses_with={'dump_path': DUMP_PATH_DOCKER},
             )
         )

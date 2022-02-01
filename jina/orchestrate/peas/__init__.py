@@ -107,7 +107,7 @@ class BasePea(ABC):
     :class:`BasePea` is an interface from which all the classes managing the lifetime of a Runtime inside a local process,
     container or in a remote JinaD instance (to come) must inherit.
 
-    It exposes the required APIs so that the `BasePea` can be handled by the `cli` api as a context manager or by a `Pod`.
+    It exposes the required APIs so that the `BasePea` can be handled by the `cli` api as a context manager or by a `Deployment`.
 
     What makes a BasePea a BasePea is that it manages the lifecycle of a Runtime (gateway or not gateway)
     """
@@ -129,7 +129,7 @@ class BasePea(ABC):
                 f'specially dangerous to mix `Executors` running in different types of `RuntimeBackends`.'
             )
 
-        self._envs = {'JINA_POD_NAME': self.name}
+        self._envs = {'JINA_DEPLOYMENT_NAME': self.name}
         if self.args.quiet:
             self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:
@@ -286,7 +286,7 @@ class BasePea(ABC):
 
     @property
     def role(self) -> 'PeaRoleType':
-        """Get the role of this pea in a pod
+        """Get the role of this pea in a deployment
         .. #noqa: DAR201"""
         return self.args.pea_role
 

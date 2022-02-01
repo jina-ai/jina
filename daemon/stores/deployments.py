@@ -8,19 +8,19 @@ if TYPE_CHECKING:
     from daemon.models import DaemonID
 
 
-class PodStore(PeaStore):
-    """A Store of Pods spawned as Containers by Daemon"""
+class DeploymentStore(PeaStore):
+    """A Store of Deployments spawned as Containers by Daemon"""
 
-    _kind = 'pod'
+    _kind = 'deployment'
 
     @BaseStore.dump
     async def rolling_update(
         self, id: 'DaemonID', uses_with: Optional[Dict] = None
     ) -> 'DaemonID':
-        """rolling_update the Pod inside the container
+        """rolling_update the Deployment inside the container
 
-        :param id: id of the Pod
-        :param uses_with: the uses_with arguments to update the executor in pod_name
+        :param id: id of the Deployment
+        :param uses_with: the uses_with arguments to update the executor in deployment_name
         :raises KeyError: if id doesn't exist in the store
         :return: id of the Flow
         """
@@ -35,7 +35,9 @@ class PodStore(PeaStore):
                 json=uses_with,
             )
         except Exception as e:
-            self._logger.error(f'Error while sending rolling_update to the Pod: \n{e}')
+            self._logger.error(
+                f'Error while sending rolling_update to the Deployment: \n{e}'
+            )
             raise
         else:
             self[id].arguments.object = object
@@ -44,9 +46,9 @@ class PodStore(PeaStore):
 
     @BaseStore.dump
     async def scale(self, id: 'DaemonID', replicas: int) -> 'DaemonID':
-        """Scale the Pod inside the container
+        """Scale the Deployment inside the container
 
-        :param id: id of the Pod
+        :param id: id of the Deployment
         :param replicas: The number of replicas to scale to
         :raises KeyError: if id doesn't exist in the store
         :return: id of the Flow
@@ -62,7 +64,7 @@ class PodStore(PeaStore):
                 json=None,
             )
         except Exception as e:
-            self._logger.error(f'Error while scaling the Pod: \n{e}')
+            self._logger.error(f'Error while scaling the Deployment: \n{e}')
             raise
         else:
             self[id].arguments.object = object

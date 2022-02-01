@@ -19,11 +19,11 @@ def workspace():
     _clean_up_workspace(image_id, network_id, workspace_id, workspace_store)
 
 
-def pod_list_one():
+def deployment_list_one():
     return [{'name': 'executor1'}]
 
 
-def pod_list_multiple():
+def deployment_list_multiple():
     return [{'name': 'executor1'}, {'name': 'executor2'}]
 
 
@@ -64,7 +64,7 @@ async def test_flow_store_rolling_update(workspace):
     )
     assert len(store) == 1
     assert flow_id in store
-    await store.rolling_update(id=flow_id, pod_name='executor1')
+    await store.rolling_update(id=flow_id, deployment_name='executor1')
     assert len(store) == 1
     assert flow_id in store
     await store.delete(flow_id)
@@ -88,7 +88,7 @@ async def test_flow_store_scale(workspace):
     )
     assert len(store) == 1
     assert flow_id in store
-    await store.scale(id=flow_id, pod_name='executor1', replicas=2)
+    await store.scale(id=flow_id, deployment_name='executor1', replicas=2)
     assert len(store) == 1
     assert flow_id in store
     await store.delete(flow_id)

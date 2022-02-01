@@ -5,9 +5,9 @@ import pytest
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
-from jina.parsers import set_pod_parser, set_gateway_parser
+from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import K8sGrpcConnectionPool
-from jina.orchestrate.pods.config.k8s import K8sPodConfig
+from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 
 
 @pytest.fixture(autouse=True)
@@ -60,8 +60,10 @@ def test_parse_args(
 
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
-    args = set_pod_parser().parse_args(args_list)
-    pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
+    args = set_deployment_parser().parse_args(args_list)
+    pod_config = K8sDeploymentConfig(
+        args, 'default-namespace', k8s_connection_pool_call
+    )
 
     assert namespace_equal(
         pod_config.deployment_args['head_deployment'],
@@ -155,7 +157,7 @@ def test_parse_args(
 def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
-    args = set_pod_parser().parse_args(
+    args = set_deployment_parser().parse_args(
         [
             '--shards',
             str(shards),
@@ -167,7 +169,9 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
             'executor',
         ]
     )
-    pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
+    pod_config = K8sDeploymentConfig(
+        args, 'default-namespace', k8s_connection_pool_call
+    )
 
     assert pod_config.deployment_args['head_deployment'].runtime_cls == 'HeadRuntime'
     assert pod_config.deployment_args['head_deployment'].uses_before == uses_before
@@ -230,8 +234,8 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
 )
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 def test_deployments(name: str, shards: str, k8s_connection_pool_call):
-    args = set_pod_parser().parse_args(['--name', name, '--shards', shards])
-    pod_config = K8sPodConfig(args, 'ns', k8s_connection_pool_call)
+    args = set_deployment_parser().parse_args(['--name', name, '--shards', shards])
+    pod_config = K8sDeploymentConfig(args, 'ns', k8s_connection_pool_call)
 
     actual_deployments = pod_config.worker_deployments
 
@@ -295,7 +299,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
         ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465']
     )  # envs are
     # ignored for gateway
-    pod_config = K8sPodConfig(
+    pod_config = K8sDeploymentConfig(
         args, 'default-namespace', k8s_connection_pool_call, pod_addresses
     )
     yaml_configs = pod_config.to_k8s_yaml()
@@ -389,8 +393,8 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, pod_addresses):
     if not k8s_connection_pool_call:
         assert args[-1] == '--k8s-disable-connection-pool'
     if pod_addresses is not None:
-        assert '--pods-addresses' in args
-        assert args[args.index('--pods-addresses') + 1] == json.dumps(pod_addresses)
+        assert '--deployments-addresses' in args
+        assert args[args.index('--deployments-addresses') + 1] == json.dumps(pod_addresses)
 
 
 def assert_port_config(port_dict: Dict, name: str, port: int):
@@ -462,9 +466,11 @@ def test_k8s_yaml_regular_pod(
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
 
-    args = set_pod_parser().parse_args(args_list)
+    args = set_deployment_parser().parse_args(args_list)
     # ignored for gateway
-    pod_config = K8sPodConfig(args, 'default-namespace', k8s_connection_pool_call)
+    pod_config = K8sDeploymentConfig(
+        args, 'default-namespace', k8s_connection_pool_call
+    )
     yaml_configs = pod_config.to_k8s_yaml()
     assert len(yaml_configs) == 1 + shards
     head_name, head_configs = yaml_configs[0]

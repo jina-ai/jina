@@ -7,14 +7,14 @@ def get_full_schema() -> dict:
     from jina.schemas.executor import schema_all_executors
     from jina.schemas.flow import schema_flow
     from jina.schemas.meta import schema_metas
-    from jina.schemas.pod import schema_pod
+    from jina.schemas.deployment import schema_deployment
 
     definitions = {}
     for s in [
         schema_all_executors,
         schema_flow,
         schema_metas,
-        schema_pod,
+        schema_deployment,
         IMPORTED.schema_executors,
     ]:
         definitions.update(s)

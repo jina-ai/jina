@@ -5,8 +5,8 @@ import pytest
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
-from jina.parsers import set_pod_parser, set_gateway_parser
-from jina.orchestrate.pods.config.docker_compose import DockerComposeConfig
+from jina.parsers import set_deployment_parser, set_gateway_parser
+from jina.orchestrate.deployments.config.docker_compose import DockerComposeConfig
 
 
 @pytest.fixture(autouse=True)
@@ -67,7 +67,7 @@ def test_parse_args(
 
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
-    args = set_pod_parser().parse_args(args_list)
+    args = set_deployment_parser().parse_args(args_list)
     pod_config = DockerComposeConfig(args)
 
     assert namespace_equal(
@@ -203,7 +203,7 @@ def test_parse_args(
 def test_parse_args_custom_executor(shards: int, replicas: int):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
-    args = set_pod_parser().parse_args(
+    args = set_deployment_parser().parse_args(
         [
             '--shards',
             str(shards),
@@ -303,7 +303,7 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
     ],
 )
 def test_worker_services(name: str, shards: str):
-    args = set_pod_parser().parse_args(['--name', name, '--shards', shards])
+    args = set_deployment_parser().parse_args(['--name', name, '--shards', shards])
     pod_config = DockerComposeConfig(args)
 
     actual_services = pod_config.worker_services
@@ -344,8 +344,10 @@ def test_docker_compose_gateway(pod_addresses):
     assert '--pea-role' in args
     assert args[args.index('--pea-role') + 1] == 'GATEWAY'
     if pod_addresses is not None:
-        assert '--pods-addresses' in args
-        assert args[args.index('--pods-addresses') + 1] == json.dumps(pod_addresses)
+        assert '--deployments-addresses' in args
+        assert args[args.index('--deployments-addresses') + 1] == json.dumps(
+            pod_addresses
+        )
 
 
 @pytest.mark.parametrize('shards', [3, 1])
@@ -410,7 +412,7 @@ def test_docker_compose_yaml_regular_pod(
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
 
-    args = set_pod_parser().parse_args(args_list)
+    args = set_deployment_parser().parse_args(args_list)
     # ignored for gateway
     pod_config = DockerComposeConfig(args)
     yaml_configs = pod_config.to_docker_compose_config()

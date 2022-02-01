@@ -84,7 +84,7 @@ def test_gateway(signal, protocol):
                 protocol,
                 '--graph-description',
                 '{}',
-                '--pods-addresses',
+                '--deployments-addresses',
                 '{}',
             ]
         )

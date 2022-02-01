@@ -9,11 +9,11 @@ from daemon.helper import if_alive, error_msg_from
 from daemon.models.id import DaemonID, daemonize
 
 
-class AsyncPodClient(AsyncPeaClient):
-    """Async Client to create/update/delete Peods on remote JinaD"""
+class AsyncDeploymentClient(AsyncPeaClient):
+    """Async Client to create/update/delete Deployments on remote JinaD"""
 
-    _kind = 'pod'
-    _endpoint = '/pods'
+    _kind = 'deployment'
+    _endpoint = '/deployments'
 
     @if_alive
     async def rolling_update(
@@ -23,9 +23,9 @@ class AsyncPodClient(AsyncPeaClient):
     ) -> str:
         """Update a Flow on remote JinaD (only rolling_update supported)
 
-        :param id: Pod ID
+        :param id: Deployment ID
         :param uses_with: the uses_with to update the Executor
-        :return: Pod ID
+        :return: Deployment ID
         """
         async with aiohttp.request(
             method='PUT',
@@ -44,11 +44,11 @@ class AsyncPodClient(AsyncPeaClient):
 
     @if_alive
     async def scale(self, id: Union[str, 'DaemonID'], replicas: int) -> str:
-        """Scale a remote Pod
+        """Scale a remote Deployment
 
-        :param id: Pod ID
+        :param id: Deployment ID
         :param replicas: The number of replicas to scale to
-        :return: Pod ID
+        :return: Deployment ID
         """
         async with aiohttp.request(
             method='PUT',
@@ -66,5 +66,5 @@ class AsyncPodClient(AsyncPeaClient):
             return response_json
 
 
-class PodClient(AsyncToSyncMixin, AsyncPodClient):
-    """Client to create/update/delete Pods on remote JinaD"""
+class DeploymentClient(AsyncToSyncMixin, AsyncDeploymentClient):
+    """Client to create/update/delete Deployments on remote JinaD"""

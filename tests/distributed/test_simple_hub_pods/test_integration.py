@@ -17,7 +17,7 @@ GATEWAY_PORT = 45630
 
 @pytest.mark.skip('jinad with docker-compose not supported for now')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_simple_hub_pods(docker_compose):
+def test_simple_hub_deployments(docker_compose):
     workspace_id = create_workspace(filepaths=[flow_yaml])
     assert wait_for_workspace(workspace_id)
     flow_id = create_flow(workspace_id=workspace_id, filename='flow.yml')

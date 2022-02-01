@@ -16,7 +16,7 @@ class Ports(BaseModel):
 class PortMapping(BaseModel):
     """Used to set the additional port mappings in partial-daemon"""
 
-    pod_name: str
+    deployment_name: str
     pea_name: str
     ports: Ports
 
@@ -36,7 +36,7 @@ class PortMappings(BaseModel):
             for mapping in self.__root__:
                 if mapping.pea_name == item:
                     return mapping
-                elif mapping.pod_name == item:
+                elif mapping.deployment_name == item:
                     return mapping
 
     @property
@@ -61,12 +61,12 @@ class PortMappings(BaseModel):
         return {f'{port}/tcp': port for port in self.ports}
 
     @property
-    def pod_names(self) -> List[str]:
-        """Get all pod names
+    def deployment_names(self) -> List[str]:
+        """Get all deployment names
 
-        :return: unique list of pod names
+        :return: unique list of deployment names
         """
-        return list(set(mapping.pod_name for mapping in self.__root__))
+        return list(set(mapping.deployment_name for mapping in self.__root__))
 
     @property
     def pea_names(self) -> List[str]:

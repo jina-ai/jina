@@ -50,8 +50,8 @@ def partial_flow_client(monkeypatch):
 
 
 @pytest.fixture(scope='function', autouse=False)
-def partial_pod_client(monkeypatch):
-    yield from get_partial_client(mode='pod', monkeypatch=monkeypatch)
+def partial_deployment_client(monkeypatch):
+    yield from get_partial_client(mode='deployment', monkeypatch=monkeypatch)
 
 
 @pytest.fixture(scope='function', autouse=False)

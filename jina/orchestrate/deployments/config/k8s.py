@@ -4,19 +4,19 @@ from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
 from jina.enums import PeaRoleType
-from jina.orchestrate.pods.config.k8slib import kubernetes_deployment
-from jina.orchestrate.pods.config.helper import (
+from jina.orchestrate.deployments.config.k8slib import kubernetes_deployment
+from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
 )
 from jina.serve.networking import K8sGrpcConnectionPool
-from jina.orchestrate.pods import BasePod
+from jina.orchestrate.deployments import BaseDeployment
 
 
-class K8sPodConfig:
+class K8sDeploymentConfig:
     """
-    Class that implements the output of configuration files for Kubernetes for a given Pod.
+    Class that implements the output of configuration files for Kubernetes for a given Deployment.
     """
 
     class _K8sDeployment:
@@ -25,26 +25,26 @@ class K8sPodConfig:
             name: str,
             version: str,
             pea_type: PeaRoleType,
-            jina_pod_name: str,
+            jina_deployment_name: str,
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
             deployment_args: Union['Namespace', Dict],
             k8s_namespace: str,
             k8s_connection_pool: bool = True,
-            k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
+            k8s_deployment_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
             self.dns_name = to_compatible_name(name)
             self.version = version
             self.pea_type = pea_type
-            self.jina_pod_name = jina_pod_name
+            self.jina_deployment_name = jina_deployment_name
             self.shard_id = shard_id
             self.common_args = common_args
             self.deployment_args = deployment_args
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.k8s_namespace = k8s_namespace
             self.k8s_connection_pool = k8s_connection_pool
-            self.k8s_pod_addresses = k8s_pod_addresses
+            self.k8s_deployment_addresses = k8s_deployment_addresses
 
         def get_gateway_yamls(
             self,
@@ -59,7 +59,7 @@ class K8sPodConfig:
             )
             cargs = copy.copy(self.deployment_args)
             cargs.env = None
-            cargs.pods_addresses = self.k8s_pod_addresses
+            cargs.deployments_addresses = self.k8s_deployment_addresses
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
@@ -79,7 +79,7 @@ class K8sPodConfig:
                 container_args=f'{container_args}',
                 replicas=1,
                 pull_policy='IfNotPresent',
-                jina_pod_name='gateway',
+                jina_deployment_name='gateway',
                 pea_type=self.pea_type,
                 port_expose=self.common_args.port_expose,
                 env=cargs.env,
@@ -212,7 +212,7 @@ class K8sPodConfig:
                 container_args_uses_after=container_args_uses_after,
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
-                jina_pod_name=self.jina_pod_name,
+                jina_deployment_name=self.jina_deployment_name,
                 pea_type=self.pea_type,
                 shard_id=self.shard_id,
                 env=cargs.env,
@@ -224,17 +224,17 @@ class K8sPodConfig:
         args: Union['Namespace', Dict],
         k8s_namespace: Optional[str] = None,
         k8s_connection_pool: bool = True,
-        k8s_pod_addresses: Optional[Dict[str, List[str]]] = None,
+        k8s_deployment_addresses: Optional[Dict[str, List[str]]] = None,
     ):
-        # External Pods should be ignored in a K8s based Flow
+        # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
-        self.k8s_pod_addresses = k8s_pod_addresses
+        self.k8s_deployment_addresses = k8s_deployment_addresses
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
-            # otherwise it will remain with the one from the original Pod
+            # otherwise it will remain with the one from the original Deployment
             self.args.k8s_namespace = k8s_namespace
         self.args.k8s_connection_pool = k8s_connection_pool
         self.name = self.args.name
@@ -246,13 +246,13 @@ class K8sPodConfig:
                 name=self.deployment_args['head_deployment'].name,
                 version=get_base_executor_version(),
                 shard_id=None,
-                jina_pod_name=self.name,
+                jina_deployment_name=self.name,
                 common_args=self.args,
                 deployment_args=self.deployment_args['head_deployment'],
                 pea_type=PeaRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
                 k8s_connection_pool=self.k8s_connection_pool,
-                k8s_pod_addresses=self.k8s_pod_addresses,
+                k8s_deployment_addresses=self.k8s_deployment_addresses,
             )
 
         self.worker_deployments = []
@@ -269,10 +269,10 @@ class K8sPodConfig:
                     pea_type=PeaRoleType.WORKER
                     if name != 'gateway'
                     else PeaRoleType.GATEWAY,
-                    jina_pod_name=self.name,
+                    jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
-                    k8s_pod_addresses=self.k8s_pod_addresses
+                    k8s_deployment_addresses=self.k8s_deployment_addresses
                     if name == 'gateway'
                     else None,
                 )
@@ -288,7 +288,9 @@ class K8sPodConfig:
         uses_after = getattr(args, 'uses_after', None)
 
         if args.name != 'gateway':
-            parsed_args['head_deployment'] = BasePod._copy_to_head_args(self.args)
+            parsed_args['head_deployment'] = BaseDeployment._copy_to_head_args(
+                self.args
+            )
             parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
             parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
@@ -350,7 +352,7 @@ class K8sPodConfig:
         self,
     ) -> List[Tuple[str, List[Dict]]]:
         """
-        Return a list of dictionary configurations. One for each deployment in this Pod
+        Return a list of dictionary configurations. One for each deployment in this Deployment
             .. # noqa: DAR201
             .. # noqa: DAR101
         """

@@ -1,24 +1,27 @@
 from pathlib import Path
 
-from daemon.models import PodModel
+from daemon.models import DeploymentModel
 
 cur_dir = Path(__file__).parent
-api = '/pod'
+api = '/deployment'
 
 
-def test_pod_api(partial_pod_client):
-    pod_model = PodModel()
+def test_deployment_api(partial_deployment_client):
+    deployment_model = DeploymentModel()
 
-    response = partial_pod_client.post(
+    response = partial_deployment_client.post(
         api,
-        json={'pod': pod_model.dict(exclude={'log_config'}), 'envs': {'key1': 'val1'}},
+        json={
+            'deployment': deployment_model.dict(exclude={'log_config'}),
+            'envs': {'key1': 'val1'},
+        },
     )
     assert response
 
-    response = partial_pod_client.get(api)
+    response = partial_deployment_client.get(api)
     assert response
 
-    assert response.json()['arguments']['port_jinad'] == pod_model.port_jinad
+    assert response.json()['arguments']['port_jinad'] == deployment_model.port_jinad
 
-    response = partial_pod_client.delete(api)
+    response = partial_deployment_client.delete(api)
     assert response

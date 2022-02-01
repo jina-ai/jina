@@ -311,7 +311,7 @@ class ReducerExecutor(BaseExecutor):
     """
     ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.
     ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be
-    sent to the next pod.
+    sent to the next deployment.
 
     This Executor only adds a reduce endpoint to the BaseExecutor.
     """

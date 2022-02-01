@@ -29,7 +29,7 @@ def mixin_daemon_parser(parser):
         type=str,
         choices=list(PartialDaemonModes),
         default=None,
-        help='Mode for partial jinad. Can be flow/pod/pea. If none provided main jinad is run.'
+        help='Mode for partial jinad. Can be flow/deployment/pea. If none provided main jinad is run.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

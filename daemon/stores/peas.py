@@ -12,7 +12,7 @@ class PeaStore(ContainerStore, AiohttpMixin):
     async def add_in_partial(
         self, uri: str, params: Dict, envs: Optional[Dict] = {}, **kwargs
     ) -> Dict:
-        """Sends `POST` request to `partial-daemon` to create a Pea/Pod.
+        """Sends `POST` request to `partial-daemon` to create a Pea/Deployment.
 
         :param uri: uri of partial-daemon
         :param params: json payload to be sent
@@ -27,7 +27,7 @@ class PeaStore(ContainerStore, AiohttpMixin):
         )
 
     async def delete_in_partial(self, uri, **kwargs) -> Dict:
-        """Sends a `DELETE` request to `partial-daemon` to terminate a Pea/Pod
+        """Sends a `DELETE` request to `partial-daemon` to terminate a Pea/Deployment
 
         :param uri: uri of partial-daemon
         :param kwargs: keyword args

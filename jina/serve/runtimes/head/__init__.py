@@ -45,7 +45,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if args.name is None:
             args.name = ''
         self.name = args.name
-        self._pod_name = os.getenv('JINA_POD_NAME', 'worker')
+        self._deployment_name = os.getenv('JINA_DEPLOYMENT_NAME', 'worker')
         self.connection_pool = create_connection_pool(
             logger=self.logger,
             k8s_connection_pool=args.k8s_connection_pool,
@@ -78,14 +78,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
             self._polling = self._default_polling_dict(default_polling)
 
-        # In K8s the ConnectionPool needs the information about the Jina Pod its running in
-        # This is stored in the environment variable JINA_POD_NAME in all Jina K8s default templates
+        # In K8s the ConnectionPool needs the information about the Jina Deployment its running in
+        # This is stored in the environment variable JINA_DEPLOYMENT_NAME in all Jina K8s default templates
         if (
             type(self.connection_pool) == K8sGrpcConnectionPool
-            and 'JINA_POD_NAME' not in os.environ
+            and 'JINA_DEPLOYMENT_NAME' not in os.environ
         ):
             raise ValueError(
-                'K8s deployments need to specify the environment variable "JINA_POD_NAME"'
+                'K8s deployments need to specify the environment variable "JINA_DEPLOYMENT_NAME"'
             )
 
         if hasattr(args, 'connection_list') and args.connection_list:
@@ -94,14 +94,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 shard_connections = connection_list[shard_id]
                 if isinstance(shard_connections, str):
                     self.connection_pool.add_connection(
-                        pod=self._pod_name,
+                        deployment=self._deployment_name,
                         address=shard_connections,
                         shard_id=int(shard_id),
                     )
                 else:
                     for connection in shard_connections:
                         self.connection_pool.add_connection(
-                            pod=self._pod_name,
+                            deployment=self._deployment_name,
                             address=connection,
                             shard_id=int(shard_id),
                         )
@@ -110,12 +110,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         if self.uses_before_address:
             self.connection_pool.add_connection(
-                pod='uses_before', address=self.uses_before_address
+                deployment='uses_before', address=self.uses_before_address
             )
         self.uses_after_address = args.uses_after_address
         if self.uses_after_address:
             self.connection_pool.add_connection(
-                pod='uses_after', address=self.uses_after_address
+                deployment='uses_after', address=self.uses_after_address
             )
         self._has_uses = args.uses is not None and args.uses != __default_executor__
 
@@ -212,7 +212,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                     connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
 
                     self.connection_pool.add_connection(
-                        pod=self._pod_name,
+                        deployment=self._deployment_name,
                         address=connection_string,
                         shard_id=relatedEntity.shard_id
                         if relatedEntity.HasField('shard_id')
@@ -222,7 +222,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 for relatedEntity in request.relatedEntities:
                     connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
                     await self.connection_pool.remove_connection(
-                        pod=self._pod_name,
+                        deployment=self._deployment_name,
                         address=connection_string,
                         shard_id=relatedEntity.shard_id,
                     )
@@ -249,7 +249,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response,
                 uses_before_metadata,
             ) = await self.connection_pool.send_requests_once(
-                requests, pod='uses_before'
+                requests, deployment='uses_before'
             )
             requests = [response]
         elif len(requests) > 1 and not self._has_uses:
@@ -257,7 +257,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests,
-            pod=self._pod_name,
+            deployment=self._deployment_name,
             polling_type=self._polling[endpoint],
         )
 
@@ -277,7 +277,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response_request,
                 uses_after_metadata,
             ) = await self.connection_pool.send_requests_once(
-                worker_results, pod='uses_after'
+                worker_results, deployment='uses_after'
             )
         elif len(worker_results) > 1:
             DataRequestHandler.reduce_requests(worker_results)

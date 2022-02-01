@@ -11,9 +11,9 @@ from jina.types.request.data import DataRequest
 class TopologyGraph:
     """
     :class TopologyGraph is a class that describes a computational graph of nodes, where each node represents
-        a Pod that needs to be sent requests in the order respecting the path traversal.
+        a Deployment that needs to be sent requests in the order respecting the path traversal.
 
-    :param graph_description: A dictionary describing the topology of the Pods. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
+    :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
         determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
         will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.
     """
@@ -53,7 +53,7 @@ class TopologyGraph:
                     self.start_time = datetime.utcnow()
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
-                        pod=self.name,
+                        deployment=self.name,
                         head=True,
                         endpoint=endpoint,
                     )
@@ -79,22 +79,22 @@ class TopologyGraph:
             :param endpoint: Optional string defining the endpoint of this request
 
             .. note:
-                pod1 -> outgoing_nodes: pod2
-                pod2 -> outgoing_nodes: pod4
-                pod3 -> outgoing_nodes: pod4
-                pod4 -> outgoing_nodes: pod6
-                pod5 -> outgoing_nodes: pod6
-                pod6 -> outgoing_nodes: []
+                deployment1 -> outgoing_nodes: deployment2
+                deployment2 -> outgoing_nodes: deployment4
+                deployment3 -> outgoing_nodes: deployment4
+                deployment4 -> outgoing_nodes: deployment6
+                deployment5 -> outgoing_nodes: deployment6
+                deployment6 -> outgoing_nodes: []
 
-                |-> pod1 -> pod2 -->
-                |                   | -> pod4 --->
-                |-> pod3 ---------->             | -> pod6
-                |-> pod5 ------------------------>
+                |-> deployment1 -> deployment2 -->
+                |                   | -> deployment4 --->
+                |-> deployment3 ---------->             | -> deployment6
+                |-> deployment5 ------------------------>
 
-                Let's imagine a graph from this. Node corresponding to Pod6 will receive 2 calls from pod4 and pod5.
-                The task returned by `pod6` will backpropagated to the caller of pod1.get_leaf_tasks, pod3.get_leaf_tasks and pod5.get_leaf_tasks.
+                Let's imagine a graph from this. Node corresponding to Deployment6 will receive 2 calls from deployment4 and deployment5.
+                The task returned by `deployment6` will backpropagated to the caller of deployment1.get_leaf_tasks, deployment3.get_leaf_tasks and deployment5.get_leaf_tasks.
 
-                When the caller of these methods await them, they will fire the logic of sending requests and responses from and to every pod
+                When the caller of these methods await them, they will fire the logic of sending requests and responses from and to every deployment
 
             :return: Return a list of tuples, where tasks corresponding to the leafs of all the subgraphs born from this node are in each tuple.
                 These tasks will be based on awaiting for the task from previous_node and sending a request to the corresponding node. The other member of the pair
@@ -155,13 +155,13 @@ class TopologyGraph:
             origin_node_names = graph_representation['start-gateway']
         else:
             origin_node_names = set()
-        hanging_pod_names = set()
+        hanging_deployment_names = set()
         node_set = set()
         for node_name, outgoing_node_names in graph_representation.items():
             if node_name not in {'start-gateway', 'end-gateway'}:
                 node_set.add(node_name)
             if len(outgoing_node_names) == 0:
-                hanging_pod_names.add(node_name)
+                hanging_deployment_names.add(node_name)
             for out_node_name in outgoing_node_names:
                 if out_node_name not in {'start-gateway', 'end-gateway'}:
                     node_set.add(out_node_name)
@@ -174,7 +174,7 @@ class TopologyGraph:
                 number_of_parts=num_parts_per_node[node_name]
                 if num_parts_per_node[node_name] > 0
                 else 1,
-                hanging=node_name in hanging_pod_names,
+                hanging=node_name in hanging_deployment_names,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():
@@ -200,7 +200,7 @@ class TopologyGraph:
     def origin_nodes(self):
         """
         The list of origin nodes, the one that depend only on the gateway, so all the subgraphs will be born from them and they will
-        send to their pods the request as received by the client.
+        send to their deployments the request as received by the client.
 
         :return: A list of nodes
         """

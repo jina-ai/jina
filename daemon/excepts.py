@@ -94,7 +94,7 @@ async def partial_daemon_exception_handler(
 
     Since `PartialDaemon400Exception` is always chained, we access the `__cause__` and send that as `body`.
 
-    This handler makes sure, in case of exceptions (Pea/Pod/Flow start/update/delete failures),
+    This handler makes sure, in case of exceptions (Pea/Deployment/Flow start/update/delete failures),
     the response from Partial Daemon whould always look like -
     ```{
         "detail": "PartialDaemon400Exception",

@@ -11,7 +11,7 @@ ac_table = {
         'hub',
         'help',
         'pea',
-        'pod',
+        'deployment',
         'client',
         'export-api',
     ],
@@ -155,7 +155,7 @@ ac_table = {
             '--proxy',
             '--port-expose',
             '--graph-description',
-            '--pods-addresses',
+            '--deployments-addresses',
             '--daemon',
             '--runtime-backend',
             '--runtime',
@@ -255,7 +255,7 @@ ac_table = {
             '--uses-after-address',
             '--connection-list',
         ],
-        'pod': [
+        'deployment': [
             '--help',
             '--name',
             '--workspace',
@@ -309,7 +309,7 @@ ac_table = {
             '--uses-before',
             '--uses-after',
             '--external',
-            '--pod-role',
+            '--deployment-role',
         ],
         'client': [
             '--help',

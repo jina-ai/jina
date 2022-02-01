@@ -71,8 +71,8 @@ class AsyncBaseClient:
     async def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
         """Get status of the remote object
 
-        :param id: identity of the Pea/Pod
-        :return: response if the remote Flow/Pea/Pod/Workspace exists
+        :param id: identity of the Pea/Deployment
+        :return: response if the remote Flow/Pea/Deployment/Workspace exists
         """
 
         async with aiohttp.request(
@@ -98,7 +98,7 @@ class AsyncBaseClient:
     async def list(self) -> Dict:
         """List all objects in the store
 
-        :return: json response of the remote Flow/Pea/Pod/Workspace status
+        :return: json response of the remote Flow/Pea/Deployment/Workspace status
         """
         async with aiohttp.request(
             method='GET', url=self.store_api, timeout=self.timeout
@@ -122,7 +122,7 @@ class AsyncBaseClient:
     async def clear(self):
         """Send delete request to api
 
-        :return : json response of the remote Flow/Pea/Pod/Workspace status
+        :return : json response of the remote Flow/Pea/Deployment/Workspace status
         """
         async with aiohttp.request(
             method='DELETE', url=f'{self.store_api}'
@@ -135,7 +135,7 @@ class AsyncBaseClient:
                 )
 
     async def create(self, *args, **kwargs) -> Dict:
-        """Create a Workspace/Flow/Pea/Pod on remote.
+        """Create a Workspace/Flow/Pea/Deployment on remote.
         Must be implemented by the inherited class.
 
         # noqa: DAR101
@@ -144,7 +144,7 @@ class AsyncBaseClient:
         raise NotImplementedError
 
     async def update(self, *args, **kwargs) -> Dict:
-        """Update a Workspace/Flow/Pea/Pod on remote.
+        """Update a Workspace/Flow/Pea/Deployment on remote.
         Must be implemented by the inherited class.
 
         # noqa: DAR101
@@ -153,7 +153,7 @@ class AsyncBaseClient:
         raise NotImplementedError
 
     async def delete(self, id: DaemonID, *args, **kwargs) -> str:
-        """Delete a Workspace/Flow/Pea/Pod on remote.
+        """Delete a Workspace/Flow/Pea/Deployment on remote.
         Must be implemented by the inherited class.
 
         # noqa: DAR101

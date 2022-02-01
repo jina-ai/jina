@@ -86,14 +86,16 @@ def mixin_pea_parser(parser):
         type=PeaRoleType.from_string,
         choices=list(PeaRoleType),
         default=PeaRoleType.WORKER,
-        help='The role of this Pea in a Pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
+        help='The role of this Pea in a Deployment'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
 
     gp.add_argument(
         '--noblock-on-start',
         action='store_true',
         default=False,
-        help='If set, starting a Pea/Pod does not block the thread/process. It then relies on '
+        help='If set, starting a Pea/Deployment does not block the thread/process. It then relies on '
         '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
@@ -103,7 +105,7 @@ def mixin_pea_parser(parser):
         '--shards',
         type=int,
         default=1,
-        help='The number of shards in the pod running at the same time. For more details check '
+        help='The number of shards in the deployment running at the same time. For more details check '
         'https://docs.jina.ai/fundamentals/flow/topology/',
     )
 
@@ -111,5 +113,5 @@ def mixin_pea_parser(parser):
         '--replicas',
         type=int,
         default=1,
-        help='The number of replicas in the pod',
+        help='The number of replicas in the deployment',
     )

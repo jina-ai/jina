@@ -139,7 +139,7 @@ class AddEvaluationExecutor(Executor):
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 def test_flow_returned_collect(protocol):
-    # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
+    # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` deployment
     # use an specific executor.
 
     def validate_func(resp):

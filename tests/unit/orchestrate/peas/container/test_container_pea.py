@@ -232,7 +232,7 @@ def test_container_pea_gateway_runtime(protocol, gateway_runtime_docker_image_bu
                 'docker://gateway-runtime',
                 '--graph-description',
                 '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
-                '--pods-addresses',
+                '--deployments-addresses',
                 '{"pod0": ["0.0.0.0:1234"]}',
                 '--protocol',
                 protocol,

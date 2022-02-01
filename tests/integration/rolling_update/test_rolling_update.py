@@ -114,10 +114,10 @@ def test_search_while_updating(docs, reraise, docker_image, uses):
     request_count = 50
     shards = 2
 
-    def update_rolling(flow, pod_name, start_event):
+    def update_rolling(flow, deployment_name, start_event):
         start_event.wait()
         with reraise:
-            flow.rolling_update(pod_name)
+            flow.rolling_update(deployment_name)
 
     with Flow().add(
         uses=uses,
@@ -153,10 +153,10 @@ def test_search_while_updating(docs, reraise, docker_image, uses):
 # @pytest.mark.repeat(5)
 @pytest.mark.timeout(60)
 def test_vector_indexer_thread(config, docs, reraise):
-    def update_rolling(flow, pod_name, start_event):
+    def update_rolling(flow, deployment_name, start_event):
         start_event.wait()
         with reraise:
-            flow.rolling_update(pod_name)
+            flow.rolling_update(deployment_name)
 
     with Flow().add(
         name='executor1',
@@ -195,7 +195,7 @@ def test_workspace(config, tmpdir, docs):
         workspace=str(tmpdir),
         shards=3,
     ) as flow:
-        # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
+        # in practice, we don't send index requests to the deployment this is just done to test the workspaces
         for i in range(10):
             flow.index(docs)
 
@@ -212,7 +212,7 @@ def test_num_peas(config):
         shards=4,
     ) as flow:
         assert flow.num_peas == (
-            4 * 3 + 1 + 1  # shards 4  # replicas 3  # pod head  # gateway
+            4 * 3 + 1 + 1  # shards 4  # replicas 3  # deployment head  # gateway
         )
 
 

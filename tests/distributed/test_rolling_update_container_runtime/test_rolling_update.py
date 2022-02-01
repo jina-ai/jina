@@ -31,8 +31,8 @@ def executor_images():
 
     client = docker.from_env()
 
-    dbms_dir = os.path.join(cur_dir, 'pods', 'dbms')
-    query_dir = os.path.join(cur_dir, 'pods', 'query')
+    dbms_dir = os.path.join(cur_dir, 'deployments', 'dbms')
+    query_dir = os.path.join(cur_dir, 'deployments', 'query')
     client.images.build(path=dbms_dir, tag='dbms-executor')
     client.images.build(path=query_dir, tag='query-executor')
     client.close()
@@ -89,7 +89,7 @@ def test_dump_dbms_remote(executor_images, docker_compose):
         DaemonID(
             client.flows.rolling_update(
                 id=query_flow_id,
-                pod_name='indexer_query',
+                deployment_name='indexer_query',
                 uses_with={'dump_path': DUMP_PATH},
             )
         )

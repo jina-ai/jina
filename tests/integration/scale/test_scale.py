@@ -42,14 +42,14 @@ def docker_image_built():
 
 
 @pytest.fixture
-def pod_params(request):
+def deployment_params(request):
     num_replicas, scale_to, shards = request.param
     return num_replicas, scale_to, shards
 
 
 @pytest.fixture
-def flow_with_worker_runtime(pod_params):
-    num_replicas, scale_to, shards = pod_params
+def flow_with_worker_runtime(deployment_params):
+    num_replicas, scale_to, shards = deployment_params
     return Flow(port_expose=exposed_port).add(
         name='executor',
         uses=ScalableExecutor,
@@ -60,8 +60,8 @@ def flow_with_worker_runtime(pod_params):
 
 
 @pytest.fixture
-def flow_with_container_runtime(pod_params, docker_image_built):
-    num_replicas, scale_to, shards = pod_params
+def flow_with_container_runtime(deployment_params, docker_image_built):
+    num_replicas, scale_to, shards = deployment_params
     return Flow(port_expose=exposed_port).add(
         name='executor',
         uses=f'docker://{IMG_NAME}',
@@ -77,7 +77,7 @@ def flow_with_runtime(request):
 
 
 @pytest.mark.parametrize(
-    'pod_params',  # (num_replicas, scale_to, shards)
+    'deployment_params',  # (num_replicas, scale_to, shards)
     [
         (2, 3, 1),  # scale up 1 replica with 1 shard
         (2, 3, 2),  # scale up 1 replica with 2 shards
@@ -86,15 +86,15 @@ def flow_with_runtime(request):
     ],
     indirect=True,
 )
-def test_scale_success(flow_with_runtime, pod_params):
-    num_replicas, scale_to, shards = pod_params
+def test_scale_success(flow_with_runtime, deployment_params):
+    num_replicas, scale_to, shards = deployment_params
     with flow_with_runtime as f:
         ret1 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
-        f.scale(pod_name='executor', replicas=scale_to)
+        f.scale(deployment_name='executor', replicas=scale_to)
         ret2 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
@@ -128,7 +128,7 @@ def test_scale_success(flow_with_runtime, pod_params):
 
 
 @pytest.mark.parametrize(
-    'pod_params',
+    'deployment_params',
     [
         (2, 3, 1),
         (3, 2, 1),
@@ -136,7 +136,7 @@ def test_scale_success(flow_with_runtime, pod_params):
     indirect=True,
 )
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
+def test_scale_with_concurrent_client(flow_with_runtime, deployment_params, protocol):
     def peer_client(port, protocol, peer_hash, queue):
         rv = Client(protocol=protocol, port=port).index(
             [Document(text=peer_hash) for _ in range(NUM_DOCS_SENT_BY_CLIENTS)],
@@ -148,7 +148,7 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
                 # our proto objects are not fit to be sent by queues
                 queue.put(doc.text)
 
-    num_replicas, scale_to, _ = pod_params
+    num_replicas, scale_to, _ = deployment_params
     queue = multiprocessing.Queue()
     flow_with_runtime.protocol = protocol
     with flow_with_runtime as f:
@@ -163,7 +163,7 @@ def test_scale_with_concurrent_client(flow_with_runtime, pod_params, protocol):
             t.start()
             thread_pool.append(t)
 
-        f.scale(pod_name='executor', replicas=scale_to)
+        f.scale(deployment_name='executor', replicas=scale_to)
 
         for t in thread_pool:
             t.join()

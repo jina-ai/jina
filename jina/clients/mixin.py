@@ -45,7 +45,7 @@ class PostMixin:
 
         .. warning::
             ``target_executor`` uses ``re.match`` for checking if the pattern is matched.
-             ``target_executor=='foo'`` will match both pods with the name ``foo`` and ``foo_what_ever_suffix``.
+             ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
 
         async def _get_results(*args, **kwargs):

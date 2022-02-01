@@ -6,25 +6,29 @@ import pytest
 
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType
-from jina.parsers import set_gateway_parser, set_pod_parser
-from jina.orchestrate.pods import Pod
+from jina.parsers import set_gateway_parser, set_deployment_parser
+from jina.orchestrate.deployments import Deployment
 
 
 @pytest.mark.asyncio
 # test gateway, head and worker pea by creating them manually in the most simple configuration
-async def test_pods_trivial_topology(port_generator):
-    pod_port = port_generator()
+async def test_deployments_trivial_topology(port_generator):
+    deployment_port = port_generator()
     port_expose = port_generator()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pod_addresses = f'{{"pod0": ["0.0.0.0:{pod_port}"]}}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
+    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{deployment_port}"]}}'
 
     # create a single worker pea
-    worker_pod = _create_regular_pod(pod_port)
+    worker_deployment = _create_regular_deployment(deployment_port)
 
     # create a single gateway pea
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_deployment = _create_gateway_deployment(
+        graph_description, deployment_addresses, port_expose
+    )
 
-    with gateway_pod, worker_pod:
+    with gateway_deployment, worker_deployment:
 
         # send requests to the gateway
         c = Client(host='localhost', port=port_expose, asyncio=True)
@@ -43,16 +47,16 @@ async def test_pods_trivial_topology(port_generator):
 @pytest.fixture
 def complete_graph_dict():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['end-gateway'],
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'merger': ['pod_last'],
-        'pod5': ['merger'],
-        'pod3': ['merger'],
-        'pod6': [],  # hanging_pod
-        'pod_last': ['end-gateway'],
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['end-gateway'],
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'merger': ['deployment_last'],
+        'deployment5': ['merger'],
+        'deployment3': ['merger'],
+        'deployment6': [],  # hanging_deployment
+        'deployment_last': ['end-gateway'],
     }
 
 
@@ -60,38 +64,40 @@ def complete_graph_dict():
 @pytest.mark.parametrize('uses_before', [True, False])
 @pytest.mark.parametrize('uses_after', [True, False])
 # test gateway, head and worker pea by creating them manually in a more Flow like topology with branching/merging
-async def test_pods_flow_topology(
+async def test_deployments_flow_topology(
     complete_graph_dict, uses_before, uses_after, port_generator
 ):
-    pods = [
-        pod_name for pod_name in complete_graph_dict.keys() if 'gateway' not in pod_name
+    deployments = [
+        deployment_name
+        for deployment_name in complete_graph_dict.keys()
+        if 'gateway' not in deployment_name
     ]
-    started_pods = []
-    pod_addresses = '{'
-    for pod in pods:
+    started_deployments = []
+    deployment_addresses = '{'
+    for deployment in deployments:
         head_port = port_generator()
-        pod_addresses += f'"{pod}": ["0.0.0.0:{head_port}"],'
-        regular_pod = _create_regular_pod(
+        deployment_addresses += f'"{deployment}": ["0.0.0.0:{head_port}"],'
+        regular_deployment = _create_regular_deployment(
             port=head_port,
-            name=f'{pod}',
+            name=f'{deployment}',
             uses_before=uses_before,
             uses_after=uses_after,
         )
 
-        started_pods.append(regular_pod)
-        regular_pod.start()
+        started_deployments.append(regular_deployment)
+        regular_deployment.start()
 
     # remove last comma
-    pod_addresses = pod_addresses[:-1]
-    pod_addresses += '}'
+    deployment_addresses = deployment_addresses[:-1]
+    deployment_addresses += '}'
     port_expose = port_generator()
 
     # create a single gateway pea
 
-    gateway_pod = _create_gateway_pod(
-        json.dumps(complete_graph_dict), pod_addresses, port_expose
+    gateway_deployment = _create_gateway_deployment(
+        json.dumps(complete_graph_dict), deployment_addresses, port_expose
     )
-    gateway_pod.start()
+    gateway_deployment.start()
 
     await asyncio.sleep(0.1)
 
@@ -102,10 +108,10 @@ async def test_pods_flow_topology(
     async for response in responses:
         response_list.append(response)
 
-    # clean up pods
-    gateway_pod.close()
-    for pod in started_pods:
-        pod.close()
+    # clean up deployments
+    gateway_deployment.close()
+    for deployment in started_deployments:
+        deployment.close()
 
     assert len(response_list) == 20
     expected_docs = 1
@@ -119,17 +125,23 @@ async def test_pods_flow_topology(
 @pytest.mark.asyncio
 @pytest.mark.parametrize('polling', [PollingType.ALL, PollingType.ANY])
 # test simple topology with shards
-async def test_pods_shards(polling, port_generator):
+async def test_deployments_shards(polling, port_generator):
     head_port = port_generator()
     port_expose = port_generator()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
+    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
-    pod = _create_regular_pod(port=head_port, name='pod', polling=polling, shards=10)
-    pod.start()
+    deployment = _create_regular_deployment(
+        port=head_port, name='deployment', polling=polling, shards=10
+    )
+    deployment.start()
 
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
-    gateway_pod.start()
+    gateway_deployment = _create_gateway_deployment(
+        graph_description, deployment_addresses, port_expose
+    )
+    gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
@@ -139,8 +151,8 @@ async def test_pods_shards(polling, port_generator):
     async for response in responses:
         response_list.append(response)
 
-    gateway_pod.close()
-    pod.close()
+    gateway_deployment.close()
+    deployment.close()
 
     assert len(response_list) == 20
     assert len(response_list[0].docs) == 1 if polling == PollingType.ANY else 10
@@ -148,17 +160,23 @@ async def test_pods_shards(polling, port_generator):
 
 @pytest.mark.asyncio
 # test simple topology with replicas
-async def test_pods_replicas(port_generator):
+async def test_deployments_replicas(port_generator):
     head_port = port_generator()
     port_expose = port_generator()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
+    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
-    pod = _create_regular_pod(port=head_port, name='pod', replicas=10)
-    pod.start()
+    deployment = _create_regular_deployment(
+        port=head_port, name='deployment', replicas=10
+    )
+    deployment.start()
 
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
-    gateway_pod.start()
+    gateway_deployment = _create_gateway_deployment(
+        graph_description, deployment_addresses, port_expose
+    )
+    gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
@@ -168,33 +186,37 @@ async def test_pods_replicas(port_generator):
     async for response in responses:
         response_list.append(response)
 
-    gateway_pod.close()
-    pod.close()
+    gateway_deployment.close()
+    deployment.close()
 
     assert len(response_list) == 20
     assert len(response_list[0].docs) == 1
 
 
 @pytest.mark.asyncio
-async def test_pods_with_executor(port_generator):
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+async def test_deployments_with_executor(port_generator):
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
 
     head_port = port_generator()
-    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
-    regular_pod = _create_regular_pod(
+    regular_deployment = _create_regular_deployment(
         port=head_port,
-        name='pod',
+        name='deployment',
         executor='NameChangeExecutor',
         uses_before=True,
         uses_after=True,
         polling=PollingType.ALL,
     )
-    regular_pod.start()
+    regular_deployment.start()
 
     port_expose = port_generator()
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
-    gateway_pod.start()
+    gateway_deployment = _create_gateway_deployment(
+        graph_description, deployment_addresses, port_expose
+    )
+    gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
@@ -204,32 +226,36 @@ async def test_pods_with_executor(port_generator):
     async for response in responses:
         response_list.append(response.docs)
 
-    gateway_pod.close()
-    regular_pod.close()
+    gateway_deployment.close()
+    regular_deployment.close()
 
     assert len(response_list) == 20
     assert len(response_list[0]) == 4
 
     doc_texts = [doc.text for doc in response_list[0]]
     assert doc_texts.count('client0-Request') == 1
-    assert doc_texts.count('pod/uses_before-0') == 1
-    assert doc_texts.count('pod/uses_after-0') == 1
+    assert doc_texts.count('deployment/uses_before-0') == 1
+    assert doc_texts.count('deployment/uses_after-0') == 1
 
 
 @pytest.mark.asyncio
-async def test_pods_with_replicas_advance_faster(port_generator):
+async def test_deployments_with_replicas_advance_faster(port_generator):
     head_port = port_generator()
     port_expose = port_generator()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
-
-    pod = _create_regular_pod(
-        port=head_port, name='pod', executor='FastSlowExecutor', replicas=10
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    pod.start()
+    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
-    gateway_pod.start()
+    deployment = _create_regular_deployment(
+        port=head_port, name='deployment', executor='FastSlowExecutor', replicas=10
+    )
+    deployment.start()
+
+    gateway_deployment = _create_gateway_deployment(
+        graph_description, deployment_addresses, port_expose
+    )
+    gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
@@ -240,8 +266,8 @@ async def test_pods_with_replicas_advance_faster(port_generator):
     async for response in responses:
         response_list.append(response)
 
-    gateway_pod.close()
-    pod.close()
+    gateway_deployment.close()
+    deployment.close()
 
     assert len(response_list) == 2
     for response in response_list:
@@ -270,7 +296,7 @@ class FastSlowExecutor(Executor):
                 time.sleep(1.0)
 
 
-def _create_regular_pod(
+def _create_regular_deployment(
     port,
     name='',
     executor=None,
@@ -280,7 +306,7 @@ def _create_regular_pod(
     shards=None,
     replicas=None,
 ):
-    args = set_pod_parser().parse_args([])
+    args = set_deployment_parser().parse_args([])
     args.port_in = port
     args.name = name
     if shards:
@@ -294,17 +320,17 @@ def _create_regular_pod(
         args.uses_after = executor if executor else 'NameChangeExecutor'
     if uses_before:
         args.uses_before = executor if executor else 'NameChangeExecutor'
-    return Pod(args)
+    return Deployment(args)
 
 
-def _create_gateway_pod(graph_description, pod_addresses, port_expose):
-    return Pod(
+def _create_gateway_deployment(graph_description, deployment_addresses, port_expose):
+    return Deployment(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
                 graph_description,
-                '--pods-addresses',
-                pod_addresses,
+                '--deployments-addresses',
+                deployment_addresses,
                 '--port-expose',
                 str(port_expose),
             ]

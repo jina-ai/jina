@@ -5,7 +5,7 @@ from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 
 
 def mixin_distributed_feature_parser(parser):
-    """Mixing in arguments required by :class:`BasePod` into the given parser.
+    """Mixing in arguments required by :class:`BaseDeployment` into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 
@@ -25,7 +25,7 @@ def mixin_distributed_feature_parser(parser):
         metavar='FILE',
         help='''
 The files on the host to be uploaded to the remote
-workspace. This can be useful when your Pod has more
+workspace. This can be useful when your Deployment has more
 file dependencies beyond a single YAML file, e.g.
 Python files, data files.
 

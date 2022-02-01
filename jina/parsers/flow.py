@@ -27,9 +27,9 @@ def mixin_flow_features_parser(parser):
         choices=list(FlowInspectType),
         default=FlowInspectType.COLLECT,
         help='''
-    The strategy on those inspect pods in the flow.
+    The strategy on those inspect deployments in the flow.
 
-    If `REMOVE` is given then all inspect pods are removed when building the flow.
+    If `REMOVE` is given then all inspect deployments are removed when building the flow.
     ''',
     )
 

@@ -77,7 +77,9 @@ async def test_flowstore_rolling_update(partial_flow_store, mocker):
         'daemon.stores.partial.PartialFlowStore.rolling_update', return_value=future
     )
 
-    resp = await partial_flow_store.rolling_update(pod_name='executor1', uses_with={})
+    resp = await partial_flow_store.rolling_update(
+        deployment_name='executor1', uses_with={}
+    )
     assert resp
 
 
@@ -92,5 +94,5 @@ async def test_flowstore_scale(partial_flow_store, mocker):
     future = asyncio.Future()
     future.set_result(PartialStoreItem())
     mocker.patch('daemon.stores.partial.PartialFlowStore.scale', return_value=future)
-    resp = await partial_flow_store.scale(pod_name='executor1', replicas=2)
+    resp = await partial_flow_store.scale(deployment_name='executor1', replicas=2)
     assert resp

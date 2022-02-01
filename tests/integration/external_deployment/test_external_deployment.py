@@ -1,7 +1,7 @@
 import pytest
 
-from jina.orchestrate.pods import Pod
-from jina.parsers import set_pod_parser
+from jina.orchestrate.deployments import Deployment
+from jina.parsers import set_deployment_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.helper import random_port
@@ -29,7 +29,7 @@ def num_shards(request):
 
 
 @pytest.fixture(scope='function')
-def external_pod_args(num_replicas, num_shards):
+def external_deployment_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -46,12 +46,12 @@ def external_pod_args(num_replicas, num_shards):
         '--polling',
         'all',
     ]
-    return set_pod_parser().parse_args(args)
+    return set_deployment_parser().parse_args(args)
 
 
 @pytest.fixture
-def external_pod(external_pod_args):
-    return Pod(external_pod_args)
+def external_deployment(external_deployment_args):
+    return Deployment(external_deployment_args)
 
 
 class MyExternalExecutor(Executor):
@@ -66,14 +66,14 @@ class MyExternalExecutor(Executor):
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
-def test_flow_with_external_pod(
-    external_pod, external_pod_args, input_docs, num_replicas, num_shards
+def test_flow_with_external_deployment(
+    external_deployment, external_deployment_args, input_docs, num_replicas, num_shards
 ):
-    with external_pod:
-        external_args = vars(external_pod_args)
+    with external_deployment:
+        external_args = vars(external_deployment_args)
         del external_args['name']
         del external_args['external']
-        del external_args['pod_role']
+        del external_args['deployment_role']
         flow = Flow().add(
             **external_args,
             name='external_fake',
@@ -88,14 +88,14 @@ def test_flow_with_external_pod(
 
 @pytest.mark.parametrize('num_replicas', [2], indirect=True)
 @pytest.mark.parametrize('num_shards', [2], indirect=True)
-def test_two_flow_with_shared_external_pod(
-    external_pod, external_pod_args, input_docs, num_replicas, num_shards
+def test_two_flow_with_shared_external_deployment(
+    external_deployment, external_deployment_args, input_docs, num_replicas, num_shards
 ):
-    with external_pod:
-        external_args = vars(external_pod_args)
+    with external_deployment:
+        external_args = vars(external_deployment_args)
         del external_args['name']
         del external_args['external']
-        del external_args['pod_role']
+        del external_args['deployment_role']
         flow1 = Flow().add(
             **external_args,
             name='external_fake',
@@ -124,7 +124,7 @@ def test_two_flow_with_shared_external_pod(
 
 
 @pytest.fixture(scope='function')
-def external_pod_shards_1_args(num_replicas, num_shards):
+def external_deployment_shards_1_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -139,16 +139,16 @@ def external_pod_shards_1_args(num_replicas, num_shards):
         '--polling',
         'all',
     ]
-    return set_pod_parser().parse_args(args)
+    return set_deployment_parser().parse_args(args)
 
 
 @pytest.fixture
-def external_pod_shards_1(external_pod_shards_1_args):
-    return Pod(external_pod_shards_1_args)
+def external_deployment_shards_1(external_deployment_shards_1_args):
+    return Deployment(external_deployment_shards_1_args)
 
 
 @pytest.fixture(scope='function')
-def external_pod_shards_2_args(num_replicas, num_shards):
+def external_deployment_shards_2_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -163,34 +163,34 @@ def external_pod_shards_2_args(num_replicas, num_shards):
         '--polling',
         'all',
     ]
-    return set_pod_parser().parse_args(args)
+    return set_deployment_parser().parse_args(args)
 
 
 @pytest.fixture
-def external_pod_shards_2(external_pod_shards_2_args):
-    return Pod(external_pod_shards_2_args)
+def external_deployment_shards_2(external_deployment_shards_2_args):
+    return Deployment(external_deployment_shards_2_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
-def test_flow_with_external_pod_shards(
-    external_pod_shards_1,
-    external_pod_shards_2,
-    external_pod_shards_1_args,
-    external_pod_shards_2_args,
+def test_flow_with_external_deployment_shards(
+    external_deployment_shards_1,
+    external_deployment_shards_2,
+    external_deployment_shards_1_args,
+    external_deployment_shards_2_args,
     input_docs,
     num_replicas,
     num_shards,
 ):
-    with external_pod_shards_1, external_pod_shards_2:
-        external_args_1 = vars(external_pod_shards_1_args)
-        external_args_2 = vars(external_pod_shards_2_args)
+    with external_deployment_shards_1, external_deployment_shards_2:
+        external_args_1 = vars(external_deployment_shards_1_args)
+        external_args_2 = vars(external_deployment_shards_2_args)
         del external_args_1['name']
         del external_args_1['external']
-        del external_args_1['pod_role']
+        del external_args_1['deployment_role']
         del external_args_2['name']
         del external_args_2['external']
-        del external_args_2['pod_role']
+        del external_args_2['deployment_role']
         flow = (
             Flow()
             .add(name='executor1')
@@ -217,7 +217,7 @@ def test_flow_with_external_pod_shards(
 
 
 @pytest.fixture(scope='function')
-def external_pod_pre_shards_args(num_replicas, num_shards):
+def external_deployment_pre_shards_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -232,28 +232,28 @@ def external_pod_pre_shards_args(num_replicas, num_shards):
         '--polling',
         'all',
     ]
-    return set_pod_parser().parse_args(args)
+    return set_deployment_parser().parse_args(args)
 
 
 @pytest.fixture
-def external_pod_pre_shards(external_pod_pre_shards_args):
-    return Pod(external_pod_pre_shards_args)
+def external_deployment_pre_shards(external_deployment_pre_shards_args):
+    return Deployment(external_deployment_pre_shards_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
-def test_flow_with_external_pod_pre_shards(
-    external_pod_pre_shards,
-    external_pod_pre_shards_args,
+def test_flow_with_external_deployment_pre_shards(
+    external_deployment_pre_shards,
+    external_deployment_pre_shards_args,
     input_docs,
     num_replicas,
     num_shards,
 ):
-    with external_pod_pre_shards:
-        external_args = vars(external_pod_pre_shards_args)
+    with external_deployment_pre_shards:
+        external_args = vars(external_deployment_pre_shards_args)
         del external_args['name']
         del external_args['external']
-        del external_args['pod_role']
+        del external_args['deployment_role']
         flow = (
             Flow()
             .add(
@@ -279,7 +279,7 @@ def test_flow_with_external_pod_pre_shards(
 
 
 @pytest.fixture(scope='function')
-def external_pod_join_args(num_replicas, num_shards):
+def external_deployment_join_args(num_replicas, num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -287,7 +287,7 @@ def external_pod_join_args(num_replicas, num_shards):
         'external_real',
         '--port-in',
         str(random_port()),
-        '--pod-role',
+        '--deployment-role',
         'JOIN',
         '--shards',
         str(num_shards),
@@ -296,28 +296,28 @@ def external_pod_join_args(num_replicas, num_shards):
         '--polling',
         'all',
     ]
-    return set_pod_parser().parse_args(args)
+    return set_deployment_parser().parse_args(args)
 
 
 @pytest.fixture
-def external_pod_join(external_pod_join_args):
-    return Pod(external_pod_join_args)
+def external_deployment_join(external_deployment_join_args):
+    return Deployment(external_deployment_join_args)
 
 
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
-def test_flow_with_external_pod_join(
-    external_pod_join,
-    external_pod_join_args,
+def test_flow_with_external_deployment_join(
+    external_deployment_join,
+    external_deployment_join_args,
     input_docs,
     num_replicas,
     num_shards,
 ):
-    with external_pod_join:
-        external_args = vars(external_pod_join_args)
+    with external_deployment_join:
+        external_args = vars(external_deployment_join_args)
         del external_args['name']
         del external_args['external']
-        del external_args['pod_role']
+        del external_args['deployment_role']
         flow = (
             Flow()
             .add(

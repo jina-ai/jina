@@ -4,7 +4,7 @@ from jina.helper import get_public_ip, get_internal_ip, get_full_version
 from jina.logging.profile import used_memory_readable
 
 from daemon.models import DaemonStatus
-from daemon.stores import workspace_store, pea_store, pod_store, flow_store
+from daemon.stores import workspace_store, pea_store, deployment_store, flow_store
 
 router = APIRouter(tags=['daemon'])
 
@@ -50,7 +50,7 @@ async def _status():
         'envs': _envs,
         'workspaces': workspace_store.status,
         'peas': pea_store.status,
-        'pods': pod_store.status,
+        'deployments': deployment_store.status,
         'flows': flow_store.status,
         'used_memory': used_memory_readable(),
     }

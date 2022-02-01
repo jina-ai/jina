@@ -9,7 +9,9 @@ from daemon.models.id import DaemonID
 from daemon.models.workspaces import WorkspaceItem, WorkspaceStoreStatus
 
 FlowModel = build_pydantic_model(model_name='FlowModel', module='flow')
-PodModel = build_pydantic_model(model_name='PodModel', module='pod')
+DeploymentModel = build_pydantic_model(
+    model_name='DeploymentModel', module='deployment'
+)
 PeaModel = build_pydantic_model(model_name='PeaModel', module='pea')
 
 
@@ -27,6 +29,6 @@ class DaemonStatus(BaseModel):
     envs: Dict
     workspaces: WorkspaceStoreStatus
     peas: ContainerStoreStatus
-    pods: ContainerStoreStatus
+    deployments: ContainerStoreStatus
     flows: ContainerStoreStatus
     used_memory: str

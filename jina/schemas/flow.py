@@ -5,7 +5,7 @@ _schema_flow_with = _cli_to_schema(
     api_to_dict(),
     'flow',
     allow_addition=False,
-    description='The config of Flow, unrecognized config arguments will be applied to all Pods',
+    description='The config of Flow, unrecognized config arguments will be applied to all Deployments',
 )['Jina::Flow']
 
 schema_flow = {
@@ -27,14 +27,14 @@ schema_flow = {
             },
             'executors': {
                 'description': 'Define the steps in the Flow.\n'
-                'A Pod is a container and interface for one or multiple Peas that have the same properties.',
+                'A Deployment is a container and interface for one or multiple Peas that have the same properties.',
                 'type': 'array',
-                'items': {'$ref': '#/definitions/Jina::Pod'},
+                'items': {'$ref': '#/definitions/Jina::Deployment'},
                 'minItems': 1,
             },
         },
         'type': 'object',
         'additionalProperties': False,
-        'required': ['jtype', 'version', 'pods'],
+        'required': ['jtype', 'version', 'deployments'],
     }
 }

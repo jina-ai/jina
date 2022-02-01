@@ -20,7 +20,7 @@ class AsyncPeaClient(AsyncBaseClient):
 
     @if_alive
     async def arguments(self) -> Optional[Dict]:
-        """Get all arguments accepted by a remote Pea/Pod
+        """Get all arguments accepted by a remote Pea/Deployment
 
         :return: dict arguments of remote JinaD
         """
@@ -37,12 +37,12 @@ class AsyncPeaClient(AsyncBaseClient):
         payload: Dict,
         envs: Dict[str, str] = {},
     ) -> Tuple[bool, str]:
-        """Create a remote Pea / Pod
+        """Create a remote Pea / Deployment
 
         :param workspace_id: id of workspace where the Pea would live in
         :param payload: json payload
         :param envs: dict of env vars to be passed
-        :return: (True if Pea/Pod creation succeeded) and (the identity of the spawned Pea/Pod or, error message)
+        :return: (True if Pea/Deployment creation succeeded) and (the identity of the spawned Pea/Deployment or, error message)
         """
         envs = (
             [('envs', f'{k}={v}') for k, v in envs.items()]
@@ -80,9 +80,9 @@ class AsyncPeaClient(AsyncBaseClient):
 
     @if_alive
     async def delete(self, id: Union[str, 'DaemonID'], **kwargs) -> bool:
-        """Delete a remote Pea/Pod
+        """Delete a remote Pea/Deployment
 
-        :param id: the identity of the Pea/Pod
+        :param id: the identity of the Pea/Deployment
         :param kwargs: keyword arguments
         :return: True if the deletion is successful
         """

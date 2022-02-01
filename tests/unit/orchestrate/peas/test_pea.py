@@ -123,7 +123,7 @@ def test_gateway_runtimes(protocol, expected):
         [
             '--graph-description',
             '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
-            '--pods-addresses',
+            '--deployments-addresses',
             '{"pod0": ["0.0.0.0:1234"]}',
             '--protocol',
             protocol,
@@ -182,7 +182,7 @@ def test_failing_gateway_runtimes(protocol, expected):
         [
             '--graph-description',
             '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
-            '--pods-addresses',
+            '--deployments-addresses',
             '{_INVALIDJSONINTENTIONALLY_pod0": ["0.0.0.0:1234"]}',
             '--protocol',
             protocol,

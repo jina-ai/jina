@@ -43,12 +43,12 @@ def allowed_levels(levels: List['FlowBuildLevel']):
     return __build_level
 
 
-def _hanging_pods(op_flow: 'Flow') -> List[str]:
+def _hanging_deployments(op_flow: 'Flow') -> List[str]:
     """
     :param op_flow: the Flow we're operating on
-    :return: names of hanging Pods (nobody recv from them) in the Flow.
+    :return: names of hanging Deployments (nobody recv from them) in the Flow.
     """
-    all_needs = {v for p in op_flow._pod_nodes.values() for v in p.needs}
-    all_names = {p for p in op_flow._pod_nodes.keys()}
+    all_needs = {v for p in op_flow._deployment_nodes.values() for v in p.needs}
+    all_names = {p for p in op_flow._deployment_nodes.keys()}
     # all_names is always a superset of all_needs
     return list(all_names.difference(all_needs))

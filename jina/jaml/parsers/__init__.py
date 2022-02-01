@@ -24,10 +24,9 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
 
 
 def _get_flow_parser():
-    from jina.jaml.parsers.flow.legacy import LegacyParser
     from jina.jaml.parsers.flow.v1 import V1Parser
 
-    return [V1Parser, LegacyParser], V1Parser
+    return [V1Parser], V1Parser
 
 
 def _get_exec_parser():

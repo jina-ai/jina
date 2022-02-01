@@ -4,19 +4,19 @@ from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
 from jina.enums import PeaRoleType
-from jina.orchestrate.pods.config.helper import (
+from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
 )
-from jina.orchestrate.pods import BasePod
+from jina.orchestrate.deployments import BaseDeployment
 
 PORT_IN = 8081
 
 
 class DockerComposeConfig:
     """
-    Class that implements the output of configuration files for docker-compose for a given Pod.
+    Class that implements the output of configuration files for docker-compose for a given Deployment.
     """
 
     class _DockerComposeService:
@@ -25,22 +25,22 @@ class DockerComposeConfig:
             name: str,
             version: str,
             pea_type: PeaRoleType,
-            jina_pod_name: str,
+            jina_deployment_name: str,
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
             service_args: Union['Namespace', Dict],
-            pod_addresses: Optional[Dict[str, List[str]]] = None,
+            deployment_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
             self.compatible_name = to_compatible_name(self.name)
             self.version = version
             self.pea_type = pea_type
-            self.jina_pod_name = jina_pod_name
+            self.jina_deployment_name = jina_deployment_name
             self.shard_id = shard_id
             self.common_args = common_args
             self.service_args = service_args
             self.num_replicas = getattr(self.service_args, 'replicas', 1)
-            self.pod_addresses = pod_addresses
+            self.deployment_addresses = deployment_addresses
 
         def get_gateway_config(
             self,
@@ -54,7 +54,7 @@ class DockerComposeConfig:
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
             cargs = copy.copy(self.service_args)
-            cargs.pods_addresses = self.pod_addresses
+            cargs.deployment_addresses = self.deployment_addresses
             cargs.env = None
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
@@ -159,9 +159,9 @@ class DockerComposeConfig:
     def __init__(
         self,
         args: Union['Namespace', Dict],
-        pod_addresses: Optional[Dict[str, List[str]]] = None,
+        deployment_addresses: Optional[Dict[str, List[str]]] = None,
     ):
-        self.pod_addresses = pod_addresses
+        self.deployment_addresses = deployment_addresses
         self.head_service = None
         self.uses_before_service = None
         self.uses_after_service = None
@@ -175,11 +175,11 @@ class DockerComposeConfig:
                 name=self.services_args['head_service'].name,
                 version=get_base_executor_version(),
                 shard_id=None,
-                jina_pod_name=self.name,
+                jina_deployment_name=self.name,
                 common_args=self.args,
                 service_args=self.services_args['head_service'],
                 pea_type=PeaRoleType.HEAD,
-                pod_addresses=None,
+                deployment_addresses=None,
             )
 
         if self.services_args['uses_before_service'] is not None:
@@ -187,11 +187,11 @@ class DockerComposeConfig:
                 name=self.services_args['uses_before_service'].name,
                 version=get_base_executor_version(),
                 shard_id=None,
-                jina_pod_name=self.name,
+                jina_deployment_name=self.name,
                 common_args=self.args,
                 service_args=self.services_args['uses_before_service'],
                 pea_type=PeaRoleType.WORKER,
-                pod_addresses=None,
+                deployment_addresses=None,
             )
 
         if self.services_args['uses_after_service'] is not None:
@@ -199,11 +199,11 @@ class DockerComposeConfig:
                 name=self.services_args['uses_after_service'].name,
                 version=get_base_executor_version(),
                 shard_id=None,
-                jina_pod_name=self.name,
+                jina_deployment_name=self.name,
                 common_args=self.args,
                 service_args=self.services_args['uses_after_service'],
                 pea_type=PeaRoleType.WORKER,
-                pod_addresses=None,
+                deployment_addresses=None,
             )
 
         self.worker_services = []
@@ -220,8 +220,10 @@ class DockerComposeConfig:
                     pea_type=PeaRoleType.WORKER
                     if name != 'gateway'
                     else PeaRoleType.GATEWAY,
-                    jina_pod_name=self.name,
-                    pod_addresses=self.pod_addresses if name == 'gateway' else None,
+                    jina_deployment_name=self.name,
+                    deployment_addresses=self.deployment_addresses
+                    if name == 'gateway'
+                    else None,
                 )
             )
 
@@ -238,7 +240,7 @@ class DockerComposeConfig:
         uses_after = getattr(args, 'uses_after', None)
 
         if args.name != 'gateway':
-            parsed_args['head_service'] = BasePod._copy_to_head_args(self.args)
+            parsed_args['head_service'] = BaseDeployment._copy_to_head_args(self.args)
             parsed_args['head_service'].port_in = PORT_IN
             parsed_args['head_service'].uses = None
             parsed_args['head_service'].uses_metas = None
@@ -329,7 +331,7 @@ class DockerComposeConfig:
         self,
     ) -> List[Tuple[str, Dict]]:
         """
-        Return a list of dictionary configurations. One for each service in this Pod
+        Return a list of dictionary configurations. One for each service in this Deployment
             .. # noqa: DAR201
             .. # noqa: DAR101
         """

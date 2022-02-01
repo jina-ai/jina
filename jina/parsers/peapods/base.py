@@ -1,4 +1,4 @@
-"""Base argparser module for Pea and Pod runtime"""
+"""Base argparser module for Pea and Deployment runtime"""
 import argparse
 import os
 
@@ -8,7 +8,7 @@ from jina.helper import random_identity
 
 
 def mixin_base_ppr_parser(parser):
-    """Mixing in arguments required by pea/pod/runtime module into the given parser.
+    """Mixing in arguments required by pea/deployment/runtime module into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 
@@ -64,7 +64,7 @@ When not given, then the default naming strategy will apply.
         type=str,
         default=random_identity(),
         help='the UUID for identifying the workspace. When not given a random id will be assigned.'
-        'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '
+        'Multiple Pea/Deployment/Flow will work under the same workspace if they share the same '
         '`workspace-id`.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
@@ -110,9 +110,9 @@ When not given, then the default naming strategy will apply.
         type=str,
         default=PollingType.ANY.name,
         help='''
-    The polling strategy of the Pod and its endpoints (when `shards>1`).
-    Can be defined for all endpoints of a Pod or by endpoint.
-    Define per Pod:
+    The polling strategy of the Deployment and its endpoints (when `shards>1`).
+    Can be defined for all endpoints of a Deployment or by endpoint.
+    Define per Deployment:
     - ANY: only one (whoever is idle) Pea polls the message
     - ALL: all Peas poll the message (like a broadcast)
     Define per Endpoint:

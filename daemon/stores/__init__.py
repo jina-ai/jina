@@ -3,14 +3,18 @@ from typing import Optional, TYPE_CHECKING, Type, Union
 from daemon.stores.base import BaseStore
 from daemon.stores.flows import FlowStore
 from daemon.stores.peas import PeaStore
-from daemon.stores.pods import PodStore
+from daemon.stores.deployments import DeploymentStore
 from daemon.stores.workspaces import WorkspaceStore
 from daemon import jinad_args
 from daemon.models import DaemonID
 from daemon.models.enums import IDLiterals
 
 if TYPE_CHECKING:
-    from daemon.stores.partial import PartialPeaStore, PartialPodStore, PartialFlowStore
+    from daemon.stores.partial import (
+        PartialPeaStore,
+        PartialDeploymentStore,
+        PartialFlowStore,
+    )
 
 
 def _get_store(cls: Type[BaseStore]) -> BaseStore:
@@ -30,19 +34,23 @@ def _get_store(cls: Type[BaseStore]) -> BaseStore:
 
 
 def _get_partial_store() -> Optional[
-    Union['PartialPeaStore', 'PartialPodStore', 'PartialFlowStore']
+    Union['PartialPeaStore', 'PartialDeploymentStore', 'PartialFlowStore']
 ]:
     """Get partial store object
 
     :return: partial store object
     """
     from daemon.models.enums import PartialDaemonModes
-    from daemon.stores.partial import PartialPeaStore, PartialPodStore, PartialFlowStore
+    from daemon.stores.partial import (
+        PartialPeaStore,
+        PartialDeploymentStore,
+        PartialFlowStore,
+    )
 
     if jinad_args.mode == PartialDaemonModes.PEA:
         return PartialPeaStore()
-    elif jinad_args.mode == PartialDaemonModes.POD:
-        return PartialPodStore()
+    elif jinad_args.mode == PartialDaemonModes.DEPLOYMENT:
+        return PartialDeploymentStore()
     elif jinad_args.mode == PartialDaemonModes.FLOW:
         return PartialFlowStore()
     else:
@@ -55,8 +63,8 @@ def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
     :param entity_id: DaemonID
     :return: store object
     """
-    if entity_id.jtype == IDLiterals.JPOD:
-        return pod_store
+    if entity_id.jtype == IDLiterals.JDAEMON:
+        return deployment_store
     elif entity_id.jtype == IDLiterals.JPEA:
         return pea_store
     elif entity_id.jtype == IDLiterals.JFLOW:
@@ -68,7 +76,7 @@ def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
 
 
 pea_store: PeaStore = _get_store(PeaStore)
-pod_store: PodStore = _get_store(PodStore)
+deployment_store: DeploymentStore = _get_store(DeploymentStore)
 flow_store: FlowStore = _get_store(FlowStore)
 workspace_store: WorkspaceStore = _get_store(WorkspaceStore)
 partial_store = _get_partial_store()
