@@ -63,7 +63,7 @@ def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
     :param entity_id: DaemonID
     :return: store object
     """
-    if entity_id.jtype == IDLiterals.JDAEMON:
+    if entity_id.jtype == IDLiterals.JDEPLOYMENT:
         return deployment_store
     elif entity_id.jtype == IDLiterals.JPEA:
         return pea_store
