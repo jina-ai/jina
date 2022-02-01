@@ -25,7 +25,7 @@ def test_load_flow_from_empty_yaml():
 
 
 def test_support_versions():
-    assert get_supported_versions(Flow) == ['1', 'legacy']
+    assert get_supported_versions(Flow) == ['1']
 
 
 def test_load_legacy_and_v1():
@@ -172,11 +172,11 @@ def test_flow_yaml_from_string():
         assert f1 == f2
 
     f3 = Flow.load_config(
-        '!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]'
+        '!Flow\nversion: 1.0\ndeployments: [{name: ppp0, uses: _merge}, name: aaa1]'
     )
     assert 'ppp0' in f3._deployment_nodes.keys()
     assert 'aaa1' in f3._deployment_nodes.keys()
-    assert f3.num_pods == 2
+    assert f3.num_deployments == 2
 
 
 class DummyEncoder(Executor):

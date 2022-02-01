@@ -602,22 +602,22 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
     )
 
     if k8s_connection_pool is False and has_external:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["1.2.3.4:9090"]}'
         )
     elif k8s_connection_pool and has_external:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"external_executor": ["1.2.3.4:9090"]}'
         )
     elif k8s_connection_pool and not has_external:
-        assert '--pods-addresses' not in gateway_args
+        assert '--deployments-addresses' not in gateway_args
     elif not k8s_connection_pool and not has_external:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["external-executor-head-0.test-flow-ns.svc:8081"]}'
         )
