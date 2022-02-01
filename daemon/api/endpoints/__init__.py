@@ -49,7 +49,7 @@ async def _status():
         'jina': _jina,
         'envs': _envs,
         'workspaces': workspace_store.status,
-        'peas': pod_store.status,
+        'pods': pod_store.status,
         'deployments': deployment_store.status,
         'flows': flow_store.status,
         'used_memory': used_memory_readable(),

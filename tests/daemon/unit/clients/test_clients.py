@@ -4,7 +4,7 @@ import aiohttp
 from daemon.models.id import DaemonID
 from daemon.clients import JinaDClient
 from daemon.clients.base import BaseClient, AsyncBaseClient
-from daemon.clients.peas import PodClient, AsyncPodClient
+from daemon.clients.pods import PodClient, AsyncPodClient
 from daemon.clients.deployments import DeploymentClient, AsyncDeploymentClient
 from daemon.clients.flows import FlowClient, AsyncFlowClient
 from daemon.clients.workspaces import WorkspaceClient, AsyncWorkspaceClient
@@ -454,7 +454,7 @@ async def test_podpod_delete_async(monkeypatch, identity, client_cls):
 
 def test_timeout():
     client = JinaDClient(host='1.2.3.4', port=8000)
-    assert client.peas.timeout.total == 10 * 60
+    assert client.pods.timeout.total == 10 * 60
 
     client = JinaDClient(host='1.2.3.4', port=8000, timeout=10)
-    assert client.peas.timeout.total == 10
+    assert client.pods.timeout.total == 10

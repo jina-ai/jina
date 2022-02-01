@@ -22,7 +22,7 @@ class IDLiterals(DaemonEnum):
     """Enum representing all values allowed in DaemonID"""
 
     JDEPLOYMENT = 'jdeployment'
-    JPEA = 'jpod'
+    JPOD = 'jpod'
     JFLOW = 'jflow'
     JNETWORK = 'jnetwork'
     JWORKSPACE = 'jworkspace'
@@ -74,6 +74,6 @@ class PythonVersion(DaemonEnum):
 class PartialDaemonModes(DaemonEnum):
     """Enum representing partial daemon modes"""
 
-    PEA = 'pod'
+    POD = 'pod'
     DEPLOYMENT = 'deployment'
     FLOW = 'flow'

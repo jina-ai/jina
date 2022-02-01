@@ -57,10 +57,10 @@ def _get_app(mode=None):
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     if mode is None:
-        from daemon.api.endpoints import flows, deployments, peas, logs, workspaces
+        from daemon.api.endpoints import flows, deployments, pods, logs, workspaces
 
         app.include_router(logs.router)
-        app.include_router(peas.router)
+        app.include_router(pods.router)
         app.include_router(deployments.router)
         app.include_router(flows.router)
         app.include_router(workspaces.router)
@@ -76,7 +76,7 @@ def _get_app(mode=None):
                     'description': 'API to manage Deployments',
                 },
                 {
-                    'name': 'peas',
+                    'name': 'pods',
                     'description': 'API to manage Pods',
                 },
                 {

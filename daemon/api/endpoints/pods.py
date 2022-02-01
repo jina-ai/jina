@@ -5,7 +5,7 @@ from daemon.api.dependencies import PodDepends
 from daemon.models import DaemonID, ContainerItem, ContainerStoreStatus, PodModel
 from daemon.stores import pod_store as store
 
-router = APIRouter(prefix='/peas', tags=['peas'])
+router = APIRouter(prefix='/pods', tags=['pods'])
 
 
 @router.get(

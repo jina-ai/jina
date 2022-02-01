@@ -179,7 +179,7 @@ class FlowDepends:
                     and hasattr(deployment.args, 'replicas')
                     and deployment.args.replicas > 1
                 ):
-                    for pod_args in [deployment.peas_args['head']]:
+                    for pod_args in [deployment.pod_args['head']]:
                         self._update_port_mapping(
                             pod_args, deployment_name, port_mapping
                         )
@@ -246,7 +246,7 @@ class PodDepends:
 
         :return: dict of port mappings
         """
-        # Container peas are started in separate docker containers, so we should not expose port_in here
+        # Container pods are started in separate docker containers, so we should not expose port_in here
         if (
             (
                 self.params.pod_role

@@ -25,7 +25,7 @@ def test_flow_error_in_partial_daemon():
 def test_pod_error_in_partial_daemon():
     client = JinaDClient(host=__default_host__, port=8000)
     workspace_id = client.workspaces.create()
-    status, error_msg = client.peas.create(
+    status, error_msg = client.pods.create(
         workspace_id=workspace_id,
         payload={'name': 'blah-pod', 'py_modules': ['abc.py']},
     )

@@ -3,7 +3,7 @@ from typing import Union, Dict, Optional
 
 import aiohttp
 
-from daemon.clients.peas import AsyncPodClient
+from daemon.clients.pods import AsyncPodClient
 from daemon.clients.mixin import AsyncToSyncMixin
 from daemon.helper import if_alive, error_msg_from
 from daemon.models.id import DaemonID, daemonize

@@ -23,7 +23,7 @@ def test_status(fastapi_client):
         'jina',
         'envs',
         'workspaces',
-        'peas',
+        'pods',
         'deployments',
         'flows',
         'used_memory',

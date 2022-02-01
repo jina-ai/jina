@@ -46,13 +46,13 @@ async def test_async_jinad_client(async_jinad_client, pod_args):
     workspace_id = await async_jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
 
-    success, pod_id = await async_jinad_client.peas.create(
+    success, pod_id = await async_jinad_client.pods.create(
         workspace_id=workspace_id, payload=replace_enum_to_str(vars(pod_args))
     )
     assert success
     assert pod_id
     assert is_pod_ready(pod_args)
-    assert await async_jinad_client.peas.delete(pod_id)
+    assert await async_jinad_client.pods.delete(pod_id)
     assert not is_pod_ready(pod_args)
     assert await async_jinad_client.workspaces.delete(workspace_id)
 
@@ -61,13 +61,13 @@ def test_sync_jinad_client(jinad_client, pod_args):
     workspace_id = jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
 
-    success, pod_id = jinad_client.peas.create(
+    success, pod_id = jinad_client.pods.create(
         workspace_id=workspace_id, payload=replace_enum_to_str(vars(pod_args))
     )
     assert success
     assert pod_id
     assert is_pod_ready(pod_args)
-    assert jinad_client.peas.delete(pod_id)
+    assert jinad_client.pods.delete(pod_id)
     assert not is_pod_ready(pod_args)
     assert jinad_client.workspaces.delete(workspace_id)
 
@@ -301,7 +301,7 @@ async def test_pseudo_remote_pods_shards(gateway, head, worker, polling):
     async for response in responses:
         response_list.append(response)
 
-    # clean up peas
+    # clean up pods
     gateway_pod.close()
     head_pod.close()
     for shard_pod in shard_pods:
@@ -369,7 +369,7 @@ async def test_pseudo_remote_pods_replicas(gateway, head, worker):
     async for response in responses:
         response_list.append(response)
 
-    # clean up peas
+    # clean up pods
     gateway_pod.close()
     head_pod.close()
     for pod in replica_pods:
@@ -396,7 +396,7 @@ async def test_pseudo_remote_pods_executor(
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    peas = []
+    pods = []
 
     NUM_SHARDS = 3
 
@@ -412,7 +412,7 @@ async def test_pseudo_remote_pods_executor(
         else None,
     )
     uses_before_pod.start()
-    peas.append(uses_before_pod)
+    pods.append(uses_before_pod)
 
     uses_after_port = random_port()
     uses_after_pod = _create_worker_pod(
@@ -426,7 +426,7 @@ async def test_pseudo_remote_pods_executor(
         else None,
     )
     uses_after_pod.start()
-    peas.append(uses_after_pod)
+    pods.append(uses_after_pod)
 
     # create head
     head_port = random_port()
@@ -440,7 +440,7 @@ async def test_pseudo_remote_pods_executor(
         uses_after=f'{__docker_host__ if is_remote(head) else HOST}:{uses_after_port}',
     )
 
-    peas.append(head_pod)
+    pods.append(head_pod)
     head_pod.start()
 
     # create some shards
@@ -459,7 +459,7 @@ async def test_pseudo_remote_pods_executor(
             else None,
         )
         worker_pod.start()
-        peas.append(worker_pod)
+        pods.append(worker_pod)
         await asyncio.sleep(0.1)
 
         worker_host = HOST
@@ -479,7 +479,7 @@ async def test_pseudo_remote_pods_executor(
     print(f'head_port: {head_port}, port_expose: {port_expose}')
 
     gateway_pod.start()
-    peas.append(gateway_pod)
+    pods.append(gateway_pod)
 
     await asyncio.sleep(1.0)
 
@@ -489,8 +489,8 @@ async def test_pseudo_remote_pods_executor(
     async for response in responses:
         response_list.append(response.docs)
 
-    # clean up peas
-    for pod in peas:
+    # clean up pods
+    for pod in pods:
         pod.close()
 
     assert len(response_list) == 20

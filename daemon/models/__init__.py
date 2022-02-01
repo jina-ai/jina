@@ -28,7 +28,7 @@ class DaemonStatus(BaseModel):
     jina: Dict
     envs: Dict
     workspaces: WorkspaceStoreStatus
-    peas: ContainerStoreStatus
+    pods: ContainerStoreStatus
     deployments: ContainerStoreStatus
     flows: ContainerStoreStatus
     used_memory: str

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Dict, Optional
 
 from jina.helper import colored
 from daemon.stores.base import BaseStore
-from daemon.stores.peas import PodStore
+from daemon.stores.pods import PodStore
 
 if TYPE_CHECKING:
     from daemon.models import DaemonID

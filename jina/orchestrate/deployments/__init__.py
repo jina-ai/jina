@@ -20,8 +20,8 @@ from jina.hubble.hubio import HubIO
 
 
 class BaseDeployment(ExitStack):
-    """A BaseDeployment is an immutable set of peas.
-    Internally, the peas can run with the process/thread backend.
+    """A BaseDeployment is an immutable set of pods.
+    Internally, the pods can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
     """
 
@@ -57,8 +57,8 @@ class BaseDeployment(ExitStack):
 
     @staticmethod
     def _set_upload_files(args):
-        # sets args.upload_files at the deployment level so that peas inherit from it.
-        # all peas work under one remote workspace, hence important to have upload_files set for all
+        # sets args.upload_files at the deployment level so that pods inherit from it.
+        # all pods work under one remote workspace, hence important to have upload_files set for all
 
         def valid_path(path):
             try:
@@ -161,7 +161,7 @@ class BaseDeployment(ExitStack):
 
     @abstractmethod
     def join(self):
-        """Wait until all deployment and peas exit."""
+        """Wait until all deployment and pods exit."""
         ...
 
     @property
@@ -190,8 +190,8 @@ class BaseDeployment(ExitStack):
 
 
 class Deployment(BaseDeployment):
-    """A Deployment is an immutable set of peas, which run in replicas. They share the same input and output socket.
-    Internally, the peas can run with the process/thread backend. They can be also run in their own containers
+    """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
+    Internally, the pods can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
     :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment
     """
@@ -317,7 +317,7 @@ class Deployment(BaseDeployment):
                     self._pods[i].close()
                 finally:
                     # If there is an exception at close time. Most likely the pod's terminated abruptly and therefore these
-                    # peas are useless
+                    # pods are useless
                     del self._pods[i]
                     del self.args[i]
 
@@ -396,23 +396,23 @@ class Deployment(BaseDeployment):
         self.join()
 
     def update_pod_args(self):
-        """ Update args of all its peas based on Deployment args. Including head/tail"""
+        """ Update args of all its pods based on Deployment args. Including head/tail"""
         if isinstance(self.args, Dict):
-            # This is used when a Deployment is created in a remote context, where peas & their connections are already given.
-            self.peas_args = self.args
+            # This is used when a Deployment is created in a remote context, where pods & their connections are already given.
+            self.pod_args = self.args
         else:
-            self.peas_args = self._parse_args(self.args)
+            self.pod_args = self._parse_args(self.args)
 
         if self.is_sandbox:
             host, port = HubIO.deploy_public_sandbox(getattr(self.args, 'uses', ''))
             self.first_pod_args.host = host
             self.first_pod_args.port_in = port
-            self.peas_args['head'].host = host
-            self.peas_args['head'].port_in = port
+            self.pod_args['head'].host = host
+            self.pod_args['head'].port_in = port
 
     def update_worker_pod_args(self):
-        """ Update args of all its worker peas based on Deployment args. Does not touch head and tail"""
-        self.peas_args['peas'] = self._set_pods_args(self.args)
+        """ Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
+        self.pod_args['pods'] = self._set_pods_args(self.args)
 
     @property
     def is_sandbox(self) -> bool:
@@ -450,7 +450,7 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         # note this will be never out of boundary
-        return self.peas_args['peas'][0][0]
+        return self.pod_args['pods'][0][0]
 
     @property
     def host(self) -> str:
@@ -473,7 +473,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR201
         """
-        return self.peas_args['head']
+        return self.pod_args['head']
 
     @head_args.setter
     def head_args(self, args):
@@ -482,7 +482,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR101
         """
-        self.peas_args['head'] = args
+        self.pod_args['head'] = args
 
     @property
     def uses_before_args(self) -> Namespace:
@@ -491,7 +491,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR201
         """
-        return self.peas_args['uses_before']
+        return self.pod_args['uses_before']
 
     @uses_before_args.setter
     def uses_before_args(self, args):
@@ -500,7 +500,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR101
         """
-        self.peas_args['uses_before'] = args
+        self.pod_args['uses_before'] = args
 
     @property
     def uses_after_args(self) -> Namespace:
@@ -509,7 +509,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR201
         """
-        return self.peas_args['uses_after']
+        return self.pod_args['uses_after']
 
     @uses_after_args.setter
     def uses_after_args(self, args):
@@ -518,7 +518,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR101
         """
-        self.peas_args['uses_after'] = args
+        self.pod_args['uses_after'] = args
 
     @property
     def all_args(self) -> List[Namespace]:
@@ -527,12 +527,12 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         all_args = (
-            ([self.peas_args['uses_before']] if self.peas_args['uses_before'] else [])
-            + ([self.peas_args['uses_after']] if self.peas_args['uses_after'] else [])
-            + ([self.peas_args['head']] if self.peas_args['head'] else [])
+            ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
+            + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
+            + ([self.pod_args['head']] if self.pod_args['head'] else [])
         )
-        for shard_id in self.peas_args['peas']:
-            all_args += self.peas_args['peas'][shard_id]
+        for shard_id in self.pod_args['pods']:
+            all_args += self.pod_args['pods'][shard_id]
         return all_args
 
     @property
@@ -558,11 +558,11 @@ class Deployment(BaseDeployment):
 
     def activate(self):
         """
-        Activate all worker peas in this deployment by registering them with the head
+        Activate all worker pods in this deployment by registering them with the head
         """
         if self.head_pod is not None:
-            for shard_id in self.peas_args['peas']:
-                for pod_idx, pod_args in enumerate(self.peas_args['peas'][shard_id]):
+            for shard_id in self.pod_args['pods']:
+                for pod_idx, pod_args in enumerate(self.pod_args['pods'][shard_id]):
                     worker_host = self.get_worker_host(
                         pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
                     )
@@ -620,28 +620,28 @@ class Deployment(BaseDeployment):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
-        if self.peas_args['uses_before'] is not None:
-            _args = self.peas_args['uses_before']
+        if self.pod_args['uses_before'] is not None:
+            _args = self.pod_args['uses_before']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
             self.uses_before_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_before_pod)
-        if self.peas_args['uses_after'] is not None:
-            _args = self.peas_args['uses_after']
+        if self.pod_args['uses_after'] is not None:
+            _args = self.pod_args['uses_after']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
-        if self.peas_args['head'] is not None:
-            _args = self.peas_args['head']
+        if self.pod_args['head'] is not None:
+            _args = self.pod_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
-        for shard_id in self.peas_args['peas']:
+        for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
                 self.args,
-                self.peas_args['peas'][shard_id],
+                self.pod_args['pods'][shard_id],
                 self.head_pod,
             )
             self.enter_context(self.shards[shard_id])
@@ -651,7 +651,7 @@ class Deployment(BaseDeployment):
         return self
 
     def wait_start_success(self) -> None:
-        """Block until all peas starts successfully.
+        """Block until all pods starts successfully.
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
@@ -674,7 +674,7 @@ class Deployment(BaseDeployment):
             raise
 
     def join(self):
-        """Wait until all peas exit"""
+        """Wait until all pods exit"""
         try:
             if self.uses_before_pod is not None:
                 self.uses_before_pod.join()
@@ -734,7 +734,7 @@ class Deployment(BaseDeployment):
                 task = asyncio.create_task(
                     self.shards[shard_id].rolling_update(uses_with=uses_with)
                 )
-                # it is dangerous to fork new processes (peas) while grpc operations are ongoing
+                # it is dangerous to fork new processes (pods) while grpc operations are ongoing
                 # while we use fork, we need to guarantee that forking/grpc status checking is done sequentially
                 # this is true at least when the flow process and the forked processes are running in the same OS
                 # thus this does not apply to K8s
@@ -841,7 +841,7 @@ class Deployment(BaseDeployment):
             'head': None,
             'uses_before': None,
             'uses_after': None,
-            'peas': {},
+            'pods': {},
         }
 
         # a gateway has no heads and uses
@@ -870,7 +870,7 @@ class Deployment(BaseDeployment):
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
-        parsed_args['peas'] = self._set_pods_args(args)
+        parsed_args['pods'] = self._set_pods_args(args)
 
         return parsed_args
 
@@ -903,9 +903,9 @@ class Deployment(BaseDeployment):
                 self.uses_after_args.uses if self.uses_after_args is not None else None
             )
             shard_names = []
-            if len(self.peas_args['peas']) > 1:
+            if len(self.pod_args['pods']) > 1:
                 # multiple shards
-                for shard_id, peas_args in self.peas_args['peas'].items():
+                for shard_id, pod_args in self.pod_args['pods'].items():
                     shard_name = f'{self.name}/shard-{shard_id}'
                     shard_names.append(shard_name)
                     shard_mermaid_graph = [
@@ -913,14 +913,14 @@ class Deployment(BaseDeployment):
                         f'\ndirection TB;\n',
                     ]
                     names = [
-                        args.name for args in peas_args
+                        args.name for args in pod_args
                     ]  # all the names of each of the replicas
                     uses = [
-                        args.uses for args in peas_args
+                        args.uses for args in pod_args
                     ]  # all the uses should be the same but let's keep it this
                     # way
                     for rep_i, (name, use) in enumerate(zip(names, uses)):
-                        shard_mermaid_graph.append(f'{name}[{use}]:::PEA;')
+                        shard_mermaid_graph.append(f'{name}[{use}]:::pod;')
                     shard_mermaid_graph.append('end;')
                     shard_mermaid_graph = [
                         node.replace(';', '\n') for node in shard_mermaid_graph
@@ -940,24 +940,24 @@ class Deployment(BaseDeployment):
             else:
                 # single shard case
                 names = [
-                    args.name for args in self.peas_args['peas'][0]
+                    args.name for args in self.pod_args['pods'][0]
                 ]  # all the names of each of the replicas
                 uses = [
-                    args.uses for args in self.peas_args['peas'][0]
+                    args.uses for args in self.pod_args['pods'][0]
                 ]  # all the uses should be the same but let's keep it this way
                 if uses_before_name is None and uses_after_name is None:
                     # just put the replicas in parallel
                     for rep_i, (name, use) in enumerate(zip(names, uses)):
-                        mermaid_graph.append(f'{name}/rep-{rep_i}[{use}]:::PEA;')
+                        mermaid_graph.append(f'{name}/rep-{rep_i}[{use}]:::pod;')
                 if uses_before_name is not None:
                     for name, use in zip(names, uses):
                         mermaid_graph.append(
-                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {name}[{use}]:::PEA;'
+                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {name}[{use}]:::pod;'
                         )
                 if uses_after_name is not None:
                     for name, use in zip(names, uses):
                         mermaid_graph.append(
-                            f'{name}[{use}]:::PEA --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
+                            f'{name}[{use}]:::pod --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
                         )
             mermaid_graph.append('end;')
         return mermaid_graph

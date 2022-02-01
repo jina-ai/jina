@@ -2,7 +2,7 @@ from typing import Optional, TYPE_CHECKING, Type, Union
 
 from daemon.stores.base import BaseStore
 from daemon.stores.flows import FlowStore
-from daemon.stores.peas import PodStore
+from daemon.stores.pods import PodStore
 from daemon.stores.deployments import DeploymentStore
 from daemon.stores.workspaces import WorkspaceStore
 from daemon import jinad_args
@@ -47,7 +47,7 @@ def _get_partial_store() -> Optional[
         PartialFlowStore,
     )
 
-    if jinad_args.mode == PartialDaemonModes.PEA:
+    if jinad_args.mode == PartialDaemonModes.POD:
         return PartialPodStore()
     elif jinad_args.mode == PartialDaemonModes.DEPLOYMENT:
         return PartialDeploymentStore()
@@ -65,7 +65,7 @@ def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
     """
     if entity_id.jtype == IDLiterals.JDEPLOYMENT:
         return deployment_store
-    elif entity_id.jtype == IDLiterals.JPEA:
+    elif entity_id.jtype == IDLiterals.JPOD:
         return pod_store
     elif entity_id.jtype == IDLiterals.JFLOW:
         return flow_store

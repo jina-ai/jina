@@ -56,7 +56,7 @@ class PartialStore(ABC):
 class PartialPodStore(PartialStore):
     """A Pod store spawned inside partial-daemon container"""
 
-    peapod_constructor = PodFactory.build_pod
+    poddeployment_constructor = PodFactory.build_pod
 
     def add(
         self, args: Namespace, envs: Optional[Dict] = {}, **kwargs
@@ -75,7 +75,7 @@ class PartialPodStore(PartialStore):
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
             self.object: Union[
                 Type['BasePod'], Type['BaseDeployment']
-            ] = self.__class__.peapod_constructor(args).__enter__()
+            ] = self.__class__.poddeployment_constructor(args).__enter__()
             self.object.env = envs
         except Exception as e:
             if hasattr(self, 'object') and self.object:
@@ -92,7 +92,7 @@ class PartialPodStore(PartialStore):
 class PartialDeploymentStore(PartialPodStore):
     """A Deployment store spawned inside partial-daemon container"""
 
-    peapod_constructor = Deployment
+    poddeployment_constructor = Deployment
 
     async def rolling_update(
         self, uses_with: Optional[Dict] = None
@@ -163,7 +163,7 @@ class PartialFlowStore(PartialStore):
                     hasattr(deployment.args, 'replicas')
                     and deployment.args.replicas > 1
                 ):
-                    for pod_args in [deployment.peas_args['head']]:
+                    for pod_args in [deployment.pod_args['head']]:
                         if pod_args.name in port_mapping.pod_names:
                             for port_name in Ports.__fields__:
                                 self._set_pod_ports(pod_args, port_mapping, port_name)

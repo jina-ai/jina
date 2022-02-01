@@ -81,7 +81,7 @@ async def test_pods_flow_topology(
     pods = [
         pod_name for pod_name in complete_graph_dict.keys() if 'gateway' not in pod_name
     ]
-    peas = []
+    pods = []
     pod_addresses = '{'
     ports = []
     for pod in pods:
@@ -89,12 +89,12 @@ async def test_pods_flow_topology(
             uses_before_port, uses_before_pod = await _start_create_pod(
                 pod, port_generator, type='uses_before'
             )
-            peas.append(uses_before_pod)
+            pods.append(uses_before_pod)
         if uses_after:
             uses_after_port, uses_after_pod = await _start_create_pod(
                 pod, port_generator, type='uses_after'
             )
-            peas.append(uses_after_pod)
+            pods.append(uses_after_pod)
 
         # create head
         head_port = port_generator()
@@ -107,16 +107,16 @@ async def test_pods_flow_topology(
             f'127.0.0.1:{uses_after_port}' if uses_after else None,
         )
 
-        peas.append(head_pod)
+        pods.append(head_pod)
         head_pod.start()
 
         # create worker
         worker_port, worker_pod = await _start_create_pod(pod, port_generator)
         ports.append((head_port, worker_port))
-        peas.append(worker_pod)
+        pods.append(worker_pod)
         await asyncio.sleep(0.1)
 
-    for pod in peas:
+    for pod in pods:
         pod.wait_start_success()
 
     for head_port, worker_port in ports:
@@ -146,7 +146,7 @@ async def test_pods_flow_topology(
 
     # clean up pod
     gateway_pod.close()
-    for pod in peas:
+    for pod in pods:
         pod.close()
 
     assert len(response_list) == 20
@@ -201,7 +201,7 @@ async def test_pods_shards(polling, port_generator):
     async for response in responses:
         response_list.append(response)
 
-    # clean up peas
+    # clean up pods
     gateway_pod.close()
     head_pod.close()
     for shard_pod in shard_pods:
@@ -256,7 +256,7 @@ async def test_pods_replicas(port_generator):
     async for response in responses:
         response_list.append(response)
 
-    # clean up peas
+    # clean up pods
     gateway_pod.close()
     head_pod.close()
     for pod in replica_pods:
@@ -269,17 +269,17 @@ async def test_pods_replicas(port_generator):
 @pytest.mark.asyncio
 async def test_pods_with_executor(port_generator):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    peas = []
+    pods = []
 
     uses_before_port, uses_before_pod = await _start_create_pod(
         'pod0', port_generator, type='uses_before', executor='NameChangeExecutor'
     )
-    peas.append(uses_before_pod)
+    pods.append(uses_before_pod)
 
     uses_after_port, uses_after_pod = await _start_create_pod(
         'pod0', port_generator, type='uses_after', executor='NameChangeExecutor'
     )
-    peas.append(uses_after_pod)
+    pods.append(uses_after_pod)
 
     # create head
     head_port = port_generator()
@@ -292,7 +292,7 @@ async def test_pods_with_executor(port_generator):
         f'127.0.0.1:{uses_after_port}',
     )
 
-    peas.append(head_pod)
+    pods.append(head_pod)
     head_pod.start()
 
     # create some shards
@@ -301,11 +301,11 @@ async def test_pods_with_executor(port_generator):
         worker_port, worker_pod = await _start_create_pod(
             'pod0', port_generator, type=f'shards/{i}', executor='NameChangeExecutor'
         )
-        peas.append(worker_pod)
+        pods.append(worker_pod)
         await asyncio.sleep(0.1)
         await _activate_worker(head_port, worker_port, shard_id=i)
 
-    for pod in peas:
+    for pod in pods:
         pod.wait_start_success()
 
     # create a single gateway pod
@@ -314,7 +314,7 @@ async def test_pods_with_executor(port_generator):
 
     gateway_pod.start()
     gateway_pod.wait_start_success()
-    peas.append(gateway_pod)
+    pods.append(gateway_pod)
 
     await asyncio.sleep(1.0)
 
@@ -324,8 +324,8 @@ async def test_pods_with_executor(port_generator):
     async for response in responses:
         response_list.append(response.docs)
 
-    # clean up peas
-    for pod in peas:
+    # clean up pods
+    for pod in pods:
         pod.close()
 
     assert len(response_list) == 20
@@ -368,7 +368,7 @@ async def test_pods_gateway_worker_direct_connection(port_generator):
     async for response in responses:
         response_list.append(response)
 
-    # clean up peas
+    # clean up pods
     gateway_pod.close()
     worker_pod.close()
 
@@ -392,20 +392,20 @@ async def test_pods_with_replicas_advance_faster(port_generator):
     gateway_pod.start()
 
     # create the shards
-    peas = []
+    pods = []
     for i in range(10):
         # create worker
         worker_port = port_generator()
         # create a single worker pod
         worker_pod = _create_worker_pod(worker_port, f'pod0/{i}', 'FastSlowExecutor')
-        peas.append(worker_pod)
+        pods.append(worker_pod)
         worker_pod.start()
 
         await asyncio.sleep(0.1)
 
     head_pod.wait_start_success()
     gateway_pod.wait_start_success()
-    for pod in peas:
+    for pod in pods:
         # this would be done by the Pod, its adding the worker to the head
         pod.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
@@ -419,10 +419,10 @@ async def test_pods_with_replicas_advance_faster(port_generator):
     async for response in responses:
         response_list.append(response)
 
-    # clean up peas
+    # clean up pods
     gateway_pod.close()
     head_pod.close()
-    for pod in peas:
+    for pod in pods:
         pod.close()
 
     assert len(response_list) == 2

@@ -3,7 +3,7 @@ from typing import Optional, Dict, TYPE_CHECKING, Union
 from jina.logging.logger import JinaLogger
 
 from daemon.clients.base import BaseClient, AsyncBaseClient
-from daemon.clients.peas import PodClient, AsyncPodClient
+from daemon.clients.pods import PodClient, AsyncPodClient
 from daemon.clients.deployments import DeploymentClient, AsyncDeploymentClient
 from daemon.clients.flows import FlowClient, AsyncFlowClient
 from daemon.clients.workspaces import WorkspaceClient, AsyncWorkspaceClient
@@ -43,7 +43,7 @@ class JinaDClient:
         self.kwargs = {'uri': uri, 'logger': logger, 'timeout': timeout}
 
     @property
-    def peas(self):
+    def pods(self):
         """Pod Client
 
         :return: Pod Client

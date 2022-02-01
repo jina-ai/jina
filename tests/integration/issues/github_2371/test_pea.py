@@ -4,9 +4,9 @@ from jina.orchestrate.pods.factory import PodFactory
 
 def test_pod_instantiate_start_same_context():
     arg = set_pod_parser().parse_args([])
-    peas_args = [arg, arg]
+    pods_args = [arg, arg]
 
-    for args in peas_args:
+    for args in pods_args:
         pod = PodFactory.build_pod(args)
         with pod:
             pass
@@ -14,11 +14,11 @@ def test_pod_instantiate_start_same_context():
 
 def test_pod_instantiate_start_different_context():
     arg = set_pod_parser().parse_args([])
-    peas_args = [arg, arg]
-    peas = []
-    for args in peas_args:
-        peas.append(PodFactory.build_pod(args))
+    pods_args = [arg, arg]
+    pods = []
+    for args in pods_args:
+        pods.append(PodFactory.build_pod(args))
 
-    for pod in peas:
+    for pod in pods:
         with pod:
             pass

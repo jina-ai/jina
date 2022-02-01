@@ -16,7 +16,7 @@ class AsyncPodClient(AsyncBaseClient):
     """Async Client to create/update/delete Pods on remote JinaD"""
 
     _kind = 'pod'
-    _endpoint = '/peas'
+    _endpoint = '/pods'
 
     @if_alive
     async def arguments(self) -> Optional[Dict]:

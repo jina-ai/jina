@@ -1595,10 +1595,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
-                args = getattr(p, 'peas_args', getattr(p, 'shards_args', None))
+                args = getattr(p, 'pod_args', getattr(p, 'shards_args', None))
                 if args is None:
                     raise ValueError(
-                        f'could not find "peas_args" or "shards_args" on {p}'
+                        f'could not find "pod_args" or "shards_args" on {p}'
                     )
                 values = None
                 if isinstance(args, dict):

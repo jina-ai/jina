@@ -5,8 +5,7 @@ from multiprocessing import Process
 import pytest
 
 from jina.clients.request import request_generator
-from jina.enums import PollingType, PodRoleType
-from jina.helper import get_internal_ip
+from jina.enums import PollingType
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_deployment_parser
 from jina.orchestrate.deployments import Deployment
@@ -425,12 +424,12 @@ def test_pod_upload_files(
         ]
     )
     pod = Deployment(args)
-    for k, v in pod.peas_args.items():
+    for k, v in pod.pods_args.items():
         if k in ['head', 'tail']:
             if v:
                 pass
                 # assert sorted(v.upload_files) == sorted(expected)
-        elif v is not None and k == 'peas':
+        elif v is not None and k == 'pods':
             for shard_id in v:
                 for pod in v[shard_id]:
                     print(sorted(pod.upload_files))
@@ -607,8 +606,8 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
     assert args.host == __default_host__
     with Deployment(args) as pod:
         assert pod.num_pods == num_shards * num_replicas + 1
-        peas_args = dict(pod.peas_args['peas'])
-        for k, replica_args in peas_args.items():
+        pods_args = dict(pod.pods_args['pods'])
+        for k, replica_args in pods_args.items():
             assert len(replica_args) == num_replicas
             for replica_arg in replica_args:
                 assert replica_arg.host == __default_host__
