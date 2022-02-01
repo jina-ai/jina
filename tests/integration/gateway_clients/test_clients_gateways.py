@@ -19,70 +19,70 @@ from jina.types.request.data import DataRequest
 @pytest.fixture
 def linear_graph_dict():
     return {
-        'start-gateway': ['pod0'],
-        'pod0': ['pod1'],
-        'pod1': ['pod2'],
-        'pod2': ['pod3'],
-        'pod3': ['end-gateway'],
+        'start-gateway': ['deployment0'],
+        'deployment0': ['deployment1'],
+        'deployment1': ['deployment2'],
+        'deployment2': ['deployment3'],
+        'deployment3': ['end-gateway'],
     }
 
 
 @pytest.fixture
 def bifurcation_graph_dict():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': [],  # hanging_pod
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'pod5': ['end-gateway'],
-        'pod3': ['pod5'],
-        'pod6': [],  # hanging_pod
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': [],  # hanging_deployment
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'deployment5': ['end-gateway'],
+        'deployment3': ['deployment5'],
+        'deployment6': [],  # hanging_deployment
     }
 
 
 @pytest.fixture
 def merge_graph_dict_directly_merge_in_gateway():
     return {
-        'start-gateway': ['pod0'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['merger'],
-        'pod2': ['merger'],
+        'start-gateway': ['deployment0'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['merger'],
+        'deployment2': ['merger'],
         'merger': ['end-gateway'],
     }
 
 
 @pytest.fixture
-def merge_graph_dict_directly_merge_in_last_pod():
+def merge_graph_dict_directly_merge_in_last_deployment():
     return {
-        'start-gateway': ['pod0'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['merger'],
-        'pod2': ['merger'],
-        'merger': ['pod_last'],
-        'pod_last': ['end-gateway'],
+        'start-gateway': ['deployment0'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['merger'],
+        'deployment2': ['merger'],
+        'merger': ['deployment_last'],
+        'deployment_last': ['end-gateway'],
     }
 
 
 @pytest.fixture
 def complete_graph_dict():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['merger'],
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'merger': ['pod_last'],
-        'pod5': ['merger'],
-        'pod3': ['merger'],
-        'pod6': [],  # hanging_pod
-        'pod_last': ['end-gateway'],
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['merger'],
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'merger': ['deployment_last'],
+        'deployment5': ['merger'],
+        'deployment3': ['merger'],
+        'deployment6': [],  # hanging_deployment
+        'deployment_last': ['end-gateway'],
     }
 
 
 class DummyNoDocAccessMockConnectionPool:
     def send_requests_once(
-        self, requests, pod: str, head: bool, endpoint: str = None
+        self, requests, deployment: str, head: bool, endpoint: str = None
     ) -> asyncio.Task:
         async def task_wrapper():
             import random
@@ -101,7 +101,7 @@ class DummyNoDocAccessMockConnectionPool:
 
 class DummyMockConnectionPool:
     def send_requests_once(
-        self, requests, pod: str, head: bool, endpoint: str = None
+        self, requests, deployment: str, head: bool, endpoint: str = None
     ) -> asyncio.Task:
         assert head
         request = requests[0]
@@ -110,7 +110,7 @@ class DummyMockConnectionPool:
         docs = request.docs
         for doc in docs:
             clientid = doc.text[0:7]
-            new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
+            new_doc = Document(text=doc.text + f'-{clientid}-{deployment}')
             new_docs.append(new_doc)
 
         response_msg.data.docs = new_docs
@@ -200,7 +200,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         assert len(responses[0].docs) == 1
         assert (
             responses[0].docs[0].text
-            == f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-pod2-client{client_id}-pod3'
+            == f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-deployment2-client{client_id}-deployment3'
         )
 
     p = multiprocessing.Process(
@@ -284,13 +284,13 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     def client_validate(client_id: int):
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
-        # reducing is supposed to happen in the pods, in the test it will get a single doc in non deterministic order
+        # reducing is supposed to happen in the deployments, in the test it will get a single doc in non deterministic order
         assert len(responses[0].docs) == 1
         assert (
             responses[0].docs[0].text
-            == f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
+            == f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3'
             or responses[0].docs[0].text
-            == f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
+            == f'client{client_id}-Request-client{client_id}-deployment4-client{client_id}-deployment5'
         )
 
     p = multiprocessing.Process(
@@ -333,15 +333,15 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
-        pod1_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger'
+        deployment1_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-merger'
             in responses[0].docs[0].text
         )
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger'
+        deployment2_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-merger'
             in responses[0].docs[0].text
         )
-        assert pod1_path or pod2_path
+        assert deployment1_path or deployment2_path
 
     p = multiprocessing.Process(
         target=create_runtime,
@@ -368,8 +368,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
-    merge_graph_dict_directly_merge_in_last_pod, monkeypatch, protocol
+def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
+    merge_graph_dict_directly_merge_in_last_deployment, monkeypatch, protocol
 ):
     # TODO: Test incomplete until merging of responses is ready
     monkeypatch.setattr(
@@ -383,22 +383,22 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_pod(
         responses = client_send(client_id, port_in, protocol)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
-        pod1_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
+        deployment1_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-merger-client{client_id}-deployment_last'
             in responses[0].docs[0].text
         )
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger-client{client_id}-pod_last'
+        deployment2_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-merger-client{client_id}-deployment_last'
             in responses[0].docs[0].text
         )
-        assert pod1_path or pod2_path
+        assert deployment1_path or deployment2_path
 
     p = multiprocessing.Process(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
             'port_in': port_in,
-            'graph_dict': merge_graph_dict_directly_merge_in_last_pod,
+            'graph_dict': merge_graph_dict_directly_merge_in_last_deployment,
         },
     )
     p.start()
@@ -435,11 +435,11 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
         assert len(responses[0].docs) == 1
         # there are 3 incoming paths to merger, it could be any
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-merger-client{client_id}-deployment_last'
             == responses[0].docs[0].text
-            or f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
+            or f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3-client{client_id}-merger-client{client_id}-deployment_last'
             == responses[0].docs[0].text
-            or f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
+            or f'client{client_id}-Request-client{client_id}-deployment4-client{client_id}-deployment5-client{client_id}-merger-client{client_id}-deployment_last'
             == responses[0].docs[0].text
         )
 

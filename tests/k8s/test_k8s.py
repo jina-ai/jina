@@ -633,7 +633,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
     [['jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
+async def test_flow_with_external_native_deployment(logger, docker_images, tmpdir):
     class DocReplaceExecutor(Executor):
         @requests
         def add(self, **kwargs):
@@ -642,12 +642,12 @@ async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
             )
 
     args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
-    with Deployment(args) as external_pod:
+    with Deployment(args) as external_deployment:
         flow = Flow(name='k8s_flow-with_external_deployment', port_expose=9090).add(
             name='external_executor',
             external=True,
             host=f'172.17.0.1',
-            port_in=external_pod.head_port_in,
+            port_in=external_deployment.head_port_in,
         )
 
         namespace = 'test-flow-with-external-deployment'
@@ -690,20 +690,20 @@ async def test_flow_with_external_native_pod(logger, docker_images, tmpdir):
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_external_k8s_pod(logger, docker_images, tmpdir):
-    namespace = 'test-flow-with-external-k8s-pod'
+async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
+    namespace = 'test-flow-with-external-k8s-deployment'
     from kubernetes import client
 
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    await _create_external_pod(api_client, app_client, docker_images, tmpdir)
+    await _create_external_deployment(api_client, app_client, docker_images, tmpdir)
 
-    flow = Flow(name='k8s_flow-with_external_pod', port_expose=9090).add(
+    flow = Flow(name='k8s_flow-with_external_deployment', port_expose=9090).add(
         name='external_executor',
         external=True,
-        host='external-pod-head-0.external-pod-ns.svc',
+        host='external-deployment-head-0.external-deployment-ns.svc',
         port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
     )
 
@@ -733,8 +733,8 @@ async def test_flow_with_external_k8s_pod(logger, docker_images, tmpdir):
         assert 'workspace' in doc.tags
 
 
-async def _create_external_pod(api_client, app_client, docker_images, tmpdir):
-    namespace = 'external-pod-ns'
+async def _create_external_deployment(api_client, app_client, docker_images, tmpdir):
+    namespace = 'external-deployment-ns'
     args = set_deployment_parser().parse_args(
         ['--uses', f'docker://{docker_images[0]}', '--name', 'external-deployment']
     )

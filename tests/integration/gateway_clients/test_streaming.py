@@ -49,7 +49,7 @@ def simple_graph_dict_indexer():
 
 class DummyMockConnectionPool:
     def send_requests_once(
-        self, requests, pod: str, head: bool, endpoint: str = None
+        self, requests, deployment: str, head: bool, endpoint: str = None
     ) -> asyncio.Task:
         assert head
         request = requests[0]
@@ -62,7 +62,7 @@ class DummyMockConnectionPool:
             exec_endpoint = request.header.exec_endpoint
             new_docs = DocumentArray()
             await asyncio.sleep(0.1)
-            if pod == 'indexer-executor':
+            if deployment == 'indexer-executor':
                 if exec_endpoint == '/index':
                     time.sleep(0.1)
                     self._docs.extend(request.docs)
@@ -75,13 +75,13 @@ class DummyMockConnectionPool:
                     response_msg.data.docs = docs
                 return response_msg
             else:
-                if pod == 'slow-executor':
+                if deployment == 'slow-executor':
                     await asyncio.sleep(SLOW_EXECUTOR_SLEEP_TIME)
                 for doc in request.docs:
                     new_doc = Document(doc, copy=True)
                     new_doc.tags['executor'] = time.time()
                     print(
-                        f'in {pod}, {new_doc.id} => time: {readable_time_from(new_doc.tags["executor"])}, {new_doc.tags["executor"]}',
+                        f'in {deployment}, {new_doc.id} => time: {readable_time_from(new_doc.tags["executor"])}, {new_doc.tags["executor"]}',
                         flush=True,
                     )
                     new_docs.append(new_doc)

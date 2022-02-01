@@ -31,7 +31,7 @@ class K8sDeploymentConfig:
             deployment_args: Union['Namespace', Dict],
             k8s_namespace: str,
             k8s_connection_pool: bool = True,
-            k8s_deployment_addresses: Optional[Dict[str, List[str]]] = None,
+            k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
             self.dns_name = to_compatible_name(name)
@@ -44,7 +44,7 @@ class K8sDeploymentConfig:
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.k8s_namespace = k8s_namespace
             self.k8s_connection_pool = k8s_connection_pool
-            self.k8s_deployment_addresses = k8s_deployment_addresses
+            self.k8s_deployments_addresses = k8s_deployments_addresses
 
         def get_gateway_yamls(
             self,
@@ -59,7 +59,7 @@ class K8sDeploymentConfig:
             )
             cargs = copy.copy(self.deployment_args)
             cargs.env = None
-            cargs.deployments_addresses = self.k8s_deployment_addresses
+            cargs.deployments_addresses = self.k8s_deployments_addresses
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
@@ -224,13 +224,13 @@ class K8sDeploymentConfig:
         args: Union['Namespace', Dict],
         k8s_namespace: Optional[str] = None,
         k8s_connection_pool: bool = True,
-        k8s_deployment_addresses: Optional[Dict[str, List[str]]] = None,
+        k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
     ):
         # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
-        self.k8s_deployment_addresses = k8s_deployment_addresses
+        self.k8s_deployments_addresses = k8s_deployments_addresses
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
@@ -252,7 +252,7 @@ class K8sDeploymentConfig:
                 pea_type=PeaRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
                 k8s_connection_pool=self.k8s_connection_pool,
-                k8s_deployment_addresses=self.k8s_deployment_addresses,
+                k8s_deployments_addresses=self.k8s_deployments_addresses,
             )
 
         self.worker_deployments = []
@@ -272,7 +272,7 @@ class K8sDeploymentConfig:
                     jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
-                    k8s_deployment_addresses=self.k8s_deployment_addresses
+                    k8s_deployments_addresses=self.k8s_deployments_addresses
                     if name == 'gateway'
                     else None,
                 )

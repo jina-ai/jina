@@ -328,7 +328,7 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     # create a single head pea
     head_pea = _create_head_pea(head, head_port)
@@ -357,7 +357,7 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(
-        gateway, graph_description, deployment_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port_expose
     )
     gateway_pea.start()
 
@@ -430,7 +430,7 @@ async def test_pseudo_remote_peas_executor(
 
     # create head
     head_port = random_port()
-    deployment_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
     head_pea = _create_head_pea(
         head,
         head_port,
@@ -474,7 +474,7 @@ async def test_pseudo_remote_peas_executor(
     # create a single gateway pea
     port_expose = random_port()
     gateway_pea = _create_gateway_pea(
-        gateway, graph_description, deployment_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port_expose
     )
     print(f'head_port: {head_port}, port_expose: {port_expose}')
 

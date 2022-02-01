@@ -18,14 +18,14 @@ async def test_deployments_trivial_topology(port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{deployment_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{deployment_port}"]}}'
 
     # create a single worker pea
     worker_deployment = _create_regular_deployment(deployment_port)
 
     # create a single gateway pea
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployment_addresses, port_expose
+        graph_description, deployments_addresses, port_expose
     )
 
     with gateway_deployment, worker_deployment:
@@ -73,10 +73,10 @@ async def test_deployments_flow_topology(
         if 'gateway' not in deployment_name
     ]
     started_deployments = []
-    deployment_addresses = '{'
+    deployments_addresses = '{'
     for deployment in deployments:
         head_port = port_generator()
-        deployment_addresses += f'"{deployment}": ["0.0.0.0:{head_port}"],'
+        deployments_addresses += f'"{deployment}": ["0.0.0.0:{head_port}"],'
         regular_deployment = _create_regular_deployment(
             port=head_port,
             name=f'{deployment}',
@@ -88,14 +88,14 @@ async def test_deployments_flow_topology(
         regular_deployment.start()
 
     # remove last comma
-    deployment_addresses = deployment_addresses[:-1]
-    deployment_addresses += '}'
+    deployments_addresses = deployments_addresses[:-1]
+    deployments_addresses += '}'
     port_expose = port_generator()
 
     # create a single gateway pea
 
     gateway_deployment = _create_gateway_deployment(
-        json.dumps(complete_graph_dict), deployment_addresses, port_expose
+        json.dumps(complete_graph_dict), deployments_addresses, port_expose
     )
     gateway_deployment.start()
 
@@ -131,7 +131,7 @@ async def test_deployments_shards(polling, port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', polling=polling, shards=10
@@ -139,7 +139,7 @@ async def test_deployments_shards(polling, port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployment_addresses, port_expose
+        graph_description, deployments_addresses, port_expose
     )
     gateway_deployment.start()
 
@@ -166,7 +166,7 @@ async def test_deployments_replicas(port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', replicas=10
@@ -174,7 +174,7 @@ async def test_deployments_replicas(port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployment_addresses, port_expose
+        graph_description, deployments_addresses, port_expose
     )
     gateway_deployment.start()
 
@@ -200,7 +200,7 @@ async def test_deployments_with_executor(port_generator):
     )
 
     head_port = port_generator()
-    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     regular_deployment = _create_regular_deployment(
         port=head_port,
@@ -214,7 +214,7 @@ async def test_deployments_with_executor(port_generator):
 
     port_expose = port_generator()
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployment_addresses, port_expose
+        graph_description, deployments_addresses, port_expose
     )
     gateway_deployment.start()
 
@@ -245,7 +245,7 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', executor='FastSlowExecutor', replicas=10
@@ -253,7 +253,7 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployment_addresses, port_expose
+        graph_description, deployments_addresses, port_expose
     )
     gateway_deployment.start()
 
@@ -323,14 +323,14 @@ def _create_regular_deployment(
     return Deployment(args)
 
 
-def _create_gateway_deployment(graph_description, deployment_addresses, port_expose):
+def _create_gateway_deployment(graph_description, deployments_addresses, port_expose):
     return Deployment(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
                 graph_description,
                 '--deployments-addresses',
-                deployment_addresses,
+                deployments_addresses,
                 '--port-expose',
                 str(port_expose),
             ]

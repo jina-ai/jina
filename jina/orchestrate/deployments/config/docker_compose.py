@@ -29,7 +29,7 @@ class DockerComposeConfig:
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
             service_args: Union['Namespace', Dict],
-            deployment_addresses: Optional[Dict[str, List[str]]] = None,
+            deployments_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
             self.compatible_name = to_compatible_name(self.name)
@@ -40,7 +40,7 @@ class DockerComposeConfig:
             self.common_args = common_args
             self.service_args = service_args
             self.num_replicas = getattr(self.service_args, 'replicas', 1)
-            self.deployment_addresses = deployment_addresses
+            self.deployments_addresses = deployments_addresses
 
         def get_gateway_config(
             self,
@@ -54,7 +54,7 @@ class DockerComposeConfig:
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
             cargs = copy.copy(self.service_args)
-            cargs.deployment_addresses = self.deployment_addresses
+            cargs.deployments_addresses = self.deployments_addresses
             cargs.env = None
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
@@ -159,9 +159,9 @@ class DockerComposeConfig:
     def __init__(
         self,
         args: Union['Namespace', Dict],
-        deployment_addresses: Optional[Dict[str, List[str]]] = None,
+        deployments_addresses: Optional[Dict[str, List[str]]] = None,
     ):
-        self.deployment_addresses = deployment_addresses
+        self.deployments_addresses = deployments_addresses
         self.head_service = None
         self.uses_before_service = None
         self.uses_after_service = None
@@ -179,7 +179,7 @@ class DockerComposeConfig:
                 common_args=self.args,
                 service_args=self.services_args['head_service'],
                 pea_type=PeaRoleType.HEAD,
-                deployment_addresses=None,
+                deployments_addresses=None,
             )
 
         if self.services_args['uses_before_service'] is not None:
@@ -191,7 +191,7 @@ class DockerComposeConfig:
                 common_args=self.args,
                 service_args=self.services_args['uses_before_service'],
                 pea_type=PeaRoleType.WORKER,
-                deployment_addresses=None,
+                deployments_addresses=None,
             )
 
         if self.services_args['uses_after_service'] is not None:
@@ -203,7 +203,7 @@ class DockerComposeConfig:
                 common_args=self.args,
                 service_args=self.services_args['uses_after_service'],
                 pea_type=PeaRoleType.WORKER,
-                deployment_addresses=None,
+                deployments_addresses=None,
             )
 
         self.worker_services = []
@@ -221,7 +221,7 @@ class DockerComposeConfig:
                     if name != 'gateway'
                     else PeaRoleType.GATEWAY,
                     jina_deployment_name=self.name,
-                    deployment_addresses=self.deployment_addresses
+                    deployments_addresses=self.deployments_addresses
                     if name == 'gateway'
                     else None,
                 )

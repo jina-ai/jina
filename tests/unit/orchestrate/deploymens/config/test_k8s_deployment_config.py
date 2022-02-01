@@ -312,15 +312,15 @@ def assert_config_map_config(
     assert config_map['data'] == expected_config_map_data
 
 
-@pytest.mark.parametrize('deployment_addresses', [None, {'1': 'address.svc'}])
+@pytest.mark.parametrize('deployments_addresses', [None, {'1': 'address.svc'}])
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
-def test_k8s_yaml_gateway(k8s_connection_pool_call, deployment_addresses):
+def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465']
     )  # envs are
     # ignored for gateway
     deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', k8s_connection_pool_call, deployment_addresses
+        args, 'default-namespace', k8s_connection_pool_call, deployments_addresses
     )
     yaml_configs = deployment_config.to_k8s_yaml()
     assert len(yaml_configs) == 1
@@ -412,10 +412,10 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployment_addresses):
     assert args[args.index('--pea-role') + 1] == 'GATEWAY'
     if not k8s_connection_pool_call:
         assert args[-1] == '--k8s-disable-connection-pool'
-    if deployment_addresses is not None:
+    if deployments_addresses is not None:
         assert '--deployments-addresses' in args
         assert args[args.index('--deployments-addresses') + 1] == json.dumps(
-            deployment_addresses
+            deployments_addresses
         )
 
 

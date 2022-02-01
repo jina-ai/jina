@@ -424,7 +424,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         needs: str,
         graph_description: Dict[str, List[str]],
-        deployment_addresses: Dict[str, List[str]],
+        deployments_addresses: Dict[str, List[str]],
         **kwargs,
     ):
         kwargs.update(
@@ -443,10 +443,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
-        args.deployments_addresses = json.dumps(deployment_addresses)
+        args.deployments_addresses = json.dumps(deployments_addresses)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
-    def _get_deployment_addresses(self) -> Dict[str, List[str]]:
+    def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
@@ -455,7 +455,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return graph_dict
 
-    def _get_k8s_deployment_addresses(
+    def _get_k8s_deployments_addresses(
         self, k8s_namespace: str, k8s_connection_pool: bool
     ) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -481,7 +481,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return graph_dict if graph_dict else None
 
-    def _get_docker_compose_deployment_addresses(self) -> Dict[str, List[str]]:
+    def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.orchestrate.deployments.config.docker_compose import PORT_IN
         from jina.orchestrate.deployments.config.helper import to_compatible_name
@@ -960,7 +960,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             op_flow._add_gateway(
                 needs={op_flow.last_deployment},
                 graph_description=op_flow._get_graph_representation(),
-                deployment_addresses=op_flow._get_deployment_addresses(),
+                deployments_addresses=op_flow._get_deployments_addresses(),
             )
 
         removed_deployments = []
@@ -1014,8 +1014,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
             op_flow._deployment_nodes[
                 GATEWAY_NAME
-            ].args.deployment_addresses = json.dumps(
-                op_flow._get_deployment_addresses()
+            ].args.deployments_addresses = json.dumps(
+                op_flow._get_deployments_addresses()
             )
 
             op_flow._deployment_nodes[GATEWAY_NAME].update_pea_args()
@@ -1738,7 +1738,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 args=v.args,
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
-                k8s_deployment_addresses=self._get_k8s_deployment_addresses(
+                k8s_deployments_addresses=self._get_k8s_deployments_addresses(
                     k8s_namespace, k8s_connection_pool
                 )
                 if node == 'gateway'
@@ -1784,7 +1784,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._deployment_nodes.items():
             docker_compose_deployment = DockerComposeConfig(
                 args=v.args,
-                deployment_addresses=self._get_docker_compose_deployment_addresses(),
+                deployments_addresses=self._get_docker_compose_deployments_addresses(),
             )
             service_configs = docker_compose_deployment.to_docker_compose_config()
             for service_name, service in service_configs:

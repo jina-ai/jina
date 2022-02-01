@@ -68,10 +68,10 @@ def test_parse_args(
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
     args = set_deployment_parser().parse_args(args_list)
-    pod_config = DockerComposeConfig(args)
+    deployment_config = DockerComposeConfig(args)
 
     assert namespace_equal(
-        pod_config.services_args['head_service'],
+        deployment_config.services_args['head_service'],
         args,
         skip_attr=(
             'runtime_cls',
@@ -91,25 +91,29 @@ def test_parse_args(
             'replicas',
         ),
     )
-    assert pod_config.services_args['head_service'].name == 'executor/head-0'
-    assert pod_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
-    assert pod_config.services_args['head_service'].uses is None
-    assert pod_config.services_args['head_service'].uses_before is None
-    assert pod_config.services_args['head_service'].uses_after is None
-    assert pod_config.services_args['head_service'].uses_metas is None
-    assert pod_config.services_args['head_service'].uses_with is None
+    assert deployment_config.services_args['head_service'].name == 'executor/head-0'
+    assert deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
+    assert deployment_config.services_args['head_service'].uses is None
+    assert deployment_config.services_args['head_service'].uses_before is None
+    assert deployment_config.services_args['head_service'].uses_after is None
+    assert deployment_config.services_args['head_service'].uses_metas is None
+    assert deployment_config.services_args['head_service'].uses_with is None
     if uses_before is None:
-        assert pod_config.services_args['head_service'].uses_before_address is None
+        assert (
+            deployment_config.services_args['head_service'].uses_before_address is None
+        )
     else:
         assert (
-            pod_config.services_args['head_service'].uses_before_address
+            deployment_config.services_args['head_service'].uses_before_address
             == 'executor-uses-before:8081'
         )
     if uses_after is None:
-        assert pod_config.services_args['head_service'].uses_after_address is None
+        assert (
+            deployment_config.services_args['head_service'].uses_after_address is None
+        )
     else:
         assert (
-            pod_config.services_args['head_service'].uses_after_address
+            deployment_config.services_args['head_service'].uses_after_address
             == 'executor-uses-after:8081'
         )
     if shards > 1:
@@ -134,49 +138,54 @@ def test_parse_args(
             for replica in range(replicas):  # TODO
                 candidate_connection_list['0'].append(f'executor-rep-{replica}:8081')
 
-    assert pod_config.services_args['head_service'].connection_list == json.dumps(
-        candidate_connection_list
-    )
+    assert deployment_config.services_args[
+        'head_service'
+    ].connection_list == json.dumps(candidate_connection_list)
 
     if uses_before is not None:
         assert (
-            pod_config.services_args['uses_before_service'].name
+            deployment_config.services_args['uses_before_service'].name
             == 'executor/uses-before'
         )
         assert (
-            pod_config.services_args['uses_before_service'].runtime_cls
+            deployment_config.services_args['uses_before_service'].runtime_cls
             == 'WorkerRuntime'
         )
-        assert pod_config.services_args['uses_before_service'].uses == uses_before
-        assert pod_config.services_args['uses_before_service'].uses_before is None
-        assert pod_config.services_args['uses_before_service'].uses_after is None
-        assert pod_config.services_args['uses_before_service'].uses_metas is None
-        assert pod_config.services_args['uses_before_service'].uses_with is None
-        assert pod_config.services_args['uses_before_service'].shard_id == 0
-        assert pod_config.services_args['uses_before_service'].replicas == 1
+        assert (
+            deployment_config.services_args['uses_before_service'].uses == uses_before
+        )
+        assert (
+            deployment_config.services_args['uses_before_service'].uses_before is None
+        )
+        assert deployment_config.services_args['uses_before_service'].uses_after is None
+        assert deployment_config.services_args['uses_before_service'].uses_metas is None
+        assert deployment_config.services_args['uses_before_service'].uses_with is None
+        assert deployment_config.services_args['uses_before_service'].shard_id == 0
+        assert deployment_config.services_args['uses_before_service'].replicas == 1
 
     if uses_after is not None:
         assert (
-            pod_config.services_args['uses_after_service'].name == 'executor/uses-after'
+            deployment_config.services_args['uses_after_service'].name
+            == 'executor/uses-after'
         )
         assert (
-            pod_config.services_args['uses_after_service'].runtime_cls
+            deployment_config.services_args['uses_after_service'].runtime_cls
             == 'WorkerRuntime'
         )
-        assert pod_config.services_args['uses_after_service'].uses == uses_after
-        assert pod_config.services_args['uses_after_service'].uses_before is None
-        assert pod_config.services_args['uses_after_service'].uses_after is None
-        assert pod_config.services_args['uses_after_service'].uses_metas is None
-        assert pod_config.services_args['uses_after_service'].uses_with is None
-        assert pod_config.services_args['uses_after_service'].shard_id == 0
-        assert pod_config.services_args['uses_after_service'].replicas == 1
+        assert deployment_config.services_args['uses_after_service'].uses == uses_after
+        assert deployment_config.services_args['uses_after_service'].uses_before is None
+        assert deployment_config.services_args['uses_after_service'].uses_after is None
+        assert deployment_config.services_args['uses_after_service'].uses_metas is None
+        assert deployment_config.services_args['uses_after_service'].uses_with is None
+        assert deployment_config.services_args['uses_after_service'].shard_id == 0
+        assert deployment_config.services_args['uses_after_service'].replicas == 1
 
-    for i, depl_arg in enumerate(pod_config.services_args['services']):
+    for i, depl_arg in enumerate(deployment_config.services_args['services']):
         import copy
 
         assert (
             depl_arg.name == f'executor-{i}'
-            if len(pod_config.services_args['services']) > 1
+            if len(deployment_config.services_args['services']) > 1
             else 'executor'
         )
         cargs = copy.deepcopy(args)
@@ -217,55 +226,63 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
             'executor',
         ]
     )
-    pod_config = DockerComposeConfig(args)
+    deployment_config = DockerComposeConfig(args)
 
-    assert pod_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
-    assert pod_config.services_args['head_service'].uses_before is None
+    assert deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
+    assert deployment_config.services_args['head_service'].uses_before is None
     assert (
-        pod_config.services_args['head_service'].uses_before_address
+        deployment_config.services_args['head_service'].uses_before_address
         == 'executor-uses-before:8081'
     )
-    assert pod_config.services_args['head_service'].uses is None
-    assert pod_config.services_args['head_service'].uses_after is None
+    assert deployment_config.services_args['head_service'].uses is None
+    assert deployment_config.services_args['head_service'].uses_after is None
     assert (
-        pod_config.services_args['head_service'].uses_after_address
+        deployment_config.services_args['head_service'].uses_after_address
         == f'executor-uses-after:8081'
     )
 
-    assert pod_config.services_args['head_service'].uses_before is None
+    assert deployment_config.services_args['head_service'].uses_before is None
 
-    assert pod_config.services_args['head_service'].uses_after is None
+    assert deployment_config.services_args['head_service'].uses_after is None
 
     assert (
-        pod_config.services_args['uses_before_service'].name == 'executor/uses-before'
+        deployment_config.services_args['uses_before_service'].name
+        == 'executor/uses-before'
     )
     assert (
-        pod_config.services_args['uses_before_service'].runtime_cls == 'WorkerRuntime'
+        deployment_config.services_args['uses_before_service'].runtime_cls
+        == 'WorkerRuntime'
     )
-    assert pod_config.services_args['uses_before_service'].uses == uses_before
-    assert pod_config.services_args['uses_before_service'].uses_before is None
-    assert pod_config.services_args['uses_before_service'].uses_after is None
-    assert pod_config.services_args['uses_before_service'].uses_metas is None
-    assert pod_config.services_args['uses_before_service'].uses_with is None
-    assert pod_config.services_args['uses_before_service'].shard_id == 0
-    assert pod_config.services_args['uses_before_service'].replicas == 1
+    assert deployment_config.services_args['uses_before_service'].uses == uses_before
+    assert deployment_config.services_args['uses_before_service'].uses_before is None
+    assert deployment_config.services_args['uses_before_service'].uses_after is None
+    assert deployment_config.services_args['uses_before_service'].uses_metas is None
+    assert deployment_config.services_args['uses_before_service'].uses_with is None
+    assert deployment_config.services_args['uses_before_service'].shard_id == 0
+    assert deployment_config.services_args['uses_before_service'].replicas == 1
 
-    assert pod_config.services_args['uses_after_service'].name == 'executor/uses-after'
-    assert pod_config.services_args['uses_after_service'].runtime_cls == 'WorkerRuntime'
-    assert pod_config.services_args['uses_after_service'].uses == uses_after
-    assert pod_config.services_args['uses_after_service'].uses_before is None
-    assert pod_config.services_args['uses_after_service'].uses_after is None
-    assert pod_config.services_args['uses_after_service'].uses_metas is None
-    assert pod_config.services_args['uses_after_service'].uses_with is None
-    assert pod_config.services_args['uses_after_service'].shard_id == 0
-    assert pod_config.services_args['uses_after_service'].replicas == 1
+    assert (
+        deployment_config.services_args['uses_after_service'].name
+        == 'executor/uses-after'
+    )
+    assert (
+        deployment_config.services_args['uses_after_service'].runtime_cls
+        == 'WorkerRuntime'
+    )
+    assert deployment_config.services_args['uses_after_service'].uses == uses_after
+    assert deployment_config.services_args['uses_after_service'].uses_before is None
+    assert deployment_config.services_args['uses_after_service'].uses_after is None
+    assert deployment_config.services_args['uses_after_service'].uses_metas is None
+    assert deployment_config.services_args['uses_after_service'].uses_with is None
+    assert deployment_config.services_args['uses_after_service'].shard_id == 0
+    assert deployment_config.services_args['uses_after_service'].replicas == 1
 
-    for i, depl_arg in enumerate(pod_config.services_args['services']):
+    for i, depl_arg in enumerate(deployment_config.services_args['services']):
         import copy
 
         assert (
             depl_arg.name == f'executor-{i}'
-            if len(pod_config.services_args['services']) > 1
+            if len(deployment_config.services_args['services']) > 1
             else 'executor'
         )
         cargs = copy.deepcopy(args)
@@ -293,20 +310,20 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
             '1',
         ),
         (
-            'test-pod',
+            'test-deployment',
             '1',
         ),
         (
-            'test-pod',
+            'test-deployment',
             '2',
         ),
     ],
 )
 def test_worker_services(name: str, shards: str):
     args = set_deployment_parser().parse_args(['--name', name, '--shards', shards])
-    pod_config = DockerComposeConfig(args)
+    deployment_config = DockerComposeConfig(args)
 
-    actual_services = pod_config.worker_services
+    actual_services = deployment_config.worker_services
 
     assert len(actual_services) == int(shards)
     for i, deploy in enumerate(actual_services):
@@ -318,14 +335,16 @@ def test_worker_services(name: str, shards: str):
         assert deploy.shard_id == i
 
 
-@pytest.mark.parametrize('pod_addresses', [None, {'1': 'executor-head:8081'}])
-def test_docker_compose_gateway(pod_addresses):
+@pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
+def test_docker_compose_gateway(deployments_addresses):
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465', '--port-in', '33455']
     )  # envs are
     # ignored for gateway
-    pod_config = DockerComposeConfig(args, pod_addresses=pod_addresses)
-    name, gateway_config = pod_config.to_docker_compose_config()[0]
+    deployment_config = DockerComposeConfig(
+        args, deployments_addresses=deployments_addresses
+    )
+    name, gateway_config = deployment_config.to_docker_compose_config()[0]
     assert name == 'gateway'
     assert gateway_config['image'] == 'jinaai/jina:test-pip'
     assert gateway_config['entrypoint'] == ['jina']
@@ -343,10 +362,10 @@ def test_docker_compose_gateway(pod_addresses):
     assert '--env' not in args
     assert '--pea-role' in args
     assert args[args.index('--pea-role') + 1] == 'GATEWAY'
-    if pod_addresses is not None:
+    if deployments_addresses is not None:
         assert '--deployments-addresses' in args
         assert args[args.index('--deployments-addresses') + 1] == json.dumps(
-            pod_addresses
+            deployments_addresses
         )
 
 
@@ -360,7 +379,7 @@ def test_docker_compose_gateway(pod_addresses):
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
-def test_docker_compose_yaml_regular_pod(
+def test_docker_compose_yaml_regular_deployment(
     uses_before,
     uses_after,
     uses,
@@ -414,8 +433,8 @@ def test_docker_compose_yaml_regular_pod(
 
     args = set_deployment_parser().parse_args(args_list)
     # ignored for gateway
-    pod_config = DockerComposeConfig(args)
-    yaml_configs = pod_config.to_docker_compose_config()
+    deployment_config = DockerComposeConfig(args)
+    yaml_configs = deployment_config.to_docker_compose_config()
     assert len(yaml_configs) == 1 + shards * replicas + (1 if uses_before else 0) + (
         1 if uses_after else 0
     )
