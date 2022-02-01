@@ -114,7 +114,7 @@ class JinaDProcessTarget:
 
         payload = replace_enum_to_str(vars(self._mask_args()))
         # Create a remote Pod in the above workspace
-        success, response = await self.client.peas.create(
+        success, response = await self.client.pods.create(
             workspace_id=workspace_id, payload=payload, envs=self.envs
         )
         if not success:
@@ -134,7 +134,7 @@ class JinaDProcessTarget:
     async def _terminate_remote_pod(self):
         """Removes the remote Pod"""
         if self.pod_id is not None:
-            if await self.client.peas.delete(id=self.pod_id):
+            if await self.client.pods.delete(id=self.pod_id):
                 self._logger.success(
                     f'Successfully terminated remote Pod {self.pod_id}'
                 )

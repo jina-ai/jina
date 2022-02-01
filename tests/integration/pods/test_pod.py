@@ -58,16 +58,16 @@ async def test_pods_trivial_topology(port_generator):
 @pytest.fixture
 def complete_graph_dict():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['end-gateway'],
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'merger': ['pod_last'],
-        'pod5': ['merger'],
-        'pod3': ['merger'],
-        'pod6': [],  # hanging_pod
-        'pod_last': ['end-gateway'],
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['end-gateway'],
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'merger': ['deployment_last'],
+        'deployment5': ['merger'],
+        'deployment3': ['merger'],
+        'deployment6': [],  # hanging_deployment
+        'deployment_last': ['end-gateway'],
     }
 
 
@@ -78,30 +78,32 @@ def complete_graph_dict():
 async def test_pods_flow_topology(
     complete_graph_dict, uses_before, uses_after, port_generator
 ):
-    pods = [
-        pod_name for pod_name in complete_graph_dict.keys() if 'gateway' not in pod_name
+    deployments = [
+        deployment_name
+        for deployment_name in complete_graph_dict.keys()
+        if 'gateway' not in deployment_name
     ]
     pods = []
     pod_addresses = '{'
     ports = []
-    for pod in pods:
+    for deployment in deployments:
         if uses_before:
             uses_before_port, uses_before_pod = await _start_create_pod(
-                pod, port_generator, type='uses_before'
+                deployment, port_generator, type='uses_before'
             )
             pods.append(uses_before_pod)
         if uses_after:
             uses_after_port, uses_after_pod = await _start_create_pod(
-                pod, port_generator, type='uses_after'
+                deployment, port_generator, type='uses_after'
             )
             pods.append(uses_after_pod)
 
         # create head
         head_port = port_generator()
-        pod_addresses += f'"{pod}": ["0.0.0.0:{head_port}"],'
+        pod_addresses += f'"{deployment}": ["0.0.0.0:{head_port}"],'
         head_pod = _create_head_pod(
             head_port,
-            f'{pod}/head',
+            f'{deployment}/head',
             'ANY',
             f'127.0.0.1:{uses_before_port}' if uses_before else None,
             f'127.0.0.1:{uses_after_port}' if uses_after else None,
@@ -111,7 +113,7 @@ async def test_pods_flow_topology(
         head_pod.start()
 
         # create worker
-        worker_port, worker_pod = await _start_create_pod(pod, port_generator)
+        worker_port, worker_pod = await _start_create_pod(deployment, port_generator)
         ports.append((head_port, worker_port))
         pods.append(worker_pod)
         await asyncio.sleep(0.1)
