@@ -60,7 +60,7 @@ DocumentArray in the next steps. Let's suppose the following concrete example:
 * `p2` segments further the image into smaller chunks of images.
 * `p3` extracts the text and adds them as chunks.
 
-We need to end up with Documents that contain all this new data. Well, by default, if you have a pod that needs all 3 
+We need to end up with Documents that contain all this new data. Well, by default, if you have a deployment that needs all 3 
 Executors (`p1`, `p2` and `p3`), this happens with our default `Reduce` logic.
 
 ````{admonition} See Also
@@ -93,8 +93,8 @@ f = (Flow()
 
 ````{admonition} Note
 :class: note
-If there is no pod that needs all 3 pods `p1`, `p2` and `p3`, there will be no reduce logic.
-If you want to add a pod that needs all of them but you don't want to have any reducing, use `uses='BaseExecutor'`.
+If there is no deployment that needs all 3 deployments `p1`, `p2` and `p3`, there will be no reduce logic.
+If you want to add a deployment that needs all of them but you don't want to have any reducing, use `uses='BaseExecutor'`.
 ````
 
 

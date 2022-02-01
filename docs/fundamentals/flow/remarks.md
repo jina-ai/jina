@@ -3,7 +3,7 @@
 
 ## Joining/Reducing
 
-If you have multiple Executors running in parallel and one pod that needs them, merging of the 
+If you have multiple Executors running in parallel and one deployment that needs them, merging of the 
 resulting Documents is applied automatically if you don't specify `uses` or `uses_before`. You can also customize the 
 default reducing logic using a Merger Executor in `uses_before` or `uses`.
 
