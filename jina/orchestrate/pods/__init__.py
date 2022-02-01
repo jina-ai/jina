@@ -817,8 +817,10 @@ class Pod(BasePod):
             _args.name = f'{entity_type}-0'
 
         if 'uses_before' == entity_type:
+            _args.uses_requests = None
             _args.uses = args.uses_before or __default_executor__
         elif 'uses_after' == entity_type:
+            _args.uses_requests = None
             _args.uses = args.uses_after or __default_executor__
         else:
             raise ValueError(
