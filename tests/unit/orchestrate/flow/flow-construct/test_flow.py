@@ -268,7 +268,7 @@ def test_flow_arbitrary_needs(protocol):
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_needs_all(protocol):
     f = Flow(protocol=protocol).add(name='p1', needs='gateway').needs_all(name='r1')
-    assert f._pod_nodes['r1'].needs == {'p1'}
+    assert f._deployment_nodes['r1'].needs == {'p1'}
 
     f = (
         Flow(protocol=protocol)
@@ -278,7 +278,7 @@ def test_flow_needs_all(protocol):
         .needs(needs=['p1', 'p2'], name='r1')
         .needs_all(name='r2')
     )
-    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
+    assert f._deployment_nodes['r2'].needs == {'p3', 'r1'}
 
     with f:
         f.index(from_ndarray(np.random.random([10, 10])))
@@ -292,8 +292,8 @@ def test_flow_needs_all(protocol):
         .needs_all(name='r2')
         .add(name='p4', needs='r2')
     )
-    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
-    assert f._pod_nodes['p4'].needs == {'r2'}
+    assert f._deployment_nodes['r2'].needs == {'p3', 'r1'}
+    assert f._deployment_nodes['p4'].needs == {'r2'}
 
     with f:
         f.index(from_ndarray(np.random.random([10, 10])))

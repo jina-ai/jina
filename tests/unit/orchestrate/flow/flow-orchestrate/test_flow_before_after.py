@@ -13,7 +13,7 @@ def test_flow(protocol):
     with f:
         f.index(docs)
         assert f.num_pods == 2
-        assert f._pod_nodes['p1'].num_peas == 2
+        assert f._deployment_nodes['p1'].num_peas == 2
         assert f.num_peas == 3
 
 
@@ -32,7 +32,7 @@ def test_flow_before(protocol):
     with f:
         f.index(docs)
         assert f.num_pods == 2
-        assert f._pod_nodes['p1'].num_peas == 3
+        assert f._deployment_nodes['p1'].num_peas == 3
         assert f.num_peas == 4
 
 
@@ -45,7 +45,7 @@ def test_flow_after(protocol):
     with f:
         f.index(docs)
         assert f.num_pods == 2
-        assert f._pod_nodes['p1'].num_peas == 3
+        assert f._deployment_nodes['p1'].num_peas == 3
         assert f.num_peas == 4
 
 
@@ -60,7 +60,7 @@ def test_flow_default_before_after_is_ignored(protocol):
     with f:
         f.index(docs)
         assert f.num_pods == 2
-        assert f._pod_nodes['p1'].num_peas == 2
+        assert f._deployment_nodes['p1'].num_peas == 2
         assert f.num_peas == 3
 
 
@@ -73,5 +73,5 @@ def test_flow_before_after(protocol):
     with f:
         f.index(docs)
         assert f.num_pods == 2
-        assert f._pod_nodes['p1'].num_peas == 4
+        assert f._deployment_nodes['p1'].num_peas == 4
         assert f.num_peas == 5

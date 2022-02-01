@@ -155,7 +155,7 @@ The autocomplete is context-aware. It also works when you type a second-level ar
 
 ```bash
 
-jina pod --name --lo
+jina deployment --name --lo
 
 --log-profile  --log-remote   --log-sse
 ```
