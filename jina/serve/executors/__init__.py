@@ -14,7 +14,7 @@ from jina.helper import (
     iscoroutinefunction,
     run_in_threadpool,
 )
-from jina.jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
+from jina.jaml import JAMLCompatible, JAML, env_var_regex, internal_var_regex
 
 
 if TYPE_CHECKING:
@@ -155,7 +155,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         for k, v in tmp.items():
             if not hasattr(target, k):
                 if isinstance(v, str):
-                    if not subvar_regex.findall(v):
+                    if not env_var_regex.findall(v):
                         setattr(target, k, v)
                     else:
                         unresolved_attr = True
@@ -173,7 +173,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 if not hasattr(target, k):
                     if isinstance(v, str):
                         if not (
-                            subvar_regex.findall(v) or internal_var_regex.findall(v)
+                            env_var_regex.findall(v) or internal_var_regex.findall(v)
                         ):
                             setattr(target, k, v)
                         else:

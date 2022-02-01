@@ -1,6 +1,7 @@
 import copy
 import os
 import re
+import string
 import tempfile
 import warnings
 from types import SimpleNamespace
@@ -21,12 +22,26 @@ __all__ = ['JAML', 'JAMLCompatible']
 from jina.excepts import BadConfigSource
 from jina.helper import expand_env_var
 
-subvar_regex = re.compile(
-    r'\${{\s*([\w\[\].]+)\s*}}'
-)  #: regex for substituting variables
 internal_var_regex = re.compile(
-    r'{{.+}}|\$[a-zA-Z0-9_]*\b'
-)  # detects exp's of the form {{ var }} or $var
+    r'{.+}|\$[a-zA-Z0-9_]*\b'
+)  # detects exp's of the form {var} or $var
+
+env_var_new_regex_str = r'\${{\s[a-zA-Z0-9_.]*\s}}'
+env_var_new_regex = re.compile(
+    env_var_new_regex_str
+)  # matches expressions of form '${{ var }}'
+
+env_var_deprecated_regex_str = r'\$[a-zA-Z0-9_]*'
+env_var_deprecated_regex = re.compile(
+    r'\$[a-zA-Z0-9_]*'
+)  # matches expressions of form '$var'
+
+env_var_regex_str = env_var_deprecated_regex_str + '|' + env_var_deprecated_regex_str
+env_var_regex = re.compile(env_var_regex_str)  # matches either of the above
+
+yaml_ref_regex = re.compile(
+    r'\${{([\w\[\].]+)}}'
+)  # matches expressions of form '${{root.name[0].var}}'
 
 
 class JAML:
@@ -239,8 +254,8 @@ class JAML:
                         _replace(v, p.__dict__[k], resolve_ref)
                     else:
                         if isinstance(v, str):
-                            if resolve_ref and internal_var_regex.findall(v):
-                                sub_d[k] = _resolve(v, p)
+                            if resolve_ref and yaml_ref_regex.findall(v):
+                                sub_d[k] = _resolve_yaml_reference(v, p)
                             else:
                                 sub_d[k] = _sub(v)
             elif isinstance(sub_d, list):
@@ -249,81 +264,58 @@ class JAML:
                         _replace(v, p[idx], resolve_ref)
                     else:
                         if isinstance(v, str):
-                            if resolve_ref and internal_var_regex.findall(v):
-                                sub_d[idx] = _resolve(v, p)
+                            if resolve_ref and yaml_ref_regex.findall(v):
+                                sub_d[idx] = _resolve_yaml_reference(v, p)
                             else:
                                 sub_d[idx] = _sub(v)
 
+        def _new_to_depr_env_syntax(v):
+            def repl_fn(matchobj):
+                return '$' + matchobj.group(0)[4:-3]
+
+            return re.sub(env_var_new_regex, repl_fn, v)
+
         def _sub(v):
-            org_v = v
-            v = expand_env_var(v)
-            if not (isinstance(v, str) and subvar_regex.findall(v)):
-                return v
-
-            # 0. replace ${{var}} to {var} to use .format
-            v = re.sub(subvar_regex, '{\\1}', v)
-
-            # 1. substitute the envs (new syntax: ${{ENV.VAR_NAME}})
-            try:
-                v = v.format(ENV=env_map)
-            except KeyError:
-                pass
-
-            # 2. substitute the envs (old syntax: $VAR_NAME)
-            if os.environ:
-                try:
-                    v = v.format_map(dict(os.environ))
-                except KeyError:
-                    pass
-
-            # 3. substitute the context dict
-            if context:
-                try:
-                    if isinstance(context, dict):
-                        v = v.format_map(context)
-                    elif isinstance(context, SimpleNamespace):
-                        v = v.format(root=context, this=context)
-                except (KeyError, AttributeError):
-                    pass
-
-            # 4. make string to float/int/list/bool with best effort
-            v = parse_arg(v)
-
-            if isinstance(v, str) and internal_var_regex.findall(v):
-                # replacement failed, revert back to before
-                v = org_v
-
+            if env_var_new_regex.findall(v):
+                v = _new_to_depr_env_syntax(
+                    v
+                )  # transform new-style env var syntax to old-style syntax
+            if env_var_deprecated_regex.findall(v):
+                v = v.replace('ENV.', '')  # replace redundant reference to ENV.
+                if context:
+                    v = string.Template(v).safe_substitute(
+                        context
+                    )  # use vars provided in context
+                v = os.path.expandvars(
+                    v
+                )  # gets env var and parses to python objects if needed
+            v = parse_arg(v)  # parse to python objects if still needed
             return v
 
-        def _resolve(v, p):
+        def _resolve_yaml_reference(v, p):
             # resolve internal reference
             org_v = v
-            v = re.sub(subvar_regex, '{\\1}', v)
+            v = re.sub(yaml_ref_regex, '{\\1}', v)
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
             except AttributeError as ex:
+                v = org_v
                 raise AttributeError(
                     'variable replacement is failed, please check your YAML file.'
                 ) from ex
             except KeyError:
-                pass
+                return org_v
 
-            v = parse_arg(v)
-
-            if isinstance(v, str) and internal_var_regex.findall(v):
-                # replacement failed, revert back to before
-                v = org_v
-
-            return v
+            return parse_arg(v)
 
         _scan(d, expand_map)
         _scan(dict(os.environ), env_map)
         # first do var replacement
         _replace(d, expand_map)
 
-        # do three rounds of scan-replace to resolve internal references
+        # do `resolve_passes` rounds of scan-replace to resolve internal references
         for _ in range(resolve_passes):
             # rebuild expand_map
             expand_map = SimpleNamespace()
