@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         app: {name}
-        jina_pod_name: {jina_pod_name}
+        jina_deployment_name: {jina_deployment_name}
         shard_id: {shard_id}
         pea_type: {pea_type}
         ns: {namespace}

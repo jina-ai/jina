@@ -78,7 +78,7 @@ def get_deployment_yamls(
         'image_uses_before': image_name_uses_before,
         'image_uses_after': image_name_uses_after,
         'pull_policy': pull_policy,
-        'jina_deploy,emt_name': jina_deployment_name,
+        'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pea_type': pea_type,
         'port_ready_probe': port_ready_probe,

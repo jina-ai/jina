@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         app: {name}
-        jina_pod_name: {jina_pod_name}
+        jina_deployment_name: {jina_deployment_name}
         shard_id: {shard_id}
         pea_type: {pea_type}
         ns: {namespace}
@@ -40,7 +40,7 @@ spec:
             fieldRef:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
-          value: {jina_pod_name}
+          value: {jina_deployment_name}
 
         readinessProbe:
           tcpSocket:
@@ -63,7 +63,7 @@ spec:
             fieldRef:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
-          value: {jina_pod_name}
+          value: {jina_deployment_name}
 
         readinessProbe:
           tcpSocket:

@@ -314,7 +314,7 @@ def test_worker_services(name: str, shards: str):
             assert deploy.name == f'{name}-{i}'
         else:
             assert deploy.name == name
-        assert deploy.jina_pod_name == name
+        assert deploy.jina_deployment_name == name
         assert deploy.shard_id == i
 
 
