@@ -8,7 +8,7 @@ if _SHOW_ALL_ARGS:
     from jina.logging.predefined import default_logger
 
     default_logger.warning(
-        f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD'
+        f'Setting {_SHOW_ALL_ARGS} will make remote Pods with sharding not work when using JinaD'
     )
 
 

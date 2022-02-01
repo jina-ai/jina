@@ -8,14 +8,14 @@ from typing import Type, Union, Dict, Optional
 
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.jaml import JAML
-from jina.orchestrate.peas.helper import _get_event, _get_worker, ConditionalEvent
+from jina.orchestrate.pods.helper import _get_event, _get_worker, ConditionalEvent
 from jina import __stop_msg__, __ready_msg__, __windows__
-from jina.enums import PeaRoleType, RuntimeBackendType
+from jina.enums import PodRoleType, RuntimeBackendType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename
 from jina.logging.logger import JinaLogger
 
-__all__ = ['BasePea', 'Pea']
+__all__ = ['BasePod', 'Pod']
 
 
 def run(
@@ -31,7 +31,7 @@ def run(
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
-    This method is the target for the Pea's `thread` or `process`
+    This method is the target for the Pod's `thread` or `process`
 
     .. note::
         :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
@@ -50,14 +50,14 @@ def run(
         When using `spawn` as the multiprocessing start method, passing this argument to `run` method re-imports
         & re-registers all `JAMLCompatible` classes.
 
-    :param args: namespace args from the Pea
-    :param name: name of the Pea to have proper logging
+    :param args: namespace args from the Pod
+    :param name: name of the Pod to have proper logging
     :param runtime_cls: the runtime class to instantiate
     :param envs: a dictionary of environment variables to be set in the new Process
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
+    :param cancel_event: concurrency event to receive cancelling signal from the Pod. Needed by some runtimes
     :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     logger = JinaLogger(name, **vars(args))
@@ -102,14 +102,14 @@ def run(
         logger.debug(f' Process terminated')
 
 
-class BasePea(ABC):
+class BasePod(ABC):
     """
-    :class:`BasePea` is an interface from which all the classes managing the lifetime of a Runtime inside a local process,
+    :class:`BasePod` is an interface from which all the classes managing the lifetime of a Runtime inside a local process,
     container or in a remote JinaD instance (to come) must inherit.
 
-    It exposes the required APIs so that the `BasePea` can be handled by the `cli` api as a context manager or by a `Deployment`.
+    It exposes the required APIs so that the `BasePod` can be handled by the `cli` api as a context manager or by a `Deployment`.
 
-    What makes a BasePea a BasePea is that it manages the lifecycle of a Runtime (gateway or not gateway)
+    What makes a BasePod a BasePod is that it manages the lifecycle of a Runtime (gateway or not gateway)
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -157,7 +157,7 @@ class BasePea(ABC):
         return f'{self.args.host}:{self.args.port_in}'
 
     def close(self) -> None:
-        """Close the Pea
+        """Close the Pod
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
@@ -175,7 +175,7 @@ class BasePea(ABC):
                         )
                     else:
                         self.logger.warning(
-                            'Pea was forced to close after 1 second. Graceful closing is not available on Windows.'
+                            'Pod was forced to close after 1 second. Graceful closing is not available on Windows.'
                         )
             except Exception as ex:
                 self.logger.error(
@@ -217,7 +217,7 @@ class BasePea(ABC):
 
     def _fail_start_timeout(self, timeout):
         """
-        Closes the Pea and raises a TimeoutError with the corresponding warning messages
+        Closes the Pod and raises a TimeoutError with the corresponding warning messages
 
         :param timeout: The time to wait before readiness or failure is determined
             .. # noqa: DAR201
@@ -261,7 +261,7 @@ class BasePea(ABC):
 
     async def async_wait_start_success(self):
         """
-        Wait for the `Pea` to start successfully in a non-blocking manner
+        Wait for the `Pod` to start successfully in a non-blocking manner
         """
         import asyncio
 
@@ -285,14 +285,14 @@ class BasePea(ABC):
         self._fail_start_timeout(_timeout)
 
     @property
-    def role(self) -> 'PeaRoleType':
-        """Get the role of this pea in a deployment
+    def role(self) -> 'PodRoleType':
+        """Get the role of this pod in a deployment
         .. #noqa: DAR201"""
-        return self.args.pea_role
+        return self.args.pod_role
 
     @abstractmethod
     def start(self):
-        """Start the BasePea.
+        """Start the BasePod.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
@@ -304,7 +304,7 @@ class BasePea(ABC):
 
     @abstractmethod
     def join(self, *args, **kwargs):
-        """Joins the BasePea. Wait for the BasePea to properly terminate
+        """Joins the BasePod. Wait for the BasePod to properly terminate
 
         :param args: extra positional arguments
         :param kwargs: extra keyword arguments
@@ -312,12 +312,12 @@ class BasePea(ABC):
         ...
 
 
-class Pea(BasePea):
+class Pod(BasePod):
     """
-    :class:`Pea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
+    :class:`Pod` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
     or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
 
-    A :class:`Pea` must be equipped with a proper :class:`Runtime` class to work.
+    A :class:`Pod` must be equipped with a proper :class:`Runtime` class to work.
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -346,7 +346,7 @@ class Pea(BasePea):
 
     def start(self):
 
-        """Start the Pea.
+        """Start the Pod.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
@@ -358,7 +358,7 @@ class Pea(BasePea):
         return self
 
     def join(self, *args, **kwargs):
-        """Joins the Pea.
+        """Joins the Pod.
         This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
@@ -369,7 +369,7 @@ class Pea(BasePea):
         self.logger.debug(f' Successfully joined the process')
 
     def _terminate(self):
-        """Terminate the Pea.
+        """Terminate the Pod.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
@@ -382,7 +382,7 @@ class Pea(BasePea):
             self.logger.debug(f'runtime thread properly canceled')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
-        from jina.orchestrate.peas.helper import update_runtime_cls
+        from jina.orchestrate.pods.helper import update_runtime_cls
         from jina.serve.runtimes import get_runtime
 
         update_runtime_cls(self.args)

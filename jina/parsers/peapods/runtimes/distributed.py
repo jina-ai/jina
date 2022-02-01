@@ -40,7 +40,7 @@ Note,
         '--disable-remote',
         action='store_true',
         default=False,
-        help='If set, remote pea invocation is avoided. This is used by peas created by JinaD'
+        help='If set, remote pod invocation is avoided. This is used by peas created by JinaD'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

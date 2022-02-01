@@ -78,7 +78,7 @@ class LegacyParser(VersionedYAMLParser):
         arguments_from_cls = LegacyParser._get_all_arguments(cls)
         arguments_from_yaml = set(data.get('with', {}))
         difference_set = arguments_from_yaml - arguments_from_cls
-        # only log warnings about unknown args for main Pea
+        # only log warnings about unknown args for main Pod
         if any(difference_set) and not LegacyParser.is_tail_or_head(data):
             default_logger.warning(
                 f'The given arguments {difference_set} are not defined in `{cls.__name__}.__init__`'
@@ -100,7 +100,7 @@ class LegacyParser(VersionedYAMLParser):
 
     @staticmethod
     def is_tail_or_head(data: Dict) -> bool:
-        """Based on name, compute if this is a tail/head Pea or a main Pea
+        """Based on name, compute if this is a tail/head Pod or a main Pod
 
         :param data: the data for the parser
         :return: True if it is tail/head, False otherwise

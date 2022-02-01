@@ -27,7 +27,7 @@ schema_flow = {
             },
             'executors': {
                 'description': 'Define the steps in the Flow.\n'
-                'A Deployment is a container and interface for one or multiple Peas that have the same properties.',
+                'A Deployment is a container and interface for one or multiple Pods that have the same properties.',
                 'type': 'array',
                 'items': {'$ref': '#/definitions/Jina::Deployment'},
                 'minItems': 1,

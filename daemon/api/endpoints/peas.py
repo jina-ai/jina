@@ -1,15 +1,15 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from daemon import Runtime400Exception
-from daemon.api.dependencies import PeaDepends
-from daemon.models import DaemonID, ContainerItem, ContainerStoreStatus, PeaModel
-from daemon.stores import pea_store as store
+from daemon.api.dependencies import PodDepends
+from daemon.models import DaemonID, ContainerItem, ContainerStoreStatus, PodModel
+from daemon.stores import pod_store as store
 
 router = APIRouter(prefix='/peas', tags=['peas'])
 
 
 @router.get(
-    path='', summary='Get all alive Pea\' status', response_model=ContainerStoreStatus
+    path='', summary='Get all alive Pod\' status', response_model=ContainerStoreStatus
 )
 async def _get_items():
     return store.status
@@ -17,28 +17,28 @@ async def _get_items():
 
 @router.get(
     path='/arguments',
-    summary='Get all accepted arguments of a Pea',
+    summary='Get all accepted arguments of a Pod',
 )
-async def _fetch_pea_params():
-    return PeaModel.schema()['properties']
+async def _fetch_pod_params():
+    return PodModel.schema()['properties']
 
 
 @router.post(
     path='',
-    summary='Create a Pea',
-    description='Create a Pea and add it to the store',
+    summary='Create a Pod',
+    description='Create a Pod and add it to the store',
     status_code=201,
     response_model=DaemonID,
 )
-async def _create(pea: PeaDepends = Depends(PeaDepends)):
+async def _create(pod: PodDepends = Depends(PodDepends)):
     try:
         return await store.add(
-            id=pea.id,
-            workspace_id=pea.workspace_id,
-            params=pea.params,
-            ports=pea.ports,
-            envs=pea.envs,
-            device_requests=pea.device_requests,
+            id=pod.id,
+            workspace_id=pod.workspace_id,
+            params=pod.params,
+            ports=pod.ports,
+            envs=pod.envs,
+            device_requests=pod.device_requests,
         )
     except Exception as ex:
         raise Runtime400Exception from ex
@@ -48,7 +48,7 @@ async def _create(pea: PeaDepends = Depends(PeaDepends)):
 #  https://fastapi.tiangolo.com/tutorial/path-params/?h=+path#order-matters
 @router.delete(
     path='',
-    summary='Terminate all running Peas',
+    summary='Terminate all running Pods',
 )
 async def _clear_all():
     await store.clear()
@@ -56,8 +56,8 @@ async def _clear_all():
 
 @router.delete(
     path='/{id}',
-    summary='Terminate a running Pea',
-    description='Terminate a running Pea and release its resources',
+    summary='Terminate a running Pod',
+    description='Terminate a running Pod and release its resources',
 )
 async def _delete(id: DaemonID, workspace: bool = False):
     try:
@@ -67,10 +67,10 @@ async def _delete(id: DaemonID, workspace: bool = False):
 
 
 @router.get(
-    path='/{id}', summary='Get status of a running Pea', response_model=ContainerItem
+    path='/{id}', summary='Get status of a running Pod', response_model=ContainerItem
 )
 async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in pea store')
+        raise HTTPException(status_code=404, detail=f'{id} not found in pod store')

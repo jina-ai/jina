@@ -73,8 +73,8 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
         == '{"executor0": ["executor0-head-0:8081"], "executor1": ["executor1-head-0:8081"], "executor2": ["executor2-head-0:8081"]}'
     )
-    assert '--pea-role' in gateway_args
-    assert gateway_args[gateway_args.index('--pea-role') + 1] == 'GATEWAY'
+    assert '--pod-role' in gateway_args
+    assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
     if protocol == 'http':
         assert '--protocol' in gateway_args
         assert gateway_args[gateway_args.index('--protocol') + 1] == 'HTTP'
@@ -98,8 +98,8 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         executor0_head_args[executor0_head_args.index('--runtime-cls') + 1]
         == 'HeadRuntime'
     )
-    assert '--pea-role' in executor0_head_args
-    assert executor0_head_args[executor0_head_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in executor0_head_args
+    assert executor0_head_args[executor0_head_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor0_head_args
     assert '--connection-list' in executor0_head_args
     assert (
@@ -123,9 +123,9 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-with' in executor0_args
     assert executor0_args[executor0_args.index('--uses-with') + 1] == '{"param": 0}'
     assert '--uses-metas' in executor0_args
-    assert executor0_args[executor0_args.index('--uses-metas') + 1] == '{"pea_id": 0}'
+    assert executor0_args[executor0_args.index('--uses-metas') + 1] == '{"pod_id": 0}'
     assert '--native' in executor0_args
-    assert '--pea-role' not in executor0_args
+    assert '--pod-role' not in executor0_args
     assert '--runtime-cls' not in executor0_args
     assert '--connection-list' not in executor0_args
     assert '--uses-before' not in executor0_args
@@ -146,8 +146,8 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         executor1_head_args[executor1_head_args.index('--runtime-cls') + 1]
         == 'HeadRuntime'
     )
-    assert '--pea-role' in executor1_head_args
-    assert executor1_head_args[executor1_head_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in executor1_head_args
+    assert executor1_head_args[executor1_head_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor1_head_args
     assert '--connection-list' in executor1_head_args
     assert (
@@ -179,10 +179,10 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-metas' in executor1_shard0_args
     assert (
         executor1_shard0_args[executor1_shard0_args.index('--uses-metas') + 1]
-        == '{"pea_id": 0}'
+        == '{"pod_id": 0}'
     )
     assert '--native' in executor1_shard0_args
-    assert '--pea-role' not in executor1_shard0_args
+    assert '--pod-role' not in executor1_shard0_args
     assert '--runtime-cls' not in executor1_shard0_args
     assert '--connection-list' not in executor1_shard0_args
     assert '--uses-before' not in executor1_shard0_args
@@ -206,10 +206,10 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-metas' in executor1_shard1_args
     assert (
         executor1_shard1_args[executor1_shard1_args.index('--uses-metas') + 1]
-        == '{"pea_id": 1}'
+        == '{"pod_id": 1}'
     )
     assert '--native' in executor1_shard1_args
-    assert '--pea-role' not in executor1_shard1_args
+    assert '--pod-role' not in executor1_shard1_args
     assert '--runtime-cls' not in executor1_shard1_args
     assert '--connection-list' not in executor1_shard1_args
     assert '--uses-before' not in executor1_shard1_args
@@ -230,8 +230,8 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         executor2_head_args[executor2_head_args.index('--runtime-cls') + 1]
         == 'HeadRuntime'
     )
-    assert '--pea-role' in executor2_head_args
-    assert executor2_head_args[executor2_head_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in executor2_head_args
+    assert executor2_head_args[executor2_head_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor2_head_args
     assert '--connection-list' in executor2_head_args
     assert (
@@ -271,10 +271,10 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-metas' in executor2_rep_0_args
     assert (
         executor2_rep_0_args[executor2_rep_0_args.index('--uses-metas') + 1]
-        == '{"pea_id": 0}'
+        == '{"pod_id": 0}'
     )
     assert '--native' in executor2_rep_0_args
-    assert '--pea-role' not in executor2_rep_0_args
+    assert '--pod-role' not in executor2_rep_0_args
     assert '--runtime-cls' not in executor2_rep_0_args
     assert '--connection-list' not in executor2_rep_0_args
     assert '--uses-before' not in executor2_rep_0_args
@@ -298,10 +298,10 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-metas' in executor2_rep_1_args
     assert (
         executor2_rep_1_args[executor2_rep_1_args.index('--uses-metas') + 1]
-        == '{"pea_id": 0}'
+        == '{"pod_id": 0}'
     )
     assert '--native' in executor2_rep_1_args
-    assert '--pea-role' not in executor2_rep_1_args
+    assert '--pod-role' not in executor2_rep_1_args
     assert '--runtime-cls' not in executor2_rep_1_args
     assert '--connection-list' not in executor2_rep_1_args
     assert '--uses-before' not in executor2_rep_1_args
@@ -324,7 +324,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         == '{}'
     )
     assert '--native' in executor2_uses_before_args
-    assert '--pea-role' not in executor2_uses_before_args
+    assert '--pod-role' not in executor2_uses_before_args
     assert '--runtime-cls' not in executor2_uses_before_args
     assert '--connection-list' not in executor2_uses_before_args
     assert '--uses-before' not in executor2_uses_before_args
@@ -347,7 +347,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         == '{}'
     )
     assert '--native' in executor2_uses_after_args
-    assert '--pea-role' not in executor2_uses_after_args
+    assert '--pod-role' not in executor2_uses_after_args
     assert '--runtime-cls' not in executor2_uses_after_args
     assert '--connection-list' not in executor2_uses_after_args
     assert '--uses-before' not in executor2_uses_after_args

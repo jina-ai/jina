@@ -99,8 +99,8 @@ message ControlRequestProto {
 
     enum Command {
             STATUS = 0; // check the status of the BasePod
-            ACTIVATE = 1; // used to add Peas to a Pod
-            DEACTIVATE = 2; // used to remove Peas from a Pod
+            ACTIVATE = 1; // used to add Pods to a Pod
+            DEACTIVATE = 2; // used to remove Pods from a Pod
     }
 
     Command command = 2; // the control command

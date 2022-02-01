@@ -305,7 +305,7 @@ class EnvChecker1(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # pea/pod-specific
+        # pod/pod-specific
         assert os.environ['key1'] == 'value1'
         assert os.environ['key2'] == 'value2'
         # inherit from parent process
@@ -317,7 +317,7 @@ class EnvChecker2(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # pea/pod-specific
+        # pod/pod-specific
         assert 'key1' not in os.environ
         assert 'key2' not in os.environ
         # inherit from parent process

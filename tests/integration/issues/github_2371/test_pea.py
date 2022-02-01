@@ -1,24 +1,24 @@
-from jina.parsers import set_pea_parser
-from jina.orchestrate.peas.factory import PeaFactory
+from jina.parsers import set_pod_parser
+from jina.orchestrate.pods.factory import PodFactory
 
 
-def test_pea_instantiate_start_same_context():
-    arg = set_pea_parser().parse_args([])
+def test_pod_instantiate_start_same_context():
+    arg = set_pod_parser().parse_args([])
     peas_args = [arg, arg]
 
     for args in peas_args:
-        pea = PeaFactory.build_pea(args)
-        with pea:
+        pod = PodFactory.build_pod(args)
+        with pod:
             pass
 
 
-def test_pea_instantiate_start_different_context():
-    arg = set_pea_parser().parse_args([])
+def test_pod_instantiate_start_different_context():
+    arg = set_pod_parser().parse_args([])
     peas_args = [arg, arg]
     peas = []
     for args in peas_args:
-        peas.append(PeaFactory.build_pea(args))
+        peas.append(PodFactory.build_pod(args))
 
-    for pea in peas:
-        with pea:
+    for pod in peas:
+        with pod:
             pass

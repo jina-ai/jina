@@ -3,7 +3,7 @@ from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
-from jina.enums import PeaRoleType
+from jina.enums import PodRoleType
 from jina.orchestrate.deployments.config.k8slib import kubernetes_deployment
 from jina.orchestrate.deployments.config.helper import (
     get_image_name,
@@ -24,7 +24,7 @@ class K8sDeploymentConfig:
             self,
             name: str,
             version: str,
-            pea_type: PeaRoleType,
+            pod_type: PodRoleType,
             jina_deployment_name: str,
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
@@ -36,7 +36,7 @@ class K8sDeploymentConfig:
             self.name = name
             self.dns_name = to_compatible_name(name)
             self.version = version
-            self.pea_type = pea_type
+            self.pod_type = pod_type
             self.jina_deployment_name = jina_deployment_name
             self.shard_id = shard_id
             self.common_args = common_args
@@ -80,20 +80,20 @@ class K8sDeploymentConfig:
                 replicas=1,
                 pull_policy='IfNotPresent',
                 jina_deployment_name='gateway',
-                pea_type=self.pea_type,
+                pod_type=self.pod_type,
                 port_expose=self.common_args.port_expose,
                 env=cargs.env,
             )
 
         @staticmethod
-        def _construct_runtime_container_args(cargs, uses_metas, uses_with, pea_type):
+        def _construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
             import json
             from jina.helper import ArgNamespace
-            from jina.parsers import set_pea_parser
+            from jina.parsers import set_pod_parser
 
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
-                set_pea_parser(),
+                set_pod_parser(),
                 taboo={
                     'uses_with',
                     'uses_metas',
@@ -104,7 +104,7 @@ class K8sDeploymentConfig:
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['executor'] + _args
-            if not cargs.k8s_connection_pool and pea_type == PeaRoleType.HEAD:
+            if not cargs.k8s_connection_pool and pod_type == PodRoleType.HEAD:
                 container_args.append('--k8s-disable-connection-pool')
             if uses_metas is not None:
                 container_args.extend(['--uses-metas', json.dumps(uses_metas)])
@@ -128,15 +128,15 @@ class K8sDeploymentConfig:
 
             return image_name
 
-        def _get_container_args(self, cargs, pea_type):
+        def _get_container_args(self, cargs, pod_type):
             uses_metas = cargs.uses_metas or {}
             if self.shard_id is not None:
-                uses_metas['pea_id'] = self.shard_id
+                uses_metas['pod_id'] = self.shard_id
             uses_with = self.deployment_args.uses_with
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'
             return self._construct_runtime_container_args(
-                cargs, uses_metas, uses_with, pea_type
+                cargs, uses_metas, uses_with, pod_type
             )
 
         def get_runtime_yamls(
@@ -155,7 +155,7 @@ class K8sDeploymentConfig:
                 if hasattr(cargs, 'uses_after') and cargs.uses_after
                 else None
             )
-            container_args = self._get_container_args(cargs, pea_type=self.pea_type)
+            container_args = self._get_container_args(cargs, pod_type=self.pod_type)
             container_args_uses_before = None
             if getattr(cargs, 'uses_before', False):
                 uses_before_cargs = copy.copy(cargs)
@@ -171,10 +171,10 @@ class K8sDeploymentConfig:
                 uses_before_cargs.env = None
                 uses_before_cargs.connection_list = None
                 uses_before_cargs.runtime_cls = 'WorkerRuntime'
-                uses_before_cargs.pea_role = PeaRoleType.WORKER
+                uses_before_cargs.pod_role = PodRoleType.WORKER
                 uses_before_cargs.polling = None
                 container_args_uses_before = self._get_container_args(
-                    uses_before_cargs, PeaRoleType.WORKER
+                    uses_before_cargs, PodRoleType.WORKER
                 )
 
             container_args_uses_after = None
@@ -192,10 +192,10 @@ class K8sDeploymentConfig:
                 uses_after_cargs.env = None
                 uses_after_cargs.connection_list = None
                 uses_after_cargs.runtime_cls = 'WorkerRuntime'
-                uses_after_cargs.pea_role = PeaRoleType.WORKER
+                uses_after_cargs.pod_role = PodRoleType.WORKER
                 uses_after_cargs.polling = None
                 container_args_uses_after = self._get_container_args(
-                    uses_after_cargs, PeaRoleType.WORKER
+                    uses_after_cargs, PodRoleType.WORKER
                 )
 
             return kubernetes_deployment.get_deployment_yamls(
@@ -213,7 +213,7 @@ class K8sDeploymentConfig:
                 replicas=self.num_replicas,
                 pull_policy='IfNotPresent',
                 jina_deployment_name=self.jina_deployment_name,
-                pea_type=self.pea_type,
+                pod_type=self.pod_type,
                 shard_id=self.shard_id,
                 env=cargs.env,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
@@ -249,7 +249,7 @@ class K8sDeploymentConfig:
                 jina_deployment_name=self.name,
                 common_args=self.args,
                 deployment_args=self.deployment_args['head_deployment'],
-                pea_type=PeaRoleType.HEAD,
+                pod_type=PodRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
                 k8s_connection_pool=self.k8s_connection_pool,
                 k8s_deployments_addresses=self.k8s_deployments_addresses,
@@ -266,9 +266,9 @@ class K8sDeploymentConfig:
                     shard_id=i,
                     common_args=self.args,
                     deployment_args=args,
-                    pea_type=PeaRoleType.WORKER
+                    pod_type=PodRoleType.WORKER
                     if name != 'gateway'
-                    else PeaRoleType.GATEWAY,
+                    else PodRoleType.GATEWAY,
                     jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
                     k8s_connection_pool=self.k8s_connection_pool,
@@ -340,7 +340,7 @@ class K8sDeploymentConfig:
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':
-                cargs.pea_role = PeaRoleType.GATEWAY
+                cargs.pod_role = PodRoleType.GATEWAY
             # the worker runtimes do not care
             else:
                 cargs.k8s_connection_pool = False

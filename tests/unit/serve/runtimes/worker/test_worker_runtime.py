@@ -11,7 +11,7 @@ import pytest
 from docarray import Document
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
-from jina.parsers import set_pea_parser
+from jina.parsers import set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import (
@@ -24,7 +24,7 @@ from jina.proto import jina_pb2_grpc, jina_pb2
 @pytest.mark.slow
 @pytest.mark.timeout(5)
 def test_worker_runtime():
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
 
@@ -94,7 +94,7 @@ class SlowNewDocsExecutor(Executor):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('uses', ['AsyncSlowNewDocsExecutor', 'SlowNewDocsExecutor'])
 async def test_worker_runtime_slow_async_exec(uses):
-    args = set_pea_parser().parse_args(['--uses', uses])
+    args = set_pod_parser().parse_args(['--uses', uses])
 
     cancel_event = multiprocessing.Event()
 
@@ -147,7 +147,7 @@ async def test_worker_runtime_slow_async_exec(uses):
 @pytest.mark.slow
 @pytest.mark.timeout(10)
 def test_error_in_worker_runtime(monkeypatch):
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
 
@@ -200,7 +200,7 @@ def test_error_in_worker_runtime(monkeypatch):
 )
 # TODO: This test should work, it does not
 async def test_worker_runtime_graceful_shutdown():
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
     handler_closed_event = multiprocessing.Event()

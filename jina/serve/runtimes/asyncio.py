@@ -81,7 +81,7 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         super().teardown()
 
     async def _wait_for_cancel(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # threads are not using asyncio.Event, but threading.Event
         if isinstance(self.is_cancel, asyncio.Event):
             await self.is_cancel.wait()
@@ -92,7 +92,7 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         await self.async_cancel()
 
     async def _loop_body(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         try:
             await asyncio.gather(self.async_run_forever(), self._wait_for_cancel())
         except asyncio.CancelledError:
@@ -123,7 +123,7 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         """The async method to run until it is stopped."""
         ...
 
-    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+    # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 
     @staticmethod
     def activate(**kwargs):

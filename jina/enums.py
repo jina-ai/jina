@@ -159,8 +159,8 @@ class GatewayProtocolType(BetterEnum):
     WEBSOCKET = 2
 
 
-class PeaRoleType(BetterEnum):
-    """The enum of a Pea role."""
+class PodRoleType(BetterEnum):
+    """The enum of a Pod role."""
 
     HEAD = 0
     WORKER = 1

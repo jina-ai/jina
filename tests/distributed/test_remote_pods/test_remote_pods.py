@@ -79,7 +79,7 @@ async def test_jinad_pod_create_async_given_unprocessable_entity(
     pod_args, async_jinad_client
 ):
     payload = replace_enum_to_str(ArgNamespace.flatten_to_dict(pod_args))
-    payload['pea_role'] = 'RANDOM'  # patch an invalid pea role type
+    payload['pod_role'] = 'RANDOM'  # patch an invalid pod role type
 
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]

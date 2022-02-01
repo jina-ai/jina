@@ -3,7 +3,7 @@ import pytest
 from docarray import Document, DocumentArray
 from jina import Executor, requests
 from jina.logging.logger import JinaLogger
-from jina.parsers import set_pea_parser
+from jina.parsers import set_pod_parser
 from jina.serve.runtimes.request_handlers.data_request_handler import (
     DataRequestHandler,
 )
@@ -44,7 +44,7 @@ def logger():
 
 @pytest.mark.asyncio
 async def test_data_request_handler_new_docs(logger):
-    args = set_pea_parser().parse_args(['--uses', 'NewDocsExecutor'])
+    args = set_pod_parser().parse_args(['--uses', 'NewDocsExecutor'])
     handler = DataRequestHandler(args, logger)
     req = list(
         request_generator(
@@ -60,7 +60,7 @@ async def test_data_request_handler_new_docs(logger):
 
 @pytest.mark.asyncio
 async def test_aync_data_request_handler_new_docs(logger):
-    args = set_pea_parser().parse_args(['--uses', 'AsyncNewDocsExecutor'])
+    args = set_pod_parser().parse_args(['--uses', 'AsyncNewDocsExecutor'])
     handler = DataRequestHandler(args, logger)
     req = list(
         request_generator(
@@ -76,7 +76,7 @@ async def test_aync_data_request_handler_new_docs(logger):
 
 @pytest.mark.asyncio
 async def test_data_request_handler_change_docs(logger):
-    args = set_pea_parser().parse_args(['--uses', 'ChangeDocsExecutor'])
+    args = set_pod_parser().parse_args(['--uses', 'ChangeDocsExecutor'])
     handler = DataRequestHandler(args, logger)
 
     req = list(
@@ -95,7 +95,7 @@ async def test_data_request_handler_change_docs(logger):
 @pytest.mark.asyncio
 async def test_data_request_handler_change_docs_from_partial_requests(logger):
     NUM_PARTIAL_REQUESTS = 5
-    args = set_pea_parser().parse_args(['--uses', 'MergeChangeDocsExecutor'])
+    args = set_pod_parser().parse_args(['--uses', 'MergeChangeDocsExecutor'])
     handler = DataRequestHandler(args, logger)
 
     partial_reqs = [

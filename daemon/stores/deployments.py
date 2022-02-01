@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING, Dict, Optional
 
 from jina.helper import colored
 from daemon.stores.base import BaseStore
-from daemon.stores.peas import PeaStore
+from daemon.stores.peas import PodStore
 
 if TYPE_CHECKING:
     from daemon.models import DaemonID
 
 
-class DeploymentStore(PeaStore):
+class DeploymentStore(PodStore):
     """A Store of Deployments spawned as Containers by Daemon"""
 
     _kind = 'deployment'

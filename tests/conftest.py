@@ -55,8 +55,8 @@ def partial_deployment_client(monkeypatch):
 
 
 @pytest.fixture(scope='function', autouse=False)
-def partial_pea_client(monkeypatch):
-    yield from get_partial_client(mode='pea', monkeypatch=monkeypatch)
+def partial_pod_client(monkeypatch):
+    yield from get_partial_client(mode='pod', monkeypatch=monkeypatch)
 
 
 def get_partial_client(mode, monkeypatch):

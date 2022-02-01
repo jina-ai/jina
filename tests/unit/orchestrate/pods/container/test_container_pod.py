@@ -3,8 +3,8 @@ import time
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.parsers import set_pea_parser, set_gateway_parser
-from jina.orchestrate.peas.container import ContainerPea
+from jina.parsers import set_pod_parser, set_gateway_parser
+from jina.orchestrate.pods.container import ContainerPod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,11 +22,11 @@ def env_checker_docker_image_built():
     client.containers.prune()
 
 
-def test_container_pea_pass_envs(env_checker_docker_image_built):
+def test_container_pod_pass_envs(env_checker_docker_image_built):
     import docker
 
-    with ContainerPea(
-        set_pea_parser().parse_args(
+    with ContainerPod(
+        set_pod_parser().parse_args(
             [
                 '--uses',
                 'docker://env-checker',
@@ -36,8 +36,8 @@ def test_container_pea_pass_envs(env_checker_docker_image_built):
                 'key2=value2',
             ]
         )
-    ) as pea:
-        container = pea._container
+    ) as pod:
+        container = pod._container
         status = container.status
 
     assert status == 'running'
@@ -45,7 +45,7 @@ def test_container_pea_pass_envs(env_checker_docker_image_built):
     containers = client.containers.list()
     assert container.id not in containers
     with pytest.raises(docker.errors.NotFound):
-        pea._container
+        pod._container
 
 
 @pytest.fixture(scope='module')
@@ -64,7 +64,7 @@ def fail_start_docker_image_built():
 def test_failing_executor(fail_start_docker_image_built):
     import docker
 
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--uses',
             'docker://fail-start',
@@ -72,12 +72,12 @@ def test_failing_executor(fail_start_docker_image_built):
     )
 
     with pytest.raises(RuntimeFailToStart):
-        pea = ContainerPea(args)
-        with pea:
+        pod = ContainerPod(args)
+        with pod:
             pass
 
     with pytest.raises(docker.errors.NotFound):
-        pea._container
+        pod._container
 
 
 def test_pass_arbitrary_kwargs(monkeypatch, mocker):
@@ -151,7 +151,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             return {}
 
     monkeypatch.setattr(docker, 'from_env', MockClient)
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--uses',
             'docker://jinahub/pod',
@@ -164,10 +164,10 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             'hello: 0',
         ]
     )
-    with ContainerPea(args) as pea:
+    with ContainerPod(args) as pod:
         pass
-    pea.join()
-    assert pea.worker.exitcode == 0
+    pod.join()
+    assert pod.worker.exitcode == 0
 
 
 @pytest.fixture(scope='module')
@@ -183,26 +183,26 @@ def head_runtime_docker_image_built():
     client.containers.prune()
 
 
-def test_container_pea_head_runtime(head_runtime_docker_image_built):
+def test_container_pod_head_runtime(head_runtime_docker_image_built):
     import docker
 
-    with ContainerPea(
-        set_pea_parser().parse_args(
+    with ContainerPod(
+        set_pod_parser().parse_args(
             [
                 '--uses',
                 'docker://head-runtime',
             ]
         )
-    ) as pea:
-        container = pea._container
-        status = pea._container.status
+    ) as pod:
+        container = pod._container
+        status = pod._container.status
 
     assert status == 'running'
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
     with pytest.raises(docker.errors.NotFound):
-        pea._container
+        pod._container
 
 
 @pytest.fixture(scope='module')
@@ -220,12 +220,12 @@ def gateway_runtime_docker_image_built():
     client.containers.prune()
 
 
-@pytest.mark.skip('ContainerPea is not ready to handle `Gateway`')
+@pytest.mark.skip('ContainerPod is not ready to handle `Gateway`')
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-def test_container_pea_gateway_runtime(protocol, gateway_runtime_docker_image_built):
+def test_container_pod_gateway_runtime(protocol, gateway_runtime_docker_image_built):
     import docker
 
-    with ContainerPea(
+    with ContainerPod(
         set_gateway_parser().parse_args(
             [
                 '--uses',
@@ -238,13 +238,13 @@ def test_container_pea_gateway_runtime(protocol, gateway_runtime_docker_image_bu
                 protocol,
             ]
         )
-    ) as pea:
-        container = pea._container
-        status = pea._container.status
+    ) as pod:
+        container = pod._container
+        status = pod._container.status
 
     assert status == 'running'
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
     with pytest.raises(docker.errors.NotFound):
-        pea._container
+        pod._container

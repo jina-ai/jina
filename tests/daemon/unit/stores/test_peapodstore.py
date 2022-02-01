@@ -3,8 +3,8 @@ from typing import Type
 
 import pytest
 
-from daemon.models import DaemonID, PeaModel, DeploymentModel
-from daemon.stores import PeaStore, DeploymentStore
+from daemon.models import DaemonID, PodModel, DeploymentModel
+from daemon.stores import PodStore, DeploymentStore
 from daemon.stores.partial import PartialStore
 from jina import Executor
 
@@ -26,11 +26,11 @@ def workspace():
 @pytest.mark.parametrize(
     'model, store, id',
     [
-        (PeaModel(), PeaStore, DaemonID(f'jpea')),
+        (PodModel(), PodStore, DaemonID(f'jpod')),
         # (PodModel(), PodStore, DaemonID(f'jpod')),
     ],
 )
-async def test_peapod_store_add(model, store, id, workspace):
+async def test_podpod_store_add(model, store, id, workspace):
     s = store()
     await s.add(id=id, params=model, workspace_id=workspace, ports={})
     assert len(s) == 1
@@ -43,11 +43,11 @@ async def test_peapod_store_add(model, store, id, workspace):
 @pytest.mark.parametrize(
     'model, store, type',
     [
-        (PeaModel(), PeaStore, 'pea'),
+        (PodModel(), PodStore, 'pod'),
         # (PodModel(), PodStore, 'pod')
     ],
 )
-async def test_peapod_store_multi_add(model, store, type, workspace):
+async def test_podpod_store_multi_add(model, store, type, workspace):
     s = store()
     for j in range(5):
         id = DaemonID(f'j{type}')
@@ -63,11 +63,11 @@ async def test_peapod_store_multi_add(model, store, type, workspace):
 @pytest.mark.parametrize(
     'model, store, id',
     [
-        (PeaModel(), PeaStore, DaemonID(f'jpea')),
+        (PodModel(), PodStore, DaemonID(f'jpod')),
         # (PodModel(), PodStore, DaemonID(f'jpod')),
     ],
 )
-async def test_peapod_store_add_bad(model, store, id, workspace):
+async def test_podpod_store_add_bad(model, store, id, workspace):
     class BadCrafter(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

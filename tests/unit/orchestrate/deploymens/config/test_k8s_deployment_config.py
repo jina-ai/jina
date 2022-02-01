@@ -70,7 +70,7 @@ def test_parse_args(
         args,
         skip_attr=(
             'runtime_cls',
-            'pea_role',
+            'pod_role',
             'port_in',
             'k8s_namespace',
             'k8s_connection_pool',
@@ -156,7 +156,7 @@ def test_parse_args(
             cargs,
             skip_attr=(
                 'runtime_cls',
-                'pea_role',
+                'pod_role',
                 'port_in',
                 'k8s_namespace',
                 'k8s_connection_pool',
@@ -387,7 +387,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
             'app': 'gateway',
             'jina_deployment_name': 'gateway',
             'shard_id': '',
-            'pea_type': 'GATEWAY',
+            'pod_type': 'GATEWAY',
             'ns': 'default-namespace',
         }
     }
@@ -408,8 +408,8 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     assert '--port-expose' in args
     assert args[args.index('--port-expose') + 1] == '32465'
     assert '--env' not in args
-    assert '--pea-role' in args
-    assert args[args.index('--pea-role') + 1] == 'GATEWAY'
+    assert '--pod-role' in args
+    assert args[args.index('--pod-role') + 1] == 'GATEWAY'
     if not k8s_connection_pool_call:
         assert args[-1] == '--k8s-disable-connection-pool'
     if deployments_addresses is not None:
@@ -551,7 +551,7 @@ def test_k8s_yaml_regular_deployment(
             'app': 'executor-head-0',
             'jina_deployment_name': 'executor',
             'shard_id': '',
-            'pea_type': 'HEAD',
+            'pod_type': 'HEAD',
             'ns': 'default-namespace',
         }
     }
@@ -595,9 +595,9 @@ def test_k8s_yaml_regular_deployment(
         == '8081'
     )
     assert '--env' not in head_runtime_container_args
-    assert '--pea-role' in head_runtime_container_args
+    assert '--pod-role' in head_runtime_container_args
     assert (
-        head_runtime_container_args[head_runtime_container_args.index('--pea-role') + 1]
+        head_runtime_container_args[head_runtime_container_args.index('--pod-role') + 1]
         == 'HEAD'
     )
     if not k8s_connection_pool_call:
@@ -758,7 +758,7 @@ def test_k8s_yaml_regular_deployment(
                 'app': name,
                 'jina_deployment_name': 'executor',
                 'shard_id': str(i),
-                'pea_type': 'WORKER',
+                'pod_type': 'WORKER',
                 'ns': 'default-namespace',
             }
         }
@@ -825,7 +825,7 @@ def test_k8s_yaml_regular_deployment(
         expected_uses_metas = {}
         if uses_metas is not None:
             expected_uses_metas = json.loads(uses_metas)
-        expected_uses_metas['pea_id'] = i
+        expected_uses_metas['pod_id'] = i
         assert '--uses-metas' in shard_container_runtime_container_args
         assert shard_container_runtime_container_args[
             shard_container_runtime_container_args.index('--uses-metas') + 1

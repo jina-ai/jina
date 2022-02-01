@@ -1,23 +1,23 @@
-"""Argparser module for Pea runtimes"""
+"""Argparser module for Pod runtimes"""
 import argparse
 
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
-from jina.enums import PeaRoleType, RuntimeBackendType
+from jina.enums import PodRoleType, RuntimeBackendType
 
 
-def mixin_pea_parser(parser):
-    """Mixing in arguments required by :class:`Pea` into the given parser.
+def mixin_pod_parser(parser):
+    """Mixing in arguments required by :class:`Pod` into the given parser.
     :param parser: the parser instance to which we add arguments
     """
 
-    gp = add_arg_group(parser, title='Pea')
+    gp = add_arg_group(parser, title='Pod')
 
     gp.add_argument(
         '--daemon',
         action='store_true',
         default=False,
-        help='The Pea attempts to terminate all of its Runtime child processes/threads on existing. '
-        'setting it to true basically tell the Pea do not wait on the Runtime when closing',
+        help='The Pod attempts to terminate all of its Runtime child processes/threads on existing. '
+        'setting it to true basically tell the Pod do not wait on the Runtime when closing',
     )
 
     gp.add_argument(
@@ -26,21 +26,21 @@ def mixin_pea_parser(parser):
         type=RuntimeBackendType.from_string,
         choices=list(RuntimeBackendType),
         default=RuntimeBackendType.PROCESS,
-        help='The parallel backend of the runtime inside the Pea',
+        help='The parallel backend of the runtime inside the Pod',
     )
 
     gp.add_argument(
         '--runtime-cls',
         type=str,
         default='WorkerRuntime',
-        help='The runtime class to run inside the Pea',
+        help='The runtime class to run inside the Pod',
     )
 
     gp.add_argument(
         '--timeout-ready',
         type=int,
         default=600000,
-        help='The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting '
+        help='The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting '
         'forever',
     )
 
@@ -58,7 +58,7 @@ def mixin_pea_parser(parser):
         default=False,
         help='If set, expose the public IP address to remote when necessary, by default it exposes'
         'private IP address, which only allows accessing under the same network/subnet. Important to '
-        'set this to true when the Pea will receive input connections from remote Peas',
+        'set this to true when the Pod will receive input connections from remote Pods',
     )
 
     # hidden CLI used for internal only
@@ -82,11 +82,11 @@ def mixin_pea_parser(parser):
     )
 
     gp.add_argument(
-        '--pea-role',
-        type=PeaRoleType.from_string,
-        choices=list(PeaRoleType),
-        default=PeaRoleType.WORKER,
-        help='The role of this Pea in a Deployment'
+        '--pod-role',
+        type=PodRoleType.from_string,
+        choices=list(PodRoleType),
+        default=PodRoleType.WORKER,
+        help='The role of this Pod in a Deployment'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -95,7 +95,7 @@ def mixin_pea_parser(parser):
         '--noblock-on-start',
         action='store_true',
         default=False,
-        help='If set, starting a Pea/Deployment does not block the thread/process. It then relies on '
+        help='If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
         '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,

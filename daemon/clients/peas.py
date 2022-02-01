@@ -12,15 +12,15 @@ if TYPE_CHECKING:
     from daemon.models import DaemonID
 
 
-class AsyncPeaClient(AsyncBaseClient):
-    """Async Client to create/update/delete Peas on remote JinaD"""
+class AsyncPodClient(AsyncBaseClient):
+    """Async Client to create/update/delete Pods on remote JinaD"""
 
-    _kind = 'pea'
+    _kind = 'pod'
     _endpoint = '/peas'
 
     @if_alive
     async def arguments(self) -> Optional[Dict]:
-        """Get all arguments accepted by a remote Pea/Deployment
+        """Get all arguments accepted by a remote Pod/Deployment
 
         :return: dict arguments of remote JinaD
         """
@@ -37,12 +37,12 @@ class AsyncPeaClient(AsyncBaseClient):
         payload: Dict,
         envs: Dict[str, str] = {},
     ) -> Tuple[bool, str]:
-        """Create a remote Pea / Deployment
+        """Create a remote Pod / Deployment
 
-        :param workspace_id: id of workspace where the Pea would live in
+        :param workspace_id: id of workspace where the Pod would live in
         :param payload: json payload
         :param envs: dict of env vars to be passed
-        :return: (True if Pea/Deployment creation succeeded) and (the identity of the spawned Pea/Deployment or, error message)
+        :return: (True if Pod/Deployment creation succeeded) and (the identity of the spawned Pod/Deployment or, error message)
         """
         envs = (
             [('envs', f'{k}={v}') for k, v in envs.items()]
@@ -80,9 +80,9 @@ class AsyncPeaClient(AsyncBaseClient):
 
     @if_alive
     async def delete(self, id: Union[str, 'DaemonID'], **kwargs) -> bool:
-        """Delete a remote Pea/Deployment
+        """Delete a remote Pod/Deployment
 
-        :param id: the identity of the Pea/Deployment
+        :param id: the identity of the Pod/Deployment
         :param kwargs: keyword arguments
         :return: True if the deletion is successful
         """
@@ -100,5 +100,5 @@ class AsyncPeaClient(AsyncBaseClient):
             return response.status == HTTPStatus.OK
 
 
-class PeaClient(AsyncToSyncMixin, AsyncPeaClient):
-    """Client to create/update/delete Peas on remote JinaD"""
+class PodClient(AsyncToSyncMixin, AsyncPodClient):
+    """Client to create/update/delete Pods on remote JinaD"""

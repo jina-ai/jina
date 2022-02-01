@@ -5,9 +5,9 @@ from typing import Dict, Optional, Type, Union
 
 from jina.helper import colored, random_port
 from jina.orchestrate.deployments import Deployment, BaseDeployment
-from jina.orchestrate.peas.factory import PeaFactory
-from jina.orchestrate.peas import BasePea
-from jina.orchestrate.peas.helper import update_runtime_cls
+from jina.orchestrate.pods.factory import PodFactory
+from jina.orchestrate.pods import BasePod
+from jina.orchestrate.pods.helper import update_runtime_cls
 from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
@@ -22,7 +22,7 @@ class PartialStore(ABC):
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         self.item = PartialStoreItem()
-        self.object: Union[Type['BasePea'], Type['BaseDeployment'], 'Flow'] = None
+        self.object: Union[Type['BasePod'], Type['BaseDeployment'], 'Flow'] = None
 
     @abstractmethod
     def add(self, *args, **kwargs) -> PartialStoreItem:
@@ -53,20 +53,20 @@ class PartialStore(ABC):
             self.item = PartialStoreItem()
 
 
-class PartialPeaStore(PartialStore):
-    """A Pea store spawned inside partial-daemon container"""
+class PartialPodStore(PartialStore):
+    """A Pod store spawned inside partial-daemon container"""
 
-    peapod_constructor = PeaFactory.build_pea
+    peapod_constructor = PodFactory.build_pod
 
     def add(
         self, args: Namespace, envs: Optional[Dict] = {}, **kwargs
     ) -> PartialStoreItem:
-        """Starts a Pea in `partial-daemon`
+        """Starts a Pod in `partial-daemon`
 
-        :param args: namespace args for the pea/deployment
-        :param envs: environment variables to be passed into partial pea/deployment
+        :param args: namespace args for the pod/deployment
+        :param envs: environment variables to be passed into partial pod/deployment
         :param kwargs: keyword args
-        :return: Item describing the Pea object
+        :return: Item describing the Pod object
         """
         try:
             # This is set so that ContainerRuntime sets host_ctrl to __docker_host__
@@ -74,7 +74,7 @@ class PartialPeaStore(PartialStore):
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
             self.object: Union[
-                Type['BasePea'], Type['BaseDeployment']
+                Type['BasePod'], Type['BaseDeployment']
             ] = self.__class__.peapod_constructor(args).__enter__()
             self.object.env = envs
         except Exception as e:
@@ -89,7 +89,7 @@ class PartialPeaStore(PartialStore):
             return self.item
 
 
-class PartialDeploymentStore(PartialPeaStore):
+class PartialDeploymentStore(PartialPodStore):
     """A Deployment store spawned inside partial-daemon container"""
 
     peapod_constructor = Deployment
@@ -163,11 +163,11 @@ class PartialFlowStore(PartialStore):
                     hasattr(deployment.args, 'replicas')
                     and deployment.args.replicas > 1
                 ):
-                    for pea_args in [deployment.peas_args['head']]:
-                        if pea_args.name in port_mapping.pea_names:
+                    for pod_args in [deployment.peas_args['head']]:
+                        if pod_args.name in port_mapping.pod_names:
                             for port_name in Ports.__fields__:
-                                self._set_pea_ports(pea_args, port_mapping, port_name)
-                    deployment.update_worker_pea_args()
+                                self._set_pod_ports(pod_args, port_mapping, port_name)
+                    deployment.update_worker_pod_args()
 
             self.object = self.object.__enter__()
         except Exception as e:
@@ -190,13 +190,13 @@ class PartialFlowStore(PartialStore):
             self._logger.success(f'Flow is created successfully!')
             return self.item
 
-    def _set_pea_ports(self, pea_args, port_mapping, port_name):
-        if hasattr(pea_args, port_name):
+    def _set_pod_ports(self, pod_args, port_mapping, port_name):
+        if hasattr(pod_args, port_name):
             setattr(
-                pea_args,
+                pod_args,
                 port_name,
                 getattr(
-                    port_mapping[pea_args.name].ports,
+                    port_mapping[pod_args.name].ports,
                     port_name,
                     random_port(),
                 ),

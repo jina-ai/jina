@@ -3,8 +3,8 @@ from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.peapods.runtimes.head import mixin_head_parser
 
 
-def set_pea_parser(parser=None):
-    """Set the parser for the Pea
+def set_pod_parser(parser=None):
+    """Set the parser for the Pod
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -18,7 +18,7 @@ def set_pea_parser(parser=None):
     from jina.parsers.peapods.runtimes.worker import mixin_worker_runtime_parser
     from jina.parsers.peapods.runtimes.container import mixin_container_runtime_parser
     from jina.parsers.peapods.runtimes.remote import mixin_remote_runtime_parser
-    from jina.parsers.peapods.pea import mixin_pea_parser
+    from jina.parsers.peapods.pod import mixin_pod_parser
     from jina.parsers.peapods.runtimes.distributed import (
         mixin_distributed_feature_parser,
     )
@@ -29,7 +29,7 @@ def set_pea_parser(parser=None):
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
-    mixin_pea_parser(parser)
+    mixin_pod_parser(parser)
     mixin_hub_pull_options_parser(parser)
     mixin_head_parser(parser)
 
@@ -47,7 +47,7 @@ def set_deployment_parser(parser=None):
 
         parser = set_base_parser()
 
-    set_pea_parser(parser)
+    set_pod_parser(parser)
 
     from jina.parsers.peapods.deployment import mixin_base_deployment_parser
 
@@ -76,7 +76,7 @@ def set_gateway_parser(parser=None):
         mixin_compressor_parser,
     )
     from jina.parsers.peapods.deployment import mixin_base_deployment_parser
-    from jina.parsers.peapods.pea import mixin_pea_parser
+    from jina.parsers.peapods.pod import mixin_pod_parser
 
     mixin_base_ppr_parser(parser)
     mixin_worker_runtime_parser(parser)
@@ -85,7 +85,7 @@ def set_gateway_parser(parser=None):
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
-    mixin_pea_parser(parser)
+    mixin_pod_parser(parser)
     mixin_head_parser(parser)
 
     from jina.enums import DeploymentRoleType
@@ -180,7 +180,7 @@ def get_main_parser():
         )
     )
 
-    set_pea_parser(
+    set_pod_parser(
         sp.add_parser(
             'executor',
             help='Start an Executor',
@@ -235,14 +235,14 @@ def get_main_parser():
     )
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 
-    set_pea_parser(
+    set_pod_parser(
         sp.add_parser(
-            'pea',
-            description='Start a Pea. '
+            'pod',
+            description='Start a Pod. '
             'You should rarely use this directly unless you '
             'are doing low-level orchestration',
             formatter_class=_chf,
-            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
+            **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
         )
     )
 

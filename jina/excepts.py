@@ -14,11 +14,11 @@ class MismatchedVersion(SystemError, BaseJinaExeception):
 
 
 class ExecutorFailToLoad(SystemError, BaseJinaExeception):
-    """When the executor can not be loaded in pea/deployment."""
+    """When the executor can not be loaded in pod/deployment."""
 
 
 class RuntimeFailToStart(SystemError, BaseJinaExeception):
-    """When pea/deployment is failed to started."""
+    """When pod/deployment is failed to started."""
 
 
 class ScalingFails(SystemError, BaseJinaExeception):
@@ -34,7 +34,7 @@ class NoAvailablePortError(Exception, BaseJinaExeception):
 
 
 class RuntimeTerminated(KeyboardInterrupt, BaseJinaExeception):
-    """The event loop of BasePea ends."""
+    """The event loop of BasePod ends."""
 
 
 class UnknownControlCommand(RuntimeError, BaseJinaExeception):
@@ -89,7 +89,7 @@ class DaemonWorkspaceCreationFailed(Exception, BaseJinaExeception):
     """Exception to raise when jina daemon is not connectable."""
 
 
-class DaemonPeaCreationFailed(Exception, BaseJinaExeception):
+class DaemonPodCreationFailed(Exception, BaseJinaExeception):
     """Exception to raise when jina daemon is not connectable."""
 
 

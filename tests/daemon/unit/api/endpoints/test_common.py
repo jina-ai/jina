@@ -59,7 +59,7 @@ def _validate_response(response, payload, id, workspace_id):
         (
             '/peas',
             {
-                'json': {'name': 'my_pea'},
+                'json': {'name': 'my_pod'},
             },
         ),
         (
@@ -103,7 +103,7 @@ def test_add_same_del_all(api, payload, fastapi_client, workspace):
         (
             '/peas',
             {
-                'json': {'name': 'my_pea'},
+                'json': {'name': 'my_pod'},
             },
         ),
         (
@@ -153,7 +153,7 @@ def test_add_success(api, payload, fastapi_client, workspace):
 @pytest.mark.parametrize(
     'api, payload',
     [
-        ('/peas', {'json': {'name': 'my_pea', 'uses': 'BAD'}}),
+        ('/peas', {'json': {'name': 'my_pod', 'uses': 'BAD'}}),
         ('/deployments', {'json': {'name': 'my_deployment', 'uses': 'BAD'}}),
         (
             '/flows',

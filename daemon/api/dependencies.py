@@ -8,12 +8,12 @@ from fastapi import HTTPException, UploadFile, File, Query, Depends
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 
-from jina.orchestrate.peas.container_helper import get_gpu_device_requests
-from jina.orchestrate.peas.helper import update_runtime_cls
+from jina.orchestrate.pods.container_helper import get_gpu_device_requests
+from jina.orchestrate.pods.helper import update_runtime_cls
 from jina import Flow
 from jina.enums import (
     RemoteWorkspaceState,
-    PeaRoleType,
+    PodRoleType,
 )
 from jina.helper import cached_property
 
@@ -23,7 +23,7 @@ from daemon.models import (
     DaemonID,
     FlowModel,
     DeploymentModel,
-    PeaModel,
+    PodModel,
     GATEWAY_RUNTIME_DICT,
 )
 from daemon.models.ports import Ports, PortMapping, PortMappings
@@ -72,7 +72,7 @@ class FlowDepends:
         self.envs = envs.vars
         self._ports = {}
         self.load_and_dump()
-        # Unlike `PeaModel` / `DeploymentModel`, `gpus` arg doesn't exist in FlowModel
+        # Unlike `PodModel` / `DeploymentModel`, `gpus` arg doesn't exist in FlowModel
         # We try assigning `all` gpus to the Flow container by default.
         self.device_requests = get_gpu_device_requests('all')
 
@@ -127,7 +127,7 @@ class FlowDepends:
         2. `build` the Flow so that `gateway` gets added.
             - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)
             - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
-            - Deployment level args for ports are enough, as we don't need to publish Pea ports
+            - Deployment level args for ports are enough, as we don't need to publish Pod ports
         3. `save` the Flow config.
             - saves port configs of all `executors` into the new yaml.
             - set `JINA_FULL_CLI` envvar, so that `gateway` args are also added.
@@ -150,7 +150,7 @@ class FlowDepends:
             port_mapping.append(
                 PortMapping(
                     deployment_name='gateway',
-                    pea_name='gateway',
+                    pod_name='gateway',
                     ports=Ports(port_expose=f.port_expose),
                 )
             )
@@ -170,7 +170,7 @@ class FlowDepends:
                     port_mapping.append(
                         PortMapping(
                             deployment_name=deployment_name,
-                            pea_name='',
+                            pod_name='',
                             ports=current_ports,
                         )
                     )
@@ -179,9 +179,9 @@ class FlowDepends:
                     and hasattr(deployment.args, 'replicas')
                     and deployment.args.replicas > 1
                 ):
-                    for pea_args in [deployment.peas_args['head']]:
+                    for pod_args in [deployment.peas_args['head']]:
                         self._update_port_mapping(
-                            pea_args, deployment_name, port_mapping
+                            pod_args, deployment_name, port_mapping
                         )
 
             self.ports = port_mapping
@@ -189,19 +189,19 @@ class FlowDepends:
             f.save_config(filename=self.newfile)
             self.params.uses = self.newname
 
-    def _update_port_mapping(self, pea_args, deployment_name, port_mapping):
+    def _update_port_mapping(self, pod_args, deployment_name, port_mapping):
         current_ports = Ports()
         for port_name in Ports.__fields__:
             # Get port from Namespace args & set to PortMappings
             setattr(
                 current_ports,
                 port_name,
-                getattr(pea_args, port_name, None),
+                getattr(pod_args, port_name, None),
             )
         port_mapping.append(
             PortMapping(
                 deployment_name=deployment_name,
-                pea_name=pea_args.name,
+                pod_name=pod_args.name,
                 ports=current_ports,
             )
         )
@@ -223,19 +223,19 @@ class FlowDepends:
         self._ports = PortMappings.parse_obj(port_mapping)
 
 
-class PeaDepends:
-    """Validates & Sets host/port dependencies during Pea creation/update"""
+class PodDepends:
+    """Validates & Sets host/port dependencies during Pod creation/update"""
 
     def __init__(
         self,
         workspace_id: DaemonID,
-        pea: PeaModel,
+        pod: PodModel,
         envs: Environment = Depends(Environment),
     ):
-        # Deepankar: adding quotes around PeaModel breaks things
+        # Deepankar: adding quotes around PodModel breaks things
         self.workspace_id = workspace_id
-        self.params = pea
-        self.id = DaemonID('jpea')
+        self.params = pod
+        self.id = DaemonID('jpod')
         self.envs = envs.vars
         self.update_args()
 
@@ -249,8 +249,8 @@ class PeaDepends:
         # Container peas are started in separate docker containers, so we should not expose port_in here
         if (
             (
-                self.params.pea_role
-                and PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.HEAD
+                self.params.pod_role
+                and PodRoleType.from_string(self.params.pod_role) != PodRoleType.HEAD
             )
             and self.params.uses
             and self.params.uses.startswith('docker://')
@@ -261,14 +261,14 @@ class PeaDepends:
 
     def update_args(self):
         """TODO: update docs"""
-        # Each pea is inside a container
+        # Each pod is inside a container
         self.params.workspace_id = self.workspace_id
         self.device_requests = (
             get_gpu_device_requests(self.params.gpus) if self.params.gpus else None
         )
 
 
-class DeploymentDepends(PeaDepends):
+class DeploymentDepends(PodDepends):
     """Validates & Sets host/port dependencies during Pod creation/update"""
 
     def __init__(

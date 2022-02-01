@@ -7,13 +7,13 @@ import pytest
 from daemon.clients import AsyncJinaDClient, JinaDClient
 from daemon.models.id import DaemonID
 from jina import Client, Document, __docker_host__
-from jina.enums import PeaRoleType, PollingType, replace_enum_to_str
+from jina.enums import PodRoleType, PollingType, replace_enum_to_str
 from jina.helper import random_port
-from jina.parsers import set_gateway_parser, set_pea_parser
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
-from jina.orchestrate.peas.factory import PeaFactory
-from jina.orchestrate.peas.helper import is_ready
-from jina.orchestrate.peas.jinad import JinaDPea, JinaDProcessTarget
+from jina.orchestrate.pods.factory import PodFactory
+from jina.orchestrate.pods.helper import is_ready
+from jina.orchestrate.pods.jinad import JinaDPod, JinaDProcessTarget
 from jina.types.request.control import ControlRequest
 
 HOST = '127.0.0.1'
@@ -22,13 +22,13 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 is_remote = lambda l_or_r: l_or_r == 'remote'
 
 
-def is_pea_ready(args):
+def is_pod_ready(args):
     return is_ready(f'{HOST}:{args.port_in}')
 
 
 @pytest.fixture
-def pea_args():
-    return set_pea_parser().parse_args([])
+def pod_args():
+    return set_pod_parser().parse_args([])
 
 
 @pytest.fixture
@@ -42,37 +42,37 @@ def async_jinad_client():
 
 
 @pytest.mark.asyncio
-async def test_async_jinad_client(async_jinad_client, pea_args):
+async def test_async_jinad_client(async_jinad_client, pod_args):
     workspace_id = await async_jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
 
-    success, pea_id = await async_jinad_client.peas.create(
-        workspace_id=workspace_id, payload=replace_enum_to_str(vars(pea_args))
+    success, pod_id = await async_jinad_client.peas.create(
+        workspace_id=workspace_id, payload=replace_enum_to_str(vars(pod_args))
     )
     assert success
-    assert pea_id
-    assert is_pea_ready(pea_args)
-    assert await async_jinad_client.peas.delete(pea_id)
-    assert not is_pea_ready(pea_args)
+    assert pod_id
+    assert is_pod_ready(pod_args)
+    assert await async_jinad_client.peas.delete(pod_id)
+    assert not is_pod_ready(pod_args)
     assert await async_jinad_client.workspaces.delete(workspace_id)
 
 
-def test_sync_jinad_client(jinad_client, pea_args):
+def test_sync_jinad_client(jinad_client, pod_args):
     workspace_id = jinad_client.workspaces.create(paths=[cur_dir])
     assert DaemonID(workspace_id)
 
-    success, pea_id = jinad_client.peas.create(
-        workspace_id=workspace_id, payload=replace_enum_to_str(vars(pea_args))
+    success, pod_id = jinad_client.peas.create(
+        workspace_id=workspace_id, payload=replace_enum_to_str(vars(pod_args))
     )
     assert success
-    assert pea_id
-    assert is_pea_ready(pea_args)
-    assert jinad_client.peas.delete(pea_id)
-    assert not is_pea_ready(pea_args)
+    assert pod_id
+    assert is_pod_ready(pod_args)
+    assert jinad_client.peas.delete(pod_id)
+    assert not is_pod_ready(pod_args)
     assert jinad_client.workspaces.delete(workspace_id)
 
 
-def test_jinad_process_target(pea_args):
+def test_jinad_process_target(pod_args):
     is_started_event, is_shutdown_event, is_ready_event, is_cancelled_event = [
         multiprocessing.Event()
     ] * 4
@@ -80,7 +80,7 @@ def test_jinad_process_target(pea_args):
     process = multiprocessing.Process(
         target=JinaDProcessTarget(),
         kwargs={
-            'args': pea_args,
+            'args': pod_args,
             'is_started': is_started_event,
             'is_shutdown': is_shutdown_event,
             'is_ready': is_ready_event,
@@ -89,20 +89,20 @@ def test_jinad_process_target(pea_args):
     )
     process.start()
     is_ready_event.wait()
-    check_is_pea_ready = is_pea_ready(pea_args)
+    check_is_pod_ready = is_pod_ready(pod_args)
     process.join()
-    assert check_is_pea_ready
+    assert check_is_pod_ready
     assert is_shutdown_event.is_set()
-    assert not is_pea_ready(pea_args)
+    assert not is_pod_ready(pod_args)
 
 
-def test_jinad_pea():
-    args = set_pea_parser().parse_args([])
-    assert not is_pea_ready(args)
+def test_jinad_pod():
+    args = set_pod_parser().parse_args([])
+    assert not is_pod_ready(args)
 
-    with JinaDPea(args):
-        assert is_pea_ready(args)
-    assert not is_pea_ready(args)
+    with JinaDPod(args):
+        assert is_pod_ready(args)
+    assert not is_pod_ready(args)
 
 
 async def _activate_worker(
@@ -116,7 +116,7 @@ async def _activate_worker(
     GrpcConnectionPool.send_request_sync(activate_msg, f'{head_host}:{head_port}')
 
 
-def _create_worker_pea(
+def _create_worker_pod(
     l_or_r,
     port,
     name='',
@@ -124,7 +124,7 @@ def _create_worker_pea(
     py_modules=None,
     upload_files=None,
 ):
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     if is_remote(l_or_r):
         args.host = HOST
         args.port_jinad = PORT
@@ -137,29 +137,29 @@ def _create_worker_pea(
         args.upload_files = upload_files
     if py_modules:
         args.py_modules = [py_modules]
-    return PeaFactory.build_pea(args)
+    return PodFactory.build_pod(args)
 
 
-def _create_head_pea(
+def _create_head_pod(
     l_or_r, port, polling=PollingType.ANY, name='', uses_before=None, uses_after=None
 ):
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     if is_remote(l_or_r):
         args.host = HOST
         args.port_jinad = PORT
     args.name = name if name else f'head-{l_or_r}'
     args.port_in = port
-    args.pea_role = PeaRoleType.HEAD
+    args.pod_role = PodRoleType.HEAD
     args.polling = polling
     args.runtime_cls = 'HeadRuntime'
     if uses_before:
         args.uses_before_address = uses_before
     if uses_after:
         args.uses_after_address = uses_after
-    return PeaFactory.build_pea(args)
+    return PodFactory.build_pod(args)
 
 
-def _create_gateway_pea(l_or_r, graph_description, deployments_addresses, port_expose):
+def _create_gateway_pod(l_or_r, graph_description, deployments_addresses, port_expose):
     args = set_gateway_parser().parse_args([])
     if l_or_r == 'remote':
         args.host = HOST
@@ -168,7 +168,7 @@ def _create_gateway_pea(l_or_r, graph_description, deployments_addresses, port_e
     args.deployments_addresses = deployments_addresses
     args.port_expose = port_expose
     args.runtime_cls = 'GRPCGatewayRuntime'
-    return PeaFactory.build_pea(args)
+    return PodFactory.build_pod(args)
 
 
 async def async_inputs():
@@ -185,7 +185,7 @@ async def async_inputs():
         ('local', 'remote', 'remote'),
     ],
 )
-async def test_pseudo_remote_peas_topologies(gateway, head, worker):
+async def test_pseudo_remote_pods_topologies(gateway, head, worker):
     """
     g(l)-h(l)-w(l) - works
     g(l)-h(l)-w(r) - works - head connects to worker via localhost
@@ -205,28 +205,28 @@ async def test_pseudo_remote_peas_topologies(gateway, head, worker):
     else:
         deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
-    # create a single head pea
-    head_pea = _create_head_pea(head, head_port)
+    # create a single head pod
+    head_pod = _create_head_pod(head, head_port)
 
-    # create a single worker pea
-    worker_pea = _create_worker_pea(worker, worker_port)
+    # create a single worker pod
+    worker_pod = _create_worker_pod(worker, worker_port)
 
-    # create a single gateway pea
-    gateway_pea = _create_gateway_pea(
+    # create a single gateway pod
+    gateway_pod = _create_gateway_pod(
         gateway, graph_description, deployments_addresses, port_expose
     )
 
-    with gateway_pea, worker_pea, head_pea:
+    with gateway_pod, worker_pod, head_pod:
         await asyncio.sleep(1.0)
         # this would be done by the deployment, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
-        worker_host, worker_port = worker_pea.runtime_ctrl_address.split(':')
+        worker_host, worker_port = worker_pod.runtime_ctrl_address.split(':')
         if head == 'remote':
             worker_host = __docker_host__
 
         activate_msg.add_related_entity('worker', worker_host, int(worker_port))
         assert GrpcConnectionPool.send_request_sync(
-            activate_msg, head_pea.runtime_ctrl_address
+            activate_msg, head_pod.runtime_ctrl_address
         )
 
         # send requests to the gateway
@@ -253,7 +253,7 @@ async def test_pseudo_remote_peas_topologies(gateway, head, worker):
 )
 @pytest.mark.parametrize('polling', [PollingType.ANY, PollingType.ALL])
 # test simple topology with shards on remote
-async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
+async def test_pseudo_remote_pods_shards(gateway, head, worker, polling):
     head_port = random_port()
     port_expose = random_port()
     graph_description = (
@@ -261,19 +261,19 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
     )
     deployments_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
 
-    # create a single head pea
-    head_pea = _create_head_pea(head, head_port, polling)
-    head_pea.start()
+    # create a single head pod
+    head_pod = _create_head_pod(head, head_port, polling)
+    head_pod.start()
 
     # create the shards
-    shard_peas = []
+    shard_pods = []
     for i in range(3):
         # create worker
         worker_port = random_port()
-        # create a single worker pea
-        worker_pea = _create_worker_pea(worker, worker_port, f'deployment0/shard/{i}')
-        shard_peas.append(worker_pea)
-        worker_pea.start()
+        # create a single worker pod
+        worker_pod = _create_worker_pod(worker, worker_port, f'deployment0/shard/{i}')
+        shard_pods.append(worker_pod)
+        worker_pod.start()
 
         await asyncio.sleep(0.1)
 
@@ -287,11 +287,11 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
         activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id=i)
         GrpcConnectionPool.send_request_sync(activate_msg, f'{HOST}:{head_port}')
 
-    # create a single gateway pea
-    gateway_pea = _create_gateway_pea(
+    # create a single gateway pod
+    gateway_pod = _create_gateway_pod(
         gateway, graph_description, deployments_addresses, port_expose
     )
-    gateway_pea.start()
+    gateway_pod.start()
 
     await asyncio.sleep(1.0)
 
@@ -302,13 +302,13 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
         response_list.append(response)
 
     # clean up peas
-    gateway_pea.close()
-    head_pea.close()
-    for shard_pea in shard_peas:
-        shard_pea.close()
+    gateway_pod.close()
+    head_pod.close()
+    for shard_pod in shard_pods:
+        shard_pod.close()
 
     assert len(response_list) == 20
-    assert len(response_list[0].docs) == 1 if polling == 'ANY' else len(shard_peas)
+    assert len(response_list[0].docs) == 1 if polling == 'ANY' else len(shard_pods)
 
 
 @pytest.mark.asyncio
@@ -321,7 +321,7 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
     ],
 )
 # test simple topology with shards on remote
-async def test_pseudo_remote_peas_replicas(gateway, head, worker):
+async def test_pseudo_remote_pods_replicas(gateway, head, worker):
     NUM_REPLICAS = 3
     head_port = random_port()
     port_expose = random_port()
@@ -330,19 +330,19 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
     )
     deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
-    # create a single head pea
-    head_pea = _create_head_pea(head, head_port)
-    head_pea.start()
+    # create a single head pod
+    head_pod = _create_head_pod(head, head_port)
+    head_pod.start()
 
     # create the shards
-    replica_peas = []
+    replica_pods = []
     for i in range(NUM_REPLICAS):
         # create worker
         worker_port = random_port()
-        # create a single worker pea
-        worker_pea = _create_worker_pea(worker, worker_port, f'deployment0/{i}')
-        replica_peas.append(worker_pea)
-        worker_pea.start()
+        # create a single worker pod
+        worker_pod = _create_worker_pod(worker, worker_port, f'deployment0/{i}')
+        replica_pods.append(worker_pod)
+        worker_pod.start()
 
         await asyncio.sleep(0.1)
         if head == 'remote':
@@ -355,11 +355,11 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
         activate_msg.add_related_entity('worker', worker_host, worker_port)
         GrpcConnectionPool.send_request_sync(activate_msg, f'{HOST}:{head_port}')
 
-    # create a single gateway pea
-    gateway_pea = _create_gateway_pea(
+    # create a single gateway pod
+    gateway_pod = _create_gateway_pod(
         gateway, graph_description, deployments_addresses, port_expose
     )
-    gateway_pea.start()
+    gateway_pod.start()
 
     await asyncio.sleep(1.0)
 
@@ -370,10 +370,10 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
         response_list.append(response)
 
     # clean up peas
-    gateway_pea.close()
-    head_pea.close()
-    for pea in replica_peas:
-        pea.close()
+    gateway_pod.close()
+    head_pod.close()
+    for pod in replica_pods:
+        pod.close()
 
     assert len(response_list) == 20
     assert len(response_list[0].docs) == 1
@@ -385,13 +385,13 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
 @pytest.mark.parametrize('worker', ['local', 'remote'])
 @pytest.mark.parametrize('uses_before', ['local', 'remote'])
 @pytest.mark.parametrize('uses_after', ['local', 'remote'])
-async def test_pseudo_remote_peas_executor(
+async def test_pseudo_remote_pods_executor(
     gateway, head, worker, uses_before, uses_after
 ):
     """
     TODO: head on remote doesn't consider polling args.
-    polling is an arg available with deployment_parser, which gets removed for remote head pea
-    since JinaD removes non-pea args.
+    polling is an arg available with deployment_parser, which gets removed for remote head pod
+    since JinaD removes non-pod args.
     """
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
@@ -401,7 +401,7 @@ async def test_pseudo_remote_peas_executor(
     NUM_SHARDS = 3
 
     uses_before_port = random_port()
-    uses_before_pea = _create_worker_pea(
+    uses_before_pod = _create_worker_pod(
         uses_before,
         uses_before_port,
         'deployment0/uses_before',
@@ -411,11 +411,11 @@ async def test_pseudo_remote_peas_executor(
         if is_remote(uses_before)
         else None,
     )
-    uses_before_pea.start()
-    peas.append(uses_before_pea)
+    uses_before_pod.start()
+    peas.append(uses_before_pod)
 
     uses_after_port = random_port()
-    uses_after_pea = _create_worker_pea(
+    uses_after_pod = _create_worker_pod(
         uses_after,
         uses_after_port,
         'deployment0/uses_after',
@@ -425,13 +425,13 @@ async def test_pseudo_remote_peas_executor(
         if is_remote(uses_after)
         else None,
     )
-    uses_after_pea.start()
-    peas.append(uses_after_pea)
+    uses_after_pod.start()
+    peas.append(uses_after_pod)
 
     # create head
     head_port = random_port()
     deployments_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
-    head_pea = _create_head_pea(
+    head_pod = _create_head_pod(
         head,
         head_port,
         polling=PollingType.ALL,
@@ -440,15 +440,15 @@ async def test_pseudo_remote_peas_executor(
         uses_after=f'{__docker_host__ if is_remote(head) else HOST}:{uses_after_port}',
     )
 
-    peas.append(head_pea)
-    head_pea.start()
+    peas.append(head_pod)
+    head_pod.start()
 
     # create some shards
     for i in range(NUM_SHARDS):
         # create worker
         worker_port = random_port()
         print(f'worker_port: {worker_port}')
-        worker_pea = _create_worker_pea(
+        worker_pod = _create_worker_pod(
             worker,
             worker_port,
             f'deployment0/shards/{i}',
@@ -458,8 +458,8 @@ async def test_pseudo_remote_peas_executor(
             if is_remote(worker)
             else None,
         )
-        worker_pea.start()
-        peas.append(worker_pea)
+        worker_pod.start()
+        peas.append(worker_pod)
         await asyncio.sleep(0.1)
 
         worker_host = HOST
@@ -471,15 +471,15 @@ async def test_pseudo_remote_peas_executor(
             shard_id=i,
         )
 
-    # create a single gateway pea
+    # create a single gateway pod
     port_expose = random_port()
-    gateway_pea = _create_gateway_pea(
+    gateway_pod = _create_gateway_pod(
         gateway, graph_description, deployments_addresses, port_expose
     )
     print(f'head_port: {head_port}, port_expose: {port_expose}')
 
-    gateway_pea.start()
-    peas.append(gateway_pea)
+    gateway_pod.start()
+    peas.append(gateway_pod)
 
     await asyncio.sleep(1.0)
 
@@ -490,8 +490,8 @@ async def test_pseudo_remote_peas_executor(
         response_list.append(response.docs)
 
     # clean up peas
-    for pea in peas:
-        pea.close()
+    for pod in peas:
+        pod.close()
 
     assert len(response_list) == 20
     assert (

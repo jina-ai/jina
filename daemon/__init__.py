@@ -77,7 +77,7 @@ def _get_app(mode=None):
                 },
                 {
                     'name': 'peas',
-                    'description': 'API to manage Peas',
+                    'description': 'API to manage Pods',
                 },
                 {
                     'name': 'logs',
@@ -102,17 +102,17 @@ def _get_app(mode=None):
                 'description': 'API to manage a Deployment',
             }
         )
-    elif mode == 'pea':
-        from daemon.api.endpoints.partial import pea
+    elif mode == 'pod':
+        from daemon.api.endpoints.partial import pod
 
-        app.include_router(pea.router)
+        app.include_router(pod.router)
         app.add_exception_handler(
             PartialDaemon400Exception, partial_daemon_exception_handler
         )
         app.openapi_tags.append(
             {
-                'name': 'pea',
-                'description': 'API to manage a Pea',
+                'name': 'pod',
+                'description': 'API to manage a Pod',
             },
         )
     elif mode == 'flow':

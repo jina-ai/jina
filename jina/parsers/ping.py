@@ -12,10 +12,10 @@ def set_ping_parser(parser=None):
         parser = set_base_parser()
 
     parser.add_argument(
-        'host', type=str, help='The host address of the target Pea, e.g. 0.0.0.0'
+        'host', type=str, help='The host address of the target Pod, e.g. 0.0.0.0'
     )
     parser.add_argument(
-        'port', type=int, help='The control port of the target deployment/pea'
+        'port', type=int, help='The control port of the target deployment/pod'
     )
     parser.add_argument(
         '--timeout',

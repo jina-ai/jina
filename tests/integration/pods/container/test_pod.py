@@ -6,12 +6,12 @@ import time
 import pytest
 
 from jina import Document, Client
-from jina.enums import PollingType, PeaRoleType
+from jina.enums import PollingType, PodRoleType
 from jina.helper import random_port
-from jina.parsers import set_gateway_parser, set_pea_parser
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
-from jina.orchestrate.peas.container import ContainerPea
-from jina.orchestrate.peas import Pea
+from jina.orchestrate.pods.container import ContainerPod
+from jina.orchestrate.pods import Pod
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.types.request.control import ControlRequest
@@ -48,8 +48,8 @@ def worker_runtime_docker_image_built():
 
 
 @pytest.mark.asyncio
-# test gateway, head and worker pea by creating them manually in the most simple configuration
-async def test_peas_trivial_topology(
+# test gateway, head and worker pod by creating them manually in the most simple configuration
+async def test_pods_trivial_topology(
     head_runtime_docker_image_built, worker_runtime_docker_image_built
 ):
     worker_port = random_port()
@@ -58,36 +58,36 @@ async def test_peas_trivial_topology(
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
-    # create a single worker pea
-    worker_pea = _create_worker_pea(worker_port)
+    # create a single worker pod
+    worker_pod = _create_worker_pod(worker_port)
 
-    # create a single head pea
-    head_pea = _create_head_pea(head_port)
+    # create a single head pod
+    head_pod = _create_head_pod(head_port)
 
-    # create a single gateway pea
-    gateway_pea = _create_gateway_pea(graph_description, pod_addresses, port_expose)
+    # create a single gateway pod
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
 
-    with gateway_pea, worker_pea, head_pea:
+    with gateway_pod, worker_pod, head_pod:
         await asyncio.sleep(1.0)
 
         assert HeadRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
-            ctrl_address=head_pea.runtime_ctrl_address,
+            ctrl_address=head_pod.runtime_ctrl_address,
             ready_or_shutdown_event=multiprocessing.Event(),
         )
 
         assert WorkerRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
-            ctrl_address=worker_pea.runtime_ctrl_address,
+            ctrl_address=worker_pod.runtime_ctrl_address,
             ready_or_shutdown_event=multiprocessing.Event(),
         )
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
-        worker_host, worker_port = worker_pea.runtime_ctrl_address.split(':')
+        worker_host, worker_port = worker_pod.runtime_ctrl_address.split(':')
         activate_msg.add_related_entity('worker', worker_host, int(worker_port))
         assert GrpcConnectionPool.send_request_sync(
-            activate_msg, head_pea.runtime_ctrl_address
+            activate_msg, head_pod.runtime_ctrl_address
         )
 
         # send requests to the gateway
@@ -103,26 +103,26 @@ async def test_peas_trivial_topology(
     assert len(response_list[0].docs) == 1
 
 
-def _create_worker_pea(port):
-    args = set_pea_parser().parse_args([])
+def _create_worker_pod(port):
+    args = set_pod_parser().parse_args([])
     args.port_in = port
     args.name = 'worker'
     args.uses = 'docker://worker-runtime'
-    return ContainerPea(args)
+    return ContainerPod(args)
 
 
-def _create_head_pea(port):
-    args = set_pea_parser().parse_args([])
+def _create_head_pod(port):
+    args = set_pod_parser().parse_args([])
     args.port_in = port
     args.name = 'head'
-    args.pea_role = PeaRoleType.HEAD
+    args.pod_role = PodRoleType.HEAD
     args.polling = PollingType.ANY
     args.uses = 'docker://head-runtime'
-    return ContainerPea(args)
+    return ContainerPod(args)
 
 
-def _create_gateway_pea(graph_description, pod_addresses, port_expose):
-    return Pea(
+def _create_gateway_pod(graph_description, pod_addresses, port_expose):
+    return Pod(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',

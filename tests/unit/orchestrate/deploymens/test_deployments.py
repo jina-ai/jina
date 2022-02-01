@@ -5,7 +5,7 @@ from multiprocessing import Process
 import pytest
 
 from jina.clients.request import request_generator
-from jina.enums import PollingType, PeaRoleType
+from jina.enums import PollingType, PodRoleType
 from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_deployment_parser
@@ -109,7 +109,7 @@ def test_uses_before_after(pod_args):
             pod.head_args.uses_after_address
             == f'{pod.uses_after_args.host}:{pod.uses_after_args.port_in}'
         )
-        assert pod.num_peas == 4
+        assert pod.num_pods == 4
 
 
 def test_mermaid_str_no_error(pod_args):
@@ -129,10 +129,10 @@ def test_pod_context_replicas(replicas):
     with Deployment(args) as bp:
 
         if replicas == 1:
-            assert bp.num_peas == 2
+            assert bp.num_pods == 2
         else:
             # count head
-            assert bp.num_peas == replicas + 1
+            assert bp.num_pods == replicas + 1
 
     Deployment(args).start().close()
 
@@ -144,7 +144,7 @@ def test_pod_context_shards_replicas(shards):
     args_list.extend(['--shards', str(shards)])
     args = set_deployment_parser().parse_args(args_list)
     with Deployment(args) as bp:
-        assert bp.num_peas == shards * 3 + 1
+        assert bp.num_pods == shards * 3 + 1
 
     Deployment(args).start().close()
 
@@ -166,7 +166,7 @@ def test_pod_activates_replicas():
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
     with Deployment(args) as pod:
-        assert pod.num_peas == 4
+        assert pod.num_pods == 4
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
         for _ in range(3):
@@ -255,7 +255,7 @@ def test_pod_naming_with_shards():
         ]
     )
     with Deployment(args) as pod:
-        assert pod.head_pea.name == 'pod/head-0'
+        assert pod.head_pod.name == 'pod/head-0'
 
         assert pod.shards[0].args[0].name == 'pod/shard-0/rep-0'
         assert pod.shards[0].args[1].name == 'pod/shard-0/rep-1'
@@ -274,7 +274,7 @@ def test_pod_activates_shards():
     args.uses = 'AppendShardExecutor'
     args.polling = PollingType.ALL
     with Deployment(args) as pod:
-        assert pod.num_peas == 3 * 3 + 1
+        assert pod.num_pods == 3 * 3 + 1
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
         response = GrpcConnectionPool.send_request_sync(
@@ -322,21 +322,21 @@ def test_gateway_pod(protocol, runtime_cls, graph_description):
 def test_pod_naming_with_replica():
     args = set_deployment_parser().parse_args(['--name', 'pod', '--replicas', '2'])
     with Deployment(args) as bp:
-        assert bp.head_pea.name == 'pod/head-0'
-        assert bp.shards[0]._peas[0].name == 'pod/rep-0'
-        assert bp.shards[0]._peas[1].name == 'pod/rep-1'
+        assert bp.head_pod.name == 'pod/head-0'
+        assert bp.shards[0]._pods[0].name == 'pod/rep-0'
+        assert bp.shards[0]._pods[1].name == 'pod/rep-1'
 
 
 def test_pod_args_remove_uses_ba():
     args = set_deployment_parser().parse_args([])
     with Deployment(args) as p:
-        assert p.num_peas == 2
+        assert p.num_pods == 2
 
     args = set_deployment_parser().parse_args(
         ['--uses-before', __default_executor__, '--uses-after', __default_executor__]
     )
     with Deployment(args) as p:
-        assert p.num_peas == 2
+        assert p.num_pods == 2
 
     args = set_deployment_parser().parse_args(
         [
@@ -349,7 +349,7 @@ def test_pod_args_remove_uses_ba():
         ]
     )
     with Deployment(args) as p:
-        assert p.num_peas == 3
+        assert p.num_pods == 3
 
 
 @pytest.mark.parametrize('replicas', [1])
@@ -432,10 +432,10 @@ def test_pod_upload_files(
                 # assert sorted(v.upload_files) == sorted(expected)
         elif v is not None and k == 'peas':
             for shard_id in v:
-                for pea in v[shard_id]:
-                    print(sorted(pea.upload_files))
+                for pod in v[shard_id]:
+                    print(sorted(pod.upload_files))
                     print(sorted(expected))
-                    assert sorted(pea.upload_files) == sorted(expected)
+                    assert sorted(pod.upload_files) == sorted(expected)
 
 
 class DynamicPollingExecutor(Executor):
@@ -593,7 +593,7 @@ def _create_test_data_message(endpoint='/'):
 
 
 @pytest.mark.parametrize('num_shards, num_replicas', [(1, 1), (1, 2), (2, 1), (3, 2)])
-def test_pod_remote_pea_replicas_host(num_shards, num_replicas):
+def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
     args = set_deployment_parser().parse_args(
         [
             '--shards',
@@ -606,7 +606,7 @@ def test_pod_remote_pea_replicas_host(num_shards, num_replicas):
     )
     assert args.host == __default_host__
     with Deployment(args) as pod:
-        assert pod.num_peas == num_shards * num_replicas + 1
+        assert pod.num_pods == num_shards * num_replicas + 1
         peas_args = dict(pod.peas_args['peas'])
         for k, replica_args in peas_args.items():
             assert len(replica_args) == num_replicas

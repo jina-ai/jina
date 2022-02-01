@@ -178,13 +178,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
+        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -206,8 +206,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
+              - ANY: only one (whoever is idle) Pod polls the message
+              - ALL: all Pods poll the message (like a broadcast)
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
@@ -227,11 +227,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
-        :param runtime_backend: The parallel backend of the runtime inside the Pea
-        :param runtime_cls: The runtime class to run inside the Pea
+        :param runtime_backend: The parallel backend of the runtime inside the Pod
+        :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
-        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
                   * an Executor YAML file (.yml, .yaml, .jaml)
@@ -295,8 +295,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
+              - ANY: only one (whoever is idle) Pod polls the message
+              - ALL: all Pods poll the message (like a broadcast)
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
@@ -613,14 +613,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Add an Executor to the current Flow object.
 
         :param connection_list: dictionary JSON with a list of connections to configure
-        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
+        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
@@ -648,8 +648,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
+              - ANY: only one (whoever is idle) Pod polls the message
+              - ALL: all Pods poll the message (like a broadcast)
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
@@ -666,11 +666,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
         :param replicas: The number of replicas in the deployment
-        :param runtime_backend: The parallel backend of the runtime inside the Pea
-        :param runtime_cls: The runtime class to run inside the Pea
+        :param runtime_backend: The parallel backend of the runtime inside the Pod
+        :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
-        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.
@@ -690,9 +690,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
-        :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
+        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
         :param uses_after_address: The address of the uses-before runtime
-        :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all shards, accepted type follows `--uses`
+        :param uses_before: The executor attached after the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`
         :param uses_before_address: The address of the uses-before runtime
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
@@ -1018,7 +1018,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 op_flow._get_deployments_addresses()
             )
 
-            op_flow._deployment_nodes[GATEWAY_NAME].update_pea_args()
+            op_flow._deployment_nodes[GATEWAY_NAME].update_pod_args()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -1059,7 +1059,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         Remember to close the Flow with :meth:`close`.
 
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited all the way from :class:`jina.peadeployments.peas.Pea`
+        which is inherited all the way from :class:`jina.peadeployments.peas.Pod`
 
 
         .. # noqa: DAR401
@@ -1167,7 +1167,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if addr_table:
                 self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
             self.logger.debug(
-                f'{self.num_deployments} Deployments (i.e. {self.num_peas} Peas) are running in this Flow'
+                f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
             )
 
     @property
@@ -1179,12 +1179,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return len(self._deployment_nodes)
 
     @property
-    def num_peas(self) -> int:
+    def num_pods(self) -> int:
         """Get the number of peas (shards count) in this Flow
 
 
         .. # noqa: DAR201"""
-        return sum(v.num_peas for v in self._deployment_nodes.values())
+        return sum(v.num_pods for v in self._deployment_nodes.values())
 
     def __eq__(self, other: 'Flow') -> bool:
         """
@@ -1573,7 +1573,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.args.workspace = value
         for k, p in self:
             p.args.workspace = value
-            p.update_pea_args()
+            p.update_pod_args()
 
     @property
     def workspace_id(self) -> Dict[str, str]:

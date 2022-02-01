@@ -78,14 +78,14 @@ def build_pydantic_model(model_name: str, module: str):
     from jina.parsers import helper
 
     helper._SHOW_ALL_ARGS, old_val = True, helper._SHOW_ALL_ARGS
-    from jina.parsers import set_pea_parser, set_deployment_parser
+    from jina.parsers import set_pod_parser, set_deployment_parser
     from jina.parsers.flow import set_flow_parser
 
     kwargs = {}
     if module == 'deployment':
         parser = set_deployment_parser
-    elif module == 'pea':
-        parser = set_pea_parser
+    elif module == 'pod':
+        parser = set_pod_parser
     elif module == 'flow':
         parser = set_flow_parser
     else:

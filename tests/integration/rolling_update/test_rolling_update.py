@@ -204,14 +204,14 @@ def test_workspace(config, tmpdir, docs):
     assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1', '2'}
 
 
-def test_num_peas(config):
+def test_num_pods(config):
     with Flow().add(
         name='executor1',
         uses='!DummyMarkExecutor',
         replicas=3,
         shards=4,
     ) as flow:
-        assert flow.num_peas == (
+        assert flow.num_pods == (
             4 * 3 + 1 + 1  # shards 4  # replicas 3  # deployment head  # gateway
         )
 

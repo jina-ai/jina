@@ -6,13 +6,13 @@ from contextlib import ExitStack
 from typing import Dict, List, Optional, Set, Union
 
 from jina.serve.networking import GrpcConnectionPool, host_is_local
-from jina.orchestrate.peas import Pea
-from jina.orchestrate.peas.container import ContainerPea
-from jina.orchestrate.peas.factory import PeaFactory
-from jina.orchestrate.peas.jinad import JinaDPea
+from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.container import ContainerPod
+from jina.orchestrate.pods.factory import PodFactory
+from jina.orchestrate.pods.jinad import JinaDPod
 from jina import __default_executor__, __default_host__, __docker_host__
 from jina import helper
-from jina.enums import DeploymentRoleType, PeaRoleType, PollingType
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from jina.helper import CatchAllCleanupContextManager
 from jina.jaml.helper import complete_path
@@ -27,10 +27,10 @@ class BaseDeployment(ExitStack):
 
     @abstractmethod
     def start(self) -> 'BaseDeployment':
-        """Start to run all :class:`Pea` in this BaseDeployment.
+        """Start to run all :class:`Pod` in this BaseDeployment.
 
         .. note::
-            If one of the :class:`Pea` fails to start, make sure that all of them
+            If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
         ...
@@ -106,14 +106,14 @@ class BaseDeployment(ExitStack):
 
     @property
     def head_host(self) -> str:
-        """Get the host of the HeadPea of this deployment
+        """Get the host of the HeadPod of this deployment
         .. # noqa: DAR201
         """
         return self.head_args.host
 
     @property
     def head_port_in(self):
-        """Get the port_in of the HeadPea of this deployment
+        """Get the port_in of the HeadPod of this deployment
         .. # noqa: DAR201
         """
         return self.head_args.port_in
@@ -138,7 +138,7 @@ class BaseDeployment(ExitStack):
         else:
             _head_args.port_in = args.port_in
         _head_args.uses = args.uses
-        _head_args.pea_role = PeaRoleType.HEAD
+        _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
         _head_args.replicas = 1
 
@@ -201,84 +201,84 @@ class Deployment(BaseDeployment):
             self,
             deployment_args: Namespace,
             args: List[Namespace],
-            head_pea,
+            head_pod,
         ):
             self.deployment_args = copy.copy(deployment_args)
             self.args = args
             self.shard_id = args[0].shard_id
-            self._peas = []
-            self.head_pea = head_pea
+            self._pods = []
+            self.head_pod = head_pod
 
         @property
         def is_ready(self):
-            return all(p.is_ready.is_set() for p in self._peas)
+            return all(p.is_ready.is_set() for p in self._pods)
 
-        def clear_peas(self):
-            self._peas.clear()
+        def clear_pods(self):
+            self._pods.clear()
 
         @property
-        def num_peas(self):
-            return len(self._peas)
+        def num_pods(self):
+            return len(self._pods)
 
         def join(self):
-            for pea in self._peas:
-                pea.join()
+            for pod in self._pods:
+                pod.join()
 
         def wait_start_success(self):
-            for pea in self._peas:
-                pea.wait_start_success()
+            for pod in self._pods:
+                pod.wait_start_success()
 
         async def rolling_update(self, uses_with: Optional[Dict] = None):
             # TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?
-            for i in range(len(self._peas)):
+            for i in range(len(self._pods)):
                 _args = self.args[i]
-                old_pea = self._peas[i]
+                old_pod = self._pods[i]
                 await GrpcConnectionPool.deactivate_worker(
                     worker_host=Deployment.get_worker_host(
-                        _args, old_pea, self.head_pea
+                        _args, old_pod, self.head_pod
                     ),
                     worker_port=_args.port_in,
-                    target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
+                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
                     shard_id=self.shard_id,
                 )
-                old_pea.close()
+                old_pod.close()
                 _args.noblock_on_start = True
                 _args.uses_with = uses_with
-                new_pea = PeaFactory.build_pea(_args)
-                new_pea.__enter__()
-                await new_pea.async_wait_start_success()
+                new_pod = PodFactory.build_pod(_args)
+                new_pod.__enter__()
+                await new_pod.async_wait_start_success()
                 await GrpcConnectionPool.activate_worker(
                     worker_host=Deployment.get_worker_host(
-                        _args, new_pea, self.head_pea
+                        _args, new_pod, self.head_pod
                     ),
                     worker_port=_args.port_in,
-                    target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
+                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
                     shard_id=self.shard_id,
                 )
                 self.args[i] = _args
-                self._peas[i] = new_pea
+                self._pods[i] = new_pod
 
         async def _scale_up(self, replicas: int):
-            new_peas = []
+            new_pods = []
             new_args_list = []
-            for i in range(len(self._peas), replicas):
+            for i in range(len(self._pods), replicas):
                 new_args = copy.copy(self.args[0])
                 new_args.noblock_on_start = True
                 new_args.name = new_args.name[:-1] + f'{i}'
                 new_args.port_in = helper.random_port()
                 # no exception should happen at create and enter time
-                new_peas.append(PeaFactory.build_pea(new_args).start())
+                new_pods.append(PodFactory.build_pod(new_args).start())
                 new_args_list.append(new_args)
             exception = None
-            for new_pea, new_args in zip(new_peas, new_args_list):
+            for new_pod, new_args in zip(new_pods, new_args_list):
                 try:
-                    await new_pea.async_wait_start_success()
+                    await new_pod.async_wait_start_success()
                     await GrpcConnectionPool.activate_worker(
                         worker_host=Deployment.get_worker_host(
-                            new_args, new_pea, self.head_pea
+                            new_args, new_pod, self.head_pod
                         ),
                         worker_port=new_args.port_in,
-                        target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
+                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
                         shard_id=self.shard_id,
                     )
                 except (
@@ -298,27 +298,27 @@ class Deployment(BaseDeployment):
                 msg += f'due to executor failing to start with exception: {exception!r}'
                 raise ScalingFails(msg)
             else:
-                for new_pea, new_args in zip(new_peas, new_args_list):
+                for new_pod, new_args in zip(new_pods, new_args_list):
                     self.args.append(new_args)
-                    self._peas.append(new_pea)
+                    self._pods.append(new_pod)
 
         async def _scale_down(self, replicas: int):
-            for i in reversed(range(replicas, len(self._peas))):
+            for i in reversed(range(replicas, len(self._pods))):
                 # Close returns exception, but in theory `termination` should handle close properly
                 try:
                     await GrpcConnectionPool.deactivate_worker(
                         worker_host=Deployment.get_worker_host(
-                            self.args[i], self._peas[i], self.head_pea
+                            self.args[i], self._pods[i], self.head_pod
                         ),
                         worker_port=self.args[i].port_in,
-                        target_head=f'{self.head_pea.args.host}:{self.head_pea.args.port_in}',
+                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
                         shard_id=self.shard_id,
                     )
-                    self._peas[i].close()
+                    self._pods[i].close()
                 finally:
-                    # If there is an exception at close time. Most likely the pea's terminated abruptly and therefore these
+                    # If there is an exception at close time. Most likely the pod's terminated abruptly and therefore these
                     # peas are useless
-                    del self._peas[i]
+                    del self._pods[i]
                     del self.args[i]
 
         async def scale(self, replicas: int):
@@ -331,9 +331,9 @@ class Deployment(BaseDeployment):
             """
             # TODO make scale robust, in what state this ReplicaSet ends when this fails?
             assert replicas > 0
-            if replicas > len(self._peas):
+            if replicas > len(self._pods):
                 await self._scale_up(replicas)
-            elif replicas < len(self._peas):
+            elif replicas < len(self._pods):
                 await self._scale_down(
                     replicas
                 )  # scale down has some challenges with the exit fifo
@@ -342,12 +342,12 @@ class Deployment(BaseDeployment):
         @property
         def has_forked_processes(self):
             """
-            Checks if any pea in this replica set is a forked process
+            Checks if any pod in this replica set is a forked process
 
-            :returns: True if any Pea is a forked Process, False otherwise (Containers/JinaD)
+            :returns: True if any Pod is a forked Process, False otherwise (Containers/JinaD)
             """
-            for pea in self._peas:
-                if type(pea) == Pea and pea.is_forked:
+            for pod in self._pods:
+                if type(pod) == Pod and pod.is_forked:
                     return True
             return False
 
@@ -355,14 +355,14 @@ class Deployment(BaseDeployment):
             for _args in self.args:
                 if getattr(self.deployment_args, 'noblock_on_start', False):
                     _args.noblock_on_start = True
-                self._peas.append(PeaFactory.build_pea(_args).start())
+                self._pods.append(PodFactory.build_pod(_args).start())
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             closing_exception = None
-            for pea in self._peas:
+            for pod in self._pods:
                 try:
-                    pea.close()
+                    pod.close()
                 except Exception as exc:
                     if closing_exception is None:
                         closing_exception = exc
@@ -385,17 +385,17 @@ class Deployment(BaseDeployment):
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
-        self.uses_before_pea = None
-        self.uses_after_pea = None
-        self.head_pea = None
+        self.uses_before_pod = None
+        self.uses_after_pod = None
+        self.head_pod = None
         self.shards = {}
-        self.update_pea_args()
+        self.update_pod_args()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
 
-    def update_pea_args(self):
+    def update_pod_args(self):
         """ Update args of all its peas based on Deployment args. Including head/tail"""
         if isinstance(self.args, Dict):
             # This is used when a Deployment is created in a remote context, where peas & their connections are already given.
@@ -405,14 +405,14 @@ class Deployment(BaseDeployment):
 
         if self.is_sandbox:
             host, port = HubIO.deploy_public_sandbox(getattr(self.args, 'uses', ''))
-            self.first_pea_args.host = host
-            self.first_pea_args.port_in = port
+            self.first_pod_args.host = host
+            self.first_pod_args.port_in = port
             self.peas_args['head'].host = host
             self.peas_args['head'].port_in = port
 
-    def update_worker_pea_args(self):
+    def update_worker_pod_args(self):
         """ Update args of all its worker peas based on Deployment args. Does not touch head and tail"""
-        self.peas_args['peas'] = self._set_peas_args(self.args)
+        self.peas_args['peas'] = self._set_pods_args(self.args)
 
     @property
     def is_sandbox(self) -> bool:
@@ -443,8 +443,8 @@ class Deployment(BaseDeployment):
         return 'https' if self.is_sandbox else protocol
 
     @property
-    def first_pea_args(self) -> Namespace:
-        """Return the first worker pea's args
+    def first_pod_args(self) -> Namespace:
+        """Return the first worker pod's args
 
 
         .. # noqa: DAR201
@@ -459,7 +459,7 @@ class Deployment(BaseDeployment):
 
         .. # noqa: DAR201
         """
-        return self.first_pea_args.host
+        return self.first_pod_args.host
 
     def _parse_args(
         self, args: Namespace
@@ -522,7 +522,7 @@ class Deployment(BaseDeployment):
 
     @property
     def all_args(self) -> List[Namespace]:
-        """Get all arguments of all Peas in this BaseDeployment.
+        """Get all arguments of all Pods in this BaseDeployment.
 
         .. # noqa: DAR201
         """
@@ -536,66 +536,66 @@ class Deployment(BaseDeployment):
         return all_args
 
     @property
-    def num_peas(self) -> int:
-        """Get the number of running :class:`Pea`
+    def num_pods(self) -> int:
+        """Get the number of running :class:`Pod`
 
         .. # noqa: DAR201
         """
-        num_peas = 0
-        if self.head_pea is not None:
-            num_peas += 1
-        if self.uses_before_pea is not None:
-            num_peas += 1
-        if self.uses_after_pea is not None:
-            num_peas += 1
+        num_pods = 0
+        if self.head_pod is not None:
+            num_pods += 1
+        if self.uses_before_pod is not None:
+            num_pods += 1
+        if self.uses_after_pod is not None:
+            num_pods += 1
         if self.shards:  # external deployments
             for shard_id in self.shards:
-                num_peas += self.shards[shard_id].num_peas
-        return num_peas
+                num_pods += self.shards[shard_id].num_pods
+        return num_pods
 
     def __eq__(self, other: 'BaseDeployment'):
-        return self.num_peas == other.num_peas and self.name == other.name
+        return self.num_pods == other.num_pods and self.name == other.name
 
     def activate(self):
         """
         Activate all worker peas in this deployment by registering them with the head
         """
-        if self.head_pea is not None:
+        if self.head_pod is not None:
             for shard_id in self.peas_args['peas']:
-                for pea_idx, pea_args in enumerate(self.peas_args['peas'][shard_id]):
+                for pod_idx, pod_args in enumerate(self.peas_args['peas'][shard_id]):
                     worker_host = self.get_worker_host(
-                        pea_args, self.shards[shard_id]._peas[pea_idx], self.head_pea
+                        pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
                     )
                     GrpcConnectionPool.activate_worker_sync(
                         worker_host,
-                        int(pea_args.port_in),
-                        self.head_pea.runtime_ctrl_address,
+                        int(pod_args.port_in),
+                        self.head_pod.runtime_ctrl_address,
                         shard_id,
                     )
 
     @staticmethod
-    def get_worker_host(pea_args, pea, head_pea):
+    def get_worker_host(pod_args, pod, head_pod):
         """
-        Check if the current pea and head are both containerized on the same host
+        Check if the current pod and head are both containerized on the same host
         If so __docker_host__ needs to be advertised as the worker's address to the head
 
-        :param pea_args: arguments of the worker pea
-        :param pea: the worker pea
-        :param head_pea: head pea communicating with the worker pea
+        :param pod_args: arguments of the worker pod
+        :param pod: the worker pod
+        :param head_pod: head pod communicating with the worker pod
         :return: host to use in activate messages
         """
-        # Check if the current pea and head are both containerized on the same host
+        # Check if the current pod and head are both containerized on the same host
         # If so __docker_host__ needs to be advertised as the worker's address to the head
         worker_host = (
             __docker_host__
-            if Deployment._is_container_to_container(pea, head_pea)
-            and host_is_local(pea_args.host)
-            else pea_args.host
+            if Deployment._is_container_to_container(pod, head_pod)
+            and host_is_local(pod_args.host)
+            else pod_args.host
         )
         return worker_host
 
     @staticmethod
-    def _is_container_to_container(pea, head_pea):
+    def _is_container_to_container(pod, head_pod):
         def _in_docker():
             path = '/proc/self/cgroup'
             return (
@@ -604,45 +604,45 @@ class Deployment(BaseDeployment):
                 and any('docker' in line for line in open(path))
             )
 
-        # Check if both shard_id/pea_idx and the head are containerized
+        # Check if both shard_id/pod_idx and the head are containerized
         # if the head is not containerized, it still could mean that the deployment itself is containerized
-        return (type(pea) == ContainerPea or type(pea) == JinaDPea) and (
-            type(head_pea) == ContainerPea or type(head_pea) == JinaDPea or _in_docker()
+        return (type(pod) == ContainerPod or type(pod) == JinaDPod) and (
+            type(head_pod) == ContainerPod or type(head_pod) == JinaDPod or _in_docker()
         )
 
     def start(self) -> 'Deployment':
         """
-        Start to run all :class:`Pea` in this BaseDeployment.
+        Start to run all :class:`Pod` in this BaseDeployment.
 
         :return: started deployment
 
         .. note::
-            If one of the :class:`Pea` fails to start, make sure that all of them
+            If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
         if self.peas_args['uses_before'] is not None:
             _args = self.peas_args['uses_before']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.uses_before_pea = PeaFactory.build_pea(_args)
-            self.enter_context(self.uses_before_pea)
+            self.uses_before_pod = PodFactory.build_pod(_args)
+            self.enter_context(self.uses_before_pod)
         if self.peas_args['uses_after'] is not None:
             _args = self.peas_args['uses_after']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.uses_after_pea = PeaFactory.build_pea(_args)
-            self.enter_context(self.uses_after_pea)
+            self.uses_after_pod = PodFactory.build_pod(_args)
+            self.enter_context(self.uses_after_pod)
         if self.peas_args['head'] is not None:
             _args = self.peas_args['head']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
-            self.head_pea = PeaFactory.build_pea(_args)
-            self.enter_context(self.head_pea)
+            self.head_pod = PodFactory.build_pod(_args)
+            self.enter_context(self.head_pod)
         for shard_id in self.peas_args['peas']:
             self.shards[shard_id] = self._ReplicaSet(
                 self.args,
                 self.peas_args['peas'][shard_id],
-                self.head_pea,
+                self.head_pod,
             )
             self.enter_context(self.shards[shard_id])
 
@@ -660,12 +660,12 @@ class Deployment(BaseDeployment):
                 f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
             )
         try:
-            if self.uses_before_pea is not None:
-                self.uses_before_pea.wait_start_success()
-            if self.uses_after_pea is not None:
-                self.uses_after_pea.wait_start_success()
-            if self.head_pea is not None:
-                self.head_pea.wait_start_success()
+            if self.uses_before_pod is not None:
+                self.uses_before_pod.wait_start_success()
+            if self.uses_after_pod is not None:
+                self.uses_after_pod.wait_start_success()
+            if self.head_pod is not None:
+                self.head_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
             self.activate()
@@ -676,43 +676,43 @@ class Deployment(BaseDeployment):
     def join(self):
         """Wait until all peas exit"""
         try:
-            if self.uses_before_pea is not None:
-                self.uses_before_pea.join()
-            if self.uses_after_pea is not None:
-                self.uses_after_pea.join()
-            if self.head_pea is not None:
-                self.head_pea.join()
+            if self.uses_before_pod is not None:
+                self.uses_before_pod.join()
+            if self.uses_after_pod is not None:
+                self.uses_after_pod.join()
+            if self.head_pod is not None:
+                self.head_pod.join()
             if self.shards:
                 for shard_id in self.shards:
                     self.shards[shard_id].join()
         except KeyboardInterrupt:
             pass
         finally:
-            self.head_pea = None
+            self.head_pod = None
             if self.shards:
                 for shard_id in self.shards:
-                    self.shards[shard_id].clear_peas()
+                    self.shards[shard_id].clear_pods()
 
     @property
     def is_ready(self) -> bool:
         """Checks if Deployment is ready
 
         .. note::
-            A Deployment is ready when all the Peas it contains are ready
+            A Deployment is ready when all the Pods it contains are ready
 
 
         .. # noqa: DAR201
         """
         is_ready = True
-        if self.head_pea is not None:
-            is_ready = self.head_pea.is_ready.is_set()
+        if self.head_pod is not None:
+            is_ready = self.head_pod.is_ready.is_set()
         if is_ready:
             for shard_id in self.shards:
                 is_ready = self.shards[shard_id].is_ready
-        if is_ready and self.uses_before_pea is not None:
-            is_ready = self.uses_before_pea.is_ready.is_set()
-        if is_ready and self.uses_after_pea is not None:
-            is_ready = self.uses_after_pea.is_ready.is_set()
+        if is_ready and self.uses_before_pod is not None:
+            is_ready = self.uses_before_pod.is_ready.is_set()
+        if is_ready and self.uses_after_pod is not None:
+            is_ready = self.uses_after_pod.is_ready.is_set()
         return is_ready
 
     @property
@@ -722,7 +722,7 @@ class Deployment(BaseDeployment):
         )
 
     async def rolling_update(self, uses_with: Optional[Dict] = None):
-        """Reload all Peas of this Deployment.
+        """Reload all Pods of this Deployment.
 
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
@@ -738,7 +738,7 @@ class Deployment(BaseDeployment):
                 # while we use fork, we need to guarantee that forking/grpc status checking is done sequentially
                 # this is true at least when the flow process and the forked processes are running in the same OS
                 # thus this does not apply to K8s
-                # to ContainerPea it still applies due to the managing process being forked
+                # to ContainerPod it still applies due to the managing process being forked
                 # source: https://grpc.github.io/grpc/cpp/impl_2codegen_2fork_8h.html#a450c01a1187f69112a22058bf690e2a0
                 await task
                 tasks.append(task)
@@ -778,7 +778,7 @@ class Deployment(BaseDeployment):
             raise
 
     @staticmethod
-    def _set_peas_args(args: Namespace) -> Dict[int, List[Namespace]]:
+    def _set_pods_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
         sharding_enabled = args.shards and args.shards > 1
         for shard_id in range(args.shards):
@@ -786,7 +786,7 @@ class Deployment(BaseDeployment):
             for replica_id in range(args.replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
-                _args.pea_role = PeaRoleType.WORKER
+                _args.pod_role = PodRoleType.WORKER
 
                 _args.host = args.host
                 if _args.name:
@@ -800,7 +800,7 @@ class Deployment(BaseDeployment):
 
                 _args.port_in = helper.random_port()
 
-                # pea workspace if not set then derive from workspace
+                # pod workspace if not set then derive from workspace
                 if not _args.workspace:
                     _args.workspace = args.workspace
                 replica_args.append(_args)
@@ -811,7 +811,7 @@ class Deployment(BaseDeployment):
     def _set_uses_before_after_args(args: Namespace, entity_type: str) -> Namespace:
 
         _args = copy.deepcopy(args)
-        _args.pea_role = PeaRoleType.WORKER
+        _args.pod_role = PodRoleType.WORKER
         _args.host = __default_host__
         _args.port_in = helper.random_port()
 
@@ -828,10 +828,10 @@ class Deployment(BaseDeployment):
             _args.uses = args.uses_after or __default_executor__
         else:
             raise ValueError(
-                f'uses_before/uses_after pea does not support type {entity_type}'
+                f'uses_before/uses_after pod does not support type {entity_type}'
             )
 
-        # pea workspace if not set then derive from workspace
+        # pod workspace if not set then derive from workspace
         if not _args.workspace:
             _args.workspace = args.workspace
         return _args
@@ -870,7 +870,7 @@ class Deployment(BaseDeployment):
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
-        parsed_args['peas'] = self._set_peas_args(args)
+        parsed_args['peas'] = self._set_pods_args(args)
 
         return parsed_args
 

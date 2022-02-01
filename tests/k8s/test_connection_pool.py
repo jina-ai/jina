@@ -51,7 +51,7 @@ async def test_process_up_down_events(docker_images):
                         'app': 'dummy-deployment',
                         'jina_deployment_name': 'some-deployment',
                         'shard_id': '4',
-                        'pea_type': 'WORKER',
+                        'pod_type': 'WORKER',
                         'ns': f'{namespace}',
                     }
                 },

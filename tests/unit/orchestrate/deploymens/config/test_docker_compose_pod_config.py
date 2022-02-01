@@ -75,7 +75,7 @@ def test_parse_args(
         args,
         skip_attr=(
             'runtime_cls',
-            'pea_role',
+            'pod_role',
             'port_in',
             'k8s_namespace',
             'k8s_connection_pool',
@@ -196,7 +196,7 @@ def test_parse_args(
             cargs,
             skip_attr=(
                 'runtime_cls',
-                'pea_role',
+                'pod_role',
                 'port_in',
                 'k8s_namespace',
                 'k8s_connection_pool',
@@ -360,8 +360,8 @@ def test_docker_compose_gateway(deployments_addresses):
     assert '--port-expose' in args
     assert args[args.index('--port-expose') + 1] == '32465'
     assert '--env' not in args
-    assert '--pea-role' in args
-    assert args[args.index('--pea-role') + 1] == 'GATEWAY'
+    assert '--pod-role' in args
+    assert args[args.index('--pod-role') + 1] == 'GATEWAY'
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args
         assert args[args.index('--deployments-addresses') + 1] == json.dumps(
@@ -452,8 +452,8 @@ def test_docker_compose_yaml_regular_deployment(
     assert '--port-in' in head_args
     assert head_args[head_args.index('--port-in') + 1] == '8081'
     assert '--env' not in head_args
-    assert '--pea-role' in head_args
-    assert head_args[head_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in head_args
+    assert head_args[head_args.index('--pod-role') + 1] == 'HEAD'
     assert '--connection-list' in head_args
     connection_list_string = head_args[head_args.index('--connection-list') + 1]
     candidate_connection_list = {}
@@ -574,7 +574,7 @@ def test_docker_compose_yaml_regular_deployment(
             expected_uses_metas = {}
             if uses_metas is not None:
                 expected_uses_metas = json.loads(uses_metas)
-            expected_uses_metas['pea_id'] = shard_id
+            expected_uses_metas['pod_id'] = shard_id
             assert '--uses-metas' in replica_args
             assert replica_args[replica_args.index('--uses-metas') + 1] == json.dumps(
                 expected_uses_metas

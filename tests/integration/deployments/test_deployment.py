@@ -11,7 +11,7 @@ from jina.orchestrate.deployments import Deployment
 
 
 @pytest.mark.asyncio
-# test gateway, head and worker pea by creating them manually in the most simple configuration
+# test gateway, head and worker pod by creating them manually in the most simple configuration
 async def test_deployments_trivial_topology(port_generator):
     deployment_port = port_generator()
     port_expose = port_generator()
@@ -20,10 +20,10 @@ async def test_deployments_trivial_topology(port_generator):
     )
     deployments_addresses = f'{{"deployment0": ["0.0.0.0:{deployment_port}"]}}'
 
-    # create a single worker pea
+    # create a single worker pod
     worker_deployment = _create_regular_deployment(deployment_port)
 
-    # create a single gateway pea
+    # create a single gateway pod
     gateway_deployment = _create_gateway_deployment(
         graph_description, deployments_addresses, port_expose
     )
@@ -63,7 +63,7 @@ def complete_graph_dict():
 @pytest.mark.asyncio
 @pytest.mark.parametrize('uses_before', [True, False])
 @pytest.mark.parametrize('uses_after', [True, False])
-# test gateway, head and worker pea by creating them manually in a more Flow like topology with branching/merging
+# test gateway, head and worker pod by creating them manually in a more Flow like topology with branching/merging
 async def test_deployments_flow_topology(
     complete_graph_dict, uses_before, uses_after, port_generator
 ):
@@ -92,7 +92,7 @@ async def test_deployments_flow_topology(
     deployments_addresses += '}'
     port_expose = port_generator()
 
-    # create a single gateway pea
+    # create a single gateway pod
 
     gateway_deployment = _create_gateway_deployment(
         json.dumps(complete_graph_dict), deployments_addresses, port_expose

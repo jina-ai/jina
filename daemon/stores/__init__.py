@@ -2,7 +2,7 @@ from typing import Optional, TYPE_CHECKING, Type, Union
 
 from daemon.stores.base import BaseStore
 from daemon.stores.flows import FlowStore
-from daemon.stores.peas import PeaStore
+from daemon.stores.peas import PodStore
 from daemon.stores.deployments import DeploymentStore
 from daemon.stores.workspaces import WorkspaceStore
 from daemon import jinad_args
@@ -11,7 +11,7 @@ from daemon.models.enums import IDLiterals
 
 if TYPE_CHECKING:
     from daemon.stores.partial import (
-        PartialPeaStore,
+        PartialPodStore,
         PartialDeploymentStore,
         PartialFlowStore,
     )
@@ -34,7 +34,7 @@ def _get_store(cls: Type[BaseStore]) -> BaseStore:
 
 
 def _get_partial_store() -> Optional[
-    Union['PartialPeaStore', 'PartialDeploymentStore', 'PartialFlowStore']
+    Union['PartialPodStore', 'PartialDeploymentStore', 'PartialFlowStore']
 ]:
     """Get partial store object
 
@@ -42,13 +42,13 @@ def _get_partial_store() -> Optional[
     """
     from daemon.models.enums import PartialDaemonModes
     from daemon.stores.partial import (
-        PartialPeaStore,
+        PartialPodStore,
         PartialDeploymentStore,
         PartialFlowStore,
     )
 
     if jinad_args.mode == PartialDaemonModes.PEA:
-        return PartialPeaStore()
+        return PartialPodStore()
     elif jinad_args.mode == PartialDaemonModes.DEPLOYMENT:
         return PartialDeploymentStore()
     elif jinad_args.mode == PartialDaemonModes.FLOW:
@@ -66,7 +66,7 @@ def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
     if entity_id.jtype == IDLiterals.JDEPLOYMENT:
         return deployment_store
     elif entity_id.jtype == IDLiterals.JPEA:
-        return pea_store
+        return pod_store
     elif entity_id.jtype == IDLiterals.JFLOW:
         return flow_store
     elif entity_id.jtype == IDLiterals.JWORKSPACE:
@@ -75,7 +75,7 @@ def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
         return None
 
 
-pea_store: PeaStore = _get_store(PeaStore)
+pod_store: PodStore = _get_store(PodStore)
 deployment_store: DeploymentStore = _get_store(DeploymentStore)
 flow_store: FlowStore = _get_store(FlowStore)
 workspace_store: WorkspaceStore = _get_store(WorkspaceStore)

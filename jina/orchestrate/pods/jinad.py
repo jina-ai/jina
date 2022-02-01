@@ -6,8 +6,8 @@ import multiprocessing
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Union, Optional
 
-from jina.orchestrate.peas import BasePea
-from jina.orchestrate.peas.helper import _get_worker, is_ready
+from jina.orchestrate.pods import BasePod
+from jina.orchestrate.pods.helper import _get_worker, is_ready
 from jina.helper import run_async
 from jina.jaml.helper import complete_path
 from jina.importer import ImportExtensions
@@ -15,7 +15,7 @@ from jina.enums import replace_enum_to_str
 from jina.logging.logger import JinaLogger
 from jina.excepts import (
     DaemonConnectivityError,
-    DaemonPeaCreationFailed,
+    DaemonPodCreationFailed,
     DaemonWorkspaceCreationFailed,
 )
 
@@ -35,21 +35,21 @@ class JinaDProcessTarget:
         is_cancelled: Union['multiprocessing.Event', 'threading.Event'],
         envs: Optional[Dict] = None,
     ):
-        """Method responsible to manage a remote Pea
+        """Method responsible to manage a remote Pod
 
-        This method is the target for the Pea's `thread` or `process`
+        This method is the target for the Pod's `thread` or `process`
 
         .. note::
             Please note that env variables are process-specific. Subprocess inherits envs from
             the main process. But Subprocess's envs do NOT affect the main process. It does NOT
             mess up user local system envs.
 
-        :param args: namespace args from the Pea
+        :param args: namespace args from the Pod
         :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
         :param is_shutdown: concurrency event to communicate runtime is terminated
         :param is_ready: concurrency event to communicate runtime is ready to receive messages
-        :param is_cancelled: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
-        :param envs: a dictionary of environment variables to be passed to remote Pea
+        :param is_cancelled: concurrency event to receive cancelling signal from the Pod. Needed by some runtimes
+        :param envs: a dictionary of environment variables to be passed to remote Pod
         """
         self.args = args
         self.envs = envs
@@ -57,17 +57,17 @@ class JinaDProcessTarget:
         self.is_shutdown = is_shutdown
         self.is_ready = is_ready
         self.is_cancelled = is_cancelled
-        self.pea_id = None
-        self._logger = JinaLogger('RemotePea', **vars(args))
+        self.pod_id = None
+        self._logger = JinaLogger('RemotePod', **vars(args))
         run_async(self._run)
 
     async def _run(self):
-        """Manage a remote Pea"""
+        """Manage a remote Pod"""
         try:
-            await self._create_remote_pea()
+            await self._create_remote_pod()
         except Exception as ex:
             self._logger.error(
-                f'{ex!r} while starting a remote Pea'
+                f'{ex!r} while starting a remote Pod'
                 + f'\n add "--quiet-error" to suppress the exception details'
                 if not self.args.quiet_error
                 else '',
@@ -78,12 +78,12 @@ class JinaDProcessTarget:
             self.is_ready.set()
             await self._wait_until_cancelled()
         finally:
-            await self._terminate_remote_pea()
+            await self._terminate_remote_pod()
             self.is_shutdown.set()
             self._logger.debug('JinaDProcessTarget terminated')
 
-    async def _create_remote_pea(self):
-        """Create Workspace, Pea on remote JinaD server"""
+    async def _create_remote_pod(self):
+        """Create Workspace, Pod on remote JinaD server"""
         with ImportExtensions(required=True):
             # rich & aiohttp are used in `AsyncJinaDClient`
             import rich
@@ -93,7 +93,7 @@ class JinaDProcessTarget:
             assert rich
             assert aiohttp
 
-        # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
+        # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pod,
         # so it can't be used for Client timeout.
         self.client = AsyncJinaDClient(
             host=self.args.host, port=self.args.port_jinad, logger=self._logger
@@ -113,15 +113,15 @@ class JinaDProcessTarget:
             raise DaemonWorkspaceCreationFailed
 
         payload = replace_enum_to_str(vars(self._mask_args()))
-        # Create a remote Pea in the above workspace
+        # Create a remote Pod in the above workspace
         success, response = await self.client.peas.create(
             workspace_id=workspace_id, payload=payload, envs=self.envs
         )
         if not success:
-            self._logger.critical(f'remote pea creation failed')
-            raise DaemonPeaCreationFailed(response)
+            self._logger.critical(f'remote pod creation failed')
+            raise DaemonPodCreationFailed(response)
         else:
-            self.pea_id = response
+            self.pod_id = response
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
@@ -131,12 +131,12 @@ class JinaDProcessTarget:
         while not self.is_cancelled.is_set():
             await asyncio.sleep(0.1)
 
-    async def _terminate_remote_pea(self):
-        """Removes the remote Pea"""
-        if self.pea_id is not None:
-            if await self.client.peas.delete(id=self.pea_id):
+    async def _terminate_remote_pod(self):
+        """Removes the remote Pod"""
+        if self.pod_id is not None:
+            if await self.client.peas.delete(id=self.pod_id):
                 self._logger.success(
-                    f'Successfully terminated remote Pea {self.pea_id}'
+                    f'Successfully terminated remote Pod {self.pod_id}'
                 )
             # Don't delete workspace here, as other Executors might use them.
             # TODO(Deepankar): probably enable an arg here?
@@ -186,8 +186,8 @@ class JinaDProcessTarget:
         return cargs
 
 
-class JinaDPea(BasePea):
-    """Manages a remote Pea by handling a separate Process / Thread"""
+class JinaDPod(BasePod):
+    """Manages a remote Pod by handling a separate Process / Thread"""
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
@@ -242,7 +242,7 @@ class JinaDPea(BasePea):
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            # is_ready returns True is the Pea is actually created by JinaD
+            # is_ready returns True is the Pod is actually created by JinaD
             # ready_or_shutdown_event is set after JinaDProcessTarget
             if ready_or_shutdown_event.is_set():
                 return True
@@ -250,7 +250,7 @@ class JinaDPea(BasePea):
         return False
 
     def start(self):
-        """Start the JinaD Process (to manage remote Pea).
+        """Start the JinaD Process (to manage remote Pod).
         .. #noqa: DAR201
         """
         self.worker.start()
@@ -259,7 +259,7 @@ class JinaDPea(BasePea):
         return self
 
     def join(self, *args, **kwargs):
-        """Joins the Pea.
+        """Joins the Pod.
         This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
@@ -270,11 +270,11 @@ class JinaDPea(BasePea):
         self.logger.debug(f' Successfully joined the JinaD process')
 
     def _terminate(self):
-        """Terminate the Pea.
+        """Terminate the Pod.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         self.cancel_event.set()  # Inform JinaD Process to stop streaming
-        self.is_shutdown.wait()  # Wait until JinaD terminates remote Pea and sets shutdown event
+        self.is_shutdown.wait()  # Wait until JinaD terminates remote Pod and sets shutdown event
         if hasattr(self.worker, 'terminate'):
             self.logger.debug(f'terminating the JinaD Process')
             self.worker.terminate()

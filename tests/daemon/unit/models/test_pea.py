@@ -1,9 +1,9 @@
-from daemon.models import PeaModel
+from daemon.models import PodModel
 
 
 def test_no_exceptions():
-    PeaModel()
+    PodModel()
     # this gets executed while verifying inputs
-    PeaModel().dict()
+    PodModel().dict()
     # this gets executed while creating docs
-    PeaModel().schema()
+    PodModel().schema()

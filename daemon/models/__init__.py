@@ -12,7 +12,7 @@ FlowModel = build_pydantic_model(model_name='FlowModel', module='flow')
 DeploymentModel = build_pydantic_model(
     model_name='DeploymentModel', module='deployment'
 )
-PeaModel = build_pydantic_model(model_name='PeaModel', module='pea')
+PodModel = build_pydantic_model(model_name='PodModel', module='pod')
 
 
 GATEWAY_RUNTIME_DICT = {

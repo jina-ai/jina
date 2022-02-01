@@ -5,8 +5,8 @@ import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.serve.executors import BaseExecutor
-from jina.parsers import set_gateway_parser, set_pea_parser
-from jina.orchestrate.peas import Pea
+from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.orchestrate.pods import Pod
 from jina.serve import runtimes
 
 
@@ -20,16 +20,16 @@ def fake_env():
 class EnvChecker1(BaseExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # pea/pod-specific
+        # pod/pod-specific
         assert os.environ['key1'] == 'value1'
         assert os.environ['key2'] == 'value2'
         # inherit from parent process
         assert os.environ['key_parent'] == 'value3'
 
 
-def test_pea_runtime_env_setting_in_process(fake_env):
-    with Pea(
-        set_pea_parser().parse_args(
+def test_pod_runtime_env_setting_in_process(fake_env):
+    with Pod(
+        set_pod_parser().parse_args(
             [
                 '--uses',
                 'EnvChecker1',
@@ -53,7 +53,7 @@ def test_pea_runtime_env_setting_in_process(fake_env):
 class EnvChecker2(BaseExecutor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # pea/pod-specific
+        # pod/pod-specific
         assert 'key1' not in os.environ
         assert 'key2' not in os.environ
         # inherit from parent process
@@ -61,11 +61,11 @@ class EnvChecker2(BaseExecutor):
 
 
 @pytest.mark.skip('grpc in threads messes up and produces handing servers')
-def test_pea_runtime_env_setting_in_thread(fake_env):
+def test_pod_runtime_env_setting_in_thread(fake_env):
     os.environ['key_parent'] = 'value3'
 
-    with Pea(
-        set_pea_parser().parse_args(
+    with Pod(
+        set_pod_parser().parse_args(
             [
                 '--uses',
                 'EnvChecker2',
@@ -106,7 +106,7 @@ def test_gateway_args(protocol, expected):
             protocol,
         ]
     )
-    p = Pea(args)
+    p = Pod(args)
     assert p.runtime_cls.__name__ == expected
 
 
@@ -130,7 +130,7 @@ def test_gateway_runtimes(protocol, expected):
         ]
     )
 
-    with Pea(args) as p:
+    with Pod(args) as p:
         assert p.runtime_cls.__name__ == expected
 
 
@@ -139,14 +139,14 @@ def test_gateway_runtimes(protocol, expected):
     ['WorkerRuntime', 'HeadRuntime'],
 )
 def test_non_gateway_runtimes(runtime_cls):
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--runtime-cls',
             runtime_cls,
         ]
     )
 
-    with Pea(args) as p:
+    with Pod(args) as p:
         assert p.runtime_cls.__name__ == runtime_cls
 
 
@@ -157,7 +157,7 @@ class RaisingExecutor(BaseExecutor):
 
 
 def test_failing_executor():
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--uses',
             'RaisingExecutor',
@@ -165,7 +165,7 @@ def test_failing_executor():
     )
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args):
+        with Pod(args):
             pass
 
 
@@ -190,12 +190,12 @@ def test_failing_gateway_runtimes(protocol, expected):
     )
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args):
+        with Pod(args):
             pass
 
 
 def test_failing_head():
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--runtime-cls',
             'HeadRuntime',
@@ -204,7 +204,7 @@ def test_failing_head():
     args.port_in = None
 
     with pytest.raises(RuntimeFailToStart):
-        with Pea(args):
+        with Pod(args):
             pass
 
 
@@ -228,9 +228,9 @@ def test_close_before_start(monkeypatch):
         'get_runtime',
         lambda *args, **kwargs: SlowFakeRuntime,
     )
-    pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
-    pea.start()
-    pea.close()
+    pod = Pod(set_pod_parser().parse_args(['--noblock-on-start']))
+    pod.start()
+    pod.close()
 
 
 @pytest.mark.timeout(4)
@@ -253,6 +253,6 @@ def test_close_before_start_slow_enter(monkeypatch):
         'get_runtime',
         lambda *args, **kwargs: SlowFakeRuntime,
     )
-    pea = Pea(set_pea_parser().parse_args(['--noblock-on-start']))
-    pea.start()
-    pea.close()
+    pod = Pod(set_pod_parser().parse_args(['--noblock-on-start']))
+    pod.start()
+    pod.close()

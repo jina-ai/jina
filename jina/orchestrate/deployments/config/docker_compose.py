@@ -3,7 +3,7 @@ from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
-from jina.enums import PeaRoleType
+from jina.enums import PodRoleType
 from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
@@ -24,7 +24,7 @@ class DockerComposeConfig:
             self,
             name: str,
             version: str,
-            pea_type: PeaRoleType,
+            pod_type: PodRoleType,
             jina_deployment_name: str,
             shard_id: Optional[int],
             common_args: Union['Namespace', Dict],
@@ -34,7 +34,7 @@ class DockerComposeConfig:
             self.name = name
             self.compatible_name = to_compatible_name(self.name)
             self.version = version
-            self.pea_type = pea_type
+            self.pod_type = pod_type
             self.jina_deployment_name = jina_deployment_name
             self.shard_id = shard_id
             self.common_args = common_args
@@ -83,11 +83,11 @@ class DockerComposeConfig:
         def _construct_runtime_container_args(cargs, uses_metas, uses_with):
             import json
             from jina.helper import ArgNamespace
-            from jina.parsers import set_pea_parser
+            from jina.parsers import set_pod_parser
 
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs,
-                set_pea_parser(),
+                set_pod_parser(),
                 taboo={
                     'uses_with',
                     'uses_metas',
@@ -123,7 +123,7 @@ class DockerComposeConfig:
         def _get_container_args(self, cargs):
             uses_metas = cargs.uses_metas or {}
             if self.shard_id is not None:
-                uses_metas['pea_id'] = self.shard_id
+                uses_metas['pod_id'] = self.shard_id
             uses_with = self.service_args.uses_with
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'
@@ -178,7 +178,7 @@ class DockerComposeConfig:
                 jina_deployment_name=self.name,
                 common_args=self.args,
                 service_args=self.services_args['head_service'],
-                pea_type=PeaRoleType.HEAD,
+                pod_type=PodRoleType.HEAD,
                 deployments_addresses=None,
             )
 
@@ -190,7 +190,7 @@ class DockerComposeConfig:
                 jina_deployment_name=self.name,
                 common_args=self.args,
                 service_args=self.services_args['uses_before_service'],
-                pea_type=PeaRoleType.WORKER,
+                pod_type=PodRoleType.WORKER,
                 deployments_addresses=None,
             )
 
@@ -202,7 +202,7 @@ class DockerComposeConfig:
                 jina_deployment_name=self.name,
                 common_args=self.args,
                 service_args=self.services_args['uses_after_service'],
-                pea_type=PeaRoleType.WORKER,
+                pod_type=PodRoleType.WORKER,
                 deployments_addresses=None,
             )
 
@@ -217,9 +217,9 @@ class DockerComposeConfig:
                     shard_id=i,
                     common_args=self.args,
                     service_args=args,
-                    pea_type=PeaRoleType.WORKER
+                    pod_type=PodRoleType.WORKER
                     if name != 'gateway'
-                    else PeaRoleType.GATEWAY,
+                    else PodRoleType.GATEWAY,
                     jina_deployment_name=self.name,
                     deployments_addresses=self.deployments_addresses
                     if name == 'gateway'
@@ -281,7 +281,7 @@ class DockerComposeConfig:
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
             uses_before_cargs.connection_list = None
-            uses_before_cargs.pea_role = PeaRoleType.WORKER
+            uses_before_cargs.pod_role = PodRoleType.WORKER
             uses_before_cargs.polling = None
             parsed_args['uses_before_service'] = uses_before_cargs
             parsed_args[
@@ -302,7 +302,7 @@ class DockerComposeConfig:
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
             uses_after_cargs.connection_list = None
-            uses_after_cargs.pea_role = PeaRoleType.WORKER
+            uses_after_cargs.pod_role = PodRoleType.WORKER
             uses_after_cargs.polling = None
             parsed_args['uses_after_service'] = uses_after_cargs
             parsed_args[
@@ -320,7 +320,7 @@ class DockerComposeConfig:
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':
-                cargs.pea_role = PeaRoleType.GATEWAY
+                cargs.pod_role = PodRoleType.GATEWAY
             else:
                 cargs.port_in = PORT_IN
             parsed_args['services'].append(cargs)

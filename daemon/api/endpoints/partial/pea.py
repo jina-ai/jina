@@ -2,18 +2,18 @@ from typing import Optional, Dict
 from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
-from jina.parsers import set_pea_parser
+from jina.parsers import set_pod_parser
 
-from daemon.models import PeaModel
+from daemon.models import PodModel
 from daemon.models.partial import PartialStoreItem
 from daemon.excepts import PartialDaemon400Exception
 from daemon.stores import partial_store as store
 
-router = APIRouter(prefix='/pea', tags=['pea'])
+router = APIRouter(prefix='/pod', tags=['pod'])
 
 
 @router.get(
-    path='', summary='Get status of a running Pea', response_model=PartialStoreItem
+    path='', summary='Get status of a running Pod', response_model=PartialStoreItem
 )
 async def _status():
     """
@@ -25,18 +25,18 @@ async def _status():
 
 @router.post(
     path='',
-    summary='Create a Pea',
-    description='Create a Pea and add it to the store',
+    summary='Create a Pod',
+    description='Create a Pod and add it to the store',
     status_code=201,
     response_model=PartialStoreItem,
 )
-async def _create(pea: 'PeaModel', envs: Optional[Dict] = {}):
+async def _create(pod: 'PodModel', envs: Optional[Dict] = {}):
     """
 
     .. #noqa: DAR101
     .. #noqa: DAR201"""
     try:
-        args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
+        args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
         return store.add(args, envs)
     except Exception as ex:
         raise PartialDaemon400Exception from ex
@@ -44,8 +44,8 @@ async def _create(pea: 'PeaModel', envs: Optional[Dict] = {}):
 
 @router.delete(
     path='',
-    summary='Terminate the running Pea',
-    description='Terminate a running Pea and release its resources',
+    summary='Terminate the running Pod',
+    description='Terminate a running Pod and release its resources',
 )
 async def _delete():
     """

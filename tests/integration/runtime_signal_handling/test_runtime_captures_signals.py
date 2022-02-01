@@ -8,7 +8,7 @@ import pytest
 from cli.api import gateway, executor_native
 from jina import Executor, DocumentArray, Document, requests
 from jina.clients.request import request_generator
-from jina.parsers import set_gateway_parser, set_pea_parser
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 
 
@@ -42,7 +42,7 @@ def _create_test_data_message():
 def test_executor_runtimes(signal, tmpdir):
     import time
 
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
 
     def run(args):
 

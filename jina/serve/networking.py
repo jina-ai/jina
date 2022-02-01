@@ -243,7 +243,7 @@ class GrpcConnectionPool:
                 self._deployments[deployment][type][entity_id].add_connection(address)
             else:
                 self._logger.debug(
-                    f'Ignoring activation of pea, {address} already known'
+                    f'Ignoring activation of pod, {address} already known'
                 )
 
         async def remove_head(self, deployment, address, head_id: Optional[int] = 0):
@@ -825,7 +825,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
         try:
             jina_deployment_name = item.metadata.labels['jina_deployment_name']
 
-            is_head = item.metadata.labels['pea_type'].lower() == 'head'
+            is_head = item.metadata.labels['pod_type'].lower() == 'head'
             shard_id = (
                 int(item.metadata.labels['shard_id'])
                 if item.metadata.labels['shard_id'] and not is_head

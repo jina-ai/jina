@@ -4,7 +4,7 @@ from copy import deepcopy
 from functools import partial
 from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 
-from jina.enums import GatewayProtocolType, RuntimeBackendType, PeaRoleType
+from jina.enums import GatewayProtocolType, RuntimeBackendType, PodRoleType
 from jina.hubble.helper import is_valid_huburi
 from jina.hubble.hubio import HubIO
 
@@ -93,7 +93,7 @@ class ConditionalEvent:
 def update_runtime_cls(args, copy=False) -> 'Namespace':
     """Get runtime_cls as a string from args
 
-    :param args: pea/deployment namespace args
+    :param args: pod/deployment namespace args
     :param copy: True if args shouldn't be modified in-place
     :return: runtime class as a string
     """
@@ -111,7 +111,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
 
     if hasattr(_args, 'protocol'):
         _args.runtime_cls = gateway_runtime_dict[_args.protocol]
-    if _args.pea_role == PeaRoleType.HEAD:
+    if _args.pod_role == PodRoleType.HEAD:
         _args.runtime_cls = 'HeadRuntime'
 
     return _args

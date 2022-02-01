@@ -11,9 +11,9 @@ import asyncio
 
 from jina import __windows__
 from jina.importer import ImportExtensions
-from jina.orchestrate.peas import BasePea
-from jina.orchestrate.peas import _get_worker
-from jina.orchestrate.peas.container_helper import (
+from jina.orchestrate.pods import BasePod
+from jina.orchestrate.pods import _get_worker
+from jina.orchestrate.pods.container_helper import (
     get_gpu_device_requests,
     get_docker_network,
 )
@@ -62,10 +62,10 @@ def _docker_run(
         )
         uses_img = args.uses
 
-    # the image arg should be ignored otherwise it keeps using ContainerPea in the container
-    # basically all args in Pea-docker arg group should be ignored.
-    # this prevent setting containerPea twice
-    from jina.parsers import set_pea_parser
+    # the image arg should be ignored otherwise it keeps using ContainerPod in the container
+    # basically all args in Pod-docker arg group should be ignored.
+    # this prevent setting containerPod twice
+    from jina.parsers import set_pod_parser
     from jina.helper import ArgNamespace
     from pathlib import Path
 
@@ -73,7 +73,7 @@ def _docker_run(
 
     non_defaults = ArgNamespace.get_non_defaults_args(
         args,
-        set_pea_parser(),
+        set_pod_parser(),
         taboo={
             'uses',
             'entrypoint',
@@ -162,7 +162,7 @@ def run(
 ):
     """Method to be run in a process that stream logs from a Container
 
-    This method is the target for the Pea's `thread` or `process`
+    This method is the target for the Pod's `thread` or `process`
 
     .. note::
         :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
@@ -173,8 +173,8 @@ def run(
         the main process. But Subprocess's envs do NOT affect the main process. It does NOT
         mess up user local system envs.
 
-    :param args: namespace args from the Pea
-    :param name: name of the Pea to have proper logging
+    :param args: namespace args from the Pod
+    :param name: name of the Pod to have proper logging
     :param container_name: name to set the Container to
     :param net_mode: The network mode where to run the container
     :param runtime_ctrl_address: The control address of the runtime in the container
@@ -274,9 +274,9 @@ def run(
         logger.debug(f' Process terminated')
 
 
-class ContainerPea(BasePea):
+class ContainerPod(BasePod):
     """
-    :class:`ContainerPea` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`threading.Thread`
+    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`threading.Thread`
     or :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
     """
 
@@ -364,7 +364,7 @@ class ContainerPea(BasePea):
         return container
 
     def start(self):
-        """Start the ContainerPea.
+        """Start the ContainerPod.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
@@ -389,7 +389,7 @@ class ContainerPea(BasePea):
         return self
 
     def _terminate(self):
-        """Terminate the Pea.
+        """Terminate the Pod.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         # terminate the docker
@@ -407,7 +407,7 @@ class ContainerPea(BasePea):
                 self.logger.debug(f'runtime thread properly canceled')
 
     def join(self, *args, **kwargs):
-        """Joins the Pea.
+        """Joins the Pod.
         This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join

@@ -20,7 +20,7 @@ class AsyncFlowClient(AsyncBaseClient):
 
     @if_alive
     async def arguments(self) -> Optional[Dict]:
-        """Get all arguments accepted by a remote Pea/Deployment
+        """Get all arguments accepted by a remote Pod/Deployment
 
         :return: dict arguments of remote JinaD
         """

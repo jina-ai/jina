@@ -15,7 +15,7 @@ def get_deployment_yamls(
     replicas: int,
     pull_policy: str,
     jina_deployment_name: str,
-    pea_type: str,
+    pod_type: str,
     shard_id: Optional[int] = None,
     port_expose: Optional[int] = None,
     env: Optional[Dict] = None,
@@ -37,7 +37,7 @@ def get_deployment_yamls(
     :param replicas: number of replicas
     :param pull_policy: pull policy used for fetching the Docker images from the registry.
     :param jina_deployment_name: Name of the Jina Deployment this deployment belongs to
-    :param pea_type: type os this pea, can be gateway/head/worker
+    :param pod_type: type os this pod, can be gateway/head/worker
     :param shard_id: id of this shard, None if shards=1 or this is gateway/head
     :param port_expose: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
@@ -80,7 +80,7 @@ def get_deployment_yamls(
         'pull_policy': pull_policy,
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
-        'pea_type': pea_type,
+        'pod_type': pod_type,
         'port_ready_probe': port_ready_probe,
     }
 

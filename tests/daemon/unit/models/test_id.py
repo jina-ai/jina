@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from daemon.models import DaemonID
 
 
-VALID_JTYPES = ['jflow', 'jdeployment', 'jpea', 'jworkspace', 'jnetwork']
+VALID_JTYPES = ['jflow', 'jdeployment', 'jpod', 'jworkspace', 'jnetwork']
 
 
 def test_jtype_only():

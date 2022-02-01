@@ -15,7 +15,7 @@ class AiohttpMixin:
     async def POST(
         self: T, *, url: str, params: Optional[Dict] = None, json: Optional[Dict] = None
     ):
-        """Sends `POST` request to `partial-daemon` to create a Flow/Pea/Deployment.
+        """Sends `POST` request to `partial-daemon` to create a Flow/Pod/Deployment.
 
         :param url: uri of partial-daemon
         :param params: query-params to be sent
@@ -36,7 +36,7 @@ class AiohttpMixin:
     async def PUT(
         self: T, *, url: str, params: Optional[Dict] = None, json: Optional[Dict] = None
     ):
-        """Sends `PUT` request to `partial-daemon` to update a Flow/Pea/Deployment.
+        """Sends `PUT` request to `partial-daemon` to update a Flow/Pod/Deployment.
 
         :param url: uri of partial-daemon
         :param params: query-params to be sent
@@ -55,7 +55,7 @@ class AiohttpMixin:
 
     @if_alive
     async def DELETE(self: T, *, url: str):
-        """Sends `DELETE` request to `partial-daemon` to terminate a Flow/Pea/Deployment.
+        """Sends `DELETE` request to `partial-daemon` to terminate a Flow/Pod/Deployment.
 
         :param url: uri of partial-daemon
         :raises PartialDaemon400Exception: if POST request fails
