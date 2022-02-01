@@ -161,8 +161,11 @@ def test_parsing_brackets_in_envvar():
     executors:
     - name: a
       env:
-        var1: ${{ VAR1 }}
+        var1: ${{ env.VAR1 }}
+        var4: -${{ env.VAR1 }}
         var2: ${{root.executors[0].name}}
+        var3: ${{ env.VAR1 }}-${{root.executors[0].name}}
+
     '''
 
     with EnvironmentVarCtxtManager(
@@ -174,3 +177,5 @@ def test_parsing_brackets_in_envvar():
         b = JAML.load(flow_yaml, substitute=True)
         assert b['executors'][0]['env']['var1'] == '{"1": "2"}'
         assert b['executors'][0]['env']['var2'] == 'a'
+        assert b['executors'][0]['env']['var3'] == '{"1": "2"}-a'
+        assert b['executors'][0]['env']['var4'] == '-{"1": "2"}'
