@@ -15,81 +15,81 @@ from jina.types.request.data import DataRequest
 @pytest.fixture
 def linear_graph_dict():
     return {
-        'start-gateway': ['pod0'],
-        'pod0': ['pod1'],
-        'pod1': ['pod2'],
-        'pod2': ['pod3'],
-        'pod3': ['end-gateway'],
+        'start-gateway': ['deployment0'],
+        'deployment0': ['deployment1'],
+        'deployment1': ['deployment2'],
+        'deployment2': ['deployment3'],
+        'deployment3': ['end-gateway'],
     }
 
 
 @pytest.fixture
 def bifurcation_graph_dict():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': [],  # hanging_pod
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'pod5': ['end-gateway'],
-        'pod3': ['end-gateway'],
-        'pod6': [],  # hanging_pod
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': [],  # hanging_deployment
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'deployment5': ['end-gateway'],
+        'deployment3': ['end-gateway'],
+        'deployment6': [],  # hanging_deployment
     }
 
 
 @pytest.fixture
 def merge_graph_dict_directly_merge_in_gateway():
     return {
-        'start-gateway': ['pod0'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['merger'],
-        'pod2': ['merger'],
+        'start-gateway': ['deployment0'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['merger'],
+        'deployment2': ['merger'],
         'merger': ['end-gateway'],
     }
 
 
 @pytest.fixture
-def merge_graph_dict_directly_merge_in_last_pod():
+def merge_graph_dict_directly_merge_in_last_deployment():
     return {
-        'start-gateway': ['pod0'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['merger'],
-        'pod2': ['merger'],
-        'merger': ['pod_last'],
-        'pod_last': ['end-gateway'],
+        'start-gateway': ['deployment0'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['merger'],
+        'deployment2': ['merger'],
+        'merger': ['deployment_last'],
+        'deployment_last': ['end-gateway'],
     }
 
 
 @pytest.fixture
 def complete_graph_dict():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': ['end-gateway'],
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'merger': ['pod_last'],
-        'pod5': ['merger'],
-        'pod3': ['merger'],
-        'pod6': [],  # hanging_pod
-        'pod_last': ['end-gateway'],
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': ['end-gateway'],
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'merger': ['deployment_last'],
+        'deployment5': ['merger'],
+        'deployment3': ['merger'],
+        'deployment6': [],  # hanging_deployment
+        'deployment_last': ['end-gateway'],
     }
 
 
 @pytest.fixture
-def graph_hanging_pod_after_merge():
+def graph_hanging_deployment_after_merge():
     return {
-        'start-gateway': ['pod0', 'pod4', 'pod6', 'pod8'],
-        'pod0': ['pod1', 'pod2'],
-        'pod1': [],  # hanging_pod
-        'pod2': ['pod3'],
-        'pod4': ['pod5'],
-        'pod5': ['end-gateway'],
-        'pod3': ['end-gateway'],
-        'pod6': ['pod7'],
-        'pod8': ['pod7'],
-        'pod7': ['pod9'],
-        'pod9': [],  # hanging_pod
+        'start-gateway': ['deployment0', 'deployment4', 'deployment6', 'deployment8'],
+        'deployment0': ['deployment1', 'deployment2'],
+        'deployment1': [],  # hanging_deployment
+        'deployment2': ['deployment3'],
+        'deployment4': ['deployment5'],
+        'deployment5': ['end-gateway'],
+        'deployment3': ['end-gateway'],
+        'deployment6': ['deployment7'],
+        'deployment8': ['deployment7'],
+        'deployment7': ['deployment9'],
+        'deployment9': [],  # hanging_deployment
     }
 
 
@@ -98,7 +98,7 @@ def two_joins_graph():
     return {
         'start-gateway': ['p0', 'p1'],
         'p0': ['joiner_1'],
-        'p1': ['joiner_1'],  # hanging_pod
+        'p1': ['joiner_1'],  # hanging_deployment
         'joiner_1': ['p2', 'p3'],
         'p2': ['p4'],
         'p3': ['p4'],
@@ -108,314 +108,361 @@ def two_joins_graph():
 
 def test_topology_graph_build_linear(linear_graph_dict):
     graph = TopologyGraph(linear_graph_dict)
-    assert [node.name for node in graph.origin_nodes] == ['pod0']
-    node_pod0 = graph.origin_nodes[0]
-    assert node_pod0.name == 'pod0'
-    assert node_pod0.number_of_parts == 1
-    assert len(node_pod0.outgoing_nodes) == 1
-    assert not node_pod0.hanging
+    assert [node.name for node in graph.origin_nodes] == ['deployment0']
+    node_deployment0 = graph.origin_nodes[0]
+    assert node_deployment0.name == 'deployment0'
+    assert node_deployment0.number_of_parts == 1
+    assert len(node_deployment0.outgoing_nodes) == 1
+    assert not node_deployment0.hanging
 
-    node_pod1 = node_pod0.outgoing_nodes[0]
-    assert node_pod1.name == 'pod1'
-    assert node_pod1.number_of_parts == 1
-    assert len(node_pod1.outgoing_nodes) == 1
-    assert not node_pod1.hanging
+    node_deployment1 = node_deployment0.outgoing_nodes[0]
+    assert node_deployment1.name == 'deployment1'
+    assert node_deployment1.number_of_parts == 1
+    assert len(node_deployment1.outgoing_nodes) == 1
+    assert not node_deployment1.hanging
 
-    node_pod2 = node_pod1.outgoing_nodes[0]
-    assert node_pod2.name == 'pod2'
-    assert node_pod2.number_of_parts == 1
-    assert len(node_pod2.outgoing_nodes) == 1
-    assert not node_pod2.hanging
+    node_deployment2 = node_deployment1.outgoing_nodes[0]
+    assert node_deployment2.name == 'deployment2'
+    assert node_deployment2.number_of_parts == 1
+    assert len(node_deployment2.outgoing_nodes) == 1
+    assert not node_deployment2.hanging
 
-    node_pod3 = node_pod2.outgoing_nodes[0]
-    assert node_pod3.name == 'pod3'
-    assert node_pod3.number_of_parts == 1
-    assert len(node_pod3.outgoing_nodes) == 0
-    assert not node_pod3.hanging
+    node_deployment3 = node_deployment2.outgoing_nodes[0]
+    assert node_deployment3.name == 'deployment3'
+    assert node_deployment3.number_of_parts == 1
+    assert len(node_deployment3.outgoing_nodes) == 0
+    assert not node_deployment3.hanging
 
 
 def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
     graph = TopologyGraph(bifurcation_graph_dict)
     node_names_list = [node.name for node in graph.origin_nodes]
-    assert set(node_names_list) == {'pod0', 'pod4', 'pod6'}
-    assert len(graph.origin_nodes[node_names_list.index('pod0')].outgoing_nodes) == 2
+    assert set(node_names_list) == {'deployment0', 'deployment4', 'deployment6'}
+    assert (
+        len(graph.origin_nodes[node_names_list.index('deployment0')].outgoing_nodes)
+        == 2
+    )
     assert set(
         [
             node.name
-            for node in graph.origin_nodes[node_names_list.index('pod0')].outgoing_nodes
+            for node in graph.origin_nodes[
+                node_names_list.index('deployment0')
+            ].outgoing_nodes
         ]
-    ) == {'pod1', 'pod2'}
+    ) == {'deployment1', 'deployment2'}
 
-    node_pod0 = graph.origin_nodes[node_names_list.index('pod0')]
-    assert not node_pod0.hanging
-    assert node_pod0.name == 'pod0'
-    assert node_pod0.number_of_parts == 1
-    outgoing_pod0_list = [node.name for node in node_pod0.outgoing_nodes]
+    node_deployment0 = graph.origin_nodes[node_names_list.index('deployment0')]
+    assert not node_deployment0.hanging
+    assert node_deployment0.name == 'deployment0'
+    assert node_deployment0.number_of_parts == 1
+    outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
-    node_pod1 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod1')]
-    assert node_pod1.name == 'pod1'
-    assert node_pod1.number_of_parts == 1
-    assert len(node_pod1.outgoing_nodes) == 0
-    assert node_pod1.hanging
+    node_deployment1 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment1')
+    ]
+    assert node_deployment1.name == 'deployment1'
+    assert node_deployment1.number_of_parts == 1
+    assert len(node_deployment1.outgoing_nodes) == 0
+    assert node_deployment1.hanging
 
-    node_pod2 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod2')]
-    assert node_pod2.name == 'pod2'
-    assert node_pod2.number_of_parts == 1
-    assert len(node_pod2.outgoing_nodes) == 1
-    assert not node_pod2.hanging
+    node_deployment2 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment2')
+    ]
+    assert node_deployment2.name == 'deployment2'
+    assert node_deployment2.number_of_parts == 1
+    assert len(node_deployment2.outgoing_nodes) == 1
+    assert not node_deployment2.hanging
 
-    node_pod3 = node_pod2.outgoing_nodes[0]
-    assert node_pod3.name == 'pod3'
-    assert node_pod3.number_of_parts == 1
-    assert len(node_pod3.outgoing_nodes) == 0
-    assert not node_pod3.hanging
+    node_deployment3 = node_deployment2.outgoing_nodes[0]
+    assert node_deployment3.name == 'deployment3'
+    assert node_deployment3.number_of_parts == 1
+    assert len(node_deployment3.outgoing_nodes) == 0
+    assert not node_deployment3.hanging
 
-    node_pod4 = graph.origin_nodes[node_names_list.index('pod4')]
-    assert node_pod4.name == 'pod4'
-    assert node_pod4.number_of_parts == 1
-    assert len(node_pod4.outgoing_nodes) == 1
-    assert not node_pod4.hanging
+    node_deployment4 = graph.origin_nodes[node_names_list.index('deployment4')]
+    assert node_deployment4.name == 'deployment4'
+    assert node_deployment4.number_of_parts == 1
+    assert len(node_deployment4.outgoing_nodes) == 1
+    assert not node_deployment4.hanging
     assert set(
         [
             node.name
-            for node in graph.origin_nodes[node_names_list.index('pod4')].outgoing_nodes
+            for node in graph.origin_nodes[
+                node_names_list.index('deployment4')
+            ].outgoing_nodes
         ]
-    ) == {'pod5'}
+    ) == {'deployment5'}
 
-    node_pod5 = node_pod4.outgoing_nodes[0]
-    assert node_pod5.name == 'pod5'
-    assert node_pod5.number_of_parts == 1
-    assert not node_pod5.hanging
-    assert len(node_pod5.outgoing_nodes) == 0
+    node_deployment5 = node_deployment4.outgoing_nodes[0]
+    assert node_deployment5.name == 'deployment5'
+    assert node_deployment5.number_of_parts == 1
+    assert not node_deployment5.hanging
+    assert len(node_deployment5.outgoing_nodes) == 0
 
-    node_pod6 = graph.origin_nodes[node_names_list.index('pod6')]
-    assert node_pod6.name == 'pod6'
-    assert len(node_pod6.outgoing_nodes) == 0
-    assert node_pod6.number_of_parts == 1
-    assert node_pod6.hanging
-    assert set([node.name for node in node_pod6.outgoing_nodes]) == set()
+    node_deployment6 = graph.origin_nodes[node_names_list.index('deployment6')]
+    assert node_deployment6.name == 'deployment6'
+    assert len(node_deployment6.outgoing_nodes) == 0
+    assert node_deployment6.number_of_parts == 1
+    assert node_deployment6.hanging
+    assert set([node.name for node in node_deployment6.outgoing_nodes]) == set()
 
 
 def test_topology_graph_build_merge_in_gateway(
     merge_graph_dict_directly_merge_in_gateway,
 ):
     graph = TopologyGraph(merge_graph_dict_directly_merge_in_gateway)
-    assert set([node.name for node in graph.origin_nodes]) == {'pod0'}
+    assert set([node.name for node in graph.origin_nodes]) == {'deployment0'}
 
-    node_pod0 = graph.origin_nodes[0]
-    assert node_pod0.name == 'pod0'
-    assert not node_pod0.hanging
-    assert len(node_pod0.outgoing_nodes) == 2
-    outgoing_pod0_list = [node.name for node in node_pod0.outgoing_nodes]
-    assert node_pod0.number_of_parts == 1
+    node_deployment0 = graph.origin_nodes[0]
+    assert node_deployment0.name == 'deployment0'
+    assert not node_deployment0.hanging
+    assert len(node_deployment0.outgoing_nodes) == 2
+    outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
+    assert node_deployment0.number_of_parts == 1
 
-    node_pod1 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod1')]
-    assert node_pod1.name == 'pod1'
-    assert len(node_pod1.outgoing_nodes) == 1
-    assert node_pod1.outgoing_nodes[0].name == 'merger'
-    assert node_pod1.number_of_parts == 1
-    assert not node_pod1.hanging
+    node_deployment1 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment1')
+    ]
+    assert node_deployment1.name == 'deployment1'
+    assert len(node_deployment1.outgoing_nodes) == 1
+    assert node_deployment1.outgoing_nodes[0].name == 'merger'
+    assert node_deployment1.number_of_parts == 1
+    assert not node_deployment1.hanging
 
-    node_pod2 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod2')]
-    assert node_pod2.name == 'pod2'
-    assert len(node_pod2.outgoing_nodes) == 1
-    assert node_pod2.outgoing_nodes[0].name == 'merger'
-    assert node_pod2.number_of_parts == 1
-    assert not node_pod2.hanging
-    assert id(node_pod1.outgoing_nodes[0]) == id(node_pod2.outgoing_nodes[0])
+    node_deployment2 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment2')
+    ]
+    assert node_deployment2.name == 'deployment2'
+    assert len(node_deployment2.outgoing_nodes) == 1
+    assert node_deployment2.outgoing_nodes[0].name == 'merger'
+    assert node_deployment2.number_of_parts == 1
+    assert not node_deployment2.hanging
+    assert id(node_deployment1.outgoing_nodes[0]) == id(
+        node_deployment2.outgoing_nodes[0]
+    )
 
-    merger_pod = node_pod1.outgoing_nodes[0]
-    assert merger_pod.name == 'merger'
-    assert merger_pod.number_of_parts == 2
-    assert len(merger_pod.outgoing_nodes) == 0
-    assert not merger_pod.hanging
+    merger_deployment = node_deployment1.outgoing_nodes[0]
+    assert merger_deployment.name == 'merger'
+    assert merger_deployment.number_of_parts == 2
+    assert len(merger_deployment.outgoing_nodes) == 0
+    assert not merger_deployment.hanging
 
 
-def test_topology_graph_build_merge_in_last_pod(
-    merge_graph_dict_directly_merge_in_last_pod,
+def test_topology_graph_build_merge_in_last_deployment(
+    merge_graph_dict_directly_merge_in_last_deployment,
 ):
-    graph = TopologyGraph(merge_graph_dict_directly_merge_in_last_pod)
-    assert set([node.name for node in graph.origin_nodes]) == {'pod0'}
+    graph = TopologyGraph(merge_graph_dict_directly_merge_in_last_deployment)
+    assert set([node.name for node in graph.origin_nodes]) == {'deployment0'}
 
-    node_pod0 = graph.origin_nodes[0]
-    assert node_pod0.number_of_parts == 1
-    assert len(node_pod0.outgoing_nodes) == 2
-    assert not node_pod0.hanging
-    outgoing_pod0_list = [node.name for node in node_pod0.outgoing_nodes]
+    node_deployment0 = graph.origin_nodes[0]
+    assert node_deployment0.number_of_parts == 1
+    assert len(node_deployment0.outgoing_nodes) == 2
+    assert not node_deployment0.hanging
+    outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
-    node_pod1 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod1')]
-    assert node_pod1.number_of_parts == 1
-    assert len(node_pod1.outgoing_nodes) == 1
-    assert node_pod1.outgoing_nodes[0].name == 'merger'
-    assert not node_pod1.hanging
+    node_deployment1 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment1')
+    ]
+    assert node_deployment1.number_of_parts == 1
+    assert len(node_deployment1.outgoing_nodes) == 1
+    assert node_deployment1.outgoing_nodes[0].name == 'merger'
+    assert not node_deployment1.hanging
 
-    node_pod2 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod2')]
-    assert node_pod2.number_of_parts == 1
-    assert len(node_pod2.outgoing_nodes) == 1
-    assert node_pod2.outgoing_nodes[0].name == 'merger'
-    assert not node_pod2.hanging
+    node_deployment2 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment2')
+    ]
+    assert node_deployment2.number_of_parts == 1
+    assert len(node_deployment2.outgoing_nodes) == 1
+    assert node_deployment2.outgoing_nodes[0].name == 'merger'
+    assert not node_deployment2.hanging
 
-    assert id(node_pod1.outgoing_nodes[0]) == id(node_pod2.outgoing_nodes[0])
+    assert id(node_deployment1.outgoing_nodes[0]) == id(
+        node_deployment2.outgoing_nodes[0]
+    )
 
-    merger_pod = node_pod1.outgoing_nodes[0]
-    assert merger_pod.name == 'merger'
-    assert len(merger_pod.outgoing_nodes) == 1
-    assert merger_pod.number_of_parts == 2
-    assert not merger_pod.hanging
+    merger_deployment = node_deployment1.outgoing_nodes[0]
+    assert merger_deployment.name == 'merger'
+    assert len(merger_deployment.outgoing_nodes) == 1
+    assert merger_deployment.number_of_parts == 2
+    assert not merger_deployment.hanging
 
-    pod_last_pod = merger_pod.outgoing_nodes[0]
-    assert pod_last_pod.name == 'pod_last'
-    assert len(pod_last_pod.outgoing_nodes) == 0
-    assert pod_last_pod.number_of_parts == 1
-    assert not pod_last_pod.hanging
+    deployment_last_deployment = merger_deployment.outgoing_nodes[0]
+    assert deployment_last_deployment.name == 'deployment_last'
+    assert len(deployment_last_deployment.outgoing_nodes) == 0
+    assert deployment_last_deployment.number_of_parts == 1
+    assert not deployment_last_deployment.hanging
 
 
 def test_topology_graph_build_complete(complete_graph_dict):
     graph = TopologyGraph(complete_graph_dict)
     assert set([node.name for node in graph.origin_nodes]) == {
-        'pod0',
-        'pod4',
-        'pod6',
+        'deployment0',
+        'deployment4',
+        'deployment6',
     }
     node_names_list = [node.name for node in graph.origin_nodes]
 
-    node_pod0 = graph.origin_nodes[node_names_list.index('pod0')]
-    assert node_pod0.number_of_parts == 1
-    assert not node_pod0.hanging
-    outgoing_pod0_list = [node.name for node in node_pod0.outgoing_nodes]
+    node_deployment0 = graph.origin_nodes[node_names_list.index('deployment0')]
+    assert node_deployment0.number_of_parts == 1
+    assert not node_deployment0.hanging
+    outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
-    node_pod1 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod1')]
-    assert node_pod1.number_of_parts == 1
-    assert not node_pod1.hanging
-    assert len(node_pod1.outgoing_nodes) == 0
+    node_deployment1 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment1')
+    ]
+    assert node_deployment1.number_of_parts == 1
+    assert not node_deployment1.hanging
+    assert len(node_deployment1.outgoing_nodes) == 0
 
-    node_pod2 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod2')]
-    assert len(node_pod2.outgoing_nodes) == 1
-    assert node_pod2.number_of_parts == 1
-    assert not node_pod2.hanging
+    node_deployment2 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment2')
+    ]
+    assert len(node_deployment2.outgoing_nodes) == 1
+    assert node_deployment2.number_of_parts == 1
+    assert not node_deployment2.hanging
 
-    node_pod3 = node_pod2.outgoing_nodes[0]
-    assert node_pod3.name == 'pod3'
-    assert node_pod3.number_of_parts == 1
-    assert len(node_pod3.outgoing_nodes) == 1
-    assert node_pod3.outgoing_nodes[0].name == 'merger'
-    assert not node_pod3.hanging
+    node_deployment3 = node_deployment2.outgoing_nodes[0]
+    assert node_deployment3.name == 'deployment3'
+    assert node_deployment3.number_of_parts == 1
+    assert len(node_deployment3.outgoing_nodes) == 1
+    assert node_deployment3.outgoing_nodes[0].name == 'merger'
+    assert not node_deployment3.hanging
 
-    node_pod4 = graph.origin_nodes[node_names_list.index('pod4')]
-    assert node_pod4.number_of_parts == 1
-    assert len(node_pod4.outgoing_nodes) == 1
-    assert not node_pod4.hanging
+    node_deployment4 = graph.origin_nodes[node_names_list.index('deployment4')]
+    assert node_deployment4.number_of_parts == 1
+    assert len(node_deployment4.outgoing_nodes) == 1
+    assert not node_deployment4.hanging
 
-    node_pod5 = node_pod4.outgoing_nodes[0]
-    assert node_pod5.number_of_parts == 1
-    assert node_pod5.name == 'pod5'
-    assert len(node_pod5.outgoing_nodes) == 1
-    assert node_pod5.outgoing_nodes[0].name == 'merger'
-    assert not node_pod5.hanging
+    node_deployment5 = node_deployment4.outgoing_nodes[0]
+    assert node_deployment5.number_of_parts == 1
+    assert node_deployment5.name == 'deployment5'
+    assert len(node_deployment5.outgoing_nodes) == 1
+    assert node_deployment5.outgoing_nodes[0].name == 'merger'
+    assert not node_deployment5.hanging
 
-    assert id(node_pod3.outgoing_nodes[0]) == id(node_pod5.outgoing_nodes[0])
+    assert id(node_deployment3.outgoing_nodes[0]) == id(
+        node_deployment5.outgoing_nodes[0]
+    )
 
-    merger_pod = node_pod3.outgoing_nodes[0]
-    assert merger_pod.name == 'merger'
-    assert len(merger_pod.outgoing_nodes) == 1
-    assert merger_pod.number_of_parts == 2
-    assert not merger_pod.hanging
+    merger_deployment = node_deployment3.outgoing_nodes[0]
+    assert merger_deployment.name == 'merger'
+    assert len(merger_deployment.outgoing_nodes) == 1
+    assert merger_deployment.number_of_parts == 2
+    assert not merger_deployment.hanging
 
-    pod_last_pod = merger_pod.outgoing_nodes[0]
-    assert pod_last_pod.name == 'pod_last'
-    assert len(pod_last_pod.outgoing_nodes) == 0
-    assert pod_last_pod.number_of_parts == 1
-    assert not pod_last_pod.hanging
+    deployment_last_deployment = merger_deployment.outgoing_nodes[0]
+    assert deployment_last_deployment.name == 'deployment_last'
+    assert len(deployment_last_deployment.outgoing_nodes) == 0
+    assert deployment_last_deployment.number_of_parts == 1
+    assert not deployment_last_deployment.hanging
 
-    node_pod6 = graph.origin_nodes[node_names_list.index('pod6')]
-    assert node_pod6.name == 'pod6'
-    assert node_pod6.number_of_parts == 1
-    assert len(node_pod6.outgoing_nodes) == 0
-    assert node_pod6.hanging
+    node_deployment6 = graph.origin_nodes[node_names_list.index('deployment6')]
+    assert node_deployment6.name == 'deployment6'
+    assert node_deployment6.number_of_parts == 1
+    assert len(node_deployment6.outgoing_nodes) == 0
+    assert node_deployment6.hanging
 
 
-def test_topology_graph_build_hanging_after_merge(graph_hanging_pod_after_merge):
-    graph = TopologyGraph(graph_hanging_pod_after_merge)
+def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after_merge):
+    graph = TopologyGraph(graph_hanging_deployment_after_merge)
     node_names_list = [node.name for node in graph.origin_nodes]
-    assert set(node_names_list) == {'pod0', 'pod4', 'pod6', 'pod8'}
-    assert len(graph.origin_nodes[node_names_list.index('pod0')].outgoing_nodes) == 2
+    assert set(node_names_list) == {
+        'deployment0',
+        'deployment4',
+        'deployment6',
+        'deployment8',
+    }
+    assert (
+        len(graph.origin_nodes[node_names_list.index('deployment0')].outgoing_nodes)
+        == 2
+    )
     assert set(
         [
             node.name
-            for node in graph.origin_nodes[node_names_list.index('pod0')].outgoing_nodes
+            for node in graph.origin_nodes[
+                node_names_list.index('deployment0')
+            ].outgoing_nodes
         ]
-    ) == {'pod1', 'pod2'}
+    ) == {'deployment1', 'deployment2'}
 
-    node_pod0 = graph.origin_nodes[node_names_list.index('pod0')]
-    assert node_pod0.name == 'pod0'
-    assert node_pod0.number_of_parts == 1
-    assert not node_pod0.hanging
-    outgoing_pod0_list = [node.name for node in node_pod0.outgoing_nodes]
+    node_deployment0 = graph.origin_nodes[node_names_list.index('deployment0')]
+    assert node_deployment0.name == 'deployment0'
+    assert node_deployment0.number_of_parts == 1
+    assert not node_deployment0.hanging
+    outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
-    node_pod1 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod1')]
-    assert node_pod1.name == 'pod1'
-    assert node_pod1.number_of_parts == 1
-    assert len(node_pod1.outgoing_nodes) == 0
-    assert node_pod1.hanging
+    node_deployment1 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment1')
+    ]
+    assert node_deployment1.name == 'deployment1'
+    assert node_deployment1.number_of_parts == 1
+    assert len(node_deployment1.outgoing_nodes) == 0
+    assert node_deployment1.hanging
 
-    node_pod2 = node_pod0.outgoing_nodes[outgoing_pod0_list.index('pod2')]
-    assert node_pod2.name == 'pod2'
-    assert node_pod2.number_of_parts == 1
-    assert len(node_pod2.outgoing_nodes) == 1
-    assert not node_pod2.hanging
+    node_deployment2 = node_deployment0.outgoing_nodes[
+        outgoing_deployment0_list.index('deployment2')
+    ]
+    assert node_deployment2.name == 'deployment2'
+    assert node_deployment2.number_of_parts == 1
+    assert len(node_deployment2.outgoing_nodes) == 1
+    assert not node_deployment2.hanging
 
-    node_pod3 = node_pod2.outgoing_nodes[0]
-    assert node_pod3.name == 'pod3'
-    assert node_pod3.number_of_parts == 1
-    assert len(node_pod3.outgoing_nodes) == 0
-    assert not node_pod3.hanging
+    node_deployment3 = node_deployment2.outgoing_nodes[0]
+    assert node_deployment3.name == 'deployment3'
+    assert node_deployment3.number_of_parts == 1
+    assert len(node_deployment3.outgoing_nodes) == 0
+    assert not node_deployment3.hanging
 
-    node_pod4 = graph.origin_nodes[node_names_list.index('pod4')]
-    assert node_pod4.name == 'pod4'
-    assert node_pod4.number_of_parts == 1
-    assert len(node_pod4.outgoing_nodes) == 1
+    node_deployment4 = graph.origin_nodes[node_names_list.index('deployment4')]
+    assert node_deployment4.name == 'deployment4'
+    assert node_deployment4.number_of_parts == 1
+    assert len(node_deployment4.outgoing_nodes) == 1
     assert set(
         [
             node.name
-            for node in graph.origin_nodes[node_names_list.index('pod4')].outgoing_nodes
+            for node in graph.origin_nodes[
+                node_names_list.index('deployment4')
+            ].outgoing_nodes
         ]
-    ) == {'pod5'}
-    assert not node_pod4.hanging
+    ) == {'deployment5'}
+    assert not node_deployment4.hanging
 
-    node_pod5 = node_pod4.outgoing_nodes[0]
-    assert node_pod5.name == 'pod5'
-    assert node_pod5.number_of_parts == 1
-    assert len(node_pod5.outgoing_nodes) == 0
-    assert not node_pod5.hanging
+    node_deployment5 = node_deployment4.outgoing_nodes[0]
+    assert node_deployment5.name == 'deployment5'
+    assert node_deployment5.number_of_parts == 1
+    assert len(node_deployment5.outgoing_nodes) == 0
+    assert not node_deployment5.hanging
 
-    node_pod6 = graph.origin_nodes[node_names_list.index('pod6')]
-    assert node_pod6.name == 'pod6'
-    assert len(node_pod6.outgoing_nodes) == 1
-    assert node_pod6.number_of_parts == 1
-    assert node_pod6.outgoing_nodes[0].name == 'pod7'
-    assert not node_pod6.hanging
+    node_deployment6 = graph.origin_nodes[node_names_list.index('deployment6')]
+    assert node_deployment6.name == 'deployment6'
+    assert len(node_deployment6.outgoing_nodes) == 1
+    assert node_deployment6.number_of_parts == 1
+    assert node_deployment6.outgoing_nodes[0].name == 'deployment7'
+    assert not node_deployment6.hanging
 
-    node_pod8 = graph.origin_nodes[node_names_list.index('pod8')]
-    assert node_pod8.name == 'pod8'
-    assert len(node_pod8.outgoing_nodes) == 1
-    assert node_pod8.number_of_parts == 1
-    assert node_pod8.outgoing_nodes[0].name == 'pod7'
-    assert not node_pod8.hanging
+    node_deployment8 = graph.origin_nodes[node_names_list.index('deployment8')]
+    assert node_deployment8.name == 'deployment8'
+    assert len(node_deployment8.outgoing_nodes) == 1
+    assert node_deployment8.number_of_parts == 1
+    assert node_deployment8.outgoing_nodes[0].name == 'deployment7'
+    assert not node_deployment8.hanging
 
-    assert id(node_pod6.outgoing_nodes[0]) == id(node_pod8.outgoing_nodes[0])
+    assert id(node_deployment6.outgoing_nodes[0]) == id(
+        node_deployment8.outgoing_nodes[0]
+    )
 
-    node_pod7 = node_pod6.outgoing_nodes[0]
-    assert node_pod7.name == 'pod7'
-    assert len(node_pod7.outgoing_nodes) == 1
-    assert node_pod7.number_of_parts == 2
-    assert node_pod7.outgoing_nodes[0].name == 'pod9'
-    assert not node_pod7.hanging
+    node_deployment7 = node_deployment6.outgoing_nodes[0]
+    assert node_deployment7.name == 'deployment7'
+    assert len(node_deployment7.outgoing_nodes) == 1
+    assert node_deployment7.number_of_parts == 2
+    assert node_deployment7.outgoing_nodes[0].name == 'deployment9'
+    assert not node_deployment7.hanging
 
-    node_pod9 = node_pod7.outgoing_nodes[0]
-    assert node_pod9.name == 'pod9'
-    assert len(node_pod9.outgoing_nodes) == 0
-    assert node_pod9.number_of_parts == 1
-    assert node_pod9.hanging
+    node_deployment9 = node_deployment7.outgoing_nodes[0]
+    assert node_deployment9.name == 'deployment9'
+    assert len(node_deployment9.outgoing_nodes) == 0
+    assert node_deployment9.number_of_parts == 1
+    assert node_deployment9.hanging
 
 
 def test_topology_graph_build_two_joins(two_joins_graph):
@@ -438,21 +485,21 @@ def test_topology_graph_build_two_joins(two_joins_graph):
 
     assert id(node_p0.outgoing_nodes[0]) == id(node_p1.outgoing_nodes[0])
 
-    joiner_pod = node_p0.outgoing_nodes[0]
-    assert joiner_pod.name == 'joiner_1'
-    assert len(joiner_pod.outgoing_nodes) == 2
-    assert joiner_pod.number_of_parts == 2
-    assert not joiner_pod.hanging
+    joiner_deployment = node_p0.outgoing_nodes[0]
+    assert joiner_deployment.name == 'joiner_1'
+    assert len(joiner_deployment.outgoing_nodes) == 2
+    assert joiner_deployment.number_of_parts == 2
+    assert not joiner_deployment.hanging
 
-    joiner_outgoing_list = [node.name for node in joiner_pod.outgoing_nodes]
+    joiner_outgoing_list = [node.name for node in joiner_deployment.outgoing_nodes]
 
-    node_p2 = joiner_pod.outgoing_nodes[joiner_outgoing_list.index('p2')]
+    node_p2 = joiner_deployment.outgoing_nodes[joiner_outgoing_list.index('p2')]
     assert node_p2.name == 'p2'
     assert len(node_p2.outgoing_nodes) == 1
     assert node_p2.number_of_parts == 1
     assert not node_p2.hanging
 
-    node_p3 = joiner_pod.outgoing_nodes[joiner_outgoing_list.index('p3')]
+    node_p3 = joiner_deployment.outgoing_nodes[joiner_outgoing_list.index('p3')]
     assert node_p3.name == 'p3'
     assert len(node_p3.outgoing_nodes) == 1
     assert node_p3.number_of_parts == 1
@@ -472,17 +519,17 @@ class DummyMockConnectionPool:
         self.responded_messages = defaultdict(dict)
 
     def send_requests_once(
-        self, requests: List[Request], pod: str, head: bool, endpoint: str = None
+        self, requests: List[Request], deployment: str, head: bool, endpoint: str = None
     ) -> asyncio.Task:
         assert head
         response_msg = copy.deepcopy(requests[0])
         new_docs = DocumentArray()
         for doc in requests[0].docs:
             clientid = doc.text[0:7]
-            self.sent_msg[clientid][pod] = doc.text
-            new_doc = Document(text=doc.text + f'-{clientid}-{pod}')
+            self.sent_msg[clientid][deployment] = doc.text
+            new_doc = Document(text=doc.text + f'-{clientid}-{deployment}')
             new_docs.append(new_doc)
-            self.responded_messages[clientid][pod] = new_doc.text
+            self.responded_messages[clientid][deployment] = new_doc.text
 
         response_msg.data.docs = new_docs
 
@@ -544,7 +591,7 @@ async def test_message_ordering_linear_graph(linear_graph_dict):
     for client_id, client_resps in resps:
         assert len(client_resps) == 1
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-pod2-client{client_id}-pod3'
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-deployment2-client{client_id}-deployment3'
             == client_resps[0].docs[0].text
         )
 
@@ -565,7 +612,7 @@ async def test_message_ordering_bifurcation_graph(bifurcation_graph_dict):
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
+    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 2
         sorted_clients_resps = list(
@@ -573,31 +620,35 @@ async def test_message_ordering_bifurcation_graph(bifurcation_graph_dict):
         )
 
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3'
             == sorted_clients_resps[0].docs[0].text
         )
         assert (
-            f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
+            f'client{client_id}-Request-client{client_id}-deployment4-client{client_id}-deployment5'
             == sorted_clients_resps[1].docs[0].text
         )
 
-        # assert the hanging pod was sent message
+        # assert the hanging deployment was sent message
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
-            == runtime.connection_pool.responded_messages[f'client{client_id}']['pod1']
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
+            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                'deployment1'
+            ]
         )
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0'
-            == runtime.connection_pool.sent_msg[f'client{client_id}']['pod1']
+            f'client{client_id}-Request-client{client_id}-deployment0'
+            == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment1']
         )
 
         assert (
-            f'client{client_id}-Request-client{client_id}-pod6'
-            == runtime.connection_pool.responded_messages[f'client{client_id}']['pod6']
+            f'client{client_id}-Request-client{client_id}-deployment6'
+            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                'deployment6'
+            ]
         )
         assert (
             f'client{client_id}-Request'
-            == runtime.connection_pool.sent_msg[f'client{client_id}']['pod6']
+            == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment6']
         )
 
 
@@ -625,23 +676,25 @@ async def test_message_ordering_merge_in_gateway_graph(
             None in client_resps
         )  # at the merge branch, only responds to the last part
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger'
+        deployment2_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-merger'
             in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
-        pod1_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger'
+        deployment1_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-merger'
             in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
         # TODO: need to add logic to merge messages
-        assert pod1_path or pod2_path
+        assert deployment1_path or deployment2_path
 
 
 @pytest.mark.asyncio
-async def test_message_ordering_merge_in_last_pod_graph(
-    merge_graph_dict_directly_merge_in_last_pod,
+async def test_message_ordering_merge_in_last_deployment_graph(
+    merge_graph_dict_directly_merge_in_last_deployment,
 ):
-    runtime = DummyMockGatewayRuntime(merge_graph_dict_directly_merge_in_last_pod)
+    runtime = DummyMockGatewayRuntime(
+        merge_graph_dict_directly_merge_in_last_deployment
+    )
     resps = await asyncio.gather(
         runtime.receive_from_client(0, create_req_from_text('client0-Request')),
         runtime.receive_from_client(1, create_req_from_text('client1-Request')),
@@ -661,16 +714,16 @@ async def test_message_ordering_merge_in_last_pod_graph(
             None in client_resps
         )  # at the merge branch, only responds to the last part
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-merger-client{client_id}-pod_last'
+        deployment2_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-merger-client{client_id}-deployment_last'
             in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
-        pod1_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1-client{client_id}-merger-client{client_id}-pod_last'
+        deployment1_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-merger-client{client_id}-deployment_last'
             in list(map(lambda resp: resp.data.docs[0].text, filtered_client_resps))
         )
         # TODO: need to add logic to merge messages
-        assert pod1_path or pod2_path
+        assert deployment1_path or deployment2_path
 
 
 @pytest.mark.asyncio
@@ -689,7 +742,7 @@ async def test_message_ordering_complete_graph(complete_graph_dict):
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
+    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 3
         assert (
@@ -701,37 +754,39 @@ async def test_message_ordering_complete_graph(complete_graph_dict):
             sorted(filtered_client_resps, key=lambda msg: msg.docs[0].text)
         )
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
             == sorted_filtered_client_resps[0].docs[0].text
         )
 
-        pod2_path = (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3-client{client_id}-merger-client{client_id}-pod_last'
+        deployment2_path = (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3-client{client_id}-merger-client{client_id}-deployment_last'
             == sorted_filtered_client_resps[1].docs[0].text
         )
-        pod4_path = (
-            f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5-client{client_id}-merger-client{client_id}-pod_last'
+        deployment4_path = (
+            f'client{client_id}-Request-client{client_id}-deployment4-client{client_id}-deployment5-client{client_id}-merger-client{client_id}-deployment_last'
             == sorted_filtered_client_resps[1].docs[0].text
         )
 
-        assert pod2_path or pod4_path
+        assert deployment2_path or deployment4_path
 
-        # assert the hanging pod was sent message
+        # assert the hanging deployment was sent message
         assert (
-            f'client{client_id}-Request-client{client_id}-pod6'
-            == runtime.connection_pool.responded_messages[f'client{client_id}']['pod6']
+            f'client{client_id}-Request-client{client_id}-deployment6'
+            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                'deployment6'
+            ]
         )
         assert (
             f'client{client_id}-Request'
-            == runtime.connection_pool.sent_msg[f'client{client_id}']['pod6']
+            == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment6']
         )
 
 
 @pytest.mark.asyncio
 async def test_message_ordering_hanging_after_merge_graph(
-    graph_hanging_pod_after_merge,
+    graph_hanging_deployment_after_merge,
 ):
-    runtime = DummyMockGatewayRuntime(graph_hanging_pod_after_merge)
+    runtime = DummyMockGatewayRuntime(graph_hanging_deployment_after_merge)
     resps = await asyncio.gather(
         runtime.receive_from_client(0, create_req_from_text('client0-Request')),
         runtime.receive_from_client(1, create_req_from_text('client1-Request')),
@@ -745,47 +800,53 @@ async def test_message_ordering_hanging_after_merge_graph(
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
+    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 2
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod2-client{client_id}-pod3'
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3'
             == client_resps[0].docs[0].text
         )
         assert (
-            f'client{client_id}-Request-client{client_id}-pod4-client{client_id}-pod5'
+            f'client{client_id}-Request-client{client_id}-deployment4-client{client_id}-deployment5'
             == client_resps[1].docs[0].text
         )
 
-        # assert the hanging pod was sent message
+        # assert the hanging deployment was sent message
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0-client{client_id}-pod1'
-            == runtime.connection_pool.responded_messages[f'client{client_id}']['pod1']
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
+            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                'deployment1'
+            ]
         )
         assert (
-            f'client{client_id}-Request-client{client_id}-pod0'
-            == runtime.connection_pool.sent_msg[f'client{client_id}']['pod1']
+            f'client{client_id}-Request-client{client_id}-deployment0'
+            == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment1']
         )
 
         path6 = (
-            f'client{client_id}-Request-client{client_id}-pod6-client{client_id}-pod7-client{client_id}-pod9'
-            == runtime.connection_pool.responded_messages[f'client{client_id}']['pod9']
+            f'client{client_id}-Request-client{client_id}-deployment6-client{client_id}-deployment7-client{client_id}-deployment9'
+            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                'deployment9'
+            ]
         )
         path8 = (
-            f'client{client_id}-Request-client{client_id}-pod8-client{client_id}-pod7-client{client_id}-pod9'
-            == runtime.connection_pool.responded_messages[f'client{client_id}']['pod9']
+            f'client{client_id}-Request-client{client_id}-deployment8-client{client_id}-deployment7-client{client_id}-deployment9'
+            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                'deployment9'
+            ]
         )
         assert path6 or path8
 
         if path6:
             assert (
-                f'client{client_id}-Request-client{client_id}-pod6-client{client_id}-pod7'
-                == runtime.connection_pool.sent_msg[f'client{client_id}']['pod9']
+                f'client{client_id}-Request-client{client_id}-deployment6-client{client_id}-deployment7'
+                == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment9']
             )
         if path8:
             assert (
-                f'client{client_id}-Request-client{client_id}-pod8-client{client_id}-pod7'
-                == runtime.connection_pool.sent_msg[f'client{client_id}']['pod9']
+                f'client{client_id}-Request-client{client_id}-deployment8-client{client_id}-deployment7'
+                == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment9']
             )
 
 
@@ -807,7 +868,7 @@ async def test_message_ordering_two_joins_graph(
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging pods tasks
+    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 4
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
