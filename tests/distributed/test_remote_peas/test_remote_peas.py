@@ -108,7 +108,7 @@ def test_jinad_pea():
 async def _activate_worker(
     head_host, head_port, worker_host, worker_port, shard_id=None
 ):
-    # this would be done by the Pod, its adding the worker to the head
+    # this would be done by the deployment, its adding the worker to the head
     activate_msg = ControlRequest(command='ACTIVATE')
     activate_msg.add_related_entity(
         'worker', worker_host, worker_port, shard_id=shard_id
@@ -159,13 +159,13 @@ def _create_head_pea(
     return PeaFactory.build_pea(args)
 
 
-def _create_gateway_pea(l_or_r, graph_description, pods_addresses, port_expose):
+def _create_gateway_pea(l_or_r, graph_description, deployments_addresses, port_expose):
     args = set_gateway_parser().parse_args([])
     if l_or_r == 'remote':
         args.host = HOST
         args.port_jinad = PORT
     args.graph_description = graph_description
-    args.pods_addresses = pods_addresses
+    args.deployments_addresses = deployments_addresses
     args.port_expose = port_expose
     args.runtime_cls = 'GRPCGatewayRuntime'
     return PeaFactory.build_pea(args)
@@ -197,11 +197,13 @@ async def test_pseudo_remote_peas_topologies(gateway, head, worker):
     worker_port = random_port()
     head_port = random_port()
     port_expose = random_port()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
     if head == 'remote':
-        pods_addresses = f'{{"pod0": ["{HOST}:{head_port}"]}}'
+        deployments_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
     else:
-        pods_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+        deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     # create a single head pea
     head_pea = _create_head_pea(head, head_port)
@@ -211,12 +213,12 @@ async def test_pseudo_remote_peas_topologies(gateway, head, worker):
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(
-        gateway, graph_description, pods_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port_expose
     )
 
     with gateway_pea, worker_pea, head_pea:
         await asyncio.sleep(1.0)
-        # this would be done by the Pod, its adding the worker to the head
+        # this would be done by the deployment, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
         worker_host, worker_port = worker_pea.runtime_ctrl_address.split(':')
         if head == 'remote':
@@ -254,8 +256,10 @@ async def test_pseudo_remote_peas_topologies(gateway, head, worker):
 async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
     head_port = random_port()
     port_expose = random_port()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pods_addresses = f'{{"pod0": ["{HOST}:{head_port}"]}}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
+    deployments_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
 
     # create a single head pea
     head_pea = _create_head_pea(head, head_port, polling)
@@ -267,7 +271,7 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
         # create worker
         worker_port = random_port()
         # create a single worker pea
-        worker_pea = _create_worker_pea(worker, worker_port, f'pod0/shard/{i}')
+        worker_pea = _create_worker_pea(worker, worker_port, f'deployment0/shard/{i}')
         shard_peas.append(worker_pea)
         worker_pea.start()
 
@@ -278,14 +282,14 @@ async def test_pseudo_remote_peas_shards(gateway, head, worker, polling):
         else:
             worker_host = HOST
 
-        # this would be done by the Pod, its adding the worker to the head
+        # this would be done by the deployment, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', worker_host, worker_port, shard_id=i)
         GrpcConnectionPool.send_request_sync(activate_msg, f'{HOST}:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(
-        gateway, graph_description, pods_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port_expose
     )
     gateway_pea.start()
 
@@ -321,8 +325,10 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
     NUM_REPLICAS = 3
     head_port = random_port()
     port_expose = random_port()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
+    deployment_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     # create a single head pea
     head_pea = _create_head_pea(head, head_port)
@@ -334,7 +340,7 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
         # create worker
         worker_port = random_port()
         # create a single worker pea
-        worker_pea = _create_worker_pea(worker, worker_port, f'pod0/{i}')
+        worker_pea = _create_worker_pea(worker, worker_port, f'deployment0/{i}')
         replica_peas.append(worker_pea)
         worker_pea.start()
 
@@ -344,14 +350,14 @@ async def test_pseudo_remote_peas_replicas(gateway, head, worker):
         else:
             worker_host = HOST
 
-        # this would be done by the Pod, its adding the worker to the head
+        # this would be done by the deployment, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity('worker', worker_host, worker_port)
         GrpcConnectionPool.send_request_sync(activate_msg, f'{HOST}:{head_port}')
 
     # create a single gateway pea
     gateway_pea = _create_gateway_pea(
-        gateway, graph_description, pod_addresses, port_expose
+        gateway, graph_description, deployment_addresses, port_expose
     )
     gateway_pea.start()
 
@@ -384,10 +390,12 @@ async def test_pseudo_remote_peas_executor(
 ):
     """
     TODO: head on remote doesn't consider polling args.
-    polling is an arg available with pod_parser, which gets removed for remote head pea
+    polling is an arg available with deployment_parser, which gets removed for remote head pea
     since JinaD removes non-pea args.
     """
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    graph_description = (
+        '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
+    )
     peas = []
 
     NUM_SHARDS = 3
@@ -396,7 +404,7 @@ async def test_pseudo_remote_peas_executor(
     uses_before_pea = _create_worker_pea(
         uses_before,
         uses_before_port,
-        'pod0/uses_before',
+        'deployment0/uses_before',
         executor='NameChangeExecutor',
         py_modules='executor.py' if is_remote(uses_before) else 'executors/executor.py',
         upload_files=[os.path.join(cur_dir, 'executors')]
@@ -410,7 +418,7 @@ async def test_pseudo_remote_peas_executor(
     uses_after_pea = _create_worker_pea(
         uses_after,
         uses_after_port,
-        'pod0/uses_after',
+        'deployment0/uses_after',
         executor='NameChangeExecutor',
         py_modules='executor.py' if is_remote(uses_after) else 'executors/executor.py',
         upload_files=[os.path.join(cur_dir, 'executors')]
@@ -422,12 +430,12 @@ async def test_pseudo_remote_peas_executor(
 
     # create head
     head_port = random_port()
-    pod_addresses = f'{{"pod0": ["{HOST}:{head_port}"]}}'
+    deployment_addresses = f'{{"deployment0": ["{HOST}:{head_port}"]}}'
     head_pea = _create_head_pea(
         head,
         head_port,
         polling=PollingType.ALL,
-        name='pod0/head',
+        name='deployment0/head',
         uses_before=f'{__docker_host__ if is_remote(head) else HOST}:{uses_before_port}',
         uses_after=f'{__docker_host__ if is_remote(head) else HOST}:{uses_after_port}',
     )
@@ -443,7 +451,7 @@ async def test_pseudo_remote_peas_executor(
         worker_pea = _create_worker_pea(
             worker,
             worker_port,
-            f'pod0/shards/{i}',
+            f'deployment0/shards/{i}',
             executor='NameChangeExecutor',
             py_modules='executor.py' if is_remote(worker) else 'executors/executor.py',
             upload_files=[os.path.join(cur_dir, 'executors')]
@@ -466,7 +474,7 @@ async def test_pseudo_remote_peas_executor(
     # create a single gateway pea
     port_expose = random_port()
     gateway_pea = _create_gateway_pea(
-        gateway, graph_description, pod_addresses, port_expose
+        gateway, graph_description, deployment_addresses, port_expose
     )
     print(f'head_port: {head_port}, port_expose: {port_expose}')
 
@@ -493,7 +501,7 @@ async def test_pseudo_remote_peas_executor(
     doc_texts = [doc.text for doc in response_list[0]]
     print(doc_texts)
     assert doc_texts.count('client0-Request') == NUM_SHARDS
-    assert doc_texts.count('pod0/uses_before') == NUM_SHARDS
-    assert doc_texts.count('pod0/uses_after') == 1
+    assert doc_texts.count('deployment0/uses_before') == NUM_SHARDS
+    assert doc_texts.count('deployment0/uses_after') == 1
     for i in range(NUM_SHARDS):
-        assert doc_texts.count(f'pod0/shards/{i}') == 1
+        assert doc_texts.count(f'deployment0/shards/{i}') == 1

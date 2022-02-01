@@ -77,7 +77,9 @@ def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
 
     assert len(process_ids) == replicas * shards
 
-    jinad_client.flows.scale(id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to)
+    jinad_client.flows.scale(
+        id=flow_id, deployment_name=SCALE_EXECUTOR, replicas=scale_to
+    )
 
     ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=False).index(
         inputs=DocumentArray([Document() for _ in range(200)]),
@@ -129,7 +131,7 @@ async def test_scale_remote_flow_async(
     assert len(process_ids) == replicas * shards
 
     await async_jinad_client.flows.scale(
-        id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to
+        id=flow_id, deployment_name=SCALE_EXECUTOR, replicas=scale_to
     )
 
     ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=True).index(
