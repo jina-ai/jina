@@ -15,7 +15,7 @@ SCALE_EXECUTOR = 'scale_executor'
 
 
 @pytest.fixture
-def pod_params(request):
+def deployment_params(request):
     replicas, scale_to, shards = request.param
     return replicas, scale_to, shards
 
@@ -47,7 +47,7 @@ def docker_image_built():
 
 
 @pytest.mark.parametrize(
-    'pod_params',
+    'deployment_params',
     [(1, 2, 1), (2, 3, 1), (3, 1, 1), (1, 2, 2), (2, 1, 2)],
     indirect=True,  # (replicas, scale_to, shards)
 )
@@ -96,7 +96,7 @@ def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'pod_params',
+    'deployment_params',
     [(1, 2, 1), (2, 3, 1), (3, 1, 1), (1, 2, 2), (2, 1, 2)],
     indirect=True,  # (replicas, scale_to, shards)
 )

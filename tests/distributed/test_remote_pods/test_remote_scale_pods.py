@@ -32,7 +32,7 @@ async def slow_down_tests():
 
 
 @pytest.mark.parametrize(
-    'pod_params',  # (num_replicas, scale_to, shards)
+    'deployment_params',  # (num_replicas, scale_to, shards)
     [
         (2, 3, 1),  # scale up 1 replica with 1 shard
         (2, 3, 2),  # scale up 1 replica with 2 shards
@@ -72,7 +72,7 @@ def test_scale_remote_pod(deployment_params, jinad_client):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'pod_params',  # (num_replicas, scale_to, shards)
+    'deployment_params',  # (num_replicas, scale_to, shards)
     [
         (2, 3, 1),  # scale up 1 replica with 1 shard
         (2, 3, 2),  # scale up 1 replica with 2 shards
