@@ -21,7 +21,7 @@ class DaemonEnum(str, Enum):
 class IDLiterals(DaemonEnum):
     """Enum representing all values allowed in DaemonID"""
 
-    JDAEMON = 'jdaemon'
+    JDEPLOYMENT = 'jdeployment'
     JPEA = 'jpea'
     JFLOW = 'jflow'
     JNETWORK = 'jnetwork'
