@@ -147,6 +147,7 @@ ac_table = {
             '--no-crud-endpoints',
             '--expose-endpoints',
             '--uvicorn-kwargs',
+            '--uvicorn-app-path',
             '--compress',
             '--compress-min-bytes',
             '--compress-min-ratio',

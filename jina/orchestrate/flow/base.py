@@ -156,6 +156,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
+        uvicorn_app_path: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
         **kwargs,
@@ -240,6 +241,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_app_path: The path to a python file defining the fastAPI or flask App file: This file must implement `get_uvicorn_app` method
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
