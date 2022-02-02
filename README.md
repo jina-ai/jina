@@ -46,9 +46,13 @@ pip install -U jina
 ```
 More install options including Conda, Docker, Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
+If you are upgrading from Jina 2: Please remove version 2 first and install version 3 then. (`pip uninstall jina && pip install -U jina`)
+
 ## Documentation
 
 Check our **[comprehensive docs](https://docs.jina.ai)** for more in depth tutorials, advanced topics and API reference.
+
+This is the readme for Jina 3. The old readme for Jina 2 can be found <a href="https://github.com/jina-ai/jina/blob/v2.6.4/README.md">here</a>.
 
 ## Get Started
 
