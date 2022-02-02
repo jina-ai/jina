@@ -19,7 +19,7 @@ spec:
         app: {name}
         jina_deployment_name: {jina_deployment_name}
         shard_id: {shard_id}
-        pea_type: {pea_type}
+        pod_type: {pod_type}
         ns: {namespace}
     spec:
       containers:
