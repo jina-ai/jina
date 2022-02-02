@@ -20,20 +20,25 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.2k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
-<!-- start elevator-pitch -->
+<!-- start ecosystem-description -->
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Native support for PyTorch/Keras/ONNX/Paddle. Build solutions in just minutes.
+Jina is split into Docarray, Finetuner and Jina Core:
+* <a href="https://github.com/jina-ai/docarray/">DocArray</a>: Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
+* <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you to deliver the last mile of performance and quality for domain-specific neural search applications.
+* <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
 
-🌌 **All data types** - Process, index, query, and understand videos, images, long/short text, audio, source code, PDFs, etc.
+<!-- end ecosystem-description -->
+With Jina Core you th following features:
 
-🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
+🏗️ **Modular Building Blocks** - [explain value of working with docs in Executors, ]
 
-🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with
-fragmented, multi-vendor, generic legacy tools.
+**Serve** - [Explain gateway API]
 
-<!-- end elevator-pitch -->
+🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud.
+
+
 
 ## Install 
 ```
@@ -41,10 +46,9 @@ pip install -U jina
 ```
 More install options including Conda, Docker, Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
-## Learning and Docs
+## Documentation
 
-- Brand new to Jina? Check our **[Learning Bootcamp](https://learn.jina.ai)** to get up to speed.
-- Check our **[comprehensive docs](https://docs.jina.ai)** for deeper tutorials, more advanced topics, and API reference.
+Check our **[comprehensive docs](https://docs.jina.ai)** for more in depth tutorials, advanced topics and API reference.
 
 ## Get Started
 
