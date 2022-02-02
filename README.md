@@ -28,7 +28,7 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 
 🌌 **All data types** - Process, index, query, and understand videos, images, long/short text, audio, source code, PDFs, etc.
 
-🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
+🌩️ **Local & cloud-friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
@@ -39,12 +39,12 @@ fragmented, multi-vendor, generic legacy tools.
 ```
 pip install -U jina
 ```
-More install options including Conda, Docker, Windows [can be found here](https://docs.jina.ai/get-started/install/). 
+More install options include Conda, Docker, Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
 ## Learning and Docs
 
 - Brand new to Jina? Check our **[Learning Bootcamp](https://learn.jina.ai)** to get up to speed.
-- Check our **[comprehensive docs](https://docs.jina.ai)** for deeper tutorials, more advanced topics, and API reference.
+- Check our **[comprehensive docs](https://docs.jina.ai)** for deeper tutorials, more advanced topics, and API references.
 
 ## Get Started
 
@@ -57,14 +57,14 @@ We promise you can build a scalable ResNet-powered image search service in 20 mi
 
 ### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
 
-Document, Executor, and Flow are three fundamental concepts in Jina.
+The document, Executor, and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
 
 
-Leveraging these three components, let's build an app that **find similar images using ResNet50**.
+Leveraging these three components, let's build an app that **finds similar images using ResNet50**.
 
 ### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
 
@@ -274,7 +274,7 @@ ecosystem in open source.
 
 ## Contributing
 
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
+We welcome all kinds of contributions from the open-source community, individuals, and partners. We owe our success to
 your active involvement.
 
 - [Release cycles and development stages](RELEASE.md)
