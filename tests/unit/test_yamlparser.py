@@ -145,7 +145,7 @@ def test_load_from_dict():
     d1 = {
         'jtype': __default_executor__,
         'metas': {
-            'name': '${{BE_TEST_NAME}}',
+            'name': '${{ BE_TEST_NAME }}',
             'workspace': '${{this.name}}',
         },
     }
