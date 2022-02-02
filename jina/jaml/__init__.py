@@ -83,17 +83,45 @@ class JAML:
     An expression can be any combination of literal values, references to a context, or functions.
     You can combine literals, context references, and functions using operators.
 
-    You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string.
+    You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string,
+    which is based on GitHub actions syntax, and looks like this:
 
     .. highlight:: yaml
     .. code-block:: yaml
 
         ${{ <expression> }}
 
-    To evaluate (i.e. substitute the value to the real value)
-    the expression when loading, use :meth:`load(substitute=True)`.
+    This expression can be evaluated directly (i.e. substituted by the real value) when being loaded,
+    by using :meth:`load(substitute=True)`
 
-    To substitute the value based on a dict,
+    JAML supports three different kinds of variables to be used as expressions: `Environment variables`
+    (coming form the environment itself), `context variables` (being passed as a dict),
+    and `internal references` (included in the .yaml file itself).
+
+    An environment variable `var` is accessed through the following syntax:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ env.var }}
+
+    Note the mandatory spaces before and after the variable denotation.
+
+    Context variables can be accessed using the following syntax:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ context_var }}
+
+    Or, if you want to be explicit:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ context.context_var }}
+
+    These context variables are passed as a dict:
 
     .. highlight:: python
     .. code-block:: python
@@ -101,6 +129,16 @@ class JAML:
         obj = JAML.load(fp, substitute=True,
                             context={'context_var': 3.14,
                                     'context_var2': 'hello-world'})
+
+    Internal references point to other variables in the yaml file itself, and can be accessed using the following syntax:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{root.path.to.var}}
+
+    Note omission of spaces in this syntax.
+
 
     .. note::
         :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
@@ -544,8 +582,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
 
         Support substitutions in YAML:
-            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``.
-            - Context dict (``context``): ``${{VAR}}``(recommended).
+            - Environment variables: ``${{ ENV.VAR }}`` (recommended), ``$VAR`` (deprecated).
+            - Context dict (``context``): ``${{ CONTEXT.VAR }}``(recommended), ``${{ VAR }}``.
             - Internal reference via ``this`` and ``root``: ``${{this.same_level_key}}``, ``${{root.root_level_key}}``
 
         Substitutions are carried in the order and multiple passes to resolve variables with best effort.
