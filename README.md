@@ -57,7 +57,7 @@ We promise you can build a scalable ResNet-powered image search service in 20 mi
 
 ### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
 
-The document, Executor, and Flow are three fundamental concepts in Jina.
+ Document, Executor, and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
