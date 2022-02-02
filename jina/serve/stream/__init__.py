@@ -53,14 +53,29 @@ class RequestStreamer:
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
 
-    async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
+    async def stream(
+        self, request_iterator, *args, **kwargs
+    ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
 
         :param request_iterator: iterator of requests
         :param args: positional arguments
+        :param kwargs: extra keyword arguments
         :yield: responses from Executors
         """
+        from docarray import DocumentArray
+
+        return_docarray = False
+        if isinstance(request_iterator, DocumentArray):
+            return_docarray = True
+            from jina.clients.request import request_generator
+
+            # TODO: Check proper default endpoint
+            request_iterator = request_generator(
+                exec_endpoint=kwargs.get('exec_endpoint', '*'), data=request_iterator
+            )
+
         async_iter: AsyncIterator = (
             self._stream_requests_with_prefetch(request_iterator, self._prefetch)
             if self._prefetch > 0
@@ -68,7 +83,10 @@ class RequestStreamer:
         )
 
         async for response in async_iter:
-            yield response
+            if return_docarray is False:
+                yield response
+            else:
+                yield response.docs
 
     async def _stream_requests(
         self, request_iterator: Union[Iterator, AsyncIterator]
@@ -183,16 +201,6 @@ class RequestStreamer:
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
-                # if self.logger.debug_enabled:
-                #     if hasattr(self.msg_handler, 'msg_sent') and hasattr(
-                #         self.msg_handler, 'msg_recv'
-                #     ):
-                #         self.logger.debug(
-                #             f'send: {self.msg_handler.msg_sent} '
-                #             f'recv: {self.msg_handler.msg_recv} '
-                #             f'pending: {self.msg_handler.msg_sent - self.msg_handler.msg_recv}'
-                #         )
-                onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
                     res = await r
                     yield self._result_handler(res)

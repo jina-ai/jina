@@ -168,6 +168,14 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
 ''',
     )
 
+    gp.add_argument(
+        '--uvicorn-app-path',
+        type=str,
+        default=None,
+        help='The path to a python file defining the fastAPI or flask App file: This file must '
+        'implement `get_uvicorn_app` method',
+    )
+
 
 def mixin_prefetch_parser(parser=None):
     """Add the options for prefetching

@@ -6,7 +6,7 @@ from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
 from jina.serve.networking import create_connection_pool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.gateway.http.app import get_fastapi_app
+from jina.serve.runtimes.gateway.http.app import get_uvicorn_app
 
 
 JINA_LOGO_URL = 'https://api.jina.ai/logo/logo-product/jina-core/horizontal-layout/colored/Product%20logo_Core_vertical_colorful%402x-margin.png'
@@ -16,10 +16,25 @@ GATEWAY_SCHEMA_FILENAME = 'gateway.json'
 
 args = set_gateway_parser().parse_args([])
 logger = JinaLogger('')
-gateway_app = get_fastapi_app(
+from jina.serve.stream import RequestStreamer
+from jina.serve.runtimes.gateway.request_handling import (
+    handle_request,
+    handle_result,
+)
+
+connection_pool = create_connection_pool()
+streamer = RequestStreamer(
+    args=args,
+    request_handler=handle_request(
+        graph=TopologyGraph({}), connection_pool=connection_pool
+    ),
+    result_handler=handle_result,
+)
+streamer.Call = streamer.stream
+gateway_app = get_uvicorn_app(
     args,
-    topology_graph=TopologyGraph({}),
-    connection_pool=create_connection_pool(),
+    flow_fn=streamer.Call,
+    close_fn=connection_pool.close,
     logger=logger,
 )
 gateway_schema = gateway_app.openapi()

@@ -5,7 +5,6 @@ from jina import __default_host__
 
 from jina.importer import ImportExtensions
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.gateway.http.app import get_fastapi_app
 
 __all__ = ['HTTPGatewayRuntime']
 
@@ -48,21 +47,50 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 """
                 await self.main_loop()
 
-        from jina.helper import extend_rest_interface
-
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
         self._set_topology_graph()
         self._set_connection_pool()
+        from jina.serve.stream import RequestStreamer
+        from jina.serve.runtimes.gateway.request_handling import (
+            handle_request,
+            handle_result,
+        )
+
+        streamer = RequestStreamer(
+            args=self.args,
+            request_handler=handle_request(
+                graph=self._topology_graph, connection_pool=self._connection_pool
+            ),
+            result_handler=handle_result,
+        )
+        streamer.Call = streamer.stream
+
+        uvi_app = None
+        if self.args.uvicorn_app_path is None:
+            from jina.serve.runtimes.gateway.http.app import get_uvicorn_app
+
+            uvi_app = get_uvicorn_app(
+                self.args,
+                flow_fn=streamer.Call,
+                close_fn=self._connection_pool.close,
+                logger=self.logger,
+            )
+        else:
+            from importlib import import_module
+
+            mod = import_module(self.args.uvicorn_app_path)
+            uvi_app = getattr(mod, 'get_uvicorn_app')(
+                self.args,
+                flow_fn=streamer.Call,
+                close_fn=self._connection_pool.close,
+                logger=self.logger,
+            )
+
+        # we check if there is a fastapi app provided by user. (how do we import it?) (they gave us an app.py) #
+        # maybe we need to dynamically import get_uvicorn_app from this app.py
         self._server = UviServer(
             config=Config(
-                app=extend_rest_interface(
-                    get_fastapi_app(
-                        self.args,
-                        topology_graph=self._topology_graph,
-                        connection_pool=self._connection_pool,
-                        logger=self.logger,
-                    )
-                ),
+                app=uvi_app,
                 host=__default_host__,
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),

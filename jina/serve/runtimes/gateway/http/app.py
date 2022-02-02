@@ -1,6 +1,6 @@
 import argparse
 import json
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, Callable
 
 from jina import __version__
 from jina.clients.request import request_generator
@@ -9,23 +9,19 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
 
-if TYPE_CHECKING:
-    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-    from jina.serve.networking import GrpcConnectionPool
 
-
-def get_fastapi_app(
+def get_uvicorn_app(
     args: 'argparse.Namespace',
-    topology_graph: 'TopologyGraph',
-    connection_pool: 'GrpcConnectionPool',
+    flow_fn: Callable,
+    close_fn: Callable,
     logger: 'JinaLogger',
 ):
     """
     Get the app from FastAPI as the REST interface.
 
     :param args: passed arguments.
-    :param topology_graph: topology graph that manages the logic of sending to the proper executors.
-    :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them
+    :param flow_fn: A callable that will send Requests to every Executor
+    :param close_fn: A callable to be executed to shutdown the gateway
     :param logger: Jina logger.
     :return: fastapi app
     """
@@ -63,24 +59,9 @@ def get_fastapi_app(
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    from jina.serve.stream import RequestStreamer
-    from jina.serve.runtimes.gateway.request_handling import (
-        handle_request,
-        handle_result,
-    )
-
-    streamer = RequestStreamer(
-        args=args,
-        request_handler=handle_request(
-            graph=topology_graph, connection_pool=connection_pool
-        ),
-        result_handler=handle_result,
-    )
-    streamer.Call = streamer.stream
-
     @app.on_event('shutdown')
     async def _shutdown():
-        await connection_pool.close()
+        await close_fn()
 
     openapi_tags = []
     if not args.no_debug_endpoints:
@@ -145,6 +126,9 @@ def get_fastapi_app(
             if bd['data'] is not None and 'docs' in bd['data']:
                 req_generator_input['data'] = req_generator_input['data']['docs']
 
+            # I get a request,
+            # I want to send to the gateway (or send it to the Executors)
+
             result = await _get_singleton_result(
                 request_generator(**req_generator_input)
             )
@@ -164,6 +148,7 @@ def get_fastapi_app(
             'response_model',
             JinaResponseModel,  # use standard response model by default
         )
+        # do some validation no?
         kwargs['methods'] = kwargs.get('methods', ['POST'])
 
         @app.api_route(
@@ -234,7 +219,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in streamer.stream(request_iterator=request_iterator):
+        async for k in flow_fn(request_iterator=request_iterator):
             request_dict = k.to_dict()
             return request_dict
 
