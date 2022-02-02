@@ -31,6 +31,14 @@ context_var_regex = re.compile(
     context_regex_str
 )  # matches expressions of form '${{ var }}'
 
+
+context_dot_regex_str = (
+    r'\${{\sCONTEXT\.[a-zA-Z0-9_]*\s}}|\${{\scontext\.[a-zA-Z0-9_]*\s}}'
+)
+context_dot_regex = re.compile(
+    context_dot_regex_str
+)  # matches expressions of form '${{ ENV.var }}' or '${{ env.var }}'
+
 new_env_regex_str = r'\${{\sENV\.[a-zA-Z0-9_]*\s}}|\${{\senv\.[a-zA-Z0-9_]*\s}}'
 new_env_var_regex = re.compile(
     new_env_regex_str
@@ -295,6 +303,15 @@ class JAML:
 
             return re.sub(r'\$\$[a-zA-Z0-9_.]*', repl_fn, v)
 
+        def _to_normal_context_var(v):
+            def repl_fn(matchobj):
+                match_str = matchobj.group(0)
+                match_str = match_str.replace('CONTEXT.', '')
+                match_str = match_str.replace('context.', '')
+                return match_str
+
+            return re.sub(context_dot_regex, repl_fn, v)
+
         def _sub(v):
 
             if env_var_deprecated_regex.findall(v):  # catch expressions of form '$var'
@@ -307,6 +324,8 @@ class JAML:
                 v
             ):  # handle expressions of form '${{ ENV.var}}'
                 v = _to_env_var_synatx(v)
+            if context_dot_regex.findall(v):
+                v = _to_normal_context_var(v)
             if context_var_regex.findall(v):  # handle expressions of form '${{ var }}'
                 v = _var_to_substitutable(v)
                 if context:

@@ -75,6 +75,8 @@ def test_yaml_expand4():
     assert b['components'][1]['metas']['random_id'] == 3.14
     assert b['components'][1]['metas']['config_str'] == 'hello-world'
     assert b['components'][1]['metas']['bracket_env'] == '{"1": "2"}'
+    assert b['components'][1]['metas']['bracket_env'] == '{"1": "2"}'
+    assert b['components'][1]['metas']['context_dot'] == 3.14
 
 
 def test_attr_dict():
