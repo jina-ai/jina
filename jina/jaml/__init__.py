@@ -31,7 +31,6 @@ context_var_regex = re.compile(
     context_regex_str
 )  # matches expressions of form '${{ var }}'
 
-
 context_dot_regex_str = (
     r'\${{\sCONTEXT\.[a-zA-Z0-9_]*\s}}|\${{\scontext\.[a-zA-Z0-9_]*\s}}'
 )
@@ -237,6 +236,7 @@ class JAML:
         :param resolve_passes: number of rounds to resolve internal reference.
         :return: expanded dict.
         """
+
         from jina.helper import parse_arg
 
         expand_map = SimpleNamespace()
@@ -265,6 +265,7 @@ class JAML:
                         p.append(v)
 
         def _replace(sub_d, p, resolve_ref=False):
+
             if isinstance(sub_d, dict):
                 for k, v in sub_d.items():
                     if isinstance(v, (dict, list)):
@@ -314,6 +315,21 @@ class JAML:
 
         def _sub(v):
 
+            # substitute template with actual value either from context or env variable
+            # v could contain template of the form
+            #
+            # 1)    ${{ var }},${{ context.var }},${{ CONTEXT.var }} when need to be parsed with the context dict
+            # or
+            # 2 )   ${{ ENV.var }},${{ env.var }},$var ( deprecated) when need to be parsed with env
+            #
+            #
+            # internally env var (1) and context var (2) are treated differently, both of them are cast to a unique and
+            # normalize template format and then are parsed
+            # 1) context variables placeholder are cast to $$var then we use the ContextVarTemplate to parse the context
+            # variables
+            # 2) env variables placeholder are cast to $var then we leverage the os.path.expandvars to replace by
+            # environment variables.
+
             if env_var_deprecated_regex.findall(v):  # catch expressions of form '$var'
                 warnings.warn(
                     'Specifying environment variables via the syntax `$var` is deprecated.'
@@ -322,7 +338,7 @@ class JAML:
                 )
             if new_env_var_regex.findall(
                 v
-            ):  # handle expressions of form '${{ ENV.var}}'
+            ):  # handle expressions of form '${{ ENV.var}}',
                 v = _to_env_var_synatx(v)
             if context_dot_regex.findall(v):
                 v = _to_normal_context_var(v)
@@ -338,8 +354,9 @@ class JAML:
             return parse_arg(v)
 
         def _resolve_yaml_reference(v, p):
-            # resolve internal reference
+
             org_v = v
+            # internal references are of the form ${{path}} where path is a yaml path like root.executors[0].name
 
             def repl_fn(matchobj):
                 match_str = matchobj.group(0)
@@ -347,7 +364,7 @@ class JAML:
 
                 match_str = re.sub(
                     yaml_ref_regex, '{\\1}', match_str
-                )  # from ${{var}} to {var} to leverage python formater
+                )  # from ${{var}} to {var} to leverage python formatter
 
                 try:
                     # "root" context is now the global namespace
@@ -368,6 +385,7 @@ class JAML:
 
         _scan(d, expand_map)
         _scan(dict(os.environ), env_map)
+
         # first do var replacement
         _replace(d, expand_map)
 
