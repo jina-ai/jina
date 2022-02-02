@@ -334,7 +334,7 @@ class JAML:
                     )  # use vars provided in context
             v = os.path.expandvars(
                 v
-            )  # gets env var and parses to python objects if needed
+            )  # gets env var and parses to python objects if neededd
             return parse_arg(v)
 
         def _resolve_yaml_reference(v, p):
