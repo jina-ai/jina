@@ -412,7 +412,7 @@ class Deployment(BaseDeployment):
 
     def update_worker_pod_args(self):
         """ Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
-        self.pod_args['pods'] = self._set_pods_args(self.args)
+        self.pod_args['pods'] = self._set_pod_args(self.args)
 
     @property
     def is_sandbox(self) -> bool:
@@ -778,7 +778,7 @@ class Deployment(BaseDeployment):
             raise
 
     @staticmethod
-    def _set_pods_args(args: Namespace) -> Dict[int, List[Namespace]]:
+    def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
         sharding_enabled = args.shards and args.shards > 1
         for shard_id in range(args.shards):
@@ -870,7 +870,7 @@ class Deployment(BaseDeployment):
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
-        parsed_args['pods'] = self._set_pods_args(args)
+        parsed_args['pods'] = self._set_pod_args(args)
 
         return parsed_args
 

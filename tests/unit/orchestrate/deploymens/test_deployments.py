@@ -424,7 +424,7 @@ def test_pod_upload_files(
         ]
     )
     pod = Deployment(args)
-    for k, v in pod.pods_args.items():
+    for k, v in pod.pod_args.items():
         if k in ['head', 'tail']:
             if v:
                 pass
@@ -606,8 +606,8 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
     assert args.host == __default_host__
     with Deployment(args) as pod:
         assert pod.num_pods == num_shards * num_replicas + 1
-        pods_args = dict(pod.pods_args['pods'])
-        for k, replica_args in pods_args.items():
+        pod_args = dict(pod.pod_args['pods'])
+        for k, replica_args in pod_args.items():
             assert len(replica_args) == num_replicas
             for replica_arg in replica_args:
                 assert replica_arg.host == __default_host__
