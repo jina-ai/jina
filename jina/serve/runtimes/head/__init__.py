@@ -22,7 +22,7 @@ from jina import __default_executor__
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
     """
-    Runtime is used in head peas. It responds to Gateway requests and sends to uses_before/uses_after and its workers
+    Runtime is used in head pods. It responds to Gateway requests and sends to uses_before/uses_after and its workers
     """
 
     DEFAULT_POLLING = PollingType.ANY
@@ -265,7 +265,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         if len(worker_results) == 0:
             raise RuntimeError(
-                f'Head {self.name} did not receive a response when sending message to worker peas'
+                f'Head {self.name} did not receive a response when sending message to worker pods'
             )
 
         worker_results, metadata = zip(*worker_results)

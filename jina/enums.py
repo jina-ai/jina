@@ -101,7 +101,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
 
 
 class PollingType(BetterEnum):
-    """The enum for representing the parallel type of peas in a deployment."""
+    """The enum for representing the parallel type of pods in a deployment."""
 
     ANY = 1  #: one of the shards will receive the message
     ALL = 2  #: all shards will receive the message, blocked until all done with the message

@@ -288,7 +288,7 @@ class GrpcConnectionPool:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_messages
         :param request: a single request to send
         :param deployment: name of the Jina deployment to send the message to
-        :param head: If True it is send to the head, otherwise to the worker peas
+        :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
@@ -316,7 +316,7 @@ class GrpcConnectionPool:
 
         :param requests: request (DataRequest/ControlRequest) to send
         :param deployment: name of the Jina deployment to send the request to
-        :param head: If True it is send to the head, otherwise to the worker peas
+        :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the requests
@@ -351,7 +351,7 @@ class GrpcConnectionPool:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
         :param deployment: name of the Jina deployment to send the message to
-        :param head: If True it is send to the head, otherwise to the worker peas
+        :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :return: asyncio.Task representing the send call
         """
@@ -371,7 +371,7 @@ class GrpcConnectionPool:
 
         :param requests: request to send
         :param deployment: name of the Jina deployment to send the request to
-        :param head: If True it is send to the head, otherwise to the worker peas
+        :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param endpoint: endpoint to target with the requests
         :return: asyncio.Task representing the send call

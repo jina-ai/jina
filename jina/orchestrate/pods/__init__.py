@@ -244,7 +244,7 @@ class BasePod(ABC):
                 raise RuntimeRunForeverEarlyError
 
     def wait_start_success(self):
-        """Block until all peas starts successfully.
+        """Block until all pods starts successfully.
 
         If not success, it will raise an error hoping the outer function to catch it
         """

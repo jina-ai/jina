@@ -40,7 +40,7 @@ def set_flow_parser(parser=None):
     :param parser: an (optional) initial parser to build upon
     :return: the parser
     """
-    from jina.parsers.peapods.base import mixin_base_ppr_parser
+    from jina.parsers.orchestrate.base import mixin_base_ppr_parser
 
     if not parser:
         parser = set_base_parser()

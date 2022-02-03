@@ -243,7 +243,7 @@ class JinaRequestModel(BaseModel):
     target_executor: Optional[str] = Field(
         None,
         example='',
-        description='A regex string represent the certain peas/deployments request targeted.',
+        description='A regex string represent the certain pods/deployments request targeted.',
     )
     parameters: Optional[Dict] = Field(
         None,

@@ -526,7 +526,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'Flow':
         """
-        Add a blocker to the Flow, wait until all peas defined in **needs** completed.
+        Add a blocker to the Flow, wait until all pods defined in **needs** completed.
 
 
         .. # noqa: DAR401
@@ -550,7 +550,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
-        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing peas completed.
+        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.
 
         :param name: the name of this joiner (default is ``joiner``)
         :param args: additional positional arguments which are forwarded to the add and needs function
@@ -1059,7 +1059,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         Remember to close the Flow with :meth:`close`.
 
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited all the way from :class:`jina.peadeployments.peas.Pod`
+        which is inherited all the way from :class:`jina.orchestrate.pods.Pod`
 
 
         .. # noqa: DAR401
@@ -1180,7 +1180,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     def num_pods(self) -> int:
-        """Get the number of peas (shards count) in this Flow
+        """Get the number of pods (shards count) in this Flow
 
 
         .. # noqa: DAR201"""
