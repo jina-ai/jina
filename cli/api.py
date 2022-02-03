@@ -1,6 +1,7 @@
 from jina.serve.runtimes.head import HeadRuntime
+from typing import TYPE_CHECKING
 
-if False:
+if TYPE_CHECKING:
     from argparse import Namespace
 
 
