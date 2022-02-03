@@ -24,19 +24,25 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-Jina is split into Docarray, Finetuner and Jina Core:
+Jina is composed of Docarray, Finetuner and Jina Core:
 * <a href="https://github.com/jina-ai/docarray/">DocArray</a>: Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
 * <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you to deliver the last mile of performance and quality for domain-specific neural search applications.
-* <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
+* <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
 
 <!-- end ecosystem-description -->
-With Jina Core you th following features:
+Jina Core comes equipped with the following features:
 
-🏗️ **Modular Building Blocks** - [explain value of working with docs in Executors, ]
+**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performing specific tasks like generating embeddings or indexing. Jina exposes the necessary concepts to orchestrate your neural search application in such a composable way.
 
-**Serve** - [Explain gateway API]
+**Serve** - Jina uses industry standard technologies like gRPC/protobuf to exchange information. Your Jina search application can be easily exposed via an API using http, websockets or gRPC. 
 
-🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud.
+**Scale** - Jina allows you to scale your neural search applications horizontally by adding more machines. High availability and throughput setups can be easily achieved with Jina. 
+
+**Cloud Native** - Jina is built as Cloud native framework. All your workloads can be containerized. They can be easily deployed with Docker Compose or Kubernetes. Thus making any Cloud deployment working similarly to your local installation of Jina.
+
+🏗️ **Modular Building Blocks** - Jina pipelines are modularized and each Executor can be easily shared via the <a href="https://hub.jina.ai">Hub</a>. This enables you to share pipelines with co-workers or to leverage pre built building blocks. 
+
+
 
 
 
@@ -55,21 +61,27 @@ Check our **[comprehensive docs](https://docs.jina.ai)** for more in depth tutor
 This is the readme for Jina 3. The old readme for Jina 2 can be found <a href="https://github.com/jina-ai/jina/blob/v2.6.4/README.md">here</a>.
 
 ## Get Started
+You can follow our basic example below to get started from building a local `Executor` to eventually deploying your search application in a `Flow` to Kubernetes.
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-get-started.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
-</p>
-
-We promise you can build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
+We recommend familiarizing yourself before with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
 
 
-### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
+### Basic Concepts
+
+
+
+Use simpl executors and flow (doc logic based on docarray readme),
+
+locally
+containrize
+compose
+k8s
 
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
-- [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
+- [**Document**](https://docs.jina.ai/fundamentals/document/): The basic data type in Jina, which can be used as well in the standalone <a href="https://github.com/jina-ai/docarray/">Docarray</a> library
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. It offers both a Pythonic and a gRPC interface to interact with. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application. They can be <a href="https://docs.jina.ai/advanced/hub/">shared via the Jina Hub</a>.
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready to use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
 
 
 Leveraging these three components, let's build an app that **find similar images using ResNet50**.
