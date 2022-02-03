@@ -57,6 +57,8 @@ def test_yaml_expand3():
 
 def test_yaml_expand4():
     os.environ['ENV1'] = 'a'
+    os.environ['ENV2'] = '{"1": "2"}'
+
     with open(os.path.join(cur_dir, 'yaml/test-expand4.yml')) as fp:
         b = JAML.load(
             fp,
@@ -72,6 +74,9 @@ def test_yaml_expand4():
     assert b['components'][1]['metas']['mixed_env'] == '0.232-a'
     assert b['components'][1]['metas']['random_id'] == 3.14
     assert b['components'][1]['metas']['config_str'] == 'hello-world'
+    assert b['components'][1]['metas']['bracket_env'] == '{"1": "2"}'
+    assert b['components'][1]['metas']['bracket_env'] == '{"1": "2"}'
+    assert b['components'][1]['metas']['context_dot'] == 3.14
 
 
 def test_attr_dict():
@@ -140,7 +145,7 @@ def test_load_from_dict():
     d1 = {
         'jtype': __default_executor__,
         'metas': {
-            'name': '${{BE_TEST_NAME}}',
+            'name': '${{ BE_TEST_NAME }}',
             'workspace': '${{this.name}}',
         },
     }

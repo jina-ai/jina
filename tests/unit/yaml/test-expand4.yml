@@ -18,6 +18,9 @@ components:
       name_shortcut: ${{this.name}}
       random_id: ${{ context_var }}
       config_str: ${{ context_var2 }}
+      bracket_env: ${{ ENV.ENV2 }}
+      context_dot: ${{ CONTEXT.context_var }}
+
 metas:
   name: real-compound
 rootvar: 123

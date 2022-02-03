@@ -1,6 +1,7 @@
 import copy
 import os
 import re
+import string
 import tempfile
 import warnings
 from types import SimpleNamespace
@@ -21,10 +22,42 @@ __all__ = ['JAML', 'JAMLCompatible']
 from jina.excepts import BadConfigSource
 from jina.helper import expand_env_var
 
-subvar_regex = re.compile(
-    r'\${{\s*([\w\[\].]+)\s*}}'
-)  #: regex for substituting variables
-internal_var_regex = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
+internal_var_regex = re.compile(
+    r'{.+}|\$[a-zA-Z0-9_]*\b'
+)  # detects exp's of the form {var} or $var
+
+context_regex_str = r'\${{\s[a-zA-Z0-9_]*\s}}'
+context_var_regex = re.compile(
+    context_regex_str
+)  # matches expressions of form '${{ var }}'
+
+context_dot_regex_str = (
+    r'\${{\sCONTEXT\.[a-zA-Z0-9_]*\s}}|\${{\scontext\.[a-zA-Z0-9_]*\s}}'
+)
+context_dot_regex = re.compile(
+    context_dot_regex_str
+)  # matches expressions of form '${{ ENV.var }}' or '${{ env.var }}'
+
+new_env_regex_str = r'\${{\sENV\.[a-zA-Z0-9_]*\s}}|\${{\senv\.[a-zA-Z0-9_]*\s}}'
+new_env_var_regex = re.compile(
+    new_env_regex_str
+)  # matches expressions of form '${{ ENV.var }}' or '${{ env.var }}'
+
+env_var_deprecated_regex_str = r'\$[a-zA-Z0-9_]*'
+env_var_deprecated_regex = re.compile(
+    r'\$[a-zA-Z0-9_]*'
+)  # matches expressions of form '$var'
+
+env_var_regex_str = env_var_deprecated_regex_str + '|' + new_env_regex_str
+env_var_regex = re.compile(env_var_regex_str)  # matches either of the above
+
+yaml_ref_regex = re.compile(
+    r'\${{([\w\[\].]+)}}'
+)  # matches expressions of form '${{root.name[0].var}}'
+
+
+class ContextVarTemplate(string.Template):
+    delimiter = '$$'  # variables that should be substituted with values from the context are internally denoted with '$$'
 
 
 class JAML:
@@ -49,17 +82,45 @@ class JAML:
     An expression can be any combination of literal values, references to a context, or functions.
     You can combine literals, context references, and functions using operators.
 
-    You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string.
+    You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string,
+    which is based on GitHub actions syntax, and looks like this:
 
     .. highlight:: yaml
     .. code-block:: yaml
 
         ${{ <expression> }}
 
-    To evaluate (i.e. substitute the value to the real value)
-    the expression when loading, use :meth:`load(substitute=True)`.
+    This expression can be evaluated directly (i.e. substituted by the real value) when being loaded,
+    by using :meth:`load(substitute=True)`
 
-    To substitute the value based on a dict,
+    JAML supports three different kinds of variables to be used as expressions: `Environment variables`
+    (coming form the environment itself), `context variables` (being passed as a dict),
+    and `internal references` (included in the .yaml file itself).
+
+    An environment variable `var` is accessed through the following syntax:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ env.var }}
+
+    Note the mandatory spaces before and after the variable denotation.
+
+    Context variables can be accessed using the following syntax:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ context_var }}
+
+    Or, if you want to be explicit:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ context.context_var }}
+
+    These context variables are passed as a dict:
 
     .. highlight:: python
     .. code-block:: python
@@ -67,6 +128,16 @@ class JAML:
         obj = JAML.load(fp, substitute=True,
                             context={'context_var': 3.14,
                                     'context_var2': 'hello-world'})
+
+    Internal references point to other variables in the yaml file itself, and can be accessed using the following syntax:
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{root.path.to.var}}
+
+    Note omission of spaces in this syntax.
+
 
     .. note::
         :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
@@ -203,6 +274,7 @@ class JAML:
         :param resolve_passes: number of rounds to resolve internal reference.
         :return: expanded dict.
         """
+
         from jina.helper import parse_arg
 
         expand_map = SimpleNamespace()
@@ -231,14 +303,15 @@ class JAML:
                         p.append(v)
 
         def _replace(sub_d, p, resolve_ref=False):
+
             if isinstance(sub_d, dict):
                 for k, v in sub_d.items():
                     if isinstance(v, (dict, list)):
                         _replace(v, p.__dict__[k], resolve_ref)
                     else:
                         if isinstance(v, str):
-                            if resolve_ref and internal_var_regex.findall(v):
-                                sub_d[k] = _resolve(v, p)
+                            if resolve_ref and yaml_ref_regex.findall(v):
+                                sub_d[k] = _resolve_yaml_reference(v, p)
                             else:
                                 sub_d[k] = _sub(v)
             elif isinstance(sub_d, list):
@@ -247,81 +320,114 @@ class JAML:
                         _replace(v, p[idx], resolve_ref)
                     else:
                         if isinstance(v, str):
-                            if resolve_ref and internal_var_regex.findall(v):
-                                sub_d[idx] = _resolve(v, p)
+                            if resolve_ref and yaml_ref_regex.findall(v):
+                                sub_d[idx] = _resolve_yaml_reference(v, p)
                             else:
                                 sub_d[idx] = _sub(v)
 
+        def _var_to_substitutable(v, exp=context_var_regex):
+            def repl_fn(matchobj):
+                return '$$' + matchobj.group(0)[4:-3]
+
+            return re.sub(exp, repl_fn, v)
+
+        def _to_env_var_synatx(v):
+            v = _var_to_substitutable(v, new_env_var_regex)
+
+            def repl_fn(matchobj):
+                match_str = matchobj.group(0)
+                match_str = match_str.replace('ENV.', '')
+                match_str = match_str.replace('env.', '')
+                return match_str[1:]
+
+            return re.sub(r'\$\$[a-zA-Z0-9_.]*', repl_fn, v)
+
+        def _to_normal_context_var(v):
+            def repl_fn(matchobj):
+                match_str = matchobj.group(0)
+                match_str = match_str.replace('CONTEXT.', '')
+                match_str = match_str.replace('context.', '')
+                return match_str
+
+            return re.sub(context_dot_regex, repl_fn, v)
+
         def _sub(v):
+
+            # substitute template with actual value either from context or env variable
+            # v could contain template of the form
+            #
+            # 1)    ${{ var }},${{ context.var }},${{ CONTEXT.var }} when need to be parsed with the context dict
+            # or
+            # 2 )   ${{ ENV.var }},${{ env.var }},$var ( deprecated) when need to be parsed with env
+            #
+            #
+            # internally env var (1) and context var (2) are treated differently, both of them are cast to a unique and
+            # normalize template format and then are parsed
+            # 1) context variables placeholder are cast to $$var then we use the ContextVarTemplate to parse the context
+            # variables
+            # 2) env variables placeholder are cast to $var then we leverage the os.path.expandvars to replace by
+            # environment variables.
+
+            if env_var_deprecated_regex.findall(v):  # catch expressions of form '$var'
+                warnings.warn(
+                    'Specifying environment variables via the syntax `$var` is deprecated.'
+                    'Use `${{ ENV.var }}` instead.',
+                    category=DeprecationWarning,
+                )
+            if new_env_var_regex.findall(
+                v
+            ):  # handle expressions of form '${{ ENV.var}}',
+                v = _to_env_var_synatx(v)
+            if context_dot_regex.findall(v):
+                v = _to_normal_context_var(v)
+            if context_var_regex.findall(v):  # handle expressions of form '${{ var }}'
+                v = _var_to_substitutable(v)
+                if context:
+                    v = ContextVarTemplate(v).safe_substitute(
+                        context
+                    )  # use vars provided in context
+            v = os.path.expandvars(
+                v
+            )  # gets env var and parses to python objects if neededd
+            return parse_arg(v)
+
+        def _resolve_yaml_reference(v, p):
+
             org_v = v
-            v = expand_env_var(v)
-            if not (isinstance(v, str) and subvar_regex.findall(v)):
-                return v
+            # internal references are of the form ${{path}} where path is a yaml path like root.executors[0].name
 
-            # 0. replace ${{var}} to {var} to use .format
-            v = re.sub(subvar_regex, '{\\1}', v)
+            def repl_fn(matchobj):
+                match_str = matchobj.group(0)
+                match_str_origin = match_str
 
-            # 1. substitute the envs (new syntax: ${{ENV.VAR_NAME}})
-            try:
-                v = v.format(ENV=env_map)
-            except KeyError:
-                pass
+                match_str = re.sub(
+                    yaml_ref_regex, '{\\1}', match_str
+                )  # from ${{var}} to {var} to leverage python formatter
 
-            # 2. substitute the envs (old syntax: $VAR_NAME)
-            if os.environ:
                 try:
-                    v = v.format_map(dict(os.environ))
+                    # "root" context is now the global namespace
+                    # "this" context is now the current node namespace
+                    match_str = match_str.format(root=expand_map, this=p, ENV=env_map)
+                except AttributeError as ex:
+                    raise AttributeError(
+                        'variable replacement is failed, please check your YAML file.'
+                    ) from ex
                 except KeyError:
-                    pass
+                    return match_str_origin
 
-            # 3. substitute the context dict
-            if context:
-                try:
-                    if isinstance(context, dict):
-                        v = v.format_map(context)
-                    elif isinstance(context, SimpleNamespace):
-                        v = v.format(root=context, this=context)
-                except (KeyError, AttributeError):
-                    pass
+                return match_str
 
-            # 4. make string to float/int/list/bool with best effort
-            v = parse_arg(v)
+            v = re.sub(yaml_ref_regex, repl_fn, v)
 
-            if isinstance(v, str) and internal_var_regex.findall(v):
-                # replacement failed, revert back to before
-                v = org_v
-
-            return v
-
-        def _resolve(v, p):
-            # resolve internal reference
-            org_v = v
-            v = re.sub(subvar_regex, '{\\1}', v)
-            try:
-                # "root" context is now the global namespace
-                # "this" context is now the current node namespace
-                v = v.format(root=expand_map, this=p, ENV=env_map)
-            except AttributeError as ex:
-                raise AttributeError(
-                    'variable replacement is failed, please check your YAML file.'
-                ) from ex
-            except KeyError:
-                pass
-
-            v = parse_arg(v)
-
-            if isinstance(v, str) and internal_var_regex.findall(v):
-                # replacement failed, revert back to before
-                v = org_v
-
-            return v
+            return parse_arg(v)
 
         _scan(d, expand_map)
         _scan(dict(os.environ), env_map)
+
         # first do var replacement
         _replace(d, expand_map)
 
-        # do three rounds of scan-replace to resolve internal references
+        # do `resolve_passes` rounds of scan-replace to resolve internal references
         for _ in range(resolve_passes):
             # rebuild expand_map
             expand_map = SimpleNamespace()
@@ -494,8 +600,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
 
         Support substitutions in YAML:
-            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``.
-            - Context dict (``context``): ``${{VAR}}``(recommended).
+            - Environment variables: ``${{ ENV.VAR }}`` (recommended), ``$VAR`` (deprecated).
+            - Context dict (``context``): ``${{ CONTEXT.VAR }}``(recommended), ``${{ VAR }}``.
             - Internal reference via ``this`` and ``root``: ``${{this.same_level_key}}``, ``${{root.root_level_key}}``
 
         Substitutions are carried in the order and multiple passes to resolve variables with best effort.

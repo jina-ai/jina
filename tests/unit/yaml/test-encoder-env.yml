@@ -1,4 +1,4 @@
 !BaseExecutor
 metas:
-  name: ${{BE_TEST_NAME}}
+  name: ${{ ENV.BE_TEST_NAME }}
   workspace: ${{this.name}}
