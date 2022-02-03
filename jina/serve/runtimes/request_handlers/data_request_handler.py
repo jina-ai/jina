@@ -1,3 +1,4 @@
+import warnings
 from typing import Dict, List, TYPE_CHECKING, Optional
 
 from docarray import DocumentArray
@@ -85,7 +86,7 @@ class DataRequestHandler:
         )
 
         # executor logic
-        r_docs = await self._executor.__acall__(
+        return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
@@ -95,17 +96,24 @@ class DataRequestHandler:
             ),
         )
         # assigning result back to request
-        if r_docs is not None:
-            if isinstance(r_docs, DocumentArray):
-                DataRequestHandler.replace_docs(requests[0], r_docs)
-            elif isinstance(r_docs, dict):
+        if return_data is not None:
+            if isinstance(return_data, DocumentArray):
+                DataRequestHandler.replace_docs(requests[0], return_data)
+            elif isinstance(return_data, dict):
                 params = requests[0].parameters
-                params.update(r_docs)
+                results_key = "results"
+
+                if not results_key in params.keys():
+                    params[results_key] = dict()
+
+                params[results_key].update({self.args.name: return_data})
+
                 requests[0].parameters = params
+
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / Dict / `None`, '
-                    f'but getting {r_docs!r}'
+                    f'but getting {return_data!r}'
                 )
         else:
             DataRequestHandler.replace_docs(requests[0], docs)
@@ -176,16 +184,21 @@ class DataRequestHandler:
     @staticmethod
     def get_parameters_dict_from_request(
         requests: List['DataRequest'],
-    ) -> List['Dict']:
+    ) -> 'Dict':
         """
         Returns a parameters dict from a list of DataRequest objects.
         :param requests: List of DataRequest objects
         :return: parameters matrix: list of parameters (Dict) objects
         """
-        return {
-            f'request-{i}': getattr(request, 'parameters')
-            for i, request in enumerate(requests)
-        }
+
+        parameters = requests[0].parameters
+        parameters["results"] = dict()
+        # we only merge the results and make the assumption that the others params does not change during execution
+
+        for req in requests:
+            parameters["results"].update(req.parameters["results"])
+
+        return parameters
 
     @staticmethod
     def get_docs_from_request(

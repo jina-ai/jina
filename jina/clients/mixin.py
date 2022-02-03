@@ -9,6 +9,19 @@ if TYPE_CHECKING:
     from jina import DocumentArray
 
 
+def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
+    if parameters:
+        if "results" in parameters.keys():
+            raise KeyError(
+                f"key results can't be used in `parameters` because it is use internally to return the results"
+            )
+        parameters.update({"results": dict()})
+    else:
+        parameters = {"results": dict()}
+
+    return parameters
+
+
 class PostMixin:
     """The Post Mixin class for Client and Flow"""
 
@@ -70,6 +83,8 @@ class PostMixin:
         if (on_always is None) and (on_done is None):
             return_results = True
 
+        parameters = _include_results_field_in_param(parameters)
+
         return run_async(
             _get_results,
             inputs=inputs,
@@ -125,6 +140,9 @@ class AsyncPostMixin:
         c = self.client
         c.show_progress = show_progress
         c.continue_on_error = continue_on_error
+
+        parameters = _include_results_field_in_param(parameters)
+
         async for r in c._get_results(
             inputs=inputs,
             on_done=on_done,
