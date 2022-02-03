@@ -209,7 +209,7 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         )
 
 
-da = DocumentArray(docs=[Document(text='text_input')])
+da = DocumentArray([Document(text='text_input')])
 
 
 @pytest.mark.parametrize(
