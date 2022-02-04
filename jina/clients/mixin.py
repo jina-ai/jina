@@ -1,5 +1,6 @@
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
+import warnings
 
 from jina.helper import run_async
 
@@ -11,13 +12,15 @@ if TYPE_CHECKING:
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
     if parameters:
-        if "results" in parameters.keys():
-            raise KeyError(
-                f"key results can't be used in `parameters` because it is use internally to return the results"
-            )
-        parameters.update({"results": dict()})
+        if 'results' in parameters.keys():
+            if not isinstance(parameters['results'], dict):
+                warnings.warn(
+                    'It looks like you passed a dictionary with the key `results` to `parameters`.'
+                    'This key is reserved, so the associated value will be deleted.'
+                )
+                parameters.update({'results': dict()})
     else:
-        parameters = {"results": dict()}
+        parameters = {'results': dict()}
 
     return parameters
 
