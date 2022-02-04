@@ -193,11 +193,11 @@ class DataRequestHandler:
 
         parameters = requests[0].parameters
         if "results" not in parameters.keys():
-            parameters["results"] = dict()
+            parameters['results'] = dict()
         # we only merge the results and make the assumption that the others params does not change during execution
 
         for req in requests:
-            parameters["results"].update(req.parameters.get("results", dict()))
+            parameters['results'].update(req.parameters.get('results', dict()))
 
         return parameters
 
