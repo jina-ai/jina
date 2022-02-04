@@ -219,16 +219,12 @@ def test_reduce_status():
     with flow as f:
         da = DocumentArray([Document() for _ in range(5)])
         resp = Client(port=exposed_port).post(
-            '/status', parameters={"foo": "bar"}, inputs=da, return_results=True
+            '/status', parameters={'foo': 'bar'}, inputs=da, return_results=True
         )
 
-    # assert no reduce happened
+    assert resp[0].parameters['foo'] == 'bar'
+    assert len(resp[0].parameters['__results__']) == n_shards
 
-    assert resp[0].parameters["foo"] == "bar"
-    assert len(resp[0].parameters["results"]) == n_shards
-
-    print(resp[0].parameters)
-
-    for _, param in resp[0].parameters["results"].items():
+    for _, param in resp[0].parameters['__results__'].items():
         assert 'shard_id' in param.keys()
         assert 'happy_status' in param.keys()

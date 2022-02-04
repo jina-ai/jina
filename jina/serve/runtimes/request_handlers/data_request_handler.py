@@ -101,7 +101,7 @@ class DataRequestHandler:
                 DataRequestHandler.replace_docs(requests[0], return_data)
             elif isinstance(return_data, dict):
                 params = requests[0].parameters
-                results_key = "results"
+                results_key = '__results__'
 
                 if not results_key in params.keys():
                     params[results_key] = dict()
@@ -190,14 +190,14 @@ class DataRequestHandler:
         :param requests: List of DataRequest objects
         :return: parameters matrix: list of parameters (Dict) objects
         """
-
+        key_result = '__results__'
         parameters = requests[0].parameters
-        if "results" not in parameters.keys():
-            parameters['results'] = dict()
+        if key_result not in parameters.keys():
+            parameters[key_result] = dict()
         # we only merge the results and make the assumption that the others params does not change during execution
 
         for req in requests:
-            parameters['results'].update(req.parameters.get('results', dict()))
+            parameters[key_result].update(req.parameters.get(key_result, dict()))
 
         return parameters
 

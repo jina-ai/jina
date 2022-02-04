@@ -11,16 +11,19 @@ if TYPE_CHECKING:
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
+    key_result = '__results__'
+
     if parameters:
-        if 'results' in parameters.keys():
-            if not isinstance(parameters['results'], dict):
+
+        if key_result in parameters.keys():
+            if not isinstance(parameters[key_result], dict):
                 warnings.warn(
-                    'It looks like you passed a dictionary with the key `results` to `parameters`.'
+                    'It looks like you passed a dictionary with the key `{key_result}` to `parameters`.'
                     'This key is reserved, so the associated value will be deleted.'
                 )
-                parameters.update({'results': dict()})
+                parameters.update({key_result: dict()})
     else:
-        parameters = {'results': dict()}
+        parameters = {key_result: dict()}
 
     return parameters
 
