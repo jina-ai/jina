@@ -10,7 +10,7 @@ from jina import Flow, Document
 cur_dir = os.path.dirname(__file__)
 
 
-async def create_all_flow_pods_and_wait_ready(
+async def create_all_flow_deployments_and_wait_ready(
     flow_dump_path, namespace, api_client, app_client, core_client
 ):
     from kubernetes import utils
@@ -24,11 +24,11 @@ async def create_all_flow_pods_and_wait_ready(
         utils.create_from_dict(api_client, namespace_object)
     except:
         pass
-    pod_set = set(os.listdir(flow_dump_path))
-    assert pod_set == {'gateway', 'slow_process_executor'}
-    for pod_name in pod_set:
-        file_set = set(os.listdir(os.path.join(flow_dump_path, pod_name)))
-        if pod_name == 'gateway':
+    deployment_set = set(os.listdir(flow_dump_path))
+    assert deployment_set == {'gateway', 'slow_process_executor'}
+    for deployment_name in deployment_set:
+        file_set = set(os.listdir(os.path.join(flow_dump_path, deployment_name)))
+        if deployment_name == 'gateway':
             assert file_set == {'gateway.yml'}
         else:
             assert file_set == {
@@ -39,7 +39,7 @@ async def create_all_flow_pods_and_wait_ready(
             try:
                 utils.create_from_yaml(
                     api_client,
-                    yaml_file=os.path.join(flow_dump_path, pod_name, file),
+                    yaml_file=os.path.join(flow_dump_path, deployment_name, file),
                     namespace=namespace,
                 )
             except Exception:
@@ -155,7 +155,7 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
-    await create_all_flow_pods_and_wait_ready(
+    await create_all_flow_deployments_and_wait_ready(
         dump_path,
         namespace=namespace,
         api_client=api_client,
@@ -261,7 +261,7 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
-    await create_all_flow_pods_and_wait_ready(
+    await create_all_flow_deployments_and_wait_ready(
         dump_path,
         namespace=namespace,
         api_client=api_client,
@@ -370,7 +370,7 @@ async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
-    await create_all_flow_pods_and_wait_ready(
+    await create_all_flow_deployments_and_wait_ready(
         dump_path,
         namespace=namespace,
         api_client=api_client,

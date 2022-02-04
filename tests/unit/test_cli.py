@@ -9,9 +9,9 @@ from cli.export import api_to_dict
 from cli.lookup import _build_lookup_table, lookup_and_print
 from jina.checker import NetworkChecker
 from jina.jaml import JAML
-from jina.parsers import set_pod_parser, set_pea_parser
+from jina.parsers import set_deployment_parser, set_pod_parser
 from jina.parsers.ping import set_ping_parser
-from jina.orchestrate.peas.factory import PeaFactory
+from jina.orchestrate.pods.factory import PodFactory
 
 
 def test_export_api(tmpdir):
@@ -36,11 +36,11 @@ def test_main_cli():
 
 
 def test_cli_help():
-    subprocess.check_call(['jina', 'help', 'pod'])
+    subprocess.check_call(['jina', 'help', 'deployment'])
 
 
 def test_cli_warn_unknown_args():
-    subprocess.check_call(['jina', 'help', 'pod', '--abcdefg'])
+    subprocess.check_call(['jina', 'help', 'deployment', '--abcdefg'])
 
 
 @pytest.mark.parametrize('cli', ac_table['commands'])
@@ -60,29 +60,33 @@ def test_all_start_method(smethod):
 
 
 def test_parse_env_map():
-    a = set_pod_parser().parse_args(['--env', 'key1=value1', '--env', 'key2=value2'])
+    a = set_deployment_parser().parse_args(
+        ['--env', 'key1=value1', '--env', 'key2=value2']
+    )
     assert a.env == {'key1': 'value1', 'key2': 'value2'}
 
-    a = set_pod_parser().parse_args(['--env', 'key1=value1', 'key2=value2', 'key3=3'])
+    a = set_deployment_parser().parse_args(
+        ['--env', 'key1=value1', 'key2=value2', 'key3=3']
+    )
     assert a.env == {'key1': 'value1', 'key2': 'value2', 'key3': 3}
 
 
 @pytest.mark.slow
 def test_ping():
-    a1 = set_pea_parser().parse_args([])
+    a1 = set_pod_parser().parse_args([])
     a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_in)])
 
     a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_in), '--timeout', '1000'])
 
     with pytest.raises(SystemExit) as cm:
-        with PeaFactory.build_pea(a1):
+        with PodFactory.build_pod(a1):
             NetworkChecker(a2)
 
     assert cm.value.code == 0
 
     # test with bad address
     with pytest.raises(SystemExit) as cm:
-        with PeaFactory.build_pea(a1):
+        with PodFactory.build_pod(a1):
             NetworkChecker(a3)
 
     assert cm.value.code == 1

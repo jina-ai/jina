@@ -7,11 +7,11 @@ def _cli_to_schema(
     api_dict,
     target,
 ):
-    pod_api = None
+    deployment_api = None
 
     for d in api_dict['methods']:
         if d['name'] == target:
-            pod_api = d['options']
+            deployment_api = d['options']
             break
 
     _schema = {
@@ -19,7 +19,7 @@ def _cli_to_schema(
         'required': [],
     }
 
-    for p in pod_api:
+    for p in deployment_api:
         dtype = p['type']
         if dtype.startswith('typing.'):
             dtype = dtype.replace('typing.', '')
@@ -126,7 +126,7 @@ def fill_overload(
 # param
 entries = [
     dict(
-        cli_entrypoint='pod',
+        cli_entrypoint='deployment',
         doc_str_title='Add an Executor to the current Flow object.',
         doc_str_return='a (new) Flow object with modification',
         return_type="Union['Flow', 'AsyncFlow']",

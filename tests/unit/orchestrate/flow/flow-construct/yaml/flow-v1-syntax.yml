@@ -1,6 +1,6 @@
 !Flow
 version: '1'
-pods:
+deployments:
   - name: executor0  # notice the change here, name is now an attribute
     method: add  # by default method is always add, available: add, needs, inspect
     needs: gateway

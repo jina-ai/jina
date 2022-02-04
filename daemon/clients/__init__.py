@@ -1,10 +1,10 @@
-from typing import Optional, Dict, TYPE_CHECKING, Union, Awaitable
+from typing import Optional, Dict, TYPE_CHECKING, Union
 
 from jina.logging.logger import JinaLogger
 
 from daemon.clients.base import BaseClient, AsyncBaseClient
-from daemon.clients.peas import PeaClient, AsyncPeaClient
 from daemon.clients.pods import PodClient, AsyncPodClient
+from daemon.clients.deployments import DeploymentClient, AsyncDeploymentClient
 from daemon.clients.flows import FlowClient, AsyncFlowClient
 from daemon.clients.workspaces import WorkspaceClient, AsyncWorkspaceClient
 
@@ -25,8 +25,8 @@ class JinaDClient:
     """
 
     _base_cls = BaseClient
-    _pea_cls = PeaClient
     _pod_cls = PodClient
+    _deployment_cls = DeploymentClient
     _flow_cls = FlowClient
     _workspace_cls = WorkspaceClient
 
@@ -43,20 +43,20 @@ class JinaDClient:
         self.kwargs = {'uri': uri, 'logger': logger, 'timeout': timeout}
 
     @property
-    def peas(self):
-        """Pea Client
-
-        :return: Pea Client
-        """
-        return self._pea_cls(**self.kwargs)
-
-    @property
-    def pods(self) -> Union[PodClient, AsyncPodClient]:
+    def pods(self):
         """Pod Client
 
         :return: Pod Client
         """
         return self._pod_cls(**self.kwargs)
+
+    @property
+    def deployments(self) -> Union[DeploymentClient, AsyncDeploymentClient]:
+        """Deployment Client
+
+        :return: Deployment Client
+        """
+        return self._deployment_cls(**self.kwargs)
 
     @property
     def flows(self) -> Union[FlowClient, AsyncFlowClient]:
@@ -95,7 +95,7 @@ class AsyncJinaDClient(JinaDClient):
     """Async JinaD Client"""
 
     _base_cls = AsyncBaseClient
-    _pea_cls = AsyncPeaClient
     _pod_cls = AsyncPodClient
+    _deployment_cls = AsyncDeploymentClient
     _flow_cls = AsyncFlowClient
     _workspace_cls = AsyncWorkspaceClient

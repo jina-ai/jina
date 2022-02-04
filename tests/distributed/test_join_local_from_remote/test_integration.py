@@ -12,7 +12,7 @@ from ..helpers import create_workspace, wait_for_workspace, create_flow, assert_
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 flow_yaml = os.path.join(cur_dir, 'flow.yml')
-pod_dir = os.path.join(cur_dir, 'pods')
+deployment_dir = os.path.join(cur_dir, 'deployments')
 
 
 JINAD_HOST = __default_host__
@@ -57,7 +57,7 @@ def test_flow(docker_compose, doc_to_index, client_instance, mocker):
         assert resp.data.docs[1].text == 'test'
 
     mock = mocker.Mock()
-    workspace_id = create_workspace(filepaths=[flow_yaml], dirpath=pod_dir)
+    workspace_id = create_workspace(filepaths=[flow_yaml], dirpath=deployment_dir)
     assert wait_for_workspace(workspace_id)
     flow_id = create_flow(
         workspace_id=workspace_id,

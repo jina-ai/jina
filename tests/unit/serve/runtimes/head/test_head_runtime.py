@@ -12,7 +12,7 @@ from grpc import RpcError
 from jina import DocumentArray, Document
 from jina.clients.request import request_generator
 from jina.enums import PollingType
-from jina.parsers import set_pea_parser
+from jina.parsers import set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
@@ -23,7 +23,7 @@ from jina.types.request.data import DataRequest
 
 
 def test_regular_data_case():
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     args.polling = PollingType.ANY
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
@@ -45,7 +45,7 @@ def test_regular_data_case():
 
 
 def test_control_message_processing():
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     # no connection registered yet
@@ -72,7 +72,7 @@ def test_control_message_processing():
 
 
 def test_message_merging():
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     args.polling = PollingType.ALL
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
@@ -93,7 +93,7 @@ def test_message_merging():
 
 
 def test_uses_before_uses_after():
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     args.polling = PollingType.ALL
     args.uses_before_address = 'fake_address'
     args.uses_after_address = 'fake_address'
@@ -132,7 +132,7 @@ def test_decompress(monkeypatch):
         decompress,
     )
 
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     args.polling = PollingType.ANY
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
@@ -157,7 +157,7 @@ def test_decompress(monkeypatch):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_dynamic_polling(polling):
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--polling',
             json.dumps(
@@ -201,7 +201,7 @@ def test_dynamic_polling(polling):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_base_polling(polling):
-    args = set_pea_parser().parse_args(
+    args = set_pod_parser().parse_args(
         [
             '--polling',
             polling,

@@ -57,11 +57,11 @@ def _get_app(mode=None):
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     if mode is None:
-        from daemon.api.endpoints import flows, pods, peas, logs, workspaces
+        from daemon.api.endpoints import flows, deployments, pods, logs, workspaces
 
         app.include_router(logs.router)
-        app.include_router(peas.router)
         app.include_router(pods.router)
+        app.include_router(deployments.router)
         app.include_router(flows.router)
         app.include_router(workspaces.router)
         app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
@@ -72,12 +72,12 @@ def _get_app(mode=None):
                     'description': 'API to manage Flows',
                 },
                 {
-                    'name': 'pods',
-                    'description': 'API to manage Pods',
+                    'name': 'deployments',
+                    'description': 'API to manage Deployments',
                 },
                 {
-                    'name': 'peas',
-                    'description': 'API to manage Peas',
+                    'name': 'pods',
+                    'description': 'API to manage Pods',
                 },
                 {
                     'name': 'logs',
@@ -88,6 +88,19 @@ def _get_app(mode=None):
                     'description': 'API to manage Workspaces',
                 },
             ]
+        )
+    elif mode == 'deployment':
+        from daemon.api.endpoints.partial import deployment
+
+        app.include_router(deployment.router)
+        app.add_exception_handler(
+            PartialDaemon400Exception, partial_daemon_exception_handler
+        )
+        app.openapi_tags.append(
+            {
+                'name': 'deployment',
+                'description': 'API to manage a Deployment',
+            }
         )
     elif mode == 'pod':
         from daemon.api.endpoints.partial import pod
@@ -100,19 +113,6 @@ def _get_app(mode=None):
             {
                 'name': 'pod',
                 'description': 'API to manage a Pod',
-            }
-        )
-    elif mode == 'pea':
-        from daemon.api.endpoints.partial import pea
-
-        app.include_router(pea.router)
-        app.add_exception_handler(
-            PartialDaemon400Exception, partial_daemon_exception_handler
-        )
-        app.openapi_tags.append(
-            {
-                'name': 'pea',
-                'description': 'API to manage a Pea',
             },
         )
     elif mode == 'flow':

@@ -10,7 +10,7 @@ from jina import helper
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.parsers import set_gateway_parser
-from jina.orchestrate.peas.factory import PeaFactory
+from jina.orchestrate.pods.factory import PodFactory
 from docarray import Document, DocumentArray
 from tests import random_docs
 
@@ -70,11 +70,11 @@ def test_gateway_ready(port_expose, route, status_code):
             'http',
             '--graph-description',
             '{}',
-            '--pods-addresses',
+            '--deployments-addresses',
             '{}',
         ]
     )
-    with PeaFactory.build_pea(p):
+    with PodFactory.build_pod(p):
         time.sleep(0.5)
         a = requests.get(f'http://localhost:{p.port_expose}{route}')
     assert a.status_code == status_code

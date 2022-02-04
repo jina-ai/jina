@@ -106,18 +106,18 @@ def docker_image():
     client.close()
 
 
-# TODO: this should be repeatable, but its not due to head/gateway not being containerized
-# @pytest.mark.repeat(5)
+# TODO: this should be repodtable, but its not due to head/gateway not being containerized
+# @pytest.mark.repodt(5)
 @pytest.mark.timeout(60)
 @pytest.mark.parametrize('uses', ['docker://test_rolling_update_docker'])
 def test_search_while_updating(docs, reraise, docker_image, uses):
     request_count = 50
     shards = 2
 
-    def update_rolling(flow, pod_name, start_event):
+    def update_rolling(flow, deployment_name, start_event):
         start_event.wait()
         with reraise:
-            flow.rolling_update(pod_name)
+            flow.rolling_update(deployment_name)
 
     with Flow().add(
         uses=uses,
@@ -149,14 +149,14 @@ def test_search_while_updating(docs, reraise, docker_image, uses):
     assert total_docs == len(docs) * request_count
 
 
-# TODO: this should be repeatable, but its not due to head/gateway not being containerized
-# @pytest.mark.repeat(5)
+# TODO: this should be repodtable, but its not due to head/gateway not being containerized
+# @pytest.mark.repodt(5)
 @pytest.mark.timeout(60)
 def test_vector_indexer_thread(config, docs, reraise):
-    def update_rolling(flow, pod_name, start_event):
+    def update_rolling(flow, deployment_name, start_event):
         start_event.wait()
         with reraise:
-            flow.rolling_update(pod_name)
+            flow.rolling_update(deployment_name)
 
     with Flow().add(
         name='executor1',
@@ -195,7 +195,7 @@ def test_workspace(config, tmpdir, docs):
         workspace=str(tmpdir),
         shards=3,
     ) as flow:
-        # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
+        # in practice, we don't send index requests to the deployment this is just done to test the workspaces
         for i in range(10):
             flow.index(docs)
 
@@ -204,15 +204,15 @@ def test_workspace(config, tmpdir, docs):
     assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1', '2'}
 
 
-def test_num_peas(config):
+def test_num_pods(config):
     with Flow().add(
         name='executor1',
         uses='!DummyMarkExecutor',
         replicas=3,
         shards=4,
     ) as flow:
-        assert flow.num_peas == (
-            4 * 3 + 1 + 1  # shards 4  # replicas 3  # pod head  # gateway
+        assert flow.num_pods == (
+            4 * 3 + 1 + 1  # shards 4  # replicas 3  # deployment head  # gateway
         )
 
 

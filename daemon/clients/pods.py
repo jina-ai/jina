@@ -1,69 +1,103 @@
 from http import HTTPStatus
-from typing import Union, Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING, Tuple, Union
 
 import aiohttp
 
-from daemon.clients.peas import AsyncPeaClient
+from daemon.models.id import daemonize
+from daemon.clients.base import AsyncBaseClient
 from daemon.clients.mixin import AsyncToSyncMixin
-from daemon.helper import if_alive, error_msg_from
-from daemon.models.id import DaemonID, daemonize
+from daemon.helper import error_msg_from, if_alive
+
+if TYPE_CHECKING:
+    from daemon.models import DaemonID
 
 
-class AsyncPodClient(AsyncPeaClient):
-    """Async Client to create/update/delete Peods on remote JinaD"""
+class AsyncPodClient(AsyncBaseClient):
+    """Async Client to create/update/delete Pods on remote JinaD"""
 
     _kind = 'pod'
     _endpoint = '/pods'
 
     @if_alive
-    async def rolling_update(
-        self,
-        id: Union[str, 'DaemonID'],
-        uses_with: Optional[Dict] = None,
-    ) -> str:
-        """Update a Flow on remote JinaD (only rolling_update supported)
+    async def arguments(self) -> Optional[Dict]:
+        """Get all arguments accepted by a remote Pod/Deployment
 
-        :param id: Pod ID
-        :param uses_with: the uses_with to update the Executor
-        :return: Pod ID
+        :return: dict arguments of remote JinaD
         """
         async with aiohttp.request(
-            method='PUT',
-            url=f'{self.store_api}/rolling_update/{daemonize(id, self._kind)}',
-            json=uses_with,
-            timeout=self.timeout,
+            method='GET', url=f'{self.store_api}/arguments', timeout=self.timeout
         ) as response:
-            response_json = await response.json()
-            if response.status != HTTPStatus.OK:
-                error_msg = error_msg_from(response_json)
-                self._logger.error(
-                    f'{self._kind.title()} update failed as: {error_msg}'
-                )
-                return error_msg
-            return response_json
+            if response.status == HTTPStatus.OK:
+                return await response.json()
 
     @if_alive
-    async def scale(self, id: Union[str, 'DaemonID'], replicas: int) -> str:
-        """Scale a remote Pod
+    async def create(
+        self,
+        workspace_id: Union[str, 'DaemonID'],
+        payload: Dict,
+        envs: Dict[str, str] = {},
+    ) -> Tuple[bool, str]:
+        """Create a remote Pod / Deployment
 
-        :param id: Pod ID
-        :param replicas: The number of replicas to scale to
-        :return: Pod ID
+        :param workspace_id: id of workspace where the Pod would live in
+        :param payload: json payload
+        :param envs: dict of env vars to be passed
+        :return: (True if Pod/Deployment creation succeeded) and (the identity of the spawned Pod/Deployment or, error message)
         """
+        envs = (
+            [('envs', f'{k}={v}') for k, v in envs.items()]
+            if envs and isinstance(envs, Dict)
+            else []
+        )
         async with aiohttp.request(
-            method='PUT',
-            url=f'{self.store_api}/scale/{daemonize(id, self._kind)}',
-            params={'replicas': replicas},
+            method='POST',
+            url=self.store_api,
+            params=[('workspace_id', daemonize(workspace_id))] + envs,
+            json=payload,
+            timeout=self.timeout,
+        ) as response:
+            response_json = await response.json()
+            if response.status == HTTPStatus.CREATED:
+                self._logger.success(
+                    f'successfully created a {self._kind.title()} {response_json} in workspace {workspace_id}'
+                )
+                return True, response_json
+            elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
+                field_msg = (
+                    f' for field {response_json["detail"][0]["loc"][1]}'
+                    if 'loc' in response_json["detail"][0]
+                    else ''
+                )
+                error_msg = f'validation error in the payload: {response_json["detail"][0]["msg"]}{field_msg}'
+                self._logger.error(error_msg)
+                return False, error_msg
+            else:
+                error_msg = error_msg_from(response_json)
+                self._logger.error(
+                    f'{self._kind.title()} creation failed as: {error_msg}'
+                )
+                return False, error_msg
+
+    @if_alive
+    async def delete(self, id: Union[str, 'DaemonID'], **kwargs) -> bool:
+        """Delete a remote Pod/Deployment
+
+        :param id: the identity of the Pod/Deployment
+        :param kwargs: keyword arguments
+        :return: True if the deletion is successful
+        """
+
+        async with aiohttp.request(
+            method='DELETE',
+            url=f'{self.store_api}/{daemonize(id, self._kind)}',
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
-                error_msg = error_msg_from(response_json)
                 self._logger.error(
-                    f'{self._kind.title()} update failed as: {error_msg}'
+                    f'deletion of {self._kind.title()} {id} failed: {error_msg_from(response_json)}'
                 )
-                return error_msg
-            return response_json
+            return response.status == HTTPStatus.OK
 
 
 class PodClient(AsyncToSyncMixin, AsyncPodClient):

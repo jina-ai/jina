@@ -129,9 +129,9 @@ def test_encoder_name_dict_replace():
 
 def test_encoder_inject_config_via_kwargs():
     with BaseExecutor.load_config(
-        'yaml/test-encoder-env.yml', metas={'pea_id': 345}
+        'yaml/test-encoder-env.yml', metas={'pod_id': 345}
     ) as be:
-        assert be.metas.pea_id == 345
+        assert be.metas.pod_id == 345
 
 
 def test_load_from_dict():
@@ -139,7 +139,7 @@ def test_load_from_dict():
     # metas:
     #   name: ${{BE_TEST_NAME}}
     #   batch_size: ${{BATCH_SIZE}}
-    #   pea_id: ${{pea_id}}
+    #   pod_id: ${{pod_id}}
     #   workspace: ${{this.name}}-${{this.batch_size}}
 
     d1 = {

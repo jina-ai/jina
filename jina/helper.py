@@ -814,20 +814,20 @@ class ArgNamespace:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
         :param args: namespace or dict or namespace to dict.
-        :return: pea args
+        :return: pod args
         """
         if isinstance(args, Namespace):
             return vars(args)
         elif isinstance(args, dict):
-            pea_args = {}
+            pod_args = {}
             for k, v in args.items():
                 if isinstance(v, Namespace):
-                    pea_args[k] = vars(v)
+                    pod_args[k] = vars(v)
                 elif isinstance(v, list):
-                    pea_args[k] = [vars(_) for _ in v]
+                    pod_args[k] = [vars(_) for _ in v]
                 else:
-                    pea_args[k] = v
-            return pea_args
+                    pod_args[k] = v
+            return pod_args
 
 
 def is_valid_local_config_source(path: str) -> bool:

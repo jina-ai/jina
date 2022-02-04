@@ -49,11 +49,13 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 )
 async def _rolling_update(
     id: DaemonID,
-    pod_name: str,
+    deployment_name: str,
     uses_with: Optional[Dict[str, Any]] = None,
 ):
     try:
-        return await store.rolling_update(id=id, pod_name=pod_name, uses_with=uses_with)
+        return await store.rolling_update(
+            id=id, deployment_name=deployment_name, uses_with=uses_with
+        )
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -62,9 +64,11 @@ async def _rolling_update(
     path='/scale/{id}',
     summary='Trigger a scale operation on the Flow object',
 )
-async def _scale(id: DaemonID, pod_name: str, replicas: int):
+async def _scale(id: DaemonID, deployment_name: str, replicas: int):
     try:
-        return await store.scale(id=id, pod_name=pod_name, replicas=replicas)
+        return await store.scale(
+            id=id, deployment_name=deployment_name, replicas=replicas
+        )
     except Exception as ex:
         raise Runtime400Exception from ex
 

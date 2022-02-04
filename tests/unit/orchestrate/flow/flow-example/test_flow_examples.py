@@ -9,7 +9,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
-    addresses = f._get_pod_addresses()
+    addresses = f._get_deployments_addresses()
     for name, pod in f:
         if name != 'gateway':
             assert (

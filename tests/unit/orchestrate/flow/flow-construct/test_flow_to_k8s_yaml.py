@@ -107,13 +107,13 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         == '{"executor0": ["executor1"], "start-gateway": ["executor0"], "executor1": ["executor2"], "executor2": ["end-gateway"]}'
     )
     if k8s_connection_pool is False:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "executor1": ["executor1-head-0.test-flow-ns.svc:8081"], "executor2": ["executor2-head-0.test-flow-ns.svc:8081"]}'
         )
-    assert '--pea-role' in gateway_args
-    assert gateway_args[gateway_args.index('--pea-role') + 1] == 'GATEWAY'
+    assert '--pod-role' in gateway_args
+    assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
     if protocol == 'http':
         assert '--protocol' in gateway_args
         assert gateway_args[gateway_args.index('--protocol') + 1] == 'HTTP'
@@ -167,8 +167,8 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         executor0_head0_args[executor0_head0_args.index('--runtime-cls') + 1]
         == 'HeadRuntime'
     )
-    assert '--pea-role' in executor0_head0_args
-    assert executor0_head0_args[executor0_head0_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in executor0_head0_args
+    assert executor0_head0_args[executor0_head0_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor0_head0_args
     if not k8s_connection_pool:
         assert '--k8s-disable-connection-pool' in executor0_head0_args
@@ -218,10 +218,10 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--uses-with' in executor0_args
     assert executor0_args[executor0_args.index('--uses-with') + 1] == '{"param": 0}'
     assert '--uses-metas' in executor0_args
-    assert executor0_args[executor0_args.index('--uses-metas') + 1] == '{"pea_id": 0}'
+    assert executor0_args[executor0_args.index('--uses-metas') + 1] == '{"pod_id": 0}'
     assert '--native' in executor0_args
     assert '--k8s-disable-connection-pool' not in executor0_args
-    assert '--pea-role' not in executor0_args
+    assert '--pod-role' not in executor0_args
     assert '--runtime-cls' not in executor0_args
     assert '--connection-list' not in executor0_args
 
@@ -271,8 +271,8 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         executor1_head0_args[executor1_head0_args.index('--runtime-cls') + 1]
         == 'HeadRuntime'
     )
-    assert '--pea-role' in executor1_head0_args
-    assert executor1_head0_args[executor1_head0_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in executor1_head0_args
+    assert executor1_head0_args[executor1_head0_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor1_head0_args
     if not k8s_connection_pool:
         assert '--k8s-disable-connection-pool' in executor1_head0_args
@@ -333,11 +333,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--uses-metas' in executor1_shard0_args
     assert (
         executor1_shard0_args[executor1_shard0_args.index('--uses-metas') + 1]
-        == '{"pea_id": 0}'
+        == '{"pod_id": 0}'
     )
     assert '--native' in executor1_shard0_args
     assert '--k8s-disable-connection-pool' not in executor1_shard0_args
-    assert '--pea-role' not in executor1_shard0_args
+    assert '--pod-role' not in executor1_shard0_args
     assert '--runtime-cls' not in executor1_shard0_args
     assert '--connection-list' not in executor1_shard0_args
 
@@ -388,11 +388,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--uses-metas' in executor1_shard1_args
     assert (
         executor1_shard1_args[executor1_shard1_args.index('--uses-metas') + 1]
-        == '{"pea_id": 1}'
+        == '{"pod_id": 1}'
     )
     assert '--native' in executor1_shard1_args
     assert '--k8s-disable-connection-pool' not in executor1_shard1_args
-    assert '--pea-role' not in executor1_shard1_args
+    assert '--pod-role' not in executor1_shard1_args
     assert '--runtime-cls' not in executor1_shard1_args
     assert '--connection-list' not in executor1_shard1_args
 
@@ -444,8 +444,8 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         executor2_head0_args[executor2_head0_args.index('--runtime-cls') + 1]
         == 'HeadRuntime'
     )
-    assert '--pea-role' in executor2_head0_args
-    assert executor2_head0_args[executor2_head0_args.index('--pea-role') + 1] == 'HEAD'
+    assert '--pod-role' in executor2_head0_args
+    assert executor2_head0_args[executor2_head0_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor2_head0_args
     if not k8s_connection_pool:
         assert '--k8s-disable-connection-pool' in executor2_head0_args
@@ -481,7 +481,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     )
     assert '--native' in executor2_uses_before_args
     assert '--k8s-disable-connection-pool' not in executor2_uses_before_args
-    assert '--pea-role' not in executor2_uses_before_args
+    assert '--pod-role' not in executor2_uses_before_args
     assert '--runtime-cls' not in executor2_uses_before_args
     assert '--connection-list' not in executor2_uses_before_args
 
@@ -507,7 +507,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     )
     assert '--native' in executor2_uses_after_args
     assert '--k8s-disable-connection-pool' not in executor2_uses_after_args
-    assert '--pea-role' not in executor2_uses_after_args
+    assert '--pod-role' not in executor2_uses_after_args
     assert '--runtime-cls' not in executor2_uses_after_args
     assert '--connection-list' not in executor2_uses_after_args
 
@@ -547,10 +547,10 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--uses-with' in executor2_args
     assert executor2_args[executor2_args.index('--uses-with') + 1] == '{"param": 0}'
     assert '--uses-metas' in executor2_args
-    assert executor2_args[executor2_args.index('--uses-metas') + 1] == '{"pea_id": 0}'
+    assert executor2_args[executor2_args.index('--uses-metas') + 1] == '{"pod_id": 0}'
     assert '--native' in executor2_args
     assert '--k8s-disable-connection-pool' not in executor2_args
-    assert '--pea-role' not in executor2_args
+    assert '--pod-role' not in executor2_args
     assert '--runtime-cls' not in executor2_args
     assert '--connection-list' not in executor2_args
 
@@ -602,22 +602,22 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
     )
 
     if k8s_connection_pool is False and has_external:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["1.2.3.4:9090"]}'
         )
     elif k8s_connection_pool and has_external:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"external_executor": ["1.2.3.4:9090"]}'
         )
     elif k8s_connection_pool and not has_external:
-        assert '--pods-addresses' not in gateway_args
+        assert '--deployments-addresses' not in gateway_args
     elif not k8s_connection_pool and not has_external:
-        assert '--pods-addresses' in gateway_args
+        assert '--deployments-addresses' in gateway_args
         assert (
-            gateway_args[gateway_args.index('--pods-addresses') + 1]
+            gateway_args[gateway_args.index('--deployments-addresses') + 1]
             == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["external-executor-head-0.test-flow-ns.svc:8081"]}'
         )

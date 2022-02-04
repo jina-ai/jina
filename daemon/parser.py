@@ -5,7 +5,7 @@ import sys
 from jina import __resources_path__, __default_host__
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
-from jina.parsers.peapods.base import mixin_base_ppr_parser
+from jina.parsers.orchestrate.base import mixin_base_ppr_parser
 from daemon.models.enums import PartialDaemonModes
 
 
@@ -29,7 +29,7 @@ def mixin_daemon_parser(parser):
         type=str,
         choices=list(PartialDaemonModes),
         default=None,
-        help='Mode for partial jinad. Can be flow/pod/pea. If none provided main jinad is run.'
+        help='Mode for partial jinad. Can be flow/deployment/pod. If none provided main jinad is run.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

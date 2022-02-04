@@ -164,7 +164,7 @@ class WorkspaceStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
 
-        # Peas/Pods/Flows need to be deleted before networks, files etc can be deleted
+        # Pods/Deployments/Flows need to be deleted before networks, files etc can be deleted
         if everything and self[id].metadata:
             from daemon.stores import get_store_from_id
 

@@ -36,7 +36,7 @@ class JinaLogger:
 
     :param context: The context identifier of the class, module or method.
     :param log_config: The configuration file for the logger.
-    configuration to group logs by pod.
+    configuration to group logs by deployment.
     :return:: an executor object.
     """
 
@@ -61,7 +61,7 @@ class JinaLogger:
             log_config = os.path.join(__resources_path__, 'logging.quiet.yml')
 
         if not name:
-            name = os.getenv('JINA_POD_NAME', context)
+            name = os.getenv('JINA_DEPLOYMENT_NAME', context)
 
         # Remove all handlers associated with the root logger object.
         for handler in logging.root.handlers[:]:

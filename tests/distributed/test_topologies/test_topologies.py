@@ -217,7 +217,7 @@ def test_remote_workspace_value():
 @pytest.mark.parametrize('gpus', ['all', '2'])
 def test_remote_executor_gpu(mocker, gpus):
     # This test wouldn't be able to use gpus on remote, as they're not available on CI.
-    # But it shouldn't fail the Pea creation.
+    # But it shouldn't fail the Pod creation.
     response_mock = mocker.Mock()
     f = Flow().add(host=CLOUD_HOST, gpus=gpus)
     with f:

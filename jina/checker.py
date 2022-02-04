@@ -4,7 +4,7 @@ from jina.logging.predefined import default_logger
 
 
 class NetworkChecker:
-    """Check if a BasePod is running or not."""
+    """Check if a BaseDeployment is running or not."""
 
     def __init__(self, args: 'argparse.Namespace'):
         """

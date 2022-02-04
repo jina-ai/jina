@@ -11,7 +11,7 @@ from jina.enums import FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.serve.executors import BaseExecutor
 from jina.helper import random_identity
-from jina.orchestrate.pods import BasePod
+from jina.orchestrate.deployments import BaseDeployment
 from docarray.document.generators import from_ndarray
 from jina.types.request.data import Response
 from tests import random_docs
@@ -268,7 +268,7 @@ def test_flow_arbitrary_needs(protocol):
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_needs_all(protocol):
     f = Flow(protocol=protocol).add(name='p1', needs='gateway').needs_all(name='r1')
-    assert f._pod_nodes['r1'].needs == {'p1'}
+    assert f._deployment_nodes['r1'].needs == {'p1'}
 
     f = (
         Flow(protocol=protocol)
@@ -278,7 +278,7 @@ def test_flow_needs_all(protocol):
         .needs(needs=['p1', 'p2'], name='r1')
         .needs_all(name='r2')
     )
-    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
+    assert f._deployment_nodes['r2'].needs == {'p3', 'r1'}
 
     with f:
         f.index(from_ndarray(np.random.random([10, 10])))
@@ -292,8 +292,8 @@ def test_flow_needs_all(protocol):
         .needs_all(name='r2')
         .add(name='p4', needs='r2')
     )
-    assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
-    assert f._pod_nodes['p4'].needs == {'r2'}
+    assert f._deployment_nodes['r2'].needs == {'p3', 'r1'}
+    assert f._deployment_nodes['p4'].needs == {'r2'}
 
     with f:
         f.index(from_ndarray(np.random.random([10, 10])))
@@ -305,7 +305,7 @@ class EnvChecker1(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # pea/pod-specific
+        # pod/pod-specific
         assert os.environ['key1'] == 'value1'
         assert os.environ['key2'] == 'value2'
         # inherit from parent process
@@ -317,7 +317,7 @@ class EnvChecker2(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # pea/pod-specific
+        # pod/pod-specific
         assert 'key1' not in os.environ
         assert 'key2' not in os.environ
         # inherit from parent process
@@ -464,8 +464,8 @@ def test_flow_equalities():
 
 def test_flow_get_item():
     f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
-    assert isinstance(f1[1], BasePod)
-    assert isinstance(f1['executor0'], BasePod)
+    assert isinstance(f1[1], BaseDeployment)
+    assert isinstance(f1['executor0'], BaseDeployment)
 
 
 class CustomizedExecutor(BaseExecutor):
@@ -626,7 +626,7 @@ def test_gateway_only_flows_no_error(capsys, protocol):
 
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
-    addresses = f._get_pod_addresses()
+    addresses = f._get_deployments_addresses()
     for name, pod in f:
         if name != 'gateway':
             assert (

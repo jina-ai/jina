@@ -140,119 +140,135 @@ class GrpcConnectionPool:
     class _ConnectionPoolMap:
         def __init__(self, logger: Optional[JinaLogger]):
             self._logger = logger
-            # this maps pods to shards or heads
-            self._pods: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
-            # dict stores last entity id used for a particular pod, used for round robin
+            # this maps deployments to shards or heads
+            self._deployments: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
+            # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
 
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
                 os.unsetenv('https_proxy')
 
-        def add_replica(self, pod: str, shard_id: int, address: str):
-            self._add_connection(pod, shard_id, address, 'shards')
+        def add_replica(self, deployment: str, shard_id: int, address: str):
+            self._add_connection(deployment, shard_id, address, 'shards')
 
         def add_head(
-            self, pod: str, address: str, head_id: Optional[int] = 0
+            self, deployment: str, address: str, head_id: Optional[int] = 0
         ):  # the head_id is always 0 for now, this will change when scaling the head
-            self._add_connection(pod, head_id, address, 'heads')
+            self._add_connection(deployment, head_id, address, 'heads')
 
         def get_replicas(
-            self, pod: str, head: bool, entity_id: Optional[int] = None
+            self, deployment: str, head: bool, entity_id: Optional[int] = None
         ) -> ReplicaList:
-            if pod in self._pods:
+            if deployment in self._deployments:
                 type = 'heads' if head else 'shards'
                 if entity_id is None and head:
                     entity_id = 0
-                return self._get_connection_list(pod, type, entity_id)
+                return self._get_connection_list(deployment, type, entity_id)
             else:
-                self._logger.debug(f'Unknown pod {pod}, no replicas available')
+                self._logger.debug(
+                    f'Unknown deployment {deployment}, no replicas available'
+                )
                 return None
 
-        def get_replicas_all_shards(self, pod: str) -> List[ReplicaList]:
+        def get_replicas_all_shards(self, deployment: str) -> List[ReplicaList]:
             replicas = []
-            if pod in self._pods:
-                for shard_id in self._pods[pod]['shards']:
-                    replicas.append(self._get_connection_list(pod, 'shards', shard_id))
+            if deployment in self._deployments:
+                for shard_id in self._deployments[deployment]['shards']:
+                    replicas.append(
+                        self._get_connection_list(deployment, 'shards', shard_id)
+                    )
             return replicas
 
         async def close(self):
             # Close all connections to all replicas
-            for pod in self._pods:
-                for entity_type in self._pods[pod]:
-                    for shard_in in self._pods[pod][entity_type]:
-                        await self._pods[pod][entity_type][shard_in].close()
-            self._pods.clear()
+            for deployment in self._deployments:
+                for entity_type in self._deployments[deployment]:
+                    for shard_in in self._deployments[deployment][entity_type]:
+                        await self._deployments[deployment][entity_type][
+                            shard_in
+                        ].close()
+            self._deployments.clear()
 
         def _get_connection_list(
-            self, pod: str, type: str, entity_id: Optional[int] = None
+            self, deployment: str, type: str, entity_id: Optional[int] = None
         ) -> ReplicaList:
             try:
-                if entity_id is None and len(self._pods[pod][type]) > 0:
+                if entity_id is None and len(self._deployments[deployment][type]) > 0:
                     # select a random entity
-                    self._access_count[pod] += 1
-                    return self._pods[pod][type][
-                        self._access_count[pod] % len(self._pods[pod][type])
+                    self._access_count[deployment] += 1
+                    return self._deployments[deployment][type][
+                        self._access_count[deployment]
+                        % len(self._deployments[deployment][type])
                     ]
                 else:
-                    return self._pods[pod][type][entity_id]
+                    return self._deployments[deployment][type][entity_id]
             except KeyError:
                 if (
                     entity_id is None
-                    and pod in self._pods
-                    and len(self._pods[pod][type])
+                    and deployment in self._deployments
+                    and len(self._deployments[deployment][type])
                 ):
                     # This can happen as a race condition when removing connections while accessing it
                     # In this case we don't care for the concrete entity, so retry with the first one
-                    return self._get_connection_list(pod, type, 0)
+                    return self._get_connection_list(deployment, type, 0)
                 self._logger.debug(
-                    f'Did not find a connection for pod {pod}, type {type} and entity_id {entity_id}. There are {len(self._pods[pod][type]) if pod in self._pods else 0} available connections for this pod and type. '
+                    f'Did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
                 return None
 
-        def _add_pod(self, pod: str):
-            if pod not in self._pods:
-                self._pods[pod] = {'shards': {}, 'heads': {}}
-                self._access_count[pod] = 0
+        def _add_deployment(self, deployment: str):
+            if deployment not in self._deployments:
+                self._deployments[deployment] = {'shards': {}, 'heads': {}}
+                self._access_count[deployment] = 0
 
         def _add_connection(
             self,
-            pod: str,
+            deployment: str,
             entity_id: int,
             address: str,
             type: str,
         ):
-            self._add_pod(pod)
-            if entity_id not in self._pods[pod][type]:
+            self._add_deployment(deployment)
+            if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList()
-                self._pods[pod][type][entity_id] = connection_list
+                self._deployments[deployment][type][entity_id] = connection_list
 
-            if not self._pods[pod][type][entity_id].has_connection(address):
+            if not self._deployments[deployment][type][entity_id].has_connection(
+                address
+            ):
                 self._logger.debug(
-                    f'Adding connection for pod {pod}/{type}/{entity_id} to {address}'
+                    f'Adding connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
-                self._pods[pod][type][entity_id].add_connection(address)
+                self._deployments[deployment][type][entity_id].add_connection(address)
             else:
                 self._logger.debug(
-                    f'Ignoring activation of pea, {address} already known'
+                    f'Ignoring activation of pod, {address} already known'
                 )
 
-        async def remove_head(self, pod, address, head_id: Optional[int] = 0):
-            return await self._remove_connection(pod, head_id, address, 'heads')
+        async def remove_head(self, deployment, address, head_id: Optional[int] = 0):
+            return await self._remove_connection(deployment, head_id, address, 'heads')
 
-        async def remove_replica(self, pod, address, shard_id: Optional[int] = 0):
-            return await self._remove_connection(pod, shard_id, address, 'shards')
+        async def remove_replica(
+            self, deployment, address, shard_id: Optional[int] = 0
+        ):
+            return await self._remove_connection(
+                deployment, shard_id, address, 'shards'
+            )
 
-        async def _remove_connection(self, pod, entity_id, address, type):
-            if pod in self._pods and entity_id in self._pods[pod][type]:
+        async def _remove_connection(self, deployment, entity_id, address, type):
+            if (
+                deployment in self._deployments
+                and entity_id in self._deployments[deployment][type]
+            ):
                 self._logger.debug(
-                    f'Removing connection for pod {pod}/{type}/{entity_id} to {address}'
+                    f'Removing connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
-                connection = await self._pods[pod][type][entity_id].remove_connection(
-                    address
-                )
-                if not self._pods[pod][type][entity_id].has_connections():
-                    del self._pods[pod][type][entity_id]
+                connection = await self._deployments[deployment][type][
+                    entity_id
+                ].remove_connection(address)
+                if not self._deployments[deployment][type][entity_id].has_connections():
+                    del self._deployments[deployment][type][entity_id]
                 return connection
             return None
 
@@ -263,7 +279,7 @@ class GrpcConnectionPool:
     def send_request(
         self,
         request: Request,
-        pod: str,
+        deployment: str,
         head: bool = False,
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
@@ -271,16 +287,16 @@ class GrpcConnectionPool:
     ) -> List[asyncio.Task]:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_messages
         :param request: a single request to send
-        :param pod: name of the Jina pod to send the message to
-        :param head: If True it is send to the head, otherwise to the worker peas
-        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :param deployment: name of the Jina deployment to send the message to
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
         :return: list of asyncio.Task items for each send call
         """
         return self.send_requests(
             requests=[request],
-            pod=pod,
+            deployment=deployment,
             head=head,
             shard_id=shard_id,
             polling_type=polling_type,
@@ -290,7 +306,7 @@ class GrpcConnectionPool:
     def send_requests(
         self,
         requests: List[Request],
-        pod: str,
+        deployment: str,
         head: bool = False,
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
@@ -299,9 +315,9 @@ class GrpcConnectionPool:
         """Send a request to target via one or all of the pooled connections, depending on polling_type
 
         :param requests: request (DataRequest/ControlRequest) to send
-        :param pod: name of the Jina pod to send the request to
-        :param head: If True it is send to the head, otherwise to the worker peas
-        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :param deployment: name of the Jina deployment to send the request to
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the requests
         :return: list of asyncio.Task items for each send call
@@ -309,11 +325,11 @@ class GrpcConnectionPool:
         results = []
         connections = []
         if polling_type == PollingType.ANY:
-            connection_list = self._connections.get_replicas(pod, head, shard_id)
+            connection_list = self._connections.get_replicas(deployment, head, shard_id)
             if connection_list:
                 connections.append(connection_list.get_next_connection())
         elif polling_type == PollingType.ALL:
-            connection_lists = self._connections.get_replicas_all_shards(pod)
+            connection_lists = self._connections.get_replicas_all_shards(deployment)
             for connection_list in connection_lists:
                 connections.append(connection_list.get_next_connection())
         else:
@@ -328,23 +344,25 @@ class GrpcConnectionPool:
     def send_request_once(
         self,
         request: Request,
-        pod: str,
+        deployment: str,
         head: bool = False,
         shard_id: Optional[int] = None,
     ) -> asyncio.Task:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
-        :param pod: name of the Jina pod to send the message to
-        :param head: If True it is send to the head, otherwise to the worker peas
-        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :param deployment: name of the Jina deployment to send the message to
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :return: asyncio.Task representing the send call
         """
-        return self.send_requests_once([request], pod=pod, head=head, shard_id=shard_id)
+        return self.send_requests_once(
+            [request], deployment=deployment, head=head, shard_id=shard_id
+        )
 
     def send_requests_once(
         self,
         requests: List[Request],
-        pod: str,
+        deployment: str,
         head: bool = False,
         shard_id: Optional[int] = None,
         endpoint: Optional[str] = None,
@@ -352,66 +370,66 @@ class GrpcConnectionPool:
         """Send a request to target via only one of the pooled connections
 
         :param requests: request to send
-        :param pod: name of the Jina pod to send the request to
-        :param head: If True it is send to the head, otherwise to the worker peas
-        :param shard_id: Send to a specific shard of the pod, ignored for polling ALL
+        :param deployment: name of the Jina deployment to send the request to
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param endpoint: endpoint to target with the requests
         :return: asyncio.Task representing the send call
         """
-        replicas = self._connections.get_replicas(pod, head, shard_id)
+        replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
             connection = replicas.get_next_connection()
             return self._send_requests(requests, connection, endpoint)
         else:
             self._logger.debug(
-                f'No available connections for pod {pod} and shard {shard_id}'
+                f'No available connections for deployment {deployment} and shard {shard_id}'
             )
             return None
 
     def add_connection(
         self,
-        pod: str,
+        deployment: str,
         address: str,
         head: Optional[bool] = False,
         shard_id: Optional[int] = None,
     ):
         """
-        Adds a connection for a pod to this connection pool
+        Adds a connection for a deployment to this connection pool
 
-        :param pod: The pod the connection belongs to, like 'encoder'
+        :param deployment: The deployment the connection belongs to, like 'encoder'
         :param head: True if the connection is for a head
         :param address: Address used for the grpc connection, format is <host>:<port>
         :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
         """
         if head:
-            self._connections.add_head(pod, address, 0)
+            self._connections.add_head(deployment, address, 0)
         else:
             if shard_id is None:
                 shard_id = 0
-            self._connections.add_replica(pod, shard_id, address)
+            self._connections.add_replica(deployment, shard_id, address)
 
     async def remove_connection(
         self,
-        pod: str,
+        deployment: str,
         address: str,
         head: Optional[bool] = False,
         shard_id: Optional[int] = None,
     ):
         """
-        Removes a connection to a pod
+        Removes a connection to a deployment
 
-        :param pod: The pod the connection belongs to, like 'encoder'
+        :param deployment: The deployment the connection belongs to, like 'encoder'
         :param address: Address used for the grpc connection, format is <host>:<port>
         :param head: True if the connection is for a head
         :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads
         :return: The removed connection, None if it did not exist
         """
         if head:
-            return await self._connections.remove_head(pod, address)
+            return await self._connections.remove_head(deployment, address)
         else:
             if shard_id is None:
                 shard_id = 0
-            return await self._connections.remove_replica(pod, address, shard_id)
+            return await self._connections.remove_replica(deployment, address, shard_id)
 
     def start(self):
         """
@@ -805,9 +823,9 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
     async def _process_item(self, item):
         try:
-            jina_pod_name = item.metadata.labels['jina_pod_name']
+            jina_deployment_name = item.metadata.labels['jina_deployment_name']
 
-            is_head = item.metadata.labels['pea_type'].lower() == 'head'
+            is_head = item.metadata.labels['pod_type'].lower() == 'head'
             shard_id = (
                 int(item.metadata.labels['shard_id'])
                 if item.metadata.labels['shard_id'] and not is_head
@@ -826,14 +844,14 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
                 and self._pod_is_ready(item)
             ):
                 self.add_connection(
-                    pod=jina_pod_name,
+                    deployment=jina_deployment_name,
                     head=is_head,
                     address=f'{ip}:{port}',
                     shard_id=shard_id,
                 )
             elif ip and port and is_deleted and self._pod_is_up(item):
                 await self.remove_connection(
-                    pod=jina_pod_name,
+                    deployment=jina_deployment_name,
                     head=is_head,
                     address=f'{ip}:{port}',
                     shard_id=shard_id,

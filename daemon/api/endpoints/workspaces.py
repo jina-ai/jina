@@ -55,7 +55,7 @@ async def _delete(
 @router.post(
     path='',
     summary='Create a workspace & upload files',
-    description='Return a DaemonID to the workspace, which can be used later when create Pea/Pod/Flow',
+    description='Return a DaemonID to the workspace, which can be used later when create Pod/Deployment/Flow',
     status_code=201,
 )
 async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
@@ -68,7 +68,7 @@ async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
 @router.put(
     path='/{id}',
     summary='Update files in a workspace',
-    description='Return a DaemonID to the workspace, which can be used later when create Pea/Pod/Flow',
+    description='Return a DaemonID to the workspace, which can be used later when create Pod/Deployment/Flow',
     status_code=200,
 )
 async def _update(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):

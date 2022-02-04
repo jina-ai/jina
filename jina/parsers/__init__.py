@@ -1,39 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
 from jina.parsers.helper import _SHOW_ALL_ARGS
-from jina.parsers.peapods.runtimes.head import mixin_head_parser
-
-
-def set_pea_parser(parser=None):
-    """Set the parser for the Pea
-
-    :param parser: an optional existing parser to build upon
-    :return: the parser
-    """
-    if not parser:
-        from jina.parsers.base import set_base_parser
-
-        parser = set_base_parser()
-
-    from jina.parsers.peapods.base import mixin_base_ppr_parser
-    from jina.parsers.peapods.runtimes.worker import mixin_worker_runtime_parser
-    from jina.parsers.peapods.runtimes.container import mixin_container_runtime_parser
-    from jina.parsers.peapods.runtimes.remote import mixin_remote_runtime_parser
-    from jina.parsers.peapods.pea import mixin_pea_parser
-    from jina.parsers.peapods.runtimes.distributed import (
-        mixin_distributed_feature_parser,
-    )
-    from jina.parsers.hubble.pull import mixin_hub_pull_options_parser
-
-    mixin_base_ppr_parser(parser)
-    mixin_worker_runtime_parser(parser)
-    mixin_container_runtime_parser(parser)
-    mixin_remote_runtime_parser(parser)
-    mixin_distributed_feature_parser(parser)
-    mixin_pea_parser(parser)
-    mixin_hub_pull_options_parser(parser)
-    mixin_head_parser(parser)
-
-    return parser
+from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
 def set_pod_parser(parser=None):
@@ -47,11 +14,46 @@ def set_pod_parser(parser=None):
 
         parser = set_base_parser()
 
-    set_pea_parser(parser)
+    from jina.parsers.orchestrate.base import mixin_base_ppr_parser
+    from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
+    from jina.parsers.orchestrate.runtimes.container import (
+        mixin_container_runtime_parser,
+    )
+    from jina.parsers.orchestrate.runtimes.remote import mixin_remote_runtime_parser
+    from jina.parsers.orchestrate.pod import mixin_pod_parser
+    from jina.parsers.orchestrate.runtimes.distributed import (
+        mixin_distributed_feature_parser,
+    )
+    from jina.parsers.hubble.pull import mixin_hub_pull_options_parser
 
-    from jina.parsers.peapods.pod import mixin_base_pod_parser
+    mixin_base_ppr_parser(parser)
+    mixin_worker_runtime_parser(parser)
+    mixin_container_runtime_parser(parser)
+    mixin_remote_runtime_parser(parser)
+    mixin_distributed_feature_parser(parser)
+    mixin_pod_parser(parser)
+    mixin_hub_pull_options_parser(parser)
+    mixin_head_parser(parser)
 
-    mixin_base_pod_parser(parser)
+    return parser
+
+
+def set_deployment_parser(parser=None):
+    """Set the parser for the Deployment
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        from jina.parsers.base import set_base_parser
+
+        parser = set_base_parser()
+
+    set_pod_parser(parser)
+
+    from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
+
+    mixin_base_deployment_parser(parser)
 
     return parser
 
@@ -67,16 +69,16 @@ def set_gateway_parser(parser=None):
 
         parser = set_base_parser()
 
-    from jina.parsers.peapods.base import mixin_base_ppr_parser
-    from jina.parsers.peapods.runtimes.worker import mixin_worker_runtime_parser
-    from jina.parsers.peapods.runtimes.remote import (
+    from jina.parsers.orchestrate.base import mixin_base_ppr_parser
+    from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
+    from jina.parsers.orchestrate.runtimes.remote import (
         mixin_gateway_parser,
         mixin_prefetch_parser,
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
-    from jina.parsers.peapods.pod import mixin_base_pod_parser
-    from jina.parsers.peapods.pea import mixin_pea_parser
+    from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
+    from jina.parsers.orchestrate.pod import mixin_pod_parser
 
     mixin_base_ppr_parser(parser)
     mixin_worker_runtime_parser(parser)
@@ -85,15 +87,15 @@ def set_gateway_parser(parser=None):
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
-    mixin_pea_parser(parser)
+    mixin_pod_parser(parser)
     mixin_head_parser(parser)
 
-    from jina.enums import PodRoleType
+    from jina.enums import DeploymentRoleType
 
     parser.set_defaults(
         name='gateway',
         runtime_cls='GRPCGatewayRuntime',
-        pod_role=PodRoleType.GATEWAY,
+        deployment_role=DeploymentRoleType.GATEWAY,
     )
 
     return parser
@@ -110,7 +112,7 @@ def set_client_cli_parser(parser=None):
 
         parser = set_base_parser()
 
-    from jina.parsers.peapods.runtimes.remote import mixin_client_gateway_parser
+    from jina.parsers.orchestrate.runtimes.remote import mixin_client_gateway_parser
     from jina.parsers.client import (
         mixin_client_features_parser,
         mixin_comm_protocol_parser,
@@ -180,7 +182,7 @@ def get_main_parser():
         )
     )
 
-    set_pea_parser(
+    set_pod_parser(
         sp.add_parser(
             'executor',
             help='Start an Executor',
@@ -202,7 +204,7 @@ def get_main_parser():
         sp.add_parser(
             'ping',
             help='Ping an Executor',
-            description='Ping a Pod and check its network connectivity.',
+            description='Ping a Deployment and check its network connectivity.',
             formatter_class=_chf,
         )
     )
@@ -235,17 +237,6 @@ def get_main_parser():
     )
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 
-    set_pea_parser(
-        sp.add_parser(
-            'pea',
-            description='Start a Pea. '
-            'You should rarely use this directly unless you '
-            'are doing low-level orchestration',
-            formatter_class=_chf,
-            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
-        )
-    )
-
     set_pod_parser(
         sp.add_parser(
             'pod',
@@ -254,6 +245,17 @@ def get_main_parser():
             'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pod')) if _SHOW_ALL_ARGS else {},
+        )
+    )
+
+    set_deployment_parser(
+        sp.add_parser(
+            'deployment',
+            description='Start a Deployment. '
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
+            formatter_class=_chf,
+            **(dict(help='Start a Deployment')) if _SHOW_ALL_ARGS else {},
         )
     )
 

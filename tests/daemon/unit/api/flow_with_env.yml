@@ -1,7 +1,6 @@
 jtype: Flow
 with:
   name: my-flow
-  grpc_data_requests: true
   port_expose: 12345
   protocol: http
   env:

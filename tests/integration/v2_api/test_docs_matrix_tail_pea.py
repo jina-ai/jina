@@ -50,7 +50,7 @@ class ChunkMerger(Executor):
 
 @pytest.mark.timeout(60)
 @pytest.mark.parametrize('num_replicas, num_shards', [(1, 1), (2, 2)])
-def test_sharding_tail_pea(num_replicas, num_shards):
+def test_sharding_tail_pod(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
 
     f = Flow(port_expose=1234).add(
@@ -68,7 +68,7 @@ def test_sharding_tail_pea(num_replicas, num_shards):
         assert len(results[0].docs[0].matches) == num_shards
 
 
-def test_merging_head_pea():
+def test_merging_head_pod():
     def multimodal_generator():
         for i in range(0, 5):
             document = Document()

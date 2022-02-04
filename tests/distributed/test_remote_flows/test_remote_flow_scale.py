@@ -15,7 +15,7 @@ SCALE_EXECUTOR = 'scale_executor'
 
 
 @pytest.fixture
-def pod_params(request):
+def deployment_params(request):
     replicas, scale_to, shards = request.param
     return replicas, scale_to, shards
 
@@ -47,12 +47,12 @@ def docker_image_built():
 
 
 @pytest.mark.parametrize(
-    'pod_params',
+    'deployment_params',
     [(1, 2, 1), (2, 3, 1), (3, 1, 1), (1, 2, 2), (2, 1, 2)],
     indirect=True,  # (replicas, scale_to, shards)
 )
-def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
-    replicas, scale_to, shards = pod_params
+def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
+    replicas, scale_to, shards = deployment_params
     workspace_id = jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
@@ -77,7 +77,9 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
     assert len(process_ids) == replicas * shards
 
-    jinad_client.flows.scale(id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to)
+    jinad_client.flows.scale(
+        id=flow_id, deployment_name=SCALE_EXECUTOR, replicas=scale_to
+    )
 
     ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=False).index(
         inputs=DocumentArray([Document() for _ in range(200)]),
@@ -96,14 +98,14 @@ def test_scale_remote_flow(docker_image_built, jinad_client, pod_params):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'pod_params',
+    'deployment_params',
     [(1, 2, 1), (2, 3, 1), (3, 1, 1), (1, 2, 2), (2, 1, 2)],
     indirect=True,  # (replicas, scale_to, shards)
 )
 async def test_scale_remote_flow_async(
-    docker_image_built, async_jinad_client, pod_params
+    docker_image_built, async_jinad_client, deployment_params
 ):
-    replicas, scale_to, shards = pod_params
+    replicas, scale_to, shards = deployment_params
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
@@ -129,7 +131,7 @@ async def test_scale_remote_flow_async(
     assert len(process_ids) == replicas * shards
 
     await async_jinad_client.flows.scale(
-        id=flow_id, pod_name=SCALE_EXECUTOR, replicas=scale_to
+        id=flow_id, deployment_name=SCALE_EXECUTOR, replicas=scale_to
     )
 
     ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=True).index(

@@ -24,17 +24,21 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from jina.orchestrate.flow.builder import allowed_levels, _hanging_pods
+from jina.orchestrate.flow.builder import allowed_levels, _hanging_deployments
 from jina import __default_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
 from jina.enums import (
     FlowBuildLevel,
-    PodRoleType,
+    DeploymentRoleType,
     FlowInspectType,
     GatewayProtocolType,
 )
-from jina.excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
+from jina.excepts import (
+    FlowTopologyError,
+    FlowMissingDeploymentError,
+    RuntimeFailToStart,
+)
 from jina.helper import (
     colored,
     get_public_ip,
@@ -46,9 +50,13 @@ from jina.helper import (
 )
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
-from jina.parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
+from jina.parsers import (
+    set_gateway_parser,
+    set_deployment_parser,
+    set_client_cli_parser,
+)
 from jina.parsers.flow import set_flow_parser
-from jina.orchestrate.pods import Pod
+from jina.orchestrate.deployments import Deployment
 
 __all__ = ['Flow']
 
@@ -69,7 +77,7 @@ if TYPE_CHECKING:
 GATEWAY_NAME = 'gateway'
 FALLBACK_PARSERS = [
     set_gateway_parser(),
-    set_pod_parser(),
+    set_deployment_parser(),
     set_client_cli_parser(),
     set_flow_parser(),
 ]
@@ -121,6 +129,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
+        deployments_addresses: Optional[str] = '{}',
         description: Optional[str] = None,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
@@ -133,7 +142,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        pods_addresses: Optional[str] = '{}',
         polling: Optional[str] = 'ANY',
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -170,12 +178,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
+        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
+        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -194,12 +203,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
-        :param pods_addresses: dictionary JSON with the input addresses of each Pod
-        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Pod or by endpoint.
-              Define per Pod:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
+        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Deployment or by endpoint.
+              Define per Deployment:
+              - ANY: only one (whoever is idle) Pod polls the message
+              - ALL: all Pods poll the message (like a broadcast)
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
@@ -218,12 +226,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param replicas: The number of replicas in the pod
-        :param runtime_backend: The parallel backend of the runtime inside the Pea
-        :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        :param replicas: The number of replicas in the deployment
+        :param runtime_backend: The parallel backend of the runtime inside the Pod
+        :param runtime_cls: The runtime class to run inside the Pod
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
-        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
                   * an Executor YAML file (.yml, .yaml, .jaml)
@@ -271,9 +279,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
-        :param inspect: The strategy on those inspect pods in the flow.
+        :param inspect: The strategy on those inspect deployments in the flow.
 
-              If `REMOVE` is given then all inspect pods are removed when building the flow.
+              If `REMOVE` is given then all inspect deployments are removed when building the flow.
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
 
@@ -284,11 +292,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Pod or by endpoint.
-              Define per Pod:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
+        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Deployment or by endpoint.
+              Define per Deployment:
+              - ANY: only one (whoever is idle) Pod polls the message
+              - ALL: all Pods poll the message (like a broadcast)
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
@@ -311,13 +319,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, Pod]
-        self._inspect_pods = {}  # type: Dict[str, str]
+        self._deployment_nodes = OrderedDict()  # type: Dict[str, Deployment]
+        self._inspect_deployments = {}  # type: Dict[str, str]
         self._endpoints_mapping = {}  # type: Dict[str, Dict]
         self._build_level = FlowBuildLevel.EMPTY
-        self._last_changed_pod = [
+        self._last_changed_deployment = [
             GATEWAY_NAME
-        ]  #: default first pod is gateway, will add when build()
+        ]  #: default first deployment is gateway, will add when build()
         self._update_args(args, **kwargs)
 
         if isinstance(self.args, argparse.Namespace):
@@ -353,32 +361,34 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.__class__ = AsyncFlow
 
     @staticmethod
-    def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
+    def _parse_endpoints(
+        op_flow, deployment_name, endpoint, connect_to_last_deployment=False
+    ) -> Set:
         # parsing needs
         if isinstance(endpoint, str):
             endpoint = [endpoint]
         elif not endpoint:
-            if op_flow._last_changed_pod and connect_to_last_pod:
-                endpoint = [op_flow.last_pod]
+            if op_flow._last_changed_deployment and connect_to_last_deployment:
+                endpoint = [op_flow.last_deployment]
             else:
                 endpoint = []
 
         if isinstance(endpoint, (list, tuple)):
             for idx, s in enumerate(endpoint):
-                if s == pod_name:
+                if s == deployment_name:
                     raise FlowTopologyError(
-                        'the income/output of a pod can not be itself'
+                        'the income/output of a deployment can not be itself'
                     )
         else:
             raise ValueError(f'endpoint={endpoint} is not parsable')
 
-        # if an endpoint is being inspected, then replace it with inspected Pod
-        endpoint = set(op_flow._inspect_pods.get(ep, ep) for ep in endpoint)
+        # if an endpoint is being inspected, then replace it with inspected Deployment
+        endpoint = set(op_flow._inspect_deployments.get(ep, ep) for ep in endpoint)
         return endpoint
 
     @property
-    def last_pod(self):
-        """Last pod
+    def last_deployment(self):
+        """Last deployment
 
 
         .. # noqa: DAR401
@@ -386,24 +396,24 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         .. # noqa: DAR201
         """
-        return self._last_changed_pod[-1]
+        return self._last_changed_deployment[-1]
 
-    @last_pod.setter
-    def last_pod(self, name: str):
+    @last_deployment.setter
+    def last_deployment(self, name: str):
         """
-        Set a Pod as the last Pod in the Flow, useful when modifying the Flow.
+        Set a Deployment as the last Deployment in the Flow, useful when modifying the Flow.
 
 
         .. # noqa: DAR401
-        :param name: the name of the existing Pod
+        :param name: the name of the existing Deployment
         """
-        if name not in self._pod_nodes:
-            raise FlowMissingPodError(f'{name} can not be found in this Flow')
+        if name not in self._deployment_nodes:
+            raise FlowMissingDeploymentError(f'{name} can not be found in this Flow')
 
-        if self._last_changed_pod and name == self.last_pod:
+        if self._last_changed_deployment and name == self.last_deployment:
             pass
         else:
-            self._last_changed_pod.append(name)
+            self._last_changed_deployment.append(name)
 
         # graph is now changed so we need to
         # reset the build level to the lowest
@@ -414,7 +424,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         needs: str,
         graph_description: Dict[str, List[str]],
-        pod_addresses: Dict[str, List[str]],
+        deployments_addresses: Dict[str, List[str]],
         **kwargs,
     ):
         kwargs.update(
@@ -424,7 +434,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 host=self.host,
                 protocol=self.protocol,
                 port_expose=self.port_expose,
-                pod_role=PodRoleType.GATEWAY,
+                deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
             )
         )
@@ -433,62 +443,62 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
-        args.pods_addresses = json.dumps(pod_addresses)
-        self._pod_nodes[GATEWAY_NAME] = Pod(args, needs)
+        args.deployments_addresses = json.dumps(deployments_addresses)
+        self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
-    def _get_pod_addresses(self) -> Dict[str, List[str]]:
+    def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        for node, v in self._pod_nodes.items():
+        for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
             graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port_in}']
 
         return graph_dict
 
-    def _get_k8s_pod_addresses(
+    def _get_k8s_deployments_addresses(
         self, k8s_namespace: str, k8s_connection_pool: bool
     ) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.serve.networking import K8sGrpcConnectionPool
-        from jina.orchestrate.pods.config.helper import to_compatible_name
+        from jina.orchestrate.deployments.config.helper import to_compatible_name
 
-        for node, v in self._pod_nodes.items():
+        for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
 
             if v.external:
-                pod_k8s_address = f'{v.host}'
+                deployment_k8s_address = f'{v.host}'
             else:
-                pod_k8s_address = (
+                deployment_k8s_address = (
                     f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
                 )
 
-            # we only need hard coded addresses if the k8s connection pool is disabled or if this pod is external
+            # we only need hard coded addresses if the k8s connection pool is disabled or if this deployment is external
             if not k8s_connection_pool or v.external:
                 graph_dict[node] = [
-                    f'{pod_k8s_address}:{v.head_port_in if v.external else K8sGrpcConnectionPool.K8S_PORT_IN}'
+                    f'{deployment_k8s_address}:{v.head_port_in if v.external else K8sGrpcConnectionPool.K8S_PORT_IN}'
                 ]
 
         return graph_dict if graph_dict else None
 
-    def _get_docker_compose_pod_addresses(self) -> Dict[str, List[str]]:
+    def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.orchestrate.pods.config.docker_compose import PORT_IN
-        from jina.orchestrate.pods.config.helper import to_compatible_name
+        from jina.orchestrate.deployments.config.docker_compose import PORT_IN
+        from jina.orchestrate.deployments.config.helper import to_compatible_name
 
-        for node, v in self._pod_nodes.items():
+        for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
-            pod_docker_compose_address = (
+            deployment_docker_compose_address = (
                 f'{to_compatible_name(v.head_args.name)}:{PORT_IN}'
             )
-            graph_dict[node] = [pod_docker_compose_address]
+            graph_dict[node] = [deployment_docker_compose_address]
 
         return graph_dict
 
     def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
-            # in the graph we need to distinguish between start and end gateway, although they are the same pod
+            # in the graph we need to distinguish between start and end gateway, although they are the same deployment
             if n == 'gateway':
                 n = 'start-gateway'
             if n not in graph:
@@ -496,7 +506,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return n
 
         graph_dict = {}
-        for node, v in self._pod_nodes.items():
+        for node, v in self._deployment_nodes.items():
             node = _add_node(graph_dict, node)
             if node == 'start-gateway':
                 continue
@@ -505,9 +515,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 graph_dict[need].append(node)
 
         # find all non hanging leafs
-        last_pod = self.last_pod
-        if last_pod != 'gateway':
-            graph_dict[last_pod].append('end-gateway')
+        last_deployment = self.last_deployment
+        if last_deployment != 'gateway':
+            graph_dict[last_deployment].append('end-gateway')
 
         return graph_dict
 
@@ -516,7 +526,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'Flow':
         """
-        Add a blocker to the Flow, wait until all peas defined in **needs** completed.
+        Add a blocker to the Flow, wait until all pods defined in **needs** completed.
 
 
         .. # noqa: DAR401
@@ -531,25 +541,29 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'no need to wait for a single service, need len(needs) > 1'
             )
         return self.add(
-            name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs
+            name=name,
+            needs=needs,
+            deployment_role=DeploymentRoleType.JOIN,
+            *args,
+            **kwargs,
         )
 
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
-        Collect all hanging Pods so far and add a blocker to the Flow; wait until all handing peas completed.
+        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.
 
         :param name: the name of this joiner (default is ``joiner``)
         :param args: additional positional arguments which are forwarded to the add and needs function
         :param kwargs: additional key value arguments which are forwarded to the add and needs function
         :return: the modified Flow
         """
-        needs = _hanging_pods(self)
+        needs = _hanging_deployments(self)
         if len(needs) == 1:
             return self.add(name=name, needs=needs, *args, **kwargs)
 
         return self.needs(name=name, needs=needs, *args, **kwargs)
 
-    # overload_inject_start_pod
+    # overload_inject_start_deployment
     @overload
     def add(
         self,
@@ -599,15 +613,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Add an Executor to the current Flow object.
 
         :param connection_list: dictionary JSON with a list of connections to configure
-        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
-        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
+        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
+        :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
@@ -631,11 +645,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param polling: The polling strategy of the Pod and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Pod or by endpoint.
-              Define per Pod:
-              - ANY: only one (whoever is idle) Pea polls the message
-              - ALL: all Peas poll the message (like a broadcast)
+        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
+              Can be defined for all endpoints of a Deployment or by endpoint.
+              Define per Deployment:
+              - ANY: only one (whoever is idle) Pod polls the message
+              - ALL: all Pods poll the message (like a broadcast)
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
@@ -651,14 +665,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
-        :param replicas: The number of replicas in the pod
-        :param runtime_backend: The parallel backend of the runtime inside the Pea
-        :param runtime_cls: The runtime class to run inside the Pea
-        :param shards: The number of shards in the pod running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        :param replicas: The number of replicas in the deployment
+        :param runtime_backend: The parallel backend of the runtime inside the Pod
+        :param runtime_cls: The runtime class to run inside the Pod
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
-        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
-          workspace. This can be useful when your Pod has more
+          workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.
           Python files, data files.
 
@@ -676,9 +690,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
-        :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
+        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`
         :param uses_after_address: The address of the uses-before runtime
-        :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all shards, accepted type follows `--uses`
+        :param uses_before: The executor attached after the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`
         :param uses_before_address: The address of the uses-before runtime
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
@@ -697,52 +711,52 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR003
         """
 
-    # overload_inject_end_pod
+    # overload_inject_end_deployment
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
         *,
         needs: Optional[Union[str, Tuple[str], List[str]]] = None,
         copy_flow: bool = True,
-        pod_role: 'PodRoleType' = PodRoleType.POD,
+        deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
         **kwargs,
     ) -> 'Flow':
         """
-        Add a Pod to the current Flow object and return the new modified Flow object.
-        The attribute of the Pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
+        Add a Deployment to the current Flow object and return the new modified Flow object.
+        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
         .. # noqa: DAR401
-        :param needs: the name of the Pod(s) that this Pod receives data from.
+        :param needs: the name of the Deployment(s) that this Deployment receives data from.
                            One can also use 'gateway' to indicate the connection with the gateway.
-        :param pod_role: the role of the Pod, used for visualization and route planning
+        :param deployment_role: the role of the Deployment, used for visualization and route planning
         :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
-        :param kwargs: other keyword-value arguments that the Pod CLI supports
+        :param kwargs: other keyword-value arguments that the Deployment CLI supports
         :return: a (new) Flow object with modification
         """
         op_flow = copy.deepcopy(self) if copy_flow else self
 
-        # pod naming logic
-        pod_name = kwargs.get('name', None)
+        # deployment naming logic
+        deployment_name = kwargs.get('name', None)
 
-        if pod_name in op_flow._pod_nodes:
-            new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
+        if deployment_name in op_flow._deployment_nodes:
+            new_name = f'{deployment_name}{len(op_flow._deployment_nodes)}'
             self.logger.debug(
-                f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"'
+                f'"{deployment_name}" is used in this Flow already! renamed it to "{new_name}"'
             )
-            pod_name = new_name
+            deployment_name = new_name
 
-        if not pod_name:
-            pod_name = f'executor{len(op_flow._pod_nodes)}'
+        if not deployment_name:
+            deployment_name = f'executor{len(op_flow._deployment_nodes)}'
 
-        if not pod_name.isidentifier():
+        if not deployment_name.isidentifier():
             # hyphen - can not be used in the name
             raise ValueError(
-                f'name: {pod_name} is invalid, please follow the python variable name conventions'
+                f'name: {deployment_name} is invalid, please follow the python variable name conventions'
             )
 
         # needs logic
         needs = op_flow._parse_endpoints(
-            op_flow, pod_name, needs, connect_to_last_pod=True
+            op_flow, deployment_name, needs, connect_to_last_deployment=True
         )
 
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
@@ -761,18 +775,24 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 kwargs['port_jinad'] = m.group(2)
                 kwargs['host'] = m.group(1)
 
-        # update kwargs of this Pod
-        kwargs.update(dict(name=pod_name, pod_role=pod_role, num_part=len(needs)))
+        # update kwargs of this Deployment
+        kwargs.update(
+            dict(
+                name=deployment_name,
+                deployment_role=deployment_role,
+                num_part=len(needs),
+            )
+        )
 
-        parser = set_pod_parser()
-        if pod_role == PodRoleType.GATEWAY:
+        parser = set_deployment_parser()
+        if deployment_role == DeploymentRoleType.GATEWAY:
             parser = set_gateway_parser()
 
         args = ArgNamespace.kwargs2namespace(
             kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
         )
 
-        # pod workspace if not set then derive from flow workspace
+        # deployment workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         args.noblock_on_start = True
@@ -783,27 +803,27 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             port_in = helper.random_port()
             args.port_in = port_in
 
-        op_flow._pod_nodes[pod_name] = Pod(args, needs)
+        op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
-        op_flow.last_pod = pod_name
+        op_flow.last_deployment = deployment_name
 
         return op_flow
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
-        """Add an inspection on the last changed Pod in the Flow
+        """Add an inspection on the last changed Deployment in the Flow
 
-        Internally, it adds two Pods to the Flow. But don't worry, the overhead is minimized and you
+        Internally, it adds two Deployments to the Flow. But don't worry, the overhead is minimized and you
         can remove them by simply using `Flow(inspect=FlowInspectType.REMOVE)` before using the Flow.
 
         .. highlight:: bash
         .. code-block:: bash
 
-            Flow -- PUB-SUB -- BasePod(_pass) -- Flow
+            Flow -- PUB-SUB -- BaseDeployment(_pass) -- Flow
                     |
-                    -- PUB-SUB -- InspectPod (Hanging)
+                    -- PUB-SUB -- InspectDeployment (Hanging)
 
-        In this way, :class:`InspectPod` looks like a simple ``_pass`` from outside and
+        In this way, :class:`InspectDeployment` looks like a simple ``_pass`` from outside and
         does not introduce side-effects (e.g. changing the socket type) to the original Flow.
         The original incoming and outgoing socket types are preserved.
 
@@ -813,29 +833,33 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
             :meth:`gather_inspect`
 
-        :param name: name of the Pod
+        :param name: name of the Deployment
         :param args: args for .add()
         :param kwargs: kwargs for .add()
         :return: the new instance of the Flow
         """
-        _last_pod = self.last_pod
+        _last_deployment = self.last_deployment
         op_flow = self.add(
-            name=name, needs=_last_pod, pod_role=PodRoleType.INSPECT, *args, **kwargs
-        )
-
-        # now remove uses and add an auxiliary Pod
-        if 'uses' in kwargs:
-            kwargs.pop('uses')
-        op_flow = op_flow.add(
-            name=f'_aux_{name}',
-            needs=_last_pod,
-            pod_role=PodRoleType.INSPECT_AUX_PASS,
+            name=name,
+            needs=_last_deployment,
+            deployment_role=DeploymentRoleType.INSPECT,
             *args,
             **kwargs,
         )
 
-        # register any future connection to _last_pod by the auxiliary Pod
-        op_flow._inspect_pods[_last_pod] = op_flow.last_pod
+        # now remove uses and add an auxiliary Deployment
+        if 'uses' in kwargs:
+            kwargs.pop('uses')
+        op_flow = op_flow.add(
+            name=f'_aux_{name}',
+            needs=_last_deployment,
+            deployment_role=DeploymentRoleType.INSPECT_AUX_PASS,
+            *args,
+            **kwargs,
+        )
+
+        # register any future connection to _last_deployment by the auxiliary Deployment
+        op_flow._inspect_deployments[_last_deployment] = op_flow.last_deployment
 
         return op_flow
 
@@ -843,11 +867,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def gather_inspect(
         self,
         name: str = 'gather_inspect',
-        include_last_pod: bool = True,
+        include_last_deployment: bool = True,
         *args,
         **kwargs,
     ) -> 'Flow':
-        """Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
+        """Gather all inspect Deployments output into one Deployment. When the Flow has no inspect Deployment then the Flow itself
         is returned.
 
         .. note::
@@ -855,8 +879,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             If ``--no-inspect`` is **not** given, then :meth:`gather_inspect` is auto called before :meth:`build`. So
             in general you don't need to manually call :meth:`gather_inspect`.
 
-        :param name: the name of the gather Pod
-        :param include_last_pod: if to include the last modified Pod in the Flow
+        :param name: the name of the gather Deployment
+        :param include_last_deployment: if to include the last modified Deployment in the Flow
         :param args: args for .add()
         :param kwargs: kwargs for .add()
         :return: the modified Flow or the copy of it
@@ -867,14 +891,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             :meth:`inspect`
 
         """
-        needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
+        needs = [
+            k
+            for k, v in self._deployment_nodes.items()
+            if v.role == DeploymentRoleType.INSPECT
+        ]
         if needs:
-            if include_last_pod:
-                needs.append(self.last_pod)
+            if include_last_deployment:
+                needs.append(self.last_deployment)
             return self.add(
                 name=name,
                 needs=needs,
-                pod_role=PodRoleType.JOIN_INSPECT,
+                deployment_role=DeploymentRoleType.JOIN_INSPECT,
                 *args,
                 **kwargs,
             )
@@ -883,12 +911,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return self
 
     def _get_gateway_target(self, prefix):
-        gateway_pod = self._pod_nodes[GATEWAY_NAME]
+        gateway_deployment = self._deployment_nodes[GATEWAY_NAME]
         return (
             f'{prefix}-{GATEWAY_NAME}',
             {
-                'host': gateway_pod.head_host,
-                'port': gateway_pod.head_port_in,
+                'host': gateway_deployment.head_host,
+                'port': gateway_deployment.head_port_in,
                 'expected_parts': 0,
             },
         )
@@ -928,61 +956,69 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
-        if GATEWAY_NAME not in op_flow._pod_nodes:
+        if GATEWAY_NAME not in op_flow._deployment_nodes:
             op_flow._add_gateway(
-                needs={op_flow.last_pod},
+                needs={op_flow.last_deployment},
                 graph_description=op_flow._get_graph_representation(),
-                pod_addresses=op_flow._get_pod_addresses(),
+                deployments_addresses=op_flow._get_deployments_addresses(),
             )
 
-        removed_pods = []
+        removed_deployments = []
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
-            filtered_pod_nodes = OrderedDict()
-            for k, v in op_flow._pod_nodes.items():
+            filtered_deployment_nodes = OrderedDict()
+            for k, v in op_flow._deployment_nodes.items():
                 if not v.role.is_inspect:
-                    filtered_pod_nodes[k] = v
+                    filtered_deployment_nodes[k] = v
                 else:
-                    removed_pods.append(v.name)
+                    removed_deployments.append(v.name)
 
-            op_flow._pod_nodes = filtered_pod_nodes
-            reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
+            op_flow._deployment_nodes = filtered_deployment_nodes
+            reverse_inspect_map = {
+                v: k for k, v in op_flow._inspect_deployments.items()
+            }
             while (
-                len(op_flow._last_changed_pod) > 0
-                and len(removed_pods) > 0
-                and op_flow.last_pod in removed_pods
+                len(op_flow._last_changed_deployment) > 0
+                and len(removed_deployments) > 0
+                and op_flow.last_deployment in removed_deployments
             ):
-                op_flow._last_changed_pod.pop()
+                op_flow._last_changed_deployment.pop()
 
-        for end, pod in op_flow._pod_nodes.items():
-            # if an endpoint is being inspected, then replace it with inspected Pod
+        for end, deployment in op_flow._deployment_nodes.items():
+            # if an endpoint is being inspected, then replace it with inspected Deployment
             # but not those inspect related node
             if op_flow.args.inspect.is_keep:
-                pod.needs = set(
-                    ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep)
-                    for ep in pod.needs
+                deployment.needs = set(
+                    ep
+                    if deployment.role.is_inspect
+                    else op_flow._inspect_deployments.get(ep, ep)
+                    for ep in deployment.needs
                 )
             else:
-                pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
+                deployment.needs = set(
+                    reverse_inspect_map.get(ep, ep) for ep in deployment.needs
+                )
 
-        hanging_pods = _hanging_pods(op_flow)
-        if hanging_pods:
+        hanging_deployments = _hanging_deployments(op_flow)
+        if hanging_deployments:
             op_flow.logger.warning(
-                f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
+                f'{hanging_deployments} are hanging in this flow with no deployment receiving from them, '
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
-        if len(removed_pods) > 0:
+        if len(removed_deployments) > 0:
             # very dirty
-            op_flow._pod_nodes[GATEWAY_NAME].args.graph_description = json.dumps(
+            op_flow._deployment_nodes[GATEWAY_NAME].args.graph_description = json.dumps(
                 op_flow._get_graph_representation()
             )
-            op_flow._pod_nodes[GATEWAY_NAME].args.pod_addresses = json.dumps(
-                op_flow._get_pod_addresses()
+            op_flow._deployment_nodes[
+                GATEWAY_NAME
+            ].args.deployments_addresses = json.dumps(
+                op_flow._get_deployments_addresses()
             )
 
-            op_flow._pod_nodes[GATEWAY_NAME].update_pea_args()
+            op_flow._deployment_nodes[GATEWAY_NAME].update_pod_args()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -1009,8 +1045,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 os.environ.pop(k, None)
 
         # do not know why but removing these 2 lines make 2 tests fail
-        if GATEWAY_NAME in self._pod_nodes:
-            self._pod_nodes.pop(GATEWAY_NAME)
+        if GATEWAY_NAME in self._deployment_nodes:
+            self._deployment_nodes.pop(GATEWAY_NAME)
 
         self._build_level = FlowBuildLevel.EMPTY
 
@@ -1018,12 +1054,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger.close()
 
     def start(self):
-        """Start to run all Pods in this Flow.
+        """Start to run all Deployments in this Flow.
 
         Remember to close the Flow with :meth:`close`.
 
         Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited all the way from :class:`jina.peapods.peas.Pea`
+        which is inherited all the way from :class:`jina.orchestrate.pods.Pod`
 
 
         .. # noqa: DAR401
@@ -1033,7 +1069,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        # set env only before the Pod get started
+        # set env only before the Deployment get started
         if self.args.env:
             for k, v in self.args.env.items():
                 os.environ[k] = str(v)
@@ -1052,14 +1088,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         results = {}
         threads = []
 
-        def _wait_ready(_pod_name, _pod):
+        def _wait_ready(_deployment_name, _deployment):
             try:
-                if not _pod.external:
-                    results[_pod_name] = 'pending'
-                    _pod.wait_start_success()
-                    results[_pod_name] = 'done'
+                if not _deployment.external:
+                    results[_deployment_name] = 'pending'
+                    _deployment.wait_start_success()
+                    results[_deployment_name] = 'done'
             except Exception as ex:
-                results[_pod_name] = repr(ex)
+                results[_deployment_name] = repr(ex)
 
         def _polling_status():
             spinner = itertools.cycle(
@@ -1088,7 +1124,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     break
                 time.sleep(0.1)
 
-        # kick off all pods wait-ready threads
+        # kick off all deployments wait-ready threads
         for k, v in self:
             t = threading.Thread(
                 target=_wait_ready,
@@ -1118,10 +1154,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             t_ip.join()
         t_m.join()
 
-        error_pods = [k for k, v in results.items() if v != 'done']
-        if error_pods:
+        error_deployments = [k for k, v in results.items() if v != 'done']
+        if error_deployments:
             self.logger.error(
-                f'Flow is aborted due to {error_pods} can not be started.'
+                f'Flow is aborted due to {error_deployments} can not be started.'
             )
             self.close()
             raise RuntimeFailToStart
@@ -1131,24 +1167,24 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             if addr_table:
                 self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
             self.logger.debug(
-                f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
+                f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
             )
 
     @property
-    def num_pods(self) -> int:
-        """Get the number of Pods in this Flow
+    def num_deployments(self) -> int:
+        """Get the number of Deployments in this Flow
 
 
         .. # noqa: DAR201"""
-        return len(self._pod_nodes)
+        return len(self._deployment_nodes)
 
     @property
-    def num_peas(self) -> int:
-        """Get the number of peas (shards count) in this Flow
+    def num_pods(self) -> int:
+        """Get the number of pods (shards count) in this Flow
 
 
         .. # noqa: DAR201"""
-        return sum(v.num_peas for v in self._pod_nodes.values())
+        return sum(v.num_pods for v in self._deployment_nodes.values())
 
     def __eq__(self, other: 'Flow') -> bool:
         """
@@ -1171,7 +1207,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         else:
             b = other
 
-        return a._pod_nodes == b._pod_nodes
+        return a._deployment_nodes == b._deployment_nodes
 
     @property
     def client(self) -> 'BaseClient':
@@ -1210,14 +1246,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             'flowchart LR;',
         ]
 
-        pod_nodes = []
+        deployment_nodes = []
 
         # plot subgraphs
-        for node, v in self._pod_nodes.items():
-            pod_nodes.append(v.name)
+        for node, v in self._deployment_nodes.items():
+            deployment_nodes.append(v.name)
             mermaid_graph.extend(v._mermaid_str)
 
-        for node, v in self._pod_nodes.items():
+        for node, v in self._deployment_nodes.items():
             for need in sorted(v.needs):
                 need_print = need
                 if need == 'gateway':
@@ -1226,27 +1262,34 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 if node == 'gateway':
                     node_print = 'gatewayend[gateway]'
 
-                _s_role = self._pod_nodes[need].role
-                _e_role = self._pod_nodes[node].role
-                if self._pod_nodes[need].external:
+                _s_role = self._deployment_nodes[need].role
+                _e_role = self._deployment_nodes[node].role
+                if self._deployment_nodes[need].external:
                     _s_role = 'EXTERNAL'
-                if self._pod_nodes[node].external:
+                if self._deployment_nodes[node].external:
                     _e_role = 'EXTERNAL'
                 line_st = '-->'
-                if _s_role == PodRoleType.INSPECT or _e_role == PodRoleType.INSPECT:
+                if (
+                    _s_role == DeploymentRoleType.INSPECT
+                    or _e_role == DeploymentRoleType.INSPECT
+                ):
                     line_st = '-.->'
                 mermaid_graph.append(
                     f'{need_print}:::{str(_s_role)} {line_st} {node_print}:::{str(_e_role)};'
                 )
 
-        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} stroke:#F29C9F')
-
-        mermaid_graph.append(f'classDef {str(PodRoleType.JOIN_INSPECT)} stroke:#F29C9F')
         mermaid_graph.append(
-            f'classDef {str(PodRoleType.GATEWAY)} fill:none,color:#000,stroke:none'
+            f'classDef {str(DeploymentRoleType.INSPECT)} stroke:#F29C9F'
+        )
+
+        mermaid_graph.append(
+            f'classDef {str(DeploymentRoleType.JOIN_INSPECT)} stroke:#F29C9F'
         )
         mermaid_graph.append(
-            f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} stroke-dasharray: 2 2'
+            f'classDef {str(DeploymentRoleType.GATEWAY)} fill:none,color:#000,stroke:none'
+        )
+        mermaid_graph.append(
+            f'classDef {str(DeploymentRoleType.INSPECT_AUX_PASS)} stroke-dasharray: 2 2'
         )
         mermaid_graph.append(f'classDef HEADTAIL fill:#32C8CD1D')
 
@@ -1274,7 +1317,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         .. highlight:: python
         .. code-block:: python
 
-            flow = Flow().add(name='pod_a').plot('flow.svg')
+            flow = Flow().add(name='deployment_a').plot('flow.svg')
 
         :param output: a filename specifying the name of the image to be created,
                     the suffix svg/jpg determines the file type of the output image
@@ -1343,8 +1386,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return the exposed port of the gateway
         .. # noqa: DAR201
         """
-        if GATEWAY_NAME in self._pod_nodes:
-            return self._pod_nodes[GATEWAY_NAME].args.port_expose
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self._deployment_nodes[GATEWAY_NAME].args.port_expose
         else:
             return self._common_kwargs.get('port_expose', None)
 
@@ -1371,8 +1414,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return the local address of the gateway
         .. # noqa: DAR201
         """
-        if GATEWAY_NAME in self._pod_nodes:
-            return self._pod_nodes[GATEWAY_NAME].host
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self._deployment_nodes[GATEWAY_NAME].host
         else:
             return self._common_kwargs.get('host', __default_host__)
 
@@ -1411,7 +1454,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return get_public_ip()
 
     def __iter__(self):
-        return self._pod_nodes.items().__iter__()
+        return self._deployment_nodes.items().__iter__()
 
     def _get_address_table(self, address_table):
         address_table.extend(
@@ -1508,9 +1551,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def __getitem__(self, item):
         if isinstance(item, str):
-            return self._pod_nodes[item]
+            return self._deployment_nodes[item]
         elif isinstance(item, int):
-            return list(self._pod_nodes.values())[item]
+            return list(self._deployment_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
 
@@ -1523,18 +1566,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @workspace.setter
     def workspace(self, value: str):
-        """set workspace dir for flow & all pods
+        """set workspace dir for flow & all deployments
 
         :param value: workspace to be set
         """
         self.args.workspace = value
         for k, p in self:
             p.args.workspace = value
-            p.update_pea_args()
+            p.update_pod_args()
 
     @property
     def workspace_id(self) -> Dict[str, str]:
-        """Get all Pods' ``workspace_id`` values in a dict
+        """Get all Deployments' ``workspace_id`` values in a dict
 
 
         .. # noqa: DAR201"""
@@ -1544,7 +1587,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @workspace_id.setter
     def workspace_id(self, value: str):
-        """Set all Pods' ``workspace_id`` to ``value``
+        """Set all Deployments' ``workspace_id`` to ``value``
 
         :param value: a hexadecimal UUID string
         """
@@ -1552,10 +1595,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
-                args = getattr(p, 'peas_args', getattr(p, 'shards_args', None))
+                args = getattr(p, 'pod_args', getattr(p, 'shards_args', None))
                 if args is None:
                     raise ValueError(
-                        f'could not find "peas_args" or "shards_args" on {p}'
+                        f'could not find "pod_args" or "shards_args" on {p}'
                     )
                 values = None
                 if isinstance(args, dict):
@@ -1579,7 +1622,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @env.setter
     def env(self, value: Dict[str, str]):
-        """set env vars for flow & all pods.
+        """set env vars for flow & all deployments.
         This can be used by jinad to set envs for Flow and all child objects
 
         :param value: value to be set
@@ -1649,19 +1692,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def rolling_update(
         self,
-        pod_name: str,
+        deployment_name: str,
         uses_with: Optional[Dict] = None,
     ):
         """
-        Reload all replicas of a pod sequentially
+        Reload all replicas of a deployment sequentially
 
-        :param pod_name: pod to update
+        :param deployment_name: deployment to update
         :param uses_with: a Dictionary of arguments to restart the executor with
         """
         from jina.helper import run_async
 
         run_async(
-            self._pod_nodes[pod_name].rolling_update,
+            self._deployment_nodes[deployment_name].rolling_update,
             uses_with=uses_with,
             any_event_loop=True,
         )
@@ -1683,28 +1726,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        from jina.orchestrate.pods.config.k8s import K8sPodConfig
+        from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
-        for node, v in self._pod_nodes.items():
+        for node, v in self._deployment_nodes.items():
             if v.external:
                 continue
-            pod_base = os.path.join(output_base_path, node)
-            k8s_pod = K8sPodConfig(
+            deployment_base = os.path.join(output_base_path, node)
+            k8s_deployment = K8sDeploymentConfig(
                 args=v.args,
                 k8s_namespace=k8s_namespace,
                 k8s_connection_pool=k8s_connection_pool,
-                k8s_pod_addresses=self._get_k8s_pod_addresses(
+                k8s_deployments_addresses=self._get_k8s_deployments_addresses(
                     k8s_namespace, k8s_connection_pool
                 )
                 if node == 'gateway'
                 else None,
             )
-            configs = k8s_pod.to_k8s_yaml()
+            configs = k8s_deployment.to_k8s_yaml()
             for name, k8s_objects in configs:
-                filename = os.path.join(pod_base, f'{name}.yml')
-                os.makedirs(pod_base, exist_ok=True)
+                filename = os.path.join(deployment_base, f'{name}.yml')
+                os.makedirs(deployment_base, exist_ok=True)
                 with open(filename, 'w+') as fp:
                     for i, k8s_object in enumerate(k8s_objects):
                         yaml.dump(k8s_object, fp)
@@ -1727,7 +1770,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
-        from jina.orchestrate.pods.config.docker_compose import DockerComposeConfig
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
 
         docker_compose_dict = {
             'version': '3.3',
@@ -1736,12 +1781,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         services = {}
 
-        for node, v in self._pod_nodes.items():
-            docker_compose_pod = DockerComposeConfig(
+        for node, v in self._deployment_nodes.items():
+            docker_compose_deployment = DockerComposeConfig(
                 args=v.args,
-                pod_addresses=self._get_docker_compose_pod_addresses(),
+                deployments_addresses=self._get_docker_compose_deployments_addresses(),
             )
-            service_configs = docker_compose_pod.to_docker_compose_config()
+            service_configs = docker_compose_deployment.to_docker_compose_config()
             for service_name, service in service_configs:
                 service['networks'] = [network_name]
                 services[service_name] = service
@@ -1752,13 +1797,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def scale(
         self,
-        pod_name: str,
+        deployment_name: str,
         replicas: int,
     ):
         """
         Scale the amount of replicas of a given Executor.
 
-        :param pod_name: pod to update
+        :param deployment_name: deployment to update
         :param replicas: The number of replicas to scale to
         """
 
@@ -1767,7 +1812,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         from jina.helper import run_async
 
         run_async(
-            self._pod_nodes[pod_name].scale,
+            self._deployment_nodes[deployment_name].scale,
             replicas=replicas,
             any_event_loop=True,
         )

@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from jina import Flow, Document, Client
-from jina.parsers import set_pod_parser
+from jina.parsers import set_deployment_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 single_compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -13,19 +13,19 @@ exposed_port = 12345
 
 
 @pytest.fixture
-def external_pod_args():
+def external_deployment_args():
     args = ['--port-in', str(45678)]
-    args = vars(set_pod_parser().parse_args(args))
+    args = vars(set_deployment_parser().parse_args(args))
     del args['external']
-    del args['pod_role']
+    del args['deployment_role']
     del args['host']
     return args
 
 
 @pytest.fixture
-def local_flow(external_pod_args):
+def local_flow(external_deployment_args):
     return Flow(port_expose=exposed_port).add(
-        **external_pod_args, host='10.1.0.100', external=True
+        **external_deployment_args, host='10.1.0.100', external=True
     )
 
 

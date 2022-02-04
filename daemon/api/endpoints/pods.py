@@ -1,5 +1,3 @@
-from typing import Optional, Dict, Any
-
 from fastapi import Depends, APIRouter, HTTPException
 
 from daemon import Runtime400Exception
@@ -11,13 +9,16 @@ router = APIRouter(prefix='/pods', tags=['pods'])
 
 
 @router.get(
-    path='', summary='Get all alive Pods\' status', response_model=ContainerStoreStatus
+    path='', summary='Get all alive Pod\' status', response_model=ContainerStoreStatus
 )
 async def _get_items():
     return store.status
 
 
-@router.get(path='/arguments', summary='Get all accepted arguments of a Pod')
+@router.get(
+    path='/arguments',
+    summary='Get all accepted arguments of a Pod',
+)
 async def _fetch_pod_params():
     return PodModel.schema()['properties']
 
@@ -43,31 +44,8 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
         raise Runtime400Exception from ex
 
 
-@router.put(
-    path='/rolling_update/{id}',
-    summary='Trigger a rolling_update operation on the Pod object',
-)
-async def _rolling_update(
-    id: DaemonID,
-    uses_with: Optional[Dict[str, Any]] = None,
-):
-    try:
-        return await store.rolling_update(id=id, uses_with=uses_with)
-    except Exception as ex:
-        raise Runtime400Exception from ex
-
-
-@router.put(
-    path='/scale/{id}',
-    summary='Trigger a scale operation on the Pod object',
-)
-async def _scale(id: DaemonID, replicas: int):
-    try:
-        return await store.scale(id=id, replicas=replicas)
-    except Exception as ex:
-        raise Runtime400Exception from ex
-
-
+# order matters! this must be put in front of del {id}
+#  https://fastapi.tiangolo.com/tutorial/path-params/?h=+path#order-matters
 @router.delete(
     path='',
     summary='Terminate all running Pods',
@@ -95,4 +73,4 @@ async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in store')
+        raise HTTPException(status_code=404, detail=f'{id} not found in pod store')

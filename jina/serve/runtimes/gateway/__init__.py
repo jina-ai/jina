@@ -21,15 +21,15 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
     def _set_connection_pool(self):
         import json
 
-        pods_addresses = json.loads(self.args.pods_addresses)
+        deployments_addresses = json.loads(self.args.deployments_addresses)
         # add the connections needed
         self._connection_pool = create_connection_pool(
             logger=self.logger,
             k8s_connection_pool=self.args.k8s_connection_pool,
             k8s_namespace=self.args.k8s_namespace,
         )
-        for pod_name, addresses in pods_addresses.items():
+        for deployment_name, addresses in deployments_addresses.items():
             for address in addresses:
                 self._connection_pool.add_connection(
-                    pod=pod_name, address=address, head=True
+                    deployment=deployment_name, address=address, head=True
                 )

@@ -5,8 +5,8 @@ import pytest
 from jina import Flow
 from jina.excepts import RuntimeFailToStart
 from jina.serve.executors import BaseExecutor
-from jina.parsers import set_pod_parser
-from jina.orchestrate.pods import Pod
+from jina.parsers import set_deployment_parser
+from jina.orchestrate.deployments import Deployment
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,9 +36,9 @@ def test_use_from_local_dir_exe_level():
         pass
 
 
-def test_use_from_local_dir_pod_level():
-    a = set_pod_parser().parse_args(['--uses', 'dummyhub/config.yml'])
-    with Pod(a):
+def test_use_from_local_dir_deployment_level():
+    a = set_deployment_parser().parse_args(['--uses', 'dummyhub/config.yml'])
+    with Deployment(a):
         pass
 
 
@@ -63,7 +63,7 @@ def local_hub_executor(tmpdir, test_envs):
     )
 
 
-def test_use_from_local_hub_pod_level(
+def test_use_from_local_hub_deployment_level(
     test_envs, mocker, monkeypatch, local_hub_executor
 ):
     from jina.hubble.hubio import HubIO, HubExecutor
@@ -86,8 +86,8 @@ def test_use_from_local_hub_pod_level(
         )
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
-    a = set_pod_parser().parse_args(['--uses', 'jinahub://hello'])
-    with Pod(a):
+    a = set_deployment_parser().parse_args(['--uses', 'jinahub://hello'])
+    with Deployment(a):
         pass
 
 

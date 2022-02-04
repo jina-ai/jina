@@ -6,7 +6,7 @@ from daemon.clients import JinaDClient, AsyncJinaDClient
 
 from jina import __default_host__
 from jina.helper import ArgNamespace
-from jina.parsers import set_pod_parser
+from jina.parsers import set_deployment_parser
 from jina.enums import replace_enum_to_str
 
 
@@ -17,7 +17,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def pod_args():
-    return set_pod_parser().parse_args([])
+    return set_deployment_parser().parse_args([])
 
 
 @pytest.fixture
@@ -36,17 +36,19 @@ def test_remote_jinad_pod(pod_args, jinad_client):
     workspace_id = jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
-    assert jinad_client.pods.alive()
+    assert jinad_client.deployments.alive()
     # create pod
-    success, pod_id = jinad_client.pods.create(
+    success, pod_id = jinad_client.deployments.create(
         workspace_id=workspace_id, payload=payload
     )
     assert success
     # get pod status
-    remote_pod_args = jinad_client.pods.get(pod_id)['arguments']['object']['arguments']
+    remote_pod_args = jinad_client.deployments.get(pod_id)['arguments']['object'][
+        'arguments'
+    ]
     # delete pod
-    assert jinad_client.pods.delete(pod_id)
-    resp = jinad_client.pods.get(pod_id)
+    assert jinad_client.deployments.delete(pod_id)
+    resp = jinad_client.deployments.get(pod_id)
     assert resp == pod_id + ' not found in store'
 
 
@@ -57,18 +59,18 @@ async def test_remote_jinad_pod_async(pod_args, async_jinad_client):
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
-    assert await async_jinad_client.pods.alive()
+    assert await async_jinad_client.deployments.alive()
     # create pod
-    success, pod_id = await async_jinad_client.pods.create(
+    success, pod_id = await async_jinad_client.deployments.create(
         workspace_id=workspace_id, payload=payload
     )
     assert success
     # get pod status
-    resp = await async_jinad_client.pods.get(pod_id)
+    resp = await async_jinad_client.deployments.get(pod_id)
     remote_pod_args = resp['arguments']['object']['arguments']
     # delete pod
-    assert await async_jinad_client.pods.delete(pod_id)
-    resp = await async_jinad_client.pods.get(pod_id)
+    assert await async_jinad_client.deployments.delete(pod_id)
+    resp = await async_jinad_client.deployments.get(pod_id)
     assert resp == pod_id + ' not found in store'
 
 
@@ -77,12 +79,12 @@ async def test_jinad_pod_create_async_given_unprocessable_entity(
     pod_args, async_jinad_client
 ):
     payload = replace_enum_to_str(ArgNamespace.flatten_to_dict(pod_args))
-    payload['pea_role'] = 'RANDOM'  # patch an invalid pea role type
+    payload['pod_role'] = 'RANDOM'  # patch an invalid pod role type
 
     workspace_id = await async_jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, cur_dir)]
     )
-    success, resp = await async_jinad_client.pods.create(
+    success, resp = await async_jinad_client.deployments.create(
         workspace_id=workspace_id, payload=payload
     )
     assert not success
@@ -91,6 +93,6 @@ async def test_jinad_pod_create_async_given_unprocessable_entity(
 
 @pytest.mark.asyncio
 async def test_jinad_pod_arguments(pod_args, async_jinad_client):
-    resp = await async_jinad_client.pods.arguments()
+    resp = await async_jinad_client.deployments.arguments()
     assert resp
     assert resp['name']['title'] == 'Name'

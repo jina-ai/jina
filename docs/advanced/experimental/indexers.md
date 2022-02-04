@@ -128,13 +128,13 @@ where
 For performing the **rolling update**, we can see the usage in the same test:
 
 ```python
-flow_query.rolling_update(pod_name='indexer_query', uses_with={'dump_path': dump_path})
+flow_query.rolling_update(deployment_name='indexer_query', uses_with={'dump_path': dump_path})
 ```
 
 where
 
 - `flow_query` is the Flow with the searcher Indexer
-- `pod_name` is the name of the Executor, defined in your `flow.yml`
+- `deployment_name` is the name of the Executor, defined in your `flow.yml`
 - `dump_path` is the folder where you exported the data, from the above **dump** call
 
 ```{note}

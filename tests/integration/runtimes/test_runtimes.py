@@ -8,7 +8,7 @@ import pytest
 
 from jina import Document, Executor, Client, requests
 from jina.enums import PollingType
-from jina.parsers import set_gateway_parser, set_pea_parser
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
@@ -618,7 +618,7 @@ async def _create_worker(pod, port_generator, type='worker', executor=None):
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     args.port_in = port
     args.name = name
     if executor:
@@ -630,7 +630,7 @@ def _create_worker_runtime(port, name='', executor=None):
 def _create_head_runtime(
     port, name='', polling='ANY', uses_before=None, uses_after=None
 ):
-    args = set_pea_parser().parse_args([])
+    args = set_pod_parser().parse_args([])
     args.port_in = port
     args.name = name
     args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL
@@ -649,7 +649,7 @@ def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
             [
                 '--graph-description',
                 graph_description,
-                '--pods-addresses',
+                '--deployments-addresses',
                 pod_addresses,
                 '--port-expose',
                 str(port_expose),

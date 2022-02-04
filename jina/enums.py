@@ -101,7 +101,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
 
 
 class PollingType(BetterEnum):
-    """The enum for representing the parallel type of peas in a pod."""
+    """The enum for representing the parallel type of pods in a deployment."""
 
     ANY = 1  #: one of the shards will receive the message
     ALL = 2  #: all shards will receive the message, blocked until all done with the message
@@ -146,7 +146,7 @@ class FlowBuildLevel(BetterEnum):
 
     EMPTY = 0  #: Nothing is built
     GRAPH = 1  #: The underlying graph is built, you may visualize the flow
-    RUNNING = 2  #: the graph is started and all pods are running
+    RUNNING = 2  #: the graph is started and all deployment are running
 
 
 class GatewayProtocolType(BetterEnum):
@@ -159,18 +159,18 @@ class GatewayProtocolType(BetterEnum):
     WEBSOCKET = 2
 
 
-class PeaRoleType(BetterEnum):
-    """The enum of a Pea role."""
+class PodRoleType(BetterEnum):
+    """The enum of a Pod role."""
 
     HEAD = 0
     WORKER = 1
     GATEWAY = 2
 
 
-class PodRoleType(BetterEnum):
-    """The enum of a Pod role for visualization."""
+class DeploymentRoleType(BetterEnum):
+    """The enum of a Deploymen role for visualization."""
 
-    POD = 0
+    DEPLOYMENT = 0
     JOIN = 1
     INSPECT = 2
     GATEWAY = 3
@@ -180,9 +180,9 @@ class PodRoleType(BetterEnum):
     @property
     def is_inspect(self) -> bool:
         """
-        If the role is inspect pod related.
+        If the role is inspect deployment related.
 
-        :return: True if the Pod role is inspect related else False.
+        :return: True if the Deployment role is inspect related else False.
         """
         return self.value in {2, 4}
 
@@ -237,7 +237,7 @@ class FlowInspectType(BetterEnum):
 
     HANG = 0  # keep them hanging there
     REMOVE = 1  # remove them in the build
-    COLLECT = 2  # spawn a new pod and collect them before build
+    COLLECT = 2  # spawn a new deployment and collect them before build
 
     @property
     def is_keep(self) -> bool:
@@ -247,16 +247,6 @@ class FlowInspectType(BetterEnum):
         :return: True if the target is inspected else False.
         """
         return self.value in {0, 2}
-
-
-class BuildTestLevel(BetterEnum):
-    """Test level in :command:`jina hub build`, higher level includes lower levels."""
-
-    NONE = 0  # no build test
-    EXECUTOR = 1  # test at executor level, directly use the config yaml
-    POD_NONDOCKER = 2  # test at pod level, directly use the config yaml
-    POD_DOCKER = 3  # test at pod level but pod --uses the built image
-    FLOW = 4  # test at a simple flow
 
 
 class DataInputType(BetterEnum):

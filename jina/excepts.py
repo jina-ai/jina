@@ -9,20 +9,16 @@ class NoExplicitMessage(Exception, BaseJinaExeception):
     """Waiting until all partial messages are received."""
 
 
-class ChainedPodException(Exception, BaseJinaExeception):
-    """Chained exception from the last Pod."""
-
-
 class MismatchedVersion(SystemError, BaseJinaExeception):
     """When the jina version info of the incoming message does not match the local Jina version."""
 
 
 class ExecutorFailToLoad(SystemError, BaseJinaExeception):
-    """When the executor can not be loaded in pea/pod."""
+    """When the executor can not be loaded in pod/deployment."""
 
 
 class RuntimeFailToStart(SystemError, BaseJinaExeception):
-    """When pea/pod is failed to started."""
+    """When pod/deployment is failed to started."""
 
 
 class ScalingFails(SystemError, BaseJinaExeception):
@@ -38,7 +34,7 @@ class NoAvailablePortError(Exception, BaseJinaExeception):
 
 
 class RuntimeTerminated(KeyboardInterrupt, BaseJinaExeception):
-    """The event loop of BasePea ends."""
+    """The event loop of BasePod ends."""
 
 
 class UnknownControlCommand(RuntimeError, BaseJinaExeception):
@@ -49,8 +45,8 @@ class FlowTopologyError(Exception, BaseJinaExeception):
     """Flow exception when the topology is ambiguous."""
 
 
-class FlowMissingPodError(Exception, BaseJinaExeception):
-    """Flow exception when a pod can not be found in the flow."""
+class FlowMissingDeploymentError(Exception, BaseJinaExeception):
+    """Flow exception when a deployment can not be found in the flow."""
 
 
 class FlowBuildLevelError(Exception, BaseJinaExeception):
@@ -93,7 +89,7 @@ class DaemonWorkspaceCreationFailed(Exception, BaseJinaExeception):
     """Exception to raise when jina daemon is not connectable."""
 
 
-class DaemonPeaCreationFailed(Exception, BaseJinaExeception):
+class DaemonPodCreationFailed(Exception, BaseJinaExeception):
     """Exception to raise when jina daemon is not connectable."""
 
 

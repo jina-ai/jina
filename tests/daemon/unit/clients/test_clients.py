@@ -4,8 +4,8 @@ import aiohttp
 from daemon.models.id import DaemonID
 from daemon.clients import JinaDClient
 from daemon.clients.base import BaseClient, AsyncBaseClient
-from daemon.clients.peas import PeaClient, AsyncPeaClient
 from daemon.clients.pods import PodClient, AsyncPodClient
+from daemon.clients.deployments import DeploymentClient, AsyncDeploymentClient
 from daemon.clients.flows import FlowClient, AsyncFlowClient
 from daemon.clients.workspaces import WorkspaceClient, AsyncWorkspaceClient
 from jina.logging.logger import JinaLogger
@@ -14,11 +14,17 @@ logger = JinaLogger('BaseTests')
 MOCK_URI = '1.2.3.4:7230'
 
 
-all_sync_clients = [BaseClient, PeaClient, PodClient, FlowClient, WorkspaceClient]
+all_sync_clients = [
+    BaseClient,
+    PodClient,
+    DeploymentClient,
+    FlowClient,
+    WorkspaceClient,
+]
 all_async_clients = [
     AsyncBaseClient,
-    AsyncPeaClient,
     AsyncPodClient,
+    AsyncDeploymentClient,
     AsyncFlowClient,
     AsyncWorkspaceClient,
 ]
@@ -122,7 +128,12 @@ async def test_status_async(monkeypatch, client_cls):
 
 @pytest.mark.parametrize(
     'identity',
-    [DaemonID('jworkspace'), DaemonID('jpea'), DaemonID('jpod'), DaemonID('jflow')],
+    [
+        DaemonID('jworkspace'),
+        DaemonID('jpod'),
+        DaemonID('jdeployment'),
+        DaemonID('jflow'),
+    ],
 )
 @pytest.mark.parametrize('client_cls', all_sync_clients)
 def test_get(monkeypatch, identity, client_cls):
@@ -154,7 +165,12 @@ def test_get(monkeypatch, identity, client_cls):
 
 @pytest.mark.parametrize(
     'identity',
-    [DaemonID('jworkspace'), DaemonID('jpea'), DaemonID('jpod'), DaemonID('jflow')],
+    [
+        DaemonID('jworkspace'),
+        DaemonID('jpod'),
+        DaemonID('jdeployment'),
+        DaemonID('jflow'),
+    ],
 )
 @pytest.mark.parametrize('client_cls', all_async_clients)
 @pytest.mark.asyncio
@@ -222,10 +238,10 @@ async def test_list_async(monkeypatch, client_cls):
 
 @pytest.mark.parametrize(
     'identity',
-    [DaemonID('jpea'), DaemonID('jpod')],
+    [DaemonID('jpod'), DaemonID('jdeployment')],
 )
-@pytest.mark.parametrize('client_cls', [PeaClient, PodClient])
-def test_peapod_create(monkeypatch, identity, client_cls):
+@pytest.mark.parametrize('client_cls', [PodClient, DeploymentClient])
+def test_podpod_create(monkeypatch, identity, client_cls):
     payload = {'1': 2}
 
     client = client_cls(uri=MOCK_URI, logger=logger)
@@ -264,11 +280,11 @@ def test_peapod_create(monkeypatch, identity, client_cls):
 
 @pytest.mark.parametrize(
     'identity',
-    [DaemonID('jpea'), DaemonID('jpod')],
+    [DaemonID('jpod'), DaemonID('jdeployment')],
 )
-@pytest.mark.parametrize('client_cls', [AsyncPeaClient, AsyncPodClient])
+@pytest.mark.parametrize('client_cls', [AsyncPodClient, AsyncDeploymentClient])
 @pytest.mark.asyncio
-async def test_peapod_create_async(monkeypatch, identity, client_cls):
+async def test_podpod_create_async(monkeypatch, identity, client_cls):
     payload = {'1': 2}
 
     client = client_cls(uri=MOCK_URI, logger=logger)
@@ -305,11 +321,11 @@ async def test_peapod_create_async(monkeypatch, identity, client_cls):
     assert await client.create(identity, payload) is None
 
 
-def test_pod_rolling_update(monkeypatch):
+def test_deployment_rolling_update(monkeypatch):
     payload = {'1': 2}
 
-    identity = DaemonID('jpod')
-    client = PodClient(uri=MOCK_URI, logger=logger)
+    identity = DaemonID('jdeployment')
+    client = DeploymentClient(uri=MOCK_URI, logger=logger)
     monkeypatch.setattr(
         aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
     )
@@ -321,11 +337,11 @@ def test_pod_rolling_update(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_pod_rolling_update_async(monkeypatch):
+async def test_deployment_rolling_update_async(monkeypatch):
     payload = {'1': 2}
 
-    identity = DaemonID('jpod')
-    client = AsyncPodClient(uri=MOCK_URI, logger=logger)
+    identity = DaemonID('jdeployment')
+    client = AsyncDeploymentClient(uri=MOCK_URI, logger=logger)
     monkeypatch.setattr(
         aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
     )
@@ -336,11 +352,11 @@ async def test_pod_rolling_update_async(monkeypatch):
     assert await client.rolling_update(identity, uses_with=payload) is None
 
 
-def test_pod_scale(monkeypatch):
+def test_deployment_scale(monkeypatch):
     payload = {'1': 2}
 
-    identity = DaemonID('jpod')
-    client = PodClient(uri=MOCK_URI, logger=logger)
+    identity = DaemonID('jdeployment')
+    client = DeploymentClient(uri=MOCK_URI, logger=logger)
     monkeypatch.setattr(
         aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
     )
@@ -352,11 +368,11 @@ def test_pod_scale(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_pod_scale_async(monkeypatch):
+async def test_deployment_scale_async(monkeypatch):
     payload = {'1': 2}
 
-    identity = DaemonID('jpod')
-    client = AsyncPodClient(uri=MOCK_URI, logger=logger)
+    identity = DaemonID('jdeployment')
+    client = AsyncDeploymentClient(uri=MOCK_URI, logger=logger)
     monkeypatch.setattr(
         aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
     )
@@ -369,10 +385,10 @@ async def test_pod_scale_async(monkeypatch):
 
 @pytest.mark.parametrize(
     'identity',
-    [DaemonID('jpea'), DaemonID('jpod')],
+    [DaemonID('jpod'), DaemonID('jdeployment')],
 )
-@pytest.mark.parametrize('client_cls', [PeaClient, PodClient])
-def test_peapod_delete(monkeypatch, identity, client_cls):
+@pytest.mark.parametrize('client_cls', [PodClient, DeploymentClient])
+def test_podpod_delete(monkeypatch, identity, client_cls):
     client = client_cls(uri=MOCK_URI, logger=logger)
     monkeypatch.setattr(
         aiohttp,
@@ -403,11 +419,11 @@ def test_peapod_delete(monkeypatch, identity, client_cls):
 
 @pytest.mark.parametrize(
     'identity',
-    [DaemonID('jpea'), DaemonID('jpod')],
+    [DaemonID('jpod'), DaemonID('jdeployment')],
 )
-@pytest.mark.parametrize('client_cls', [AsyncPeaClient, AsyncPodClient])
+@pytest.mark.parametrize('client_cls', [AsyncPodClient, AsyncDeploymentClient])
 @pytest.mark.asyncio
-async def test_peapod_delete_async(monkeypatch, identity, client_cls):
+async def test_podpod_delete_async(monkeypatch, identity, client_cls):
     client = client_cls(uri=MOCK_URI, logger=logger)
     monkeypatch.setattr(
         aiohttp,
@@ -438,7 +454,7 @@ async def test_peapod_delete_async(monkeypatch, identity, client_cls):
 
 def test_timeout():
     client = JinaDClient(host='1.2.3.4', port=8000)
-    assert client.peas.timeout.total == 10 * 60
+    assert client.pods.timeout.total == 10 * 60
 
     client = JinaDClient(host='1.2.3.4', port=8000, timeout=10)
-    assert client.peas.timeout.total == 10
+    assert client.pods.timeout.total == 10

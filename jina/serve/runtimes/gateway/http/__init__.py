@@ -77,7 +77,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
         await self._server.serve()
 
     async def _wait_for_cancel(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # handle terminate signals
         while not self.is_cancel.is_set() and not self._server.should_exit:
             await asyncio.sleep(0.1)

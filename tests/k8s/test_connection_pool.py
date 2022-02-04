@@ -49,9 +49,9 @@ async def test_process_up_down_events(docker_images):
                 'metadata': {
                     'labels': {
                         'app': 'dummy-deployment',
-                        'jina_pod_name': 'some-pod',
+                        'jina_deployment_name': 'some-deployment',
                         'shard_id': '4',
-                        'pea_type': 'WORKER',
+                        'pod_type': 'WORKER',
                         'ns': f'{namespace}',
                     }
                 },
@@ -100,7 +100,7 @@ async def test_process_up_down_events(docker_images):
             and api_response.status.ready_replicas == expected_replicas
             or (api_response.status.ready_replicas is None and expected_replicas == 0)
         ):
-            replica_lists = pool._connections.get_replicas_all_shards('some-pod')
+            replica_lists = pool._connections.get_replicas_all_shards('some-deployment')
             assert expected_replicas == sum(
                 [
                     len(replica_list.get_all_connections())

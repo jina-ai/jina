@@ -25,7 +25,7 @@ def test_load_flow_from_empty_yaml():
 
 
 def test_support_versions():
-    assert get_supported_versions(Flow) == ['1', 'legacy']
+    assert get_supported_versions(Flow) == ['1']
 
 
 def test_load_legacy_and_v1():
@@ -73,29 +73,29 @@ def test_load_modify_dump_load(tmpdir):
     assert f.port_expose == 12345
     assert f.protocol == GatewayProtocolType.HTTP
     # assert executor args
-    assert f._pod_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
-    assert f._pod_nodes['custom2'].args.uses == 'CustomExecutor2'
-    assert f._pod_nodes['custom2'].args.port_in == 23456
+    assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
+    assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
+    assert f._deployment_nodes['custom2'].args.port_in == 23456
 
     # change args inside `with`
     f.port_expose = 12346
     f.protocol = GatewayProtocolType.WEBSOCKET
     # change executor args
-    f._pod_nodes['custom2'].args.port_in = 23457
+    f._deployment_nodes['custom2'].args.port_in = 23457
 
     f.save_config(str(Path(tmpdir) / 'a0.yml'))
     f1: Flow = Flow.load_config(str(Path(tmpdir) / 'a0.yml'))
 
     # assert args from original yaml
     assert f1._kwargs['name'] == 'abc'
-    assert 'custom1' in f1._pod_nodes
-    assert 'custom2' in f1._pod_nodes
-    assert f1._pod_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
-    assert f1._pod_nodes['custom2'].args.uses == 'CustomExecutor2'
+    assert 'custom1' in f1._deployment_nodes
+    assert 'custom2' in f1._deployment_nodes
+    assert f1._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
+    assert f1._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
     # assert args modified in code
     assert f1.port_expose == 12346
     assert f1.protocol == GatewayProtocolType.WEBSOCKET
-    assert f1._pod_nodes['custom2'].args.port_in == 23457
+    assert f1._deployment_nodes['custom2'].args.port_in == 23457
 
 
 def test_dump_load_build(monkeypatch):
@@ -172,11 +172,11 @@ def test_flow_yaml_from_string():
         assert f1 == f2
 
     f3 = Flow.load_config(
-        '!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]'
+        '!Flow\nversion: 1.0\ndeployments: [{name: ppp0, uses: _merge}, name: aaa1]'
     )
-    assert 'ppp0' in f3._pod_nodes.keys()
-    assert 'aaa1' in f3._pod_nodes.keys()
-    assert f3.num_pods == 2
+    assert 'ppp0' in f3._deployment_nodes.keys()
+    assert 'aaa1' in f3._deployment_nodes.keys()
+    assert f3.num_deployments == 2
 
 
 class DummyEncoder(Executor):

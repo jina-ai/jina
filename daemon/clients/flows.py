@@ -20,7 +20,7 @@ class AsyncFlowClient(AsyncBaseClient):
 
     @if_alive
     async def arguments(self) -> Optional[Dict]:
-        """Get all arguments accepted by a remote Pea/Pod
+        """Get all arguments accepted by a remote Pod/Deployment
 
         :return: dict arguments of remote JinaD
         """
@@ -75,20 +75,20 @@ class AsyncFlowClient(AsyncBaseClient):
     async def rolling_update(
         self,
         id: Union[str, 'DaemonID'],
-        pod_name: str,
+        deployment_name: str,
         uses_with: Optional[Dict] = None,
     ) -> str:
         """Perform `rolling_update` on a remote Flow
 
         :param id: flow id
-        :param pod_name: pod name for rolling update
+        :param deployment_name: deployment name for rolling update
         :param uses_with: the uses with to override the Executors params
         :return: flow id
         """
         async with aiohttp.request(
             method='PUT',
             url=f'{self.store_api}/rolling_update/{daemonize(id, self._kind)}',
-            params={'pod_name': pod_name},
+            params={'deployment_name': deployment_name},
             json=uses_with,
             timeout=self.timeout,
         ) as response:
@@ -103,19 +103,19 @@ class AsyncFlowClient(AsyncBaseClient):
 
     @if_alive
     async def scale(
-        self, id: Union[str, 'DaemonID'], pod_name: str, replicas: int
+        self, id: Union[str, 'DaemonID'], deployment_name: str, replicas: int
     ) -> str:
-        """Scale a Pod on a remote Flow
+        """Scale a Deployment on a remote Flow
 
         :param id: flow id
-        :param pod_name: pod name for rolling update
+        :param deployment_name: deployment name for rolling update
         :param replicas: The number of replicas to scale to
         :return: flow id
         """
         async with aiohttp.request(
             method='PUT',
             url=f'{self.store_api}/scale/{daemonize(id, self._kind)}',
-            params={'pod_name': pod_name, 'replicas': replicas},
+            params={'deployment_name': deployment_name, 'replicas': replicas},
             timeout=self.timeout,
         ) as response:
             response_json = await response.json()

@@ -31,12 +31,12 @@ def handle_request(
         r = request.routes.add()
         r.executor = 'gateway'
         r.start_time.GetCurrentTime()
-        # If the request is targeting a specific pod, we can send directly to the pod instead of querying the graph
+        # If the request is targeting a specific deployment, we can send directly to the deployment instead of querying the graph
         if request.header.target_executor:
             tasks_to_respond.extend(
                 connection_pool.send_request(
                     request=request,
-                    pod=request.header.target_executor,
+                    deployment=request.header.target_executor,
                     head=True,
                     endpoint=endpoint,
                 )

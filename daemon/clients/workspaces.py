@@ -169,7 +169,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             )
             workspace_id = None
             if id:
-                """When creating `Peas` with `shards > 1`, `JinadRuntime` knows the workspace_id already.
+                """When creating `Pods` with `shards > 1`, `JinadRuntime` knows the workspace_id already.
                 For shards > 1:
                 - shard 0 throws TypeError & we create a workspace
                 - shard N (all other shards) wait for workspace creation & don't emit logs

@@ -4,31 +4,31 @@ if False:
     from argparse import Namespace
 
 
+def deployment(args: 'Namespace'):
+    """
+    Start a Deployment
+
+    :param args: arguments coming from the CLI.
+    """
+    from jina.orchestrate.deployments import Deployment
+
+    try:
+        with Deployment(args) as d:
+            d.join()
+    except KeyboardInterrupt:
+        pass
+
+
 def pod(args: 'Namespace'):
     """
     Start a Pod
 
     :param args: arguments coming from the CLI.
     """
-    from jina.orchestrate.pods import Pod
+    from jina.orchestrate.pods.factory import PodFactory
 
     try:
-        with Pod(args) as p:
-            p.join()
-    except KeyboardInterrupt:
-        pass
-
-
-def pea(args: 'Namespace'):
-    """
-    Start a Pea
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.orchestrate.peas.factory import PeaFactory
-
-    try:
-        with PeaFactory.build_pea(args) as p:
+        with PodFactory.build_pod(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass
@@ -67,12 +67,12 @@ def executor(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
 
-    :returns: return the same as `pea` or `worker_runtime`
+    :returns: return the same as `pod` or `worker_runtime`
     """
     if args.native:
         return executor_native(args)
     else:
-        return pea(args)
+        return pod(args)
 
 
 def worker_runtime(args: 'Namespace'):
@@ -92,7 +92,7 @@ def worker_runtime(args: 'Namespace'):
 
 def gateway(args: 'Namespace'):
     """
-    Start a Gateway Pod
+    Start a Gateway Deployment
 
     :param args: arguments coming from the CLI.
     """
@@ -115,7 +115,7 @@ def gateway(args: 'Namespace'):
 
 def ping(args: 'Namespace'):
     """
-    Check the connectivity of a Pea
+    Check the connectivity of a Pod
 
     :param args: arguments coming from the CLI.
     """

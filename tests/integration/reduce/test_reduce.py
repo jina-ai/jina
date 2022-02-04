@@ -16,26 +16,26 @@ class ShardsExecutor(Executor):
         for doc in docs:
             doc.matches.extend(
                 [
-                    Document(id=f'm-{self.runtime_args.pea_id}-{i}')
+                    Document(id=f'm-{self.runtime_args.pod_id}-{i}')
                     for i in range(self.n_docs)
                 ]
             )
             doc.chunks.extend(
                 [
-                    Document(id=f'c-{self.runtime_args.pea_id}-{i}')
+                    Document(id=f'c-{self.runtime_args.pod_id}-{i}')
                     for i in range(self.n_docs)
                 ]
             )
 
             doc.text = self.runtime_args.name
 
-            if self.runtime_args.pea_id == 0:
+            if self.runtime_args.pod_id == 0:
                 doc.scores['cosine'].value = 0
                 doc.modality = 'text'
-            elif self.runtime_args.pea_id == 1:
+            elif self.runtime_args.pod_id == 1:
                 doc.modality = 'image'
                 doc.tags = {'c': 'd'}
-            elif self.runtime_args.pea_id == 2:
+            elif self.runtime_args.pod_id == 2:
                 doc.tags = {'a': 'b'}
 
 
