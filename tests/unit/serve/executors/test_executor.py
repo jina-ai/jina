@@ -272,7 +272,7 @@ async def test_async():
     N = 2
     da = DocumentArray.empty(N)
     exec = AsyncExecutor()
-    da1 = await exec.foo(docs=da)
+    da1 = await exec.foo(da)
     assert da1.texts == ['hello'] * N
 
 
@@ -292,5 +292,5 @@ async def test_async_apply():
     N = 2
     da = DocumentArray.empty(N)
     exec = AsyncExecutor()
-    da1 = await exec.foo(docs=da)
+    da1 = await exec.foo(da)
     assert da1.texts == ['hello'] * N
