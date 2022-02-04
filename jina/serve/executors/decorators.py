@@ -10,6 +10,7 @@ from jina.helper import convert_tuple_to_list, iscoroutinefunction
 
 if TYPE_CHECKING:
     from jina import DocumentArray
+    from jina.serve.executors import ExecutorType
 
 
 def wrap_func(cls, func_lst, wrapper):
@@ -133,3 +134,38 @@ def requests(
         return FunctionMapper(func)
     else:
         return FunctionMapper
+
+
+def executable(
+    func: Callable[
+        [
+            'DocumentArray',
+            Dict,
+            'DocumentArray',
+            List['DocumentArray'],
+            List['DocumentArray'],
+        ],
+        Optional[Union['DocumentArray', Dict]],
+    ] = None,
+    *,
+    on: Optional[Union[str, Sequence[str]]] = None,
+) -> 'ExecutorType':
+    """
+    `@executable` turns a function into an executor.
+
+    The created executor's only functionality will be the decorated function, which can be invoked via an entry point
+    specified through the `on=` keyword.
+    If `on=` is not specified, the decorated function will be invoked with any entry point.
+
+    :param func: the function to decorate
+    :param on: the endpoint string, by convention starts with `/`
+    :return: executor
+    """
+    from jina.serve.executors import BaseExecutor as Executor  # avoid cycling import
+
+    class CustomExecutor(Executor):
+        @requests(on=on)
+        def call(self, *args, **kwargs):
+            func(*args, **kwargs)
+
+    return CustomExecutor

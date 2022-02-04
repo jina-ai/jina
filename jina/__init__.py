@@ -16,7 +16,6 @@ import types as _types
 import warnings as _warnings
 import docarray as _docarray
 
-
 if _sys.version_info < (3, 7, 0):
     raise OSError(f'Jina requires Python >= 3.7, but yours is {_sys.version_info}')
 
@@ -203,7 +202,7 @@ from docarray import Document, DocumentArray
 
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
-from jina.serve.executors.decorators import requests
+from jina.serve.executors.decorators import requests, executable
 
 # Flow
 from jina.orchestrate.flow.base import Flow
