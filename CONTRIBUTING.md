@@ -32,7 +32,7 @@ We love to get issue reports. But we love it even more if they're in the right f
 
 There are also a couple of nice to haves:
 
-* **Environment:** You can find this with `jina -vf
+* **Environment:** You can find this with ``jina -vf``
 * **Screenshots:** If they're relevant
 
 To understand how our issues are labeled, check out our [issue label guide](.github/github-issue-label-guide.md).
