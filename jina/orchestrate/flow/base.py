@@ -273,7 +273,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet_error: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         uses: Optional[str] = None,
-        workspace: Optional[str] = './',
+        workspace: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
