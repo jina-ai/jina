@@ -249,7 +249,7 @@ print(d1.content_type, d1.content)
 text ﻿The Project Gutenberg eBook of Pride and Prejudice, by Jane Austen
 
 This eBook is for the use of anyone anywhere in the United States and
-most other parts of the wor
+most other parts of the world.
 ```
 ````
 
