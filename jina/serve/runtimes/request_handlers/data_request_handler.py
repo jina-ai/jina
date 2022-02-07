@@ -130,7 +130,7 @@ class DataRequestHandler:
         request.data.docs = docs
 
     @staticmethod
-    def replace_parameters(request, parameters):
+    def replace_parameters(request: List['DataRequest'], parameters: Dict) -> None:
         """Replaces the parameters in a message with new Documents.
 
         :param request: The request object
