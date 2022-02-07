@@ -780,7 +780,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=deployment_name,
                 deployment_role=deployment_role,
-                num_part=len(needs),
             )
         )
 

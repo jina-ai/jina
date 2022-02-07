@@ -80,7 +80,7 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
     if pod_type == PodRoleType.HEAD:
         taboo.add('uses')
 
-    if pod_type == PodRoleType.WORKER or PodRoleType.GATEWAY:
+    if pod_type in {PodRoleType.WORKER, PodRoleType.GATEWAY}:
         taboo.add('polling')
 
     non_defaults = ArgNamespace.get_non_defaults_args(
