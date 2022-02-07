@@ -92,12 +92,3 @@ which should be structured as a python package. For more details, please see the
         default=False,
         help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
     )
-
-    gp.add_argument(
-        '--num-part',
-        type=int,
-        default=0,
-        help='the number of messages expected from upstream, 0 and 1 means single part'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )

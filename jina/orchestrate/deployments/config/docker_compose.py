@@ -8,6 +8,7 @@ from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
+    construct_runtime_container_args,
 )
 from jina.orchestrate.deployments import BaseDeployment
 
@@ -59,9 +60,20 @@ class DockerComposeConfig:
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
+            taboo = {
+                'uses_with',
+                'uses_metas',
+                'volumes',
+                'uses_before',
+                'uses_after',
+                'workspace',
+                'workspace_id',
+                'upload_files',
+                'noblock_on_start',
+            }
+
             non_defaults = ArgNamespace.get_non_defaults_args(
-                cargs,
-                set_gateway_parser(),
+                cargs, set_gateway_parser(), taboo=taboo
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
@@ -78,32 +90,6 @@ class DockerComposeConfig:
                     f'{cargs.port_in}:{cargs.port_in}',
                 ],
             }
-
-        @staticmethod
-        def _construct_runtime_container_args(cargs, uses_metas, uses_with):
-            import json
-            from jina.helper import ArgNamespace
-            from jina.parsers import set_pod_parser
-
-            non_defaults = ArgNamespace.get_non_defaults_args(
-                cargs,
-                set_pod_parser(),
-                taboo={
-                    'uses_with',
-                    'uses_metas',
-                    'volumes',
-                    'uses_before',
-                    'uses_after',
-                },
-            )
-            _args = ArgNamespace.kwargs2list(non_defaults)
-            container_args = ['executor'] + _args
-            if uses_metas is not None:
-                container_args.extend(['--uses-metas', json.dumps(uses_metas)])
-            if uses_with is not None:
-                container_args.extend(['--uses-with', json.dumps(uses_with)])
-            container_args.append('--native')
-            return container_args
 
         def _get_image_name(self, uses: Optional[str]):
             import os
@@ -127,7 +113,9 @@ class DockerComposeConfig:
             uses_with = self.service_args.uses_with
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'
-            return self._construct_runtime_container_args(cargs, uses_metas, uses_with)
+            return construct_runtime_container_args(
+                cargs, uses_metas, uses_with, self.pod_type
+            )
 
         def get_runtime_config(
             self,

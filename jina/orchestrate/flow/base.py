@@ -273,7 +273,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         quiet_error: Optional[bool] = False,
         timeout_ctrl: Optional[int] = 60,
         uses: Optional[str] = None,
-        workspace: Optional[str] = './',
+        workspace: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
@@ -780,7 +780,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=deployment_name,
                 deployment_role=deployment_role,
-                num_part=len(needs),
             )
         )
 
@@ -793,7 +792,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
         # deployment workspace if not set then derive from flow workspace
-        args.workspace = os.path.abspath(args.workspace or self.workspace)
+        if args.workspace:
+            args.workspace = os.path.abspath(args.workspace)
+        else:
+            args.workspace = self.workspace
 
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
@@ -1562,7 +1564,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return the workspace path of the flow.
 
         .. # noqa: DAR201"""
-        return os.path.abspath(self.args.workspace or './')
+        if self.args.workspace is not None:
+            return os.path.abspath(self.args.workspace)
+        else:
+            return None
 
     @workspace.setter
     def workspace(self, value: str):
@@ -1754,6 +1759,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
 
+        self.logger.info(
+            f'K8s yaml files have been created under {output_base_path}. You can use it by running `kubectl apply -R -f {output_base_path}`'
+        )
+
     def to_docker_compose_yaml(
         self, output_path: Optional[str] = None, network_name: Optional[str] = None
     ):
@@ -1794,6 +1803,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         docker_compose_dict['services'] = services
         with open(output_path, 'w+') as fp:
             yaml.dump(docker_compose_dict, fp, sort_keys=False)
+
+        command = (
+            'docker-compose up'
+            if output_path is None
+            else f'docker-compose up -f {output_path}'
+        )
+
+        self.logger.info(
+            f'Docker compose file has been created under {output_path}. You can use it by running `{command}`'
+        )
 
     def scale(
         self,

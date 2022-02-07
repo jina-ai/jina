@@ -32,6 +32,7 @@ When not given, then the default naming strategy will apply.
     gp.add_argument(
         '--workspace',
         type=str,
+        default=None,
         help='The working directory for any IO operations in this object. '
         'If not set, then derive from its parent `workspace`.',
     )

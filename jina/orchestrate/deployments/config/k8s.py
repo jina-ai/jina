@@ -9,6 +9,7 @@ from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
+    construct_runtime_container_args,
 )
 from jina.serve.networking import K8sGrpcConnectionPool
 from jina.orchestrate.deployments import BaseDeployment
@@ -63,9 +64,20 @@ class K8sDeploymentConfig:
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
+            taboo = {
+                'uses_with',
+                'uses_metas',
+                'volumes',
+                'uses_before',
+                'uses_after',
+                'workspace',
+                'workspace_id',
+                'upload_files',
+                'noblock_on_start',
+            }
+
             non_defaults = ArgNamespace.get_non_defaults_args(
-                cargs,
-                set_gateway_parser(),
+                cargs, set_gateway_parser(), taboo=taboo
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
@@ -84,34 +96,6 @@ class K8sDeploymentConfig:
                 port_expose=self.common_args.port_expose,
                 env=cargs.env,
             )
-
-        @staticmethod
-        def _construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
-            import json
-            from jina.helper import ArgNamespace
-            from jina.parsers import set_pod_parser
-
-            non_defaults = ArgNamespace.get_non_defaults_args(
-                cargs,
-                set_pod_parser(),
-                taboo={
-                    'uses_with',
-                    'uses_metas',
-                    'volumes',
-                    'uses_before',
-                    'uses_after',
-                },
-            )
-            _args = ArgNamespace.kwargs2list(non_defaults)
-            container_args = ['executor'] + _args
-            if not cargs.k8s_connection_pool and pod_type == PodRoleType.HEAD:
-                container_args.append('--k8s-disable-connection-pool')
-            if uses_metas is not None:
-                container_args.extend(['--uses-metas', json.dumps(uses_metas)])
-            if uses_with is not None:
-                container_args.extend(['--uses-with', json.dumps(uses_with)])
-            container_args.append('--native')
-            return container_args
 
         def _get_image_name(self, uses: Optional[str]):
             import os
@@ -135,7 +119,7 @@ class K8sDeploymentConfig:
             uses_with = self.deployment_args.uses_with
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'
-            return self._construct_runtime_container_args(
+            return construct_runtime_container_args(
                 cargs, uses_metas, uses_with, pod_type
             )
 

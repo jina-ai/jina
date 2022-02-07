@@ -47,8 +47,6 @@ def set_flow_parser(parser=None):
 
     mixin_base_ppr_parser(parser)
 
-    parser.set_defaults(workspace='./')
-
     mixin_flow_features_parser(parser)
 
     return parser
