@@ -108,7 +108,7 @@ def _benchmark_qps() -> Dict[str, float]:
     download_data(targets, args.download_proxy)
 
     try:
-        f = Flow().add(uses=MyEncoder).add(uses=MyIndexer)
+        f = Flow().add(uses=MyEncoder).add(workspace='./', uses=MyIndexer)
 
         with f:
             # do index

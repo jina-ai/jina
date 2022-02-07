@@ -71,7 +71,6 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
         'volumes',
         'uses_before',
         'uses_after',
-        'workspace',
         'workspace_id',
         'upload_files',
         'noblock_on_start',
@@ -79,6 +78,7 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
 
     if pod_type == PodRoleType.HEAD:
         taboo.add('uses')
+        taboo.add('workspace')
 
     if pod_type in {PodRoleType.WORKER, PodRoleType.GATEWAY}:
         taboo.add('polling')

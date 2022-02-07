@@ -792,7 +792,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
         # deployment workspace if not set then derive from flow workspace
-        args.workspace = os.path.abspath(args.workspace or self.workspace)
+        if args.workspace:
+            args.workspace = os.path.abspath(args.workspace)
+        else:
+            args.workspace = self.workspace
 
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
@@ -1561,7 +1564,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return the workspace path of the flow.
 
         .. # noqa: DAR201"""
-        return os.path.abspath(self.args.workspace or './')
+        if self.args.workspace is not None:
+            return os.path.abspath(self.args.workspace)
+        else:
+            return None
 
     @workspace.setter
     def workspace(self, value: str):

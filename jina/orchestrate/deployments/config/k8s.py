@@ -64,9 +64,20 @@ class K8sDeploymentConfig:
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
+            taboo = {
+                'uses_with',
+                'uses_metas',
+                'volumes',
+                'uses_before',
+                'uses_after',
+                'workspace',
+                'workspace_id',
+                'upload_files',
+                'noblock_on_start',
+            }
+
             non_defaults = ArgNamespace.get_non_defaults_args(
-                cargs,
-                set_gateway_parser(),
+                cargs, set_gateway_parser(), taboo=taboo
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
