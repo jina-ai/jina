@@ -1,5 +1,6 @@
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
+import warnings
 
 from jina.helper import run_async
 
@@ -7,6 +8,24 @@ if TYPE_CHECKING:
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Response
     from jina import DocumentArray
+
+
+def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
+    key_result = '__results__'
+
+    if parameters:
+
+        if key_result in parameters:
+            if not isinstance(parameters[key_result], dict):
+                warnings.warn(
+                    f'It looks like you passed a dictionary with the key `{key_result}` to `parameters`.'
+                    'This key is reserved, so the associated value will be deleted.'
+                )
+                parameters.update({key_result: dict()})
+    else:
+        parameters = {key_result: dict()}
+
+    return parameters
 
 
 class PostMixin:
@@ -70,6 +89,8 @@ class PostMixin:
         if (on_always is None) and (on_done is None):
             return_results = True
 
+        parameters = _include_results_field_in_param(parameters)
+
         return run_async(
             _get_results,
             inputs=inputs,
@@ -125,6 +146,9 @@ class AsyncPostMixin:
         c = self.client
         c.show_progress = show_progress
         c.continue_on_error = continue_on_error
+
+        parameters = _include_results_field_in_param(parameters)
+
         async for r in c._get_results(
             inputs=inputs,
             on_done=on_done,

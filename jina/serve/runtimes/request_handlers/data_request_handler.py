@@ -1,3 +1,4 @@
+import warnings
 from typing import Dict, List, TYPE_CHECKING, Optional
 
 from docarray import DocumentArray
@@ -85,7 +86,7 @@ class DataRequestHandler:
         )
 
         # executor logic
-        r_docs = await self._executor.__acall__(
+        return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
@@ -95,25 +96,31 @@ class DataRequestHandler:
             ),
         )
         # assigning result back to request
-        if r_docs is not None:
-            if isinstance(r_docs, DocumentArray):
-                DataRequestHandler.replace_docs(requests[0], r_docs)
-            elif isinstance(r_docs, dict):
+        if return_data is not None:
+            if isinstance(return_data, DocumentArray):
+                docs = return_data
+            elif isinstance(return_data, dict):
                 params = requests[0].parameters
-                params.update(r_docs)
+                results_key = '__results__'
+
+                if not results_key in params.keys():
+                    params[results_key] = dict()
+
+                params[results_key].update({self.args.name: return_data})
                 requests[0].parameters = params
+
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / Dict / `None`, '
-                    f'but getting {r_docs!r}'
+                    f'but getting {return_data!r}'
                 )
-        else:
-            DataRequestHandler.replace_docs(requests[0], docs)
+
+        DataRequestHandler.replace_docs(requests[0], docs)
 
         return requests[0]
 
     @staticmethod
-    def replace_docs(request, docs):
+    def replace_docs(request: List['DataRequest'], docs: 'DocumentArray') -> None:
         """Replaces the docs in a message with new Documents.
 
         :param request: The request object
@@ -122,7 +129,16 @@ class DataRequestHandler:
         request.data.docs = docs
 
     @staticmethod
-    def merge_routes(requests):
+    def replace_parameters(request: List['DataRequest'], parameters: Dict) -> None:
+        """Replaces the parameters in a message with new Documents.
+
+        :param request: The request object
+        :param parameters: the new parameters to be used
+        """
+        request.parameters = parameters
+
+    @staticmethod
+    def merge_routes(requests: List['DataRequest']) -> None:
         """Merges all routes found in requests into the first message
 
         :param requests: The messages containing the requests with the routes to merge
@@ -163,6 +179,26 @@ class DataRequestHandler:
         len_r = sum(len(r) for r in result)
         if len_r:
             return result
+
+    @staticmethod
+    def get_parameters_dict_from_request(
+        requests: List['DataRequest'],
+    ) -> 'Dict':
+        """
+        Returns a parameters dict from a list of DataRequest objects.
+        :param requests: List of DataRequest objects
+        :return: parameters matrix: list of parameters (Dict) objects
+        """
+        key_result = '__results__'
+        parameters = requests[0].parameters
+        if key_result not in parameters.keys():
+            parameters[key_result] = dict()
+        # we only merge the results and make the assumption that the others params does not change during execution
+
+        for req in requests:
+            parameters[key_result].update(req.parameters.get(key_result, dict()))
+
+        return parameters
 
     @staticmethod
     def get_docs_from_request(
@@ -238,4 +274,8 @@ class DataRequestHandler:
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = DataRequestHandler.reduce(docs_matrix)
         DataRequestHandler.replace_docs(requests[0], da)
+
+        params = DataRequestHandler.get_parameters_dict_from_request(requests)
+        DataRequestHandler.replace_parameters(requests[0], params)
+
         return requests[0]

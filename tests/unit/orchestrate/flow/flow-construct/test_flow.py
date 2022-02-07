@@ -584,21 +584,6 @@ def _extract_route_entries(gateway_entry, routes):
     return a1_entry, a2_entry, b1_entry, gateway_entry, merge_entry
 
 
-def test_flow_change_parameters():
-    class ChangeParamExec(Executor):
-        @requests
-        def foo(self, **kwargs):
-            return {'a': 1}
-
-    def my_cb(resp: Response):
-        assert resp.parameters['a'] == 1.0
-
-    f = Flow().add(uses=ChangeParamExec)
-    with f:
-        f.post('/', parameters={'a': 3}, on_done=my_cb)
-        f.post('/', parameters={}, on_done=my_cb)
-
-
 def test_flow_load_executor_yaml_extra_search_paths():
     f = Flow(extra_search_paths=[os.path.join(cur_dir, 'executor')]).add(
         uses='config.yml'

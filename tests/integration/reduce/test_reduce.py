@@ -123,6 +123,19 @@ class Executor3(Executor):
             doc.embedding = np.zeros(3)
 
 
+class ExecutorStatus(Executor):
+    @requests
+    def endpoint(self, docs: DocumentArray, **kwargs):
+        for doc in docs:
+            doc.text = 'exec-status'
+
+        status = {
+            'shard_id': self.runtime_args.shard_id,
+            'happy_status': 'Hey there! Have a nice day :)',
+        }
+        return status
+
+
 def test_reduce_needs():
     flow = (
         Flow(port_expose=exposed_port)
@@ -195,3 +208,26 @@ def test_uses_before_no_reduce_real_executor_uses():
     # assert no reduce happened
     assert len(resp[0].docs) == 1
     assert resp[0].docs[0].id == 'fake_document'
+
+
+def test_reduce_status():
+    n_shards = 2
+    flow = Flow(port_expose=exposed_port).add(
+        uses=ExecutorStatus, name='pod0', shards=n_shards, polling='all'
+    )
+
+    with flow as f:
+        da = DocumentArray([Document() for _ in range(5)])
+        resp = Client(port=exposed_port).post(
+            '/status', parameters={'foo': 'bar'}, inputs=da, return_results=True
+        )
+
+    assert resp[0].parameters['foo'] == 'bar'
+    assert len(resp[0].parameters['__results__']) == n_shards
+
+    for _, param in resp[0].parameters['__results__'].items():
+        assert 'shard_id' in param.keys()
+        assert 'happy_status' in param.keys()
+
+    for doc in resp[0].docs:
+        assert doc.text == 'exec-status'
