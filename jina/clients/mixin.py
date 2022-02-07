@@ -18,7 +18,7 @@ def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
         if key_result in parameters:
             if not isinstance(parameters[key_result], dict):
                 warnings.warn(
-                    'It looks like you passed a dictionary with the key `{key_result}` to `parameters`.'
+                    f'It looks like you passed a dictionary with the key `{key_result}` to `parameters`.'
                     'This key is reserved, so the associated value will be deleted.'
                 )
                 parameters.update({key_result: dict()})
