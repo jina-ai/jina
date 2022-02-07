@@ -76,6 +76,7 @@ locally
 containrize
 compose
 k8s
+TODO: dataset too large, takes a long time?
 
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
@@ -86,151 +87,103 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 
 Leveraging these three components, let's build an app that **find similar images using ResNet50**.
 
-### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
+### Generate vector embeddings in an Executor
 
 
-<sup>💡 Preliminaries: <a href="https://drive.google.com/file/d/1OLg-JRBJJgTYYcXBJ2x35wJyzqSty4mu/view?usp=sharing">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
+<sup>💡 Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
 ```python
-from jina import DocumentArray, Document
-
-def preproc(d: Document):
-    return (d.load_uri_to_image_blob()  # load
-             .set_image_blob_normalization()  # normalize color 
-             .set_image_blob_channel_axis(-1, 0))  # switch color axis
-docs = DocumentArray.from_files('img/*.jpg').apply(preproc)
-
 import torchvision
-model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
-docs.embed(model, device='cuda')  # embed via GPU to speedup
 
-q = (Document(uri='img/00021.jpg')  # build query image & preprocess
-     .load_uri_to_image_blob()
-     .set_image_blob_normalization()
-     .set_image_blob_channel_axis(-1, 0))
-q.embed(model)  # embed
-q.match(docs)  # find top-20 nearest neighbours, done!
+from docarray import Document, DocumentArray
+from jina import Executor, requests
+
+class ImageEmbeddingExecutor(Executor):
+
+    @requests
+    def embedding(self, docs: DocumentArray, **kwargs):
+        docs.apply(self.preproc) # preprocess images
+        model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
+        docs.embed(model, device='cuda')  # embed via GPU to speed up
+        return docs
+
+    def preproc(self, d: Document):
+        return (d.load_uri_to_image_tensor()  # load
+                .set_image_tensor_shape((200, 200))  # resize all to 200x200
+                .set_image_tensor_normalization()  # normalize color
+                .set_image_tensor_channel_axis(-1, 0))  # switch color axis for the PyTorch model later
+
+da = DocumentArray.from_files('~/Downloads/left/*.jpg') # load the left images from the dataset, adjust the path as needed
+executor = ImageEmbeddingExecutor()
+da_with_embeddings = executor.embedding(da[:10]) # generate the embeddings using the Executor
 ```
 
-Done! Now print `q.matches` and you'll see the URIs of the most similar images.
+Done! Now print `da_with_embeddings.embeddings` and you'll see the vector embeddings of the images. (TODO: replace image)
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.png?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="50%"></a>
 </p>
 
-Add three lines of code to visualize them:
 
-```python
-for m in q.matches:
-    m.set_image_blob_channel_axis(0, -1).set_image_blob_inv_normalization()
-q.matches.plot_image_sprites()
-```
+### Use Vector Embeddings in a Flow to find similiar images
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
-</p>
+With a few additions we can use the embeddings from the previous step in a `Flow` to find similiar images.  This can directly be used locally as ready-to-serve service (TODO image search is annoying for demonstrating http):
 
-Sweet! FYI, you can use Keras, ONNX, or PaddlePaddle for the embedding model. Jina supports them well.
-
-### As-a-Service in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
-
-With an extremely trivial refactoring and ten extra lines of code, you can make the local script a ready-to-serve service:
-
-1. Import what we need.
+1. Add a second Executor for storing and retrieving images.
     ```python
-    from jina import Document, DocumentArray, Executor, Flow, requests
-    ```
-2. Copy-paste the preprocessing step and wrap it via `Executor`:
-    ```python
-    class PreprocImg(Executor):
-        @requests
-        def foo(self, docs: DocumentArray, **kwargs):
-            for d in docs:
-                (d.load_uri_to_image_blob()  # load
-                 .set_image_blob_normalization()  # normalize color
-                 .set_image_blob_channel_axis(-1, 0))  # switch color axis
-    ```
-3. Copy-paste the embedding step and wrap it via `Executor`:
-    
-    ```python   
-    class EmbedImg(Executor):
+    class IndexExecutor(Executor):
+
         def __init__(self, **kwargs):
             super().__init__(**kwargs)
-            import torchvision
-            self.model = torchvision.models.resnet50(pretrained=True)        
-   
-        @requests
-        def foo(self, docs: DocumentArray, **kwargs):
-            docs.embed(self.model)
-    ```
-4. Wrap the matching step into an `Executor`:
-    ```python
-    class MatchImg(Executor):
-        _da = DocumentArray()
-    
+            self._docs = DocumentArray()
+
         @requests(on='/index')
         def index(self, docs: DocumentArray, **kwargs):
-            self._da.extend(docs)
-            docs.clear()  # clear content to save bandwidth
-    
-        @requests(on='/search')
-        def foo(self, docs: DocumentArray, **kwargs):
-            docs.match(self._da)
-            for d in docs.traverse_flat('r,m'):  # only require for visualization
-                d.convert_uri_to_datauri()  # convert to datauri
-                d.pop('embedding', 'blob')  # remove unnecessary fields for save bandwidth
-    ```
-5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
-    ```python
-    f = Flow(port_expose=12345, protocol='http').add(uses=PreprocImg).add(uses=EmbedImg, replicas=3).add(uses=MatchImg)
-    ```
-    Plot it via `f.plot('flow.svg')` and you get:
-    ![](.github/images/readme-flow-plot.svg)
+            self._docs.extend(docs)
 
-6. Index image data and serve REST query publicly:
+        @requests(on='/search')
+        def search(self, docs: DocumentArray, **kwargs):
+            docs.match(self._docs)
+    ```
+2. Orchestrate both Executors in a `Flow`:
     ```python
-    with f:
-        f.post('/index', DocumentArray.from_files('img/*.jpg'), show_progress=True, request_size=8)
+    with Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor) as f:
+        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
+        client = Client(port=f.port_expose)
+        client.index(left_da)
+    ```
+3. Run the image search:
+   Now you can run this Example (TODO put link to complete file or spoiler):
+    ```python
+    with Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor) as f:
+        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
+        right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
+        client = Client(port=f.port_expose)
+        client.index(left_da)
+        
+        response = client.search(right_da[:1])
+        docs = response[0].docs
+        right_da[:1].plot_image_sprites()
+        (DocumentArray(docs[0].matches, copy=True)
+         .apply(lambda d: d.set_image_tensor_channel_axis(0, -1)
+                .set_image_tensor_inv_normalization())
+         .plot_image_sprites())
+    ```
+   You will the image you searched for and the top 10 matches. This is everything, you just build your first neural search application!
+4. Query your image search with HTTP. Just change the protocol of the `Flow` to HTTP and use Curl to query it:
+    ```python
+    with Flow(port_expose=12345, protocol='http').add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor) as f:
+        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
+        client = Client(port=f.port_expose, protocol='http')
+        print('Start indexing')
+        client.index(left_da[:100])
+        print('Indexing complete')
         f.block()
     ```
+    curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "/home/tobias/Downloads/right/00000.jpg"}]}'
 
-Done! Now query it via `curl` and you get the most similar images:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
-</p>
-
-Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
-</p>
-
-Or use a Python client to access the service:
-
-```python
-from jina import Client, Document
-from jina.types.request import Response
-
-def print_matches(resp: Response):  # the callback function invoked when task is done
-    for idx, d in enumerate(resp.docs[0].matches):  # print top-3 matches
-        print(f'[{idx}]{d.scores["cosine"].value:2f}: "{d.uri}"')
-
-c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', Document(uri='img/00021.jpg'), on_done=print_matches)
-```
-
-At this point, you probably have taken 15 minutes but here we are: an image search service with rich features:
-
-<sup>
-
-||||
-|---|---|---|
-|✅ Solution as microservices | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
-|✅ Distribute/Dockerize components | ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
-
-</sup>
+   
 
 ### Deploy to Kubernetes in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
 
