@@ -121,7 +121,7 @@ class DataRequestHandler:
         return requests[0]
 
     @staticmethod
-    def replace_docs(request, docs):
+    def replace_docs(request: List['DataRequest'], docs: 'DocumentArray') -> None:
         """Replaces the docs in a message with new Documents.
 
         :param request: The request object
@@ -139,7 +139,7 @@ class DataRequestHandler:
         request.parameters = parameters
 
     @staticmethod
-    def merge_routes(requests):
+    def merge_routes(requests: List['DataRequest']) -> None:
         """Merges all routes found in requests into the first message
 
         :param requests: The messages containing the requests with the routes to merge
