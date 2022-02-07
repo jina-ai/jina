@@ -8,15 +8,17 @@ Subpackages
    :maxdepth: 4
 
    jina.clients
+   jina.executors
+   jina.flow
    jina.helloworld
    jina.hubble
    jina.jaml
    jina.logging
-   jina.orchestrate
+   jina.optimizers
    jina.parsers
+   jina.peapods
    jina.proto
    jina.schemas
-   jina.serve
    jina.types
 
 Submodules

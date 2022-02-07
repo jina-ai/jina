@@ -8,9 +8,9 @@ Submodules
    :maxdepth: 4
 
    daemon.clients.base
-   daemon.clients.deployments
    daemon.clients.flows
    daemon.clients.mixin
+   daemon.clients.peas
    daemon.clients.pods
    daemon.clients.workspaces
 

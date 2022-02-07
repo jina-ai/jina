@@ -1,6 +1,6 @@
 # Serving Flow
 
-If you come to this page, most likely you have already built some cool stuff with Jina and now you want to share it with the world. This cookbook will
+If you come to this page, most likely you have already built some cool stuff with Jina and now want to share it to the world. This cookbook will
 guide you from basic serving for demo purpose to advanced serving in production.
 
 ## Minimum working example
@@ -43,7 +43,7 @@ Many times we need to use `Flow` & `Client` in a more explicit way, often due to
 
 - `Flow` and `Client` are on different machines: one on GPU, one on CPU;
 - `Flow` and `Client` have different lifetime: one lives longer, one lives shorter;
-- Multiple `Client`s want to access one `Flow`;
+- Multiple `Client` want to access one `Flow`;
 - One `Client` want to interleave its access to multiple `Flow`;
 - `Client` is browser/curl/Postman.
 
@@ -52,15 +52,15 @@ Flow in an explicit C/S style.
 
 ## Supported communication protocols
 
-Jina supports the three communication protocols `grpc`, `websocket`, and `http` between `Flow` and `Client`.
+Jina supports `grpc`, `websocket`, `http` three communication protocols between `Flow` and `Client`.
 
 | Protocol    | Requirements                      | Description                                                                                      | Performance on large data |
-| ----------- | --------------------------------- |--------------------------------------------------------------------------------------------------| ------------------------- |
+| ----------- | --------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------- |
 | `grpc`      | -                                 | Default gRPC protocol, mainly for streaming data                                                 | Super                     |
-| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend languages that support websocket, mainly for streaming data | Super                     |
-| `http`      | `pip install "jina[client,http]"` | HTTP protocol, mainly for allowing any client to have HTTP access                                | Good                      |
+| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend language that supports websocket, mainly for streaming data | Super                     |
+| `http`      | `pip install "jina[client,http]"` | HTTP protocol, mainly for allow any client to have HTTP access                                   | Good                      |
 
-The protocol is controlled by the `protocol=` argument in `Flow`/`Client`'s constructor.
+The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
 
 ```{figure} ../../../.github/2.0/client-server.svg
 :align: center
@@ -68,7 +68,7 @@ The protocol is controlled by the `protocol=` argument in `Flow`/`Client`'s cons
 
 ### via gRPC
 
-On the server-side, create an empty Flow and use `.block` to prevent the process from exiting.
+On the server-side, create an empty Flow and use `.block` to prevent the process exiting.
 
 ```python
 from jina import Flow
@@ -88,7 +88,7 @@ with Flow(port_expose=12345) as f:
 
 Note that the host address is `192.168.1.15` and `port_expose` is `12345`.
 
-While keeping this server open, let's create a client on a different machine:
+While keep this server open, let's create a client on a different machine:
 
 ```python
 from jina import Client
@@ -128,7 +128,7 @@ with f:
 	🌐 Public address:	197.26.36.43:12345
 ```
 
-This will serve the Flow with WebSocket, so any Client connecting to it should follow the WebSocket protocol as well.
+This will serve the Flow with WebSocket, so any Client connects to it should follow the WebSocket protocol as well.
 
 ```python
 from jina import Client
@@ -143,7 +143,7 @@ WebSocketClient@14574[S]:connected to the gateway at 0.0.0.0:12345!
 
 ### via HTTP
 
-To enable a Flow to receive HTTP requests, you can add `protocol='http'` in the Flow constructor.
+To enable a Flow to receive from HTTP requests, you can add `protocol='http'` in the Flow constructor.
 
 ```python
 from jina import Flow
@@ -165,18 +165,31 @@ with f:
 	📚 Redoc:		http://localhost:12345/redoc
 ```
 
+### Switch between communication protocols
+
+You can switch to other protocol also via `.protocol` property setter. This setter works even in Flow runtime.
+
+```python
+from jina import Flow, Document
+
+f = Flow(protocol='grpc')
+
+with f:
+    f.post('/', Document())
+    f.protocol = 'http'  # switch to HTTP protocol request
+    f.block()
+```
+
 ## Flow with HTTP protocol
 
 ### Enable cross-origin-resources-sharing (CORS)
 
-CORS is by default disabled for security. That means you can not access the service from a webpage with a different domain. To override this, simply do:
+CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
 
 ```python
 from jina import Flow
 
-f = Flow(cors=True, protocol='http', port_expose=12345)
-with f:
-    f.block()
+f = Flow(cors=True, protocol='http')
 ```
 
 ### Use swagger UI to send HTTP request
@@ -195,43 +208,53 @@ Now you can send data request via `curl`/Postman:
 $ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
 
 {
-   "header":{
-      "requestId":"3a10f4a3711b441982ea17a162dec176",
-      "status":null,
-      "execEndpoint":"/index"
-   },
-   "parameters":null,
-   "routes":[
+  "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
+  "data": {
+    "docs": [
       {
-         "executor":"gateway",
-         "startTime":"2022-01-26T10:40:43.988564+00:00",
-         "endTime":"2022-01-26T10:40:43.989243+00:00",
-         "status":null
+        "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
+        "granularity": 0,
+        "adjacency": 0,
+        "parentId": "",
+        "text": "hello world",
+        "chunks": [],
+        "weight": 0.0,
+        "matches": [],
+        "mimeType": "",
+        "tags": {
+          "mimeType": "",
+          "parentId": ""
+        },
+        "location": [],
+        "offset": 0,
+        "embedding": null,
+        "scores": {},
+        "modality": "",
+        "evaluations": {}
       }
-   ],
-   "data":[
-      {
-         "id":"69f99b5a7e9411ec91f1e86a64801cb1",
-         "parent_id":null,
-         "granularity":null,
-         "adjacency":null,
-         "blob":null,
-         "tensor":null,
-         "mime_type":"text/plain",
-         "text":"hello world",
-         "weight":null,
-         "uri":null,
-         "tags":null,
-         "offset":null,
-         "location":null,
-         "embedding":null,
-         "modality":null,
-         "evaluations":null,
-         "scores":null,
-         "chunks":null,
-         "matches":null
-      }
-   ]
+    ],
+    "groundtruths": []
+  },
+  "header": {
+    "execEndpoint": "/index",
+    "targetPeapod": "",
+    "noPropagate": false
+  },
+  "parameters": {},
+  "routes": [
+    {
+      "pod": "gateway",
+      "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
+      "startTime": "2021-08-05T07:26:58.636258+00:00",
+      "endTime": "2021-08-05T07:26:58.636910+00:00",
+      "status": null
+    }
+  ],
+  "status": {
+    "code": 0,
+    "description": "",
+    "exception": null
+  }
 }
 ```
 

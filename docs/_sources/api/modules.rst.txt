@@ -6,5 +6,6 @@ jina
 
    cli
    daemon
+   docarray
    fastentrypoints
    jina

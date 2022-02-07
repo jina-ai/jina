@@ -15,9 +15,9 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   daemon.api.endpoints.deployments
    daemon.api.endpoints.flows
    daemon.api.endpoints.logs
+   daemon.api.endpoints.peas
    daemon.api.endpoints.pods
    daemon.api.endpoints.workspaces
 

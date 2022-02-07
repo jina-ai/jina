@@ -8,7 +8,7 @@ Subpackages
    :maxdepth: 4
 
    jina.parsers.hubble
-   jina.parsers.orchestrate
+   jina.parsers.peapods
 
 Submodules
 ----------
@@ -23,6 +23,7 @@ Submodules
    jina.parsers.flow
    jina.parsers.helloworld
    jina.parsers.helper
+   jina.parsers.optimizer
    jina.parsers.ping
 
 Module contents

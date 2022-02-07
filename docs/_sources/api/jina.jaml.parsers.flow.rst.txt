@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.jaml.parsers.flow.legacy
    jina.jaml.parsers.flow.v1
 
 Module contents

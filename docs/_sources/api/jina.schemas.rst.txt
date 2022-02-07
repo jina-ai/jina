@@ -7,11 +7,11 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.schemas.deployment
    jina.schemas.executor
    jina.schemas.flow
    jina.schemas.helper
    jina.schemas.meta
+   jina.schemas.pod
 
 Module contents
 ---------------

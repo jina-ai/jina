@@ -18,6 +18,7 @@ Workspace is the entrypoint for all objects in JinaD. It primarily represents 4 
    all child containers. These can be:
     - config files (e.g.- Flow/Executor YAML, Python modules etc),
     - data written by your Executor
+    - logs (created by `fluentd`)
     - `.jinad` file
     - `requirements.txt` file
 

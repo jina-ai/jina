@@ -9,6 +9,7 @@ Submodules
 
    jina.types.request.control
    jina.types.request.data
+   jina.types.request.mixin
 
 Module contents
 ---------------

@@ -1,6 +1,6 @@
 # Remote Logs
 
-We can stream logs from a JinaD server for a running Flow/Pod/Deployment/Workspace.
+We can stream logs from a JinaD server for a running Flow/Pea/Pod/Workspace.
 
 Unlike other modules, this needs to be awaited.
 
