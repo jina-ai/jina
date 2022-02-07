@@ -3,12 +3,14 @@ from argparse import Namespace
 from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
+from jina.excepts import NoContainerizedError
 from jina.enums import PodRoleType
 from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
     construct_runtime_container_args,
+    validate_uses,
 )
 from jina.orchestrate.deployments import BaseDeployment
 
@@ -131,7 +133,6 @@ class DockerComposeConfig:
                 )
 
                 env = cargs.env
-
                 image_name = self._get_image_name(cargs.uses)
                 container_args = self._get_container_args(cargs)
                 config = {
@@ -149,6 +150,11 @@ class DockerComposeConfig:
         args: Union['Namespace', Dict],
         deployments_addresses: Optional[Dict[str, List[str]]] = None,
     ):
+        if not validate_uses(args.uses):
+            raise NoContainerizedError(
+                f'Executor "{args.uses}" is not valid to be used in docker-compose. '
+                'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'
+            )
         self.deployments_addresses = deployments_addresses
         self.head_service = None
         self.uses_before_service = None

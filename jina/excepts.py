@@ -107,3 +107,7 @@ class DockerVersionError(SystemError, BaseJinaExeception):
 
 class DaemonInvalidDockerfile(FileNotFoundError, BaseJinaExeception):
     """Raised when invalid dockerfile is passed to JinaD"""
+
+
+class NoContainerizedError(Exception, BaseJinaExeception):
+    """ Raised when trying to use non-containerized Executor in K8s or Docker Compose"""
