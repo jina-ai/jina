@@ -1754,6 +1754,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
 
+        self.logger.info(
+            f'K8s yaml files have been created under {output_base_path}. You can use it by running `kubectl apply -R -f {output_base_path}`'
+        )
+
     def to_docker_compose_yaml(
         self, output_path: Optional[str] = None, network_name: Optional[str] = None
     ):
@@ -1794,6 +1798,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         docker_compose_dict['services'] = services
         with open(output_path, 'w+') as fp:
             yaml.dump(docker_compose_dict, fp, sort_keys=False)
+
+        command = (
+            'docker-compose up'
+            if output_path is None
+            else f'docker-compose up -f {output_path}'
+        )
+
+        self.logger.info(
+            f'Docker compose file has been created under {output_path}. You can use it by running `{command}`'
+        )
 
     def scale(
         self,

@@ -1,6 +1,7 @@
 from jina import __version__
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
+from jina.enums import PodRoleType
 
 
 def get_image_name(uses: str) -> str:
@@ -49,3 +50,51 @@ def get_base_executor_version():
             return 'master'
     except:
         return 'master'
+
+
+def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
+    """
+    Construct a set of Namespace arguments into a list of arguments to pass to a container entrypoint
+    :param cargs: The namespace arguments
+    :param uses_metas: The uses_metas to override
+    :param uses_with: The uses_with to override
+    :param pod_type: The pod_type
+    :return: Arguments to pass to container
+    """
+    import json
+    from jina.helper import ArgNamespace
+    from jina.parsers import set_pod_parser
+
+    taboo = {
+        'uses_with',
+        'uses_metas',
+        'volumes',
+        'uses_before',
+        'uses_after',
+        'workspace',
+        'workspace_id',
+        'upload_files',
+        'noblock_on_start',
+    }
+
+    if pod_type == PodRoleType.HEAD:
+        taboo.add('uses')
+
+    if pod_type == PodRoleType.WORKER or PodRoleType.GATEWAY:
+        taboo.add('polling')
+
+    non_defaults = ArgNamespace.get_non_defaults_args(
+        cargs,
+        set_pod_parser(),
+        taboo=taboo,
+    )
+    _args = ArgNamespace.kwargs2list(non_defaults)
+    container_args = ['executor'] + _args
+    if not cargs.k8s_connection_pool and pod_type == PodRoleType.HEAD:
+        container_args.append('--k8s-disable-connection-pool')
+    if uses_metas is not None:
+        container_args.extend(['--uses-metas', json.dumps(uses_metas)])
+    if uses_with is not None:
+        container_args.extend(['--uses-with', json.dumps(uses_with)])
+    container_args.append('--native')
+    return container_args
