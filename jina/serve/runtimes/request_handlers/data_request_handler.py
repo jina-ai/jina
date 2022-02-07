@@ -98,7 +98,7 @@ class DataRequestHandler:
         # assigning result back to request
         if return_data is not None:
             if isinstance(return_data, DocumentArray):
-                DataRequestHandler.replace_docs(requests[0], return_data)
+                docs = return_data
             elif isinstance(return_data, dict):
                 params = requests[0].parameters
                 results_key = '__results__'
@@ -107,7 +107,6 @@ class DataRequestHandler:
                     params[results_key] = dict()
 
                 params[results_key].update({self.args.name: return_data})
-
                 requests[0].parameters = params
 
             else:
@@ -115,8 +114,8 @@ class DataRequestHandler:
                     f'The return type must be DocumentArray / Dict / `None`, '
                     f'but getting {return_data!r}'
                 )
-        else:
-            DataRequestHandler.replace_docs(requests[0], docs)
+
+        DataRequestHandler.replace_docs(requests[0], docs)
 
         return requests[0]
 

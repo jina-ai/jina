@@ -228,3 +228,6 @@ def test_reduce_status():
     for _, param in resp[0].parameters['__results__'].items():
         assert 'shard_id' in param.keys()
         assert 'happy_status' in param.keys()
+
+    for doc in resp[0].docs:
+        assert doc.text == 'exec-status'
