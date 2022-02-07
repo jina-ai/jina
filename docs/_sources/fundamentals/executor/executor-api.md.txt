@@ -6,7 +6,7 @@
 - An `Executor` should subclass directly from `jina.Executor` class.
 - An `Executor` class is a bag of functions with shared state (via `self`); it can contain an arbitrary number of
   functions with arbitrary names.
-- Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
+- Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
 
 ## Minimum working example
@@ -44,6 +44,30 @@ m.foo()
 ```
 
 ````
+
+## Using Executors with AsyncIO
+For I/O bound Executors it can be helpful to utilize Python's AsyncIO API. This means we can wait for multiple pending Executor function calls concurrently.
+
+```python
+import asyncio
+from jina import Executor, requests
+
+
+class MyExecutor(Executor):
+
+  @requests
+  async def foo(self, **kwargs):
+      await asyncio.sleep(1.0)
+      print(kwargs)
+
+async def main():
+    m = MyExecutor()
+    call1 = asyncio.create_task(m.foo())
+    call2 = asyncio.create_task(m.foo())
+    await asyncio.gather(call1, call2)
+
+asyncio.run(main())
+```
 
 ## Constructor
 
@@ -137,7 +161,7 @@ with f:
 
 ## Methods
 
-Methods of `Executor` can be named and wrote freely. 
+Methods of `Executor` can be named and written freely. 
 
 Only methods that are decorated with `@requests` can be used in a `Flow`.
 
@@ -216,10 +240,10 @@ processing.
 
 ### Method signature
 
-Class method decorated by `@request` follows the signature below:
+Class method decorated by `@request` follows the signature below (`async` is optional):
 
 ```python
-def foo(docs: DocumentArray,
+async def foo(docs: DocumentArray,
         parameters: Dict,
         docs_matrix: List[DocumentArray],
         groundtruths: Optional[DocumentArray],
@@ -227,7 +251,12 @@ def foo(docs: DocumentArray,
     pass
 ```
 
-The Executor's method receive the following arguments in order:
+
+If the function is using `async` in its signature, it will be used as a coroutine and the regular `asyncio` functionality is available inside the function.
+
+
+The Executor's methods receive the following arguments in order:
+
 
 | Name | Type | Description  |
 | --- | --- | --- |
@@ -280,7 +309,7 @@ class MyExecutor(Executor):
 
 Methods decorated with `@request` can return `DocumentArray`, `DocumentArrayMemmap`, `Dict` or `None`.
 
-- If the return is `None`, then Jina considers all changes happen in-place. The next Executor will receive the updated `docs` modified by the current Executor.
+- If the return is `None`, then Jina considers all changes to happened in-place. The next Executor will receive the updated `docs` modified by the current Executor.
 - If the return is `DocumentArray` or `DocumentArrayMemmap`, then the current `docs` field in the `Request` will be overridden by the
   return, which will be forwarded to the next Executor in the Flow.
 - If the return is a `Dict`, then `Request.parameters` will be updated by union with the return. The next Executor will receive this updated `Request.parameters`. One can leverage this feature to pass parameters between Executors.

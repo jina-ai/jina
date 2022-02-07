@@ -148,14 +148,14 @@ After installing Jina via `pip`, you should be able to use your shell's autocomp
 
 jina 
 
---help          --version       --version-full  check           client          flow            gateway         hello-world     log             pea             ping            pod
+--help          --version       --version-full  check           client          flow            gateway         hello-world     log             pod             ping            deployment
 ```
 
 The autocomplete is context-aware. It also works when you type a second-level argument:
 
 ```bash
 
-jina pod --name --lo
+jina deployment --name --lo
 
 --log-profile  --log-remote   --log-sse
 ```
