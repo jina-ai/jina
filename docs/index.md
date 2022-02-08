@@ -61,12 +61,12 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 ::::
 
-::::{grid-item-card} {octicon}`infinity;1.5em` Tasks on Multi Data Types
+::::{grid-item-card} {octicon}`infinity;1.5em` How to use Jina
 :link: datatype/text/index
 :link-type: doc
 :class-card: color-gradient-card
 
-Learn to use Jina to build neural search solution for different types of data.
+Learn to use Jina to build neural search solution using the power of Jina.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
@@ -74,19 +74,7 @@ Learn to use Jina to build neural search solution for different types of data.
 :link-type: doc
 
 Learn to share and reuse Executors from the Jina community.
-
 ::::
-
-
-::::{grid-item-card} {octicon}`workflow;1.5em`  Manage Remote Jina 
-:link: advanced/daemon/index
-:link-type: doc
-
-Learn to deploy and manage Jina on remote via a RESTful interface.
-::::
-
-
-
 
 ::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
 :link: advanced/experimental/index
