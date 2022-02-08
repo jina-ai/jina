@@ -16,7 +16,7 @@ On the other hand, Jina is built to build and serve neural search applications b
 
 When learning about Executors and the way they are scaled and replicated by Jina, people compare Jina with other Machine Learning model serving frameworks such as **Seldon Core**. 
 
-Seldon is designed to serve and expose single machine learning models of different kinds, classification, regression, etc … Jina, on the other hand is born and built to build end to end neural search applications.
+Seldon is designed to serve and expose single machine learning models of different kinds, classification, regression, etc … Jina, on the other hand, is built for end-to-end neural search applications.
  While these frameworks tend to deploy model artifacts from different ML frameworks in predefined ways, Jina gives all the power to the user by letting them define their own logic with the expressiveness of `DocumentArray` in a Pythonic way.
 
 ##Compare to Vector databases
