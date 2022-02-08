@@ -1,6 +1,6 @@
 #Comparing to alternatives
 
-It is frequently asked how Jina compares to different libraries and frameworks, and we have tried to clarify some of the most common confusions. 
+People often ask how Jina compares to different libraries and frameworks, and here we clarify some of the most common confusions. 
 
 ##Compare to MLOps frameworks
 
