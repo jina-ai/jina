@@ -31,6 +31,12 @@ Please first make sure [`Docker Compose`](https://docs.docker.com/compose/instal
 
 ### Deploy your flow
 
+
+```{admonition} Caution
+:class: caution
+Please first make sure [`Docker Compose`](https://docs.docker.com/compose/install/) is installed locally.
+```
+
 ```{admonition} Caution
 :class: caution
 Before starting this example, make sure that CLIPImageEncoder and PQLiteIndexer images are already pulled to your local machine.
