@@ -5,9 +5,9 @@ Jina is a cloud native neural search engine. Therefore, one of the simplest ways
 production is to deploy your `Flow` with `docker-compose`.
 
 Remember that a `Flow` defines complex processing pipelines. A `Flow` is composed of `Executors` which run python code
-defined to operate on `Document`. These `Executors` will live in different runtimes depending on how you want to deploy
-your flow. By default, if you are serving your flow locally they will live within processes or threads. Nevertheless, 
-because jina is thought to be cloud native your flow can easily manage executors that live in containers and that are
+defined to operate on `DocumentArray`. These `Executors` will live in different runtimes depending on how you want to deploy
+your flow. By default, if you are serving your flow locally they will live within processes. Nevertheless, 
+because Jina is thought to be cloud native your flow can easily manage executors that live in containers and that are
 orchestrated by your favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. It is so
 easy to deploy your `Flow`'s with `Docker Compose` that we even recommend using it for local development.
 
@@ -16,17 +16,12 @@ Under the hood with one line
 flow.to_docker_compose_yaml('docker-compose.yml')
 ```
 
-jina will generate for you a `docker-compose.yml` config files that you can use directly with 
+Jina will generate for you a `docker-compose.yml` config files that you can use directly with 
 `docker-compose` which correspond to your `Flow`, avoiding you the overhead of defining the services for the gateway 
 and the deployment of the `Flow`. 
 
 
 ## Examples : Indexing and searching images using CLIP image encoder and PQLiteIndexer
-
-
-### Preliminaries
-
-Please first make sure [`Docker Compose`](https://docs.docker.com/compose/install/) is installed locally.
 
 
 ### Deploy your flow
@@ -97,7 +92,8 @@ services:
 ```
 
 Here you can see that 7 services will be created. Indeed, first each `Flow` has one entrypoint the `gateway`, then each
-`Deployment` has one `Head` and two instances of the executors (either shard or replicas).
+`Deployment` of the encoder has one `Head` and two instances of the executors because it has two replicas. 
+It is the almost the same for the Indexer, excepts that the two instances are the two shards.
 
 
 Now, you can deploy this Flow to your cluster:
@@ -108,7 +104,7 @@ docker-compose -f docker-compose.yml up
 
 ### Use your search engine and query your flow
 
-Now that your flow is up and running in your cloud environment you can query it:
+Now that your flow is up and running in your docker compose you can to query it:
 
 Once we see that all the Services in the Flow are ready, we can start sending index and search requests.
 
