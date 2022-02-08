@@ -25,6 +25,6 @@ As part of the Neural Search ecosystem, people often wonder about the difference
 
 The main difference is that Jina is **not** a Vector database. 
 
-Jina is a neural search framework to build complete end to end search applications. With the power of **DocumentArray** and **Executors** one can plug any external vector database into a Jina application.
+Jina is a neural search framework to build complete end to end search applications. With the power of **DocumentArray** and **Executors** you can plug any external vector database into a Jina application.
  
  In summary, Jina takes care of the complete pipeline and allows users to integrate their own custom logic and persistence layer. 
