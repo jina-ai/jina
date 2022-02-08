@@ -563,14 +563,14 @@ with f:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = get_hubble_url_v1() + f'/executors/{name}/?'
+        pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage?id={name}'
         path_params = {}
         if secret:
             path_params['secret'] = secret
         if tag:
             path_params['tag'] = tag
         if path_params:
-            pull_url += urlencode(path_params)
+            pull_url += f'&{urlencode(path_params)}'
 
         resp = requests.get(pull_url, headers=get_request_header())
         if resp.status_code != 200:
@@ -578,15 +578,15 @@ with f:
                 raise Exception(resp.text)
             resp.raise_for_status()
 
-        resp = resp.json()
+        resp = resp.json()['data']
 
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
-            tag=tag or resp['tag'],
+            tag=tag or resp['commit'].get('tags', [None])[0],
             visibility=resp['visibility'],
-            image_name=resp['image'],
+            image_name=resp['package'].get('containers', [None])[0],
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
         )
