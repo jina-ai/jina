@@ -61,12 +61,12 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 ::::
 
-::::{grid-item-card} {octicon}`infinity;1.5em` Tasks on Multi Data Types
+::::{grid-item-card} {octicon}`infinity;1.5em` How to use Jina
 :link: datatype/text/index
 :link-type: doc
 :class-card: color-gradient-card
 
-Learn to use Jina to build neural search solution for different types of data.
+Learn to use Jina to build neural search solution using the power of Jina.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
@@ -74,19 +74,7 @@ Learn to use Jina to build neural search solution for different types of data.
 :link-type: doc
 
 Learn to share and reuse Executors from the Jina community.
-
 ::::
-
-
-::::{grid-item-card} {octicon}`workflow;1.5em`  Manage Remote Jina 
-:link: advanced/daemon/index
-:link-type: doc
-
-Learn to deploy and manage Jina on remote via a RESTful interface.
-::::
-
-
-
 
 ::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
 :link: advanced/experimental/index
@@ -108,7 +96,11 @@ Preview the next big things we are building. Careful not to get zapped!
 :hidden:
 
 get-started/neural-search
+get-started/jina-ecosystem
+get-started/jina-core
+get-started/comparing-alternatives
 get-started/install/index
+get-started/migrate-3.0/index
 get-started/hello-world/index
 ```
 
@@ -117,32 +109,23 @@ get-started/hello-world/index
 :hidden:
 
 fundamentals/concepts
-fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/clean-code
-```
-
-
-```{toctree}
-:caption: Data Types
-:hidden:
-
-datatype/text/index
-datatype/image/index
-datatype/video/index
-datatype/audio/index
-datatype/mesh/index
-datatype/tabular/index
 ```
 
 ```{toctree}
-:caption: Advanced
+:caption: How-to
 :hidden:
 
-advanced/hub/index
-advanced/daemon/index
-advanced/experimental/index
+how-to/share-hub
+how-to/executor-sandbox
+how-to/executor-gpu
+how-to/async-executor
+how-to/external-executor
+how-to/polling-strategies
+how-to/docker-compose
+how-to/kubernetes
+how-to/scale-replication-shards
 ```
 
 
