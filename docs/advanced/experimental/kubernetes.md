@@ -47,7 +47,7 @@ This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImage
 ```python
 from jina import Flow
 
-f = Flow(port_expose=8080, protocol='http').add(
+f = Flow(port_expose=8080).add(
     name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2
 ).add(name='indexer', uses='jinahub+docker://PQLiteIndexer', uses_with={'dim': 512}, shards=2)
 ```
@@ -119,7 +119,7 @@ with portforward.forward(
     client = Client(host='localhost', port=8080)
     client.show_progress = True
     docs = client.post(
-        '/index', inputs=DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob()),
+        '/index', inputs=DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_tensor()),
         return_results=True
     )
 
@@ -162,17 +162,23 @@ The client sends an image to the exposed `Flow` on `$EXTERNAL_IP` and retrieves 
 Finally, it prints the uri of the closest matches.
 
 ```python
-import requests
-from jina import DocumentArray
 import os
+
+from jina.clients import Client
+from jina import DocumentArray
+
 host = os.environ['EXTERNAL_IP']
 port = 80
-url = f'http://{host}:{port}'
 
-doc = DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob())[0].to_dict()
-resp = requests.post(f'{url}/search', json={'data': [doc]})
-matches = resp.json()['data']['docs'][0]['matches']
-print(f'Matched documents: {len(matches)}')
+client = Client(host=host, port=port)
+client.show_progress = True
+docs = DocumentArray.from_files("./imgs/*.png").apply(
+    lambda d: d.load_uri_to_image_tensor()
+)
+resp_query = client.post("/search", inputs=docs, return_results=True)
+
+matches = resp_query[0].docs[0].matches
+print(f"Matched documents: {len(matches)}")
 ```
 
 ## Scaling Executors on Kubernetes
