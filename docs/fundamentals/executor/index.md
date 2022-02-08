@@ -26,10 +26,6 @@ executor-api
 executor-built-in-features
 executor-in-flow
 repository-structure
-executor-built-in-features
-executors-in-action
-repository-structure
-../../tutorials/gpu-executor
 ```
 
 ````{admonition} See Also

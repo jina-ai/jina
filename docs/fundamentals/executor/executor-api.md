@@ -1,4 +1,3 @@
-(executor)=
 # Executor API
 
 {class}`~jina.Executor` process `DocumentArray` via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
@@ -67,13 +66,13 @@ from jina import requests
 from jina import Executor, requests
 
 
-class NetworkBoundExecutor(Executor):
+class RequestExecutor(Executor):
 
-    @requests(on=['/index', '/search']) # foo will be bound to `index` and `search` endpoints 
+    @requests(on=['/index', '/search']) # foo will be bound to `/index` and `/search` endpoints 
     def foo(self, **kwargs):
         print(f'Calling foo') 
 
-    @requests(on=['/other',]) # bat will be bound to `index` and `search` endpoints 
+    @requests(on='/other') # bar will be bound to `/other` endpoint
     def bar(self, **kwargs):
         print(f'Calling bar') 
 ```
@@ -81,7 +80,7 @@ class NetworkBoundExecutor(Executor):
 ```python
 from jina import Flow
 
-f = Flow().add(uses=NetworkBoundExecutor)
+f = Flow().add(uses=RequestExecutor)
 
 with f:
     f.post(on='/index', inputs=[])
@@ -97,41 +96,6 @@ with f:
 	🌐 Public address:	212.231.186.65:52255
 Calling foo
 Calling bar
-Calling foo
-```
-
-When no `on` parameter is defined, that function is bound to any request.
-
-```python
-from jina import Executor, requests
-
-
-class RespondToAllExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        print(f'Calling foo') 
-```
-
-```python
-from jina import Flow
-
-f = Flow().add(uses=RespondToAllExecutor)
-
-with f:
-    f.post(on='/index', inputs=[])
-    f.post(on='/other', inputs=[])
-    f.post(on='/search', inputs=[])
-```
-
-```bash
-           Flow@18048[I]:🎉 Flow is ready to use!                                                   
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52255
-	🔒 Private network:	192.168.1.187:52255
-	🌐 Public address:	212.231.186.65:52255
-Calling foo
-Calling foo
 Calling foo
 ```
 
@@ -155,17 +119,11 @@ class MyExecutor(Executor):
         print(kwargs)
 ```
 
-#### Multiple bindings
-
-To bind a method with multiple endpoints, you can use `@requests(on=['/foo', '/bar'])`. This allows
-either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that function.
-
 #### No binding
 
 A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any
 processing.
 
-(executor-method-signature)=
 ### Method arguments
 
 All Executor methods decorated by `@requests` need to follow the signature below for it to be used as a microservice inside a `Flow` (`async` is optional).
@@ -300,3 +258,29 @@ async def main():
 asyncio.run(main())
 ```
 
+## Use Executor out of Flow
+
+`Executor` object can be used directly just like a regular Python object. For example,
+
+```python
+from docarray import DocumentArray, Document
+from jina import Executor, requests
+
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
+
+
+m = MyExec()
+da = DocumentArray([Document(text='test')])
+m.foo(da)
+print(f'Text: {da[0].text}')
+```
+
+```text
+Text: hello world
+```

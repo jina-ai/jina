@@ -1,125 +1,5 @@
 # Executor Features
 
-## Exception handling
-
-Exception inside `@requests` decorated functions can be simply raised. The Flow will handle it.
-
-```python
-from jina import Executor, requests, Flow
-from jina.types.request import Response
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        raise NotImplementedError('no time for it')
-
-
-f = Flow().add(uses=MyExecutor)
-
-
-def print_why(resp: Response):
-    print(resp.status.description)
-
-
-with f:
-    f.post('', on_error=print_why)
-```
-
-```console
-
-       executor@47887[L]:ready and listening
-        gateway@47887[L]:ready and listening
-           Flow@47887[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:49242
-	🔒 Private network:	192.168.178.31:49242
-	🌐 Public address:	217.70.138.123:49242
-       executor@47893[E]:NotImplementedError('no time for it')
- add "--quiet-error" to suppress the exception details
-Traceback (most recent call last):
-  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 250, in _msg_callback
-    processed_msg = self._callback(msg)
-  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 236, in _callback
-    msg = self._post_hook(self._handle(self._pre_hook(msg)))
-  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/zmq/zed.py", line 203, in _handle
-    peapod_name=self.name,
-  File "/Users/hanxiao/Documents/jina/jina/peapods/runtimes/request_handlers/data_request_handler.py", line 163, in handle
-    field='groundtruths',
-  File "/Users/hanxiao/Documents/jina/jina/executors/__init__.py", line 200, in __call__
-    self, **kwargs
-  File "/Users/hanxiao/Documents/jina/jina/executors/decorators.py", line 105, in arg_wrapper
-    return fn(*args, **kwargs)
-  File "/Users/hanxiao/Documents/jina/toy43.py", line 9, in foo
-    raise NotImplementedError('no time for it')
-NotImplementedError: no time for it
-NotImplementedError('no time for it')
-```
-
-
-## Use Executor out of Flow
-
-`Executor` object can be used directly just like a regular Python object. For example,
-
-```python
-from jina import Executor, requests, DocumentArray, Document
-
-
-class MyExec(Executor):
-
-    @requests
-    def foo(self, docs, **kwargs):
-        for d in docs:
-            d.text = 'hello world'
-
-
-m = MyExec()
-da = DocumentArray([Document(text='test')])
-m.foo(da)
-print(da)
-```
-
-```text
-DocumentArray has 1 items:
-{'id': '20213a02-bdcd-11eb-abf1-1e008a366d48', 'mime_type': 'text/plain', 'text': 'hello world'}
-```
-
-This is useful in debugging an Executor.
-
-## Gracefully close Executor
-
-You might need to execute some logic when your executor's destructor is called. For example, you want to
-persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
-method `close` and add your logic.
-
-```{code-block} python
----
-emphasize-lines: 11, 12
----
-from jina import Executor, requests, Document, DocumentArray
-
-
-class MyExec(Executor):
-
-    @requests
-    def foo(self, docs, **kwargs):
-        for doc in docs:
-            print(doc.text)
-
-    def close(self):
-        print("closing...")
-
-
-with MyExec() as executor:
-    executor.foo(DocumentArray([Document(text='hello world')]))
-```
-
-```text
-hello world
-closing...
-```
-
 ## YAML interface
 
 An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:
@@ -148,44 +28,7 @@ requests:
     - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
     - `workspace` is a string. Defines the workspace of the executor;
     - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
-- `requests` is a map. Defines the mapping from endpoint to class method name;
-
-### Load and save Executor config
-
-You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
-
-```{code-block} python
----
-emphasize-lines: 25, 26, 27
----
-from jina import Executor
-
-
-class MyExecutor(Executor):
-
-    def __init__(self, bar: int, **kwargs):
-        super().__init__(**kwargs)
-        self.bar = bar
-
-    def foo(self, **kwargs):
-        pass
-
-
-y_literal = """
-jtype: MyExecutor
-with:
-  bar: 123
-metas:
-  name: awesomeness
-  description: my first awesome executor
-requests:
-  /random_work: foo
-"""
-
-exec = Executor.load_config(y_literal)
-exec.save_config('y.yml')
-Executor.load_config('y.yml')
-```
+- `requests` is a map. Defines the mapping from endpoint to class method name. Useful if one needs to overwrite the default methods
 
 ## Meta attributes
 
@@ -233,5 +76,37 @@ then second):
 :align: center
 ```
 
-(executor-request-parameters)=
 
+
+## Gracefully close Executor
+
+You might need to execute some logic when your executor's destructor is called. For example, you want to
+persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
+method `close` and add your logic.
+
+```{code-block} python
+---
+emphasize-lines: 11, 12
+---
+from jina import Executor, requests, Document, DocumentArray
+
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            print(doc.text)
+
+    def close(self):
+        print("closing...")
+
+
+with MyExec() as executor:
+    executor.foo(DocumentArray([Document(text='hello world')]))
+```
+
+```text
+hello world
+closing...
+```
