@@ -2,6 +2,7 @@ from jina import __version__
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.enums import PodRoleType
+from jina import __default_executor__
 
 
 def get_image_name(uses: str) -> str:
@@ -98,3 +99,20 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
         container_args.extend(['--uses-with', json.dumps(uses_with)])
     container_args.append('--native')
     return container_args
+
+
+def validate_uses(uses: str):
+    """Validate uses argument
+
+    :param uses: uses argument
+    :return: boolean indicating whether is a valid uses to be used in K8s or docker compose
+    """
+    if uses == __default_executor__ or uses.startswith('docker://'):
+        return True
+
+    try:
+        scheme, _, _, _ = parse_hub_uri(uses)
+        if scheme in {'jinahub+docker', 'jinahub+sandbox'}:
+            return True
+    except ValueError:
+        return False

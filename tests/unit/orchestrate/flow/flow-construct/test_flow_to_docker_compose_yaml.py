@@ -349,3 +349,11 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--connection-list' not in executor2_uses_after_args
     assert '--uses-before' not in executor2_uses_after_args
     assert '--uses-after' not in executor2_uses_after_args
+
+
+def test_raise_exception_invalid_executor():
+    from jina.excepts import NoContainerizedError
+
+    with pytest.raises(NoContainerizedError):
+        f = Flow().add(uses='A')
+        f.to_docker_compose_yaml()
