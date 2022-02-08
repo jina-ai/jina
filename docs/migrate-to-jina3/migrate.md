@@ -94,7 +94,7 @@ DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=
 
 ````
 
-## Method behaviour changes
+## Method behavior changes
 
 - **`.post()` method**: `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
 set. This makes it easier to immediately use the returned results. The behaviour of `client.post()` remains unchanged
