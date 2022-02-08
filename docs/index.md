@@ -108,7 +108,10 @@ Preview the next big things we are building. Careful not to get zapped!
 :hidden:
 
 get-started/neural-search
+get-started/jina-ecosystem
+get-started/jina-core
 get-started/install/index
+get-started/migrate-3.0/index
 get-started/hello-world/index
 ```
 
@@ -117,32 +120,23 @@ get-started/hello-world/index
 :hidden:
 
 fundamentals/concepts
-fundamentals/document/index
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/clean-code
-```
-
-
-```{toctree}
-:caption: Data Types
-:hidden:
-
-datatype/text/index
-datatype/image/index
-datatype/video/index
-datatype/audio/index
-datatype/mesh/index
-datatype/tabular/index
 ```
 
 ```{toctree}
-:caption: Advanced
+:caption: How-to
 :hidden:
 
-advanced/hub/index
-advanced/daemon/index
-advanced/experimental/index
+how-to/share-hub
+how-to/executor-sandbox
+how-to/executor-gpu
+how-to/async-executor
+how-to/external-executor
+how-to/polling-strategies
+how-to/docker-compose
+how-to/kubernetes
+how-to/scale-replication-shards
 ```
 
 
