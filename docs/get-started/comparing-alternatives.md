@@ -19,22 +19,31 @@ When learning about Executors and the way they are scaled and replicated by Jina
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Seldon is designed to serve and expose single machine learning models of different kinds, classification, regression, etc … Jina, on the other hand is born and built to build end to end neural search applications.
  While these frameworks tend to deploy model artifacts from different ML frameworks in predefined ways, Jina gives all the power to the user by letting them define their own logic with the expressiveness of `DocumentArray` in a Pythonic way.
 =======
 Seldon is built to serve and expose single machine learning models of different kinds, classification, regression, etc … Jina on the other hand is born and built to build end to end neural search applications.
  While these frameworks tend to deploy model artifacts from different ML frameworks in predefined ways, Jina gives all the power to the user by letting them define their own logic with the expressiveness of `docarray` in a Pythonic way.
 >>>>>>> f5d0331707... add comparing to alternatives text
+=======
+Seldon is designed to serve and expose single machine learning models of different kinds, classification, regression, etc … Jina, on the other hand is born and built to build end to end neural search applications.
+ While these frameworks tend to deploy model artifacts from different ML frameworks in predefined ways, Jina gives all the power to the user by letting them define their own logic with the expressiveness of `DocumentArray` in a Pythonic way.
+>>>>>>> 24259a999d... docs: good navigation bar
 
 ##Compare to Vector Databases.
 
 As part of the Neural Search ecosystem, people often wonders what is the difference between Jina and other Vector Databases.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 The main difference is that Jina is **not** a Vector database. 
 =======
 The main difference is that Jina is not a Vector Database. 
 >>>>>>> f5d0331707... add comparing to alternatives text
+=======
+The main difference is that Jina is **not** a Vector database. 
+>>>>>>> 24259a999d... docs: good navigation bar
 Jina is a neural search framework to build complete end to end search applications. With the power of **DocumentArray** and **Executors** one can plug any external vector database into a Jina application.
  
  In summary, Jina takes care of the complete pipeline and allows users to integrate their own custom logic and persistence layer. 
