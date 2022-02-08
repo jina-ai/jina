@@ -119,7 +119,7 @@ with portforward.forward(
     client = Client(host='localhost', port=8080)
     client.show_progress = True
     docs = client.post(
-        '/index', inputs=DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_tensor()),
+        '/index', inputs=DocumentArray.from_files('./imgs/*.png').apply(lambda d: d.load_uri_to_image_tensor()),
         return_results=True
     )
 
@@ -135,6 +135,12 @@ If `custom-namespace` has been used by another `Flow`, please set a different `k
 ```{admonition} Caution
 :class: caution
 In the default deployment dumped by the Flow, no Persistent Volume Object is added. You may want to edit the deployment files to add them if needed.
+```
+
+```{admonition} Caution
+:class: caution
+Using the HTTP protocol for this example means image tensors are serialized to JSON, which is not convenient and 
+efficient. We can avoid this by using the GRPC protocol or by converting images to data URIs instead.
 ```
 
 ## Exposing your `Flow`
