@@ -1,9 +1,8 @@
-(comparint-to-alternatives)=
-#COMPARING TO ALTERNATIVES
+#Comparing to alternatives
 
 It is frequently asked how Jina compares to different libraries and frameworks, and we have tried to clarify some of the most common confusions. 
 
-##Compare to MLOps frameworks.
+##Compare to MLOps frameworks
 
 Often community wonders how Jina differs from some MLOps frameworks such as **MLFlow**, **KubeFlow** or **RayWorkflow**. 
 
@@ -13,14 +12,14 @@ These MLOps frameworks tend to be designed to schedule and operate tasks and job
 
 On the other hand, Jina is built to build and serve neural search applications built as microservices that communicate through the network in an streaming way. Every microservice (Executor) in a Flow is constantly receiving `docarrays` to be processed in an streaming fashion. 
 
-##Compare to model serving frameworks.
+##Compare to model serving frameworks
 
 When learning about Executors and the way they are scaled and replicated by Jina, people compare Jina with other Machine Learning model serving frameworks such as **Seldon Core**. 
 
 Seldon is designed to serve and expose single machine learning models of different kinds, classification, regression, etc … Jina, on the other hand is born and built to build end to end neural search applications.
  While these frameworks tend to deploy model artifacts from different ML frameworks in predefined ways, Jina gives all the power to the user by letting them define their own logic with the expressiveness of `DocumentArray` in a Pythonic way.
 
-##Compare to Vector Databases.
+##Compare to Vector databases
 
 As part of the Neural Search ecosystem, people often wonders what is the difference between Jina and other Vector Databases.
 

@@ -96,9 +96,9 @@ Preview the next big things we are building. Careful not to get zapped!
 :hidden:
 
 get-started/neural-search
+get-started/comparing-to-alternatives
 get-started/jina-ecosystem
 get-started/jina-core
-get-started/comparing-alternatives
 get-started/install/index
 get-started/migrate-3.0/index
 get-started/hello-world/index
