@@ -1,14 +1,14 @@
 (docker-compose)=
 # Jina with Docker Compose
 
-Jina is a cloud native neural search engine. Therefore, one of the simplest way of either prototyping or serving in
+Jina is a cloud native neural search engine. Therefore, one of the simplest ways of either prototyping or serving in
 production is to deploy your `Flow` with `docker-compose`.
 
-Remember that a `Flow` define complexes processing pipelines. A `Flow` is composed of `Executors` which run python code
-define to operate on `Document`. These `Executors` will live in different runtime depending on how you want to deploy
+Remember that a `Flow` defines complex processing pipelines. A `Flow` is composed of `Executors` which run python code
+defined to operate on `Document`. These `Executors` will live in different runtimes depending on how you want to deploy
 your flow. By default, if you are serving your flow locally they will live within processes or threads. Nevertheless, 
-because jina is think to be cloud native your flow can easily manage executors that live in containers and that are
-orchestrated by you favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. It is so
+because jina is thought to be cloud native your flow can easily manage executors that live in containers and that are
+orchestrated by your favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. It is so
 easy to deploy your `Flow`'s with `Docker Compose` that we even recommend using it for local development.
 
 Under the hood with one line 
@@ -49,7 +49,7 @@ You can use:
 
 This example shows how to build and deploy a Flow with Docker Compose with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q)
 as image encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer to perform fast nearest
-neighbour retrieval on the images embedding.
+neighbor retrieval on the images embedding.
 
 ```python
 from jina import Flow
