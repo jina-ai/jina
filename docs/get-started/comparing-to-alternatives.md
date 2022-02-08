@@ -21,7 +21,7 @@ Seldon is designed to serve and expose single machine learning models of differe
 
 ##Compare to Vector databases
 
-As part of the Neural Search ecosystem, people often wonders what is the difference between Jina and other Vector Databases.
+As part of the Neural Search ecosystem, people often wonder about the difference between Jina and other Vector Databases.
 
 The main difference is that Jina is **not** a Vector database. 
 
