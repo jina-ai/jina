@@ -20,7 +20,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 
 ## Accessing attributes and elements
 
-Docarray introduces a flexible way of bulk-accessing attributes of `Document`s in a `DocumentArray`.
+Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocumentArray`, in bulk.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
   a select number of attibutes. Currently, this syntax is supported by:
   - `text`: `docs.texts`
@@ -75,7 +75,7 @@ print(docs[...].texts)
 Batching operations are delegated to the docarray package and Python builtins:
 
 - `docs.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
-The example below shows how to achieve complex behaviour that previously relied on these arguments, in a more pythonic
+The example below shows how to achieve complex behavior that previously relied on these arguments, in a more pythonic
 and Jina 3 compatible way:
 
 ````{tab} Jina 2
@@ -97,9 +97,9 @@ DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=
 ## Method behavior changes
 
 - **`.post()` method**: `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
-set. This makes it easier to immediately use the returned results. The behaviour of `client.post()` remains unchanged
+set. This makes it easier to immediately use the returned results. The behavior of `client.post()` remains unchanged
 compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` flag,
-the user can override these default behaviours.
+the user can override these default behaviors.
 - **Accessing non-existent values**: In Jina 2, bulk accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
 inside the `DocumentArray` do not have a value for that attribute. In Jina 3, this returns `None`. This change becomes
 important when migrating code that checks for the presence of a certain attribute.
@@ -139,17 +139,17 @@ print(docs.texts)
 
 ## Serialization
 
-- `docs.SerializeToString()` is removed in favour of `doc.to_bytes()`
+- `doc.SerializeToString()` is removed in favour of `doc.to_bytes()`
 - Creating a `Document` from serialized data using `Document(bytes)` is removed in favour of
 `Document.from_bytes(bytes)`
 
 
 ## YAML parsing
 
-In Jina 3, yaml syntax is aligned with [github actions notation](https://docs.github.com/en/actions/learn-github-actions/environment-variables),
+In Jina 3, YAML syntax is aligned with [Github Actions notation](https://docs.github.com/en/actions/learn-github-actions/environment-variables),
 which leads to the following changes:
 
-- Referencing environment variables using the syntax `${{ VAR }}` is no longer allowed. The posix notations for
+- Referencing environment variables using the syntax `${{ VAR }}` is no longer allowed. The POSIX notations for
 environment variables, `$var`, has been deprecated. Instead, use `${{ ENV.VAR }}`.
 - The syntax `${{ VAR }}` now defaults to signifying a context variable, passed in a `dict()`. If you want to be explicit
 about the use of context variables, you can use `${{ CONTEXT.VAR }}`.
