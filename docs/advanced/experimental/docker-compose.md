@@ -10,7 +10,7 @@ Please first make sure [`Docker Compose`](https://docs.docker.com/compose/instal
 ## Deploy your `Flow`
 
 To deploy a `Flow` with `Docker Compose`, first, you need to generate a `yaml` file with all the Executors' services descriptions.
-Then, you can use the `docker-compose up -f <file.yml>` command to start all the services and start accepting requests.
+Then, you can use the `docker-compose -f <file.yml> up` command to start all the services and start accepting requests.
 
 ```{caution}
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
@@ -43,9 +43,17 @@ This example shows how to build and deploy a Flow with Docker Compose with [`CLI
 ```python
 from jina import Flow
 
-f = Flow(port_expose=8080, protocol='http').add(
-    name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2
-).add(name='indexer', uses='jinahub+docker://PQLiteIndexer', uses_with={'dim': 512}, shards=2)
+f = (
+    Flow(port_expose=8080, protocol='http')
+    .add(name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2)
+    .add(
+        name='indexer',
+        uses='jinahub+docker://PQLiteIndexer',
+        uses_with={'dim': 512},
+        shards=2,
+    )
+)
+
 ```
 
 Now, we can generate Docker Compose YAML configuration from the Flow:
@@ -58,7 +66,7 @@ As you can see, the Flow contains services for the gateway and the rest of execu
 
 Now, you can deploy this Flow to you cluster in the following way:
 ```shell
-docker-compose up -f docker-compose.yml
+docker-compose -f docker-compose.yml up
 ```
 
 Once we see that all the Services in the Flow are ready, we can start sending index and search requests.
@@ -67,21 +75,19 @@ Once we see that all the Services in the Flow are ready, we can start sending in
 from jina.clients import Client
 from jina import DocumentArray
 
-client = Client(host='localhost', port=8080)
+client = Client(host='localhost', protocol='http',port=8080)
 client.show_progress = True
-indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob())
-
-docs = client.post(
-    '/index', inputs=indexing_documents, return_results=True
+indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
+    lambda d: d.load_uri_to_image_tensor()
 )
 
-print(f'Indexed documents: {len(docs)}')
+resp_index= client.post('/index', inputs=indexing_documents, return_results=True)
+
+print(f'Indexed documents: {len(resp_index[0].docs)}')
 
 query_doc = indexing_documents[0]
-query_responses = client.post(
-    '/search', inputs=query_doc, return_results=True
-)
+resp_query = client.post("/search", inputs=[query_doc], return_results=True)
 
-matches = query_responses[0].data.docs[0].matches
+matches = resp_query[0].docs[0].matches
 print(f'Matched documents: {len(matches)}')
 ```
