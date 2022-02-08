@@ -11,14 +11,14 @@ Accordingly, the scope of the changes in Jina 3 will be mainly related to `Docum
 In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.
 
-## Attribute renamings
+## More natural attribute names
 
 Docarray introduces more natural naming conventions for `Document` and `DocumentArray` attributes.
 
 - `doc.blob` is renamed to `doc.tensor`, to align with external libraries like PyTorch and Tensorflow
 - `doc.buffer` is renamed to `doc.blob`, to align with the industry standard
 
-## Accessing attributes and elements
+## Simplified access of attributes and elements
 
 **Attributes**: Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocuemntArray`, in bulk.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
@@ -137,14 +137,14 @@ print(docs.texts)
 ````
 
 
-## Serialization
+## Pythonic serialization
 
 - `doc.SerializeToString()` is removed in favour of `doc.to_bytes()`
 - Creating a `Document` from serialized data using `Document(bytes)` is removed in favour of
 `Document.from_bytes(bytes)`
 
 
-## YAML parsing
+## Consistent YAML parsing syntax
 
 In Jina 3, YAML syntax is aligned with [Github Actions notation](https://docs.github.com/en/actions/learn-github-actions/environment-variables),
 which leads to the following changes:
