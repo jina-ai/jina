@@ -3,9 +3,13 @@
 Jina 3 introduces a number of exciting features, but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.
 
-One of the major changes in Jina 3 is the inclusion of the [docarray library](https://docarray.jina.ai/).
+One of the major changes in Jina 3 is the inclusion of [docarray](https://docarray.jina.ai/):
+The previously included `Document` and `DocumentArray` data structured now form their own library and include new
+features, improved performance, and increased flexibility.
 Accordingly, the scope of the changes in Jina 3 will be mainly related to `Document` and `DocumentArray`.
-Here you can find out what exactly you will have to change.
+
+In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
+long run. Here you can find out what exactly you will have to change.
 
 ## Attribute renamings
 
@@ -34,22 +38,103 @@ For traversing `DocumentArray`s via a `traversal_path`, docarray introduces a si
 - `docs.traverse_flat(path)` is replaced by `docs['@path']` (e.g. `docs['@r,cm']`)
 - `docs.flatten()` is replaced by `docs[...]`
 
+````{tab} Jina 2
+
+```python
+from Jina import Document, DocumentArray
+
+docs = nested_docs()
+
+print(docs.traverse_flat('r,c').texts)
+>>> ['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
+
+print(docs.flatten().texts)
+>>> ['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
+
+```
+
+````
+
+````{tab} Jina 3 
+
+```python
+from Jina import Document, DocumentArray
+
+docs = nested_docs()
+
+print(docs['@r,c'].texts)
+>>> ['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
+
+print(docs[...].texts)
+>>> ['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
+
+```
+
+````
+
 Batching operations are delegated to the docarray package and Python builtins:
 
-- `docsarray.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
-To achieve previously allowed behaviours like `docs.batch(traversal_paths=paths, batch_size=bs, require_attr='attr')`
-use the simplified `.batch()` method in combination with Python's `filter()`:
-`DocumentArray(filter(lambda x : bool(x.attr), docs[path])).batch(batch_size=bs)`
+- `docs.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
+The example below shows how to achieve complex behaviour that previously relied on these arguments, in a more pythonic
+and Jina 3 compatible way:
+
+````{tab} Jina 2
+
+```python
+docs.batch(traversal_paths=paths, batch_size=bs, require_attr='attr')
+```
+
+````
+
+````{tab} Jina 3 
+
+```python
+DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=bs)
+```
+
+````
 
 ## Method behaviour changes
 
-- `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
+- **`.post()` method**: `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
 set. This makes it easier to immediately use the returned results. The behaviour of `client.post()` remains unchanged
 compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` flag,
 the user can override these default behaviours.
-- In Jina 2, bulk accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
+- **Accessing non-existent values**: In Jina 2, bulk accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
 inside the `DocumentArray` do not have a value for that attribute. In Jina 3, this returns `None`. This change becomes
 important when migrating code that checks for the presence of a certain attribute.
+
+````{tab} Jina 2
+
+```python
+from Jina import Document, DocumentArray
+
+d = Document()
+print(d.text)
+>>> ''
+
+docs = DocumentArray([d, d])
+print(docs.texts)
+>>> ['', '']
+```
+
+````
+
+````{tab} Jina 3 
+
+```python
+from Jina import Document, DocumentArray
+
+d = Document()
+print(d.text)
+>>> ''
+
+docs = DocumentArray([d, d])
+print(docs.texts)
+>>> None
+```
+
+````
 
 
 ## Serialization
@@ -69,4 +154,12 @@ environment variables, `$var`, has been deprecated. Instead, use `${{ ENV.VAR }}
 - The syntax `${{ VAR }}` now defaults to signifying a context variable, passed in a `dict()`. If you want to be explicit
 about the use of context variables, you can use `${{ CONTEXT.VAR }}`.
 - Relative paths can point to other variables within the same `.yaml` file, and can be references using the syntax
-- `${{root.path.to.var}}`. Note the omission of spaces in this syntax definition.
+- `${{root.path.to.var}}`.
+
+````{admonition} Environment variables vs. relative paths
+:class: tip
+
+Note that the only difference between and environment variable and relative path syntax is the inclusion of spaces in
+the former (`${{ var }}`), and the omission of spaces in the latter (`${{path}}`).
+
+````
