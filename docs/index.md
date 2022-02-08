@@ -66,7 +66,7 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 :link-type: doc
 :class-card: color-gradient-card
 
-Learn to use Jina to build neural search solution using the power of Jina.
+Build a neural search solution with the power of Jina.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
@@ -96,12 +96,12 @@ Preview the next big things we are building. Careful not to get zapped!
 :hidden:
 
 get-started/neural-search
-get-started/comparing-to-alternatives
 get-started/jina-ecosystem
 get-started/jina-core
 get-started/install/index
 get-started/migrate-3.0/index
 get-started/hello-world/index
+get-started/comparing-to-alternatives
 ```
 
 ```{toctree}
