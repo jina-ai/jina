@@ -41,12 +41,12 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     # executor2-head, executor2-rep-0, executor2-rep-1, executor2-uses-before, executor2-uses-after
     assert set(services.keys()) == {
         'gateway',
-        'executor0-head-0',
+        'executor0-head',
         'executor0',
-        'executor1-head-0',
+        'executor1-head',
         'executor1-0',
         'executor1-1',
-        'executor2-head-0',
+        'executor2-head',
         'executor2-rep-0',
         'executor2-rep-1',
         'executor2-uses-before',
@@ -71,7 +71,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--deployments-addresses' in gateway_args
     assert (
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
-        == '{"executor0": ["executor0-head-0:8081"], "executor1": ["executor1-head-0:8081"], "executor2": ["executor2-head-0:8081"]}'
+        == '{"executor0": ["executor0-head:8081"], "executor1": ["executor1-head:8081"], "executor2": ["executor2-head:8081"]}'
     )
     assert '--pod-role' in gateway_args
     assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
@@ -83,15 +83,14 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-with' not in gateway_args
     assert '--env' not in gateway_args
 
-    executor0_head_service = services['executor0-head-0']
+    executor0_head_service = services['executor0-head']
     assert executor0_head_service['entrypoint'] == ['jina']
     assert 'expose' not in executor0_head_service
     executor0_head_args = executor0_head_service['command']
     assert executor0_head_args[0] == 'executor'
     assert '--name' in executor0_head_args
     assert (
-        executor0_head_args[executor0_head_args.index('--name') + 1]
-        == 'executor0/head-0'
+        executor0_head_args[executor0_head_args.index('--name') + 1] == 'executor0/head'
     )
     assert '--runtime-cls' in executor0_head_args
     assert (
@@ -131,15 +130,14 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-before' not in executor0_args
     assert '--uses-after' not in executor0_args
 
-    executor1_head_service = services['executor1-head-0']
+    executor1_head_service = services['executor1-head']
     assert executor1_head_service['entrypoint'] == ['jina']
     assert 'expose' not in executor1_head_service
     executor1_head_args = executor1_head_service['command']
     assert executor1_head_args[0] == 'executor'
     assert '--name' in executor1_head_args
     assert (
-        executor1_head_args[executor1_head_args.index('--name') + 1]
-        == 'executor1/head-0'
+        executor1_head_args[executor1_head_args.index('--name') + 1] == 'executor1/head'
     )
     assert '--runtime-cls' in executor1_head_args
     assert (
@@ -215,15 +213,14 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--uses-before' not in executor1_shard1_args
     assert '--uses-after' not in executor1_shard1_args
 
-    executor2_head_service = services['executor2-head-0']
+    executor2_head_service = services['executor2-head']
     assert executor2_head_service['entrypoint'] == ['jina']
     assert 'expose' not in executor2_head_service
     executor2_head_args = executor2_head_service['command']
     assert executor2_head_args[0] == 'executor'
     assert '--name' in executor2_head_args
     assert (
-        executor2_head_args[executor2_head_args.index('--name') + 1]
-        == 'executor2/head-0'
+        executor2_head_args[executor2_head_args.index('--name') + 1] == 'executor2/head'
     )
     assert '--runtime-cls' in executor2_head_args
     assert (

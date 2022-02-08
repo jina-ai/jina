@@ -37,26 +37,26 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     }
     assert set(os.listdir(os.path.join(dump_path, 'gateway'))) == {'gateway.yml'}
     assert set(os.listdir(os.path.join(dump_path, 'executor0'))) == {
-        'executor0-head-0.yml',
+        'executor0-head.yml',
         'executor0.yml',
     }
     assert set(os.listdir(os.path.join(dump_path, 'executor1'))) == {
-        'executor1-head-0.yml',
+        'executor1-head.yml',
         'executor1-0.yml',
         'executor1-1.yml',
     }
     assert set(os.listdir(os.path.join(dump_path, 'executor2'))) == {
-        'executor2-head-0.yml',
+        'executor2-head.yml',
         'executor2.yml',
     }
     yaml_dicts_per_deployment = {
         'gateway': [],
         'executor0': [],
-        'executor0-head-0': [],
-        'executor1-head-0': [],
+        'executor0-head': [],
+        'executor1-head': [],
         'executor1-0': [],
         'executor1-1': [],
-        'executor2-head-0': [],
+        'executor2-head': [],
         'executor2': [],
     }
     for pod_name in set(os.listdir(dump_path)):
@@ -110,7 +110,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "executor1": ["executor1-head-0.test-flow-ns.svc:8081"], "executor2": ["executor2-head-0.test-flow-ns.svc:8081"]}'
+            == '{"executor0": ["executor0-head.test-flow-ns.svc:8081"], "executor1": ["executor1-head.test-flow-ns.svc:8081"], "executor2": ["executor2-head.test-flow-ns.svc:8081"]}'
         )
     assert '--pod-role' in gateway_args
     assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
@@ -121,7 +121,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         assert '--protocol' not in gateway_args
     assert '--uses-with' not in gateway_args
 
-    executor0_head0_objects = yaml_dicts_per_deployment['executor0-head-0']
+    executor0_head0_objects = yaml_dicts_per_deployment['executor0-head']
     assert (
         len(executor0_head0_objects) == 5
     )  # role, role-binding, config-map, service, deployment
@@ -135,18 +135,16 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
 
     assert executor0_head0_objects[2]['kind'] == 'ConfigMap'
     assert executor0_head0_objects[2]['metadata']['namespace'] == namespace
-    assert (
-        executor0_head0_objects[2]['metadata']['name'] == 'executor0-head-0-configmap'
-    )
+    assert executor0_head0_objects[2]['metadata']['name'] == 'executor0-head-configmap'
 
     assert executor0_head0_objects[3]['kind'] == 'Service'
     assert executor0_head0_objects[3]['metadata']['namespace'] == namespace
-    assert executor0_head0_objects[3]['metadata']['labels']['app'] == 'executor0-head-0'
-    assert executor0_head0_objects[3]['metadata']['name'] == 'executor0-head-0'
+    assert executor0_head0_objects[3]['metadata']['labels']['app'] == 'executor0-head'
+    assert executor0_head0_objects[3]['metadata']['name'] == 'executor0-head'
 
     assert executor0_head0_objects[4]['kind'] == 'Deployment'
     assert executor0_head0_objects[4]['metadata']['namespace'] == namespace
-    assert executor0_head0_objects[4]['metadata']['name'] == 'executor0-head-0'
+    assert executor0_head0_objects[4]['metadata']['name'] == 'executor0-head'
     assert executor0_head0_objects[4]['spec']['replicas'] == 1
     executor0_head0_args = executor0_head0_objects[4]['spec']['template']['spec'][
         'containers'
@@ -155,7 +153,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--name' in executor0_head0_args
     assert (
         executor0_head0_args[executor0_head0_args.index('--name') + 1]
-        == 'executor0/head-0'
+        == 'executor0/head'
     )
     assert '--k8s-namespace' in executor0_head0_args
     assert (
@@ -225,7 +223,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--runtime-cls' not in executor0_args
     assert '--connection-list' not in executor0_args
 
-    executor1_head0_objects = yaml_dicts_per_deployment['executor1-head-0']
+    executor1_head0_objects = yaml_dicts_per_deployment['executor1-head']
     assert (
         len(executor1_head0_objects) == 5
     )  # role, role-binding, config-map, service, deployment
@@ -239,18 +237,16 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
 
     assert executor1_head0_objects[2]['kind'] == 'ConfigMap'
     assert executor1_head0_objects[2]['metadata']['namespace'] == namespace
-    assert (
-        executor1_head0_objects[2]['metadata']['name'] == 'executor1-head-0-configmap'
-    )
+    assert executor1_head0_objects[2]['metadata']['name'] == 'executor1-head-configmap'
 
     assert executor1_head0_objects[3]['kind'] == 'Service'
     assert executor1_head0_objects[3]['metadata']['namespace'] == namespace
-    assert executor1_head0_objects[3]['metadata']['labels']['app'] == 'executor1-head-0'
-    assert executor1_head0_objects[3]['metadata']['name'] == 'executor1-head-0'
+    assert executor1_head0_objects[3]['metadata']['labels']['app'] == 'executor1-head'
+    assert executor1_head0_objects[3]['metadata']['name'] == 'executor1-head'
 
     assert executor1_head0_objects[4]['kind'] == 'Deployment'
     assert executor1_head0_objects[4]['metadata']['namespace'] == namespace
-    assert executor1_head0_objects[4]['metadata']['name'] == 'executor1-head-0'
+    assert executor1_head0_objects[4]['metadata']['name'] == 'executor1-head'
     assert executor1_head0_objects[4]['spec']['replicas'] == 1
     executor1_head0_args = executor1_head0_objects[4]['spec']['template']['spec'][
         'containers'
@@ -259,7 +255,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--name' in executor1_head0_args
     assert (
         executor1_head0_args[executor1_head0_args.index('--name') + 1]
-        == 'executor1/head-0'
+        == 'executor1/head'
     )
     assert '--k8s-namespace' in executor1_head0_args
     assert (
@@ -396,7 +392,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--runtime-cls' not in executor1_shard1_args
     assert '--connection-list' not in executor1_shard1_args
 
-    executor2_head0_objects = yaml_dicts_per_deployment['executor2-head-0']
+    executor2_head0_objects = yaml_dicts_per_deployment['executor2-head']
     assert (
         len(executor2_head0_objects) == 5
     )  # role, role-binding, config-map, service, deployment
@@ -410,18 +406,16 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
 
     assert executor2_head0_objects[2]['kind'] == 'ConfigMap'
     assert executor2_head0_objects[2]['metadata']['namespace'] == namespace
-    assert (
-        executor2_head0_objects[2]['metadata']['name'] == 'executor2-head-0-configmap'
-    )
+    assert executor2_head0_objects[2]['metadata']['name'] == 'executor2-head-configmap'
 
     assert executor2_head0_objects[3]['kind'] == 'Service'
     assert executor2_head0_objects[3]['metadata']['namespace'] == namespace
-    assert executor2_head0_objects[3]['metadata']['labels']['app'] == 'executor2-head-0'
-    assert executor2_head0_objects[3]['metadata']['name'] == 'executor2-head-0'
+    assert executor2_head0_objects[3]['metadata']['labels']['app'] == 'executor2-head'
+    assert executor2_head0_objects[3]['metadata']['name'] == 'executor2-head'
 
     assert executor2_head0_objects[4]['kind'] == 'Deployment'
     assert executor2_head0_objects[4]['metadata']['namespace'] == namespace
-    assert executor2_head0_objects[4]['metadata']['name'] == 'executor2-head-0'
+    assert executor2_head0_objects[4]['metadata']['name'] == 'executor2-head'
     assert executor2_head0_objects[4]['spec']['replicas'] == 1
     executor2_head_containers = executor2_head0_objects[4]['spec']['template']['spec'][
         'containers'
@@ -432,7 +426,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     assert '--name' in executor2_head0_args
     assert (
         executor2_head0_args[executor2_head0_args.index('--name') + 1]
-        == 'executor2/head-0'
+        == 'executor2/head'
     )
     assert '--k8s-namespace' in executor2_head0_args
     assert (
@@ -582,7 +576,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
     yaml_dicts_per_deployment = {
         'gateway': [],
         'executor0': [],
-        'executor0-head-0': [],
+        'executor0-head': [],
     }
     assert len(set(os.listdir(dump_path))) == 2 if has_external else 3
     for pod_name in set(os.listdir(dump_path)):
@@ -605,7 +599,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["1.2.3.4:9090"]}'
+            == '{"executor0": ["executor0-head.test-flow-ns.svc:8081"], "external_executor": ["1.2.3.4:9090"]}'
         )
     elif k8s_connection_pool and has_external:
         assert '--deployments-addresses' in gateway_args
@@ -619,8 +613,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ['
-            '"external-executor-head-0.test-flow-ns.svc:8081"]}'
+            == '{"executor0": ["executor0-head.test-flow-ns.svc:8081"], "external_executor": ["external-executor-head.test-flow-ns.svc:8081"]}'
         )
 
 

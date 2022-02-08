@@ -87,9 +87,7 @@ def test_parse_args(
         deployment_config.deployment_args['head_deployment'].k8s_namespace
         == 'default-namespace'
     )
-    assert (
-        deployment_config.deployment_args['head_deployment'].name == 'executor/head-0'
-    )
+    assert deployment_config.deployment_args['head_deployment'].name == 'executor/head'
     assert (
         deployment_config.deployment_args['head_deployment'].runtime_cls
         == 'HeadRuntime'
@@ -496,7 +494,7 @@ def test_k8s_yaml_regular_deployment(
     yaml_configs = deployment_config.to_k8s_yaml()
     assert len(yaml_configs) == 1 + shards
     head_name, head_configs = yaml_configs[0]
-    assert head_name == 'executor-head-0'
+    assert head_name == 'executor-head'
     assert (
         len(head_configs) == 5
     )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
@@ -507,7 +505,7 @@ def test_k8s_yaml_regular_deployment(
     config_map = head_configs[2]
     assert_config_map_config(
         config_map,
-        'executor-head-0',
+        'executor-head',
         {
             'JINA_LOG_LEVEL': 'INFO',
             'pythonunbuffered': '1',
@@ -517,9 +515,9 @@ def test_k8s_yaml_regular_deployment(
     head_service = head_configs[3]
     assert head_service['kind'] == 'Service'
     assert head_service['metadata'] == {
-        'name': 'executor-head-0',
+        'name': 'executor-head',
         'namespace': 'default-namespace',
-        'labels': {'app': 'executor-head-0'},
+        'labels': {'app': 'executor-head'},
     }
     head_spec_service = head_service['spec']
     assert head_spec_service['type'] == 'ClusterIP'
@@ -528,12 +526,12 @@ def test_k8s_yaml_regular_deployment(
     assert_port_config(head_port_expose, 'port-expose', 8080)
     head_port_in = head_spec_service['ports'][1]
     assert_port_config(head_port_in, 'port-in', 8081)
-    assert head_spec_service['selector'] == {'app': 'executor-head-0'}
+    assert head_spec_service['selector'] == {'app': 'executor-head'}
 
     head_deployment = head_configs[4]
     assert head_deployment['kind'] == 'Deployment'
     assert head_deployment['metadata'] == {
-        'name': 'executor-head-0',
+        'name': 'executor-head',
         'namespace': 'default-namespace',
     }
     head_spec_deployment = head_deployment['spec']
@@ -542,13 +540,11 @@ def test_k8s_yaml_regular_deployment(
         'type': 'RollingUpdate',
         'rollingUpdate': {'maxSurge': 1, 'maxUnavailable': 0},
     }
-    assert head_spec_deployment['selector'] == {
-        'matchLabels': {'app': 'executor-head-0'}
-    }
+    assert head_spec_deployment['selector'] == {'matchLabels': {'app': 'executor-head'}}
     head_template = head_spec_deployment['template']
     assert head_template['metadata'] == {
         'labels': {
-            'app': 'executor-head-0',
+            'app': 'executor-head',
             'jina_deployment_name': 'executor',
             'shard_id': '',
             'pod_type': 'HEAD',
@@ -580,7 +576,7 @@ def test_k8s_yaml_regular_deployment(
     assert '--name' in head_runtime_container_args
     assert (
         head_runtime_container_args[head_runtime_container_args.index('--name') + 1]
-        == 'executor/head-0'
+        == 'executor/head'
     )
     assert '--k8s-namespace' in head_runtime_container_args
     assert (
