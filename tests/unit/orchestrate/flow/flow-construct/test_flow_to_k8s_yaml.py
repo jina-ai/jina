@@ -619,5 +619,14 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ["external-executor-head-0.test-flow-ns.svc:8081"]}'
+            == '{"executor0": ["executor0-head-0.test-flow-ns.svc:8081"], "external_executor": ['
+            '"external-executor-head-0.test-flow-ns.svc:8081"]}'
         )
+
+
+def test_raise_exception_invalid_executor(tmpdir):
+    from jina.excepts import NoContainerizedError
+
+    with pytest.raises(NoContainerizedError):
+        f = Flow().add(uses='A')
+        f.to_k8s_yaml(str(tmpdir))

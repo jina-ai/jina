@@ -4,12 +4,14 @@ from typing import Dict, Union, List, Optional, Tuple
 
 from jina import __default_executor__
 from jina.enums import PodRoleType
+from jina.excepts import NoContainerizedError
 from jina.orchestrate.deployments.config.k8slib import kubernetes_deployment
 from jina.orchestrate.deployments.config.helper import (
     get_image_name,
     to_compatible_name,
     get_base_executor_version,
     construct_runtime_container_args,
+    validate_uses,
 )
 from jina.serve.networking import K8sGrpcConnectionPool
 from jina.orchestrate.deployments import BaseDeployment
@@ -212,6 +214,11 @@ class K8sDeploymentConfig:
     ):
         # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
+        if not validate_uses(args.uses):
+            raise NoContainerizedError(
+                f'Executor "{args.uses}" is not valid to be used in K8s. '
+                'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'
+            )
         self.k8s_namespace = k8s_namespace
         self.k8s_connection_pool = k8s_connection_pool
         self.k8s_deployments_addresses = k8s_deployments_addresses
