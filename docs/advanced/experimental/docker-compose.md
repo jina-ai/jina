@@ -1,32 +1,35 @@
 (docker-compose)=
 # Jina with Docker Compose
 
-Jina natively supports deploying your Flow and Executors locally with docker-compose.
+Jina is a cloud native neural search engine. Therefore, one of the simplest way of either prototyping or serving in
+production is to deploy your `Flow` with `docker-compose`.
 
-## Preliminaries
+Remember that a `Flow` define complexes processing pipelines. A `Flow` is composed of `Executors` which run python code
+define to operate on `Document`. These `Executors` will live in different runtime depending on how you want to deploy
+your flow. By default, if you are serving your flow locally they will live within processes or threads. Nevertheless, 
+because jina is think to be cloud native your flow can easily manage executors that live in containers and that are
+orchestrated by you favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. It is so
+easy to deploy your `Flow`'s with `Docker Compose` that we even recommend using it for local development.
 
-Please first make sure [`Docker Compose`](https://docs.docker.com/compose/install/) is installed locally.
-
-## Deploy your `Flow`
-
-To deploy a `Flow` with `Docker Compose`, first, you need to generate a `yaml` file with all the Executors' services descriptions.
-Then, you can use the `docker-compose -f <file.yml> up` command to start all the services and start accepting requests.
-
-```{caution}
-All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
-```
-
-To generate YAML configurations for Docker Compose from a Jina Flow, one just needs to call:
-
+Under the hood with one line 
 ```python
 flow.to_docker_compose_yaml('docker-compose.yml')
 ```
 
-This will create a file 'docker-compose.yml' with all the services neeeded to compose and serve the Flow.
+jina will generate for you a `docker-compose.yml` config files that you can use directly with 
+`docker-compose` which correspond to your `Flow`, avoiding you the overhead of defining the services for the gateway 
+and the deployment of the `Flow`. 
 
-## Examples
 
-### Indexing and searching images using CLIP image encoder and PQLiteIndexer
+## Examples : Indexing and searching images using CLIP image encoder and PQLiteIndexer
+
+
+### Preliminaries
+
+Please first make sure [`Docker Compose`](https://docs.docker.com/compose/install/) is installed locally.
+
+
+### Deploy your flow
 
 ```{admonition} Caution
 :class: caution
@@ -38,7 +41,9 @@ You can use:
 `jina hub pull jinahub+docker://PQLiteIndexer`
 ```
 
-This example shows how to build and deploy a Flow with Docker Compose with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
+This example shows how to build and deploy a Flow with Docker Compose with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q)
+as image encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer to perform fast nearest
+neighbour retrieval on the images embedding.
 
 ```python
 from jina import Flow
@@ -62,21 +67,57 @@ Now, we can generate Docker Compose YAML configuration from the Flow:
 f.to_docker_compose_yaml('docker-compose.yml')
 ```
 
-As you can see, the Flow contains services for the gateway and the rest of executors.
+let's take a look at this config file:
+```yaml
+version: '3.3'
+...
+services:
+  encoder-head-0: # # # # # # # # # # # 
+                  #                   #   
+  encoder-rep-0:  #   Deployment 1    #
+                  #                   #
+  encoder-rep-1:  # # # # # # # # # # #
 
-Now, you can deploy this Flow to you cluster in the following way:
+  indexer-head-0: # # # # # # # # # # # 
+                  #                   #   
+  indexer-rep-0:  #   Deployment 2    #
+                  #                   #
+  indexer-rep-1:  # # # # # # # # # # #
+
+  gateway: 
+    ...
+    ports:
+    - 8080:8080
+```
+
+Here you can see that 7 services will be created. Indeed, first each `Flow` has one entrypoint the `gateway`, then each
+`Deployment` has one `Head` and two instances of the executors (either shard or replicas).
+
+
+Now, you can deploy this Flow to your cluster:
+
 ```shell
 docker-compose -f docker-compose.yml up
 ```
 
+### Use your search engine and query your flow
+
+Now that your flow is up and running in your cloud environment you can query it:
+
 Once we see that all the Services in the Flow are ready, we can start sending index and search requests.
 
+First let's define a client:
 ```python
 from jina.clients import Client
 from jina import DocumentArray
 
 client = Client(host='localhost', protocol='http',port=8080)
 client.show_progress = True
+```
+
+then let's index our set of images in which we want to search :
+
+```python
 indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
     lambda d: d.load_uri_to_image_tensor()
 )
@@ -84,10 +125,16 @@ indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
 resp_index= client.post('/index', inputs=indexing_documents, return_results=True)
 
 print(f'Indexed documents: {len(resp_index[0].docs)}')
+```
 
+Then let's search for the closest image of our query image
+
+```python
 query_doc = indexing_documents[0]
 resp_query = client.post("/search", inputs=[query_doc], return_results=True)
 
 matches = resp_query[0].docs[0].matches
 print(f'Matched documents: {len(matches)}')
 ```
+
+
