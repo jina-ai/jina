@@ -2,7 +2,7 @@
 
 People often ask how Jina compares to different libraries and frameworks, and here we clarify some of the most common confusions. 
 
-##Compare to MLOps frameworks
+## Compared to MLOps frameworks
 
 Often community wonders how Jina differs from some MLOps frameworks such as **MLFlow**, **KubeFlow** or **RayWorkflow**. 
 
