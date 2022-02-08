@@ -20,7 +20,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 
 ## Accessing attributes and elements
 
-Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocuemntArray`, in bulk.
+Docarray introduces a flexible way of bulk-accessing attributes of `Document`s in a `DocumentArray`.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
   a select number of attibutes. Currently, this syntax is supported by:
   - `text`: `docs.texts`
