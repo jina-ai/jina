@@ -6,7 +6,7 @@ People often ask how Jina compares to different libraries and frameworks, and he
 
 Often community wonders how Jina differs from some MLOps frameworks such as **MLFlow**, **KubeFlow** or **RayWorkflow**. 
 
-The answer to this question is that even when both Jina and these frameworks have these complex Pipelines or **Flows** concepts, they are designed for very different purposes. 
+Even when both Jina and these frameworks have these complex Pipelines or **Flows** concepts, they are designed for very different purposes. 
 
 These MLOps frameworks tend to be designed to schedule and operate tasks and jobs targeted for training, hyperparameter tuning, etc … These tasks tend to be slow and generate artifacts from which events are triggered.
 
