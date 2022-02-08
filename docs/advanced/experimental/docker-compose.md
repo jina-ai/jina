@@ -73,17 +73,17 @@ let's take a look at this config file:
 version: '3.3'
 ...
 services:
-  encoder-head-0: # # # # # # # # # # # 
+  encoder-head: # # # # # # # # # # # 
                   #                   #   
   encoder-rep-0:  #   Deployment 1    #
                   #                   #
   encoder-rep-1:  # # # # # # # # # # #
 
-  indexer-head-0: # # # # # # # # # # # 
+  indexer-head: # # # # # # # # # # # 
                   #                   #   
-  indexer-rep-0:  #   Deployment 2    #
+  indexer-0:  #   Deployment 2    #
                   #                   #
-  indexer-rep-1:  # # # # # # # # # # #
+  indexer-1:  # # # # # # # # # # #
 
   gateway: 
     ...
