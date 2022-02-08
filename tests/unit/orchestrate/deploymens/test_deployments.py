@@ -254,7 +254,7 @@ def test_pod_naming_with_shards():
         ]
     )
     with Deployment(args) as pod:
-        assert pod.head_pod.name == 'pod/head-0'
+        assert pod.head_pod.name == 'pod/head'
 
         assert pod.shards[0].args[0].name == 'pod/shard-0/rep-0'
         assert pod.shards[0].args[1].name == 'pod/shard-0/rep-1'
@@ -321,7 +321,7 @@ def test_gateway_pod(protocol, runtime_cls, graph_description):
 def test_pod_naming_with_replica():
     args = set_deployment_parser().parse_args(['--name', 'pod', '--replicas', '2'])
     with Deployment(args) as bp:
-        assert bp.head_pod.name == 'pod/head-0'
+        assert bp.head_pod.name == 'pod/head'
         assert bp.shards[0]._pods[0].name == 'pod/rep-0'
         assert bp.shards[0]._pods[1].name == 'pod/rep-1'
 

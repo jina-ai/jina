@@ -91,7 +91,7 @@ def test_parse_args(
             'replicas',
         ),
     )
-    assert deployment_config.services_args['head_service'].name == 'executor/head-0'
+    assert deployment_config.services_args['head_service'].name == 'executor/head'
     assert deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
     assert deployment_config.services_args['head_service'].uses is None
     assert deployment_config.services_args['head_service'].uses_before is None
@@ -439,7 +439,7 @@ def test_docker_compose_yaml_regular_deployment(
         1 if uses_after else 0
     )
     head_name, head_config = yaml_configs[0]
-    assert head_name == 'executor-head-0'
+    assert head_name == 'executor-head'
     assert head_config['image'] == 'jinaai/jina:test-pip'
     assert head_config['entrypoint'] == ['jina']
     head_args = head_config['command']
@@ -448,7 +448,7 @@ def test_docker_compose_yaml_regular_deployment(
     assert '--runtime-cls' in head_args
     assert head_args[head_args.index('--runtime-cls') + 1] == 'HeadRuntime'
     assert '--name' in head_args
-    assert head_args[head_args.index('--name') + 1] == 'executor/head-0'
+    assert head_args[head_args.index('--name') + 1] == 'executor/head'
     assert '--port-in' in head_args
     assert head_args[head_args.index('--port-in') + 1] == '8081'
     assert '--env' not in head_args

@@ -256,13 +256,13 @@ async def test_flow_with_needs(
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'segmenter-head-0': 1,
+            'segmenter-head': 1,
             'segmenter': 1,
-            'textencoder-head-0': 1,
+            'textencoder-head': 1,
             'textencoder': 1,
-            'imageencoder-head-0': 1,
+            'imageencoder-head': 1,
             'imageencoder': 1,
-            'merger-head-0': 1,
+            'merger-head': 1,
             'merger': 1,
         },
         logger=logger,
@@ -317,7 +317,7 @@ async def test_flow_with_sharding(
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head-0': 1,
+            'test-executor-head': 1,
             'test-executor-0': 2,
             'test-executor-1': 2,
         },
@@ -384,7 +384,7 @@ async def test_flow_with_configmap(
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head-0': 1,
+            'test-executor-head': 1,
             'test-executor': 1,
         },
         logger=logger,
@@ -430,7 +430,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head-0': 1,
+            'test-executor-head': 1,
             'test-executor': 1,
         },
         logger=logger,
@@ -473,7 +473,7 @@ async def test_rolling_update_simple(
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head-0': 1,
+            'test-executor-head': 1,
             'test-executor': 2,
         },
         logger=logger,
@@ -547,7 +547,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head-0': 1,
+            'test-executor-head': 1,
             'test-executor': 1,
         },
         logger=logger,
@@ -599,7 +599,7 @@ async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, 
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head-0': 1,
+            'test-executor-head': 1,
             'test-executor': 2,
         },
         logger=logger,
@@ -703,7 +703,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     flow = Flow(name='k8s_flow-with_external_deployment', port_expose=9090).add(
         name='external_executor',
         external=True,
-        host='external-deployment-head-0.external-deployment-ns.svc',
+        host='external-deployment-head.external-deployment-ns.svc',
         port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
     )
 

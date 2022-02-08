@@ -142,11 +142,10 @@ class BaseDeployment(ExitStack):
         _head_args.runtime_cls = 'HeadRuntime'
         _head_args.replicas = 1
 
-        # for now the head is not being scaled, so its always the first head
         if args.name:
-            _head_args.name = f'{args.name}/head-0'
+            _head_args.name = f'{args.name}/head'
         else:
-            _head_args.name = f'head-0'
+            _head_args.name = f'head'
 
         return _head_args
 
