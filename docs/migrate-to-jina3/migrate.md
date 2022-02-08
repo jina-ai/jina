@@ -4,12 +4,12 @@ Jina 3 introduces a number of exciting features, but to be able to enjoy them, y
 tweaks to your existing Jina 2 code.
 
 One of the major changes in Jina 3 is the inclusion of [docarray](https://docarray.jina.ai/):
-The previously included `Document` and `DocumentArray` data structured now form their own library and include new
+The previously included `Document` and `DocumentArray` data structures now form their own library and include new
 features, improved performance, and increased flexibility.
 Accordingly, the scope of the changes in Jina 3 will be mainly related to `Document` and `DocumentArray`.
 
 In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
-long run. Here you can find out what exactly you will have to change.
+long run. Here you can find out what exactly you will have to adapt.
 
 ## Attribute renamings
 
@@ -20,9 +20,9 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 
 ## Accessing attributes and elements
 
-Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocumentArray`, in bulk.
+**Attributes**: Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocuemntArray`, in bulk.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
-  a select number of attibutes. Currently, this syntax is supported by:
+  a select number of attributes. Currently, this syntax is supported by:
   - `text`: `docs.texts`
   - `blob`: `docs.blobs`
   - `tensor`: `docs.tensors`
@@ -31,7 +31,7 @@ Docarray introduces a flexible way of accessing attributes of `Document`s in a `
 - The remaining attributes can be accessed in bulk by calling `docs[:, 'attribute']`, e.g. `docs[:, 'tags']`.
   Additionally, you can access a specific key in `tags` by calling `docs[:'tags__key']`.
 
-For traversing `DocumentArray`s via a `traversal_path`, docarray introduces a simplified notation:
+**Array Traversal**: For traversing `DocumentArray`s via a `traversal_path`, docarray introduces a simplified notation:
 
 - Traversal paths of the form `[path1, path2]` (e.g. `['r', 'cm']`) are replaced by a single string of the form
 `'path1,path2'` (e.g. `'r,cm'`)
@@ -72,7 +72,7 @@ print(docs[...].texts)
 
 ````
 
-Batching operations are delegated to the docarray package and Python builtins:
+**Batching**: Batching operations are delegated to the docarray package and Python builtins:
 
 - `docs.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
 The example below shows how to achieve complex behavior that previously relied on these arguments, in a more pythonic
@@ -149,12 +149,11 @@ print(docs.texts)
 In Jina 3, YAML syntax is aligned with [Github Actions notation](https://docs.github.com/en/actions/learn-github-actions/environment-variables),
 which leads to the following changes:
 
-- Referencing environment variables using the syntax `${{ VAR }}` is no longer allowed. The POSIX notations for
+- Referencing *environment variables* using the syntax `${{ VAR }}` is no longer allowed. The POSIX notations for
 environment variables, `$var`, has been deprecated. Instead, use `${{ ENV.VAR }}`.
-- The syntax `${{ VAR }}` now defaults to signifying a context variable, passed in a `dict()`. If you want to be explicit
+- The syntax `${{ VAR }}` now defaults to signifying a *context variable*, passed in a `dict()`. If you want to be explicit
 about the use of context variables, you can use `${{ CONTEXT.VAR }}`.
-- Relative paths can point to other variables within the same `.yaml` file, and can be references using the syntax
-- `${{root.path.to.var}}`.
+- *Relative paths* can point to other variables within the same `.yaml` file, and can be references using the syntax `${{root.path.to.var}}`.
 
 ````{admonition} Environment variables vs. relative paths
 :class: tip
