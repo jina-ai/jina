@@ -21,14 +21,12 @@ class ExecMerger(Executor):
         for docs in zip(*docs_matrix):
             traversed_executors = [doc.tags['traversed-executors'] for doc in docs]
             shard_ids = [doc.tags['shard_id'] for doc in docs]
-            pod_ids = [doc.tags['pod_id'] for doc in docs]
             shards = [doc.tags['shards'] for doc in docs]
             parallels = [doc.tags['parallel'] for doc in docs]
             traversed_executors = list(chain(*traversed_executors))
             doc = Document()
             doc.tags['traversed-executors'] = traversed_executors
             doc.tags['shard_id'] = shard_ids
-            doc.tags['pod_id'] = pod_ids
             doc.tags['shards'] = shards
             doc.tags['parallel'] = parallels
             doc.tags['merged'] = True

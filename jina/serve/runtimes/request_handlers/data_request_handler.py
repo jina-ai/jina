@@ -1,4 +1,3 @@
-import warnings
 from typing import Dict, List, TYPE_CHECKING, Optional
 
 from docarray import DocumentArray
@@ -25,7 +24,6 @@ class DataRequestHandler:
         """
         super().__init__()
         self.args = args
-        self.args.pod_id = self.args.shard_id
         self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
@@ -39,7 +37,12 @@ class DataRequestHandler:
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
                 uses_requests=self.args.uses_requests,
-                runtime_args=vars(self.args),
+                runtime_args={
+                    'workspace': self.args.workspace,
+                    'shard_id': self.args.shard_id,
+                    'shards': self.args.shards,
+                    'replicas': self.args.replicas,
+                },
                 extra_search_paths=self.args.extra_search_paths,
             )
         except BadConfigSource as ex:

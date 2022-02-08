@@ -821,7 +821,7 @@ def test_k8s_yaml_regular_deployment(
         expected_uses_metas = {}
         if uses_metas is not None:
             expected_uses_metas = json.loads(uses_metas)
-        expected_uses_metas['pod_id'] = i
+        expected_uses_metas['shard_id'] = i
         assert '--uses-metas' in shard_container_runtime_container_args
         assert shard_container_runtime_container_args[
             shard_container_runtime_container_args.index('--uses-metas') + 1

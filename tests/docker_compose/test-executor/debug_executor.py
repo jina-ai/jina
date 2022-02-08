@@ -27,7 +27,6 @@ class TestExecutor(Executor):
             doc.tags['parallel'] = self.runtime_args.parallel
             doc.tags['shards'] = self.runtime_args.shards
             doc.tags['shard_id'] = self.runtime_args.shard_id
-            doc.tags['pod_id'] = self.runtime_args.pod_id
 
     @requests(on='/env')
     def env(self, docs: DocumentArray, **kwargs):

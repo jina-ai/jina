@@ -129,9 +129,9 @@ def test_encoder_name_dict_replace():
 
 def test_encoder_inject_config_via_kwargs():
     with BaseExecutor.load_config(
-        'yaml/test-encoder-env.yml', metas={'pod_id': 345}
+        'yaml/test-encoder-env.yml', metas={'shard_id': 345}
     ) as be:
-        assert be.metas.pod_id == 345
+        assert be.metas.shard_id == 345
 
 
 def test_load_from_dict():
