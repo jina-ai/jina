@@ -17,7 +17,7 @@ from jina import Executor, requests, Flow
 class MyExecutor(Executor):
     
     @requests
-    async def encode(self,docs,*kwargs):
+    async def encode(self, docs, *kwargs):
         await some_coroutines()
 ```
 ````
@@ -46,12 +46,12 @@ class DummyAsyncExecutor(Executor):
         await asyncio.gather(*[proces_doc(doc) for doc in docs])
 
 
-f_async = Flow().add(uses=DummyAsyncExecutor)
+f = Flow().add(uses=DummyAsyncExecutor)
 
-with f_async:
+with f:
 
     start_time = time.time()
-    f_async.index(
+    f.index(
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
     )
     
