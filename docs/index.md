@@ -126,6 +126,7 @@ how-to/polling-strategies
 how-to/docker-compose
 how-to/kubernetes
 how-to/scale-replication-shards
+tutorials/external-executor.md
 ```
 
 
