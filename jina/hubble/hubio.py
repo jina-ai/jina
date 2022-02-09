@@ -613,15 +613,15 @@ with f:
 
         host = None
         try:
-            json = requests.get(
+            json_response = requests.get(
                 url=get_hubble_url_v2() + '/rpc/sandbox.get',
                 params=payload,
                 headers=get_request_header(),
             ).json()
-            if json.get('code') == 200:
-                host = json.get('data', {}).get('host', None)
-                port = json.get('data', {}).get('port', None)
-                livetime = json.get('data', {}).get('livetime', '15 mins')
+            if json_response.get('code') == 200:
+                host = json_response.get('data', {}).get('host', None)
+                port = json_response.get('data', {}).get('port', None)
+                livetime = json_response.get('data', {}).get('livetime', '15 mins')
 
         except Exception:
             raise
@@ -638,17 +638,17 @@ with f:
             f"[bold green]Deploying sandbox for ({name}) since no existing one..."
         ):
             try:
-                json = requests.post(
+                json_response = requests.post(
                     url=get_hubble_url_v2() + '/rpc/sandbox.create',
                     json=payload,
                     headers=get_request_header(),
                 ).json()
 
-                host = json.get('data', {}).get('host', None)
-                port = json.get('data', {}).get('port', None)
-                livetime = json.get('data', {}).get('livetime', '15 mins')
+                host = json_response.get('data', {}).get('host', None)
+                port = json_response.get('data', {}).get('port', None)
+                livetime = json_response.get('data', {}).get('livetime', '15 mins')
                 if not host or not port:
-                    raise Exception(f'Failed to deploy sandbox: {json}')
+                    raise Exception(f'Failed to deploy sandbox: {json_response}')
 
                 console.log(f"Deployment completed: {host}:{port}")
                 console.log(
