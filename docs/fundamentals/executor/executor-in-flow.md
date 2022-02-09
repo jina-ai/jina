@@ -419,25 +419,44 @@ from jina import Flow, Executor, requests
 
 
 class Exec1(Executor):
-
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-            doc.text = ''
+            doc.text = 'Exec1'
+
+
 class Exec2(Executor):
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-            print(doc.text)
+            doc.text = 'Exec2'
 
 
+class MergeExec(Executor):
+    @requests
+    def foo(self, docs_matrix, **kwargs):
+        documents_to_return = DocumentArray()
+        for doc1, doc2 in zip(*docs_matrix):
+            print(f'MergeExec processing pairs of Documents "{doc1.text}" and "{doc2.text}"')
+            documents_to_return.append(Document(text=f'Document merging from "{doc1.text}" and "{doc2.text}"'))
+        return documents_to_return
 
-with MyExec() as executor:
-    executor.foo(DocumentArray([Document(text='hello world')]))
 
-f = Flow().add(uses=MyExec)
+f = Flow().add(uses=Exec1, name='exec1').add(uses=Exec2, name='exec2').add(uses=MergeExec, needs=['exec1', 'exec2'])
 
 with f:
-    f.post(inputs=DocumentArray([Document(text='hello world')])
+    returned_docs = f.post(on='/', inputs=DocumentArray.empty(1), return_results=True)
+
+print(f'Resulting documents {returned_docs[0].text}')
+```
+
+```console
+           Flow@1244[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:54550
+	🔒 Private network:	192.168.1.187:54550
+	🌐 Public address:	212.231.186.65:54550
+MergeExec processing pairs of Documents "Exec1" and "Exec2"
+Resulting documents Document merging from "Exec1" and "Exec2"
 ```
 

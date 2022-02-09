@@ -1,5 +1,3 @@
-(structure-of-the-repository)=
-
 # Executor File Structure
 
 Besides organizing your Executor code inline-ly (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
@@ -168,8 +166,3 @@ Here you can then import from `utils/data.py` in `my_executor.py` like this: `fr
 
 The best thing is that no matter how complicated your package structure, "importing" it in your `config.yml` file is super easy - you always put only `executor/__init__.py` under `py_modules`.
 
-```{hint}
-
-For a remote Executor used with JinaD, please read the guidelines about [uploading files to remote](../../advanced/daemon/remote-executors.md#file-structures-with-remote-executors).
-
-```

@@ -23,7 +23,6 @@ Now you need to organize your code in independent modules to be served and scale
 :hidden:
 
 executor-api
-executor-built-in-features
 executor-in-flow
 repository-structure
 ```
