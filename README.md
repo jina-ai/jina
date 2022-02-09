@@ -22,7 +22,7 @@
 
 <!-- start ecosystem-description -->
 
-Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
+Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
 The ecosystem of Jina AI is composed of Docarray, Finetuner and Jina Core:
 * <a href="https://github.com/jina-ai/docarray/">DocArray</a>: Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
@@ -30,15 +30,15 @@ The ecosystem of Jina AI is composed of Docarray, Finetuner and Jina Core:
 * <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
 
 <!-- end ecosystem-description -->
-Jina Core comes equipped with the following **_features_**:
+This is what Jina Core offers developers:
 
 🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performs specific tasks like generating embeddings or indexing. Executors can be easily shared via the <a href="https://hub.jina.ai">Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
 
-🥤**Serve** - Jina uses industry standard technologies like gRPC to exchange information. Your Jina search application can be easily exposed via an API using HTTP, websockets or gRPC. 
+🥤**Serve** - Jina enables you to easily expose your neural search application via an API using HTTP, websockets or gRPC. 
 
-🚀**Scale** - Jina allows you to scale your neural search applications horizontally by adding more machines. High availability and throughput setups can be easily achieved with Jina. 
+🚀**Scale** - Jina allows you to scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
 
-☁️ **Cloud Native** - Jina is built to be a Cloud native framework. All your workloads can be containerized. They can be easily deployed with Docker Compose or Kubernetes. This way you can be sure that any cloud deployment works the same way as in your local installation of Jina.
+☁️ **Cloud Native** - Jina is built and designed to work and scale in the Cloud. All components can be deployed in the cloud to be used in your favourite cloud orchestrator. By default, Jina offers easy integration with docker compose and Kubernetes.
 
 ## Install 
 ```
@@ -65,7 +65,7 @@ We recommend familiarizing yourself before with the <a href="https://github.com/
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docs.jina.ai/fundamentals/document/): The basic data type in Jina, which can be used as well in the standalone <a href="https://github.com/jina-ai/docarray/">Docarray</a> library
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. It offers both a Pythonic and a gRPC interface to interact with. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application. They can be <a href="https://docs.jina.ai/advanced/hub/">shared via the Jina Hub</a>.
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application. They can be <a href="https://docs.jina.ai/advanced/hub/">shared via the Jina Hub</a>.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready to use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
 
 
