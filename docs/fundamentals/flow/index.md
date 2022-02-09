@@ -113,11 +113,9 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 ```{toctree}
 :hidden:
 
+create-flow
 flow-api
-send-recv
-add-exec-to-flow
-topology
-async-flow
-flow-as-a-service
+docker
+k8s
 remarks
 ```
