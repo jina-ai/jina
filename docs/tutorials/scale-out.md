@@ -29,9 +29,19 @@ Before you begin, make sure you meet these prerequisites:
 
 ## Speed-Up A Slow Executor: Replicas
 
-## Split Data Over Machines: Shards
+### Context
 
-## How does it work on Localhost, Docker and K8s
+### Scale-Up your Executor
+
+## Split Data over Machines: Shards
+
+### Context
+
+### Partitioning your Data
+
+### Different POOLING Strategies
+
+## Concept Alignment: How does it work on Localhost, Docker and K8s
 
 ## Where to go next:
 If there are known feature limitations that a user would expect to see mention them here.
