@@ -1,4 +1,3 @@
-import warnings
 from typing import Dict, List, TYPE_CHECKING, Optional
 
 from docarray import DocumentArray

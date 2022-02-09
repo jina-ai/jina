@@ -1,9 +1,6 @@
 (use-hub-executor)=
 # Use Hub Executor
 
-```{tip}
-Starting from Jina `2.2.5`, you can directly use a Hub Executor as a native Python object *without* putting it into a Flow.  
-```
 
 We provide three ways of using Hub Executors in your project. Each has its own use case and benefit.
 
@@ -12,7 +9,8 @@ We provide three ways of using Hub Executors in your project. Each has its own u
 You can use a Hub Executor as-is via `Executor.from_hub()`:
 
 ```python
-from jina import Executor, DocumentArray, Document
+from docarray import DocumentArray, Document
+from jina import Executor
 
 exec = Executor.from_hub('jinahub://DummyHubExecutor')
 da = DocumentArray([Document()])
