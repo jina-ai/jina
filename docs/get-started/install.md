@@ -1,7 +1,8 @@
 (install)=
 # Install
 
-Standard install enables the full features of Jina. 
+Jina comes with multiple installation options, enabling different feature sets.
+Standard install enables all major features of Jina and is the recommended installation for most users.
 
 ````{tab} via PyPI
 ```shell
@@ -27,7 +28,7 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 
 Minimum install enables basic features of Jina, but without support for HTTP, WebSocket, Docker and Hub.
 
-Minimum install is often used when building and depolying an Executor.
+Minimum install is often used when building and deploying an Executor.
 
 
 ````{tab} via PyPI
@@ -88,7 +89,7 @@ docker run jinaai/jina:latest-perf
 
 ### With Daemon (JinaD)
 
-Same as minimum install, but also install `uvloop` and `lz4`.
+Same as perf install, but also installs the `daemon` depdencies enabling Jina to be run remotely.
 
 ```shell
 pip install "jina[daemon]"
@@ -96,6 +97,8 @@ pip install "jina[daemon]"
 
 
 ### Full development dependencies
+
+This installs additional depencies, useful for developing Jina itself. This includes Pytest, CI components etc.
 
 
 ````{tab} via PyPI
@@ -148,16 +151,16 @@ After installing Jina via `pip`, you should be able to use your shell's autocomp
 
 jina 
 
---help          --version       --version-full  check           client          flow            gateway         hello-world     log             pod             ping            deployment
+--help          --version       --version-full  check           client          flow            gateway         hello             pod             ping            deployment            hub
 ```
 
 The autocomplete is context-aware. It also works when you type a second-level argument:
 
 ```bash
 
-jina deployment --name --lo
+jina hub 
 
---log-profile  --log-remote   --log-sse
+--help  new     pull    push
 ```
 
 

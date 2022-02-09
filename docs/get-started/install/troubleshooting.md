@@ -53,3 +53,15 @@ Depending on the results:
 ## On Windows with `conda`
 
 Unfortunately, `conda install` is not supported on Windows. You can either do `pip install jina` natively on Windows, or use `pip/conda install` under WSL2.
+
+## Upgrading Jina 2.x to 3.x
+If you upgraded an existing Jina installation from 2.x to 3.x you may see the following error message:
+```commandline
+OSError: `docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`
+```
+This can be fixed by reinstalling the `docarray` package manually:
+```commandline
+pip install -U --force-reinstall docarray
+```
+
+To avoid this issue in the first place, we recommend installing Jina in a new venv instead of upgrading from an old installation.
