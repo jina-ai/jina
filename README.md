@@ -24,7 +24,7 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
 
-Jina is composed of Docarray, Finetuner and Jina Core:
+The ecosystem of Jina AI is composed of Docarray, Finetuner and Jina Core:
 * <a href="https://github.com/jina-ai/docarray/">DocArray</a>: Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
 * <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you to deliver the last mile of performance and quality for domain-specific neural search applications.
 * <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
@@ -32,13 +32,13 @@ Jina is composed of Docarray, Finetuner and Jina Core:
 <!-- end ecosystem-description -->
 Jina Core comes equipped with the following **_features_**:
 
-🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performing specific tasks like generating embeddings or indexing. Executors can be easily shared via the <a href="https://hub.jina.ai">Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
+🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performs specific tasks like generating embeddings or indexing. Executors can be easily shared via the <a href="https://hub.jina.ai">Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
 
 🥤**Serve** - Jina uses industry standard technologies like gRPC to exchange information. Your Jina search application can be easily exposed via an API using HTTP, websockets or gRPC. 
 
 🚀**Scale** - Jina allows you to scale your neural search applications horizontally by adding more machines. High availability and throughput setups can be easily achieved with Jina. 
 
-☁️ **Cloud Native** - Jina is built as a Cloud native framework. All your workloads can be containerized. They can be easily deployed with Docker Compose or Kubernetes. Thus making any Cloud deployment working similarly to your local installation of Jina.
+☁️ **Cloud Native** - Jina is built to be a Cloud native framework. All your workloads can be containerized. They can be easily deployed with Docker Compose or Kubernetes. This way you can be sure that any cloud deployment works the same way as in your local installation of Jina.
 
 ## Install 
 ```
@@ -55,7 +55,7 @@ Check our **[comprehensive docs](https://docs.jina.ai)** for more in depth tutor
 This is the readme for Jina 3. The old readme for Jina 2 can be found <a href="https://github.com/jina-ai/jina/blob/v2.6.4/README.md">here</a>.
 
 ## Get Started
-You can follow our basic example below to get started from building a local `Executor` to eventually deploying your search application in a `Flow` to Kubernetes.
+You can follow our basic example below to get started from building a local `Executor` to deploying your search application in a `Flow` to Kubernetes.
 
 We recommend familiarizing yourself before with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
 
