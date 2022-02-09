@@ -1,4 +1,3 @@
-import argparse
 import itertools
 import json
 import os
@@ -28,17 +27,14 @@ class PostMockResponse:
 
     def json(self):
         return {
-            'code': 0,
-            'success': True,
-            'executors': [
-                {
-                    'id': 'w7qckiqy',
-                    'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
-                    'image': 'jinahub/w7qckiqy:v3',
-                    'visibility': 'public',
-                }
-            ],
-            'message': 'uploaded successfully',
+            'type': 'complete',
+            'subject': 'createExecutor',
+            'message': 'Successfully pushed w7qckiqy',
+            'payload': {
+                'id': 'w7qckiqy',
+                'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
+                'visibility': 'public',
+            },
         }
 
     @property
@@ -51,12 +47,12 @@ class PostMockResponse:
 
     def iter_lines(self):
         logs = [
-            '{"stream":"Receiving zip file..."}',
-            '{"stream":"Normalizing the content..."}',
-            '{"stream":"Building the image..."}',
-            '{"stream":"Uploading the image..."}',
-            '{"stream":"Uploading the zip..."}',
-            '{"result":{"statusCode":201,"message":"Successfully pushed w7qckiqy","data":{"executors":[{"tag":"v0","id":"w7qckiqy","image":"jinahub/w7qckiqy:v0","pullPath":"jinahub/w7qckiqy:v0","secret":"a26531e561dcb7af2c999a64cadc86d0","visibility":"public"}]}}}',
+            '{"type":"init","subject":"createExecutor"}',
+            '{"type":"start","subject":"extractZip"}',
+            '{"type":"done","subject":"extractZip"}',
+            '{"type":"start","subject":"pushImage"}',
+            '{"type":"done","subject":"pushImage"}',
+            '{"type":"complete","subject":"createExecutor","message":"Successfully pushed w7qckiqy","payload":{"id":"w7qckiqy","secret":"f7386f9ef7ea238fd955f2de9fb254a0","visibility":"public"}}',
         ]
 
         return itertools.chain(logs)
@@ -68,17 +64,18 @@ class GetMockResponse:
 
     def json(self):
         return {
-            'keywords': [],
-            'id': 'dummy_mwu_encoder',
-            'name': 'alias_dummy',
-            'tag': 'v0',
-            'versions': [],
-            'visibility': 'public',
-            'image': 'jinahub/pod.dummy_mwu_encoder',
-            'package': {
-                'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
-                'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
-            },
+            'data': {
+                'keywords': [],
+                'id': 'dummy_mwu_encoder',
+                'name': 'alias_dummy',
+                'visibility': 'public',
+                'commit': {'tags': ['v0']},
+                'package': {
+                    'containers': ['jinahub/pod.dummy_mwu_encoder'],
+                    'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
+                    'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
+                },
+            }
         }
 
     @property
