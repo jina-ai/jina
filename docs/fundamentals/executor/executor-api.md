@@ -88,7 +88,7 @@ with f:
     f.post(on='/search', inputs=[])
 ```
 
-```bash
+```console
            Flow@18048[I]:🎉 Flow is ready to use!                                                   
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:52255
@@ -222,7 +222,7 @@ with f:
     f.post(on='/return_different_docarray', inputs=DocumentArray(Document(text='request')))
 ```
 
-```bash
+```console
            Flow@23300[I]:🎉 Flow is ready to use!                                                   
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:61855
