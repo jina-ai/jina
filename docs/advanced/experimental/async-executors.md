@@ -2,60 +2,133 @@
 # Using async python within Executors
 
 
-One of the most exciting feature that come with Jina 3 is the ability to naturally call async coroutines within 
-executors, allowing you to leverage the power of asynchronous python to write concurrent code. 
+You can use naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
+python to write concurrent code. 
 
-`Executor`'s are not only static code, but they live within a `Flow`
-as a microservices waiting for `DocumentArray` to flow through (i.e. be passed to) them. In jina 2 this feature was 
-not possible because the inner python loop in which `Executor`'s were living was not compatible with the async loop.
-In Jina 3 we completely redesign this inner loop to be compatible with async python. 
+Functions decorated by `requests`  can be directly implemented as async `coroutines. 
 
+```python
+from jina import Executor, requests, Flow
+
+class MyExecutor(Executor):
+    
+    @requests
+    async def encode(self,docs,*kwargs):
+        await some_coroutines()
+```
 
 ## Examples
 
-## Simplest async call
+In this example we have a heavy lifting API for which we want to call several time, we want to leverage the
+async python features to speed up the `Executor`'s call by calling the api multiples times in parallel.
 
-First lets define a simple coroutine 
+### With async
+
+let's make this api call a python `coroutines`
 
 ```python
 import asyncio
 
-async def api_call():
+async def api_call(text):
     await asyncio.sleep(1)
-    return "hello world"
+    return text.upper()
 ```
-Now we call it from an `Executors`
+
+and let's modify our code to leverage the non blocking api call
+
 
 ```python
-from jina import Executor,requests,Flow
-from docarray import Document,DocumentArray
+import time
+import asyncio
+from docarray import Document, DocumentArray
+from jina import Executor, requests, Flow
+
+def on_done(resp):
+
+    for doc in resp.docs:
+        assert doc.text == doc.text.upper()
+
+    results = resp.parameters['__results__']
+
+    for res in results.values():
+        print(f"the call took {res['time']} second")
 
 class DummyAsyncExecutor(Executor):
-    
+
+    async def proces_doc(self, doc: Document):
+        doc.text = await api_call(doc.text)
+
     @requests
-    def encode(self, docs : DocumentArray, **kwargs):
-        
-        value = asyncio.run(api_call())
-        
-        for doc in docs:
-            doc.text = value
+    async def encode_async(self, docs: DocumentArray, **kwargs):
+
+        start_time = time.time()
+        task = [asyncio.ensure_future(self.proces_doc(doc)) for doc in docs]
+        await asyncio.gather(*task)
+        return {"time": time.time() - start_time}
+
+f_async = Flow().add(uses=DummyAsyncExecutor)
+with f_async:
+    f_async.index(
+        inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
+        on_done=test_text_value,
+    )
+
+>>>     Flow@123296[I]:🎉 Flow is ready to use!
+        🔗 Protocol: 		GRPC
+        🏠 Local access:	0.0.0.0:63319
+        🔒 Private network:	192.168.3.50:63319
+>>>     the call took 1.0029587745666504 second
 ```
 
-let's try to run it in a `Flow`
+### Without async
+
+Here is an example without using `coroutines`, all of the 50 api calls will be queued and nothing will be done 
+concurrently.
 
 ```python
-f = Flow().add(uses=DummyAsyncExecutor)
+def direct_api_call(text):
+    time.sleep(1)
+    return text.upper()
 
-def test_text_value(resp):
+
+class DummyExecutor(Executor):
     
-    for doc in resp.docs:
-       assert doc.text == "hello world"
+    @requests
+    def encode(self, docs: DocumentArray, **kwargs):
 
+        start_time = time.time()
+        for doc in docs:
+            doc.text = direct_api_call(doc.text)
+
+        return {'time': time.time() - start_time}
+
+
+f = Flow().add(uses=DummyExecutor)
 with f:
-    f.search(inputs=DocumentArray([Document(text="")]),on_done=test_text_value)
+    f.index(
+        inputs=DocumentArray([Document(text='hello') for _ in range(50)]),
+        on_done=on_done,
+    )
+
+>>>     Flow@123296[I]:🎉 Flow is ready to use!
+        🔗 Protocol: 		GRPC
+        🏠 Local access:	0.0.0.0:63319
+        🔒 Private network:	192.168.3.50:63319
+>>>     the call took 50.05074954032898 second
 ```
 
-## Async with Executor in practice
 
-let's define
+### Conclusion
+
+The encoding of the data is 50 faster when using `coroutines` because all can happen in parallel. 
+
+
+
+
+
+
+
+
+
+
 
