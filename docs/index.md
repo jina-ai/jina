@@ -70,7 +70,7 @@ Build a neural search solution with the power of Jina.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
-:link: fundamentals/executors/hub/index
+:link: fundamentals/executor/hub/index
 :link-type: doc
 
 Learn to share and reuse Executors from the Jina community.
