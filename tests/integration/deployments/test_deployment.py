@@ -278,9 +278,9 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
 
 
 class NameChangeExecutor(Executor):
-    def __init__(self, runtime_args, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = runtime_args['name']
+        self.name = self.runtime_args.name
 
     @requests
     def foo(self, docs, **kwargs):
