@@ -12,6 +12,26 @@ Accordingly, the scope of the changes in Jina 3 will be mainly related to `Docum
 In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.
 
+## Simple changes at a glance
+
+Many of the changes introduced in Jina 3 are easy to incorporate into a Jina 2 Codebase.
+The modifications in the following table should, in most instances, be safe to perform without further thought or effort.
+
+
+| Jina 2                            | Jina 3              |
+|-----------------------------------|---------------------|
+| `doc.blob`                        | `doc.tensor`          |
+| `doc.buffer`                       | `doc.blob`            |
+| `docs.get_attributes('attribute')` | `docs[:, 'attribute']` |
+| `['path1', 'path2']`               | `'path1,path2'`       |
+| `docs.traverse_flat(paths)`        | `docs['@paths']`      
+| `docs.flatten()`                    | `docs[...]` |
+| `doc.SerializeToString()`           | `doc.to_bytes()` |
+| `Document(bytes)`                   | `Document.from_bytes()` |
+
+There are, however, some more nuanced changes in Jina 3 as well.
+These are outlined below.
+
 ## More natural attribute names
 
 Docarray introduces more natural naming conventions for `Document` and `DocumentArray` attributes.
