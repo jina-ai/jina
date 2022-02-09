@@ -119,6 +119,11 @@ client.show_progress = True
 
 then let's index our set of images in which we want to search :
 
+```{admonition} Caution
+:class: caution
+Before launching using you Flow please be sure to have several `jpg` images in the folder : `./imgs`
+```
+
 ```python
 indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
     lambda d: d.load_uri_to_image_tensor()
