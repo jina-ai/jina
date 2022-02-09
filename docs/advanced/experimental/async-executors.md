@@ -5,6 +5,10 @@
 You can use naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
 python to write concurrent code. 
 
+
+````{admonition} Example code
+:class: tip
+
 Functions decorated by `requests`  can be directly implemented as async `coroutines. 
 
 ```python
@@ -16,6 +20,9 @@ class MyExecutor(Executor):
     async def encode(self,docs,*kwargs):
         await some_coroutines()
 ```
+````
+
+
 
 ## Examples
 
