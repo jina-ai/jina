@@ -25,7 +25,7 @@ class TestExecutor(Executor):
             traversed = list(doc.tags.get(key))
             traversed.append(self._name)
             doc.tags[key] = traversed
-            doc.tags['parallel'] = self.runtime_args.parallel
+            doc.tags['parallel'] = self.runtime_args.replicas
             doc.tags['shards'] = self.runtime_args.shards
             doc.tags['shard_id'] = self.runtime_args.shard_id
             doc.tags['hostname'] = socket.gethostname()

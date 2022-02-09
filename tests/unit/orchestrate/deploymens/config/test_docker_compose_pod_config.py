@@ -574,8 +574,7 @@ def test_docker_compose_yaml_regular_deployment(
             expected_uses_metas = {}
             if uses_metas is not None:
                 expected_uses_metas = json.loads(uses_metas)
-            expected_uses_metas['shard_id'] = shard_id
-            assert '--uses-metas' in replica_args
-            assert replica_args[replica_args.index('--uses-metas') + 1] == json.dumps(
-                expected_uses_metas
-            )
+                assert '--uses-metas' in replica_args
+                assert replica_args[
+                    replica_args.index('--uses-metas') + 1
+                ] == json.dumps(expected_uses_metas)

@@ -255,11 +255,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         executor2_rep_0_args[executor2_rep_0_args.index('--uses-with') + 1]
         == '{"param": 0}'
     )
-    assert '--uses-metas' in executor2_rep_0_args
-    assert (
-        executor2_rep_0_args[executor2_rep_0_args.index('--uses-metas') + 1]
-        == '{"shard_id": 0}'
-    )
     assert '--native' in executor2_rep_0_args
     assert '--pod-role' not in executor2_rep_0_args
     assert '--runtime-cls' not in executor2_rep_0_args
@@ -281,11 +276,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert (
         executor2_rep_1_args[executor2_rep_1_args.index('--uses-with') + 1]
         == '{"param": 0}'
-    )
-    assert '--uses-metas' in executor2_rep_1_args
-    assert (
-        executor2_rep_1_args[executor2_rep_1_args.index('--uses-metas') + 1]
-        == '{"shard_id": 0}'
     )
     assert '--native' in executor2_rep_1_args
     assert '--pod-role' not in executor2_rep_1_args

@@ -42,6 +42,8 @@ class DataRequestHandler:
                     'shard_id': self.args.shard_id,
                     'shards': self.args.shards,
                     'replicas': self.args.replicas,
+                    'name': self.args.name,
+                    'py_modules': self.args.py_modules,
                 },
                 extra_search_paths=self.args.extra_search_paths,
             )
