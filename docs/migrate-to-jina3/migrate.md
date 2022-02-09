@@ -6,6 +6,7 @@ tweaks to your existing Jina 2 code.
 One of the major changes in Jina 3 is the inclusion of [docarray](https://docarray.jina.ai/):
 The previously included `Document` and `DocumentArray` data structures now form their own library and include new
 features, improved performance, and increased flexibility.
+
 Accordingly, the scope of the changes in Jina 3 will be mainly related to `Document` and `DocumentArray`.
 
 In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
@@ -18,7 +19,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 - `doc.blob` is renamed to `doc.tensor`, to align with external libraries like PyTorch and Tensorflow
 - `doc.buffer` is renamed to `doc.blob`, to align with the industry standard
 
-## Simplified access of attributes and elements
+## Simplified access to attributes and elements
 
 **Attributes**: Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocuemntArray`, in bulk.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
