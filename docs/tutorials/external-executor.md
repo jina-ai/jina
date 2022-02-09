@@ -87,10 +87,13 @@ from jina import Document, DocumentArray
 
 docs = DocumentArray([Document(text='Embed me please!') for _ in range(5)])
 
-with f:
-    docs = f.index(inputs=docs, return_results=True)
+def print_embedding(resp):
+    doc = resp.docs[0]
+    print(f'{doc.text} has been embedded to shape {doc.embedding.shape}')
 
-print(f'The text "{docs[0].text}" was embedded to {docs[0].embedding[:5]}')
+with f:
+    docs = f.index(inputs=docs, on_done=print_embedding)
+
 >>> TODO paste results
 ```
 
@@ -133,16 +136,18 @@ jina executor --uses my-exec.yml --port-in 12345
 
 Now that your executor is up and running, we can tap into it just like before:
 
-```{code-block} python
+```python
 from jina import Flow, Document, DocumentArray
+
+def print_text(resp):
+    print(resp.docs[0].text)
 
 docs = DocumentArray[Document() for _ in range(5)]
 
 f = Flow().add(host='localhost', port_in=12345, external=True)
 with f:
-    docs = f.index(inputs=docs, return_results=True)
+    docs = f.index(inputs=docs, on_done=print_text)
 
-print(docs[0].text)
 >>> Hey you, have a wonderful day!
 ```
 
