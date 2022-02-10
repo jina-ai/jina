@@ -38,7 +38,8 @@ The `Flow` ties Executors together into a processing pipeline to perform a bigge
 :class: tip
 
 ```python
-from jina import Flow, Document, Executor, requests
+from docarray import Document
+from jina import Flow, Executor, requests
 
 
 class MyExecutor(Executor):

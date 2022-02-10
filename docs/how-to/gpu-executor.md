@@ -1,10 +1,6 @@
-# Run Executors on GPU
+# How to run Executors on GPU
 
-```{article-info}
-:date: Feb. 8, 2022
-```
-
-This tutorial will show you how to use an Executor on a GPU, both locally and in a
+This document will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
 
 Using a GPU allows you to significantly speed up encoding for most deep learning models,
@@ -25,6 +21,7 @@ If you want a thorough walk-through of how to use GPU resources in your code, th
 
 But if you already know how to use your GPU and have come here just to find out how to make it play nice with Jina,
 then we have good news for you:
+
 You just use your GPU like you usually would in your machine learning framework of choice, and you are off to the races.
 Jina enables you to use GPUs like you normally would in a Python script, or in a Docker 
 container - it does not impose any additional requirements or configuration.
@@ -33,21 +30,21 @@ container - it does not impose any additional requirements or configuration.
 Let's take a look at a minimal working example, written in PyTorch.
 
 ```python
+import torch
+
 from docarray import DocumentArray
 from jina import Executor, requests
-import torch
 
 class MyGPUExec(Executor):
     def __init__(self, device: str = 'cpu', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.device = device
 
-
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
         with torch.inference_mode():
           ## generate random embeddings
-          embeddings = torch.rand((len(docs),5), device=self.device)
+          embeddings = torch.rand((len(docs), 5), device=self.device)
         docs.embeddings = embeddings
         embedding_device = 'GPU' if embeddings.is_cuda else 'CPU'
         docs.texts = [f'Embeddings calculated on {embedding_device}']
@@ -69,7 +66,6 @@ print(docs.texts)
 ```
 
 ```console
-
            Flow@80[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:49618
@@ -97,7 +93,6 @@ print(docs.texts)
 ```
 
 ```console
-
            Flow@80[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:56276
@@ -134,7 +129,7 @@ To run Python scripts you will need a virtual environment (for example [venv](ht
 pip install jina
 ```
 
-## Setting up the executor
+## Setting up the Executor
 
 
 ```{admonition} Jina Hub
@@ -299,7 +294,7 @@ let's create another file - `main.py`, which will demonstrate the usage of this
 encoder by encoding 10 thousand text documents.
 
 ```python
-from docarray import Document, DocumentArray
+from docarray import Document
 from jina import Flow
 
 from executor import SentenceEncoder
