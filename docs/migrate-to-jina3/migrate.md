@@ -50,7 +50,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
   - `content`: `docs.contents`
   - `embedding`: `docs.embeddings`
 - The remaining attributes can be accessed in bulk by calling `docs[:, 'attribute']`, e.g. `docs[:, 'tags']`.
-  Additionally, you can access a specific key in `tags` by calling `docs[:'tags__key']`.
+  Additionally, you can access a specific key in `tags` by calling `docs[:, 'tags__key']`.
 
 **Array Traversal**: For traversing `DocumentArray`s via a `traversal_path`, docarray introduces a simplified notation:
 
