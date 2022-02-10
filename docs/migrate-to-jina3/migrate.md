@@ -197,3 +197,63 @@ Note that the only difference between and environment variable and relative path
 the former (`${{ var }}`), and the omission of spaces in the latter (`${{path}}`).
 
 ````
+
+## Common errors and solutions
+
+`AttributeError: 'Document' object has no attribute 'buffer'`
+<details>
+  <summary>Solution</summary>
+
+Replace `doc.buffer` with `doc.blob` in your entire codebase
+</details>
+
+`RuntimeError: Could not infer dtype of NoneType` while performing `doc.embed()`
+<details>
+  <summary>Solution</summary>
+
+Replace `doc.blob` with `doc.tensor` in your entire codebase
+</details>
+
+`AttributeError: 'DocumentArray' object has no attribute 'get_attributes'`
+<details>
+  <summary>Solution</summary>
+
+Replace `docs.get_attributes('attribute')` with `docs[:, 'attribute']`
+</details>
+
+`AttributeError: 'Document' object has no attribute 'SerializeToString'`
+
+<details>
+  <summary>Solution</summary>
+
+Replace `doc.SerializeToString` with `doc.to_bytes` or `doc.to_json`
+</details>
+
+`ValueError: Failed to initialize docarray.document.Document from obj=b"..."`
+<details>
+  <summary>Solution</summary>
+
+Replace `Document(bytes)` with `Document.from_bytes(bytes)`
+</details>
+
+`TypeError: batch() got an unexpected keyword argument 'traversal_paths'`
+<details>
+  <summary>Solution</summary>
+
+Replace `docs.batch(traversal_path='path', batch_size=bs)` with `docs['@path'].batch(batch_size=bs)`
+</details>
+
+`TypeError: batch() got an unexpected keyword argument 'require_attr'`
+<details>
+  <summary>Solution</summary>
+
+Replace `docs.batch(traversal_path='path', require_attr='attr')` with
+`DocumentArray(filter(lambda x: bool(x.attr)), docs).batch(batch_size=bs)`
+</details>
+
+`AttributeError: 'Document' object has no attribute 'docs'` when operating on the output of `flow.post()`
+<details>
+  <summary>Solution</summary>
+
+Remove `resp[i].docs` as `flow.post()` already returns a `DocumentArray`
+</details>
