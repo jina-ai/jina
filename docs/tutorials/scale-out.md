@@ -26,16 +26,114 @@ Before you begin, make sure you meet these prerequisites:
 
 * You have a good understanding of Jina [Flow](../fundamentals/flow/index.md).
 * You have a good understanding of Jina [Executor](../fundamentals/executor/index.md)
+* Please install several dependencies , includes jina and sklearn.
 
 ## Speed-Up A Slow Executor: Replicas
 
 ### Context
 
+Imaging you are building a text search system and your have an `Executor` to transform text to it's [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
+This could become a performance bottleneck to your search system.
+The Executor looks like this:
+
+```python
+from jina import Executor, requests
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+class MyTokenizer(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.vectorizer = TfidfVectorizer()
+    
+    @requests
+    def vectorize(self, docs, **kwargs):
+        # Extract all text from jina document and feed into sklearn
+        X = self.vectorizer.fit_transform(docs.contents)
+        # Assign results as document embeddings
+        docs.embeddings = X
+```
+
+And we create a `Flow` and make use some text corpus from sklearn to use this `Executor`:
+
+```python
+from jina import Flow
+from docarray import Document
+from sklearn.datasets import fetch_20newsgroups
+
+f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer)
+
+data, _ = fetch_20newsgroups(
+    shuffle=True,
+    random_state=1,
+    return_X_y=True,
+)
+
+def news_generator():
+    for item in data:
+        yield Document(text=item)
+```
+
 ### Scale-Up your Executor
 
-## Split Data over Machines: Shards
+When you start your `Flow`, you might discover to process all these text corpus, it takes a while:
 
-### Context
+```python
+with f:
+    results_da = f.post('/foo', news_generator, show_progress=True)
+```
+
+As Jina reported, it takes around 6 seconds to accomplish the task.
+6 seconds sounds reasonable (at index time), but bear in mind that this is just a test corpus.
+What if you needs to index millions of documents?
+
+```shell
+           Flow@2011375[I]:🎉 Flow is ready to use!                                        
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:52775
+	🔒 Private network:	172.31.29.177:52775
+	🌐 Public address:	54.93.57.58:52775
+⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:06 18.1 step/s . 115 steps done in 6 seconds
+```
+
+Jina allows you to scale your `Executor` very easily, with only one configuration:
+
+```python
+f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer)
+f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
+```
+
+Let's see how it performs given 2 `Replicas`:
+
+```shell
+           Flow@2011375[I]:🎉 Flow is ready to use!                                        
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:57040
+	🔒 Private network:	172.31.29.177:57040
+	🌐 Public address:	54.93.57.58:57040
+⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:03 37.0 step/s . 115 steps done in 3 seconds
+```
+
+As you can see, now it only takes 3 seconds to finish the task.
+
+Instead of scale an `Executor` at creation time,
+we can scale an `Executor` after `Flow` bing created, by calling `scale` method,
+not only scale up, but also scale down.
+For instance,
+you want to scale up and scale down an `Executor`:
+
+```python
+f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
+f.scale('slow_executor', replicas=3)  # scale up from 2 to 3
+f.scale('slow_executor', replicas=1)  # scale down from 3 to 1
+```
+
+
+
+
+
+
+
+## Split Data over Machines: Shards
 
 ### Partitioning your Data
 
