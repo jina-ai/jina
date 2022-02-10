@@ -116,7 +116,7 @@ Let's see how it performs given 2 `Replicas`:
 As you can see, now it only takes 3 seconds to finish the task.
 
 Instead of scale an `Executor` at creation time,
-we can scale an `Executor` after `Flow` bing created, by calling `scale` method,
+we can scale an `Executor` after `Flow` being created, by calling `scale` method,
 not only scale up, but also scale down.
 For instance,
 you want to scale up and scale down an `Executor`:
@@ -127,13 +127,12 @@ f.scale('slow_executor', replicas=3)  # scale up from 2 to 3
 f.scale('slow_executor', replicas=1)  # scale down from 3 to 1
 ```
 
-
-
-
-
-
+Quite intuitive, right? In a later section,
+we'll introduce what `replicas` means under different deployment options.
 
 ## Split Data over Machines: Shards
+
+### Context
 
 ### Partitioning your Data
 
@@ -141,5 +140,9 @@ f.scale('slow_executor', replicas=1)  # scale down from 3 to 1
 
 ## Concept Alignment: How does it work on Localhost, Docker and K8s
 
-## Where to go next:
-If there are known feature limitations that a user would expect to see mention them here.
+## Conclusion
+
+Jina can help you scale-out your applications easily.
+Depending on your needs, if you want to increase `Executor` throughput, use `replicas` argument.
+If you want to partition your data across multiple places,
+use `shards` with `pooling` strategy you want.
