@@ -19,14 +19,17 @@ underpin neural search apps as well as the Jina ecosystem, including [Jina](http
 In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.
 
-## More natural attribute names
+## `Document`: More natural attribute names and pythonic serialization
 
 Docarray introduces more natural naming conventions for `Document` and `DocumentArray` attributes.
 
 - `doc.blob` is renamed to `doc.tensor`, to align with external libraries like PyTorch and Tensorflow
 - `doc.buffer` is renamed to `doc.blob`, to align with the industry standard
+- `doc.SerializeToString()` is removed in favour of `doc.to_bytes()` and `doc.to_json()`
+- Creating a `Document` from serialized data using `Document(bytes)` is removed in favour of
+`Document.from_bytes(bytes)` and `Document.from_json(bytes)`
 
-## Simplified access of attributes and elements
+## `DocumentArray`: Simplified access of attributes and elements
 
 **Attributes**: Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocuemntArray`, in bulk.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
@@ -102,12 +105,6 @@ DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=
 
 ````
 
-## Method behavior changes
-
-- **`.post()` method**: `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
-set. This makes it easier to immediately use the returned results. The behavior of `client.post()` remains unchanged
-compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` flag,
-the user can override these default behaviors.
 - **Accessing non-existent values**: In Jina 2, bulk accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
 inside the `DocumentArray` do not have a value for that attribute. In Jina 3, this returns `None`. This change becomes
 important when migrating code that checks for the presence of a certain attribute.
@@ -144,12 +141,18 @@ print(docs.texts)
 
 ````
 
+- **Serialization**: `DocumentArray` introduces the same pythonic serialization syntax as Document.
+  - `docs.SerializeToString()` is removed in favour of `docs.to_bytes()` and `docs.to_json()`
+  - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
+  `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
-## Pythonic serialization
 
-- `doc.SerializeToString()` is removed in favour of `doc.to_bytes()`
-- Creating a `Document` from serialized data using `Document(bytes)` is removed in favour of
-`Document.from_bytes(bytes)`
+## `Flow`: Simplified `.post()` behavior
+
+- **`.post()` method**: `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
+set. This makes it easier to immediately use the returned results. The behavior of `client.post()` remains unchanged
+compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` flag,
+the user can override these default behaviors.
 
 
 ## Consistent YAML parsing syntax
