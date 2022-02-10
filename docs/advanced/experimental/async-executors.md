@@ -37,13 +37,11 @@ from docarray import Document, DocumentArray
 from jina import Executor, requests, Flow
 
 class DummyAsyncExecutor(Executor):
-    @requests
-    async def encode_async(self, docs: DocumentArray, **kwargs):
-        async def proces_doc(doc):
-            await asyncio.sleep(1)
+   @requests
+   async def encode(self, docs: DocumentArray, **kwargs): 
+         await asyncio.sleep(1)
+         for doc in docs:
             doc.text = doc.text.upper()
-
-        await asyncio.gather(*[proces_doc(doc) for doc in docs])
 
 
 f = Flow().add(uses=DummyAsyncExecutor)
@@ -53,6 +51,7 @@ with f:
     start_time = time.time()
     f.index(
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
+        request_size=1
     )
     
 print(f"Processing took {time.time()-start_time} seconds")
@@ -72,19 +71,17 @@ concurrently.
 class DummyExecutor(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
-
+        time.sleep(1)
         for doc in docs:
-            time.sleep(1)
             doc.text = doc.text.upper()
-
-
 
 f = Flow().add(uses=DummyExecutor)
 
 with f:
     start_time = time.time()
     f.index(
-        inputs=DocumentArray([Document(text="hello") for _ in range(2)]),
+        inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
+        request_size=1
     )
     
 print(f"Processing took {time.time()-start_time} seconds")
