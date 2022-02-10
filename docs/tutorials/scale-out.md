@@ -97,9 +97,9 @@ What if you needs to index millions of documents?
 
 Jina allows you to scale your `Executor` very easily, with only one configuration:
 
-```python
-f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer)
-f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
+```diff
++ f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
+- f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer)
 ```
 
 Let's see how it performs given 2 `Replicas`:
