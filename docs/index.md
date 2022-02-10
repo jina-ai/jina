@@ -117,8 +117,8 @@ fundamentals/flow/index
 :caption: How-to
 :hidden:
 
-how-to/share-hub
-how-to/executor-sandbox
+how-to/async-executors
+how-to/kubernetes
 how-to/executor-gpu
 how-to/async-executor
 how-to/external-executor

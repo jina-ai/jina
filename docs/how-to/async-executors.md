@@ -1,5 +1,5 @@
 (async-executors)=
-# Using async python within Executors
+# How to use async coroutines in Executors
 
 
 You can naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
@@ -31,16 +31,18 @@ async Python features to speed up the `Executor`'s call by calling the api multi
 
 
 ```python
-import time
 import asyncio
+
 from docarray import Document, DocumentArray
-from jina import Executor, requests, Flow
+from jina import Flow, Executor, requests
+
 
 class DummyAsyncExecutor(Executor):
-   @requests
-   async def process(self, docs: DocumentArray, **kwargs): 
-         await asyncio.sleep(1)
-         for doc in docs:
+
+    @requests
+    async def process(self, docs: DocumentArray, **kwargs):
+        await asyncio.sleep(1)
+        for doc in docs:
             doc.text = doc.text.upper()
 
 
@@ -53,9 +55,14 @@ with f:
         show_progress=True
     )
 
->>>     Flow@123296[I]:🎉 Flow is ready to use!
-        🔗 Protocol: 		GRPC
-        🏠 Local access:	0.0.0.0:63319
+```
+
+```console
+           Flow@20588[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:62598
+	🔒 Private network:	192.168.1.187:62598
+	🌐 Public address:	212.231.186.65:62598
 ⠙       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0 seconds 41 steps done in 1 second
 ```
 
@@ -65,13 +72,20 @@ Here is an example without using `coroutines`, all of the 50 api calls will be q
 concurrently.
 
 ```python
+import time
+
+from docarray import DocumentArray, Document
+from jina import Flow, Executor, requests
+
 
 class DummyExecutor(Executor):
+
     @requests
     def process(self, docs: DocumentArray, **kwargs):
         time.sleep(1)
         for doc in docs:
             doc.text = doc.text.upper()
+
 
 f = Flow().add(uses=DummyExecutor)
 
@@ -81,24 +95,18 @@ with f:
         request_size=1,
         show_progress=True
     )
-    
->>>     Flow@123296[I]:🎉 Flow is ready to use!
-        🔗 Protocol: 		GRPC
-        🏠 Local access:	0.0.0.0:63319
-⠸       DONE ━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━ 0:00:02 100% ETA: 0 seconds 41 steps done in 50 seconds
+```
+
+```console
+           Flow@20394[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:52592
+	🔒 Private network:	192.168.1.187:52592
+	🌐 Public address:	212.231.186.65:52592
+⠏       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0 seconds 41 steps done in 50 seconds
 ```
 
 
 ### Conclusion
 
 The processing of the data is 50 faster when using `coroutines` because it happens concurrently.
-
-
-
-
-
-
-
-
-
-

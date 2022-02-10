@@ -1,6 +1,6 @@
 (sandbox)=
 
-# Jina Sandbox
+# How to use Jina Sandbox Executors
 
 Jina Sandbox allows you to try out different Jina Executors online and see how they work together without downloading all the Executors to your local machine.
 
@@ -32,7 +32,7 @@ The sandbox will not be removed immediately after the Flow is closed. It will be
 It will find the existing sandbox by three factors: 
 - Executor name
 - Executor tag
-- Jina version of Gateway
+- Jina version of the Driver program
 
 If all these three factors are matched, then it will reuse the existing sandboxes.
 
@@ -47,7 +47,7 @@ The Jina version inside the Sandbox will be the same as the one in the place whe
 
 ## Mixed with non-sandbox Executors
 
-It can also be mixed with non-sandbox Executors. For example, pure Python class.
+It can also be mixed with non-sandbox Executors.
 
 ```python
 from jina import Flow, Document, DocumentArray, Executor, requests
@@ -67,3 +67,12 @@ with f:
   r = f.post('/', inputs=Document(text='world'), return_results=True)
   print(r[0].text)
 ```
+
+## Caveats
+
+There are some caveats when using Sandbox Executors with respect to other Executors.
+
+Since the lifetime of these Executors is not handled by the Flow and is handled by the Hub infrastructure, there is no way
+to override its default configurations, therefore `uses_with`, `uses_metas`, etc ... will not apply.
+
+You can consider a `sandbox` Executor as an external Executor where no control on its initialization or configuraiton.
