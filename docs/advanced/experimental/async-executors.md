@@ -2,8 +2,8 @@
 # Using async python within Executors
 
 
-You can use naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
-python to write concurrent code. 
+You can naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
+Python to write concurrent code. 
 
 
 ````{admonition} Example code
@@ -24,8 +24,8 @@ class MyExecutor(Executor):
 
 ## Examples
 
-In this example we have a heavy lifting API for which we want to call several time, we want to leverage the
-async python features to speed up the `Executor`'s call by calling the api multiples times in parallel.
+In this example we have a heavy lifting API for which we want to call several times, we want to leverage the
+async Python features to speed up the `Executor`'s call by calling the api multiples times concurrently.
 
 ### With async
 
@@ -95,8 +95,7 @@ print(f"Processing took {time.time()-start_time} seconds")
 
 ### Conclusion
 
-The encoding of the data is 50 faster when using `coroutines` because all can happen in parallel. 
-
+The processing of the data is 50 faster when using `coroutines` because it happens concurrently.
 
 
 
