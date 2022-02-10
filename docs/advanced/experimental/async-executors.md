@@ -55,12 +55,11 @@ with f:
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
     )
     
-print(f"the call took {time.time()-start_time} second")
-
+print(f"Processing took {time.time()-start_time} seconds")
 >>>     Flow@123296[I]:🎉 Flow is ready to use!
         🔗 Protocol: 		GRPC
         🏠 Local access:	0.0.0.0:63319
->>>     the call took 1.0029587745666504 second
+>>>     Processing took 1.0029587745666504 seconds
 ```
 
 ### Without async
@@ -88,12 +87,12 @@ with f:
         inputs=DocumentArray([Document(text="hello") for _ in range(2)]),
     )
     
-print(f"the call took {time.time()-start_time} second")
+print(f"Processing took {time.time()-start_time} seconds")
 
 >>>     Flow@123296[I]:🎉 Flow is ready to use!
         🔗 Protocol: 		GRPC
         🏠 Local access:	0.0.0.0:63319
->>>     the call took 50.05074954032898 second
+>>>     Processing took 50.05074954032898 seconds
 ```
 
 
