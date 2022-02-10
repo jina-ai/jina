@@ -1,22 +1,14 @@
 # Run Executors on GPU
 
 ```{article-info}
-:avatar: avatars/tadej.jpg
-:avatar-link: https://jobs.jina.ai
-:avatar-outline: muted
-:author: Tadej @ Jina AI
-:date: Sept. 1, 2021
+:date: Feb. 8, 2022
 ```
 
 This tutorial will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
 
 Using a GPU allows you to significantly speed up encoding for most deep learning models,
-reducing response latency by anything from 5 to 100 times, depending on the model used and 
-inputs. 
-
-Jina enables you to use GPUs like you normally would in a Python script, or in a Docker 
-container - it does not impose any additional requirements or configuration.
+reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.
 
 ```{admonition} Important
 :class: important
@@ -25,6 +17,103 @@ This tutorial assumes you are already familiar with basic Jina concepts, such as
 
 If you're not yet familiar with these concepts, first read the [Basic Concepts](../fundamentals/concepts) and related documentation, and return to this tutorial once you feel comfortable performing baisc operations in Jina.
 ```
+
+## Jina & GPUs in a nutshell
+
+If you want a thorough walk-through of how to use GPU resources in your code, the full tutorial in the
+[next section](#Prerequisites) is exactly what you are looking for.
+
+But if you already know how to use your GPU and have come here just to find out how to make it play nice with Jina,
+then we have good news for you:
+You just use your GPU like you usually would in your machine learning framework of choice, and you are off to the races.
+Jina enables you to use GPUs like you normally would in a Python script, or in a Docker 
+container - it does not impose any additional requirements or configuration.
+
+
+Let's take a look at a minimal working example, written in PyTorch.
+
+```python
+from docarray import DocumentArray
+from jina import Executor, requests
+import torch
+
+class MyGPUExec(Executor):
+    def __init__(self, device: str = 'cpu', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.device = device
+
+
+    @requests
+    def encode(self, docs: DocumentArray, **kwargs):
+        with torch.inference_mode():
+          ## generate random embeddings
+          embeddings = torch.rand((len(docs),5), device=self.device)
+        docs.embeddings = embeddings
+        embedding_device = 'GPU' if embeddings.is_cuda else 'CPU'
+        docs.texts = [f'Embeddings calculated on {embedding_device}']
+```
+
+
+````{tab} Use it with CPU 
+
+```python
+from docarray import Document
+from jina import Flow
+
+f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cpu'})
+docs = DocumentArray(Document())
+with f:
+    docs = f.post(on='/encode', inputs=docs, return_results=True)
+print(f'Document embedding: {docs.embeddings}')
+print(docs.texts)
+```
+
+```console
+
+           Flow@80[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:49618
+	🔒 Private network:	172.28.0.2:49618
+	🌐 Public address:	34.67.105.220:49618
+Document embedding: tensor([[0.1769, 0.1557, 0.9266, 0.8655, 0.6291]])
+['Embeddings calculated on CPU']
+
+```
+
+````
+
+````{tab} Use it with GPU
+
+```python
+from docarray import Document
+from jina import Flow
+
+f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cuda'})
+docs = DocumentArray(Document())
+with f:
+    docs = f.post(on='/encode', inputs=docs, return_results=True)
+print(f'Document embedding: {docs.embeddings}')
+print(docs.texts)
+```
+
+```console
+
+           Flow@80[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:56276
+	🔒 Private network:	172.28.0.2:56276
+	🌐 Public address:	34.67.105.220:56276
+Document embedding: tensor([[0.6888, 0.8646, 0.0422, 0.8501, 0.4016]])
+['Embeddings calculated on GPU']
+
+```
+
+````
+
+Just like that, your code runs on GPU, inside a Jina `Flow`.
+
+Next, we will go through a more fleshed out example in detail, where we use a language model to embed text in our
+documents - all on GPU, and thus blazingly fast.
 
 ## Prerequisites
 
@@ -47,6 +136,15 @@ pip install jina
 
 ## Setting up the executor
 
+
+```{admonition} Jina Hub
+:class: info
+
+In this section we create an executor using [Jina Hub](https://hub.jina.ai/). This still creates your executor locally
+and privately, but makes it quick and easy to run your
+executor inside a Docker container, or to publish it to the Hub later, should you so choose.
+```
+
 We will create a simple sentence encoder, and we'll start by creating the Executor 
 "skeleton" using Jina's command line utility:
 
@@ -60,11 +158,58 @@ directory, this will be our working directory for this tutorial.
 
 Next, select `y` when prompted for advanced configuration, and leave all other questions
 empty, except when you are asked if you want to create a `Dockerfile` - answer `y` to 
-this one (we will need it in the next section). Here's how this prompt dialogue should
-look like in the end
+this one (we will need it in the next section). In the end, you should be greeted with suggested next steps.
 
-![jina hub new](../_static/hub_new_gpu.png)
+<details>
+  <summary> Next steps </summary>
 
+```bash
+╭────────────────────────────────────── 🎉 Next steps ───────────────────────────────────────╮
+│                                                                                            │
+│  Congrats! You have successfully created an Executor! Here are the next steps:             │
+│  ╭──────────────────────── 1. Check out the generated Executor ─────────────────────────╮  │
+│  │   1 cd /home/ubuntu/SentenceEncoder                                                  │  │
+│  │   2 ls                                                                               │  │
+│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+│  ╭─────────────────────────── 2. Understand folder structure ───────────────────────────╮  │
+│  │                                                                                      │  │
+│  │   Filena…   Description                                                              │  │
+│  │  ──────────────────────────────────────────────────────────────────────────────────  │  │
+│  │   config…   The YAML config file of the Executor. You can define __init__ argumen…   │  │
+│  │             ╭────────────────── config.yml ──────────────────╮                       │  │
+│  │             │   1                                            │                       │  │
+│  │             │   2 jtype: SentenceEncoder                     │                       │  │
+│  │             │   3 with:                                      │                       │  │
+│  │             │   4     foo: 1                                 │                       │  │
+│  │             │   5     bar: hello                             │                       │  │
+│  │             │   6 metas:                                     │                       │  │
+│  │             │   7     py_modules:                            │                       │  │
+│  │             │   8         - executor.py                      │                       │  │
+│  │             │   9                                            │                       │  │
+│  │             ╰────────────────────────────────────────────────╯                       │  │
+│  │   Docker…   The Dockerfile describes how this executor will be built.                │  │
+│  │   execut…   The main logic file of the Executor.                                     │  │
+│  │   manife…   Metadata for the Executor, for better appeal on Jina Hub.                │  │
+│  │                                                                                      │  │
+│  │               Field   Description                                                    │  │
+│  │              ────────────────────────────────────────────────────────────────────    │  │
+│  │               name    Human-readable title of the Executor                           │  │
+│  │               desc…   Human-readable description of the Executor                     │  │
+│  │               url     URL to find more information on the Executor (e.g. GitHub…     │  │
+│  │               keyw…   Keywords that help user find the Executor                      │  │
+│  │                                                                                      │  │
+│  │   README…   A usage guide of the Executor.                                           │  │
+│  │   requir…   The Python dependencies of the Executor.                                 │  │
+│  │                                                                                      │  │
+│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+│  ╭────────────────────────────── 3. Share it to Jina Hub ───────────────────────────────╮  │
+│  │   1 jina hub push /home/ubuntu/SentenceEncoder                                       │  │
+│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+
+```
+
+</details>
 
 Once this is done, let's move to the newly created Executor directory:
 ```bash
@@ -119,11 +264,10 @@ Now let's fill the `executor.py` file with the actual code of our Executor
 ---
 emphasize-lines: 16, 17
 ---
-from typing import Optional
-
-import torch
-from jina import DocumentArray, Executor, requests
+from docarray import Document, DocumentArray
+from jina import Executor, requests
 from sentence_transformers import SentenceTransformer
+import torch
 
 
 class SentenceEncoder(Executor):
@@ -138,14 +282,11 @@ class SentenceEncoder(Executor):
         self.model.to(device)  # Move the model to device
 
     @requests
-    def encode(self, docs: Optional[DocumentArray], **kwargs):
+    def encode(self, docs: DocumentArray, **kwargs):
         """Add text-based embeddings to all documents"""
-        texts = docs.get_attributes("text")
-        with torch.no_grad():
-            embeddings = self.model.encode(texts, batch_size=32)
-
-        for doc, embedding in zip(docs, embeddings):
-            doc.embedding = embedding
+        with torch.inference_mode():
+            embeddings = self.model.encode(docs.texts, batch_size=32)
+        docs.embeddings = embeddings
 ```
 
 Here all the device-specific magic happens on the two highlighted lines - when we create the
@@ -158,7 +299,8 @@ let's create another file - `main.py`, which will demonstrate the usage of this
 encoder by encoding 10 thousand text documents.
 
 ```python
-from jina import Document, Flow
+from docarray import Document, DocumentArray
+from jina import Flow
 
 from executor import SentenceEncoder
 
@@ -173,11 +315,28 @@ with f:
     f.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
 ```
 
-Let's try it out by running
+## Running on GPU and CPU locally
+
+Let's try it out by running the same code on CPU and GPU, so we can observe the speedup we can achieve.
+
+To toggle between the two, simply set your device type to `'cuda'`, and your GPU will take over the work:
+
+```diff
++ f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})
+- f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})
+```
+
+Then, run the script:
 
 ```bash
 python main.py
 ```
+
+
+And compare the results
+
+````{tab} CPU 
+
 ```console
       executor0@26554[L]:ready and listening
         gateway@26554[L]:ready and listening
@@ -186,25 +345,13 @@ python main.py
         🏠 Local access:        0.0.0.0:56969
         🔒 Private network:     172.31.39.70:56969
         🌐 Public address:      52.59.231.246:56969
-Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:22 13.8 step/s 314 steps done in 22 seconds
+Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:20 15.1 step/s 314 steps done in 20 seconds
 ```
 
-## Using GPU locally
+````
 
-By now you can already see how easy it is to use the encoder on a GPU - simply set the device on initialization to `'cuda'`
+````{tab} GPU 
 
-```diff
-+ f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})
-- f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})
-```
-
-Let's see how much faster the GPU is, compared to CPU. The following
-comparison was made on `g4dn.xlarge` AWS instance, which has a single NVIDIA T4 GPU attached.
-
-First, we need to make sure that the encoder is using the GPU - change the `'device'` parameter in `main.py`, as shown in the snippet above. With that done, let's run the benchmark again
-```python
-python main.py
-```
 ```console
       executor0@21032[L]:ready and listening
         gateway@21032[L]:ready and listening
@@ -213,10 +360,13 @@ python main.py
         🏠 Local access:        0.0.0.0:54255
         🔒 Private network:     172.31.39.70:54255
         🌐 Public address:      52.59.231.246:54255
-Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:02 104.9 step/s 314 steps done in 2 seconds
+Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:03 90.9 step/s 314 steps done in 3 seconds
 ```
 
-We can see that we got over 7x speedup! And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
+````
+Running this code on a `g4dn.xlarge` AWS instance with a single NVIDIA T4 GPU attached, we can see that the embedding
+time can be decreased from 20s to 3s by running on GPU.
+That is more than a **6x speedup!** And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
 
 ```{admonition} Note
 :class: note
@@ -228,6 +378,13 @@ so for most use cases this is not something we would worry about.
 ```
 
 ## Using GPU in a container
+
+```{admonition} Using your GPU inside a container
+:class: tip
+
+For this part of the tutorial, you need `nvidia-container-toolkit` installed on your machine.
+If you haven't installed that already, you can find an installation guide [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html).
+```
 
 When you'll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.
 
@@ -252,7 +409,7 @@ You can run the container to quickly check that everything is working well
 docker run sentence-encoder
 ```
 
-Now, let's use the Docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU insite the container you need to pass `--gpus all` option to the `docker run` command. And Jina enables you to do just that.
+Now, let's use the Docker version of our encoder with the GPU. If you've dealt with GPUs in containers before, you probably remember that to use a GPU inside the container you need to pass `--gpus all` option to the `docker run` command. And Jina enables you to do just that.
 
 Here's how we need to modify our `main.py` script to use a GPU-base containerized Executor
 
@@ -260,7 +417,8 @@ Here's how we need to modify our `main.py` script to use a GPU-base containerize
 ---
 emphasize-lines: 12
 ---
-from jina import Document, DocumentArray, Flow
+from docarray import Document, DocumentArray
+from jina import Flow
 
 from executor import SentenceEncoder
 
@@ -289,7 +447,7 @@ f = Flow().add(
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
-    volumes="/home/ubuntu/.cache:/root/.cache",
+    volumes="/home/ubuntu/.cache:/root/.cache"
 )
 ```
 
@@ -306,11 +464,11 @@ Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-e
 ```diff
 f = Flow().add(
 -   uses='docker://sentence-encoder',
-+   uses='jinahub+docker://TransformerTorchEncoder/gpu',
++   uses='jinahub+docker://TransformerTorchEncoder/latest-gpu',
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
-    volumes="/home/ubuntu/.cache:/root/.cache",
+    volumes="/home/ubuntu/.cache:/root/.cache"
 )
 ```
 
