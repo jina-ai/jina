@@ -91,7 +91,7 @@ services:
 ```
 
 Here you can see that 7 services will be created.One for the `gateway` which is the entrypoint of the `Flow`. 
-Then both of the Executors are wrapped into a `Deployment` .
+There are three services associated with the encoder, one for the Head and two for the Replicas. Same for the indexer, one for the Head and two for the Shards.
 
 Now, you can deploy this Flow to your cluster:
 
