@@ -52,7 +52,7 @@ If you are upgrading from Jina 2: Please remove version 2 first and install vers
 
 Check our **[comprehensive docs](https://docs.jina.ai)** for more in depth tutorials, advanced topics and API reference.
 
-This is the readme for Jina 3. The old readme for Jina 2 can be found <a href="https://github.com/jina-ai/jina/blob/v2.6.4/README.md">here</a>.
+This is the readme for Jina 3. The documentation for Jina 2 can be found <a href="https://docs2.jina.ai">here</a>.
 
 ## Get Started
 You can follow our basic example below to get started from building a local `Executor` to deploying your search application in a `Flow` to Kubernetes.
