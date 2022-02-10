@@ -95,6 +95,7 @@ Preview the next big things we are building. Careful not to get zapped!
 :caption: Get started
 :hidden:
 
+migrate-to-jina3/migrate
 get-started/neural-search
 get-started/jina-ecosystem
 get-started/jina-core
