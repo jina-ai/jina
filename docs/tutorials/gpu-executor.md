@@ -33,9 +33,9 @@ container - it does not impose any additional requirements or configuration.
 Let's take a look at a minimal working example, written in PyTorch.
 
 ```python
-
+from docarray import DocumentArray
+from jina import Executor, requests
 import torch
-from jina import DocumentArray, requests
 
 class MyGPUExec(Executor):
     def __init__(self, device: str = 'cpu', *args, **kwargs):
@@ -44,21 +44,21 @@ class MyGPUExec(Executor):
 
 
     @requests
-    def encode(self, docs: Optional[DocumentArray], **kwargs):
+    def encode(self, docs: DocumentArray, **kwargs):
         with torch.inference_mode():
           ## generate random embeddings
           embeddings = torch.rand((len(docs),5), device=self.device)
         docs.embeddings = embeddings
         embedding_device = 'GPU' if embeddings.is_cuda else 'CPU'
         docs.texts = [f'Embeddings calculated on {embedding_device}']
-
 ```
 
 
 ````{tab} Use it with CPU 
 
 ```python
-from jina import Flow, Document, DocumentArray
+from docarray import Document
+from jina import Flow
 
 f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cpu'})
 docs = DocumentArray(Document())
@@ -85,7 +85,8 @@ Document embedding: tensor([[0.1769, 0.1557, 0.9266, 0.8655, 0.6291]])
 ````{tab} Use it with GPU
 
 ```python
-from jina import Flow, Document, DocumentArray
+from docarray import Document
+from jina import Flow
 
 f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cuda'})
 docs = DocumentArray(Document())
@@ -207,11 +208,10 @@ Now let's fill the `executor.py` file with the actual code of our Executor
 ---
 emphasize-lines: 16, 17
 ---
-from typing import Optional
-
-import torch
-from jina import DocumentArray, Executor, requests
+from docarray import Document, DocumentArray
+from jina import Executor, requests
 from sentence_transformers import SentenceTransformer
+import torch
 
 
 class SentenceEncoder(Executor):
@@ -226,7 +226,7 @@ class SentenceEncoder(Executor):
         self.model.to(device)  # Move the model to device
 
     @requests
-    def encode(self, docs: Optional[DocumentArray], **kwargs):
+    def encode(self, docs: DocumentArray, **kwargs):
         """Add text-based embeddings to all documents"""
         with torch.inference_mode():
             embeddings = self.model.encode(docs.texts, batch_size=32)
@@ -243,7 +243,8 @@ let's create another file - `main.py`, which will demonstrate the usage of this
 encoder by encoding 10 thousand text documents.
 
 ```python
-from jina import Document, Flow
+from docarray import Document, DocumentArray
+from jina import Flow
 
 from executor import SentenceEncoder
 
@@ -353,7 +354,8 @@ Here's how we need to modify our `main.py` script to use a GPU-base containerize
 ---
 emphasize-lines: 12
 ---
-from jina import Document, DocumentArray, Flow
+from docarray import Document, DocumentArray
+from jina import Flow
 
 from executor import SentenceEncoder
 
