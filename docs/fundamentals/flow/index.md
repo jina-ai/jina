@@ -1,28 +1,25 @@
 (flow-cookbook)=
 # Flow
 
-{class}`~jina.Flow` ties Executors together into a processing pipeline to perform a bigger task, like indexing or querying a 
-dataset. Documents "flow" through the created pipeline and are processed by Executors.
-`Flow` also provides synchronization mechanisms to manage dependencies between executors and their order.
+{class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
+Documents "flow" through the created pipeline and are processed by Executors.
 
 
+The most important methods of the `Flow` object are the following:
 
-
-A `Flow` object has the following common methods:
-
-| Group | Description |
-|---|---|
-|Construct Flow| `.add()`, `.needs()` |
-|Run Flow| `with` context manager |
-|Visualize Flow| `.plot()` |
-|Send Request| `.post()`|
-|Control| `.block()` |
+| Method         | Description                                                                                          |
+|----------------|------------------------------------------------------------------------------------------------------|
+|  `.add()` | Add an Executor to the `Flow`                                                                        |
+| `with` context manager       | You can use the `Flow` as a context manager. It will automatically start and close your `Flow` then. |
+| `.plot()` | Visualizes the flow. Helpful for building complex pipelines.                                         |
+| `.post()`   | Sends requests to the API of the `Flow`.                                                             |
+| `.block()`        | Blocks execution until the program is terminated.                                                    |
 
 
 
 ## Minimum working example
 
-````{tab} All-in-one style
+````{tab} Pythonic style
 
 
 ```python
@@ -104,7 +101,7 @@ with f:
 
 Document, Executor, and Flow are the three fundamental concepts in Jina.
 
-- {doc}`Document <../document/index>` is the basic data type in Jina;
+- <a href="https://docarray.jina.ai/>Document</a> is the basic data type in Jina;
 - {ref}`Executor <executor>` is how Jina processes Documents;
 - {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
 ````
