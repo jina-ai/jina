@@ -1,13 +1,13 @@
 # Migration to Jina 3
 
-Jina 3 introduces a number of exciting features **TODO ADD LINK TO EXCITING FEATURES**, but to be able to enjoy them, you will also have to make some
+Jina 3 comes with many improvement, but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.
 
-One of the major changes in Jina 3 is the inclusion of [DocArray](https://docarray.jina.ai/):
+One of the major changes in Jina 3 is the inclusion of [DocArray](https://docarray.jina.ai/) as an external dependency:
 The previously included `Document` and `DocumentArray` data structures now form their own library and include new
 features, improved performance, and increased flexibility.
 
-Accordingly, the scope of the changes in Jina 3 will be mainly related to `Document` and `DocumentArray`.
+Accordingly, most of the breaking changes that users will deal to when updating to Jina 3 are mainly related to `Document` and `DocumentArray`.
 
 ```{admonition} DocArray library
 :class: seealso
@@ -22,8 +22,8 @@ long run. Here you can find out what exactly you will have to adapt.
 
 ## Simple changes at a glance
 
-Many of the changes introduced in Jina 3 are easy to incorporate into a Jina 2 Codebase.
-The modifications in the following table should, in most instances, be safe to perform without further thought or effort.
+Many of the changes introduced in Jina 3 are easy to incorporate from a Jina 2 codebase.
+The modifications in the following table should, in most cases, be safe to perform without further thought or effort.
 
 
 | Jina 2                            | Jina 3              |
@@ -168,14 +168,15 @@ print(docs.texts)
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
-- **Persistence**: `DocumentArrayMemmap` is replaced by `DocumentArray`, which now offers a number of storage backends
+- **Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
   such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
 
 ## Flow: Simplified `.post()` behavior
 
-- `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s, if `return_results=True` is
-set. This makes it easier to immediately use the returned results. The behavior of `client.post()` remains unchanged
-compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` flag,
+- `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s when `return_results=True` is
+set. This makes it easier to immediately use the returned results. 
+
+The behavior of `client.post()` remains unchanged compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` argument,
 the user can override these default behaviors.
 
 
@@ -186,8 +187,10 @@ which leads to the following changes:
 
 - Referencing *environment variables* using the syntax `${{ VAR }}` is no longer allowed. The POSIX notations for
 environment variables, `$var`, has been deprecated. Instead, use `${{ ENV.VAR }}`.
+
 - The syntax `${{ VAR }}` now defaults to signifying a *context variable*, passed in a `dict()`. If you want to be explicit
 about the use of context variables, you can use `${{ CONTEXT.VAR }}`.
+
 - *Relative paths* can point to other variables within the same `.yaml` file, and can be references using the syntax `${{root.path.to.var}}`.
 
 ````{admonition} Environment variables vs. relative paths
