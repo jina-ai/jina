@@ -1,9 +1,6 @@
 # Executor Scale-Out With Replicas & Shards
 
 ```{article-info}
-:avatar: avatars/bo.jpg
-:avatar-link: https://jobs.jina.ai
-:avatar-outline: muted
 :author: Bo @ Jina AI
 :date: February 8, 2022
 ```
@@ -26,7 +23,12 @@ Before you begin, make sure you meet these prerequisites:
 
 * You have a good understanding of Jina [Flow](../fundamentals/flow/index.md).
 * You have a good understanding of Jina [Executor](../fundamentals/executor/index.md)
-* Please install several dependencies , includes jina and sklearn.
+* Please install the following dependencies if you havn't:
+
+```shell
+pip install jina
+pip install sklearn
+```
 
 ## Speed-Up A Slow Executor: Replicas
 
@@ -95,7 +97,7 @@ What if you needs to index millions of documents?
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:06 18.1 step/s . 115 steps done in 6 seconds
 ```
 
-Jina allows you to scale your `Executor` very easily, with only one configuration:
+Jina allows you to scale your `Executor` very easily, with only one parameter change:
 
 ```diff
 + f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
@@ -114,19 +116,6 @@ Let's see how it performs given 2 `Replicas`:
 ```
 
 As you can see, now it only takes 3 seconds to finish the task.
-
-Instead of scale an `Executor` at creation time,
-we can scale an `Executor` after `Flow` being created, by calling `scale` method,
-not only scale up, but also scale down.
-For instance,
-you want to scale up and scale down an `Executor`:
-
-```python
-f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
-f.scale('slow_executor', replicas=3)  # scale up from 2 to 3
-f.scale('slow_executor', replicas=1)  # scale down from 3 to 1
-```
-
 Quite intuitive, right? In a later section,
 we'll introduce what `replicas` means under different deployment options.
 
@@ -134,7 +123,56 @@ we'll introduce what `replicas` means under different deployment options.
 
 ### Context
 
+Now with your text corpus encoded as TF-IDF embeddings,
+it's time to save the results.
+We'll use Jina's [PQLite](https://hub.jina.ai/executor/pn1qofsj) `Indexer` to persist our embeddings for fast Approximate Nearest Neightbour search.
+
+And you add this `PQLiteIndexer` to your Flow:
+
+```python
+from jina import Flow
+
+f = Flow().add(
+    name='fast_executor').add(
+    name='slow_executor', uses=MyTokenizer).add(
+    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
+      'dim': 5215,
+      'metric': 'cosine'
+    },
+    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+    install_requirements=True)
+```
+
 ### Partitioning your Data
+
+Now let's run the `Flow` to index your data:
+```python
+with f:
+    f.post(on='/index', inputs=news_generator, show_progress=True)
+```
+
+The `PQLiteIndexer` will save your indexed `Documents` to your specified `workspace` (directory).
+Since the default number of shards is one.
+All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `0` is the shard id.
+
+If you want to distribute your data to different places, Jina allows you to use `shards` to specify number of shards.
+
+```python
+f = Flow().add(
+    name='fast_executor').add(
+    name='slow_executor', uses=MyTokenizer).add(
+    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
+      'dim': 5215,
+      'metric': 'cosine'
+    },
+    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+    install_requirements=True,
+    shards=2,
+)
+```
+
+If you open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
+`YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
 
 ### Different POOLING Strategies
 
