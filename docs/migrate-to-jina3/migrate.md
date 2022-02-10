@@ -3,10 +3,18 @@
 Jina 3 introduces a number of exciting features **TODO ADD LINK TO EXCITING FEATURES**, but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.
 
-One of the major changes in Jina 3 is the inclusion of [docarray](https://docarray.jina.ai/):
+One of the major changes in Jina 3 is the inclusion of [DocArray](https://docarray.jina.ai/):
 The previously included `Document` and `DocumentArray` data structures now form their own library and include new
 features, improved performance, and increased flexibility.
 Accordingly, the scope of the changes in Jina 3 will be mainly related to `Document` and `DocumentArray`.
+
+```{admonition} DocArray library
+:class: seealso
+[DocArray](https://docarray.jina.ai/) is our new library that includes the `Document` and `DocumentArray` data
+structures. Inside their own library, `Document` and `DocumentArray` are faster and more versatile than ever, and
+underpin neural search apps as well as the Jina ecosystem, including [Jina](https://docs.jina.ai/) and
+[Finetuner](https://finetuner.jina.ai/).
+```
 
 In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.
