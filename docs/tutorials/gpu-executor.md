@@ -149,11 +149,62 @@ directory, this will be our working directory for this tutorial.
 
 Next, select `y` when prompted for advanced configuration, and leave all other questions
 empty, except when you are asked if you want to create a `Dockerfile` - answer `y` to 
-this one (we will need it in the next section). Here's how this prompt dialogue should
-look like in the end
+this one (we will need it in the next section). In the end, you should be greeted with suggested next steps.
 
+<details>
+  <summary> Next steps </summary>
+
+```bash
+╭────────────────────────────────────── 🎉 Next steps ───────────────────────────────────────╮
+│                                                                                            │
+│  Congrats! You have successfully created an Executor! Here are the next steps:             │
+│  ╭──────────────────────── 1. Check out the generated Executor ─────────────────────────╮  │
+│  │   1 cd /home/ubuntu/SentenceEncoder                                                  │  │
+│  │   2 ls                                                                               │  │
+│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+│  ╭─────────────────────────── 2. Understand folder structure ───────────────────────────╮  │
+│  │                                                                                      │  │
+│  │   Filena…   Description                                                              │  │
+│  │  ──────────────────────────────────────────────────────────────────────────────────  │  │
+│  │   config…   The YAML config file of the Executor. You can define __init__ argumen…   │  │
+│  │             ╭────────────────── config.yml ──────────────────╮                       │  │
+│  │             │   1                                            │                       │  │
+│  │             │   2 jtype: SentenceEncoder                     │                       │  │
+│  │             │   3 with:                                      │                       │  │
+│  │             │   4     foo: 1                                 │                       │  │
+│  │             │   5     bar: hello                             │                       │  │
+│  │             │   6 metas:                                     │                       │  │
+│  │             │   7     py_modules:                            │                       │  │
+│  │             │   8         - executor.py                      │                       │  │
+│  │             │   9                                            │                       │  │
+│  │             ╰────────────────────────────────────────────────╯                       │  │
+│  │   Docker…   The Dockerfile describes how this executor will be built.                │  │
+│  │   execut…   The main logic file of the Executor.                                     │  │
+│  │   manife…   Metadata for the Executor, for better appeal on Jina Hub.                │  │
+│  │                                                                                      │  │
+│  │               Field   Description                                                    │  │
+│  │              ────────────────────────────────────────────────────────────────────    │  │
+│  │               name    Human-readable title of the Executor                           │  │
+│  │               desc…   Human-readable description of the Executor                     │  │
+│  │               url     URL to find more information on the Executor (e.g. GitHub…     │  │
+│  │               keyw…   Keywords that help user find the Executor                      │  │
+│  │                                                                                      │  │
+│  │   README…   A usage guide of the Executor.                                           │  │
+│  │   requir…   The Python dependencies of the Executor.                                 │  │
+│  │                                                                                      │  │
+│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+│  ╭────────────────────────────── 3. Share it to Jina Hub ───────────────────────────────╮  │
+│  │   1 jina hub push /home/ubuntu/SentenceEncoder                                       │  │
+│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+
+```
+
+</details>
+
+<!--
 ![jina hub new](../_static/hub_new_gpu.png)
-
+-->
 
 Once this is done, let's move to the newly created Executor directory:
 ```bash
@@ -289,7 +340,7 @@ And compare the results
         🏠 Local access:        0.0.0.0:56969
         🔒 Private network:     172.31.39.70:56969
         🌐 Public address:      52.59.231.246:56969
-Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:22 13.8 step/s 314 steps done in 22 seconds
+Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:20 15.1 step/s 314 steps done in 20 seconds
 ```
 
 ````
@@ -304,13 +355,13 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
         🏠 Local access:        0.0.0.0:54255
         🔒 Private network:     172.31.39.70:54255
         🌐 Public address:      52.59.231.246:54255
-Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:02 104.9 step/s 314 steps done in 2 seconds
+Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ 0:00:03 90.9 step/s 314 steps done in 3 seconds
 ```
 
 ````
 Running this code on a `g4dn.xlarge` AWS instance with a single NVIDIA T4 GPU attached, we can see that the embedding
-time can be decreased from 22s to 2s by running on GPU.
-That is more than a **7x speedup!** And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
+time can be decreased from 20s to 3s by running on GPU.
+That is more than a **6x speedup!** And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
 
 ```{admonition} Note
 :class: note
@@ -322,6 +373,13 @@ so for most use cases this is not something we would worry about.
 ```
 
 ## Using GPU in a container
+
+```{admonition} Using your GPU inside a container
+:class: tip
+
+For this part of the tutorial, you need `nvidia-container-toolkit` installed on your machine.
+If you haven't installed that already, you can find an installation guide [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html).
+```
 
 When you'll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.
 
@@ -384,7 +442,7 @@ f = Flow().add(
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
-    volumes="/home/ubuntu/.cache:/root/.cache",
+    volumes="/home/ubuntu/.cache:/root/.cache"
 )
 ```
 
@@ -405,7 +463,7 @@ f = Flow().add(
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
-    volumes="/home/ubuntu/.cache:/root/.cache",
+    volumes="/home/ubuntu/.cache:/root/.cache"
 )
 ```
 
