@@ -62,11 +62,11 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 ::::
 
 ::::{grid-item-card} {octicon}`infinity;1.5em` How to use Jina
-:link: datatype/text/index
+:link: how-to/index
 :link-type: doc
 :class-card: color-gradient-card
 
-Build a neural search solution with the power of Jina.
+Learn how to use Jina to build neural search applications.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
@@ -74,13 +74,6 @@ Build a neural search solution with the power of Jina.
 :link-type: doc
 
 Learn to share and reuse Executors from the Jina community.
-::::
-
-::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
-:link: advanced/experimental/index
-:link-type: doc
-
-Preview the next big things we are building. Careful not to get zapped!
 ::::
 
 
