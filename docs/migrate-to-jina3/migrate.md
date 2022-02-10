@@ -6,6 +6,7 @@ tweaks to your existing Jina 2 code.
 One of the major changes in Jina 3 is the inclusion of [DocArray](https://docarray.jina.ai/):
 The previously included `Document` and `DocumentArray` data structures now form their own library and include new
 features, improved performance, and increased flexibility.
+
 Accordingly, the scope of the changes in Jina 3 will be mainly related to `Document` and `DocumentArray`.
 
 ```{admonition} DocArray library
@@ -29,7 +30,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 - Creating a `Document` from serialized data using `Document(bytes)` is removed in favour of
 `Document.from_bytes(bytes)` and `Document.from_json(bytes)`
 
-## `DocumentArray`: Simplified access of attributes and elements
+## `DocumentArray`: Simplified attribute and element access and new storage options
 
 **Attributes**: Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocuemntArray`, in bulk.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
@@ -146,6 +147,8 @@ print(docs.texts)
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
+- **Persistence**: `DocumentArrayMemmap` is replaced by `DocumentArray`, which now offers a number of storage backends
+  such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
 
 ## `Flow`: Simplified `.post()` behavior
 
