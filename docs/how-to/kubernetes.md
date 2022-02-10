@@ -45,7 +45,7 @@ flow.to_k8s_yaml('flow_k8s_configuration')
 
 This will create a folder 'flow_k8s_configuration' with a set of Kubernetes yaml configurations for all the deployments composing the Flow
 
-## Examples
+## Example
 
 ### Indexing and searching images using CLIP image encoder and PQLiteIndexer
 
@@ -141,7 +141,8 @@ If `custom-namespace` has been used by another `Flow`, please set a different `k
 
 ```{admonition} Caution
 :class: caution
-In the default deployment dumped by the Flow, no Persistent Volume Object is added. You may want to edit the deployment files to add them if needed.
+The default deployment configurations dumped by the Flow, contain no special configuration objectes. You may want to 
+adapt it to your own needs. For instance, no Persistent Volume Object is added. 
 ```
 
 ```{admonition} Caution

@@ -94,6 +94,12 @@ services:
     - 8080:8080
 ```
 
+```{admonition} Caution
+:class: caution
+The default compose file dumped by the Flow, contains no special configuration or setting. You may want to 
+adapt it to your own needs.
+```
+
 Here you can see that 7 services will be created.One for the `gateway` which is the entrypoint of the `Flow`. 
 There are three services associated with the encoder, one for the Head and two for the Replicas. Same for the indexer, one for the Head and two for the Shards.
 
