@@ -136,6 +136,15 @@ pip install jina
 
 ## Setting up the executor
 
+
+```{admonition} Jina Hub
+:class: info
+
+In this section we create an executor using [Jina Hub](https://hub.jina.ai/). This still creates your executor locally
+and privately, but makes it quick and easy to run your
+executor inside a Docker container, or to publish it to the Hub later, should you so choose.
+```
+
 We will create a simple sentence encoder, and we'll start by creating the Executor 
 "skeleton" using Jina's command line utility:
 
@@ -201,10 +210,6 @@ this one (we will need it in the next section). In the end, you should be greete
 ```
 
 </details>
-
-<!--
-![jina hub new](../_static/hub_new_gpu.png)
--->
 
 Once this is done, let's move to the newly created Executor directory:
 ```bash
