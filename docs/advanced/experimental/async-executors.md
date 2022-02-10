@@ -47,18 +47,17 @@ class DummyAsyncExecutor(Executor):
 f = Flow().add(uses=DummyAsyncExecutor)
 
 with f:
-
-    start_time = time.time()
     f.index(
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
-        request_size=1
+        request_size=1,
+        show_progress=True
     )
     
 print(f"Processing took {time.time()-start_time} seconds")
 >>>     Flow@123296[I]:🎉 Flow is ready to use!
         🔗 Protocol: 		GRPC
         🏠 Local access:	0.0.0.0:63319
->>>     Processing took 1.0029587745666504 seconds
+⠙       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0 seconds 41 steps done in 1 second
 ```
 
 ### Without async
@@ -78,18 +77,15 @@ class DummyExecutor(Executor):
 f = Flow().add(uses=DummyExecutor)
 
 with f:
-    start_time = time.time()
     f.index(
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
-        request_size=1
+        request_size=1,
+        show_progress=True
     )
-    
-print(f"Processing took {time.time()-start_time} seconds")
-
 >>>     Flow@123296[I]:🎉 Flow is ready to use!
         🔗 Protocol: 		GRPC
         🏠 Local access:	0.0.0.0:63319
->>>     Processing took 50.05074954032898 seconds
+⠸       DONE ━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━ 0:00:02 100% ETA: 0 seconds 41 steps done in 50 seconds
 ```
 
 
