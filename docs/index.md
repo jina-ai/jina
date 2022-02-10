@@ -120,6 +120,7 @@ how-to/docker-compose
 how-to/kubernetes
 how-to/sandbox
 how-to/async-executors
+how-to/gpu-executor
 ```
 
 
