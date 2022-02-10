@@ -612,6 +612,7 @@ with f:
         console = Console()
 
         host = None
+        port = None
         try:
             json_response = requests.get(
                 url=get_hubble_url_v2() + '/rpc/sandbox.get',

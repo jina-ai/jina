@@ -467,3 +467,77 @@ def test_new_with_arguments(
             assert temp['description'] == 'args description'
             assert temp['keywords'] == ['args', 'keywords']
             assert temp['url'] == 'args url'
+
+
+class SandboxGetMockResponse:
+    def __init__(self, response_code: int = 200):
+        self.response_code = response_code
+
+    def json(self):
+        if self.response_code == 200:
+            return {
+                'code': self.response_code,
+                'data': {'host': 'http://test_existing_deployment.com', 'port': 4321},
+            }
+        else:
+            return {'code': self.response_code}
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+
+class SandboxCreateMockResponse:
+    def __init__(self, response_code: int = 200):
+        self.response_code = response_code
+
+    def json(self):
+        return {
+            'code': self.response_code,
+            'data': {'host': 'http://test_new_deployment.com', 'port': 4322},
+        }
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+
+def test_deploy_public_sandbox_existing(mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_get(url, params, headers=None):
+        mock(url=url, params=params)
+        return SandboxGetMockResponse(response_code=200)
+
+    monkeypatch.setattr(requests, "get", _mock_get)
+
+    host, port = HubIO.deploy_public_sandbox("jinahub+sandbox://dummy_mwu_encoder")
+    assert host == 'http://test_existing_deployment.com'
+    assert port == 4321
+
+
+def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_get(url, params, headers=None):
+        mock(url=url, params=params)
+        return SandboxGetMockResponse(response_code=404)
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return SandboxCreateMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, "get", _mock_get)
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    host, port = HubIO.deploy_public_sandbox("jinahub+sandbox://dummy_mwu_encoder")
+    assert host == 'http://test_new_deployment.com'
+    assert port == 4322
