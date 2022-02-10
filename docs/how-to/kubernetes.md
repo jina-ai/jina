@@ -10,6 +10,8 @@ your Flow.
 When deployed in `Kubernetes`, this `Executors` will be run inside `Kubernetes Pods` as containers and their lifetime will be handled
 by Kubernetes.
 
+Deploying `Flow` in Kubernetes is the recommended way of using Jina in production.
+
 ## Preliminaries
 
 Please first set up a `Kubernetes` cluster and configure the cluster access locally.
@@ -202,7 +204,24 @@ In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type and is typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with Indexers since they store a state.
 
-Check {ref}`here <flow-topology>` for more information.
+Check {ref}`here <how-to-replica-shard>` for more information.
 
 Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas of a Deployment.
 
+Once the `Flow` is deployed in Kubernetes, you can use all the native `Kubernetes` tools like `kubeclt` to perform operations on the `Pods` and `Deployments`. 
+
+You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment), to run [rolling update](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment) operations, etc ...
+
+
+## Extra Kubernetes Options
+
+This Example has shown how to deploy a Jina Flow in Kubernetes based on the basic deployment configuration dumped by Jina
+when running `.to_k8s_yaml`.
+
+However, is important to realize that you can edit this deployment to fit your needs.
+
+A non-exhaustive example list of configurations you may want to adapt may include:
+
+- Add other external deployments from which an Executor can connect to.
+- Edit the default rolling update configuration.
+- Edit the default configuration map
