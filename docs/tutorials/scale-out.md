@@ -187,12 +187,16 @@ it's better to set `polling='any'` to only store the `Documents` into one shard 
 On the other hand, at search time, the search requests should be across all shards.
 Thus we normally set `polling='all''`.
 
-As a result, we need to split our `Flow` definition into two `Flows`: `IndexFlow` and `SearchFlow`.
+As a result, we need to config our `Flow` definition with different `Polling` strategy:
 
 The `IndexFlow`:
 
 ```python
-f_index = Flow().add(
+# Config your polling strategy based on endpoints
+# At index time, use ALL, at search time use ANY, the rest use ALL.
+polling_config = {'/index': 'ALL', '/search': 'ANY', '*': 'ALL'}
+
+f = Flow().add(
     name='fast_executor').add(
     name='slow_executor', uses=MyTokenizer).add(
     name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
@@ -202,24 +206,7 @@ f_index = Flow().add(
     uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
     install_requirements=True,
     shards=2,
-    polling='any',
-)
-```
-
-The `SearchFlow`:
-
-```python
-f_search = Flow().add(
-    name='fast_executor').add(
-    name='slow_executor', uses=MyTokenizer).add(
-    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
-      'dim': 5215,
-      'metric': 'cosine'
-    },
-    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
-    install_requirements=True,
-    shards=2,
-    polling='all',
+    polling=polling_config,
 )
 ```
 
