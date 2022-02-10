@@ -1,26 +1,31 @@
 (docker-compose)=
-# Jina with Docker Compose
+# How to deploy Jina with Docker Compose
 
 Jina is a cloud native neural search framework. Therefore, one of the simplest ways of either prototyping or serving in
 production is to deploy your `Flow` with `docker-compose`.
 
-Remember that a `Flow` defines complex processing pipelines. A `Flow` is composed of `Executors` which run python code
+A `Flow` is composed of `Executors` which run Python code
 defined to operate on `DocumentArray`. These `Executors` will live in different runtimes depending on how you want to deploy
-your Flow. By default, if you are serving your Flow locally they will live within processes. Nevertheless, 
+your Flow. 
+
+By default, if you are serving your Flow locally they will live within processes. Nevertheless, 
 because Jina is thought to be cloud native your Flow can easily manage Executors that live in containers and that are
 orchestrated by your favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. 
 
-Under the hood with one line 
+Under the hood, with one line:
+
 ```python
 flow.to_docker_compose_yaml('docker-compose.yml')
 ```
 
 Jina will generate for you a `docker-compose.yml` config files that you can use directly with 
-`docker-compose` which correspond to your `Flow`, avoiding you the overhead of defining the services for the gateway 
-and the deployment of the `Flow`. 
+`docker-compose` which correspond to your `Flow`, avoiding you the overhead of defining manually all the services needed for the `Flow`. 
 
+```{caution}
+All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
+```
 
-## Examples : Indexing and searching images using CLIP image encoder and PQLiteIndexer
+## Example: Indexing and searching images using CLIP image encoder and PQLiteIndexer
 
 
 ### Deploy your Flow
@@ -58,7 +63,6 @@ f = (
         shards=2,
     )
 )
-
 ```
 
 Now, we can generate Docker Compose YAML configuration from the Flow:
@@ -67,20 +71,20 @@ Now, we can generate Docker Compose YAML configuration from the Flow:
 f.to_docker_compose_yaml('docker-compose.yml')
 ```
 
-let's take a look at this config file:
+let's take a look at the generated compose file:
 ```yaml
 version: '3.3'
 ...
 services:
   encoder-head:   # # # # # # # # # # # 
                   #                   #   
-  encoder-rep-0:  #   Deployment 1    #
+  encoder-rep-0:  #   Encoder         #
                   #                   #
   encoder-rep-1:  # # # # # # # # # # #
 
   indexer-head:   # # # # # # # # # # # 
                   #                   #   
-  indexer-0:      #   Deployment 2    #
+  indexer-0:      #   Indexer         #
                   #                   #
   indexer-1:      # # # # # # # # # # #
 
@@ -108,7 +112,6 @@ Once we see that all the Services in the Flow are ready, we can start sending in
 First let's define a client:
 ```python
 from jina.clients import Client
-from jina import DocumentArray
 
 client = Client(host='localhost', protocol='http',port=8080)
 client.show_progress = True
@@ -122,6 +125,8 @@ Before launching using you Flow please be sure to have several `jpg` images in t
 ```
 
 ```python
+from docarray import DocumentArray
+
 indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
     lambda d: d.load_uri_to_image_tensor()
 )

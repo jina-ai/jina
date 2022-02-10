@@ -116,16 +116,10 @@ fundamentals/flow/index
 ```{toctree}
 :caption: How-to
 :hidden:
-
-how-to/async-executors
-how-to/kubernetes
-how-to/executor-gpu
-how-to/async-executor
-how-to/external-executor
-how-to/polling-strategies
 how-to/docker-compose
 how-to/kubernetes
-how-to/scale-replication-shards
+how-to/sandbox
+how-to/async-executors
 ```
 
 

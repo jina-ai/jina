@@ -3,6 +3,13 @@
 
 Jina natively supports deploying your Flow and Executors into Kubernetes.
 
+A `Flow` is composed of `Executors` which run Python code
+defined to operate on `DocumentArray`. These `Executors` will live in different runtimes depending on how you want to deploy
+your Flow. 
+
+When deployed in `Kubernetes`, this `Executors` will be run inside `Kubernetes Pods` as containers and their lifetime will be handled
+by Kubernetes.
+
 ## Preliminaries
 
 Please first set up a `Kubernetes` cluster and configure the cluster access locally.
@@ -190,10 +197,11 @@ print(f"Matched documents: {len(matches)}")
 ## Scaling Executors on Kubernetes
 
 In Jina we support two ways of scaling:
+
 - **Replicas** can be used with any Executor type and is typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with Indexers since they store a state.
 
 Check {ref}`here <flow-topology>` for more information.
 
-Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas per Shard.
+Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas of a Deployment.
 
