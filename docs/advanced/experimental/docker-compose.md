@@ -7,7 +7,7 @@ production is to deploy your `Flow` with `docker-compose`.
 Remember that a `Flow` defines complex processing pipelines. A `Flow` is composed of `Executors` which run python code
 defined to operate on `DocumentArray`. These `Executors` will live in different runtimes depending on how you want to deploy
 your Flow. By default, if you are serving your Flow locally they will live within processes. Nevertheless, 
-because Jina is thought to be cloud native your Flow can easily manage executors that live in containers and that are
+because Jina is thought to be cloud native your Flow can easily manage Executors that live in containers and that are
 orchestrated by your favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. 
 
 Under the hood with one line 
