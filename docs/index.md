@@ -88,6 +88,7 @@ Learn to share and reuse Executors from the Jina community.
 :caption: Get started
 :hidden:
 
+migrate-to-jina3/migrate
 get-started/neural-search
 get-started/jina-ecosystem
 get-started/jina-core
