@@ -38,7 +38,7 @@ from jina import Executor, requests, Flow
 
 class DummyAsyncExecutor(Executor):
    @requests
-   async def encode(self, docs: DocumentArray, **kwargs): 
+   async def process(self, docs: DocumentArray, **kwargs): 
          await asyncio.sleep(1)
          for doc in docs:
             doc.text = doc.text.upper()
@@ -52,8 +52,7 @@ with f:
         request_size=1,
         show_progress=True
     )
-    
-print(f"Processing took {time.time()-start_time} seconds")
+
 >>>     Flow@123296[I]:🎉 Flow is ready to use!
         🔗 Protocol: 		GRPC
         🏠 Local access:	0.0.0.0:63319
@@ -69,7 +68,7 @@ concurrently.
 
 class DummyExecutor(Executor):
     @requests
-    def encode(self, docs: DocumentArray, **kwargs):
+    def process(self, docs: DocumentArray, **kwargs):
         time.sleep(1)
         for doc in docs:
             doc.text = doc.text.upper()
@@ -82,6 +81,7 @@ with f:
         request_size=1,
         show_progress=True
     )
+    
 >>>     Flow@123296[I]:🎉 Flow is ready to use!
         🔗 Protocol: 		GRPC
         🏠 Local access:	0.0.0.0:63319
