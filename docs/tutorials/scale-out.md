@@ -176,7 +176,59 @@ If you open your workspace directory, you'll find we created 2 shards to store y
 
 ### Different POOLING Strategies
 
+When you have multiple shards, the default `polling` strategy is `any`.
+Jina supports two `pooling` strategies:
+
+1. `any`: requests will be randomly assigned to one shard.
+2. `all`: requests will be handled by all shards.
+
+In practical, when you are indexing your `Documents`,
+it's better to set `polling='any'` to only store the `Documents` into one shard to avoid duplicates.
+On the other hand, at search time, the search requests should be across all shards.
+Thus we normally set `polling='all''`.
+
+As a result, we need to split our `Flow` definition into two `Flows`: `IndexFlow` and `SearchFlow`.
+
+The `IndexFlow`:
+
+```python
+f_index = Flow().add(
+    name='fast_executor').add(
+    name='slow_executor', uses=MyTokenizer).add(
+    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
+      'dim': 5215,
+      'metric': 'cosine'
+    },
+    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+    install_requirements=True,
+    shards=2,
+    polling='any',
+)
+```
+
+The `SearchFlow`:
+
+```python
+f_search = Flow().add(
+    name='fast_executor').add(
+    name='slow_executor', uses=MyTokenizer).add(
+    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
+      'dim': 5215,
+      'metric': 'cosine'
+    },
+    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+    install_requirements=True,
+    shards=2,
+    polling='all',
+)
+```
+
 ## Concept Alignment: How does it work on Localhost, Docker and K8s
+
+Maybe you have noticed that all experiments we did above are on localhost.
+This means that the `replicas` could be just multiple processes. And `shards`are just multiple folders on the same machine.
+
+
 
 ## Conclusion
 
