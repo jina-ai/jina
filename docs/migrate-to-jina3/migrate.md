@@ -1,6 +1,6 @@
 # Migration to Jina 3
 
-Jina 3 introduces a number of exciting features, but to be able to enjoy them, you will also have to make some
+Jina 3 introduces a number of exciting features **TODO ADD LINK TO EXCITING FEATURES**, but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.
 
 One of the major changes in Jina 3 is the inclusion of [docarray](https://docarray.jina.ai/):
