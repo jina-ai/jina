@@ -1,11 +1,11 @@
-# Remote executors in Flows
+# External Executors in Flows
 
-A flow does not have to be local-only.
-In fact, it is easy to add `Executor`s to your flow that are running on a different machine, inside or outside a docker
-container, or that are spawned by the Jina Hub.
+An `Executor` does not need to be tied to a `Flow` - or vice versa.
+In fact, Executors can be launched on their own, and be added to a Flow after the fact, all while running in the same
+environment, inside a Docker container, on a remote machine, or spawned from the Jina Hub.
 
-In this tutorial we will first go over how to add already running external executors to your flow.
-Then you will see how to spawn standalone `Executor`s that can be tapped into remotely.
+As the first step in the tutorial, you will learn how to add already running external Executors to your Flow.
+After that, you will see how to create and use an external Executor yourself.
 
 ## Adding external Executors
 
@@ -24,30 +24,31 @@ exec_host, exec_port = 'localhost', 12345
 f = Flow().add(host=exec_host, port_in=exec_port, external=True)
 ```
 
-After that, the external Executor will behave just like a local one. And you can even add the same Executor to multiple
+After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!
 
 ## Starting standalone Executors
 
-The example above assumes that there is already an Executor running on some remote machine, and you just want to access
+The example above assumes that there already is an Executor running, and you just want to access
 it from your flow.
 
-You can, however, also start your own standalone executors, which can then be accessed from anywhere. There are two
+You can, however, also start your own standalone Executors, which can then be accessed from anywhere. There are two
 ways of doing this: Pulling an Executor from Jina Hub, and using a locally defined Executor. In either case, you will
 launch the Executor using the Jina command line interface (CLI).
 
 ````{admonition} Hint
 :class: hint
-This tutorial walks through the basics of spawing a standalone Executor. For more advanced options, refer to the
+This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
 CLI documentation (**TODO: LINK TO CLI DOCS**)
 ````
 
 ## Using Jina Hub
 
 The Jina CLI allows you to spawn executors straight from the Hub.
-In this example, we will use the `CLIPTextEncoder` to create embeddings for our documents.
+In this example, we will use the `CLIPTextEncoder` to create embeddings for our Documents.
 
-First, we start the executor from the terminal. All we need to decide is the port that will be used by the Executor. Here we pick `12345`.
+First, we start the Executor from the terminal. All we need to decide is the `port` that will be used by the Executor.
+Here we pick `12345`.
 
 ````{tab} Using Docker
 
@@ -67,7 +68,7 @@ jina executor --uses jinahub://CLIPTextEncoder --port-in 12345
 
 And just like that, our Executor is up and running.
 
-Next, let's access it from a Flow and encode some documents. You can do this from a different machine, as long you know
+Next, let's access it from a Flow and encode some Documents. You can do this from a different machine, as long you know
 the first machine's host address, or simply from the same machine in a different process using `localhost`.
 
 So, if you are still working on the same machine, hop over to a new terminal or your code editor of choice, and define
@@ -80,7 +81,7 @@ f = Flow().add(host='localhost', port_in=12345, external=True)
 
 ```
 
-Now we can encode our documents:
+Now we can encode our Documents:
 
 ```python
 from jina import Document, DocumentArray
@@ -114,7 +115,7 @@ class MyExecutor(Executor):
         docs.texts = ['Hey you, have a wonderful day!' for _ in docs]
 ```
 
-Since we can't rely on the Hub this time around, we need to tell Jina how to find the executor that we just defined.
+Since we can't rely on the Hub this time around, we need to tell Jina how to find the Executor that we just defined.
 We do this using a YAML file.
 
 In a new file called `my-exec.yml` we type:
@@ -151,5 +152,5 @@ with f:
 >>> Hey you, have a wonderful day!
 ```
 
-Again, we obtain modified documents, just like we would with a local Executor.
+Again, we obtain modified Documents, just like we would with a local Executor.
 
