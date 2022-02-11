@@ -40,7 +40,7 @@ class MyExecutor(Executor):
 Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (representing the request-to-function mapping) values when the Executor is used inside a Flow.
 
 You can access the values of these arguments in the `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
-or modifying their values before sending to `super().__init__()`.
+or modify their values before passing them to `super().__init__()`.
 ````
 
 ## Methods
