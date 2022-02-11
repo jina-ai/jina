@@ -27,9 +27,9 @@ Before you begin, make sure you meet these prerequisites:
 
 
 ```shell
-pip install jina
-pip install sklearn
-pip install pqlite
+pip install jina==3.0.0
+pip install sklearn==1.0.2
+pip install pqlite==0.2.3
 ```
 
 ## Speed-Up A Slow Executor: Replicas
@@ -47,6 +47,7 @@ from docarray import Document
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.datasets import fetch_20newsgroups
 
+# we use a test corpus from scikit-learn
 data, _ = fetch_20newsgroups(
     shuffle=True,
     random_state=1,
@@ -69,7 +70,7 @@ class MyVectorizer(Executor):
         docs.embeddings = X
 ```
 
-And we create a `Flow` and make use a text corpus from scikit-learn to use this `Executor`:
+And we create a `Flow` and make use this `Executor`:
 
 ```python
 from jina import Flow
@@ -83,7 +84,7 @@ When you start your `Flow`, you might discover to process all the text corpus, t
 
 ```python
 with f:
-    f.post('/foo', news_generator, show_progress=True, request_size=100)
+    f.post('/foo', news_generator, show_progress=True)
 ```
 
 As Jina reported, it takes around 6 seconds to accomplish the task.
@@ -118,10 +119,10 @@ Let's see how it performs given 2 `Replicas`:
 ```
 
 As you can see, now it only takes 3 seconds to finish the task.
-Quite intuitive, right? In a later section,
-we'll introduce what `replicas` means under different deployment options.
+Quite intuitive, right?
+If you are deploying Jina with K8s, you can consider this `Executor` as a K8s `Deployment` and each `replica` as a K8s `Pod`.
 
-## Split Data into Partitions
+## Split Data into Partitions: Shard
 
 ### Context
 
@@ -137,8 +138,8 @@ from jina import Flow
 f = Flow().add(
     name='fast_executor').add(
     name='slow_executor', uses=MyVectorizer).add(
-    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
-      'dim': 5215,
+    name='pqlite_executor', uses='jinahub://PQLiteIndexer/v0.2.3-rc', uses_with={
+      'dim': 130107,  # the dimension is fitted on the corpus in news dataset
       'metric': 'cosine'
     },
     uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
@@ -150,7 +151,7 @@ f = Flow().add(
 Now let's run the `Flow` to index your data:
 ```python
 with f:
-    f.post(on='/index', inputs=news_generator, show_progress=True, request_size=100)
+    f.post(on='/index', inputs=news_generator, show_progress=True)
 ```
 
 The `PQLiteIndexer` will save your indexed `Documents` to your specified `workspace` (directory).
@@ -164,7 +165,7 @@ f = Flow().add(
     name='fast_executor').add(
     name='slow_executor', uses=MyVectorizer).add(
     name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
-      'dim': 5215,
+      'dim': 130107,
       'metric': 'cosine'
     },
     uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
@@ -200,8 +201,8 @@ polling_config = {'/index': 'ANY', '/search': 'ALL', '*': 'ALL'}
 f = Flow().add(
     name='fast_executor').add(
     name='slow_executor', uses=MyVectorizer).add(
-    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
-      'dim': 5215,
+    name='pqlite_executor', uses='jinahub://PQLiteIndexer/v0.2.3-rc', uses_with={
+      'dim': 130107,
       'metric': 'cosine'
     },
     uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
@@ -211,9 +212,13 @@ f = Flow().add(
 )
 ```
 
+It should be noted that Jina will automatically *reduce* your results given multiple shards.
+For instance, when you are searching across multiple shards,
+Jina will collect `matches` from all `shards` and return the reduced results.
+
 ## Conclusion
 
-Jina can help you scale out your applications easily.
+Jina can help you scale out your applications easily and effectively.
 Depending on your needs, if you want to increase the `Executor` throughput, use the `replicas` argument.
 If you want to partition your data across multiple places,
 use the `shards` with the `polling` strategy you want.
