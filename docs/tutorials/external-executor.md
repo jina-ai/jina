@@ -1,10 +1,16 @@
 # External Executors in Flows
 
 An `Executor` does not need to be tied to a `Flow` - or vice versa.
-In fact, Executors can be launched on their own, and be added to a Flow after the fact, all while running in the same
-environment, inside a Docker container, on a remote machine, or spawned from the Jina Hub.
+In fact, Executors can be launched on their own, and be added to a Flow (or multiple Flows!) after the fact.
 
-As the first step in the tutorial, you will learn how to add already running external Executors to your Flow.
+
+````{admonition} Where can external Executors run?
+:class: hint
+External Executors can run anywhere from the same environment as the Flow, to a Docker container, or even a remote
+machine. All of this is also possible through Jina Hub.
+````
+
+As the first step in this tutorial, you will learn how to add already running external Executors to your Flow.
 After that, you will see how to create and use an external Executor yourself.
 
 ## Adding external Executors
@@ -36,8 +42,8 @@ You can, however, also start your own standalone Executors, which can then be ac
 ways of doing this: Pulling an Executor from Jina Hub, and using a locally defined Executor. In either case, you will
 launch the Executor using the Jina command line interface (CLI).
 
-````{admonition} Hint
-:class: hint
+````{admonition} Advanced CLI options
+:class: seealso
 This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
 CLI documentation (**TODO: LINK TO CLI DOCS**)
 ````
