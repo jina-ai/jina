@@ -253,7 +253,9 @@ Results are returned inside the `parameters` dictionary, behind the reserved `__
 
 Note, however, that not all Executors or request methods populate this field with results. Some just modify the `Document`s passed to them, without adding further information.
 
-In this example, `MyExec` receives the parameters `{'top_k': 10}` from the client and exposes and endpoint returning internal information in the form of dict.
+In this example, `MyExec` receives the parameter `{'top_k': 10}` from the client, which can then be used internally.
+
+It also exposes a `status` endpoint returning internal information in the form of a `dict`.
 
 ```python
 from jina import requests, Executor, Flow
