@@ -40,7 +40,7 @@ The list of the `metas` are:
 ### Runtime args
 
 By default, an `Executor` object contains `.runtime_args` as an attribute when loaded from the `Flow`. It is of `SimpleNamespace` type and contains some key-value information. 
-are dynamically determined during runtime. Means that you don't know the value before running the `Executor`, e.g. `shard_id`, `replicas`. Those values are often related to the system/network environment around the `Executor`, and less about the `Executor` itself. They are usually set with the {meth}`~jina.orchestrate.flow.base.Flow.add` method
+As the name suggest, `runtime_args` are dynamically determined during runtime, meaning that you don't know the value before running the `Executor`. These values are often related to the system/network environment around the `Executor`, and less about the `Executor` itself, like shard_id` and `replicas`. They are usually set with the {meth}`~jina.orchestrate.flow.base.Flow.add` method.
 
 The list of the `runtime_args` are:
 
