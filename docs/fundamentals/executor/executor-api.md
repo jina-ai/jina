@@ -141,9 +141,8 @@ async def foo(docs: DocumentArray,
 
 Let's take a look at all these arguments:
 
-- `docs`: A DocumentArray that is part of the request. As the nature of `Executor` is to wrap functionality related to `DocumentArray`, it is natural for
-it to be the main processing unit inside `Executor` methods. It is important to notice that these `docs` can be also changed in place as it would happen with 
-any other `list` object in a Python function
+- `docs`: A `DocumentArray` that is part of the request. Since the nature of `Executor` is to wrap functionality related to `DocumentArray`, it is usually the main processing unit inside `Executor` methods. It is important to notice that these `docs` can be also changed in place, just like it could happen with 
+any other `list`-like object in a Python function.
 
 - `parameters`: A Dict object that can be used to pass extra parameters to the `Executor` functions.
 
