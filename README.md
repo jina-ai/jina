@@ -20,7 +20,7 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.2k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
-<!-- start ecosystem-description -->
+<!-- start jina-description -->
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
@@ -29,7 +29,6 @@ The ecosystem of Jina AI is composed of Docarray, Finetuner and Jina Core:
 * <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you to deliver the last mile of performance and quality for domain-specific neural search applications.
 * <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
 
-<!-- end ecosystem-description -->
 This is what Jina Core offers developers:
 
 🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performs specific tasks like generating embeddings or indexing. Executors can be easily shared via the <a href="https://hub.jina.ai">Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
@@ -39,6 +38,8 @@ This is what Jina Core offers developers:
 🚀**Scale** - Jina allows you to scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
 
 ☁️ **Cloud Native** - Jina is built and designed to work and scale in the Cloud. All components can be deployed in the cloud to be used in your favourite cloud orchestrator. By default, Jina offers easy integration with docker compose and Kubernetes.
+
+<!-- end jina-description -->
 
 ## Install 
 ```

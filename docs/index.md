@@ -1,8 +1,8 @@
 # Welcome to Jina!
 
 ```{include} ../README.md
-:start-after: <!-- start elevator-pitch -->
-:end-before: <!-- end elevator-pitch -->
+:start-after: <!-- start jina-description -->
+:end-before: <!-- end jina-description -->
 ```
 
 ## Install
