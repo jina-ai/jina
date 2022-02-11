@@ -17,7 +17,7 @@ But what if you want to go bigger? Organize your code into modules, serve and sc
 
 - Using Executor inside a Flow multiple `DocumentArray` can be processed at the same time in a concurrent manner, and deployed easily in the cloud as part of a neural search application.
 
-- They can be easily containerized and shared with your colleagues with `jina hub push/pull`
+- Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`
 
 ```{toctree}
 :hidden:
