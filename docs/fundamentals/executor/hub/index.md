@@ -1,6 +1,6 @@
 # Share Executors via Jina Hub
 
-Now you understand that `Executor` is a building block in Jina. The following questions arise naturally:
+Now that you understand that `Executor` is a building block in Jina, the following questions naturally arise:
 
 - Can I reuse my Executor in another project?
 - Can I share my Executor with my colleagues?
