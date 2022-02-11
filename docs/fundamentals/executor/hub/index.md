@@ -1,5 +1,3 @@
-(hub-cookbook)=
-
 # Share Executors via Hub
 
 Now you understand that `Executor` is a building block in Jina. The following questions arise naturally:
@@ -10,7 +8,7 @@ Now you understand that `Executor` is a building block in Jina. The following qu
 
 Basically, something like the following:
 
-```{figure} ../../../.github/hub-user-journey.svg
+```{figure} ../../../../.github/hub-user-journey.svg
 :align: center
 ```
 
@@ -33,7 +31,7 @@ with f:
 
 The Hub architecture looks like the following:
 
-```{figure} ../../../.github/hub-system.svg
+```{figure} ../../../../.github/hub-system.svg
 :align: center
 ```
 
@@ -45,5 +43,4 @@ create-hub-executor
 push-executor
 use-hub-executor
 executor-best-practices
-../../tutorials/master-executor
 ```

@@ -1,7 +1,16 @@
 (kubernetes)=
-# Jina on Kubernetes
+# How to deploy Jina on Kubernetes
 
 Jina natively supports deploying your Flow and Executors into Kubernetes.
+
+A `Flow` is composed of `Executors` which run Python code
+defined to operate on `DocumentArray`. These `Executors` will live in different runtimes depending on how you want to deploy
+your Flow. 
+
+When deployed in `Kubernetes`, this `Executors` will be run inside `Kubernetes Pods` as containers and their lifetime will be handled
+by Kubernetes.
+
+Deploying `Flow` in Kubernetes is the recommended way of using Jina in production.
 
 ## Preliminaries
 
@@ -38,7 +47,7 @@ flow.to_k8s_yaml('flow_k8s_configuration')
 
 This will create a folder 'flow_k8s_configuration' with a set of Kubernetes yaml configurations for all the deployments composing the Flow
 
-## Examples
+## Example
 
 ### Indexing and searching images using CLIP image encoder and PQLiteIndexer
 
@@ -47,7 +56,7 @@ This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImage
 ```python
 from jina import Flow
 
-f = Flow(port_expose=8080, protocol='http').add(
+f = Flow(port_expose=8080).add(
     name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2
 ).add(name='indexer', uses='jinahub+docker://PQLiteIndexer', uses_with={'dim': 512}, shards=2)
 ```
@@ -119,7 +128,7 @@ with portforward.forward(
     client = Client(host='localhost', port=8080)
     client.show_progress = True
     docs = client.post(
-        '/index', inputs=DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob()),
+        '/index', inputs=DocumentArray.from_files('./imgs/*.png').apply(lambda d: d.load_uri_to_image_tensor()),
         return_results=True
     )
 
@@ -134,7 +143,14 @@ If `custom-namespace` has been used by another `Flow`, please set a different `k
 
 ```{admonition} Caution
 :class: caution
-In the default deployment dumped by the Flow, no Persistent Volume Object is added. You may want to edit the deployment files to add them if needed.
+The default deployment configurations dumped by the Flow, contain no special configuration objectes. You may want to 
+adapt it to your own needs. For instance, no Persistent Volume Object is added. 
+```
+
+```{admonition} Caution
+:class: caution
+Using the HTTP protocol for this example means image tensors are serialized to JSON, which is not convenient and 
+efficient. We can avoid this by using the GRPC protocol or by converting images to data URIs instead.
 ```
 
 ## Exposing your `Flow`
@@ -162,26 +178,50 @@ The client sends an image to the exposed `Flow` on `$EXTERNAL_IP` and retrieves 
 Finally, it prints the uri of the closest matches.
 
 ```python
-import requests
-from jina import DocumentArray
 import os
+
+from jina.clients import Client
+from jina import DocumentArray
+
 host = os.environ['EXTERNAL_IP']
 port = 80
-url = f'http://{host}:{port}'
 
-doc = DocumentArray.from_files('./imgs/*.jpg').apply(lambda d: d.load_uri_to_image_blob())[0].to_dict()
-resp = requests.post(f'{url}/search', json={'data': [doc]})
-matches = resp.json()['data']['docs'][0]['matches']
-print(f'Matched documents: {len(matches)}')
+client = Client(host=host, port=port)
+client.show_progress = True
+docs = DocumentArray.from_files("./imgs/*.png").apply(
+    lambda d: d.load_uri_to_image_tensor()
+)
+resp_query = client.post("/search", inputs=docs, return_results=True)
+
+matches = resp_query[0].docs[0].matches
+print(f"Matched documents: {len(matches)}")
 ```
 
 ## Scaling Executors on Kubernetes
 
 In Jina we support two ways of scaling:
+
 - **Replicas** can be used with any Executor type and is typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with Indexers since they store a state.
 
-Check {ref}`here <flow-topology>` for more information.
+Check {ref}`here <how-to-replica-shard>` for more information.
 
-Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas per Shard.
+Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas of a Deployment.
 
+Once the `Flow` is deployed in Kubernetes, you can use all the native `Kubernetes` tools like `kubeclt` to perform operations on the `Pods` and `Deployments`. 
+
+You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment), to run [rolling update](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment) operations, etc ...
+
+
+## Extra Kubernetes Options
+
+This Example has shown how to deploy a Jina Flow in Kubernetes based on the basic deployment configuration dumped by Jina
+when running `.to_k8s_yaml`.
+
+However, is important to realize that you can edit this deployment to fit your needs.
+
+A non-exhaustive example list of configurations you may want to adapt may include:
+
+- Add other external deployments from which an Executor can connect to.
+- Edit the default rolling update configuration.
+- Edit the default configuration map

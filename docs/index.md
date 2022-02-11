@@ -62,25 +62,18 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 ::::
 
 ::::{grid-item-card} {octicon}`infinity;1.5em` How to use Jina
-:link: datatype/text/index
+:link: how-to/index
 :link-type: doc
 :class-card: color-gradient-card
 
-Build a neural search solution with the power of Jina.
+Learn how to use Jina to build neural search applications.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
-:link: advanced/hub/index
+:link: fundamentals/executor/hub/index
 :link-type: doc
 
 Learn to share and reuse Executors from the Jina community.
-::::
-
-::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
-:link: advanced/experimental/index
-:link-type: doc
-
-Preview the next big things we are building. Careful not to get zapped!
 ::::
 
 
@@ -95,11 +88,12 @@ Preview the next big things we are building. Careful not to get zapped!
 :caption: Get started
 :hidden:
 
+
 get-started/neural-search
 get-started/jina-ecosystem
 get-started/jina-core
 get-started/install/index
-get-started/migrate-3.0/index
+get-started/migrate
 get-started/hello-world/index
 get-started/comparing-to-alternatives
 ```
@@ -109,6 +103,7 @@ get-started/comparing-to-alternatives
 :hidden:
 
 fundamentals/concepts
+fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 ```
@@ -116,16 +111,11 @@ fundamentals/flow/index
 ```{toctree}
 :caption: How-to
 :hidden:
-
-how-to/share-hub
-how-to/executor-sandbox
-how-to/executor-gpu
-how-to/async-executor
-how-to/external-executor
-how-to/polling-strategies
 how-to/docker-compose
 how-to/kubernetes
-how-to/scale-replication-shards
+how-to/sandbox
+how-to/async-executors
+how-to/gpu-executor
 tutorials/external-executor.md
 ```
 
@@ -137,7 +127,7 @@ tutorials/external-executor.md
 
 api
 cli/index
-proto/index
+proto/docs
 ```
 
 

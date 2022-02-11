@@ -4,6 +4,6 @@
 ```{toctree}
 :hidden:
 
-../../advanced/experimental/windows
+windows
 troubleshooting
 ```

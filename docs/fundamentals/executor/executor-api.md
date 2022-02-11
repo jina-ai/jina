@@ -1,76 +1,13 @@
-(executor)=
-# Create Executor
+# Executor API
 
-{class}`~jina.Executor` process `DocumentArray` in-place via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
+{class}`~jina.Executor` process `DocumentArray` via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
 - An `Executor` should subclass directly from `jina.Executor` class.
-- An `Executor` class is a bag of functions with shared state (via `self`); it can contain an arbitrary number of
+- An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
   functions with arbitrary names.
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
-
-## Minimum working example
-
-```python
-from jina import Executor, requests
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        print(kwargs)
-
-```
-
-````{tab} Use it in a Flow 
-
-```python
-from jina import Executor
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
-```
-
-````
-
-````{tab} Use it as-is 
-
-```python
-m = MyExecutor()
-m.foo()
-```
-
-````
-
-## Using Executors with AsyncIO
-For I/O bound Executors it can be helpful to utilize Python's AsyncIO API. This means we can wait for multiple pending Executor function calls concurrently.
-
-```python
-import asyncio
-from jina import Executor, requests
-
-
-class MyExecutor(Executor):
-
-  @requests
-  async def foo(self, **kwargs):
-      await asyncio.sleep(1.0)
-      print(kwargs)
-
-async def main():
-    m = MyExecutor()
-    call1 = asyncio.create_task(m.foo())
-    call2 = asyncio.create_task(m.foo())
-    await asyncio.gather(call1, call2)
-
-asyncio.run(main())
-```
-
 ## Constructor
-
 
 ### Subclass
 
@@ -100,72 +37,22 @@ class MyExecutor(Executor):
 
 ````{admonition} What is inside kwargs? 
 :class: tip
-Here, `kwargs` contains `metas` and `requests` (representing the request-to-function mapping) values from the YAML
-config and `runtime_args` injected on startup. 
+Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (representing the request-to-function mapping) values when the Executor is used inside a Flow.
 
 You can access the values of these arguments in `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
 or modifying their values before sending to `super().__init__()`.
 ````
 
-### Passing arguments
-
-When using an Executor in a Flow, there are two ways of passing arguments to its `__init__`.
-
-````{tab} via uses_with
-
-```python
-from jina import Flow
-
-f = Flow.add(uses=MyExecutor, uses_with={'foo': 'hello', 'bar': 1})
-
-with f:
-  ...
-```
-````
-
-`````{tab} via predefined YAML
-
-````{dropdown} my-exec.yml
-:open:
-
-```yaml
-jtype: MyExecutor
-with:
-  foo: hello
-  bar: 1
-```
-````
-
-````{dropdown} my-flow.py
-:open:
-
-```python
-from jina import Flow
-
-f = Flow.add(uses='my-exec.yml')
-
-with f:
-  ...
-```
-````
-
-
-`````
-
-
-```{hint}
-
-`uses_with` has higher priority than predefined `with` config in YAML. When both presented, `uses_with` is picked up first.
-
-```
-
 ## Methods
 
 Methods of `Executor` can be named and written freely. 
 
-Only methods that are decorated with `@requests` can be used in a `Flow`.
+`Executor` will have some special methods, which will be decorated with `@requests` which when used inside a Flow will map the method to network endpoints.
 
 ### Method decorator
+
+Executors can wrap any kind of function, there will however be some special methods that need to be decorated with `requests`. These methods will be bound to specific
+network requests and will be used to respond to network queries.
 
 You can import `requests` decorator via
 
@@ -173,38 +60,44 @@ You can import `requests` decorator via
 from jina import requests
 ```
 
-`@requests` defines when a function will be invoked in the Flow. It has a keyword `on=` to define the endpoint.
-
-To call an Executor's function, uses `Flow.post(on=..., ...)`. For example, given:
+`requests` is a decorator that takes an optional parameter `on`. It defines to which network endpoints each `Executor` method will bind to. 
 
 ```python
-from jina import Executor, Flow, Document, requests
+from jina import Executor, requests
 
 
-class MyExecutor(Executor):
+class RequestExecutor(Executor):
 
-    @requests(on='/index')
+    @requests(on=['/index', '/search']) # foo will be bound to `/index` and `/search` endpoints 
     def foo(self, **kwargs):
-        print(f'foo is called: {kwargs}')
+        print(f'Calling foo') 
 
-    @requests(on='/random_work')
+    @requests(on='/other') # bar will be bound to `/other` endpoint
     def bar(self, **kwargs):
-        print(f'bar is called: {kwargs}')
-
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post(on='/index', inputs=Document(text='index'))
-    f.post(on='/random_work', inputs=Document(text='random_work'))
-    f.post(on='/blah', inputs=Document(text='blah')) 
+        print(f'Calling bar') 
 ```
 
-Then:
+```python
+from jina import Flow
 
-- `f.post(on='/index', ...)` will trigger `MyExecutor.foo`;
-- `f.post(on='/random_work', ...)` will trigger `MyExecutor.bar`;
-- `f.post(on='/blah', ...)` will not trigger any function, as no function is bound to `/blah`;
+f = Flow().add(uses=RequestExecutor)
+
+with f:
+    f.post(on='/index', inputs=[])
+    f.post(on='/other', inputs=[])
+    f.post(on='/search', inputs=[])
+```
+
+```console
+           Flow@18048[I]:🎉 Flow is ready to use!                                                   
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:52255
+	🔒 Private network:	192.168.1.187:52255
+	🌐 Public address:	212.231.186.65:52255
+Calling foo
+Calling bar
+Calling foo
+```
 
 #### Default binding
 
@@ -226,55 +119,40 @@ class MyExecutor(Executor):
         print(kwargs)
 ```
 
-#### Multiple bindings
-
-To bind a method with multiple endpoints, you can use `@requests(on=['/foo', '/bar'])`. This allows
-either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that function.
-
 #### No binding
 
 A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any
 processing.
 
-(executor-method-signature)=
+### Method arguments
 
-### Method signature
+All Executor methods decorated by `@requests` need to follow the signature below for it to be used as a microservice inside a `Flow` (`async` is optional).
 
 Class method decorated by `@request` follows the signature below (`async` is optional):
 
 ```python
+from typing import Dict, Optional, Union, List
+from docarray import DocumentArray
+
 async def foo(docs: DocumentArray,
-        parameters: Dict,
-        docs_matrix: List[DocumentArray],
-        groundtruths: Optional[DocumentArray],
-        groundtruths_matrix: List[DocumentArray]) -> Optional[DocumentArray]:
+              parameters: Dict,
+              docs_matrix: List[DocumentArray]) -> Optional[Union[DocumentArray, Dict]]:
     pass
 ```
 
+Let's take a look at all these arguments:
 
-If the function is using `async` in its signature, it will be used as a coroutine and the regular `asyncio` functionality is available inside the function.
+- `docs`: A DocumentArray that is part of the request. As the nature of `Executor` is to wrap functionality related to `DocumentArray`, it is natural for
+it to be the main processing unit inside `Executor` methods. It is important to notice that these `docs` can be also changed in place as it would happen with 
+any other `list` object in a Python function
 
+- `parameters`: A Dict object that can be used to pass extra parameters to the `Executor` functions.
 
-The Executor's methods receive the following arguments in order:
+- `docs_matrix`:  This is the less-common parameter to be used for an `Executor`. This argument is needed when an `Executor` is used inside a `Flow` 
+when its job is to merge or reduce the output of more than one `Executors`. 
 
-
-| Name | Type | Description  |
-| --- | --- | --- |
-| `docs`   | `DocumentArray`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentArray`.  |
-| `parameters`  | `Dict`  | `Request.parameters`, given by `Flow.post(..., parameters=)` |
-| `docs_matrix`  | `List[DocumentArray]`  | When multiple requests are available, it is a list of all `Request.docs`. On single request, it is `None` |
-| `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. Same behavior as `docs`  |
-| `groundtruths_matrix`  | `List[DocumentArray]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
-
-````{admonition} Note
-:class: note
-Executor's methods not decorated with `@request` do not enjoy these arguments.
-````
-
-````{admonition} Note
-:class: note
-The arguments order is designed as common-usage-first. Not alphabetical order or semantic closeness.
-````
+- `return`: Every Executor method can process data in 3 ways: Update `docs` on the fly, return a `DocumentArray` object, or return a `Dict` object. 
+  
 
 ````{admonition} Hint
 :class: hint
@@ -305,108 +183,104 @@ class MyExecutor(Executor):
 ```
 ````
 
-### Method returns
-
-Methods decorated with `@request` can return `DocumentArray`, `DocumentArrayMemmap`, `Dict` or `None`.
-
-- If the return is `None`, then Jina considers all changes to happened in-place. The next Executor will receive the updated `docs` modified by the current Executor.
-- If the return is `DocumentArray` or `DocumentArrayMemmap`, then the current `docs` field in the `Request` will be overridden by the
-  return, which will be forwarded to the next Executor in the Flow.
-- If the return is a `Dict`, then `Request.parameters` will be updated by union with the return. The next Executor will receive this updated `Request.parameters`. One can leverage this feature to pass parameters between Executors.
-
-So do I need a return? Most time you don't. Let's see some examples.
-
-
-#### Embed Documents `blob`
-
-In this example, `encode()` uses some neural network to get the embedding for each `Document.blob`, then assign it
-to `Document.embedding`. The whole procedure is in-place and there is no need to return anything.
+Let's understand how `Executor` processes `DocumentArray` inside a Flow, and how the changes are chained and applied affecting downstream `Executors` in the Flow.
 
 ```python
-import numpy as np
-from jina import requests, Executor, DocumentArray
-
-from my_model import get_predict_model
+from docarray import DocumentArray, Document
+from jina import Executor, requests, Flow
 
 
-class PNEncoder(Executor):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.model = get_predict_model()
+class PrintDocuments(Executor):
+    
+  @requests
+  def foo(self, docs, **kwargs): 
+      for doc in docs:
+        print(f' PrintExecutor: received document with text: "{doc.text}"')
 
-    @requests
-    def encode(self, docs: DocumentArray, *args, **kwargs) -> None:
-        _blob, _docs = docs.traverse_flat(['c']).get_attributes_with_docs('blob')
-        embeds = self.model.predict(np.stack(_blob))
-        for d, b in zip(_docs, embeds):
-            d.embedding = b
+class ProcessDocuments(Executor):
+
+   @requests(on='/change_in_place')
+   def in_place(self, docs, **kwargs):
+      # This executor will only work on `docs` and will not consider any other arguments
+      for doc in docs:
+        print(f' ProcessDocuments: received document with text "{doc.text}"')
+        doc.text = 'I changed the executor in place' 
+
+   @requests(on='/return_different_docarray')
+   def ret_docs(self, docs, **kwargs):
+      # This executor will only work on `docs` and will not consider any other arguments
+      ret = DocumentArray()
+      for doc in docs:
+        print(f' ProcessDocuments: received document with text: "{doc.text}"')
+        ret.append(Document(text='I returned a different Document'))
+      return ret
+
+f = Flow().add(uses=ProcessDocuments).add(uses=PrintDocuments)
+
+with f:
+    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request')))
+    f.post(on='/return_different_docarray', inputs=DocumentArray(Document(text='request')))
 ```
 
-#### Add Chunks by segmenting Document
+```console
+           Flow@23300[I]:🎉 Flow is ready to use!                                                   
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:61855
+	🔒 Private network:	192.168.1.187:61855
+	🌐 Public address:	212.231.186.65:61855
+ ProcessDocuments: received document with text "request1"
+ PrintExecutor: received document with text: "I changed the executor in place"
+ ProcessDocuments: received document with text: "request2"
+ PrintExecutor: received document with text: "I returned a different Document"
+```
 
-In this example, each `Document` is segmented by `get_mesh` and the results are added to `.chunks`. After
-that, `.buffer` and `.uri` are removed from each `Document`. In this case, all changes happen in-place and there is no
-need to return anything.
+## Using Executors with AsyncIO
+For I/O bound Executors it can be helpful to utilize Python's AsyncIO API. This means we can wait for multiple pending Executor function calls concurrently.
 
 ```python
-from jina import requests, Document, Executor, DocumentArray
+import asyncio
+from jina import Executor, requests
 
 
-class ConvertSegmenter(Executor):
+class MyExecutor(Executor):
+
+  @requests
+  async def foo(self, **kwargs):
+      await asyncio.sleep(1.0)
+      print(kwargs)
+
+async def main():
+    m = MyExecutor()
+    call1 = asyncio.create_task(m.foo())
+    call2 = asyncio.create_task(m.foo())
+    await asyncio.gather(call1, call2)
+
+asyncio.run(main())
+```
+
+## Use Executor out of Flow
+
+`Executor` object can be used directly just like a regular Python object. For example,
+
+```python
+from docarray import DocumentArray, Document
+from jina import Executor, requests
+
+
+class MyExec(Executor):
 
     @requests
-    def segment(self, docs: DocumentArray, **kwargs) -> None:
+    def foo(self, docs, **kwargs):
         for d in docs:
-            d.load_uri_to_buffer()
-            d.chunks = [Document(blob=_r['blob'], tags=_r['tags']) for _r in get_mesh(d.content)]
-            d.pop('buffer', 'uri')
+            d.text = 'hello world'
+
+
+m = MyExec()
+da = DocumentArray([Document(text='test')])
+m.foo(da)
+print(f'Text: {da[0].text}')
 ```
 
-#### Preserve Document `id` only
-
-In this example, a simple indexer stores incoming `docs` in a `DocumentArray`. Then it recreates a new `DocumentArray`
-by preserving only `id` in the original `docs` and dropping all others, as the developer does not want to carry all rich
-info over the network. This needs a return.
-
-```{code-block} python
----
-emphasize-lines: 14
----
-from jina import requests, Document, Executor, DocumentArray
-
-
-class MyIndexer(Executor):
-    """Simple indexer class """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._docs = DocumentArray()
-
-    @requests(on='/index')
-    def index(self, docs: DocumentArray, **kwargs):
-        self._docs.extend(docs)
-        return DocumentArray([Document(id=d.id) for d in docs])
-```
-
-#### Pass/change request parameters
-
-In this example, `MyExec2` receives the parameters `{'top_k': 10}` from `MyExec1` when the Flow containing `MyExec1 -> MyExec2` in order. 
-
-```{code-block} python
----
-emphasize-lines: 7, 13
----
-from jina import requests, Document, Executor
-
-class MyExec1(Executor):
-
-    @requests(on='/index')
-    def index(self, **kwargs):
-        return {'top_k': 10}
-
-class MyExec2(Executor):
-
-    @requests(on='/index')
-    def index(self, parameters, **kwargs):
-        self.docs[:int(parameters['top_k']))
+```text
+Text: hello world
 ```

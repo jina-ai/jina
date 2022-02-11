@@ -6,7 +6,8 @@ tips to help you write beautiful and efficient code.
 ## Clean import
 
 ```python
-from jina import Document, DocumentArray, Executor, Flow, requests
+from docarray import Document, DocumentArray
+from jina import Executor, Flow, requests
 ```
 is often all you need. Copy-paste it as the first line of your code.
 

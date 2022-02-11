@@ -34,14 +34,6 @@ We've added preliminary support for using Executors listed in the Hub portal. No
 
 We haven't added support for JinaD on Windows. If you can make it work, feel free to create a PR.
 
-### Limited support for `DocumentArrayMemmap`
-
-Even though support for [DocumentArrayMemmap](../../fundamentals/document/documentarraymemmap-api) has been added, it is still error-prone. Please proceed with caution.
-
-### Memory watermark is unavailable 
-
-Since Windows doesn't support `resource` module, memory watermark checks are disabled by default.
-
 
 ### `UnicodeEncodeError` on Jina CLI
 
