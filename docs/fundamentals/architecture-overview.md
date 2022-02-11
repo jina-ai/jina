@@ -6,7 +6,7 @@ This figure shows details on how `Flow` and `Executor` abstractions translate in
 serving and scaling features of Jina.
 
 This architecture is useful to understand how Jina works regardless of it working locally orchestrated by the Flow or in 
-a cloud-native infrastructure as Kubernetes. In fact, you can notice how the naming and concepts are inspired by Kubernetes architecture.
+a cloud-native infrastructure such as Kubernetes. In fact, you can notice how some of the naming and concepts are inspired by the Kubernetes architecture.
  
 
 ```{figure} arch-overview.svg
