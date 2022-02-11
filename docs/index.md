@@ -126,7 +126,7 @@ how-to/gpu-executor
 
 api
 cli/index
-proto/index
+proto/docs
 ```
 
 
