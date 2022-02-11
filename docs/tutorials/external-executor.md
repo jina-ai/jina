@@ -96,12 +96,12 @@ docs = DocumentArray([Document(text='Embed me please!') for _ in range(5)])
 
 def print_embedding(resp):
     doc = resp.docs[0]
-    print(f'{doc.text} has been embedded to shape {doc.embedding.shape}')
+    print(f'"{doc.text}" has been embedded to shape {doc.embedding.shape}')
 
 with f:
     f.index(inputs=docs, on_done=print_embedding)
 
->>> **TODO run once Jina 3 Executors are available from the hub** 
+>>> "Embed me please!" has been embedded to shape (512,)
 ```
 
 We obtain embeddings for our documents, just like we would with a local Executor.
