@@ -103,6 +103,7 @@ get-started/comparing-to-alternatives
 :hidden:
 
 fundamentals/concepts
+fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 ```
