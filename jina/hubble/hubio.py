@@ -612,37 +612,46 @@ with f:
         console = Console()
 
         host = None
+        port = None
         try:
-            res = requests.get(
+            json_response = requests.get(
                 url=get_hubble_url_v2() + '/rpc/sandbox.get',
                 params=payload,
                 headers=get_request_header(),
             ).json()
-            if res.get('code') == 200:
-                host = res.get('data', {}).get('host', None)
+            if json_response.get('code') == 200:
+                host = json_response.get('data', {}).get('host', None)
+                port = json_response.get('data', {}).get('port', None)
+                livetime = json_response.get('data', {}).get('livetime', '15 mins')
 
         except Exception:
             raise
 
-        if host:
-            return host, 443
+        if host and port:
+            console.log(f"There is already one sandbox existing, reusing it.")
+            console.log(
+                f"[bold green]This sandbox will be removed when no traffic during {livetime}"
+            )
+
+            return host, port
 
         with console.status(
             f"[bold green]Deploying sandbox for ({name}) since no existing one..."
         ):
             try:
-                json = requests.post(
+                json_response = requests.post(
                     url=get_hubble_url_v2() + '/rpc/sandbox.create',
                     json=payload,
                     headers=get_request_header(),
                 ).json()
 
-                host = json.get('data', {}).get('host', None)
-                livetime = json.get('data', {}).get('livetime', '15 mins')
-                if not host:
-                    raise Exception(f'Failed to deploy sandbox: {json}')
+                host = json_response.get('data', {}).get('host', None)
+                port = json_response.get('data', {}).get('port', None)
+                livetime = json_response.get('data', {}).get('livetime', '15 mins')
+                if not host or not port:
+                    raise Exception(f'Failed to deploy sandbox: {json_response}')
 
-                console.log(f"Deployment completed: {host}")
+                console.log(f"Deployment completed: {host}:{port}")
                 console.log(
                     f"[bold green]This sandbox will be removed when no traffic during {livetime}"
                 )
@@ -650,7 +659,7 @@ with f:
                 console.log("Deployment failed")
                 raise
 
-        return host, 443
+        return host, port
 
     def _pull_with_progress(self, log_streams, console):
         from rich.progress import Progress, DownloadColumn, BarColumn
