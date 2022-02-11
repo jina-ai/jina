@@ -1807,7 +1807,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         command = (
             'docker-compose up'
             if output_path is None
-            else f'docker-compose up -f {output_path}'
+            else f'docker-compose -f {output_path} up'
         )
 
         self.logger.info(
