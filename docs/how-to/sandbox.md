@@ -32,7 +32,7 @@ The sandbox will not be removed immediately after the Flow is closed. It will be
 It will find the existing sandbox by three factors: 
 - Executor name
 - Executor tag
-- Jina version of the Driver program
+- Jina version of the driver program
 
 If all these three factors match, then it will reuse the existing sandboxes.
 
