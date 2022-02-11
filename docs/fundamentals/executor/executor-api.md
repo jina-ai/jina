@@ -3,9 +3,9 @@
 {class}`~jina.Executor`s encapsulate functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
 1. An `Executor` should subclass directly from the `jina.Executor` class.
-- An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
+2. An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
   functions with arbitrary names.
-- Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
+3. Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
 ## Constructor
 
