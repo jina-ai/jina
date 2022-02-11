@@ -1,6 +1,6 @@
 # Basic Concepts
 
-Executor, and Flow are the two fundamental concepts in Jina. Understanding these will help you build your
+*Executor* and *Flow* are the two fundamental concepts in Jina. Understanding these will help you build your
 search engine.
 
 - **Executor** is how Jina processes Documents;
