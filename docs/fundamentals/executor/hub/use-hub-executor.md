@@ -2,9 +2,9 @@
 # Use Hub Executor
 
 
-We provide three ways of using Hub Executors in your project. Each has its own use case and benefit.
+We provide three ways of using Hub Executors in your project. Each has its own use case and benefits.
 
-## Use as-is
+## Use as-is.
 
 You can use a Hub Executor as-is via `Executor.from_hub()`:
 
@@ -21,7 +21,7 @@ assert da.texts == ['hello']
 The Hub Executor will be pulled to your local machine and run as a native Python object. You can use a line-debugger to step in/out `exec` object, set breakpoints, and observe how it behaves. You can directly feed in a `DocumentArray`. After you build some confidence in that Executor, you can move to the next step: Using it as a part of your Flow.
 
 ```{caution}
-Not all executors on the Hub can be directly run in this way, some require extra dependencies. In that case you can add `.from_hub(..., install_requirements=True)` to install the requirements automatically. Be careful, these dependencies may not be compatible with your local packages and may override your local development environment.
+Not all executors on the Hub can be directly run in this way, some require extra dependencies. In that case, you can add `.from_hub(..., install_requirements=True)` to install the requirements automatically. Be careful, these dependencies may not be compatible with your local packages and may override your local development environment.
 ```
 
 ```{tip}
@@ -44,7 +44,7 @@ f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 If you do not provide a `/<TAG>`, it defaults to `/latest`, which means using the `latest` tag.
 
 ````{important}
-To use private a Executor, you must provide the `SECRET`. It is generated after `jina hub push`.
+To use a private Executor, you must provide the `SECRET`. It is generated after `jina hub push`.
 
 ```{figure} screenshots/secret.png
 :align: center

@@ -12,7 +12,7 @@ jina hub new
 ```
 
 For the basic configuration, 
-you will be asked two things: The Executor’s name and where it should be saved. A more advanced configuration is optional, but rarely necessary.
+you will be asked for two things: The Executor’s name and where it should be saved. A more advanced configuration is optional but rarely necessary.
 
 After running the command, a project with the following structure will be generated:
 
@@ -46,7 +46,7 @@ carefully set `manifest.yml` to the correct values:
 | `name`             | Human-readable title of the Executor                                                       | None    |
 | `description`      | Human-readable description of the Executor                                                 | None    |
 | `url`              | URL to find more information about the Executor, normally the GitHub repo URL              | None    |
-| `keywords`         | A list of strings help users filter and locate your package                             | None    |
+| `keywords`         | A list of strings helps users filter and locate your package                             | None    |
 
 ```{admonition} See Also
 :class: seealso
