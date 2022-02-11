@@ -183,7 +183,7 @@ class MyExecutor(Executor):
 ```
 ````
 
-Let's understand how `Executor` processes `DocumentArray` inside a Flow, and how the changes are chained and applied affecting downstream `Executors` in the Flow.
+Let's understand how `Executor`s processes `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
 
 ```python
 from docarray import DocumentArray, Document
