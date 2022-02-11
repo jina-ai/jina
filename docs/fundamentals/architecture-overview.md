@@ -24,4 +24,4 @@ keeps knowledge of the topology of the Flow to guarantee that the `docs` are pro
 
 - **Pod**: A Pod is a simple abstraction over a runtime running any of Jina service, let it be a process, a docker container or a Kubernetes Pod.
 
-- **Head**: Head is a service added by Jina inside a Deployment to make sure that load is balanced between all replicas of Executors. It communicates with the Executors via `gRPC`
+- **Head**: The Head is a service added to a Deployment by Jina, and it ensures that load is balanced between all replicas of a given Executor. It communicates with the Executors via `gRPC`.
