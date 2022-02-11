@@ -13,7 +13,7 @@ But what if you want to go bigger? Organize your code into modules, serve and sc
 
 - Executors let you organize your `DocumentArray` based functions into logical entities that can share configuration state, following OOP.
 
-- Executor converts your local functions into functions that can be distributed inside a Flow.
+- Executors convert your local functions into functions that can be distributed inside a Flow.
 
 - Using Executor inside a Flow multiple `DocumentArray` can be processed at the same time in a concurrent manner, and deployed easily in the cloud as part of a neural search application.
 
