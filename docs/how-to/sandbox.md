@@ -47,7 +47,6 @@ The Jina version inside the Sandbox will be the same as the one in the place whe
 
 ## Mixed with non-sandbox Executors
 
-It can also be mixed with non-sandbox Executors.
 
 ```python
 from jina import Flow, Document, DocumentArray, Executor, requests
