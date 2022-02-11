@@ -120,13 +120,13 @@ As you can see, now it only takes 3 seconds to finish the task.
 Quite intuitive, right? In a later section,
 we'll introduce what `replicas` means under different deployment options.
 
-## Split Data over Machines: Shards
+## Split Data into Partitions
 
 ### Context
 
 Now with your text corpus encoded as TF-IDF embeddings,
 it's time to save the results.
-We'll use Jina's [PQLite](https://hub.jina.ai/executor/pn1qofsj) `Indexer` to persist our embeddings for fast Approximate Nearest Neighbor Search.
+We'll use Jina's [PQLiteIndexer](https://hub.jina.ai/executor/pn1qofsj) to persist our embeddings for fast Approximate Nearest Neighbor Search.
 
 And you add this `PQLiteIndexer` to your Flow:
 
@@ -175,10 +175,10 @@ f = Flow().add(
 Now open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
 `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
 
-### Different POOLING Strategies
+### Different POLLING Strategies
 
 When you have multiple shards, the default `polling` strategy is `any`.
-Jina supports two `pooling` strategies:
+Jina supports two `polling` strategies:
 
 1. `any`: requests will be randomly assigned to one shard.
 2. `all`: requests will be handled by all shards.
@@ -194,7 +194,7 @@ The new `Flow`:
 ```python
 # Config your polling strategy based on endpoints
 # At index time, use ALL, at search time use ANY, the rest use ALL.
-polling_config = {'/index': 'ALL', '/search': 'ANY', '*': 'ALL'}
+polling_config = {'/index': 'ANY', '/search': 'ALL', '*': 'ALL'}
 
 f = Flow().add(
     name='fast_executor').add(
@@ -210,15 +210,9 @@ f = Flow().add(
 )
 ```
 
-## Concept Alignment: How does it work on Localhost, Docker, and K8s
-
-Maybe you have noticed that all experiments we did above are on localhost.
-This means that the `replicas` are just multiple processes. And `shards` are multiple folders on the same machine.
-How does it work in a cloud-based deployment setting?
-
 ## Conclusion
 
 Jina can help you scale out your applications easily.
 Depending on your needs, if you want to increase the `Executor` throughput, use the `replicas` argument.
 If you want to partition your data across multiple places,
-use the `shards` with the `pooling` strategy you want.
+use the `shards` with the `polling` strategy you want.
