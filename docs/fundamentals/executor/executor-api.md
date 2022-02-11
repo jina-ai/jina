@@ -52,7 +52,6 @@ There are, however, special methods inside an `Executor`, which are decorated wi
 ### Method decorator
 
 Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
-network requests and will be used to respond to network queries.
 
 You can import `requests` decorator via
 
