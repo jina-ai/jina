@@ -53,7 +53,7 @@ There are, however, special methods inside an `Executor`, which are decorated wi
 
 Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
 
-You can import `requests` decorator via
+You can import the `requests` decorator via
 
 ```python
 from jina import requests
