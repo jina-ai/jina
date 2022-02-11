@@ -15,7 +15,7 @@ But what if you want to go bigger? Organize your code into modules, serve and sc
 
 - Executors convert your local functions into functions that can be distributed inside a Flow.
 
-- Using Executor inside a Flow multiple `DocumentArray` can be processed at the same time in a concurrent manner, and deployed easily in the cloud as part of a neural search application.
+- Executors inside a Flow can process multiple `DocumentArray`s concurrently, and can be deployed easily to the cloud as part of your neural search application.
 
 - Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`
 
