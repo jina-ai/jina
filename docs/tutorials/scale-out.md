@@ -29,6 +29,7 @@ Before you begin, make sure you meet these prerequisites:
 ```shell
 pip install jina
 pip install sklearn
+pip install pqlite
 ```
 
 ## Speed-Up A Slow Executor: Replicas
@@ -41,29 +42,10 @@ The Executor looks like this:
 
 ```python
 from jina import Executor, requests
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-class MyTokenizer(Executor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.vectorizer = TfidfVectorizer()
-    
-    @requests
-    def vectorize(self, docs, **kwargs):
-        # Extract all text from jina document and feed into sklearn
-        X = self.vectorizer.fit_transform(docs.contents)
-        # Assign results as document embeddings
-        docs.embeddings = X
-```
-
-And we create a `Flow` and make use a text corpus from scikit-learn to use this `Executor`:
-
-```python
-from jina import Flow
 from docarray import Document
-from sklearn.datasets import fetch_20newsgroups
 
-f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer)
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.datasets import fetch_20newsgroups
 
 data, _ = fetch_20newsgroups(
     shuffle=True,
@@ -71,9 +53,28 @@ data, _ = fetch_20newsgroups(
     return_X_y=True,
 )
 
+vectorizer = TfidfVectorizer()
+vectorizer.fit(data)
+
 def news_generator():
     for item in data:
         yield Document(text=item)
+
+class MyVectorizer(Executor):
+    @requests
+    def vectorize(self, docs, **kwargs):
+        # Extract all text from jina document and vectorize
+        X = vectorizer.transform(docs.contents)
+        # Assign tf-idf representation as document embeddings
+        docs.embeddings = X
+```
+
+And we create a `Flow` and make use a text corpus from scikit-learn to use this `Executor`:
+
+```python
+from jina import Flow
+
+f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer)
 ```
 
 ### Scale-Up an Executor
@@ -101,8 +102,8 @@ What if you need to index millions of documents?
 Jina allows you to scale your `Executor` very easily, with only one parameter change:
 
 ```diff
-+ f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer, replicas=2)
-- f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyTokenizer)
++ f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer, replicas=2)
+- f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer)
 ```
 
 Let's see how it performs given 2 `Replicas`:
@@ -135,7 +136,7 @@ from jina import Flow
 
 f = Flow().add(
     name='fast_executor').add(
-    name='slow_executor', uses=MyTokenizer).add(
+    name='slow_executor', uses=MyVectorizer).add(
     name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
       'dim': 5215,
       'metric': 'cosine'
@@ -161,7 +162,7 @@ If you want to distribute your data to different places, Jina allows you to use 
 ```python
 f = Flow().add(
     name='fast_executor').add(
-    name='slow_executor', uses=MyTokenizer).add(
+    name='slow_executor', uses=MyVectorizer).add(
     name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
       'dim': 5215,
       'metric': 'cosine'
@@ -198,7 +199,7 @@ polling_config = {'/index': 'ANY', '/search': 'ALL', '*': 'ALL'}
 
 f = Flow().add(
     name='fast_executor').add(
-    name='slow_executor', uses=MyTokenizer).add(
+    name='slow_executor', uses=MyVectorizer).add(
     name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
       'dim': 5215,
       'metric': 'cosine'
