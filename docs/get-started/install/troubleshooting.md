@@ -64,4 +64,4 @@ This can be fixed by reinstalling the `docarray` package manually:
 pip install -U --force-reinstall docarray
 ```
 
-To avoid this issue in the first place, we recommend installing Jina in a new venv instead of upgrading from an old installation.
+To avoid this issue in the first place, we recommend installing Jina in a new virtual environment instead of upgrading from an old installation.

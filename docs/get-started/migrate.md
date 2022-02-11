@@ -1,13 +1,13 @@
 # Migration to Jina 3
 
-Jina 3 comes with many improvement, but to be able to enjoy them, you will also have to make some
+Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.
 
-One of the major changes in Jina 3 is the inclusion of [DocArray](https://docarray.jina.ai/) as an external dependency:
+One of the major changes in Jina 3 is [DocArray](https://docarray.jina.ai/) being an external dependency:
 The previously included `Document` and `DocumentArray` data structures now form their own library and include new
 features, improved performance, and increased flexibility.
 
-Accordingly, most of the breaking changes that users will deal to when updating to Jina 3 are mainly related to `Document` and `DocumentArray`.
+Accordingly, most of the breaking changes that users will experience when updating to Jina 3 are mainly related to `Document` and `DocumentArray`.
 
 ```{admonition} DocArray library
 :class: seealso
@@ -22,7 +22,7 @@ long run. Here you can find out what exactly you will have to adapt.
 
 ## Simple changes at a glance
 
-Many of the changes introduced in Jina 3 are easy to incorporate from a Jina 2 codebase.
+Many of the changes introduced in Jina 3 are easily adapted to a Jina 2 codebase.
 The modifications in the following table should, in most cases, be safe to perform without further thought or effort.
 
 
@@ -41,7 +41,7 @@ There are, however, some more nuanced changes in Jina 3 as well.
 These are outlined below.
 
 
-## Document: More natural attribute names and pythonic serialization
+## Document: More natural attribute names and Pythonic serialization
 
 Docarray introduces more natural naming conventions for `Document` and `DocumentArray` attributes.
 
@@ -53,7 +53,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 
 ## DocumentArray: Simplified attribute, element access and new storage options
 
-**Attributes**: Docarray introduces a flexible way of accessing attributes of `Document`s in a `DocumentArray`, in bulk.
+**Attributes**: Docarray introduces a flexible way of bulk-accessing attributes of `Document`s in a `DocumentArray`.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
   a select number of attributes. Currently, this syntax is supported by:
   - `text`: `docs.texts`
@@ -64,7 +64,7 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 - The remaining attributes can be accessed in bulk by calling `docs[:, 'attribute']`, e.g. `docs[:, 'tags']`.
   Additionally, you can access a specific key in `tags` by calling `docs[:, 'tags__key']`.
 
-**Array Traversal**: For traversing `DocumentArray`s via a `traversal_path`, docarray introduces a simplified notation:
+**Array traversal**: For traversing `DocumentArray`s via a `traversal_path`, docarray introduces a simplified notation
 
 - Traversal paths of the form `[path1, path2]` (e.g. `['r', 'cm']`) are replaced by a single string of the form
 `'path1,path2'` (e.g. `'r,cm'`)
@@ -108,7 +108,7 @@ print(docs[...].texts)
 **Batching**: Batching operations are delegated to the docarray package and Python builtins:
 
 - `docs.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
-The example below shows how to achieve complex behavior that previously relied on these arguments, in a more pythonic
+The example below shows how to achieve complex behavior that previously relied on these arguments, in a more Pythonic
 and Jina 3 compatible way:
 
 ````{tab} Jina 2
@@ -127,7 +127,7 @@ DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=
 
 ````
 
-- **Accessing non-existent values**: In Jina 2, bulk accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
+- **Accessing non-existent values**: In Jina 2, bulk-accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
 inside the `DocumentArray` do not have a value for that attribute. In Jina 3, this returns `None`. This change becomes
 important when migrating code that checks for the presence of a certain attribute.
 
@@ -163,7 +163,7 @@ print(docs.texts)
 
 ````
 
-- **Serialization**: `DocumentArray` introduces the same pythonic serialization syntax as `Document`.
+- **Serialization**: `DocumentArray` introduces the same Pythonic serialization syntax as `Document`.
   - `docs.SerializeToString()` is removed in favour of `docs.to_bytes()` and `docs.to_json()`
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`

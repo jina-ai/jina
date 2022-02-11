@@ -24,8 +24,8 @@ class MyExecutor(Executor):
 
 ## Examples
 
-In this example we have a heavy lifting API for which we want to call several times, we want to leverage the
-async Python features to speed up the `Executor`'s call by calling the api multiples times concurrently.
+In this example we have a heavy lifting API for which we want to call several times, and we want to leverage the
+async Python features to speed up the `Executor`'s call by calling the API multiples times concurrently.
 
 ### With async
 
@@ -68,7 +68,7 @@ with f:
 
 ### Without async
 
-Here is an example without using `coroutines`, all of the 50 api calls will be queued and nothing will be done 
+Here is an example without using `coroutines`. All of the 50 API calls will be queued and nothing will be done 
 concurrently.
 
 ```python

@@ -32,7 +32,7 @@ We've added preliminary support for using Executors listed in the Hub portal. No
 
 ### JinaD is not supported
 
-We haven't added support for JinaD on Windows. If you can make it work, feel free to create a PR.
+We haven't added support for JinaD on Windows. If you can make it work, feel free to [create a PR](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md).
 
 
 ### `UnicodeEncodeError` on Jina CLI

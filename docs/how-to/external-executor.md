@@ -21,7 +21,7 @@ If you want to add an external Executor to your Flow, all you really need to kno
 You need:
 
 - `host`, the host address of the Executor
-- `port_in`, the port on which the executor receives information
+- `port_in`, the port on which the Executor receives information
 
 Then, adding the Executor is a simple call to `Flow.add()` with the `external` argument set to True. This tells the Flow that
 it does not need to start the Executor itself.:
@@ -39,7 +39,7 @@ Flows!
 ## Starting standalone Executors
 
 The example above assumes that there already is an Executor running, and you just want to access
-it from your flow.
+it from your Flow.
 
 You can, however, also start your own standalone Executors, which can then be accessed from anywhere. There are two
 ways of doing this: Pulling an Executor from Jina Hub, and using a locally defined Executor. In either case, you will
@@ -54,7 +54,7 @@ This tutorial walks through the basics of spawing a standalone (external) Execut
 ## Using Jina Hub
 
 The Jina CLI allows you to spawn executors straight from the Hub.
-In this example, we will use the `CLIPTextEncoder` to create embeddings for our Documents.
+In this example, we will use `CLIPTextEncoder` to create embeddings for our Documents.
 
 First, we start the Executor from the terminal. All we need to decide is the `port` that will be used by the Executor.
 Here we pick `12345`.
@@ -88,7 +88,7 @@ Next, let's access it from a Flow and encode some Documents. You can do this fro
 the first machine's host address, or simply from the same machine in a different process using `localhost`.
 
 So, if you are still working on the same machine, hop over to a new terminal or your code editor of choice, and define
-the following flow in a Python file:
+the following Flow in a Python file:
 
 ```python
 from jina import Flow
@@ -115,7 +115,7 @@ with f:
 "Embed me please!" has been embedded to shape (512,)
 ```
 
-We obtain embeddings for our documents, just like we would with a local Executor.
+We obtain embeddings for our Documents, just like we would with a local Executor.
 
 ## Using a custom Executor
 
@@ -147,7 +147,7 @@ metas:
     - exec.py
 ```
 
-This simply points jina to our file and Executor class.
+This simply points Jina to our file and Executor class.
 
 Now we can run the CLI command again, this time using our custom Executor:
 
@@ -155,7 +155,7 @@ Now we can run the CLI command again, this time using our custom Executor:
 jina executor --uses my-exec.yml --port-in 12345
 ```
 
-Now that your executor is up and running, we can tap into it just like before, and even use it from two different Flows.
+Now that your Executor is up and running, we can tap into it just like before, and even use it from two different Flows.
 
 ```python
 from jina import Flow
