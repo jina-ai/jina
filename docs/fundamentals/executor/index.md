@@ -11,7 +11,7 @@ You can create an Executor by extending the `Executor` class and adding logic to
 Once you have learned `DocumentArray`, you are capable of using all its power and expressiveness to build a neural search application.
 But what if you want to go bigger? Organize your code into modules, serve and scale them independently as microservices? That's exactly what Executors enable you to do.
 
-- Executor lets the developer organize their `DocumentArray` based functions into logical entities that can share configuration state following OOP.
+- Executors let you organize your `DocumentArray` based functions into logical entities that can share configuration state, following OOP.
 
 - Executor converts your local functions into functions that can be distributed inside a Flow.
 
