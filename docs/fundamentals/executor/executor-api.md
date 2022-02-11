@@ -127,7 +127,6 @@ processing.
 
 All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a `Flow`.The `async`-definition is optional.
 
-Class method decorated by `@request` follows the signature below (`async` is optional):
 
 ```python
 from typing import Dict, Optional, Union, List
