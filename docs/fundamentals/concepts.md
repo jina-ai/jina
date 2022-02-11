@@ -6,7 +6,7 @@ search engine.
 - **Executor** is how Jina processes Documents;
 - **Flow** is how Jina streamlines and scales Executors.
 
-*Learn them all, nothing more, you are good to go.*
+*Learn them both, nothing more, you are good to go.*
 
 ## Executor
 
