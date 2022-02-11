@@ -285,7 +285,7 @@ class GrpcConnectionPool:
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
     ) -> List[asyncio.Task]:
-        """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_messages
+        """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
         :param request: a single request to send
         :param deployment: name of the Jina deployment to send the message to
         :param head: If True it is send to the head, otherwise to the worker pods
