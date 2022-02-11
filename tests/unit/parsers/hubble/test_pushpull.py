@@ -16,6 +16,7 @@ def test_push_parser(tmpdir):
     assert args.path == tmpdir
     assert args.force_update is None
     assert args.secret is None
+    assert args.verbose is False
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')
 
@@ -51,6 +52,9 @@ def test_push_parser(tmpdir):
     assert args.secret == '8iag38yu'
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')
+
+    args = parser.parse_args([tmpdir, '--verbose'])
+    assert args.verbose is True
 
 
 def test_pull_parser():
