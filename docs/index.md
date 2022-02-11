@@ -117,6 +117,7 @@ how-to/sandbox
 how-to/async-executors
 how-to/gpu-executor
 how-to/external-executor.md
+how-to/scale-out.md
 ```
 
 
