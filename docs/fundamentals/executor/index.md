@@ -6,18 +6,18 @@
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 
 
-## Why to use Executor?
+## Why should you use Executor?
 
 Once you have learned `DocumentArray`, you are capable of using all its power and expressiveness to build a neural search application.
-Now you need to organize your code in independent modules to be served and scaled independently as microservices.
+But what if you want to go bigger? Organize your code into modules, serve and scale them independently as microservices? That's exactly what Executors enable you to do.
 
-- Executor lets the developer organize their `DocumentArray` based functions into logical entities that can share configuration state following OOP.
+- Executors let you organize your `DocumentArray` based functions into logical entities that can share configuration state, following OOP.
 
-- Executor converts your local functions into functions that can be distributed inside a Flow.
+- Executors convert your local functions into functions that can be distributed inside a Flow.
 
-- Using Executor inside a Flow multiple `DocumentArray` can be processed at the same time in a concurrent manner, and deployed easily in the cloud as part of a neural search application.
+- Executors inside a Flow can process multiple `DocumentArray`s concurrently, and can be deployed easily to the cloud as part of your neural search application.
 
-- They can be easily containerized and shared with your colleagues with `jina hub push/pull`
+- Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`
 
 ```{toctree}
 :hidden:

@@ -882,7 +882,7 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         mermaid_graph = []
-        if self.role != DeploymentRoleType.GATEWAY and self.external:
+        if self.role != DeploymentRoleType.GATEWAY and not self.external:
             mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
 
             uses_before_name = (
@@ -944,6 +944,7 @@ class Deployment(BaseDeployment):
                 uses = [
                     args.uses for args in self.pod_args['pods'][0]
                 ]  # all the uses should be the same but let's keep it this way
+
                 if uses_before_name is None and uses_after_name is None:
                     # just put the replicas in parallel
                     for rep_i, (name, use) in enumerate(zip(names, uses)):

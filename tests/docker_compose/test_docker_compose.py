@@ -161,7 +161,6 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
     for doc in docs:
         if polling == 'ALL':
             assert len(set(doc.tags['traversed-executors'])) == 2
-            assert set(doc.tags['pod_id']) == {0, 1}
             assert set(doc.tags['shard_id']) == {0, 1}
             assert doc.tags['parallel'] == [2, 2]
             assert doc.tags['shards'] == [2, 2]
@@ -170,9 +169,7 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
                     runtimes_to_visit.remove(executor)
         else:
             assert len(set(doc.tags['traversed-executors'])) == 1
-            assert len(set(doc.tags['pod_id'])) == 1
             assert len(set(doc.tags['shard_id'])) == 1
-            assert 0 in set(doc.tags['pod_id']) or 1 in set(doc.tags['pod_id'])
             assert 0 in set(doc.tags['shard_id']) or 1 in set(doc.tags['shard_id'])
             assert doc.tags['parallel'] == [2]
             assert doc.tags['shards'] == [2]

@@ -116,8 +116,6 @@ class K8sDeploymentConfig:
 
         def _get_container_args(self, cargs, pod_type):
             uses_metas = cargs.uses_metas or {}
-            if self.shard_id is not None:
-                uses_metas['pod_id'] = self.shard_id
             uses_with = self.deployment_args.uses_with
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'

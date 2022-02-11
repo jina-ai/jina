@@ -4,8 +4,8 @@
 If you want to share your Executor, you can push it to Jina Hub.
 
 There are two types of sharing:
-- **Public** (default): anyone can use public Executors without any restriction.
-- **Private**: only people that have the `secret` can use private Executors. 
+- **Public** (default): Anyone can use public Executors without any restrictions.
+- **Private**: Only people that have the `secret` can use private Executors. 
 
 (jina-hub-usage)=
 ## First publish
@@ -53,7 +53,7 @@ jina hub push <path_to_executor_folder> -t TAG1 -t TAG2
 
 You can specify `-t` or `--tags` parameter to tag an Executor.
 
-If there is no `-t` parameter provided, the default tag is `latest`. And if you provide `-t` parameters, and you still want to have `latest` tag, you must write it as a `-t` parameter.
+If there is no `-t` parameter provided, the default tag is `latest`. And if you provide `-t` parameters and you still want to have `latest` tag, you must write it as another `-t` parameter.
 
 ```bash
 jina hub push .                     # Result in one tag: latest

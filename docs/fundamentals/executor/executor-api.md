@@ -1,17 +1,17 @@
 # Executor API
 
-{class}`~jina.Executor` process `DocumentArray` via functions decorated with `@requests`. To create an Executor, you only need to follow three principles:
+{class}`~jina.Executor`s encapsulate functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
-- An `Executor` should subclass directly from `jina.Executor` class.
-- An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
+1. An `Executor` should subclass directly from the `jina.Executor` class.
+2. An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
   functions with arbitrary names.
-- Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
+3. Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
 ## Constructor
 
 ### Subclass
 
-Every new executor should be subclass from `jina.Executor`.
+Every new executor should be a subclass of `jina.Executor`.
 
 You can name your executor class freely.
 
@@ -39,15 +39,15 @@ class MyExecutor(Executor):
 :class: tip
 Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (representing the request-to-function mapping) values when the Executor is used inside a Flow.
 
-You can access the values of these arguments in `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
-or modifying their values before sending to `super().__init__()`.
+You can access the values of these arguments in the `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
+or modify their values before passing them to `super().__init__()`.
 ````
 
 ## Methods
 
 Methods of `Executor` can be named and written freely. 
 
-`Executor` will have some special methods, which will be decorated with `@requests` which when used inside a Flow will map the method to network endpoints.
+There are, however, special methods inside an `Executor`, which are decorated with `@requests`. When used inside a Flow, these methods are mapped to network endpoints.
 
 ### Method decorator
 
@@ -183,7 +183,7 @@ class MyExecutor(Executor):
 ```
 ````
 
-Let's understand how `Executor` processes `DocumentArray` inside a Flow, and how the changes are chained and applied affecting downstream `Executors` in the Flow.
+Let's understand how `Executor`s processes `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
 
 ```python
 from docarray import DocumentArray, Document
@@ -260,7 +260,7 @@ asyncio.run(main())
 
 ## Use Executor out of Flow
 
-`Executor` object can be used directly just like a regular Python object. For example,
+`Executor` objects can be used directly, just like a regular Python object. For example:
 
 ```python
 from docarray import DocumentArray, Document

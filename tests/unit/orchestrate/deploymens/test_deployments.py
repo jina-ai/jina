@@ -149,9 +149,9 @@ def test_pod_context_shards_replicas(shards):
 
 
 class AppendNameExecutor(Executor):
-    def __init__(self, runtime_args, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = runtime_args['name']
+        self.name = self.runtime_args.name
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):

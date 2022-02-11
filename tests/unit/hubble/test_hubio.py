@@ -1,4 +1,3 @@
-import argparse
 import itertools
 import json
 import os
@@ -28,17 +27,14 @@ class PostMockResponse:
 
     def json(self):
         return {
-            'code': 0,
-            'success': True,
-            'executors': [
-                {
-                    'id': 'w7qckiqy',
-                    'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
-                    'image': 'jinahub/w7qckiqy:v3',
-                    'visibility': 'public',
-                }
-            ],
-            'message': 'uploaded successfully',
+            'type': 'complete',
+            'subject': 'createExecutor',
+            'message': 'Successfully pushed w7qckiqy',
+            'payload': {
+                'id': 'w7qckiqy',
+                'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
+                'visibility': 'public',
+            },
         }
 
     @property
@@ -51,12 +47,12 @@ class PostMockResponse:
 
     def iter_lines(self):
         logs = [
-            '{"stream":"Receiving zip file..."}',
-            '{"stream":"Normalizing the content..."}',
-            '{"stream":"Building the image..."}',
-            '{"stream":"Uploading the image..."}',
-            '{"stream":"Uploading the zip..."}',
-            '{"result":{"statusCode":201,"message":"Successfully pushed w7qckiqy","data":{"executors":[{"tag":"v0","id":"w7qckiqy","image":"jinahub/w7qckiqy:v0","pullPath":"jinahub/w7qckiqy:v0","secret":"a26531e561dcb7af2c999a64cadc86d0","visibility":"public"}]}}}',
+            '{"type":"init","subject":"createExecutor"}',
+            '{"type":"start","subject":"extractZip"}',
+            '{"type":"done","subject":"extractZip"}',
+            '{"type":"start","subject":"pushImage"}',
+            '{"type":"done","subject":"pushImage"}',
+            '{"type":"complete","subject":"createExecutor","message":"Successfully pushed w7qckiqy","payload":{"id":"w7qckiqy","secret":"f7386f9ef7ea238fd955f2de9fb254a0","visibility":"public"}}',
         ]
 
         return itertools.chain(logs)
@@ -68,17 +64,18 @@ class GetMockResponse:
 
     def json(self):
         return {
-            'keywords': [],
-            'id': 'dummy_mwu_encoder',
-            'name': 'alias_dummy',
-            'tag': 'v0',
-            'versions': [],
-            'visibility': 'public',
-            'image': 'jinahub/pod.dummy_mwu_encoder',
-            'package': {
-                'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
-                'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
-            },
+            'data': {
+                'keywords': [],
+                'id': 'dummy_mwu_encoder',
+                'name': 'alias_dummy',
+                'visibility': 'public',
+                'commit': {'tags': ['v0']},
+                'package': {
+                    'containers': ['jinahub/pod.dummy_mwu_encoder'],
+                    'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
+                    'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
+                },
+            }
         }
 
     @property
@@ -470,3 +467,77 @@ def test_new_with_arguments(
             assert temp['description'] == 'args description'
             assert temp['keywords'] == ['args', 'keywords']
             assert temp['url'] == 'args url'
+
+
+class SandboxGetMockResponse:
+    def __init__(self, response_code: int = 200):
+        self.response_code = response_code
+
+    def json(self):
+        if self.response_code == 200:
+            return {
+                'code': self.response_code,
+                'data': {'host': 'http://test_existing_deployment.com', 'port': 4321},
+            }
+        else:
+            return {'code': self.response_code}
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+
+class SandboxCreateMockResponse:
+    def __init__(self, response_code: int = 200):
+        self.response_code = response_code
+
+    def json(self):
+        return {
+            'code': self.response_code,
+            'data': {'host': 'http://test_new_deployment.com', 'port': 4322},
+        }
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+
+def test_deploy_public_sandbox_existing(mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_get(url, params, headers=None):
+        mock(url=url, params=params)
+        return SandboxGetMockResponse(response_code=200)
+
+    monkeypatch.setattr(requests, "get", _mock_get)
+
+    host, port = HubIO.deploy_public_sandbox("jinahub+sandbox://dummy_mwu_encoder")
+    assert host == 'http://test_existing_deployment.com'
+    assert port == 4321
+
+
+def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_get(url, params, headers=None):
+        mock(url=url, params=params)
+        return SandboxGetMockResponse(response_code=404)
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return SandboxCreateMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, "get", _mock_get)
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    host, port = HubIO.deploy_public_sandbox("jinahub+sandbox://dummy_mwu_encoder")
+    assert host == 'http://test_new_deployment.com'
+    assert port == 4322

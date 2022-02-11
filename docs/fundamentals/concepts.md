@@ -1,12 +1,12 @@
 # Basic Concepts
 
-Executor, and Flow are the two fundamental concepts in Jina. Understanding these will help you build your
+*Executor* and *Flow* are the two fundamental concepts in Jina. Understanding these will help you build your
 search engine.
 
 - **Executor** is how Jina processes Documents;
 - **Flow** is how Jina streamlines and scales Executors.
 
-*Learn them all, nothing more, you are good to go.*
+*Learn them both, nothing more, you are good to go.*
 
 ## Executor
 
@@ -38,7 +38,8 @@ The `Flow` ties Executors together into a processing pipeline to perform a bigge
 :class: tip
 
 ```python
-from jina import Flow, Document, Executor, requests
+from docarray import Document
+from jina import Flow, Executor, requests
 
 
 class MyExecutor(Executor):
