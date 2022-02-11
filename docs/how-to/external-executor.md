@@ -1,13 +1,15 @@
-# External Executors in Flows
+# How to use External Executors in Flows
 
-An `Executor` does not need to be tied to a `Flow` - or vice versa.
-In fact, Executors can be launched on their own, and be added to a Flow (or multiple Flows!) after the fact.
+Normally, we have seen how `Flow` ties up `Executors` together, and how an `Executor` lives in the context of a Flow.
+
+However, this is not always the case, and sometimes you may want to launch an `Executor` on its own, and perhaps have the same
+`Executor` be used by different `Flows`.
 
 
 ````{admonition} Where can external Executors run?
 :class: hint
 External Executors can run anywhere from the same environment as the Flow, to a Docker container, or even a remote
-machine. All of this is also possible through Jina Hub.
+machine.
 ````
 
 As the first step in this tutorial, you will learn how to add already running external Executors to your Flow.
@@ -21,7 +23,8 @@ You need:
 - `host`, the host address of the Executor
 - `port_in`, the port on which the executor receives information
 
-Then, adding the Executor is a simple call to `Flow.add()`:
+Then, adding the Executor is a simple call to `Flow.add()` with the `external` argument set to True. This tells the Flow that
+it does not need to start the Executor itself.:
 
 ```python
 from jina import Flow
@@ -45,7 +48,7 @@ launch the Executor using the Jina command line interface (CLI).
 ````{admonition} Advanced CLI options
 :class: seealso
 This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
-CLI documentation (**TODO: LINK TO CLI DOCS**)
+{ref}`CLI <api/cli>`
 ````
 
 ## Using Jina Hub
@@ -72,7 +75,7 @@ jina executor --uses jinahub://CLIPTextEncoder --port-in 12345
 
 ````
 
-Depending on your internet connection this might take a few seconds, but in the end you should be greeted with the
+This might take a few seconds, but in the end you should be greeted with the
 following message:
 
 ```bash
@@ -91,7 +94,6 @@ the following flow in a Python file:
 from jina import Flow
 
 f = Flow().add(host='localhost', port_in=12345, external=True)
-
 ```
 
 Now we can encode our Documents:
@@ -107,8 +109,10 @@ def print_embedding(resp):
 
 with f:
     f.index(inputs=docs, on_done=print_embedding)
+```
 
->>> "Embed me please!" has been embedded to shape (512,)
+```console
+"Embed me please!" has been embedded to shape (512,)
 ```
 
 We obtain embeddings for our documents, just like we would with a local Executor.
@@ -121,12 +125,14 @@ First, we create a file `exec.py`, and in it we define our custom Executor:
 
 ```python
 from jina import Executor, requests
-from docarray import Document, DocumentArray
 
 class MyExecutor(Executor):
+
     @requests
     def foo(self, docs, **kwargs):
-        docs.texts = ['Hey you, have a wonderful day!' for _ in docs]
+        for doc in docs:
+            print(f'Received: "{doc.text}"')
+            
 ```
 
 Since we can't rely on the Hub this time around, we need to tell Jina how to find the Executor that we just defined.
@@ -149,23 +155,20 @@ Now we can run the CLI command again, this time using our custom Executor:
 jina executor --uses my-exec.yml --port-in 12345
 ```
 
-Now that your executor is up and running, we can tap into it just like before:
+Now that your executor is up and running, we can tap into it just like before, and even use it from two different Flows.
 
 ```python
 from jina import Flow
 from docarray import Document, DocumentArray
 
-def print_text(resp):
-    print(resp.docs[0].text)
-
-docs = DocumentArray[Document() for _ in range(5)]
-
-f = Flow().add(host='localhost', port_in=12345, external=True)
-with f:
-    f.index(inputs=docs, on_done=print_text)
-
->>> Hey you, have a wonderful day!
+f1 = Flow().add(host='localhost', port_in=12345, external=True)
+f2 = Flow().add(host='localhost', port_in=12345, external=True)
+with f1:
+    f1.index(inputs=DocumentArray([Document(text='Greetings from Flow1') for _ in range(1)]))
+    f2.index(inputs=DocumentArray([Document(text='Greetings from Flow2') for _ in range(1)]))
 ```
 
-Again, we obtain modified Documents, just like we would with an interal Executor.
-
+```console
+Received: "Greetings from Flow1"
+Received: "Greetings from Flow2"
+```
