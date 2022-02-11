@@ -20,7 +20,7 @@ a cloud-native infrastructure as Kubernetes. In fact, you can notice how the nam
 - **Gateway**: Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `WebSocker` or `gRPC` endpoints to the client, and
 keeps knowledge of the topology of the Flow to guarantee that the `docs` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`
 
-- **Deployment**: Deployment is an abstraction around Executor that lets the `Gateway` communicate with an Executor abstracting their internal replication details.
+- **Deployment**: Deployment is an abstraction around Executor that lets the `Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 
 - **Pod**: A Pod is a simple abstraction over a runtime that runs any Jina service, bet it a process, a docker container, or a Kubernetes Pod.
 
