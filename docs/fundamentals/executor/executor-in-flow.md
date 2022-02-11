@@ -355,7 +355,7 @@ NotImplementedError: no time for it
 NotImplementedError('no time for it')
 ```
 
-## Gracefully close Executor
+## Gracefully closing an Executor
 
 You might need to execute some logic when your executor's destructor is called. For example, you want to
 persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). To do so, you can overwrite the
