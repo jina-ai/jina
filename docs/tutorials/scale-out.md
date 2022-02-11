@@ -10,7 +10,7 @@
 A typical Jina `Flow` orchestrates multiple `Executors`.
 By default, a Jina `Executor` runs with a single `Replica` and `Shard`.
 Some `Executor` in the Flow might be less performant than other `Executors`,
-this could be a performance bottleneck when you deploy your Jina service to production environment 
+this could be a performance bottleneck when you deploy your Jina service to the production environment 
 
 Luckily, Jina `Flow` allows you to config the number of `Replicas` and `Shards`.
 `Replica` is used to increase `Executor` throughput and availability.
@@ -23,7 +23,8 @@ Before you begin, make sure you meet these prerequisites:
 
 * You have a good understanding of Jina [Flow](../fundamentals/flow/index.md).
 * You have a good understanding of Jina [Executor](../fundamentals/executor/index.md)
-* Please install the following dependencies if you havn't:
+* Please install the following dependencies if you haven't:
+
 
 ```shell
 pip install jina
@@ -34,7 +35,7 @@ pip install sklearn
 
 ### Context
 
-Imaging you are building a text search system and your have an `Executor` to transform text to it's [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
+Imagine you are building a text-based search system and you have an `Executor` to transform text to its [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
 This could become a performance bottleneck to your search system.
 The Executor looks like this:
 
@@ -55,7 +56,7 @@ class MyTokenizer(Executor):
         docs.embeddings = X
 ```
 
-And we create a `Flow` and make use some text corpus from sklearn to use this `Executor`:
+And we create a `Flow` and make use a text corpus from scikit-learn to use this `Executor`:
 
 ```python
 from jina import Flow
@@ -75,9 +76,9 @@ def news_generator():
         yield Document(text=item)
 ```
 
-### Scale-Up your Executor
+### Scale-Up an Executor
 
-When you start your `Flow`, you might discover to process all these text corpus, it takes a while:
+When you start your `Flow`, you might discover to process all the text corpus, this process takes a while:
 
 ```python
 with f:
@@ -86,7 +87,7 @@ with f:
 
 As Jina reported, it takes around 6 seconds to accomplish the task.
 6 seconds sounds reasonable (at index time), but bear in mind that this is just a test corpus.
-What if you needs to index millions of documents?
+What if you need to index millions of documents?
 
 ```shell
            Flow@2011375[I]:🎉 Flow is ready to use!                                        
@@ -125,7 +126,7 @@ we'll introduce what `replicas` means under different deployment options.
 
 Now with your text corpus encoded as TF-IDF embeddings,
 it's time to save the results.
-We'll use Jina's [PQLite](https://hub.jina.ai/executor/pn1qofsj) `Indexer` to persist our embeddings for fast Approximate Nearest Neightbour search.
+We'll use Jina's [PQLite](https://hub.jina.ai/executor/pn1qofsj) `Indexer` to persist our embeddings for fast Approximate Nearest Neighbor Search.
 
 And you add this `PQLiteIndexer` to your Flow:
 
@@ -143,7 +144,7 @@ f = Flow().add(
     install_requirements=True)
 ```
 
-### Partitioning your Data
+### Partitioning the Data
 
 Now let's run the `Flow` to index your data:
 ```python
@@ -153,9 +154,9 @@ with f:
 
 The `PQLiteIndexer` will save your indexed `Documents` to your specified `workspace` (directory).
 Since the default number of shards is one.
-All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `0` is the shard id.
+All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` where `0` is the shard id.
 
-If you want to distribute your data to different places, Jina allows you to use `shards` to specify number of shards.
+If you want to distribute your data to different places, Jina allows you to use `shards` to specify the number of shards.
 
 ```python
 f = Flow().add(
@@ -171,7 +172,7 @@ f = Flow().add(
 )
 ```
 
-If you open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
+Now open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
 `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
 
 ### Different POOLING Strategies
@@ -182,14 +183,13 @@ Jina supports two `pooling` strategies:
 1. `any`: requests will be randomly assigned to one shard.
 2. `all`: requests will be handled by all shards.
 
-In practical, when you are indexing your `Documents`,
+In practice, when you are indexing your `Documents`,
 it's better to set `polling='any'` to only store the `Documents` into one shard to avoid duplicates.
 On the other hand, at search time, the search requests should be across all shards.
-Thus we normally set `polling='all''`.
+Thus we should set `polling='all''`.
 
-As a result, we need to config our `Flow` definition with different `Polling` strategy:
-
-The `IndexFlow`:
+As a result, we need to config our `Flow` definition with a different `Polling` strategy:
+The new `Flow`:
 
 ```python
 # Config your polling strategy based on endpoints
@@ -210,16 +210,15 @@ f = Flow().add(
 )
 ```
 
-## Concept Alignment: How does it work on Localhost, Docker and K8s
+## Concept Alignment: How does it work on Localhost, Docker, and K8s
 
 Maybe you have noticed that all experiments we did above are on localhost.
-This means that the `replicas` could be just multiple processes. And `shards`are just multiple folders on the same machine.
-
-
+This means that the `replicas` are just multiple processes. And `shards` are multiple folders on the same machine.
+How does it work in a cloud-based deployment setting?
 
 ## Conclusion
 
-Jina can help you scale-out your applications easily.
-Depending on your needs, if you want to increase `Executor` throughput, use `replicas` argument.
+Jina can help you scale out your applications easily.
+Depending on your needs, if you want to increase the `Executor` throughput, use the `replicas` argument.
 If you want to partition your data across multiple places,
-use `shards` with `pooling` strategy you want.
+use the `shards` with the `pooling` strategy you want.
