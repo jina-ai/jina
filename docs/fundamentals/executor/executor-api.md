@@ -59,7 +59,7 @@ You can import `requests` decorator via
 from jina import requests
 ```
 
-`requests` is a decorator that takes an optional parameter `on`. It defines to which network endpoints each `Executor` method will bind to. 
+`requests` is a decorator that takes an optional parameter: `on=`. It defines the to which specific network endpoints each `Executor` method will bind. 
 
 ```python
 from jina import Executor, requests
