@@ -72,6 +72,13 @@ jina executor --uses jinahub://CLIPTextEncoder --port-in 12345
 
 ````
 
+Depending on your internet connection this might take a few seconds, but in the end you should be greeted with the
+following message:
+
+```bash
+WorkerRuntime@ 1[L]: Executor CLIPTextEncoder started
+```
+
 And just like that, our Executor is up and running.
 
 Next, let's access it from a Flow and encode some Documents. You can do this from a different machine, as long you know
