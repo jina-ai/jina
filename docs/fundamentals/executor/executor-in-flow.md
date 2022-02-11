@@ -245,7 +245,7 @@ requests: {'/index': <function MyExecutor.foo at 0x7fc3163ddb90>, '/search': <fu
 	🌐 Public address:	212.231.186.65:58267
 ```
 
-## Pass/change request parameters
+## Passing and changing request parameters
 
 An important feature of `Executor`, beyond the capacity of *processing* Documents, is the capacity to receive `parameters` and to return additional results.
 
