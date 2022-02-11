@@ -42,7 +42,7 @@ The list of the `metas` are:
 By default, an `Executor` object contains `.runtime_args` as an attribute when loaded from the `Flow`. It is of `SimpleNamespace` type and contains some key-value information. 
 As the name suggest, `runtime_args` are dynamically determined during runtime, meaning that you don't know the value before running the `Executor`. These values are often related to the system/network environment around the `Executor`, and less about the `Executor` itself, like shard_id` and `replicas`. They are usually set with the {meth}`~jina.orchestrate.flow.base.Flow.add` method.
 
-The list of the `runtime_args` are:
+The list of the `runtime_args` is:
 
 - `name`: Name given to the `Executor`. This is dynamically adapted from the `name` in `metas` and depends on some additional arguments like `shard_id`. 
 - `replicas`: Number of replicas of the same `Executor` deployed with the `Flow`.
