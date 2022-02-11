@@ -96,7 +96,7 @@ requests:
     - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
     - `workspace` is a string. Defines the workspace of the executor;
     - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
-- `requests` is a map. Defines the mapping from endpoint to class method name. Useful if one needs to overwrite the default methods
+- `requests` is a map. Defines the mapping from endpoint to class method name. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
 
 
 ### Passing arguments and override static arguments in the Flow
