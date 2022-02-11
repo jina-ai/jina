@@ -83,7 +83,7 @@ When you start your `Flow`, you might discover to process all the text corpus, t
 
 ```python
 with f:
-    results_da = f.post('/foo', news_generator, show_progress=True)
+    f.post('/foo', news_generator, show_progress=True, request_size=100)
 ```
 
 As Jina reported, it takes around 6 seconds to accomplish the task.
@@ -150,7 +150,7 @@ f = Flow().add(
 Now let's run the `Flow` to index your data:
 ```python
 with f:
-    f.post(on='/index', inputs=news_generator, show_progress=True)
+    f.post(on='/index', inputs=news_generator, show_progress=True, request_size=100)
 ```
 
 The `PQLiteIndexer` will save your indexed `Documents` to your specified `workspace` (directory).
