@@ -47,7 +47,7 @@ or modify their values before passing them to `super().__init__()`.
 
 Methods of `Executor` can be named and written freely. 
 
-`Executor` will have some special methods, which will be decorated with `@requests` which when used inside a Flow will map the method to network endpoints.
+There are, however, special methods inside an `Executor`, which are decorated with `@requests`. When used inside a Flow, these methods are mapped to network endpoints.
 
 ### Method decorator
 
