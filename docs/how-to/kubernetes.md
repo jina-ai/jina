@@ -181,7 +181,7 @@ Finally, it prints the uri of the closest matches.
 import os
 
 from jina.clients import Client
-from jina import DocumentArray
+from docarray import DocumentArray
 
 host = os.environ['EXTERNAL_IP']
 port = 80
