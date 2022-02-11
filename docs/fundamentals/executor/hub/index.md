@@ -1,4 +1,4 @@
-# Share Executors via Hub
+# Share Executors via Jina Hub
 
 Now you understand that `Executor` is a building block in Jina. The following questions arise naturally:
 
