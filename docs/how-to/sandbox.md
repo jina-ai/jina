@@ -34,7 +34,7 @@ It will find the existing sandbox by three factors:
 - Executor tag
 - Jina version of the Driver program
 
-If all these three factors are matched, then it will reuse the existing sandboxes.
+If all these three factors match, then it will reuse the existing sandboxes.
 
 ```{admonition} Caution
 :class: caution
