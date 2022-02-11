@@ -404,7 +404,7 @@ closing...
 Process finished with exit code 0
 ```
 
-## Multiple DocumentArray as input
+## Multiple DocumentArrays as input
 
 We have seen that `Executor` methods can receive 3 types of parameters: `docs`, `parameters` and `docs_matrix`.
 
