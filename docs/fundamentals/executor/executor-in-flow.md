@@ -406,7 +406,7 @@ Process finished with exit code 0
 
 ## Multiple DocumentArray as input
 
-We have seen that `Executor` methods can receive 3 times of parameters: `docs`, `parameters` and `docs_matrix`.
+We have seen that `Executor` methods can receive 3 types of parameters: `docs`, `parameters` and `docs_matrix`.
 
 `docs_matrix` is a parameter that is only used in some special cases, for instance when an `Executor` receives messages from more than one `upstream` Executor
 in the `Flow`.
