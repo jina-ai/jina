@@ -99,7 +99,7 @@ requests:
 - `requests` is a map. Defines the mapping from endpoint to class method name. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
 
 
-### Passing arguments and override static arguments in the Flow
+### Passing arguments and overriding static arguments in the Flow
 
 When using an Executor in a Flow, there are two ways of passing arguments to its `__init__`.
 
