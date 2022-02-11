@@ -2,12 +2,17 @@
 
 # How to use Jina Sandbox Executors
 
-Jina Sandbox allows you to try out different Jina Executors online and see how they work together without downloading all the Executors to your local machine.
+In most cases, Jina Executor is just a docker image that contains some logic to process data. Therefore, you can run it locally if you have docker installed. But the docker image could be up to 1 or several GBs, and you need to download it first, then run it afterwards. That would be annoying in some cases.
 
-## Prerequisites
+Jina Sandbox provides a way to make the downloading and running happen in a cloud environment. It will get a pair of host and port, which you can connect with. Jina will automatically take care of this connection.
 
-- Knowledge about Jina Executor
-- Knowledge about Jina Hub
+It will save a lot of time when you just want to try out one Executor. In addition, it will also save lot of computing resources for your local machine.
+
+Here is a graph to show the difference between using and not using Sandbox.
+
+```{figure} ../../.github/sandbox-advantage.png
+:align: center
+```
 
 ## Start a Flow using Jina Sandbox
 
