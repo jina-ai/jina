@@ -5,7 +5,7 @@ However, the main advantage of using `Executor` is to be used in a `Flow` so tha
 
 ## Special Executor attributes
 
-When implementing an `Executor`, uf your executor has `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
+When implementing an `Executor`, if your executor overrides `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
                                  
 ```python
 from jina import Executor
