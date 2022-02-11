@@ -2,7 +2,7 @@
 
 This figure shows an overview of how Jina deploys and serves its Flows and Executors.
 
-This figure shows details on how `Flow` and `Executor` abstractions translate into concrete entities to provide all the 
+This figure shows details on how `Flow` and `Executor` abstractions translate into concrete entities, providing all the 
 serving and scaling features of Jina.
 
 You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But it is useful in order to understand how Jina works, regardless of whether it runs locally, orchestrated only by the Flow, or if it runs in 
