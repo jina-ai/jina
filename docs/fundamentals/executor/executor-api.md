@@ -11,7 +11,7 @@
 
 ### Subclass
 
-Every new executor should be subclass from `jina.Executor`.
+Every new executor should be a subclass of `jina.Executor`.
 
 You can name your executor class freely.
 
