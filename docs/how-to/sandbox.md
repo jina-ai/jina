@@ -74,4 +74,4 @@ There are some caveats when using Sandbox Executors with respect to other Execut
 Since the lifetime of these Executors is not handled by the Flow and is handled by the Hub infrastructure, there is no way
 to override its default configurations, therefore `uses_with`, `uses_metas`, etc ... will not apply.
 
-You can consider a `sandbox` Executor as an external Executor where no control on its initialization or configuraiton.
+You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.
