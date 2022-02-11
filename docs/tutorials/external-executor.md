@@ -84,7 +84,7 @@ f = Flow().add(host='localhost', port_in=12345, external=True)
 Now we can encode our Documents:
 
 ```python
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 
 docs = DocumentArray([Document(text='Embed me please!') for _ in range(5)])
 
@@ -93,9 +93,9 @@ def print_embedding(resp):
     print(f'{doc.text} has been embedded to shape {doc.embedding.shape}')
 
 with f:
-    docs = f.index(inputs=docs, on_done=print_embedding)
+    f.index(inputs=docs, on_done=print_embedding)
 
->>> TODO paste results
+>>> 'Embed me please!' has been embedded to shape 
 ```
 
 We obtain embeddings for our documents, just like we would with a local Executor.
@@ -107,7 +107,8 @@ You can achieve the same while using your own, locally defined Executor. Let's w
 First, we create a file `exec.py`, and in it we define our custom Executor:
 
 ```python
-from jina import Executor, requests, Document, DocumentArray
+from jina import Executor, requests
+from docarray import Document, DocumentArray
 
 class MyExecutor(Executor):
     @requests
@@ -138,7 +139,8 @@ jina executor --uses my-exec.yml --port-in 12345
 Now that your executor is up and running, we can tap into it just like before:
 
 ```python
-from jina import Flow, Document, DocumentArray
+from jina import Flow
+from docarray import Document, DocumentArray
 
 def print_text(resp):
     print(resp.docs[0].text)
@@ -147,7 +149,7 @@ docs = DocumentArray[Document() for _ in range(5)]
 
 f = Flow().add(host='localhost', port_in=12345, external=True)
 with f:
-    docs = f.index(inputs=docs, on_done=print_text)
+    f.index(inputs=docs, on_done=print_text)
 
 >>> Hey you, have a wonderful day!
 ```
