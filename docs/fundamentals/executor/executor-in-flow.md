@@ -162,7 +162,7 @@ with f:
 `uses_with` has higher priority than predefined `with` config in YAML. When both presented, `uses_with` is picked up first.
 ```
 
-The same applies to `metas` and `requests`. You can define them statically inside the Executor definition YAML or update its default values with `uses_metas` and `uses_requests`.
+The same applies to `metas` and `requests`. You can define them statically inside the Executor definition YAML, or update their default values through `uses_metas` and `uses_requests`.
 
 ```python
 from jina import Executor, requests, Flow
