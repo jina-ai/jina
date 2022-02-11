@@ -299,8 +299,6 @@ Searching with top_k 10.0
  {'__results__': {'my_executor/rep-0': {'internal_parameter': 20.0}}}
 ```
 
-This shows how `parameters` are used to pass parameters to the `Executors` and how `parameters` in the `response` have a specific `__results__` reserved key to
-return potential results returned by specific `Executors`.
 
 ## Exception handling
 
