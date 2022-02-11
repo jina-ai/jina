@@ -9,7 +9,7 @@ You can create an Executor by extending the `Executor` class and adding logic to
 ## Why should you use Executor?
 
 Once you have learned `DocumentArray`, you are capable of using all its power and expressiveness to build a neural search application.
-Now you need to organize your code in independent modules to be served and scaled independently as microservices.
+But what if you want to go bigger? Organize your code into modules, serve and scale them independently as microservices? That's exactly what Executors enable you to do.
 
 - Executor lets the developer organize their `DocumentArray` based functions into logical entities that can share configuration state following OOP.
 
