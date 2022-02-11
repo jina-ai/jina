@@ -7,7 +7,7 @@ import os
 import random
 from pathlib import Path
 from typing import Optional
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode
 
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
@@ -15,7 +15,6 @@ from jina.hubble.helper import (
     download_with_resume,
     get_hubble_url_v2,
     parse_hub_uri,
-    get_hubble_url_v1,
     upload_file,
     disk_cache_offline,
 )
@@ -323,7 +322,7 @@ metas:
         console.print(p)
 
     def push(self) -> None:
-        """Push the executor pacakge to Jina Hub."""
+        """Push the executor package to Jina Hub."""
 
         from rich.console import Console
 
@@ -373,14 +372,15 @@ metas:
 
                 uuid8, secret = load_secret(work_path)
                 if self.args.force_update or uuid8:
-                    form_data['force'] = self.args.force_update or uuid8
+                    form_data['id'] = self.args.force_update or uuid8
                 if self.args.secret or secret:
                     form_data['secret'] = self.args.secret or secret
 
-                method = 'put' if ('force' in form_data) else 'post'
-
                 st.update(f'Connecting to Jina Hub ...')
-                hubble_url = get_hubble_url_v1() + '/executors'
+                if form_data.get('id') and form_data.get('secret'):
+                    hubble_url = get_hubble_url_v2() + '/rpc/executor.update'
+                else:
+                    hubble_url = get_hubble_url_v2() + '/rpc/executor.create'
 
                 # upload the archived executor to Jina Hub
                 st.update(f'Uploading...')
@@ -391,51 +391,53 @@ metas:
                     dict_data=form_data,
                     headers=req_header,
                     stream=True,
-                    method=method,
+                    method='post',
                 )
 
-                result = None
+                image = None
                 for stream_line in resp.iter_lines():
                     stream_msg = json.loads(stream_line)
 
-                    if 'stream' in stream_msg:
-                        st.update(
-                            f'Cloud building ... [dim]{stream_msg["stream"]}[/dim]'
-                        )
-                    elif 'status' in stream_msg:
-                        st.update(
-                            f'Cloud building ... [dim]{stream_msg["status"]}[/dim]'
-                        )
-                    elif 'result' in stream_msg:
-                        result = stream_msg['result']
-                        break
+                    t = stream_msg.get('type')
+                    subject = stream_msg.get('subject')
+                    if t == 'error':
+                        msg = stream_msg.get('message')
+                        payload = stream_msg.get('payload')
+                        if payload and isinstance(payload, dict):
+                            msg = payload.get('message')
 
-                if result is None:
-                    raise Exception('Unknown Error')
-                elif not result.get('data', None):
-                    msg = result.get('message', 'Unknown Error')
-                    if 'Process(docker) exited on non-zero code' in msg:
-                        self.logger.error(
+                        if 'Process(docker) exited on non-zero code' in msg:
+                            self.logger.error(
+                                '''
+                            Failed on building Docker image. Potential solutions:
+                            - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one,
+                              as the auto-generated one on the cloud did not work.
+                            - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
                             '''
-                        Failed on building Docker image. Potential solutions:
-                        - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one, 
-                          as the auto-generated one on the cloud did not work.   
-                        - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
-                        '''
-                        )
+                            )
 
-                    raise Exception(msg)
-                elif 200 <= result['statusCode'] < 300:
-                    new_uuid8, new_secret = self._prettyprint_result(console, result)
+                        raise Exception(msg or 'Unknown Error')
+                    if t == 'progress' and subject == 'buildWorkspace':
+                        legacy_message = stream_msg.get('legacyMessage', {})
+                        status = legacy_message.get('status', '')
+                        st.update(
+                            f'Cloud building ... [dim]{subject}: {t} ({status})[/dim]'
+                        )
+                    elif t == 'complete':
+                        image = stream_msg['payload']
+                        st.update(
+                            f'Cloud building ... [dim]{subject}: {t} ({stream_msg["message"]})[/dim]'
+                        )
+                        break
+                    elif t and subject:
+                        st.update(f'Cloud building ... [dim]{subject}: {t}[/dim]')
+
+                if image:
+                    new_uuid8, new_secret = self._prettyprint_result(console, image)
                     if new_uuid8 != uuid8 or new_secret != secret:
                         dump_secret(work_path, new_uuid8, new_secret)
-                elif result['message']:
-                    raise Exception(result['message'])
-                elif resp.text:
-                    # NOTE: sometimes resp.text returns empty
-                    raise Exception(resp.text)
                 else:
-                    resp.raise_for_status()
+                    raise Exception('Unknown Error')
 
             except KeyboardInterrupt:
                 pass
@@ -447,14 +449,12 @@ metas:
                 )
                 raise e
 
-    def _prettyprint_result(self, console, result):
+    def _prettyprint_result(self, console, image):
         # TODO: only support single executor now
 
         from rich.table import Table
         from rich.panel import Panel
 
-        data = result.get('data', None)
-        image = data['executors'][0]
         uuid8 = image['id']
         secret = image['secret']
         visibility = image['visibility']
@@ -563,14 +563,14 @@ with f:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = get_hubble_url_v1() + f'/executors/{name}/?'
+        pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage?id={name}'
         path_params = {}
         if secret:
             path_params['secret'] = secret
         if tag:
             path_params['tag'] = tag
         if path_params:
-            pull_url += urlencode(path_params)
+            pull_url += f'&{urlencode(path_params)}'
 
         resp = requests.get(pull_url, headers=get_request_header())
         if resp.status_code != 200:
@@ -578,15 +578,15 @@ with f:
                 raise Exception(resp.text)
             resp.raise_for_status()
 
-        resp = resp.json()
+        resp = resp.json()['data']
 
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
-            tag=tag or resp['tag'],
+            tag=tag or resp['commit'].get('tags', [None])[0],
             visibility=resp['visibility'],
-            image_name=resp['image'],
+            image_name=resp['package'].get('containers', [None])[0],
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
         )
