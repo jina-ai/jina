@@ -247,7 +247,11 @@ requests: {'/index': <function MyExecutor.foo at 0x7fc3163ddb90>, '/search': <fu
 
 ## Pass/change request parameters
 
-An important feature of `Executors` beyond its capacity of `processing` Documents is its capacity to receive `parameters` and to return `dictionaries` from their `methods`. 
+An important feature of `Executor`, beyond the capacity of *processing* Documents, is the capacity to receive `parameters` and to return additional results.
+
+Results are returned inside the `parameters` dictionary, behind the reserved `__results__` key.
+
+Note, however, that not all Executors or request methods populate this field with results. Some just modify the `Document`s passed to them, without adding further information.
 
 In this example, `MyExec` receives the parameters `{'top_k': 10}` from the client and exposes and endpoint returning internal information in the form of dict.
 
