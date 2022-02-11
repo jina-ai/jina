@@ -408,7 +408,7 @@ Process finished with exit code 0
 
 We have seen that `Executor` methods can receive 3 times of parameters: `docs`, `parameters` and `docs_matrix`.
 
-`docs_matrix` is a parameter that is only used in some special cases, as when an `Executor` receives messages from more than one `upstream` Executor
+`docs_matrix` is a parameter that is only used in some special cases, for instance when an `Executor` receives messages from more than one `upstream` Executor
 in the `Flow`.
 
 Let's see an example:
