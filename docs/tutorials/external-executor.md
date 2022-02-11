@@ -95,7 +95,7 @@ def print_embedding(resp):
 with f:
     f.index(inputs=docs, on_done=print_embedding)
 
->>> 'Embed me please!' has been embedded to shape 
+>>> **TODO run once Jina 3 Executors are available from the hub** 
 ```
 
 We obtain embeddings for our documents, just like we would with a local Executor.
@@ -154,5 +154,5 @@ with f:
 >>> Hey you, have a wonderful day!
 ```
 
-Again, we obtain modified Documents, just like we would with a local Executor.
+Again, we obtain modified Documents, just like we would with an interal Executor.
 
