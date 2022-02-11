@@ -17,7 +17,7 @@ a cloud-native infrastructure as Kubernetes. In fact, you can notice how the nam
 
 - **Executor**: {ref}`Executor <executor>` performs tasks on DocumentArrays.
 
-- **Gateway**: Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `WebSocker` or `gRPC` endpoints to the client, and
+- **Gateway**: The Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `WebSocker` or `gRPC` endpoints to the client. Additionally, it
 keeps knowledge of the topology of the Flow to guarantee that the `docs` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`
 
 - **Deployment**: Deployment is an abstraction around Executor that lets the `Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
