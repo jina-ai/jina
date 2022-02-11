@@ -147,8 +147,8 @@ any other `list` object in a Python function
 
 - `parameters`: A Dict object that can be used to pass extra parameters to the `Executor` functions.
 
-- `docs_matrix`:  This is the less-common parameter to be used for an `Executor`. This argument is needed when an `Executor` is used inside a `Flow` 
-when its job is to merge or reduce the output of more than one `Executors`. 
+- `docs_matrix`:  This is the least common parameter to be used for an `Executor`. This argument is needed when an `Executor` is used inside a `Flow` to merge or reduce the output of more than one other `Executor`.
+As a user, you will rarely touch this parameter. 
 
 - `return`: Every Executor method can process data in 3 ways: Update `docs` on the fly, return a `DocumentArray` object, or return a `Dict` object. 
   
