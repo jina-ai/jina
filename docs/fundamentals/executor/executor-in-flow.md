@@ -361,7 +361,7 @@ method `close` and add your logic.
 
 Jina will make sure that the `close` method is executed when the `Executor` is terminated inside a Flow or when deployed in any cloud-native environment.
 
-One can think as if `Jina` would be using the `Executor` as a context manager making sure that the `close` method is always executed.
+One can think of this as `Jina` using the `Executor` as a context manager, making sure that the `close` method is always executed.
 
 ```python
 from docarray import Document, DocumentArray
