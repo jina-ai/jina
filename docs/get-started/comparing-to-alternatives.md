@@ -6,7 +6,7 @@ most commonly drawn comparisons.
 ## Comparing to MLOps frameworks
 
 At first glance, Jina and MLOps frameworks such as **MLFlow**, **KubeFlow** or **RayWorkflow** may seem quite similar:
-They all have complex pipelines, or *Flows*, through which data can flow.
+They all have complex pipelines, or *Flows*, through which data can be processed.
 At closer inspection, though, standard MLOps frameworks are quite different from Jina, because they were *designed with
 a different purpose in mind*.
 
