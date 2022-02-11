@@ -260,7 +260,7 @@ asyncio.run(main())
 
 ## Use Executor out of Flow
 
-`Executor` object can be used directly just like a regular Python object. For example,
+`Executor` objects can be used directly, just like a regular Python object. For example:
 
 ```python
 from docarray import DocumentArray, Document
