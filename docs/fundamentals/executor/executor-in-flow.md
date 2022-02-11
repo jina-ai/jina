@@ -44,7 +44,7 @@ As the name suggest, `runtime_args` are dynamically determined during runtime, m
 
 The list of the `runtime_args` are:
 
-- `name`: Name given to the `Executor`. This is dynamically adapted from the `name` in `metas` depending on some `arguments` like `shard_id`. 
+- `name`: Name given to the `Executor`. This is dynamically adapted from the `name` in `metas` and depends on some additional arguments like `shard_id`. 
 - `replicas`: Number of replicas of the same `Executor` deployed with the `Flow`.
 - `shards`: Number of shards of the same `Executor` deployed with the `Flow`.
 - `shard_id`: Identifier of the `shard` corresponding to the given `Executor` instance.
