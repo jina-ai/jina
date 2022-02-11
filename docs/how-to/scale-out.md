@@ -1,21 +1,17 @@
-# Executor Scale-Out With Replicas & Shards
-
-```{article-info}
-:author: Bo @ Jina AI
-:date: February 8, 2022
-```
+# How to scale-out your Executor
 
 ## Overview
 
-A typical Jina `Flow` orchestrates multiple `Executors`.
-By default, a Jina `Executor` runs with a single `Replica` and `Shard`.
-Some `Executor` in the Flow might be less performant than other `Executors`,
-this could be a performance bottleneck when you deploy your Jina service to the production environment 
+A Jina `Flow` orchestrates multiple `Executors`.
+By default, a Jina `Executor` runs with a single `replica` and `shard`.
+Some `Executor` in the Flow might be less performant than others,
+this could turn into a performance bottleneck in your Jina application.
 
-Luckily, Jina `Flow` allows you to config the number of `Replicas` and `Shards`.
-`Replica` is used to increase `Executor` throughput and availability.
-`Shard` is used for data partitioning.
-In this tutorial, we'll dive into these two concepts and see how you can make use of `Replica` and `Shard` to scale out your `Executor`.
+To solve this, Jina `Flow` allows you to config the number of `replicas` and `shards`.
+`replica` is used to increase `Executor` throughput and availability.
+`shard` is used for data partitioning.
+
+In this document, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your `Executor`.
 
 ## Before you start
 <!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
@@ -177,7 +173,7 @@ f = Flow().add(
 Now open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
 `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
 
-### Different POLLING Strategies
+### Different polling strategies
 
 When you have multiple shards, the default `polling` strategy is `any`.
 Jina supports two `polling` strategies:
@@ -190,7 +186,7 @@ it's better to set `polling='any'` to only store the `Documents` into one shard 
 On the other hand, at search time, the search requests should be across all shards.
 Thus we should set `polling='all''`.
 
-As a result, we need to config our `Flow` definition with a different `Polling` strategy:
+As a result, we need to config our `Flow` definition with a different `polling` strategy:
 The new `Flow`:
 
 ```python
