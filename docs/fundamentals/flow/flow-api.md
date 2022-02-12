@@ -98,7 +98,7 @@ The `Client` also offers the convenience functions `.search()` and  `.index()`, 
 ### Limiting outstanding requests
 By default, a Client will just send requests as fast as possible without any throttling. This can potentially put a lot of load on the `Flow` if the Client can send requests faster than they are processed in the `Flow`. Typically, this is most likely to happen for expensive index Flows. 
 
-You can control the number of in flight requests per Client with the `prefetch` argument, e.g.- Setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
+You can control the number of in flight requests per Client with the `prefetch` argument, e.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
 
 ```{code-block} python
 ---

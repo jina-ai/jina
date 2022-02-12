@@ -1,10 +1,8 @@
 (flow)=
-Open questions:
-Does polling/sharding/replicas belong here?
 
 # Create a Flow
 
-A `Flow` can by created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting of all its Executors.
+A `Flow` can by created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting all its Executors.
 
 The most trivial `Flow` is the empty `Flow` as shown below:
 
@@ -37,9 +35,6 @@ with f: # Using it as a Context Manager will start the Flow
 ````
 
 ## Add Executors
-Content:
-* explain sources of executors (docker, jinahub, local)
-
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
 
 ````{tab} Pythonic style
@@ -77,7 +72,7 @@ TODO do yaml example
 <img src="https://github.com/jina-ai/jina/blob/master/.github/images/foobar_flow.png?raw=true" alt="Simple Flow with two Executors being chained one after the other" width="50%">
 
 
-The response of `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
+The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
 ### Executor discovery
 As explained above, the type of Executor is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
@@ -266,10 +261,6 @@ bar
 foo
 ```
 
-### Pre- and Post-processing
-
-explain uses_before/uses_after?
-
 ### External executors
 Usually a `Flow` will manage all of its Executors. 
 In some cases it is desirable though to use externally managed Executors. These are named `external Executors`. This is especially useful to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
@@ -283,7 +274,7 @@ This is adding an external Executor to the Flow. The Flow will not start or stop
 
 ## Complex Flow topologies
 Flows are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
-A typical use case for such a Flow is a topology with a common pre-processing part, but indexers separating embeddings and data.
+A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
 To define a custom `Flow` topology you can use the `needs` keyword when adding an Executor. By default, a `Flow` assumes that every Executor needs the previously added Executor.
 
 ```python

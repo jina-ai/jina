@@ -1,7 +1,7 @@
 (flow-cookbook)=
 # Flow
 
-{class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
+A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
 Documents "flow" through the created pipeline and are processed by Executors.
 
 
@@ -101,9 +101,9 @@ with f:
 
 Document, Executor, and Flow are the three fundamental concepts in Jina.
 
-- <a href="https://docarray.jina.ai/>Document</a> is the basic data type in Jina;
-- {ref}`Executor <executor>` is how Jina processes Documents;
-- {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
+- <a href="https://docarray.jina.ai/">Document</a> is the basic data type in Jina
+- {ref}`Executor <executor>` is how Jina processes Documents
+- {ref}`Flow <flow>` is how Jina streamlines and scales Executors
 ````
 
 
