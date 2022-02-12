@@ -16,6 +16,7 @@ def _get_run_args(print_args: bool = True):
         if unknown:
             from jina.helper import warn_unknown_args
 
+            unknown = list(filter(lambda x: x.startswith('--'), unknown))
             warn_unknown_args(unknown)
 
         if args.cli not in silent_print and print_args:

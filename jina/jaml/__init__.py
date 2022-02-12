@@ -368,7 +368,9 @@ class JAML:
             # 2) env variables placeholder are cast to $var then we leverage the os.path.expandvars to replace by
             # environment variables.
 
-            if env_var_deprecated_regex.findall(v):  # catch expressions of form '$var'
+            if env_var_deprecated_regex.findall(v) and not env_var_regex.findall(
+                v
+            ):  # catch expressions of form '$var'
                 warnings.warn(
                     'Specifying environment variables via the syntax `$var` is deprecated.'
                     'Use `${{ ENV.var }}` instead.',
