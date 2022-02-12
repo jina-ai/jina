@@ -700,7 +700,6 @@ def warn_unknown_args(unknown_args: List[str]):
     from cli.lookup import _build_lookup_table
 
     all_args = _build_lookup_table()[0]
-
     has_migration_tip = False
     real_unknown_args = []
     warn_strs = []
@@ -773,6 +772,7 @@ class ArgNamespace:
         if positional_args:
             args += positional_args
         p_args, unknown_args = parser.parse_known_args(args)
+        unknown_args = list(filter(lambda x: x.startswith('--'), unknown_args))
         if warn_unknown and unknown_args:
             _leftovers = set(unknown_args)
             if fallback_parsers:
