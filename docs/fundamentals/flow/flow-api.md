@@ -251,6 +251,23 @@ with Flow() as f:  # Using it as a Context Manager will start the Flow
     asyncio.run(run_client(f.port_expose))
 ```
 
+## Deployment
+To deploy a `Flow` you will need to deploy the Executors it is composed of. The `Flow` is offering convenience functions to generate the necessary configuration files for some use cases. At the moment `Docker-Compose` and `Kubernetes` are supprted.
 
+```python
+from jina import Flow
 
+with Flow() as f:
+    f.to_docker_compose_yaml()
+```
+This will generate a single `docker-compose.yml` file containing all the `Executors` of the `Flow`. More in depth information can be found in {ref}`this How-TO <kubernetes>`.
+
+```python
+from jina import Flow
+
+with Flow() as f:
+    f.to_k8s_yaml('flow_k8s_configuration')
+```
+This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`. The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
+More in depth information can be found in {ref}`this How-TO <docker-compos>`.
 

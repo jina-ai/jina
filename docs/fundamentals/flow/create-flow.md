@@ -320,6 +320,65 @@ This will get you the following output:
 ```
 So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
 
+### Replicate Executors
+
+Replication can be used to create multiple copies of the same Executor. Each request in the Flow is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:
+* If you have slow Executors (like some Encoders) you may want to scale up the number of instances of this particular Executor so that you can process multiple requests in parallel
+* Executors might need to be taken offline from time to time (updates, failures, etc.), but you may want your Flow to be able to process requests without downtimes. In this case Replicas can be used as well so that any Replica of an Executor can be taken offline as long as there is still one running Replica online. Using this technique it is possible to create a High availability setup for your Flow.
+
+```python
+from jina import Flow
+
+f = (Flow()
+     .add(name='slow_encoder', replicas=3)
+     .add(name='fast_indexer'))
+```
+
+```{figure} ../../../.github/2.0/parallel-explain.svg
+:align: center
+```
+
+The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Flow` will send every 
+request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
+
+### Partition data by using Shards
+
+Sharding can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.
+This is helpful in two situations:
+
+- When the full data does not fit on one machine 
+- When the latency of a single request becomes too large.
+
+Then splitting the load across two or more machines yields better results.
+
+For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request.
+Polling can be configured per endpoint (like `/index`) and Executor.
+By default the following `polling` is applied:
+- `ANY` for endpoints at `/index`
+- `ALL` for endpoints at `/search`
+- `ANY` for all other endpoints
+
+When you shard your index, the request handling usually differs between index and search requests:
+
+- Index (and update, delete) will just be handled by a single shard => `polling='any'`
+- Search requests are handled by all Shards => `polling='all'`
+
+For indexing, you only want a single shard to receive a request, because this is sufficient to add it to the index.
+For searching, you probably need to send the search request to all Shards, because the requested data could be on any shard.
+
+```python Usage
+from jina import Flow
+
+flow = Flow().add(name='ExecutorWithShards', shards=3, polling={'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'})
+```
+
+The example above will result in a Flow having the Executor `ExecutorWithShards` with the following polling options configured
+- `/index` has polling `ANY` (the default value is not changed here)
+- `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
+- `/custom` has polling `ALL`
+- all other endpoints will have polling `ANY` due to the usage of `*` as a wildcard to catch all other cases
+
+
 ## Visualize a `Flow`
 
 `Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
