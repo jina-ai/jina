@@ -63,7 +63,49 @@ with f:  # Using it as a Context Manager will start the Flow
 ````
 
 ````{tab} Load from YAML
-TODO do yaml example
+`flow.yml`:
+
+```yaml
+jtype: Flow
+executors:
+  - name: myexec1
+    uses: FooExecutor
+    py_modules: exec.py
+  - name: myexec2
+    uses: BarExecutor
+    py_modules: exec.py
+```
+
+`exec.py`
+```python
+from docarray import Document, DocumentArray
+
+from jina import Executor, requests
+
+
+class FooExecutor(Executor):
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='foo was here'))
+
+
+class BarExecutor(Executor):
+
+    @requests
+    def bar(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='bar was here'))
+```
+
+```python
+from jina import Flow, Document
+
+f = Flow.load_config('flow.yml')
+
+with f:
+    response = f.search(return_results=True)  # This sends a request to the /search endpoint of the Flow
+    print(response.texts)
+```
 ```
 ````
 <img src="https://github.com/jina-ai/jina/blob/master/.github/images/foobar_flow.png?raw=true" alt="Simple Flow with two Executors being chained one after the other" width="50%">

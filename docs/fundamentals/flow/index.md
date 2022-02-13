@@ -77,12 +77,25 @@ c.post(on='/bar', inputs=Document(), on_done=print)
 ````{tab} Load from YAML
 
 `my.yml`:
-
 ```yaml
 jtype: Flow
 executors:
   - name: myexec1
-    uses: MyExecutor
+    uses: FooExecutor
+    py_modules: exec.py
+```
+
+`exec.py`:
+```python
+from docarray import Document, DocumentArray
+
+from jina import Executor, requests
+
+class FooExecutor(Executor):
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='foo was here'))
 ```
 
 ```python
