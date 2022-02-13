@@ -18,6 +18,7 @@
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.2k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
+<a href="https://github.com/jina-ai/jina/blob/master/LICENSE"><img src="https://img.shields.io/github/license/jina-ai/jina.svg" alt="license"></a>
 </p>
 
 <!-- start elevator-pitch -->
@@ -64,7 +65,7 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
 
 
-Leveraging these three components, let's build an app that **find similar images using ResNet50**.
+Leveraging these three components, let's build an app that can **find similar images using ResNet50**.
 
 ### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
 
@@ -253,7 +254,7 @@ Intrigued? [Find more about Jina from our docs](https://docs.jina.ai).
 
 ## Support
 
-- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
+- Join our [Slack community](https://slack.jina.ai) to chat with our engineers about your use cases, questions, and
   support queries.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to
   discuss your use case and learn Jina's new features.
