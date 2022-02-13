@@ -245,7 +245,7 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 
 #### Requirements
 
-* Python 3
+* Python 3 (>=3.7, check out [recent release](https://www.python.org/downloads/release/python-3102/))
 * [jq](https://stedolan.github.io/jq/download/)
 
 #### Steps to build locally
