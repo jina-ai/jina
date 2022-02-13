@@ -43,20 +43,17 @@ A `Flow` orchestrates its Executors as a graph and will send requests to all Exe
 from docarray import Document, DocumentArray
 from jina import Executor, Flow, requests
 
-
 class FooExecutor(Executor):
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
-
 class BarExecutor(Executor):
 
     @requests
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='bar was here'))
-
 
 f = Flow().add(uses=FooExecutor, name='fooExecutor').add(uses=BarExecutor, name='barExecutor')  # Create the empty Flow
 with f:  # Using it as a Context Manager will start the Flow
@@ -70,7 +67,6 @@ TODO do yaml example
 ```
 ````
 <img src="https://github.com/jina-ai/jina/blob/master/.github/images/foobar_flow.png?raw=true" alt="Simple Flow with two Executors being chained one after the other" width="50%">
-
 
 The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
@@ -88,6 +84,7 @@ f = Flow()\
     .add(uses='docker://sentence-encoder', name='executor1')\
     .add(uses='jinahub+docker://TransformerTorchEncoder/', name='executor2')\
     .add(uses=ExecutorFromCode, name='executor3')
+
 ```
 * `executor1` is using a Docker image tagged as `sentence-encoder` and will be created as a docker container of this image. 
 * `executor2` will use a Docker image coming from the Hub and will be created as a docker container of this image.
@@ -222,10 +219,8 @@ param2: 2
 param3: 30
 ```
 
-
 #### Override `requests` configuration
 You can override the `requests` configuration of an executor and bind methods to endpoints that you provide. In the following codes, we replace the endpoint `/foo` binded to the `foo()` function with `/non_foo` and add a new endpoint `/bar` for binding `bar()`. Note the `all_req()` function is binded to **all** the endpoints except those explicitly binded to other functions, i.e. `/non_foo` and `/bar`.
-
 
 ```python
 from jina import Executor, requests, Flow
