@@ -34,7 +34,6 @@ with f:
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-
 class FooExecutor(Executor):
 
     @requests
@@ -46,12 +45,11 @@ class FooExecutor(Executor):
 f = Flow(protocol='http', port_expose=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345)
-
     response = client.search()
-
     print(response[0].data.docs.texts)
     f.block()
 ```
+
 ```bash
  curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{}]}'
 ```
@@ -64,7 +62,6 @@ The `Flow` API can expose different endpoints depending on the configured Execut
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-
 class EndpointExecutor(Executor):
 
     @requests(on='/foo')
@@ -75,19 +72,17 @@ class EndpointExecutor(Executor):
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='bar was called'))
 
-
-
 f = Flow(protocol='grpc', port_expose=12345).add(uses=EndpointExecutor)
 with f:
     client = Client(port=12345)
-
     foo_response = client.post(on='/foo')
     bar_response = client.post(on='/bar')
-
     print(foo_response[0].data.docs.texts)
     print(bar_response[0].data.docs.texts)
 ```
+
 This will print
+
 ```text
 ['foo was called']
 ['bar was called']
@@ -132,7 +127,6 @@ from jina import Client, Flow
 d1 = Document(content='hello')
 d2 = Document(content='world')
 
-
 def doc_gen():
     for j in range(10):
         yield Document(content=f'hello {j}')
@@ -166,20 +160,17 @@ Usually a `Flow` will send each request to all Executors with matching Endpoints
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-
 class FooExecutor(Executor):
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'foo was here and got {len(docs)} document'))
 
-
 class BarExecutor(Executor):
 
     @requests
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'bar was here and got {len(docs)} document'))
-
 
 f = Flow() \
     .add(uses=FooExecutor, name='fooExecutor') \
@@ -201,13 +192,11 @@ emphasize-lines: 14
 ---
 from jina import Document, Executor, Flow, requests
 
-
 class MyExecutor(Executor):
 
     @requests
     def foo(self, parameters, **kwargs):
         print(parameters['hello'])
-
 
 f = Flow().add(uses=MyExecutor)
 
@@ -236,7 +225,6 @@ import asyncio
 
 from docarray import Document
 from jina import Client, Flow
-
 
 async def async_inputs():
     for _ in range(10):

@@ -25,13 +25,11 @@ The most important methods of the `Flow` object are the following:
 ```python
 from jina import Flow, Document, Executor, requests
 
-
 class MyExecutor(Executor):
 
     @requests(on='/bar')
     def foo(self, docs, **kwargs):
         print(docs)
-
 
 f = Flow().add(name='myexec1', uses=MyExecutor)
 
@@ -49,13 +47,11 @@ Server:
 ```python
 from jina import Flow, Executor, requests
 
-
 class MyExecutor(Executor):
 
     @requests(on='/bar')
     def foo(self, docs, **kwargs):
         print(docs)
-
 
 f = Flow(port_expose=12345).add(name='myexec1', uses=MyExecutor)
 
@@ -112,7 +108,5 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 create-flow
 flow-api
-docker
-k8s
 remarks
 ```
