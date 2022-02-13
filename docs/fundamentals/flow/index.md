@@ -7,13 +7,13 @@ Documents "flow" through the created pipeline and are processed by Executors.
 
 The most important methods of the `Flow` object are the following:
 
-| Method         | Description                                                                                          |
-|----------------|------------------------------------------------------------------------------------------------------|
-|  `.add()` | Add an Executor to the `Flow`                                                                        |
-| `with` context manager       | You can use the `Flow` as a context manager. It will automatically start and close your `Flow` then. |
-| `.plot()` | Visualizes the flow. Helpful for building complex pipelines.                                         |
-| `.post()`   | Sends requests to the API of the `Flow`.                                                             |
-| `.block()`        | Blocks execution until the program is terminated.                                                    |
+| Method         | Description                                                                                                                                  |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  `.add()` | Add an Executor to the `Flow`                                                                                                                |
+| `with` context manager       | You can use the `Flow` as a context manager. It will automatically start and close your `Flow` then.                                         |
+| `.plot()` | Visualizes the flow. Helpful for building complex pipelines.                                                                                 |
+| `.post()`   | Sends requests to the API of the `Flow`.                                                                                                     |
+| `.block()`        | Blocks execution until the program is terminated. This is useful to keep the `Flow` alive so it can be used from other places (Clients etc). |
 
 
 

@@ -2,7 +2,7 @@
 
 # Create a Flow
 
-A `Flow` can by created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting all its Executors.
+A `Flow` can be created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting all its Executors.
 
 The most trivial `Flow` is the empty `Flow` as shown below:
 

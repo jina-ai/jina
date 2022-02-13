@@ -152,10 +152,11 @@ with Flow() as f:
 
 Especially during indexing a Client often sends thousands of Documents to a `Flow`. Those Documents are internally batched into a `Request`. The size of these batches can be controlled with the `request_size` keyword. The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
 ```python
-from jina import Flow, Document
+from docarray import Document, DocumentArray
+from jina import Flow
 
 with Flow() as f:
-    f.post('/', (Document() for _ in range(100)), request_size=10)
+    f.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
 ```
 
 ### Target a specific Executor
