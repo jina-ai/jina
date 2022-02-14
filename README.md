@@ -21,37 +21,33 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 
 🥤 **Serve** - level up your local neural search application as an API service via HTTP, WebSockets or gRPC.
 
-🗄️ **Orchestrate** - break down your complicated neural search application to a pipeline of Executors. Compose and share pipelines with the help of pre-built Executors [on the Hub](https://hub.jina.ai).
+🐙 **Orchestrate** - break down your complicated neural search application to a pipeline of Executors. Compose and share pipelines with the help of pre-built Executors [on the Hub](https://hub.jina.ai).
 
 🚀 **Scale** - scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
 
 ☁️ **Cloud Native** - built and designed to work and scale in the cloud. It offers easy integration with [Docker compose](???URL!!! TUTORIAL) and [Kubernetes](???URL!!! TUTORIAL).
 
-Beside Jina, Jina AI offers a neural search ecosystem composed of DocArray, Hub and Finetuner:
-* [DocArray](https://docarray.jina.ai): Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
-* [Hub](https://hub.jina.ai): Marketplace for sharing and discovering reusable building blocks of neural search applications.
-* [Finetuner](https://finetuner.jina.ai): Tune the weights of any deep neural network for better embeddings on search tasks. It helps you deliver the last mile of performance and quality for domain-specific neural search applications.
-
+Beside Jina, Jina AI offers a neural search ecosystem composed of [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai). They are nicely integrated with Jina.
 
 <!-- end jina-description -->
 
 ## Install 
-```
+```bash
 pip install -U jina
 ```
 
 More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
-If you are upgrading from Jina 2: please remove version 2, then install version 3. (`pip uninstall jina && pip install -U jina`)
+If you are upgrading from Jina 2:
+```bash
+pip uninstall jina && pip install -U jina
+```
 
 ## [Documentation](https://docs.jina.ai)
 
 ## Get Started
 
-> We recommend familiarizing yourself beforehand with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
-
-You can follow our basic example below to get started from building a local `Executor` to deploying your search application in a `Flow` to Kubernetes.
-
+> 💡 We recommend familiarizing yourself beforehand with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
 
 ### Basic Concepts
 
@@ -60,7 +56,7 @@ Executor and Flow are two fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready-to-use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
 
-Leveraging these three components, let's build an app that **finds similar images using ResNet50**.
+Leveraging these two components, let's build an app that **finds similar images using ResNet50**.
 
 ### Generate embeddings in an Executor
 
@@ -98,6 +94,8 @@ class ImageEmbeddingExecutor(Executor):
 Done! Now we can use the `ImageEmbeddingExecutor` to generate embeddings for the dataset:
 
 ```python
+from jina import DocumentArray
+
 da = DocumentArray.from_files(
     '~/Downloads/left/*.jpg'
 )  # load the left images from the dataset, adjust the path as needed
@@ -113,7 +111,6 @@ With a few additions we can use the embeddings from the previous step in a `Flow
 1. Create a second Executor for storing and retrieving images.
     ```python
     from jina import Executor, requests, DocumentArray
-    
     
     class IndexExecutor(Executor):
     
@@ -138,7 +135,7 @@ With a few additions we can use the embeddings from the previous step in a `Flow
     with f:
         left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
         client = Client(port=f.port_expose)
-        client.index(left_da)
+        client.post('/index', left_da)
     ```
 
 !!!IMAGE???
@@ -154,9 +151,9 @@ With a few additions we can use the embeddings from the previous step in a `Flow
     
     with f:
         client = Client(port=f.port_expose)
-        client.index(left_da)
+        client.post('/index', left_da)
     
-        print(client.search(right_da))
+        print(client.post('/search', right_da))
     ```
 You will see the image you searched for and the top 10 matches. Just close the images as they show up. This is everything: You just built your first neural search application! 🎉
 
@@ -177,7 +174,7 @@ You will see the image you searched for and the top 10 matches. Just close the i
         
     with f:
         client = Client(port=f.port_expose, protocol='http')
-        client.index(left_da[:10])
+        client.post('/index', left_da)
         f.block()
     ```
 
@@ -189,35 +186,39 @@ You will see the image you searched for and the top 10 matches. Just close the i
 ### Containerize your Executors
 
 If we want to use our Executors via Docker Compose or in Kubernetes we will need to containerize them. The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
+
 1. Move each `Executor` class to a separate folder with one Python file in each:
    - `ImageEmbeddingExecutor` -> 📁 `embed_img/exec.py`
    - `IndexExecutor` -> 📁 `match_img/exec.py`
+   
 2. Create a `requirements.txt` in `embed_img` and add `torchvision` as a requirement.
-3. Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the Usage. It looks like this `jinahub://1ylut0gf`)
+
+3. Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the usage. It looks like this `jinahub://1ylut0gf`)
     ```bash
     jina hub push embed_img
     jina hub push match_img
     ```
    You will get two Hub Executors that can be used for any container.
 
-5. Now you are able run the `Flow` from the previous example with your containerized Executors. Just replace the `uses` strings with the values you got from Jina Hub:
+4. Now you are able to run the `Flow` from the previous example with your containerized Executors. Just replace the `uses` strings with the values you got from Jina Hub:
     
     ```python
     from jina import Flow, DocumentArray, Client
     
     f = (
-        Flow(port_expose=12345, protocol='http')
-        .add(uses='jinahub://1ylut0gf')
-        .add(uses='jinahub://258lzh3c')
+        Flow(port_expose=12345)
+        .add(uses='jinahub+docker://1ylut0gf')
+        .add(uses='jinahub+docker://258lzh3c')
     )
     
     with f:
         left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-        client = Client(port=f.port_expose, protocol='http')
-        client.index(left_da)
+        client = Client(port=f.port_expose)
+        client.post('/index', left_da)
     ```
 
 ### Run your Flow with Docker Compose
+
 A `Flow` can generate a `docker-compose.yml` file so that you can easily start a `Flow` via `docker-compose up`.
 1. Generate the `docker-compose.yml` from the `Flow` using one line of Python code. Just replace the `uses` with the appropriate strings for your case:
     ```python
@@ -227,14 +228,11 @@ A `Flow` can generate a `docker-compose.yml` file so that you can easily start a
 3. Your `Flow` should be up and running now, and you can use the `Client` or `curl` to send requests:
     
     ```python
-    from jina import DocumentArray, Client
+    from jina import Client
     
-    left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-    right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
-    client = Client(port=12345, protocol='http')
-    client.index(left_da)
+    client = Client(port=12345)
     
-    response = client.search(right_da[:1])
+    print(client.post('/search', right_da))
     ```
 
 ### Deploy to Kubernetes
@@ -256,14 +254,11 @@ You can easily deploy any `Flow` with containerized Executors to a Kubernetes cl
 4. Do port forwarding so that you can send requests to our application in Kubernetes: `kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345`
 5. Your Flow should be up in running now in K8s and you can use the `Client` or `Curl` to send requests:
     ```python
-    from jina import DocumentArray, Client
+    from jina import Client
     
-    left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-    right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
-    client = Client(port=12345, protocol='http')
-    client.index(left_da)
+    client = Client(port=12345)
     
-    response = client.search(right_da[:1])
+    print(client.post('/search', right_da))
     ```
 
 Intrigued? [Find more about Jina from our docs](https://docs.jina.ai).
