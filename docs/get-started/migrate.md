@@ -81,7 +81,7 @@ to have a better understanding of accessing attributes and elements with `DocArr
 ````{tab} Jina 2
 
 ```python
-from Jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 
 docs = nested_docs()
 
@@ -98,7 +98,7 @@ print(docs.flatten().texts)
 ````{tab} Jina 3 
 
 ```python
-from Jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 
 docs = nested_docs()
 
@@ -141,7 +141,7 @@ important when migrating code that checks for the presence of a certain attribut
 ````{tab} Jina 2
 
 ```python
-from Jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 
 d = Document()
 print(d.text)
@@ -157,7 +157,7 @@ print(docs.texts)
 ````{tab} Jina 3 
 
 ```python
-from Jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 
 d = Document()
 print(d.text)

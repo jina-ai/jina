@@ -128,7 +128,7 @@ Once we see that all the Deployments in the Flow are ready, we can start indexin
 import portforward
 
 from jina.clients import Client
-from jina import DocumentArray
+from docarray import DocumentArray
 
 with portforward.forward(
     'custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8080

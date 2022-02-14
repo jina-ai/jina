@@ -280,7 +280,8 @@ The Client can also send parameters to the Executors as shown below:
 ---
 emphasize-lines: 14
 ---
-from jina import Document, Executor, Flow, requests
+from docarray import Document
+from jina import Executor, Flow, requests
 
 class MyExecutor(Executor):
 

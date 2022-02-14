@@ -62,7 +62,8 @@ For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
 will connect PostgreSQL server which was started locally. Then you must use it with:
 
 ```python
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 f = Flow().add(uses='jinahub+docker://PostgreSQLStorage', 
                uses_with={'hostname': 'host.docker.internal'})
