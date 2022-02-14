@@ -19,14 +19,16 @@ But what if you want to go bigger? Organize your code into modules, serve and sc
 
 - Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`
 
-```{toctree}
-:hidden:
+## Minimum working example
 
-executor-api
-executor-in-flow
-repository-structure
-hub/index
-containerize-executor
+```python
+from jina import Executor, requests
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        print(docs)  # process docs here
 ```
 
 ````{admonition} See Also
@@ -37,3 +39,14 @@ Executor, and Flow are the two fundamental concepts in Jina.
 - {ref}`Executor <executor>` is how Jina processes Documents;
 - {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
 ````
+
+
+```{toctree}
+:hidden:
+
+executor-api
+executor-in-flow
+repository-structure
+hub/index
+containerize-executor
+```
