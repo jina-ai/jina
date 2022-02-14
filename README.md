@@ -35,6 +35,8 @@ Jina Core offers developers:
 
 ☁️ **Cloud Native** - Jina is built and designed to work and scale in the Cloud. All components can be deployed in the cloud to be used in your favourite cloud orchestrator. By default, Jina offers easy integration with Docker compose and Kubernetes.
 
+**Common API** - Jina offers the possibility to build microservices which use a single API based on <a href="https://github.com/jina-ai/docarray/">DocArray</a>. Eases the integration pains and improves the communication between the team. 
+
 <!-- end jina-description -->
 
 ## Install 
