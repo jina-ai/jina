@@ -1,23 +1,23 @@
 # Architecture Overview
 
-This figure shows an overview of how Jina deploys and serves its Flows and Executors.
-
-This figure shows details on how `Flow` and `Executor` abstractions translate into concrete entities, providing all the 
-serving and scaling features of Jina.
-
-You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But it is useful in order to understand how Jina works, regardless of whether it runs locally, orchestrated only by the Flow, or if it runs in 
-a cloud-native infrastructure such as Kubernetes. In fact, you can notice how some of the naming and concepts are inspired by the Kubernetes architecture.
- 
-
-```{figure} arch-overview.svg
-:align: center
-```
-
 *Executor* and *Flow* are the two fundamental concepts in Jina: 
 
 - **Executor**: Each {ref}`Executor <executor>` performs a single task on `DocumentArray`s.
 
 - **Flow**: The {ref}`Flow <flow>` ties Executors together into a processing pipeline.
+
+The figure below shows details on how `Flow` and `Executor` abstractions translate into concrete entities, providing all the 
+serving and scaling features of Jina.
+
+
+```{figure} arch-overview.svg
+:align: center
+```
+
+It illustrates how Jina deploys and serves its Flows and Executors.
+
+You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But it is useful in order to understand how Jina works, regardless of whether it runs locally, orchestrated only by the Flow, or if it runs in 
+a cloud-native infrastructure such as Kubernetes. In fact, you can notice how some naming and concepts are inspired by the Kubernetes architecture.
 
 The following concepts may appear in the docs, but you don't need to master them, as they are designed to be used internal-only:
 
