@@ -57,7 +57,8 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a single task on Documents.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
-Leveraging these three concepts, let's build an app that **finds similar images using ResNet50**.
+Leveraging these three concepts, let's build an app that **finds similar images using ResNet50**. We will use the same dataset as in the [DocArray example](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search) to show to use Jina 
+to serve your similar images search as a service.
 
 ### Create `Executor` for embedding and storing images
 
@@ -116,8 +117,8 @@ Notice how we use `@requests(on=...)` to decorate the application logics.
 
 ### Orchestrate two Executors in a `Flow`
 
-Building a Flow to wire up the Executors, we can now index some images and start searching. Note that we will index the
-full dataset now and it might take a while:
+Building a Flow to wire up the Executors, we can now index some images and start searching. Note that we only index the
+100 images now for demonstration purpose:
 
 ```python
 from jina import Client, Flow
@@ -127,16 +128,15 @@ if __name__ == '__main__':
     with f:
         left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
         client = Client(port=f.port_expose)
-        client.post('/index', left_da[:10])
+        client.post('/index', left_da[:100])  # index only 100 images
         right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')[:1]
+        right_da.plot_image_sprites(output='query.png')  # save the query image
         response = client.post('/search', right_da)
-        docs = response[0].docs
-        right_da.plot_image_sprites(output='query.png')
-        (docs[0].matches
+        (response[0].docs[0].matches
          .apply(
             lambda d: d.set_image_tensor_channel_axis(0, -1)
                        .set_image_tensor_inv_normalization())
-         .plot_image_sprites(output='test.png'))
+         .plot_image_sprites(output='matches.png'))  # save the matched images
 ```
 
 ```shell
@@ -145,34 +145,38 @@ if __name__ == '__main__':
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:52097
 	🔒 Private network:	172.20.10.2:52097
-	⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:00 estimating... 
-    ⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 estimating... 
-    ⠙       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 100% ETA: 0 seconds 80 steps done in 2 seconds
+query image: /Users/nanwang/Downloads/right/04354.jpg
+matches: /Users/nanwang/Downloads/left/04354.jpg, 0.2617139220237732
+matches: /Users/nanwang/Downloads/left/03349.jpg, 0.2904244065284729
+matches: /Users/nanwang/Downloads/left/02057.jpg, 0.3914386034011841
+matches: /Users/nanwang/Downloads/left/02043.jpg, 0.43008697032928467
+matches: /Users/nanwang/Downloads/left/02725.jpg, 0.4447172284126282
+matches: /Users/nanwang/Downloads/left/04426.jpg, 0.46958935260772705
+matches: /Users/nanwang/Downloads/left/00654.jpg, 0.4706113934516907
+matches: /Users/nanwang/Downloads/left/05738.jpg, 0.5737641453742981
+matches: /Users/nanwang/Downloads/left/00132.jpg, 0.5990374088287354
 ```
 
+The images with the same id are expected to be matched. As we scan see, the pretrained ResNet50 indeed find some similar images.
+You will see the image you searched for at `query.png` and the top 9 matches at `matches.png`. 
+This is everything: You just built your first neural search application! 🎉
 
-You will see the image you searched for and the top 9 matches. Just close the images as they show up. This is everything: You just built your first neural search application! 🎉
+<p align="center">
+<a href="https://docarray.jina.ai"><img src="https://github.com/jina-ai/jina/blob/main/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
+</p>
 
-!!!IMAGE???
 
-
-You can also expose your application with a REST API so that you can send HTTP requests: Just change the protocol of the `Flow` to HTTP and use Curl to query it:
+If you want to expose your application with a REST API so that you can send HTTP requests, 
+just set the protocol of the `Flow` to `HTTP` with a port number so that you can use Curl to query it:
 
 ```python
-from jina import Client, Flow, DocumentArray
-
-f = (
-    Flow(port_expose=12345, protocol='http')
-    .add(uses=ImageEmbeddingExecutor)
-    .add(uses=IndexExecutor)
-)
-
-left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-    
-with f:
-    client = Client(port=f.port_expose, protocol='http')
-    client.post('/index', left_da)
-    f.block()
+...
+if __name__ == '__main__':
+    f = Flow(protocol='http', expose_port=1234)
+    ...
+    with f:
+        ...
+        f.block()
 ```
 
 Now use Curl to send search requests:
