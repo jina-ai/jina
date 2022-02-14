@@ -51,14 +51,15 @@ pip uninstall jina && pip install -U jina
 
 > 💡 We recommend familiarizing yourself beforehand with [DocArray](https://docarray.jina.ai).
 
-Executor and Flow are two fundamental concepts in Jina.
+Document, Executor and Flow are three fundamental concepts in Jina.
 
+- [**Document**](https://docarray.jina.ai/): a data structure contains multi-modal data.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/):   a processing unit of Documents.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/): ties Executors into a processing pipeline.
 
-Leveraging these two components, let's build an app that **finds similar images using ResNet50**.
+Leveraging these three concepts, let's build an app that **finds similar images using ResNet50**.
 
-### Create Executors for embedding and storing images
+### Create `Executor` for embedding and storing images
 
 <sup>
 Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
@@ -113,7 +114,7 @@ class IndexExecutor(Executor):
 
 Notice how we use `@requests` to decorate the application logics there. We actively drop some content to prevent it pass through the Flow and save bandwidth.
 
-### Orchestrate two Executors in a Flow
+### Orchestrate two Executors in a `Flow`
 
 ```python
 from jina import Client, Flow, DocumentArray
@@ -171,7 +172,7 @@ Now use Curl to send search requests:
 curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "<data_set_path>/right/00000.jpg"}]}' > curl_response
 ```
 
-### Containerize Executors to Hub
+### Containerize `Executor` to Hub
 
 If we want to use our Executors via Docker Compose or in Kubernetes we will need to containerize them. The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
 
@@ -205,7 +206,7 @@ If we want to use our Executors via Docker Compose or in Kubernetes we will need
         client.post('/index', left_da)
     ```
 
-### Deploy Flow via Docker Compose
+### Deploy `Flow` via Docker Compose
 
 A `Flow` can generate a `docker-compose.yml` file so that you can easily start a `Flow` via `docker-compose up`.
 1. Generate the `docker-compose.yml` from the `Flow` using one line of Python code. Just replace the `uses` with the appropriate strings for your case:
@@ -223,7 +224,7 @@ A `Flow` can generate a `docker-compose.yml` file so that you can easily start a
     print(client.post('/search', right_da))
     ```
 
-### Deploy Flow via Kubernetes
+### Deploy `Flow` via Kubernetes
 
 You can easily deploy any `Flow` with containerized Executors to a Kubernetes cluster:
 
