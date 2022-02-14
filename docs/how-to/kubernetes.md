@@ -56,9 +56,17 @@ This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImage
 ```python
 from jina import Flow
 
-f = Flow(port_expose=8080).add(
-    name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2
-).add(name='indexer', uses='jinahub+docker://PQLiteIndexer', uses_with={'dim': 512}, shards=2)
+f = (
+    Flow(port_expose=8080)
+    .add(name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2)
+    .add(
+        name='indexer',
+        uses='jinahub+docker://PQLiteIndexer',
+        uses_with={'dim': 512},
+        shards=2,
+    )
+)
+
 ```
 
 Now, we can generate Kubernetes YAML configs from the Flow:
