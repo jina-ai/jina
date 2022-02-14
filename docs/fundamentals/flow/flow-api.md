@@ -208,37 +208,6 @@ executors:
 :align: center
 ```
 
-#### Add non-Jina related routes
-
-If you want to add more customized routes, configs, options to HTTP interface, you can simply
-override `jina.helper.extend_rest_interface` function as follows:
-
-```python
-import jina.helper
-from jina import Flow
-
-
-def extend_rest_function(app):
-    @app.get('/hello', tags=['My Extended APIs'])
-    async def foo():
-        return 'hello'
-
-    return app
-
-
-jina.helper.extend_rest_interface = extend_rest_function
-f = Flow(protocol='http')
-
-with f:
-    f.block()
-```
-
-And you will see `/hello` is now available:
-
-```{figure} ../../../.github/2.0/swagger-extend.png
-:align: center
-```
-
 ## Working with the Python Client
 The most convenient way to work with the `Flow` API is the Python Client. It enables you to send `Documents` to the `Flow` API in a number of different ways shown below:
 ```python
