@@ -3,7 +3,7 @@
 ```{toctree}
 :maxdepth: 1
 
-async-executor
+async-executors
 scale-out
 gpu-executor
 external-executor
