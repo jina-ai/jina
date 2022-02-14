@@ -67,10 +67,7 @@ html_theme_options = {
 
     # start-announce
 
-    "announcement": '''
-    <a href="https://www.meetup.com/de-DE/jina-community-meetup/events/279857975/">Learn more about Jina and MindSpore at our Engineering All Hands on February 8</a>
-    ''',
-        
+
     # end-announce
 }
 
