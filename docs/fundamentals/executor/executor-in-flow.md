@@ -1,3 +1,4 @@
+(executor-in-flow)=
 # Executors inside a Flow
 
 Executors are a good way to group your `DocumentArray` functions and logics into a class that can share `configuration` and `state` in a modular way.
@@ -65,7 +66,7 @@ Each `Executor` has a special `workspace` that is reserved for that specific `Ex
 
 This `workspace` is generated using the workspace specified in `metas` or `runtime_args` workspace, plus adding special suffixes in case of sharded `Executor`s.
 
-
+(executor-yaml-interface)=
 ## YAML interface
 
 An Executor can be loaded from and stored to a YAML file. This YAML configuration can also be referenced or directly used inside a Flow YAML file.

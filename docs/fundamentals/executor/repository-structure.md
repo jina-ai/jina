@@ -3,14 +3,12 @@
 Besides organizing your Executor code inline (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
 
 
-
 `````{tab} Separate module
 
 ````{dropdown} foo.py
 
 
 ```python
-
 from docarray import Document
 from jina import Executor, Flow, requests
 

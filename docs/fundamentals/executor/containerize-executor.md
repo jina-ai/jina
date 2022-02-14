@@ -1,61 +1,63 @@
 # Dockerize your Executor
 
-Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in how to wrap this Executor into a container
+Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in wrapping this Executor into a container
 so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
 
 One option is to leverage {ref}`Jina Hub <hub/index>` infrastructure to make sure your Executor can run as a container.
 
-However, you can build a `docker` image yourself and use it as any other Executor. There are some requirements on how this image needs to be built.
-
-The main requirements are:
+However, you can also build a `docker` image yourself and use it like any other Executor. There are some requirements
+on how this image needs to be built, the main ones being:
 
 - Jina must be installed inside the image
-- Jina CLI command to start executor should be the default entrypoint
+- The Jina CLI command to start the Executor has to be the default entrypoint
 
 ## Prerequisites
 
-To be able to understand how a Container image is built for an Executor, understanding of [docker](https://docs.docker.com/) and how to write 
-a [Dockerfile](https://docs.docker.com/engine/reference/builder/) to build an image.
+To be able to understand how a Container image is built for an Executor, you need an understanding of [Docker](https://docs.docker.com/) generally, of how to write 
+a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and of how to build a Docker image.
 
-Also, to follow the explanation and the example it is needed to have `docker` installed locally.
+In addition, to reproduce the example below it is required to have `docker` installed locally.
 
 
-## Jina installed in the Image
+## Installing Jina in the Docker image
 
-It is strictly needed for Jina to be installed inside the docker image. This can be achieved in 2 ways.
+It is strictly needed for Jina to be installed inside the docker image. This can be achieved in 2 ways:
 
-- Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile. It will make sure that everything needed for Jina
-to run the Executor is installed.
+- Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile.
+This will make sure that everything needed for Jina to run the Executor is installed.
 
 ```dockerfile
 FROM jinaai/jina:3.0-py37-perf
 ```
 
-- Simply install Jina as any other Python package. You can make sure Jina is listed as a requirement or that `pip install jina` is a command part of the image building process.  
+- Simply install Jina like any other Python package. You can do this by specifying Jina in the `requirements.txt`, 
+or by including the `pip install jina` command as part of the image building process.  
 
 ```dockerfile
 RUN pip install jina==3.0
 ```
 
-## Jina Executor CLI as entrypoint
+## Setting Jina Executor CLI as entrypoint
 
-When a containerized Executor is run inside a Flow, what Jina does under the hood is to basically do `docker run` with some extra arguments. 
+When a containerized Executor is run inside a Flow,
+under the hood Jina basically executes `docker run` with some extra arguments.
 
-This means that Jina assumes that what runs inside the `container` is the same as it would run in a regular OS process. Therefore, you need to make sure that
+This means that Jina assumes that what runs inside the `container` runs just like it would run in a regular OS process. Therefore, you need to make sure that
 the basic entrypoint of the `image` calls `jina executor` {ref}`CLI <../api/cli>` command.
 
 ```dockerfile
 ENTRYPOINT ["jina", "executor", "--uses", "PATH_TO_YOUR_EXECUTOR_CONFIGURATION"]
 ```
 
-## Example
+## Example: Dockerized Executor
 
 Here we will show how to build a basic executor with a dependency on another external package.
 
 
-### Write your Executor
+### Writing the Executor
 
-Let's say we have our executor in a single python file called `my_executor.py`
+You can define your soon-to-be dockerized Executor exactly like any other Executor.
+Here that is done in the `my_executor.py` file.
 
 ```python
 import torch # Our Executor has dependency on torch
@@ -70,9 +72,18 @@ class ContainerizedEncoder(Executor):
             doc.embedding = torch.randn(10)
 ```
 
-### Write your Executor yaml file
+### Writing the Executor YAML file
 
-We need to write the YAML configuration of the Executor to be put inside the Docker image. We will write it under `config.yml`
+The YAML configuration, as a minimal working example, is required to point to the file containing the Executor.
+
+
+```{admonition} More YAML options
+:class: seealso
+To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-yaml-interface>`.
+```
+
+This is necessary for the Executor to be put inside the Docker image,
+and we can define such a configuration in `config.yml`:
 
 ```yaml
 jtype: ContainerizedEncoder
@@ -81,19 +92,19 @@ metas:
     - my_executor.py
 ```
 
-### Write your requirements.txt
+### Writing requirements.txt
 
 In this case, our Executor has only one requirement besides Jina, `torch`.
 
-So we can write a `requirements.txt` file:
+So, in `requirements.txt`, we specify just a single requirement:
 
 ```requirements.txt
 torch
 ```
 
-### Write a Dockerfile
+### Writing the Dockerfile
 
-The last step is to write a `Dockerfile`
+The last step is to write a `Dockerfile`, which has to do little more than launching the Executor via the Jina CLI:
 
 ```dockerfile
 FROM jinaai/jina:3.0-py37-perf
@@ -108,9 +119,9 @@ RUN pip install -r requirements.txt
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 
-### Build the image
+### Building the image
 
-At this point we have a folder structure looking like this:
+At this point we have a folder structure that looks like this:
 
 ```
 .
@@ -126,15 +137,17 @@ We just need to build the image:
 docker build -t my_containerized_executor .
 ```
 
-Once the build is successful, you should see under `docker images`
+Once the build is successful, this is what you should see under `docker images`:
 
 ```console
 REPOSITORY                       TAG                IMAGE ID       CREATED          SIZE
 my_containerized_executor        latest             5cead0161cb5   13 seconds ago   2.21GB
 ```
 
-### Use it
+### Using the containerized Executor
 
+The containerized Executor can be used like any other, the only difference being the 'docker' prefix in the `uses`
+ parameter:
 ```python
 from docarray import DocumentArray, Document
 from jina import Flow
