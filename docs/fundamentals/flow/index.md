@@ -12,13 +12,12 @@ The most important methods of the `Flow` object are the following:
 | `.add()`                           | Add an Executor to the `Flow`                                                                                                                |
 | `.start()`                         | Starts the `Flow`. This will start all its Executors and check if they are ready to be used.                                                 |
 | `.stop()`                          | Stops the `Flow`. This will stop all its Executors.                                                                                          |
-| `with` context manager             | You can use the `Flow` as a context manager. It will automatically start and close your `Flow` then.                                         |
-| `.to_docker_compose()`             | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
-| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files into <output_directory>.                                                                        |
+| `with` context manager             | You can use the `Flow` as a context manager. It will automatically start and stop your `Flow`.                                         |                                                                |
 | `.plot()`                          | Visualizes the flow. Helpful for building complex pipelines.                                                                                 |
 | `.post()`                          | Sends requests to the API of the `Flow`.                                                                                                     |
 | `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the `Flow` alive so it can be used from other places (Clients etc). |
-
+| `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
+| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files into <output_directory>.        
 
 
 ## Minimum working example
@@ -27,7 +26,8 @@ The most important methods of the `Flow` object are the following:
 
 
 ```python
-from jina import Flow, Document, Executor, requests
+from docarray import Document
+from jina import Flow, Executor, requests
 
 class MyExecutor(Executor):
 
@@ -99,7 +99,8 @@ class FooExecutor(Executor):
 ```
 
 ```python
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 f = Flow.load_config('my.yml')
 
