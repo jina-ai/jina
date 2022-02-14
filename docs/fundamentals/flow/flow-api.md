@@ -10,21 +10,16 @@ Every `Flow` provides an API to receive requests over the network. Supported pro
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-
 class FooExecutor(Executor):
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
-
-
 f = Flow(protocol='grpc', port_expose=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345)
-
-    response = client.search()
-
+    response = client.post(on='/')
     print(response[0].data.docs.texts)
 ```
 ````
@@ -40,12 +35,10 @@ class FooExecutor(Executor):
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
-
-
 f = Flow(protocol='http', port_expose=12345).add(uses=FooExecutor)
 with f:
-    client = Client(port=12345)
-    response = client.search()
+    client = Client(port=12345, protocol='http')
+    response = client.post(on='/')
     print(response[0].data.docs.texts)
     f.block()
 ```
@@ -53,6 +46,27 @@ with f:
 ```bash
  curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{}]}'
 ```
+````
+
+````{tab} WebSocket
+
+```python
+from docarray import Document, DocumentArray
+from jina import Client, Executor, Flow, requests
+
+class FooExecutor(Executor):
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text='foo was here'))
+
+f = Flow(protocol='websocket', port_expose=12345).add(uses=FooExecutor)
+with f:
+    client = Client(port=12345, protocol='websocket')
+    response = client.post(on='/')
+    print(response[0].data.docs.texts)
+```
+
 ````
 
 ## Configure the API
