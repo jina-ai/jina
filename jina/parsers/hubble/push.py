@@ -17,6 +17,13 @@ def mixin_hub_push_parser(parser):
         else:
             raise NotADirectoryError(string)
 
+    parser.add_argument(
+        '--verbose',
+        action='store_true',
+        default=False,
+        help='If set, more information will be printed.',
+    )
+
     gp = add_arg_group(parser, title='Push')
     gp.add_argument(
         'path',

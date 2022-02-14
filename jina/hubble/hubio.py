@@ -364,6 +364,9 @@ metas:
                     'md5sum': md5_digest,
                 }
 
+                if self.args.verbose:
+                    form_data['verbose'] = 'True'
+
                 if exec_tags:
                     form_data['tags'] = exec_tags
 
@@ -400,9 +403,9 @@ metas:
 
                     t = stream_msg.get('type')
                     subject = stream_msg.get('subject')
+                    payload = stream_msg.get('payload', '')
                     if t == 'error':
                         msg = stream_msg.get('message')
-                        payload = stream_msg.get('payload')
                         if payload and isinstance(payload, dict):
                             msg = payload.get('message')
 
@@ -430,7 +433,14 @@ metas:
                         )
                         break
                     elif t and subject:
-                        st.update(f'Cloud building ... [dim]{subject}: {t}[/dim]')
+                        if self.args.verbose and t == 'console':
+                            console.log(
+                                f'Cloud building ... [dim]{subject}: {payload}[/dim]'
+                            )
+                        else:
+                            st.update(
+                                f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]'
+                            )
 
                 if image:
                     new_uuid8, new_secret = self._prettyprint_result(console, image)
