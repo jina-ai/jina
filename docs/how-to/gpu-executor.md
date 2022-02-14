@@ -43,11 +43,11 @@ class MyGPUExec(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
         with torch.inference_mode():
-          ## generate random embeddings
-          embeddings = torch.rand((len(docs), 5), device=self.device)
-        docs.embeddings = embeddings
-        embedding_device = 'GPU' if embeddings.is_cuda else 'CPU'
-        docs.texts = [f'Embeddings calculated on {embedding_device}']
+            # Generate random embeddings
+            embeddings = torch.rand((len(docs), 5), device=self.device)
+            docs.embeddings = embeddings
+            embedding_device = 'GPU' if embeddings.is_cuda else 'CPU'
+            docs.texts = [f'Embeddings calculated on {embedding_device}']
 ```
 
 
@@ -257,7 +257,7 @@ Now let's fill the `executor.py` file with the actual code of our Executor
 
 ```{code-block} python
 ---
-emphasize-lines: 16, 17
+emphasize-lines: 16
 ---
 from docarray import Document, DocumentArray
 from jina import Executor, requests

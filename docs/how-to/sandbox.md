@@ -22,8 +22,8 @@ from jina import Flow, Document
 f = Flow().add(uses='jinahub+sandbox://Hello')
 
 with f:
-  r = f.post('/', inputs=Document(text='world'), return_results=True)
-  print(r[0].text)
+    r = f.post('/', inputs=Document(text='world'), return_results=True)
+    print(r[0].text)
 ```
 
 This will start a Flow that only has one online Executor, and will send a document to it. The document will be processed by the Executor and the result will be returned.
@@ -54,22 +54,20 @@ The Jina version inside the Sandbox will be the same as the one in the place whe
 
 
 ```python
-from jina import Flow, Document, DocumentArray, Executor, requests
+from docarray import Document
+from jina import Flow, Executor, requests
 
 class MyExecutor(Executor):
-
-  @requests
-  def process(self, docs: DocumentArray, **kwargs):
-    for doc in docs:
-      doc.text = '(first hello, from MyExecutor)' + doc.text
-
-      return docs
+    @requests
+    def process(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = '(first hello, from MyExecutor)' + doc.text
 
 f = Flow().add(uses=MyExecutor).add(uses='jinahub+sandbox://Hello')
 
 with f:
-  r = f.post('/', inputs=Document(text='world'), return_results=True)
-  print(r[0].text)
+    r = f.post('/', inputs=Document(text='world'), return_results=True)
+    print(r[0].text)
 ```
 
 ## Caveats
