@@ -76,13 +76,13 @@ with f:
 
 There are some caveats when using Sandbox Executors with respect to other Executors.
 
-### 1. Can't be controlled by the Flow
+### 1. Uncontrolled by Flow
 
 Since the lifetime of these Executors is not handled by the Flow and is handled by the Hub infrastructure, there is no way
 to override its default configurations, therefore `uses_with`, `uses_metas`, etc ... will not apply.
 
 You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.
 
-### 2. Don't support GPU yet
+### 2. Don't support GPU
 
 Computation using GPU is most likely several times faster than using CPU in many use cases. But unfortunately,  we don't support using GPU for computation in Sandbox container yet.
