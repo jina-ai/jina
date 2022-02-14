@@ -233,14 +233,14 @@ gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1
 gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
 ```
 
-2. Create a new folder for storing the generated K8S configuration files and use two lines of Python code to generate the files:
+2. Create a new folder for storing the generated K8s configuration files and use two lines of Python code to generate the files:
 ```python
 f = Flow(port_expose=12345, protocol='http').add(uses='jinahub://1ylut0gf').add(uses='jinahub://258lzh3c')
 f.to_k8s_yaml(<your_folder_path>, k8s_namespace='flow-k8s-namespace')
 ```
 3. Use `kubectl` to deploy your neural search application: `kubctl apply -R -f <your_folder_path>`
 4. Do port forwarding so that you can send requests to our application in Kubernetes: `kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345`
-5. Your Flow should be up in running now in K8S and you can use the `Client` or `Curl` to send requests:
+5. Your Flow should be up in running now in K8s and you can use the `Client` or `Curl` to send requests:
 ```python
 left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
 right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
