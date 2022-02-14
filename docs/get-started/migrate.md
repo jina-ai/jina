@@ -53,6 +53,13 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 
 ## DocumentArray: Simplified attribute, element access and new storage options
 
+```{admonition} DocArray library
+:class: seealso
+
+Take a look at the [DocArray documentation](https://docarray.jina.ai/fundamentals/documentarray/access-attributes/) 
+to have a better understanding of accessing attributes and elements with `DocArray` 
+```
+
 **Attributes**: Docarray introduces a flexible way of bulk-accessing attributes of `Document`s in a `DocumentArray`.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
   a select number of attributes. Currently, this syntax is supported by:
@@ -104,7 +111,7 @@ print(docs[...].texts)
 ```
 
 ````
-
+\
 **Batching**: Batching operations are delegated to the docarray package and Python builtins:
 
 - `docs.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
@@ -126,8 +133,8 @@ DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=
 ```
 
 ````
-
-- **Accessing non-existent values**: In Jina 2, bulk-accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
+\
+**Accessing non-existent values**: In Jina 2, bulk-accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
 inside the `DocumentArray` do not have a value for that attribute. In Jina 3, this returns `None`. This change becomes
 important when migrating code that checks for the presence of a certain attribute.
 
@@ -162,14 +169,14 @@ print(docs.texts)
 ```
 
 ````
-
-- **Serialization**: `DocumentArray` introduces the same Pythonic serialization syntax as `Document`.
+\
+**Serialization**: `DocumentArray` introduces the same Pythonic serialization syntax as `Document`.
   - `docs.SerializeToString()` is removed in favour of `docs.to_bytes()` and `docs.to_json()`
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
-- **Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
-  such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
+**Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
+    such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
 
 ## Flow: Simplified `.post()` behavior
 
