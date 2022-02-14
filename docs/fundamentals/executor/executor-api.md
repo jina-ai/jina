@@ -122,7 +122,6 @@ class MyExecutor(Executor):
         print(f'Calling bar') 
 ```
 
-For I/O bound Executors it can be helpful to utilize Python `async def`. This means we can wait for multiple pending Executor function calls concurrently.
 
 #### No binding
 
