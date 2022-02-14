@@ -28,6 +28,7 @@
 scipy>=1.6.1:               devel
 fastapi:                    standard, daemon, devel, demo
 uvicorn[standard]>=0.14.0,<=0.16.0:  standard, daemon, devel, demo
+strawberry-graphql>=0.96.0: standard, daemon, devel
 docker:                     standard, daemon, devel
 pathspec:                   standard, daemon, devel
 rich:                       standard, daemon, devel
@@ -80,3 +81,4 @@ trimesh:                    cicd
 paddlepaddle==2.2.0:        cicd
 onnx:                       cicd
 onnxruntime:                cicd
+sgqlc:                      cicd
