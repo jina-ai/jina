@@ -19,6 +19,16 @@ The most important methods of the `Flow` object are the following:
 | `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
 | `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files into <output_directory>.        
 
+## Why should you use Flow?
+
+Once you have learned `DocumentArray` and `Executor`, you have been able to split your neural search application into different independent modules and services.
+But you need to chain them together in order to bring real value and to build and serve an application out of it. That's exactly what Flows enable you to do.
+
+- Flow connects the microservices (Executor) to build an service with proper C/S style interface in HTTP/gRPC/Websockets
+
+- Flow lets you scale these Executors independently to adjust to your requirements.
+
+- Flow allows you to easily use other cloud-native orchestrators, e.g. K8s to manage the service.
 
 ## Minimum working example
 
@@ -66,7 +76,8 @@ with f:
 Client:
 
 ```python
-from jina import Client, Document
+from docarray import Document
+from jina import Client
 
 c = Client(port=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)

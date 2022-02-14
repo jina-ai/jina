@@ -1,9 +1,4 @@
 <p align="center">
-<!--startmsg-->
-<a href="https://www.meetup.com/de-DE/jina-community-meetup/events/279857975/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg?raw=true"></a>
-<!--endmsg-->
-</p>
-<p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
@@ -24,21 +19,21 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
-The ecosystem of Jina AI is composed of Docarray, Finetuner and Jina Core:
+The ecosystem of Jina AI is comprised of DocArray, Jina Core, Jina Hub and  Finetuner:
 * <a href="https://github.com/jina-ai/docarray/">DocArray</a>: Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
-* <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray based search application easily and run it locally or in the cloud.  
+* <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray-based search application easily and run it locally or in the cloud.  
 * <a href="https://hub.jina.ai/">Jina Hub</a>: Marketplace for sharing and discovering reusable building blocks of neural search applications.
-* <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you to deliver the last mile of performance and quality for domain-specific neural search applications.
+* <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you deliver the last mile of performance and quality for domain-specific neural search applications.
 
-This is what Jina Core offers developers:
+Jina Core offers developers:
 
-🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performs specific tasks like generating embeddings or indexing. Executors can be easily shared via the <a href="https://hub.jina.ai">Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
+🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performs specific tasks like generating embeddings or indexing. Executors can be easily shared via <a href="https://hub.jina.ai">Jina Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
 
-🥤**Serve** - Jina enables you to easily expose your neural search application via an API using HTTP, websockets or gRPC. 
+🥤**Serve** - Jina enables you to easily expose your neural search application via an API using HTTP, WebSockets or gRPC. 
 
 🚀**Scale** - Jina allows you to scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
 
-☁️ **Cloud Native** - Jina is built and designed to work and scale in the Cloud. All components can be deployed in the cloud to be used in your favourite cloud orchestrator. By default, Jina offers easy integration with docker compose and Kubernetes.
+☁️ **Cloud Native** - Jina is built and designed to work and scale in the Cloud. All components can be deployed in the cloud to be used in your favourite cloud orchestrator. By default, Jina offers easy integration with Docker compose and Kubernetes.
 
 <!-- end jina-description -->
 
@@ -46,32 +41,34 @@ This is what Jina Core offers developers:
 ```
 pip install -U jina
 ```
-More install options including Conda, Docker and Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
-If you are upgrading from Jina 2: Please remove version 2 first and install version 3 then. (`pip uninstall jina && pip install -U jina`)
+More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/). 
+
+If you are upgrading from Jina 2: Please remove version 2, then install version 3. (`pip uninstall jina && pip install -U jina`)
 
 ## Documentation
 
-Check our **[comprehensive docs](https://docs.jina.ai)** for more in depth tutorials, advanced topics and API reference.
+Check our **[comprehensive docs](https://docs.jina.ai)** for more in-depth tutorials, advanced topics and API reference.
 
-This is the readme for Jina 3. The documentation for Jina 2 can be found <a href="https://docs2.jina.ai">here</a>.
+This is the readme for Jina 3. Documentation for Jina 2 can be found <a href="https://docs2.jina.ai">here</a>.
 
 ## Get Started
+
 You can follow our basic example below to get started from building a local `Executor` to deploying your search application in a `Flow` to Kubernetes.
 
-We recommend familiarizing yourself before with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
+We recommend familiarizing yourself beforehand with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
 
 
 ### Basic Concepts
 
 Document, Executor, and Flow are three fundamental concepts in Jina.
 
-- [**Document**](https://docs.jina.ai/fundamentals/document/): The basic data type in Jina, which can be used as well in the standalone <a href="https://github.com/jina-ai/docarray/">Docarray</a> library
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application. They can be <a href="https://docs.jina.ai/advanced/hub/">shared via the Jina Hub</a>.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready to use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
+- [**Document**](https://docs.jina.ai/fundamentals/document/): The basic data type in Jina, which can also be used as well in the standalone <a href="https://github.com/jina-ai/docarray/">DocArray</a> library
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application. They can be <a href="https://docs.jina.ai/advanced/hub/">shared via Jina Hub</a>.
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready-to-use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
 
 
-Leveraging these three components, let's build an app that **find similar images using ResNet50**.
+Leveraging these three components, let's build an app that **finds similar images using ResNet50**.
 
 ### Generate vector embeddings in an Executor
 
@@ -79,7 +76,7 @@ Leveraging these three components, let's build an app that **find similar images
 Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
-We are a building an `Executor` generating vector embeddings with PyTorch and Resnet50:
+We are a building an `Executor` generating vector embeddings with PyTorch and ResNet50:
 
 ```python
 import torchvision
@@ -114,7 +111,7 @@ print(da_with_embeddings.embeddings)
 
 ### Use Vector Embeddings in a Flow to find similar images
 
-With a few additions we can use the embeddings from the previous step in a `Flow` to find similiar images. This can used locally immediately to serve HTTP request with a REST API:
+With a few additions we can use the embeddings from the previous step in a `Flow` to find similar images. This can used locally immediately to serve HTTP requests with a REST API:
 
 1. Create a second Executor for storing and retrieving images.
 ```python
@@ -132,7 +129,7 @@ class IndexExecutor(Executor):
     def search(self, docs: DocumentArray, **kwargs):
         docs.match(self._docs)
 ```
-2. Orchestrate both Executors in a `Flow` and index the dataset partially:
+2. Orchestrate both Executors in a `Flow` and partially index the dataset:
 ```python
 from jina import Client, Flow
     
@@ -141,7 +138,8 @@ with Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor) as f:
     client = Client(port=f.port_expose)
     client.index(left_da[:10])
 ```
-3. Now you can run this example and search for similar images. We will index the full dataset now, so it might take a bit:
+ 
+3. Now you can run this example and search for similar images. We will index the full dataset now, so it might take a while:
 ```python
 from jina import Client, Flow 
    
@@ -159,9 +157,10 @@ with Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor) as f:
                 .set_image_tensor_inv_normalization())
          .plot_image_sprites())
 ```
-You will see the image you searched for and the top 10 matches. Just close the images as they show up. This is everything, you just build your first neural search application! 🎉
+You will see the image you searched for and the top 10 matches. Just close the images as they show up. This is everything: You just built your first neural search application! 🎉
 
-4. You can also expose your application with a REST API so that you can send HTTP request: Just change the protocol of the `Flow` to HTTP and use Curl to query it:
+4. You can also expose your application with a REST API so that you can send HTTP requests: Just change the protocol of the `Flow` to HTTP and use Curl to query it:
+
 ```python
 from jina import Client, Flow  
    
@@ -171,30 +170,35 @@ with Flow(port_expose=12345, protocol='http').add(uses=ImageEmbeddingExecutor).a
     client.index(left_da[:10])
     f.block()
 ```
-6. Now use Curl to send search requests:
+
+5. Now use Curl to send search requests:
 ```bash
 curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "<data_set_path>/right/00000.jpg"}]}' > curl_response
 ```
 
 ### Containerize your Executors
-If we want to be able to use our Executors via Docker Compose or in K8s we will need to containerize them. The easiest way to do that is the usage of the [Jina Hub](https://hub.jina.ai).
+
+If we want to use our Executors via Docker Compose or in Kubernetes we will need to containerize them. The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
 1. Move each `Executor` class to a separate folder with one Python file in each:
    - `ImageEmbeddingExecutor` -> 📁 `embed_img/exec.py`
    - `IndexExecutor` -> 📁 `match_img/exec.py`
-2. Create a `requirements.txt` in embed_img and add `torchvision` as requirement there.
-3. Push all Executors to [Jina Hub](https://hub.jina.ai). **Important**: Write down the string you get for the Usage. It looks like this `jinahub://1ylut0gf`:
+2. Create a `requirements.txt` in `embed_img` and add `torchvision` as a requirement.
+3. Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the Usage. It looks like this `jinahub://1ylut0gf`)
 ```bash
 jina hub push embed_img
 jina hub push match_img
 ```
    You will get two Hub Executors that can be used for any container.
+
 5. Now you are able run the `Flow` from the previous example with your containerized Executors. Just replace the `uses` strings with the values you got from Jina Hub:
-    ```python
-    with Flow(port_expose=12345, protocol='http').add(uses='jinahub://1ylut0gf').add(uses='jinahub://258lzh3c') as f:
-        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-        client = Client(port=f.port_expose, protocol='http')
-        client.index(left_da[:100])
-    ```
+    
+```python
+with Flow(port_expose=12345, protocol='http').add(uses='jinahub://1ylut0gf').add(uses='jinahub://258lzh3c') as f:
+    left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
+    client = Client(port=f.port_expose, protocol='http')
+    client.index(left_da[:100])
+```
+
 ### Run your Flow with Docker Compose
 A `Flow` can generate a `docker-compose.yml` file so that you can easily start a `Flow` via `docker-compose up`.
 1. Generate the `docker-compose.yml` from the `Flow` using two lines of Python code. Just replace the `uses` with the appropriate strings for your case:
@@ -203,7 +207,7 @@ f = Flow(port_expose=12345, protocol='http').add(uses='jinahub://1ylut0gf').add(
 f.to_docker_compose_yaml()
 ```
 2. Now you can start your neural search application with `docker-compose up`.
-3. Your `Flow` should be up in running now and you can use the `Client` or `curl` to send requests:
+3. Your `Flow` should be up and running now, and you can use the `Client` or `curl` to send requests:
 ```python
 left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
 right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
@@ -229,7 +233,7 @@ gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1
 gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
 ```
 
-2. Create a new folder for storing the generated K8s configuration files and use two lines of python code to generate the files:
+2. Create a new folder for storing the generated K8s configuration files and use two lines of Python code to generate the files:
 ```python
 f = Flow(port_expose=12345, protocol='http').add(uses='jinahub://1ylut0gf').add(uses='jinahub://258lzh3c')
 f.to_k8s_yaml(<your_folder_path>, k8s_namespace='flow-k8s-namespace')
