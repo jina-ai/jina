@@ -26,7 +26,7 @@ with f:
     print(r[0].text)
 ```
 
-This will start a Flow that only has one online Executor, and will send a document to it. The document will be processed by the Executor and the result will be returned.
+This will start a Flow that only has one online Executor, and will send a Document to it. The Document will be processed by the Executor and the result will be returned.
 
 ## Sandbox Lifecycle
 
