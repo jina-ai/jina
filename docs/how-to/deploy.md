@@ -1,4 +1,4 @@
-# Deploy on the Cloud
+# Deploy to Cloud
 
 ```{toctree}
 :maxdepth: 1
