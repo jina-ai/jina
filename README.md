@@ -102,11 +102,16 @@ class IndexExecutor(Executor):
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
+        docs.clear()  # save bandwidth as it is not needed
 
     @requests(on='/search')
     def search(self, docs: DocumentArray, **kwargs):
         docs.match(self._docs)
+        docs[...].embeddings = None  # save bandwidth as it is not needed
+        docs[...].blobs = None  # save bandwidth as it is not needed
 ```
+
+Notice how we use `@requests` to decorate the application logics there. We actively drop some content to prevent it pass through the Flow and save bandwidth.
 
 ### Orchestrate two Executors in a Flow
 
