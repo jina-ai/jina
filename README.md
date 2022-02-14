@@ -53,9 +53,9 @@ pip uninstall jina && pip install -U jina
 
 Document, Executor and Flow are three fundamental concepts in Jina.
 
-- [**Document**](https://docarray.jina.ai/): a data structure contains multi-modal data.
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/):   a processing unit of Documents.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/): ties Executors into a processing pipeline.
+- [**Document**](https://docarray.jina.ai/) is a data structure contains multi-modal data.
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a single task on Documents.
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
 Leveraging these three concepts, let's build an app that **finds similar images using ResNet50**.
 
