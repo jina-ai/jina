@@ -1,17 +1,18 @@
 import argparse
 import json
-from typing import Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from jina import __version__
 from jina.clients.request import request_generator
+from jina.enums import DataInputType
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
-    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
     from jina.serve.networking import GrpcConnectionPool
+    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 
 def get_fastapi_app(
@@ -31,15 +32,15 @@ def get_fastapi_app(
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI
-        from starlette.requests import Request
-        from fastapi.responses import HTMLResponse
         from fastapi.middleware.cors import CORSMiddleware
+        from fastapi.responses import HTMLResponse
         from jina.serve.runtimes.gateway.http.models import (
-            JinaStatusModel,
-            JinaRequestModel,
             JinaEndpointRequestModel,
+            JinaRequestModel,
             JinaResponseModel,
+            JinaStatusModel,
         )
+        from starlette.requests import Request
 
     docs_url = '/docs'
     app = FastAPI(
@@ -63,11 +64,11 @@ def get_fastapi_app(
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    from jina.serve.stream import RequestStreamer
     from jina.serve.runtimes.gateway.request_handling import (
         handle_request,
         handle_result,
     )
+    from jina.serve.stream import RequestStreamer
 
     streamer = RequestStreamer(
         args=args,
@@ -226,6 +227,88 @@ def get_fastapi_app(
                 return HTMLResponse(f.read().decode())
 
         app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
+
+    if not args.no_graphql_endpoint:
+        with ImportExtensions(required=True):
+            from dataclasses import asdict
+
+            import strawberry
+            from docarray import DocumentArray
+            from docarray.document.strawberry_type import (
+                Base64,
+                JSONScalar,
+                NdArray,
+                StrawberryDocument,
+            )
+            from strawberry.fastapi import GraphQLRouter
+
+            @strawberry.input
+            class StrawberryDocumentInput:
+                id: Optional[str] = None
+                parent_id: Optional[str] = None
+                granularity: Optional[int] = None
+                adjacency: Optional[int] = None
+                blob: Optional[Base64] = None
+                tensor: Optional[NdArray] = None
+                mime_type: Optional[str] = None
+                text: Optional[str] = None
+                weight: Optional[float] = None
+                uri: Optional[str] = None
+                tags: Optional[JSONScalar] = None
+                offset: Optional[float] = None
+                location: Optional[List[float]] = None
+                embedding: Optional[NdArray] = None
+                modality: Optional[str] = None
+
+            @strawberry.input
+            class JinaRequestModel:
+                """
+                Jina HTTP request model.
+                """
+
+                data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
+                    default=None,
+                    description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
+                )
+                target_executor: Optional[str] = strawberry.field(
+                    default=None,
+                    description='A regex string represent the certain pods/deployments request targeted.',
+                )
+                parameters: Optional[JSONScalar] = strawberry.field(
+                    default=None,
+                    description='A dictionary of parameters to be sent to the executor.',
+                )
+                exec_endpoint: str = strawberry.field(
+                    default='/search',
+                    description='The endpoint string, by convention starts with `/`. '
+                    'All executors bind with `@requests(on="/foo")` will receive this request.',
+                )
+
+            @strawberry.type
+            class Query:
+                @strawberry.field
+                async def docs(
+                    self, body: JinaRequestModel
+                ) -> List[StrawberryDocument]:
+
+                    bd = asdict(body) if body else {'data': None}
+                    req_generator_input = bd
+                    req_generator_input['data_type'] = DataInputType.DICT
+
+                    if bd['data'] is not None and 'docs' in bd['data']:
+                        req_generator_input['data'] = req_generator_input['data'][
+                            'docs'
+                        ]
+
+                    response = await _get_singleton_result(
+                        request_generator(**req_generator_input)
+                    )
+                    return DocumentArray.from_dict(
+                        response['data']
+                    ).to_strawberry_type()
+
+            schema = strawberry.Schema(query=Query)
+            app.include_router(GraphQLRouter(schema), prefix='/graphql')
 
     async def _get_singleton_result(request_iterator) -> Dict:
         """
