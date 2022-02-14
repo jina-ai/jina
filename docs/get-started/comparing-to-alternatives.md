@@ -1,4 +1,4 @@
-# Comparing Jina to alternatives
+# Comparing to Alternatives
 
 Sometimes the question arises of how Jina compares to different libraries and frameworks. Here we want to shed light on some of the
 most commonly-drawn comparisons:

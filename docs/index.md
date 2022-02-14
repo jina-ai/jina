@@ -57,7 +57,7 @@ Try Jina on fashion image search, QA chatbot and multimodal search.
 :link: fundamentals/concepts
 :link-type: doc
 
-Document, Executor, and Flow are the three fundamental concepts in Jina.
+Executor, and Flow are the fundamental concepts in Jina.
 
 ::::
 
@@ -111,13 +111,8 @@ fundamentals/flow/index
 ```{toctree}
 :caption: How-to
 :hidden:
-how-to/docker-compose
-how-to/kubernetes
-how-to/sandbox
-how-to/async-executors
-how-to/gpu-executor
-how-to/external-executor.md
-how-to/scale-out.md
+how-to/deploy
+how-to/executor
 ```
 
 

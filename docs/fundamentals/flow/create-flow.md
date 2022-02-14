@@ -12,7 +12,7 @@ from jina import Flow
 
 f = Flow() # Create the empty Flow
 with f: # Using it as a Context Manager will start the Flow
-    f.search() # This sends a request to the /search endpoint of the Flow
+    f.post(on='/search') # This sends a request to the /search endpoint of the Flow
 ```
 ````
 
@@ -29,7 +29,7 @@ from jina import Flow
 f = Flow.load_config('flow.yml') # Load the Flow definition from Yaml file
 
 with f: # Using it as a Context Manager will start the Flow
-    f.search() # This sends a request to the /search endpoint of the Flow
+    f.post(on='/search') # This sends a request to the /search endpoint of the Flow
 ```
 ````
 
@@ -56,7 +56,7 @@ class BarExecutor(Executor):
 
 f = Flow().add(uses=FooExecutor, name='fooExecutor').add(uses=BarExecutor, name='barExecutor')  # Create the empty Flow
 with f:  # Using it as a Context Manager will start the Flow
-    response = f.search(return_results=True)  # This sends a request to the /search endpoint of the Flow
+    response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
 ````
@@ -102,7 +102,7 @@ from jina import Flow
 f = Flow.load_config('flow.yml')
 
 with f:
-    response = f.search(return_results=True)  # This sends a request to the /search endpoint of the Flow
+    response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
 ```
@@ -145,7 +145,8 @@ You can use Executors from code, being defined outside your current `PATH` envir
 ```
 `executor/my_executor.py`:
 ```python
-from jina import Executor, DocumentArray, requests
+from docarray import DocumentArray
+from jina import Executor, requests
 
 class MyExecutor(Executor):
     @requests
@@ -167,7 +168,8 @@ Now, in `app/main.py`, to correctly load the Executor, you can specify the direc
 ---
 emphasize-lines: 2
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 f = Flow(extra_search_paths=['../executor']).add(uses='config.yml')
 with f:
     r = f.post('/', inputs=Document())
@@ -186,7 +188,8 @@ executors:
 
 `main.py`:
 ```python
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 f = Flow.load_config('../flow/flow.yml')
 with f:
     r = f.post('/', inputs=Document())
@@ -346,7 +349,7 @@ f = Flow() \
     .add(needs=['barExecutor', 'bazExecutor'])
 
 with f:  # Using it as a Context Manager will start the Flow
-    response = f.search(return_results=True)  # This sends a request to the /search endpoint of the Flow
+    response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
 <img src="https://github.com/jina-ai/jina/blob/master/.github/images/foobarbaz_flow_needs.png?raw=true" alt="Simple Flow with two Executors being chained one after the other" width="50%">

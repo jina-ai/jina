@@ -1,5 +1,5 @@
 (use-hub-executor)=
-# Use Hub Executor
+# Use Hub Executor Locally
 
 
 We provide three ways of using Hub Executors in your project. Each has its own use case and benefits.
@@ -62,7 +62,8 @@ For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
 will connect PostgreSQL server which was started locally. Then you must use it with:
 
 ```python
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 f = Flow().add(uses='jinahub+docker://PostgreSQLStorage', 
                uses_with={'hostname': 'host.docker.internal'})

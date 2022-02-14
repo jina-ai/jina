@@ -1,23 +1,24 @@
 # Dockerize your Executor
 
-Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in how to wrap this Executor into a container
+
+Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in wrapping this Executor into a container
+
 so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
 
 One option is to leverage {ref}`Jina Hub <hub/index>` infrastructure to make sure your Executor can run as a container.
 
-However, you can build a `docker` image yourself and use it like any other Executor. There are some requirements on how this image needs to be built.
-
-The main requirements are:
+However, you can also build a `docker` image yourself and use it like any other Executor. There are some requirements
+on how this image needs to be built, the main ones being:
 
 - Jina must be installed inside the image
-- The Jina CLI command to start executor should be the default entrypoint
+- The Jina CLI command to start the Executor has to be the default entrypoint
 
 ## Prerequisites
 
-To be able to understand how a Container image is built for an Executor, you need an understanding of [docker](https://docs.docker.com/) generally, of how to write 
-a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and how to build a docker image.
+To be able to understand how a Container image is built for an Executor, you need an understanding of [Docker](https://docs.docker.com/) generally, of how to write 
+a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and of how to build a Docker image.
 
-Also, to reproduce the example below it is required to have `docker` installed locally.
+In addition, to reproduce the example below it is required to have `docker` installed locally.
 
 
 ## Installing Jina in the Docker image
@@ -43,7 +44,7 @@ RUN pip install jina==3.0
 When a containerized Executor is run inside a Flow,
 under the hood Jina basically executes `docker run` with some extra arguments.
 
-This means that Jina assumes that what runs inside the `container` is the same as it would run in a regular OS process. Therefore, you need to make sure that
+This means that Jina assumes that what runs inside the `container` runs just like it would run in a regular OS process. Therefore, you need to make sure that
 the basic entrypoint of the `image` calls `jina executor` {ref}`CLI <../api/cli>` command.
 
 ```dockerfile
@@ -80,7 +81,7 @@ The YAML configuration, as a minimal working example, is required to point to th
 
 ```{admonition} More YAML options
 :class: seealso
-To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-in-flow#YAML-inferface>`.
+To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-yaml-interface>`.
 ```
 
 This is necessary for the Executor to be put inside the Docker image,
