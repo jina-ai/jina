@@ -58,13 +58,13 @@ Executor and Flow are two fundamental concepts in Jina.
 
 Leveraging these two components, let's build an app that **finds similar images using ResNet50**.
 
-### Generate embeddings in an Executor
+### Create Executors for embedding and storing images
 
 <sup>
 Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
-We are building an `Executor` generating embeddings with PyTorch and ResNet50:
+We first build an `Executor` generating embeddings with PyTorch and ResNet50:
 
 ```python
 import torchvision
@@ -90,7 +90,8 @@ class ImageEmbeddingExecutor(Executor):
 
 ```
 
-Let's create a second Executor for storing and retrieving images.
+The second Executor is for storing and retrieving images:
+
 ```python
 from jina import Executor, requests, DocumentArray
 
@@ -165,7 +166,7 @@ Now use Curl to send search requests:
 curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "<data_set_path>/right/00000.jpg"}]}' > curl_response
 ```
 
-### Containerize Executors
+### Containerize Executors to Hub
 
 If we want to use our Executors via Docker Compose or in Kubernetes we will need to containerize them. The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
 
@@ -199,7 +200,7 @@ If we want to use our Executors via Docker Compose or in Kubernetes we will need
         client.post('/index', left_da)
     ```
 
-### Run Flow with Docker Compose
+### Deploy Flow via Docker Compose
 
 A `Flow` can generate a `docker-compose.yml` file so that you can easily start a `Flow` via `docker-compose up`.
 1. Generate the `docker-compose.yml` from the `Flow` using one line of Python code. Just replace the `uses` with the appropriate strings for your case:
@@ -217,7 +218,7 @@ A `Flow` can generate a `docker-compose.yml` file so that you can easily start a
     print(client.post('/search', right_da))
     ```
 
-### Deploy to Kubernetes
+### Deploy Flow via Kubernetes
 
 You can easily deploy any `Flow` with containerized Executors to a Kubernetes cluster:
 
