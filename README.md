@@ -116,17 +116,27 @@ Notice how we use `@requests(on=...)` to decorate the application logics.
 
 ### Orchestrate two Executors in a `Flow`
 
-Now we build a Flow to wire up the Executors and index some images.
+Building a Flow to wire up the Executors, we can now index some images and start searching. Note that we will index the
+full dataset now and it might take a while:
 
 ```python
 from jina import Client, Flow
 
-f = Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
-    
-with f:
-    left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-    client = Client(port=f.port_expose)
-    client.post('/index', left_da[:10], show_progress=True)
+if __name__ == '__main__':
+    f = Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
+    with f:
+        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
+        client = Client(port=f.port_expose)
+        client.post('/index', left_da[:10])
+        right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')[:1]
+        response = client.post('/search', right_da)
+        docs = response[0].docs
+        right_da.plot_image_sprites(output='query.png')
+        (docs[0].matches
+         .apply(
+            lambda d: d.set_image_tensor_channel_axis(0, -1)
+                       .set_image_tensor_inv_normalization())
+         .plot_image_sprites(output='test.png'))
 ```
 
 ```shell
@@ -139,31 +149,7 @@ with f:
     ⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 estimating... 
     ⠙       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 100% ETA: 0 seconds 80 steps done in 2 seconds
 ```
- 
-Now you can run this example and search for similar images. We will index the full dataset now, so it might take a while:
 
-```python
-with f:
-    left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-    client = Client(port=f.port_expose)
-    client.post('/index', left_da)
-    right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
-    print(client.post('/search', right_da[:1]))
-```
-
-```shell
-⠋ 0/3 waiting executor0 executor1 gateway to be ready...
-       Flow@59338[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52097
-	🔒 Private network:	172.20.10.2:52097
-	⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:00 estimating... 
-    ⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 estimating... 
-    ⠙       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 100% ETA: 0 seconds 80 steps done in 2 seconds
-    [<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 4689188944>]
-```
-
-FIX THIS!!!
 
 You will see the image you searched for and the top 9 matches. Just close the images as they show up. This is everything: You just built your first neural search application! 🎉
 
