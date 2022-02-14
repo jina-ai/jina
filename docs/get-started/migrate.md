@@ -170,7 +170,6 @@ print(docs.texts)
 
 ````
 \
-
 **Serialization**: `DocumentArray` introduces the same Pythonic serialization syntax as `Document`.
   - `docs.SerializeToString()` is removed in favour of `docs.to_bytes()` and `docs.to_json()`
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
