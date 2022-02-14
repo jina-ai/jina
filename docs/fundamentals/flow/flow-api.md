@@ -118,6 +118,96 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
 
+### Extend HTTP Interface
+
+By default the following endpoints are exposed to the public by the API:
+
+| Endpoint  | Description                                         |
+| --------- | --------------------------------------------------- |
+| `/status` | Check Jina service running status                   |
+| `/post`   | Corresponds to `f.post()` method in Python          |
+| `/index`  | Corresponds to `f.post('/index')` method in Python  |
+| `/search` | Corresponds to `f.post('/search')` method in Python |
+| `/update` | Corresponds to `f.post('/update')` method in Python |
+| `/delete` | Corresponds to `f.post('/delete')` method in Python |
+
+#### Hide CRUD and debug endpoints from HTTP interface
+
+It is possible to hide CRUD and debug endpoints in production. This might be useful when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
+
+```python
+from jina import Flow
+f = Flow(protocol='http',
+         no_debug_endpoints=True,
+         no_crud_endpoints=True)
+```
+
+```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
+:align: center
+```
+
+#### Expose customized endpoints to HTTP interface
+
+`Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
+
+```{figure} ../../../.github/2.0/expose-endpoints.svg
+:align: center
+```
+
+```python
+from jina import Executor, requests, Flow
+
+class MyExec(Executor):
+
+    @requests(on='/foo')
+    def foo(self, docs, **kwargs):
+        pass
+
+f = Flow(protocol='http').add(uses=MyExec)
+f.expose_endpoint('/foo', summary='my endpoint')
+with f:
+    f.block()
+```
+
+```{figure} ../../../.github/2.0/customized-foo-endpoint.png
+:align: center
+```
+
+Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo', ...)` in Python.
+
+You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
+
+```python
+f.expose_endpoint('/bar',
+                  summary='my endpoint',
+                  tags=['fine-tuning'],
+                  methods=['PUT']
+                  )
+```
+
+You can enable custom endpoints in a Flow using yaml syntax as well.
+
+```yaml
+jtype: Flow
+with:
+  protocol: http
+  expose_endpoints:
+    /foo:
+      methods: ["GET"]
+    /bar:
+      methods: ["PUT"]
+      summary: my endpoint
+      tags:
+        - fine-tuning
+    /foobar: {}
+executors:
+  - name: indexer
+```
+
+```{figure} ../../../.github/2.0/rich-openapi.png
+:align: center
+```
+
 ## Working with the Python Client
 The most convenient way to work with the `Flow` API is the Python Client. It enables you to send `Documents` to the `Flow` API in a number of different ways shown below:
 ```python
