@@ -16,8 +16,8 @@ achieved with `traversal_paths` and method `DocumentArray.batch`.
 from typing import Optional, Tuple
 
 import torch
-from jina import DocumentArray, Executor, requests
-from jina.logging.logger import JinaLogger
+from docarray import DocumentArray
+from jina import Executor, requests
 from transformers import CLIPFeatureExtractor, CLIPModel
 
 
@@ -116,7 +116,8 @@ image documents as chunks.
 from typing import Dict, Iterable, Optional
 
 import torch
-from jina import Document, DocumentArray, Executor, requests
+from docarray import Document, DocumentArray
+from jina import Executor, requests
 from jina_commons.batching import get_docs_batch_generator
 
 

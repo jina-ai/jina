@@ -93,7 +93,7 @@ Don't be flattered if you still recognize the 2-bit version. It is easy only bec
 You can use Jina Document API to load a wav file as a Document.
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(uri='toy.wav').load_uri_to_audio_blob()
 
@@ -118,11 +118,11 @@ d.dump_audio_blob_to_file('toy.wav')
 Let's load the "hello" audio file, reverse it and finally save it.
 
 ```python
-from jina import Document
+from docarray import Document
 
-d = Document(uri='hello.wav').load_uri_to_audio_blob()
+d = Document(uri='hello.wav').load_uri_to_audio_tensor()
 d.blob = d.blob[::-1]
-d.dump_audio_blob_to_file('olleh.wav')
+d.save_audio_tensor_to_file('olleh.wav')
 ```
 
 <table>

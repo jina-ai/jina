@@ -106,7 +106,8 @@ Next we add our embedding algorithm to `encode()` and bind it with `@request`. T
 
 ```python
 import numpy as np
-from jina import DocumentArray, requests
+from docarray import DocumentArray
+from jina import requests
     
     # ...
     

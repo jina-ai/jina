@@ -28,8 +28,8 @@ Let's load the data from the web and put them into a DocumentArray:
 ```python
 import io
 
-from jina import Document, DocumentArray
-from jina.types.document.generators import from_csv
+from docarray import Document, DocumentArray
+from docarray.document.generators import from_csv
 
 # Load some online CSV file dataset
 src = Document(

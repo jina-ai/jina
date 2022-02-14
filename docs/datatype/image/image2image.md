@@ -72,8 +72,8 @@ Our first task is to wrap the image data as `Document`s and form a `DocumentArra
 following code snippet. `from_files` creates an iterator over a list of image paths and yields `Document`s:
 
 ```python
-from jina import DocumentArray
-from jina.types.document.generators import from_files
+from docarray import DocumentArray
+from docarray.document.generators import from_files
 
 docs_array = DocumentArray(from_files(f'{image_dir}/*.{image_format}'))
 ```
@@ -83,7 +83,8 @@ Executors from [Jina Hub](https://hub.jina.ai) off-the-shelf or you can define a
 just a few steps. For this tutorial we will write our own Executor:
 
 ```python
-from jina import DocumentArray, Executor, requests
+from docarray import DocumentArray
+from jina import Executor, requests
 from flash.image import ImageEmbedder
 
 

@@ -6,7 +6,8 @@ Besides organizing your Executor code inline (i.e. with `Flow.add()` in the same
 
 
 ```python
-from jina import Executor, Flow, Document, requests
+from docarray import Document
+from jina import Executor, Flow, requests
 
 
 class MyExecutor(Executor):
@@ -31,7 +32,8 @@ with f:
 
 
 ```python
-from jina import Executor, Flow, Document, requests
+from docarray import Document
+from jina import Executor, Flow, requests
 
 
 class MyExecutor(Executor):
@@ -68,7 +70,8 @@ requests:
 ````{dropdown} flow.py
 
 ```python
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 f = Flow().add(uses='my.yml')
 

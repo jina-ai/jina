@@ -19,7 +19,8 @@ Use a [Python generator](https://docs.python.org/3/glossary.html#term-generator)
 ---
 emphasize-lines: 3, 4, 5
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 def my_input():
    for _ in range(1000):
@@ -33,7 +34,8 @@ with f:
 
 ````{tab} 😔 Don't
 ```python
-from jina import Flow, Document, DocumentArray
+from docarray import Document, DocumentArray
+from jina import Flow
 
 my_input = DocumentArray([Document() for _ in range(1000)]) 
 
@@ -52,7 +54,8 @@ with f:
 ---
 emphasize-lines: 10
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 def my_input():
    for _ in range(1000):
@@ -70,7 +73,8 @@ with f:
 ---
 emphasize-lines: 10
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 def my_input():
    for _ in range(1000):
@@ -184,7 +188,8 @@ class MyExecutor(Executor):
 To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.
 ````{tab} ✅ Do
 ```python
-from jina import Executor, requests, DocumentArray, Document
+from docarray import Document, DocumentArray
+from jina import Executor, requests
 
 
 class MyExec(Executor):
@@ -204,7 +209,8 @@ print(da)
 
 ````{tab} 😔 Don't
 ```python
-from jina import Executor, requests, DocumentArray, Document, Flow
+from docarray import Document, DocumentArray
+from jina import Executor, requests, Flow
 
 
 class MyExec(Executor):
@@ -252,7 +258,8 @@ with f:
 ---
 emphasize-lines: 12
 ---
-from jina import Executor, Flow, Document, requests
+from docarray import Document
+from jina import Executor, Flow, requests
 
 class MyExecutor(Executor):
 
@@ -278,7 +285,8 @@ It also reduces the network overhead.
 ```python
 import glob
 
-from jina import Executor, Flow, requests, Document
+from docarray import Document, DocumentArray
+from jina import Executor, Flow, requests
 
 class MyExecutor(Executor):
 
@@ -303,7 +311,8 @@ with f:
 ```python
 import glob
 
-from jina import Executor, Document
+from docarray import Document
+from jina import Executor
 
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.

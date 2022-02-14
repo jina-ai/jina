@@ -34,7 +34,7 @@ This helper function will convert image files into Jina Documents and yield them
 
 ```python
 from glob import glob
-from jina import Document
+from docarray import Document
 
 def input_generator():
     for filename in glob('images/*.jpg'):

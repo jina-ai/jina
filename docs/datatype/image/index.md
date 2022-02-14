@@ -32,7 +32,7 @@ You can load image data by specifying the image URI and then convert it into `.b
 ```
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(uri='apple.png')
 d.load_uri_to_image_blob()
@@ -55,14 +55,14 @@ print(d.blob.shape)
 Jina provides some functions to help you preprocess the image data. You can resize it (i.e. downsampling/upsampling) and normalize it; you can switch the channel axis of the `.blob` to meet certain requirements of other framework; and finally you can chain all these preprocessing steps together in one line. For example, before feeding data into a Pytorch-based ResNet Executor, the image needs to be normalized and the color axis should be at first, not at the last. You can do this via:
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = (
     Document(uri='apple.png')
-    .load_uri_to_image_blob()
-    .set_image_blob_shape(shape=(224, 224))
-    .set_image_blob_normalization()
-    .set_image_blob_channel_axis(-1, 0)
+    .load_uri_to_image_tensor()
+    .set_image_tensor_shape(shape=(224, 224))
+    .set_image_tensor_normalization()
+    .set_image_tensor_channel_axis(-1, 0)
 )
 
 print(d.blob)
@@ -84,7 +84,7 @@ print(d.blob.shape)
 You can also dump `.blob` back to a PNG image so that you can see.
 
 ```python
-d.dump_image_blob_to_file('apple-proc.png', 0)
+d.save_image_tensor_to_file('apple-proc.png', 0)
 ```
 
 Note that the channel axis is now switched to 0 because the previous preprocessing steps we just conducted. 
@@ -101,8 +101,8 @@ Yep, this looks uneatable. That's often what you give to the deep learning algor
 An image sprites is a collection of images put into a single image. When working with a `DocumentArray` of image `Documents`, you can directly view the image sprites via `plot_image_sprites`. This gives you a quick view of the dataset that you are working with:
 
 ```python
-from jina import DocumentArray
-from jina.types.document.generators import from_files
+from docarray import DocumentArray
+from docarray.document.generators import from_files
 
 da = DocumentArray(from_files('/Users/hanxiao/Downloads/left/*.jpg'))
 da.plot_image_sprites('sprite-img.png')
@@ -131,13 +131,13 @@ A large complicated image is hard to search, as it may contain too many elements
 It contains rich information in details, and it is complicated as there is no single salience interest in the image. The user may want to hit this image by searching for "Krusty Burger" or "Yellow schoolbus". User's real intention is hard guess, which highly depends on the applications. But at least what we can do is using Jina to breakdown this complicated image into simpler ones. One of the simplest approaches is to cut the image via sliding windows.
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(uri='docs/datatype/image/complicated-image.jpeg')
-d.load_uri_to_image_blob()
+d.load_uri_to_image_tensor()
 print(d.blob.shape)
 
-d.convert_image_blob_to_sliding_windows(window_shape=(64, 64))
+d.convert_image_tensor_to_sliding_windows(window_shape=(64, 64))
 print(d.blob.shape)
 ```
 
@@ -149,7 +149,7 @@ print(d.blob.shape)
 As one can see, it converts the single image blob into 180 image blobs, each with the size of (64, 64, 3). You can also add all 180 image blobs into the chunks of this `Document`, simply do:
 
 ```python
-d.convert_image_blob_to_sliding_windows(window_shape=(64, 64), as_chunks=True)
+d.convert_image_tensor_to_sliding_windows(window_shape=(64, 64), as_chunks=True)
 
 print(d.chunks)
 ```
@@ -173,7 +173,7 @@ d.chunks.plot_image_sprites('simpsons-chunks.png')
 Hmm, doesn't change so much. This is because we scan the whole image using sliding windows with no overlap (i.e. stride). Let's do a bit oversampling:
 
 ```python
-d.convert_image_blob_to_sliding_windows(window_shape=(64, 64), strides=(10, 10), as_chunks=True)
+d.convert_image_tensor_to_sliding_windows(window_shape=(64, 64), strides=(10, 10), as_chunks=True)
 d.chunks.plot_image_sprites('simpsons-chunks-stride-10.png')
 ```
 

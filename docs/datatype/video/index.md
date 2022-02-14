@@ -57,7 +57,7 @@ Let's use Jina Document API to load video this video:
 
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(uri='toy.mp4')
 d.load_uri_to_video_blob()
@@ -90,7 +90,7 @@ d.chunks.plot_image_sprites('mov.png')
 From the sprite image one can observe our example video is quite redundant. Let's extract the key frames from this video and see:
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(uri='toy.mp4')
 d.load_uri_to_video_blob(only_keyframes=True)
@@ -125,7 +125,7 @@ Makes sense, right?
 One can also save a Document `.blob` as a video file. In this example, we load our `.mp4` video and store it into a 60fps video.
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = (
     Document(uri='toy.mp4')

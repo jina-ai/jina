@@ -169,8 +169,9 @@ class MyRanker(Executor):
 As we defined the flow in the YAML file, we use the `load_config` function to create the Flow and index the data.
 
 ```python
-from jina import DocumentArray, Flow
-from jina.types.document.generators import from_files
+from docarray import DocumentArray
+from docarray.document.generators import from_files
+from jina import Flow
 
 docs = DocumentArray(from_files('toy-data/*.mp3'))
 

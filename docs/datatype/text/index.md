@@ -9,7 +9,7 @@ In this chapter, we provide some tutorials to help you get started with differen
 
 Representing text in Jina is easy. Simply do:
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(text='hello, world.')
 ```
@@ -21,7 +21,7 @@ d = Document(text='hello, world.')
 If your text data is big and can not be written inline, or it comes from a URI, then you can also define `uri` first and load the text into Document later.
 
 ```python
-from jina import Document
+from docarray import Document
 
 d = Document(uri='https://www.w3.org/History/19921103-hypertext/hypertext/README.html')
 d.load_uri_to_text()

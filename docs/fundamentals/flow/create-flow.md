@@ -145,7 +145,8 @@ You can use Executors from code, being defined outside your current `PATH` envir
 ```
 `executor/my_executor.py`:
 ```python
-from jina import Executor, DocumentArray, requests
+from docarray import DocumentArray
+from jina import Executor, requests
 
 class MyExecutor(Executor):
     @requests
@@ -167,7 +168,8 @@ Now, in `app/main.py`, to correctly load the Executor, you can specify the direc
 ---
 emphasize-lines: 2
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 f = Flow(extra_search_paths=['../executor']).add(uses='config.yml')
 with f:
     r = f.post('/', inputs=Document())
@@ -186,7 +188,8 @@ executors:
 
 `main.py`:
 ```python
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 f = Flow.load_config('../flow/flow.yml')
 with f:
     r = f.post('/', inputs=Document())

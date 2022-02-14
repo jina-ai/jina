@@ -66,7 +66,8 @@ with f:
 Client:
 
 ```python
-from jina import Client, Document
+from docarray import Document
+from jina import Client
 
 c = Client(port=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)

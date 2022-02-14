@@ -26,7 +26,7 @@ smith79;5079;Jamie;Smith
 ```
 
 ```python
-from jina import DocumentArray
+from docarray import DocumentArray
 
 da = DocumentArray.load_csv('toy.csv')
 ```
@@ -65,7 +65,7 @@ DocumentArray has 5 items (showing first three):
 This time `text` column is directly loaded into `Document.text` attribute. In general, `from_csv` will try its best to resolve the column names of the table and map them into the corresponding Document attributes. If such attempt fails, one can always resolve the field manually via:
 
 ```python
-from jina import DocumentArray
+from docarray import DocumentArray
 
 da = DocumentArray.load_csv('toy.csv', field_resolver={'Identifier': 'id'})
 ```
@@ -90,7 +90,7 @@ One thing needs to be careful is that tabular data is often not good for represe
 If your Documents contain tags, and you want to store each tag in a separate column, then you can do:
 
 ```python
-from jina import DocumentArray, Document
+from docarray import DocumentArray, Document
 
 da = DocumentArray([Document(tags={'english': 'hello', 'german': 'hallo'}),
                     Document(tags={'english': 'world', 'german': 'welt'})])
