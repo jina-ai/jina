@@ -97,10 +97,9 @@ get-started/comparing-to-alternatives
 ```
 
 ```{toctree}
-:caption: Fundamentals
+:caption: User Guides
 :hidden:
 
-fundamentals/concepts
 fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
