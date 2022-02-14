@@ -13,9 +13,9 @@ The most important methods of the `Flow` object are the following:
 | `.start()`                         | Starts the `Flow`. This will start all its Executors and check if they are ready to be used.                                                 |
 | `.stop()`                          | Stops the `Flow`. This will stop all its Executors.                                                                                          |
 | `with` context manager             | You can use the `Flow` as a context manager. It will automatically start and stop your `Flow`.                                         |                                                                |
-| `.plot()`                          | Visualizes the flow. Helpful for building complex pipelines.                                                                                 |
-| `.post()`                          | Sends requests to the API of the `Flow`.                                                                                                     |
-| `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the `Flow` alive so it can be used from other places (Clients etc). |
+| `.plot()`                          | Visualizes the Flow. Helpful for building complex pipelines.                                                                                 |
+| `.post()`                          | Sends requests to the Flow API.                                                                                                     |
+| `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
 | `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
 | `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files into <output_directory>.        
 

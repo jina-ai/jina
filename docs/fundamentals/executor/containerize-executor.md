@@ -1,6 +1,6 @@
 # Dockerize your Executor
 
-Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested om how to wrap this Executor into a container
+Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in how to wrap this Executor into a container
 so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
 
 One option is to leverage {ref}`Jina Hub <hub/index>` infrastructure to make sure your Executor can run as a container.
