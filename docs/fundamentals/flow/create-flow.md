@@ -107,8 +107,11 @@ with f:
 ```
 ```
 ````
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/foobar_flow.png?raw=true" alt="Simple Flow with two Executors being chained one after the other" width="50%">
 
+```{figure} ../../../.github/images/foobar_flow.png
+:align: center
+Simple Flow with two Executors being chained one after the other
+```
 The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
 ### Executor discovery
@@ -352,11 +355,18 @@ with f:  # Using it as a Context Manager will start the Flow
     response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/foobarbaz_flow_needs.png?raw=true" alt="Simple Flow with two Executors being chained one after the other" width="50%">
+
+```{figure} ../../../.github/images/foobarbaz_flow_needs.png
+:align: center
+Complex Flow where one Executor requires two Executors to process Documents before
+```
+
 This will get you the following output:
+
 ```text
 ['foo was here and got 0 document', 'bar was here and got 1 document', 'baz was here and got 1 document']
 ```
+
 So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
 
 ### Replicate Executors
