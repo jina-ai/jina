@@ -1,3 +1,4 @@
+(create-executor)=
 # Create Executor
 
 To create your Hub Executor, you just need to run:

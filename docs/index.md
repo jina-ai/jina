@@ -90,10 +90,7 @@ Learn to share and reuse Executors from the Jina community.
 
 
 get-started/neural-search
-get-started/jina-ecosystem
-get-started/jina-core
 get-started/install/index
-get-started/migrate
 get-started/hello-world/index
 get-started/comparing-to-alternatives
 ```
@@ -117,10 +114,11 @@ how-to/executor
 
 
 ```{toctree}
-:caption: API Reference
+:caption: Developer References
 :hidden:
 :maxdepth: 1
 
+get-started/migrate
 api
 cli/index
 proto/docs
