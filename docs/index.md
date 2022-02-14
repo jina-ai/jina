@@ -91,6 +91,7 @@ Learn to share and reuse Executors from the Jina community.
 
 get-started/neural-search
 get-started/install/index
+get-started/create-app
 get-started/hello-world/index
 get-started/comparing-to-alternatives
 ```

@@ -25,7 +25,7 @@ hello-jina
 There may have some other files like `README.md`, `manifest.yml`  `requirements.txt` to provide extra meta information about that Executor. More information {ref}`can be found here<create-executor>`.
 
 ```python
-cd hell-jina
+cd hello-jina
 python app.py
 ```
 
