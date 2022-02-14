@@ -53,7 +53,7 @@ There are, however, special methods inside an `Executor`, which are decorated wi
 
 Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
 
-The decorated method can be both `def` or `async def`.
+Both `def` or `async def` function can be decorated with `@requests`.
 
 You can import the `requests` decorator via
 
