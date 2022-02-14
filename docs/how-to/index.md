@@ -26,6 +26,20 @@ their own, use them in various Flows, even from a different machine or from insi
 {ref}`here <external-executor>`.
 
 
+## Deployment
+
+Once you have built your search app using Jina, naturally you want to deploy it. Luckily, Jina plays nice with your
+favorite tools for the job.
+
+\
+**Docker Compose**: If you want to learn about Jina's native support for Docker Compose, including deployment, look no
+further than {ref}`this guide <docker-compose>`.
+
+\
+**Kubernetes**: If your weapon of choice is Kubernetes then fear not, because it is supported by Jina natively. How you
+can put that into practice you can find {ref}`here <kubernetes>`.
+
+
 ```{toctree}
 :hidden:
 
