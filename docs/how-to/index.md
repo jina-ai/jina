@@ -2,6 +2,12 @@
 
 Jina is a very powerful framework that can help you build distributed neural search applications, from start to finish.
 
+```{admonition} See Also
+:class: seealso
+If you are completely new to Jina, you should check out its {ref}`basic concepts <concepts>` first.
+You may also find the [learning portal](https://learn.jina.ai/) useful to get off the ground.
+```
+
 In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you
 through some of Jina's more advanced features. Happy coding!
 
