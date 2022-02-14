@@ -82,3 +82,7 @@ Since the lifetime of these Executors is not handled by the Flow and is handled 
 to override its default configurations, therefore `uses_with`, `uses_metas`, etc ... will not apply.
 
 You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.
+
+### 2. Don't support GPU yet
+
+Computation using GPU is most likely N times faster than using CPU in Machine Learning area. But unfortunately, GPU virtualization technology is not mature enough so we don't support using GPU to calculate in Sandbox container yet.
