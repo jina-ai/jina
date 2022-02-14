@@ -178,7 +178,7 @@ from jina import Executor, requests
 class MyExecutor(Executor):
 
    @requests
-   def foo_need_pars_only(self, docs, parameters, docs_matrix, groundtruths_matrix, **kwargs):
+   def foo_need_pars_only(self, docs, parameters, docs_matrix, **kwargs):
       print(parameters)
 ```
 ````
