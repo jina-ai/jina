@@ -1,5 +1,4 @@
 (flow)=
-
 # Create a Flow
 
 A `Flow` can be created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting all its Executors.
@@ -25,7 +24,7 @@ jtype: Flow
 ```
 
 ```python
-from jina import Flow, Document
+from jina import Flow
 
 f = Flow.load_config('flow.yml') # Load the Flow definition from Yaml file
 
@@ -98,7 +97,7 @@ class BarExecutor(Executor):
 ```
 
 ```python
-from jina import Flow, Document
+from jina import Flow
 
 f = Flow.load_config('flow.yml')
 
