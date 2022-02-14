@@ -2,15 +2,13 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Optional, List, Union
-
-from google.protobuf.descriptor import Descriptor, FieldDescriptor
-from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
-from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
-
-from jina.proto.jina_pb2 import RouteProto, StatusProto, DataRequestProto
+from typing import Callable, Dict, List, Optional, Union
 
 from docarray.document.pydantic_model import PydanticDocumentArray
+from google.protobuf.descriptor import Descriptor, FieldDescriptor
+from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
+from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
+from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -216,7 +214,7 @@ class JinaStatusModel(BaseModel):
 
 
 def _get_example_data():
-    from jina import DocumentArray, Document
+    from jina import Document, DocumentArray
 
     docs = DocumentArray()
     docs.append(Document(text='hello, world!'))
