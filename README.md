@@ -47,14 +47,14 @@ pip uninstall jina && pip install -U jina
 
 ## Get Started
 
-> 💡 We recommend familiarizing yourself beforehand with the <a href="https://github.com/jina-ai/docarray/">DocArray</a> library and the basic concepts of `Executor` and `Flow`.
-
 ### Basic Concepts
+
+> 💡 We recommend familiarizing yourself beforehand with [DocArray](https://docarray.jina.ai).
 
 Executor and Flow are two fundamental concepts in Jina.
 
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/): Self-contained module to manipulate Documents. Typically, it is tasked with things like generating embeddings or indexing. Multiple Executors can be orchestrated to form a `Flow` to model your neural search application.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready-to-use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/):   a processing unit of Documents.
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/): ties Executors into a processing pipeline.
 
 Leveraging these two components, let's build an app that **finds similar images using ResNet50**.
 
