@@ -21,7 +21,6 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 
 The ecosystem of Jina AI is comprised of DocArray, Jina Core, Jina Hub and  Finetuner:
 * <a href="https://github.com/jina-ai/docarray/">DocArray</a>: Library for working with unstructured data. It allows deep-learning engineers to efficiently process, embed, search, recommend, store, and transfer the data with a Pythonic API.
-
 * <a href="https://github.com/jina-ai/jina/">Jina Core</a>: Framework to orchestrate, serve, scale and deploy neural search applications. Develop your own DocArray-based search application easily and run it locally or in the cloud.  
 * <a href="https://hub.jina.ai/">Jina Hub</a>: Marketplace for sharing and discovering reusable building blocks of neural search applications.
 * <a href="https://github.com/jina-ai/finetuner/">Finetuner</a>: Tune the weights of any deep neural network for better embeddings on search tasks. It helps you deliver the last mile of performance and quality for domain-specific neural search applications.

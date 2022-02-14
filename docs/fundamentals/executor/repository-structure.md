@@ -2,29 +2,6 @@
 
 Besides organizing your Executor code inline (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
 
-````{tab} Inline manner
-
-
-```python
-from docarray import Document
-from jina import Executor, Flow, requests
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        print(kwargs)
-
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
-```
-
-
-````
 
 `````{tab} Separate module
 
@@ -42,17 +19,12 @@ class MyExecutor(Executor):
     def foo(self, **kwargs):
         print(kwargs)
 
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
 ```
 
 ````
 
 
-````{dropdown} my.yml
+````{dropdown} config.yml
 
 ```yaml
 jtype: MyExecutor
@@ -73,7 +45,7 @@ requests:
 from docarray import Document
 from jina import Flow
 
-f = Flow().add(uses='my.yml')
+f = Flow().add(uses='config.yml')
 
 with f:
     f.post(on='/random_work', inputs=Document(), on_done=print)
@@ -82,6 +54,39 @@ with f:
 ````
 
 `````
+
+````{tab} Inline manner
+
+
+```python
+from jina import Executor, Flow, Document, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post(on='/random_work', inputs=Document(), on_done=print)
+```
+
+
+````
+
+## Best practice
+
+Use 
+
+```bash
+jina hub new
+```
+
+in the terminal to create an Executor bundle.
 
 ## Single Python file
 
