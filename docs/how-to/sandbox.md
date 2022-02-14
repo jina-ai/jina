@@ -85,4 +85,4 @@ You can consider a Sandbox Executor as an external Executor where you have no co
 
 ### 2. Don't support GPU yet
 
-Computation using GPU is most likely several times faster than using CPU in many usecases. But unfortunately,  we don't support using GPU for computation in Sandbox container yet.
+Computation using GPU is most likely several times faster than using CPU in many use cases. But unfortunately,  we don't support using GPU for computation in Sandbox container yet.
