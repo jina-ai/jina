@@ -1,6 +1,6 @@
 (sandbox)=
 
-# How to use Jina Sandbox Executors
+# Use Hub Executor Remotely
 
 It is often the case, that a Jina Executor is just a Docker image that contains some logic to process Documents. Therefore, you can run it locally if you have Docker installed. But the Docker image could be up to several GBs, and you need to download it first, then run it afterwards. That would be annoying in some cases.
 
