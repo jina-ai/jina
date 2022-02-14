@@ -65,21 +65,22 @@ Leveraging these three concepts, let's build an app that **finds similar images 
 Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
-We first build an `Executor` generating embeddings with PyTorch and ResNet50:
+1. We first build an `Executor` generating embeddings with PyTorch and ResNet50:
 
 ```python
-import torchvision
-from jina import Executor, requests, DocumentArray, Document
+from jina import Document, DocumentArray, Executor, requests
 
 
 class ImageEmbeddingExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        import torchvision
+        self.model = torchvision.models.resnet50(pretrained=True)   
     
     @requests
     def embedding(self, docs: DocumentArray, **kwargs):
         docs.apply(self.preproc)  # preprocess images
-        model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
-        docs.embed(model, device='cuda')  # embed via GPU to speed up
-        return docs
+        docs.embed(self.model, device='cuda')  # embed via GPU to speed up
 
     def preproc(self, d: Document):
         return (
@@ -91,11 +92,9 @@ class ImageEmbeddingExecutor(Executor):
 
 ```
 
-The second Executor is for storing and retrieving images:
+1. We build the second Executor for storing and retrieving images:
 
 ```python
-from jina import Executor, requests, DocumentArray
-
 class IndexExecutor(Executor):
 
     _docs = DocumentArray()
@@ -107,43 +106,66 @@ class IndexExecutor(Executor):
 
     @requests(on='/search')
     def search(self, docs: DocumentArray, **kwargs):
-        docs.match(self._docs)
+        docs.match(self._docs, limit=9)  # limit to returning top 9 matches
         docs[...].embeddings = None  # save bandwidth as it is not needed
         docs[...].blobs = None  # save bandwidth as it is not needed
 ```
 
-Notice how we use `@requests` to decorate the application logics there. We actively drop some content to prevent it pass through the Flow and save bandwidth.
+Notice how we use `@requests(on=...)` to decorate the application logics. 
+
 
 ### Orchestrate two Executors in a `Flow`
 
+Now we build a Flow to wire up the Executors and index some images.
+
 ```python
-from jina import Client, Flow, DocumentArray
+from jina import Client, Flow
 
 f = Flow().add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
     
 with f:
     left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
     client = Client(port=f.port_expose)
-    client.post('/index', left_da)
+    client.post('/index', left_da[:10], show_progress=True)
 ```
 
-!!!IMAGE???
+```shell
+⠋ 0/3 waiting executor0 executor1 gateway to be ready...
+       Flow@59338[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:52097
+	🔒 Private network:	172.20.10.2:52097
+	⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:00 estimating... 
+    ⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 estimating... 
+    ⠙       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 100% ETA: 0 seconds 80 steps done in 2 seconds
+```
  
 Now you can run this example and search for similar images. We will index the full dataset now, so it might take a while:
 
 ```python
-from jina import Client, Flow, DocumentArray
-
-right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
-
-...
-
 with f:
+    left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
     client = Client(port=f.port_expose)
-    print(client.post('/search', right_da))
+    client.post('/index', left_da)
+    right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')
+    print(client.post('/search', right_da[:1]))
 ```
 
-You will see the image you searched for and the top 10 matches. Just close the images as they show up. This is everything: You just built your first neural search application! 🎉
+```shell
+⠋ 0/3 waiting executor0 executor1 gateway to be ready...
+       Flow@59338[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:52097
+	🔒 Private network:	172.20.10.2:52097
+	⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:00 estimating... 
+    ⠋ Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 estimating... 
+    ⠙       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ 0:00:02 100% ETA: 0 seconds 80 steps done in 2 seconds
+    [<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 4689188944>]
+```
+
+FIX THIS!!!
+
+You will see the image you searched for and the top 9 matches. Just close the images as they show up. This is everything: You just built your first neural search application! 🎉
 
 !!!IMAGE???
 
