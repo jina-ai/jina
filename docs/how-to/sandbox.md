@@ -4,7 +4,7 @@
 
 It is often the case, that a Jina Executor is just a Docker image that contains some logic to process Documents. Therefore, you can run it locally if you have Docker installed. But the Docker image could be up to several GBs, and you need to download it first, then run it afterwards. That would be annoying in some cases.
 
-Jina Sandbox provides a way to make the downloading and running happen in a cloud environment. It will get a pair of host and port, which you can connect with. Jina will automatically take care of this connection.
+Jina Sandbox provides a way to make the downloading and running happen in a cloud environment. It will give back a pair of host and port, which you can connect with. Jina will automatically take care of this connection.
 
 It will save a lot of time when you just want to try out one Executor. In addition, it will also save lot of computing resources for your local machine.
 
