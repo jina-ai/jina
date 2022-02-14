@@ -2,19 +2,24 @@
 
 # How to use Jina Sandbox Executors
 
-Jina Sandbox allows you to try out different Jina Executors online and see how they work together without downloading all the Executors to your local machine.
+It is often the case, that a Jina Executor is just a Docker image that contains some logic to process Documents. Therefore, you can run it locally if you have Docker installed. But the Docker image could be up to several GBs, and you need to download it first, then run it afterwards. That would be annoying in some cases.
 
-## Prerequisites
+Jina Sandbox provides a way to make the downloading and running happen in a cloud environment. It will give back a pair of host and port, which you can connect with. Jina will automatically take care of this connection.
 
-- Knowledge about Jina Executor
-- Knowledge about Jina Hub
+It will save a lot of time when you just want to try out one Executor. In addition, it will also save lot of computing resources for your local machine.
+
+Here is a graph to show the difference between using and not using Sandbox.
+
+```{figure} ../../.github/sandbox-advantage.png
+:align: center
+```
 
 ## Start a Flow using Jina Sandbox
 
 ```python
 from jina import Flow, Document
 
-f = Flow().add(uses='jinahub+sandbox://MiaoTestExecutor1')
+f = Flow().add(uses='jinahub+sandbox://Hello')
 
 with f:
   r = f.post('/', inputs=Document(text='world'), return_results=True)
@@ -60,7 +65,7 @@ class MyExecutor(Executor):
 
       return docs
 
-f = Flow().add(uses=MyExecutor).add(uses='jinahub+sandbox://MiaoTestExecutor1')
+f = Flow().add(uses=MyExecutor).add(uses='jinahub+sandbox://Hello')
 
 with f:
   r = f.post('/', inputs=Document(text='world'), return_results=True)
@@ -71,7 +76,13 @@ with f:
 
 There are some caveats when using Sandbox Executors with respect to other Executors.
 
+### 1. Uncontrolled by Flow
+
 Since the lifetime of these Executors is not handled by the Flow and is handled by the Hub infrastructure, there is no way
 to override its default configurations, therefore `uses_with`, `uses_metas`, etc ... will not apply.
 
 You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.
+
+### 2. Don't support GPU
+
+Computation using GPU is most likely several times faster than using CPU in many use cases. But unfortunately,  we don't support using GPU for computation in Sandbox container yet.
