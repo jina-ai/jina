@@ -142,6 +142,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        no_graphql_endpoint: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -203,6 +204,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
+        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
