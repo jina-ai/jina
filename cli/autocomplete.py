@@ -142,6 +142,7 @@ ac_table = {
             '--cors',
             '--default-swagger-ui',
             '--no-debug-endpoints',
+            '--no-graphql-endpoint',
             '--no-crud-endpoints',
             '--expose-endpoints',
             '--uvicorn-kwargs',
