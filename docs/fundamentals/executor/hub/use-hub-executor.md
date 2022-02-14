@@ -1,5 +1,5 @@
 (use-hub-executor)=
-# Use Hub Executor
+# Use Hub Executor Locally
 
 
 We provide three ways of using Hub Executors in your project. Each has its own use case and benefits.
