@@ -76,7 +76,7 @@ to have a better understanding of accessing attributes and elements with `DocArr
 - Traversal paths of the form `[path1, path2]` (e.g. `['r', 'cm']`) are replaced by a single string of the form
 `'path1,path2'` (e.g. `'r,cm'`)
 - `docs.traverse_flat(path)` is replaced by `docs['@path']` (e.g. `docs['@r,cm']`)
-- `docs.flatten()` is replaced by `docs[...]`
+- `docs.flatten()` is replaced by `dyocs[...]`
 
 ````{tab} Jina 2
 
@@ -111,7 +111,7 @@ print(docs[...].texts)
 ```
 
 ````
-
+\
 **Batching**: Batching operations are delegated to the docarray package and Python builtins:
 
 - `docs.batch()` does not accept the arguments `traversal_paths=` and `require_attr=` anymore.
@@ -133,8 +133,8 @@ DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=
 ```
 
 ````
-
-- **Accessing non-existent values**: In Jina 2, bulk-accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
+\
+**Accessing non-existent values**: In Jina 2, bulk-accessing attributes in a `DocumentArray` returns a list of empty values, when the `Document`s
 inside the `DocumentArray` do not have a value for that attribute. In Jina 3, this returns `None`. This change becomes
 important when migrating code that checks for the presence of a certain attribute.
 
@@ -169,14 +169,15 @@ print(docs.texts)
 ```
 
 ````
+\
 
-- **Serialization**: `DocumentArray` introduces the same Pythonic serialization syntax as `Document`.
+**Serialization**: `DocumentArray` introduces the same Pythonic serialization syntax as `Document`.
   - `docs.SerializeToString()` is removed in favour of `docs.to_bytes()` and `docs.to_json()`
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
-- **Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
-  such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
+**Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
+    such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
 
 ## Flow: Simplified `.post()` behavior
 
