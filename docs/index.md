@@ -97,7 +97,7 @@ get-started/comparing-to-alternatives
 ```
 
 ```{toctree}
-:caption: Fundamentals
+:caption: User Guides
 :hidden:
 
 fundamentals/architecture-overview
