@@ -10,10 +10,10 @@ through some of Jina's more advanced features. Happy coding!
 On top of the {ref}`basics <executor-cookbook>`, `Executor` has a few more tricks up its sleeve.
 
 \
-**Scaling out**: In many scenarios, running a single Executor for a given task is just not enough. Do you need more
-speed in order to alleviate bottlenecks? No problem - *replicas* are here to help. Or did you accumulate a lot of data
-which you want to split into partitions? We've got you covered - with the power of *sharding*.
-To learn how to put both of these techniques into practice, take a look at {ref}`this tutorial <scale-out>`.
+**Scaling out**: In many scenarios, running a single Executor for a given task is just not enough. Whether you need more
+throughput or to partition your data, we've got you covered. {ref}`This tutorial <scale-out>` will show you how to
+easily scale out using Jina.
+
 
 \
 **Executors on GPU**: Machine Learning models are only as fast as the metal they run on, and for maximum performance you
