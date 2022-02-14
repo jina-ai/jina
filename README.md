@@ -29,7 +29,7 @@ Jina Core offers developers:
 
 🗄️**Orchestrate** - Define your neural search application as a pipeline of Executors. Each Executor performs specific tasks like generating embeddings or indexing. Executors can be easily shared via <a href="https://hub.jina.ai">Jina Hub</a>. This enables you to share pipelines with co-workers or to leverage pre-built Executors. 
 
-🥤**Serve** - Jina enables you to easily expose your neural search application via an API using HTTP, websockets or gRPC. 
+🥤**Serve** - Jina enables you to easily expose your neural search application via an API using HTTP, WebSockets or gRPC. 
 
 🚀**Scale** - Jina allows you to scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
 
@@ -42,7 +42,7 @@ Jina Core offers developers:
 pip install -U jina
 ```
 
-More install options including Conda, Docker and Windows [can be found here](https://docs.jina.ai/get-started/install/). 
+More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
 If you are upgrading from Jina 2: Please remove version 2, then install version 3. (`pip uninstall jina && pip install -U jina`)
 
@@ -68,7 +68,7 @@ Document, Executor, and Flow are three fundamental concepts in Jina.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/): Orchestrates Executors into a Pipeline defining the Flow of Documents. It comes with a ready-to-use API to serve requests to the Flow. It also offers utility functions to generate Docker Compose and Kubernetes deployment configurations.
 
 
-Leveraging these three components, let's build an app that **find similar images using ResNet50**.
+Leveraging these three components, let's build an app that **finds similar images using ResNet50**.
 
 ### Generate vector embeddings in an Executor
 
