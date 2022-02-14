@@ -53,6 +53,8 @@ There are, however, special methods inside an `Executor`, which are decorated wi
 
 Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
 
+Both `def` or `async def` function can be decorated with `@requests`.
+
 You can import the `requests` decorator via
 
 ```python
@@ -63,7 +65,7 @@ from jina import requests
 
 ```python
 from jina import Executor, requests
-
+import asyncio
 
 class RequestExecutor(Executor):
 
@@ -72,7 +74,8 @@ class RequestExecutor(Executor):
         print(f'Calling foo') 
 
     @requests(on='/other') # bar will be bound to `/other` endpoint
-    def bar(self, **kwargs):
+    async def bar(self, **kwargs):
+        await asyncio.sleep(1.0)
         print(f'Calling bar') 
 ```
 
@@ -105,7 +108,7 @@ is the fallback handler for endpoints that are not found. `f.post(on='/blah', ..
 
 ```python
 from jina import Executor, requests
-
+import asyncio
 
 class MyExecutor(Executor):
 
@@ -114,9 +117,11 @@ class MyExecutor(Executor):
         print(kwargs)
 
     @requests(on='/index')
-    def bar(self, **kwargs):
-        print(kwargs)
+    async def bar(self, **kwargs):
+        await asyncio.sleep(1.0)
+        print(f'Calling bar') 
 ```
+
 
 #### No binding
 
@@ -231,29 +236,6 @@ with f:
  PrintExecutor: received document with text: "I returned a different Document"
 ```
 
-## Using Executors with AsyncIO
-For I/O bound Executors it can be helpful to utilize Python's AsyncIO API. This means we can wait for multiple pending Executor function calls concurrently.
-
-```python
-import asyncio
-from jina import Executor, requests
-
-
-class MyExecutor(Executor):
-
-  @requests
-  async def foo(self, **kwargs):
-      await asyncio.sleep(1.0)
-      print(kwargs)
-
-async def main():
-    m = MyExecutor()
-    call1 = asyncio.create_task(m.foo())
-    call2 = asyncio.create_task(m.foo())
-    await asyncio.gather(call1, call2)
-
-asyncio.run(main())
-```
 
 ## Use Executor out of Flow
 
@@ -280,4 +262,29 @@ print(f'Text: {da[0].text}')
 
 ```text
 Text: hello world
+```
+
+
+## Using Executors in an AsyncIO runner
+
+
+```python
+import asyncio
+from jina import Executor, requests
+
+
+class MyExecutor(Executor):
+
+  @requests
+  async def foo(self, **kwargs):
+      await asyncio.sleep(1.0)
+      print(kwargs)
+
+async def main():
+    m = MyExecutor()
+    call1 = asyncio.create_task(m.foo())
+    call2 = asyncio.create_task(m.foo())
+    await asyncio.gather(call1, call2)
+
+asyncio.run(main())
 ```
