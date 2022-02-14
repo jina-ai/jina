@@ -76,7 +76,7 @@ to have a better understanding of accessing attributes and elements with `DocArr
 - Traversal paths of the form `[path1, path2]` (e.g. `['r', 'cm']`) are replaced by a single string of the form
 `'path1,path2'` (e.g. `'r,cm'`)
 - `docs.traverse_flat(path)` is replaced by `docs['@path']` (e.g. `docs['@r,cm']`)
-- `docs.flatten()` is replaced by `dyocs[...]`
+- `docs.flatten()` is replaced by `docs[...]`
 
 ````{tab} Jina 2
 
