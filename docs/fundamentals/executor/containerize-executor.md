@@ -50,14 +50,15 @@ the basic entrypoint of the `image` calls `jina executor` {ref}`CLI <../api/cli>
 ENTRYPOINT ["jina", "executor", "--uses", "PATH_TO_YOUR_EXECUTOR_CONFIGURATION"]
 ```
 
-## Example
+## Example: Dockerized Executor
 
 Here we will show how to build a basic executor with a dependency on another external package.
 
 
-### Write your Executor
+### Writing the Executor
 
-Let's say we have our executor in a single python file called `my_executor.py`
+You can define your soon-to-be dockerized Executor exactly like any other Executor.
+Here that is done in the `my_executor.py` file.
 
 ```python
 import torch # Our Executor has dependency on torch
@@ -72,9 +73,18 @@ class ContainerizedEncoder(Executor):
             doc.embedding = torch.randn(10)
 ```
 
-### Write your Executor yaml file
+### Writing the Executor YAML file
 
-We need to write the YAML configuration of the Executor to be put inside the Docker image. We will write it under `config.yml`
+The YAML configuration, as a minimal working example, is required to point to the file containing the Executor.
+
+
+```{admonition} More YAML options
+:class: seealso
+To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-in-flow#YAML-inferface>`.
+```
+
+This is necessary for the Executor to be put inside the Docker image,
+and we can define such a configuration in `config.yml`:
 
 ```yaml
 jtype: ContainerizedEncoder
@@ -83,19 +93,19 @@ metas:
     - my_executor.py
 ```
 
-### Write your requirements.txt
+### Writing requirements.txt
 
 In this case, our Executor has only one requirement besides Jina, `torch`.
 
-So we can write a `requirements.txt` file:
+So, in `requirements.txt`, we specify just a single requirement:
 
 ```requirements.txt
 torch
 ```
 
-### Write a Dockerfile
+### Writing the Dockerfile
 
-The last step is to write a `Dockerfile`
+The last step is to write a `Dockerfile`, which has to do little more than launching the Executor via the Jina CLI:
 
 ```dockerfile
 FROM jinaai/jina:3.0-py37-perf
@@ -110,9 +120,9 @@ RUN pip install -r requirements.txt
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 
-### Build the image
+### Building the image
 
-At this point we have a folder structure looking like this:
+At this point we have a folder structure that looks like this:
 
 ```
 .
@@ -128,15 +138,17 @@ We just need to build the image:
 docker build -t my_containerized_executor .
 ```
 
-Once the build is successful, you should see under `docker images`
+Once the build is successful, this is what you should see under `docker images`:
 
 ```console
 REPOSITORY                       TAG                IMAGE ID       CREATED          SIZE
 my_containerized_executor        latest             5cead0161cb5   13 seconds ago   2.21GB
 ```
 
-### Use it
+### Using the containerized Executor
 
+The containerized Executor can be used like any other, the only difference being the 'docker' prefix in the `uses`
+ parameter:
 ```python
 from docarray import DocumentArray, Document
 from jina import Flow
