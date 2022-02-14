@@ -53,6 +53,13 @@ Docarray introduces more natural naming conventions for `Document` and `Document
 
 ## DocumentArray: Simplified attribute, element access and new storage options
 
+```{admonition} DocArray library
+:class: seealso
+
+Take a look at the [DocArray documentation](https://docarray.jina.ai/fundamentals/documentarray/access-attributes/) 
+to have a better understanding of accessing attributes and elements with `DocArray` 
+```
+
 **Attributes**: Docarray introduces a flexible way of bulk-accessing attributes of `Document`s in a `DocumentArray`.
 - Instead of having to call `docs.get_attributes('attribute')`, you can simply call `docs.attributes` for
   a select number of attributes. Currently, this syntax is supported by:
