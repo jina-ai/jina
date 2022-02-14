@@ -124,7 +124,7 @@ with f:
 ````{admonition} See Also
 :class: seealso
 
-Document, Executor, and Flow are the three fundamental concepts in Jina.
+Executor and Flow are the two fundamental concepts in Jina.
 
 - <a href="https://docarray.jina.ai/">Document</a> is the basic data type in Jina
 - {ref}`Executor <executor>` is how Jina processes Documents
