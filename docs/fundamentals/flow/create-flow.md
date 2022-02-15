@@ -435,7 +435,12 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 from jina import Flow
 
 f = Flow().add().add()
-f.plot()
+f.plot('flow.svg')
 ```
 
-This will output mermaid link visualizing the `Flow`.
+This will create a file with an image of the Flow.
+
+```{figure} flow.svg
+:align: center
+Output of the `plot` method
+```
