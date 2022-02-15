@@ -211,61 +211,48 @@ At this point, you probably have taken 7 minutes but here we are: an image searc
 
 </sup>
 
+### Play with Containerized Executors
 
+You can containerize the Executors and play them in a sandbox thanks to [Hub](https://hub.jina.ai).
+
+1. Move each `Executor` class to a separate folder with one Python file in each:
+   - `PreprocImg` -> 📁 `preproc_img/exec.py`
+   - `EmbedImg` -> 📁 `embed_img/exec.py`
+   - `MatchImg` -> 📁 `match_img/exec.py`
+2. Create a `requirements.txt` in `embed_img` as it requires `torchvision`.
+
+    ```text
+    .
+    ├── embed_img
+    │     ├── exec.py  # copy-paste codes of ImageEmbeddingExecutor
+    │     └── requirements.txt  # add the requirement `torchvision`
+    └── match_img
+          └── exec.py  # copy-paste codes of IndexExecutor
+    └── preproc_img
+          └── exec.py  # copy-paste codes of IndexExecutor
+    ```
+3. Push all Executors to the [Hub](https://hub.jina.ai):
+    ```bash
+    jina hub push preproc_img
+    jina hub push embed_img
+    jina hub push match_img
+    ```
+   You will get three Hub Executors that can be used via Docker container. 
 
 ### Deploy the service via Docker Compose
 
-If we want to further upgrade your Flow with Docker Compose or Kubernetes, we will first need to containerize the Executors. 
-The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
-
-Move each of the two Executors to a separate folder with one Python file in each:
-   - `ImageEmbeddingExecutor` -> 📁 `embed_img/exec.py`
-   - `IndexExecutor` -> 📁 `match_img/exec.py`
-   
-Create a `requirements.txt` in `embed_img` and add `torchvision` as a requirement.
-
-```shell
-.
-├── embed_img
-│     ├── exec.py  # copy-paste codes of ImageEmbeddingExecutor
-│     └── requirements.txt  # add the requirement `torchvision`
-└── match_img
-      └── exec.py  # copy-paste codes of IndexExecutor
-```
-
-Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the usage. It looks like this `jinahub://1ylut0gf`)
-```bash
-jina hub push embed_img  # publish at jinahub+docker://1ylut0gf  
-jina hub push match_img  # publish at jinahub+docker://258lzh3c 
-```
-
-You will get two Hub Executors that can be used for any container.
-
-<p align="center">
-<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
-</p>
-
-
-A Flow can generate a Docker Compose configuration file so that you can easily start a Flow via `docker-compose up`.
-
-Replace the `uses` arguments in the Flow with the values you have got from Jina Hub from previous steps. This will run the Flow with containerized Executors.
-
-Generate the docker compose configuration from the Flow using one line of Python code. 
+Now that all Executors are in container, we can easily use Docker compose to orchestrate the Flow.
 
 ```python
 f = (
-    Flow(protocol='http', port_expose=12345)
+    Flow(port_expose=12345)
     .add(uses='jinahub+docker://1ylut0gf')
     .add(uses='jinahub+docker://258lzh3c')
 )
 f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
 ```
 
-```shell
-Flow@62548[I]:Docker compose file has been created under docker-compose.yml. You can use it by running `docker-compose up -f docker-compose.yml`
-```
-   
-Now you can start your neural search application with docker compose.
+Now in the console do:
 
 ```shell
 docker-compose up
@@ -276,8 +263,6 @@ docker-compose up
 </p>
 
 ### Deploy the service via Kubernetes
-
-You can easily deploy a Flow with containerized Executors to a Kubernetes cluster as well.
 
 Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
 ```bash
@@ -323,7 +308,7 @@ Run port forwarding so that you can send requests to our Kubernetes application 
 kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
 ```
 
-Now we have the Flow up running in Kubernetes and we can use the `Client` or cURL to send requests. 
+Now we have the Flow up running in Kubernetes!
 
 > Note that we are running everything in the cloud and make sure the image URIs are accessible from the Kubernetes cluster.
 
