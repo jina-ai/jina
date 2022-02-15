@@ -130,6 +130,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12002,4 +12003,98 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b59b1935```](https://github.com/jina-ai/jina/commit/b59b193549cd6a460b3f8de5e9e5362739debb26)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```79388360```](https://github.com/jina-ai/jina/commit/79388360877941f3c81e8e8b22a8cde9d3b11b80)] __-__ __version__: the next docarray version will be 0.0.4 (*Jina Dev Bot*)
  - [[```ebcbb078```](https://github.com/jina-ai/jina/commit/ebcbb078c7339bf3fec6b25352270fa9c679d6a5)] __-__ __version__: the next version will be 2.6.4 (*Jina Dev Bot*)
+
+<a name=release-note-2-7-0></a>
+## Release Note (`2.7.0`)
+
+> Release time: 2022-02-15 11:41:54
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Nan Wang,  Joan Fontanals,  Jina Dev Bot,  Delgermurun,  Zhaofeng Miao,  samsja,  Yanlong Wang,  Tobias Jacobowitz,  cristian,  Johannes Messner,  AlaeddineAbdessalem,  felix-wang,  Aziz Belaweid,  Wang Bo,  dependabot[bot],  Mohammad Kalim Akram,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a5935ab2```](https://github.com/jina-ai/jina/commit/a5935ab2b1cd44e809c20b7e0df0292ba503255d)] __-__ __hub__: add --verbose option to &#34;jina hub push&#34; cli (#4278) (*Delgermurun*)
+ - [[```43bf8986```](https://github.com/jina-ai/jina/commit/43bf89862f39edec9ffedb9cffcb7aea962acbaa)] __-__ __sandbox__: using given port (#4262) (*Zhaofeng Miao*)
+ - [[```5081722f```](https://github.com/jina-ai/jina/commit/5081722f360436f2c265dac592eb37c794c29bb5)] __-__ __hubble__: upgrade to hubble api v2 (#4269) (*Delgermurun*)
+ - [[```6e24af63```](https://github.com/jina-ai/jina/commit/6e24af633387ca19e0944a71150b82c2add53733)] __-__ hide more parameters from k8s and compose yamls (#4242) (*Joan Fontanals*)
+ - [[```48871dd7```](https://github.com/jina-ai/jina/commit/48871dd73f85c2750baa2a68ce22231e015ada66)] __-__ change the way parameters are returned from Executors (#4243) (*samsja*)
+ - [[```1d6c0776```](https://github.com/jina-ai/jina/commit/1d6c077692c39047c3b234ee3ecc8945a6ade1c0)] __-__ use external pods from k8s (#4223) (*Tobias Jacobowitz*)
+ - [[```6a9ed78f```](https://github.com/jina-ai/jina/commit/6a9ed78f13905fb78c786914d5da1733dd20caf9)] __-__ integrate docarray as external dependency (#4160) (*Tobias Jacobowitz*)
+ - [[```eea04c36```](https://github.com/jina-ai/jina/commit/eea04c36350e86b3b0f16217cd37e630bfb81b57)] __-__ support jinahub+sandbox (#4130) (*Zhaofeng Miao*)
+ - [[```a813b151```](https://github.com/jina-ai/jina/commit/a813b15132df422aa9b5c0925cf62e587ad0aa61)] __-__ export Flow to docker compose yaml (#4125) (*Joan Fontanals*)
+ - [[```def0a12f```](https://github.com/jina-ai/jina/commit/def0a12f6a312b1133d10750226f485b42e319f8)] __-__ flow post return DocumentArray (#4137) (*Johannes Messner*)
+
+### 🐞 Bug fixes
+
+ - [[```f55ec04b```](https://github.com/jina-ai/jina/commit/f55ec04bac7d701695c47c33718912d1fd24f518)] __-__ fix flow plot (#4336) (*Joan Fontanals*)
+ - [[```23dd1f37```](https://github.com/jina-ai/jina/commit/23dd1f376481f978c1ce73df949a640c6b7cf9bb)] __-__ __helloworld__: dump before closing (#4320) (*Joan Fontanals*)
+ - [[```cfa83955```](https://github.com/jina-ai/jina/commit/cfa839551b65986e67665eaae61b17dc1e6fe04b)] __-__ fix warning when env vars used (#4291) (*Joan Fontanals*)
+ - [[```ad50d294```](https://github.com/jina-ai/jina/commit/ad50d294c78cc7c8aeea79c9b632dd3f943c5c5a)] __-__ instruction is now docker compose -f file up (#4279) (*samsja*)
+ - [[```b283672c```](https://github.com/jina-ai/jina/commit/b283672c71706e9c1dc49ee1f7144970dd17b0ec)] __-__ fix flow plot (#4257) (*Joan Fontanals*)
+ - [[```f1a3bb9e```](https://github.com/jina-ai/jina/commit/f1a3bb9e1be605226ed36be8470a31d01972b136)] __-__ improve error message (#4245) (*Joan Fontanals*)
+ - [[```2f0bb105```](https://github.com/jina-ai/jina/commit/2f0bb10589d09ea5a7b8cdbc9114de3067243aaa)] __-__ remove fluent resources (#4244) (*Joan Fontanals*)
+ - [[```d1a08332```](https://github.com/jina-ai/jina/commit/d1a083320d3e20ec42a49cd7f58c7b6540931890)] __-__ __cli__: fix missing type_checking if statement (#4234) (*samsja*)
+ - [[```34db85a9```](https://github.com/jina-ai/jina/commit/34db85a9047dd057ff3b88e119316252c9688f41)] __-__ parsing of env vars of the form &#39;{ var }&#39; (#4229) (*Johannes Messner*)
+ - [[```ecaae245```](https://github.com/jina-ai/jina/commit/ecaae24579a3c89dee630ee3a1d837c04b26e916)] __-__ uses_request being applied to uses_after and uses_before (#4228) (*Johannes Messner*)
+ - [[```f4f8f314```](https://github.com/jina-ai/jina/commit/f4f8f314481dcdec3bc8d322012a1942303d768f)] __-__ random port assignment (#4139) (*Tobias Jacobowitz*)
+ - [[```3cf7017a```](https://github.com/jina-ai/jina/commit/3cf7017a45b1161dc0087061fbef2b26b72275b6)] __-__ fix scalable jinad test (#4218) (*Tobias Jacobowitz*)
+ - [[```1b7711d3```](https://github.com/jina-ai/jina/commit/1b7711d3d237dae90e5297fccd9e22c3a6c24661)] __-__ replace docker id with uids (#4217) (*Tobias Jacobowitz*)
+ - [[```a58d8669```](https://github.com/jina-ai/jina/commit/a58d86696b982b143caf587649fa79665e22887e)] __-__ add meaningful error on docarray issue (#4213) (*Tobias Jacobowitz*)
+ - [[```5b6d2bd5```](https://github.com/jina-ai/jina/commit/5b6d2bd59f2492797b569fe96f9095d6c4e1f082)] __-__ flatten proto structure (#4212) (*Tobias Jacobowitz*)
+ - [[```1f2c8635```](https://github.com/jina-ai/jina/commit/1f2c86359246e00eae7cba081d9e952cb64c9aea)] __-__ rescue docarray in setup (#4203) (*Tobias Jacobowitz*)
+ - [[```4db20692```](https://github.com/jina-ai/jina/commit/4db2069216f22479c7bb6372005f7bbf704ca4b6)] __-__ fix helloworld multimodal (#4198) (*Joan Fontanals*)
+ - [[```f808a9ee```](https://github.com/jina-ai/jina/commit/f808a9eec2fefa6be9f80e5e14a909944a31bfb5)] __-__ __runtime__: worker grpc proxy env (#4189) (*felix-wang*)
+ - [[```96f421e4```](https://github.com/jina-ai/jina/commit/96f421e481d27f47e16de589540d24feaad4d7d0)] __-__ __tests__: replace multiprocessing.Queue.qsize() to enable MacOS compatability (#4187) (*Johannes Messner*)
+ - [[```b09d1d19```](https://github.com/jina-ai/jina/commit/b09d1d19733cf40b9be17a8315e36d1e7202917e)] __-__ __peapods__: the name of a worker is now the name of the pea managing the worker (#4188) (*samsja*)
+ - [[```a088b373```](https://github.com/jina-ai/jina/commit/a088b373b6ee369d3f3ab730cd999080e198fbf3)] __-__ use INFO log level in k8s (#4159) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```58209134```](https://github.com/jina-ai/jina/commit/582091343e8e90c8c808c168467cbd852c4b207f)] __-__ do not expose everything in runtime args (#4261) (*Joan Fontanals*)
+ - [[```4709d24f```](https://github.com/jina-ai/jina/commit/4709d24f7557e3c26b44e525403c59172a3dab8d)] __-__ head deployment name does not need ordinal (#4250) (*Joan Fontanals*)
+ - [[```13edc16d```](https://github.com/jina-ai/jina/commit/13edc16d806fb5d77a6849551178ccc75937f25f)] __-__ rename pod to deployment (#4230) (*Tobias Jacobowitz*)
+ - [[```f95eb9ed```](https://github.com/jina-ai/jina/commit/f95eb9ed7879cffd0ac8d48fe2c9b3e3adc10fa9)] __-__ refactor rest API, access what docarray accepts (#4211) (*Joan Fontanals*)
+ - [[```066fb0b1```](https://github.com/jina-ai/jina/commit/066fb0b177c579505bea05f62fd8a684e11fee50)] __-__ remove fluentd and identity arg (#4199) (*Joan Fontanals*)
+ - [[```dde78e33```](https://github.com/jina-ai/jina/commit/dde78e33bd3b0804d1b6999fad72609a8e3c0c98)] __-__ remove docarray proto from tests and makedocs (#4200) (*Joan Fontanals*)
+ - [[```21e5daf4```](https://github.com/jina-ai/jina/commit/21e5daf445caf119602ce65138c11d71f916f42e)] __-__ create orchestrate and serve modules (#4168) (*Joan Fontanals*)
+ - [[```10c577a6```](https://github.com/jina-ai/jina/commit/10c577a603f80c9c80cb2d103a325612b5eed3dd)] __-__ remove replica id (#4162) (*Johannes Messner*)
+ - [[```6f22e682```](https://github.com/jina-ai/jina/commit/6f22e6824cbe9e95528e53e0613d5b1babd4af8e)] __-__ take out peas hosts from cli (#4171) (*Wang Bo*)
+ - [[```cea30065```](https://github.com/jina-ai/jina/commit/cea300655ed8be70d74c390ca12e8b09fb741665)] __-__ use absolute imports (#4167) (*Joan Fontanals*)
+ - [[```782f1060```](https://github.com/jina-ai/jina/commit/782f106076168dbe374e92fc8cac929b16dc9699)] __-__ use absolute imports in daemon (#4165) (*Joan Fontanals*)
+ - [[```7cf63fe8```](https://github.com/jina-ai/jina/commit/7cf63fe8dc92a6ecce057ccd5d99576ce89014d7)] __-__ change target_peapod to target_executor (#4157) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```7d42d764```](https://github.com/jina-ai/jina/commit/7d42d764f2c3e3c5a1b009d66c0f6da6f4ae3909)] __-__ use new docsqa server address (#4246) (*Yanlong Wang*)
+ - [[```bfd53573```](https://github.com/jina-ai/jina/commit/bfd53573252f7042ad2e10115c73befc35cfdfa4)] __-__ add back guide to docstrings (#4236) (*cristian*)
+ - [[```f6e2103b```](https://github.com/jina-ai/jina/commit/f6e2103b32519a31e24480365b79c1bd88bb2527)] __-__ fix Jina on Kubernetes/docker-compose section (#4176) (*AlaeddineAbdessalem*)
+ - [[```31fee0a4```](https://github.com/jina-ai/jina/commit/31fee0a44c7e40edea5910d7b09995c6627f2fcc)] __-__ fix mesh typo (#4174) (*Aziz Belaweid*)
+ - [[```d8cb09a8```](https://github.com/jina-ai/jina/commit/d8cb09a8e3337ecbc7505d33bbf12b33fadf784a)] __-__ bump qabot 0.3 (#4164) (*Yanlong Wang*)
+ - [[```b5e7fb2e```](https://github.com/jina-ai/jina/commit/b5e7fb2e8fda7f7927d9234b5f7ba9d901102c94)] __-__ update pre-requisite (#4166) (*Mohammad Kalim Akram*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```26287a76```](https://github.com/jina-ai/jina/commit/26287a766488e5dfd87545f500e3979ff58d6945)] __-__ bump version to 2.7 for testing (#4341) (*Nan Wang*)
+ - [[```6de5e0b2```](https://github.com/jina-ai/jina/commit/6de5e0b2b023b2e1a885085f5fce0d3d3362e6af)] __-__ remove fluent logger from extra reqs (#4214) (*Joan Fontanals*)
+ - [[```dfbabd56```](https://github.com/jina-ai/jina/commit/dfbabd5654caa945d82dd6b7d9ad83e366db511a)] __-__ fix docs to netlify (#4210) (*Joan Fontanals*)
+ - [[```305f4c3b```](https://github.com/jina-ai/jina/commit/305f4c3b467b8ac18a9ff7b41e0ef88261ebeb3f)] __-__ add kubernetes test on connection pool behaviour (#4196) (*AlaeddineAbdessalem*)
+ - [[```62745a78```](https://github.com/jina-ai/jina/commit/62745a787801d7f2dbff4e2770e3c1706e241a5d)] __-__ remove docarray-release (#4195) (*Joan Fontanals*)
+ - [[```f197e719```](https://github.com/jina-ai/jina/commit/f197e719a1b4897651b5a48fb0c82db4c9043ece)] __-__ bump jina version (#4193) (*Joan Fontanals*)
+ - [[```df0248b2```](https://github.com/jina-ai/jina/commit/df0248b29da90a68be51fe4fb5bbc562113b308f)] __-__ fix cd pipeline (#4192) (*Joan Fontanals*)
+ - [[```d5b1e64e```](https://github.com/jina-ai/jina/commit/d5b1e64efd20945c52e2fd73deb47879fd16ec4f)] __-__ switch test from threading to multiprocessing (#4177) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```770a7241```](https://github.com/jina-ai/jina/commit/770a72412bfc794be1d68487809d3b4e6b138a2b)] __-__ remove the legacy docaary GA script (#4325) (*Nan Wang*)
+ - [[```b4cd39b9```](https://github.com/jina-ai/jina/commit/b4cd39b9a0eba1d032acae74dfbf67bc5fcf95f0)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```6fb95e4a```](https://github.com/jina-ai/jina/commit/6fb95e4a7ff644738e170fe6fc01cdd5787bf2d4)] __-__ update docarray minimum version (#4306) (*Joan Fontanals*)
+ - [[```7462b9e4```](https://github.com/jina-ai/jina/commit/7462b9e42d6774a5b7e3d5463d7488ea6b60b95f)] __-__ fix a typo (#4276) (*Nan Wang*)
+ - [[```720642d6```](https://github.com/jina-ai/jina/commit/720642d641e5975819f7484ea8c59780c5763eeb)] __-__ add PR template (#4238) (*Tobias Jacobowitz*)
+ - [[```c71410b6```](https://github.com/jina-ai/jina/commit/c71410b64af0aed18bf9b1f4d5958a9855ec5376)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```5cef9643```](https://github.com/jina-ai/jina/commit/5cef964356fcb6a55ab711876ed10b2ade982d41)] __-__ Revert &#34;fix: rescue docarray in setup&#34; (#4219) (*Tobias Jacobowitz*)
+ - [[```bc9f8e0d```](https://github.com/jina-ai/jina/commit/bc9f8e0d4070156522f2ff165b688b508acd8a67)] __-__ __deps__: bump pillow in /scripts/latency-tracking (#4169) (*dependabot[bot]*)
 
