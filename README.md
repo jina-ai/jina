@@ -241,22 +241,22 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
 
 ### Deploy the service via Docker Compose
 
-Now that all Executors are in container, we can easily use Docker compose to orchestrate the Flow.
+1. Now that all Executors are in container, we can easily use Docker compose to orchestrate the Flow.
 
-```python
-f = (
-    Flow(port_expose=12345)
-    .add(uses='jinahub+docker://1ylut0gf')
-    .add(uses='jinahub+docker://258lzh3c')
-)
-f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
-```
+    ```python
+    f = (
+        Flow(port_expose=12345)
+        .add(uses='jinahub+docker://1ylut0gf')
+        .add(uses='jinahub+docker://258lzh3c')
+    )
+    f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
+    ```
 
-Now in the console do:
+2. Now in the console do:
 
-```shell
-docker-compose up
-```
+    ```shell
+    docker-compose up
+    ```
 
 <p align="center">
 <img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
@@ -264,53 +264,52 @@ docker-compose up
 
 ### Deploy the service via Kubernetes
 
-Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
-```bash
-gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
-gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
-```
+1. Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
+    ```bash
+    gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
+    gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
+    ```
 
-Create a namespace `flow-k8s-namespace` for demonstration purpose ,
-```bash
-kubectl create namespace flow-k8s-namespace
-```
+2. Create a namespace `flow-k8s-namespace` for demonstration purpose:
+    ```bash
+    kubectl create namespace flow-k8s-namespace
+    ```
 
-Generate the kubernetes configuration files using one line of code:
-```python
-f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
-```
+3. Generate the kubernetes configuration files using one line of code:
+    ```python
+    f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
+    ```
+    
+4. You `k8s_config` folder would look like the following:
+    ```shell
+    k8s_config
+    ├── executor0
+    │     ├── executor0-head.yml
+    │     └── executor0.yml
+    ├── executor1
+    │     ├── executor1-head.yml
+    │     └── executor1.yml
+    └── gateway
+          └── gateway.yml
+    ```
 
-```shell
-k8s_config
-├── executor0
-│     ├── executor0-head.yml
-│     └── executor0.yml
-├── executor1
-│     ├── executor1-head.yml
-│     └── executor1.yml
-└── gateway
-      └── gateway.yml
-```
+5. Use `kubectl` to deploy your neural search application: 
 
-Use `kubectl` to deploy your neural search application: 
-
-```shell
-kubectl apply -R -f ./k8s_config
-```
+    ```shell
+    kubectl apply -R -f ./k8s_config
+    ```
 
 <p align="center">
 <img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
 </p>
 
-Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
+6. Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
 
-```shell
-kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
-```
+    ```shell
+    kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
+    ```
 
-Now we have the Flow up running in Kubernetes!
-
-> Note that we are running everything in the cloud and make sure the image URIs are accessible from the Kubernetes cluster.
+Now we have the service up running in Kubernetes!
 
 
 ## Run Quick Demo
