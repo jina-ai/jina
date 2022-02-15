@@ -151,7 +151,7 @@ f = (
 )
 ```
 
-### Partitioning the Data
+### Partitioning the data
 
 Now let's run the `Flow` to index your data:
 ```python
