@@ -30,7 +30,6 @@ from jina import Executor
 
 
 class MyExecutor(Executor):
-
     def __init__(self, foo: str, bar: int, **kwargs):
         super().__init__(**kwargs)
         self.bar = bar
@@ -70,16 +69,18 @@ from jina import requests
 from jina import Executor, requests
 import asyncio
 
+
 class RequestExecutor(Executor):
-
-    @requests(on=['/index', '/search']) # foo will be bound to `/index` and `/search` endpoints 
+    @requests(
+        on=['/index', '/search']
+    )  # foo will be bound to `/index` and `/search` endpoints
     def foo(self, **kwargs):
-        print(f'Calling foo') 
+        print(f'Calling foo')
 
-    @requests(on='/other') # bar will be bound to `/other` endpoint
+    @requests(on='/other')  # bar will be bound to `/other` endpoint
     async def bar(self, **kwargs):
         await asyncio.sleep(1.0)
-        print(f'Calling bar') 
+        print(f'Calling bar')
 ```
 
 ```python
@@ -113,8 +114,8 @@ is the fallback handler for endpoints that are not found. `f.post(on='/blah', ..
 from jina import Executor, requests
 import asyncio
 
-class MyExecutor(Executor):
 
+class MyExecutor(Executor):
     @requests
     def foo(self, **kwargs):
         print(kwargs)
@@ -122,7 +123,7 @@ class MyExecutor(Executor):
     @requests(on='/index')
     async def bar(self, **kwargs):
         await asyncio.sleep(1.0)
-        print(f'Calling bar') 
+        print(f'Calling bar')
 ```
 
 
@@ -139,11 +140,15 @@ All Executor methods decorated by `@requests` need to follow the signature below
 ```python
 from typing import Dict, Optional, Union, List
 from docarray import DocumentArray
+from jina import Executor, requests
 
-async def foo(docs: DocumentArray,
-              parameters: Dict,
-              docs_matrix: List[DocumentArray]) -> Optional[Union[DocumentArray, Dict]]:
-    pass
+
+class MyExecutor(Executor):
+    @requests
+    async def foo(
+        self, docs: DocumentArray, parameters: Dict, docs_matrix: List[DocumentArray]
+    ) -> Optional[Union[DocumentArray, Dict]]:
+        pass
 ```
 
 Let's take a look at all these arguments:
@@ -196,35 +201,37 @@ from jina import Executor, requests, Flow
 
 
 class PrintDocuments(Executor):
-    
-  @requests
-  def foo(self, docs, **kwargs): 
-      for doc in docs:
-        print(f' PrintExecutor: received document with text: "{doc.text}"')
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            print(f' PrintExecutor: received document with text: "{doc.text}"')
+
 
 class ProcessDocuments(Executor):
+    @requests(on='/change_in_place')
+    def in_place(self, docs, **kwargs):
+        # This executor will only work on `docs` and will not consider any other arguments
+        for doc in docs:
+            print(f' ProcessDocuments: received document with text "{doc.text}"')
+            doc.text = 'I changed the executor in place'
 
-   @requests(on='/change_in_place')
-   def in_place(self, docs, **kwargs):
-      # This executor will only work on `docs` and will not consider any other arguments
-      for doc in docs:
-        print(f' ProcessDocuments: received document with text "{doc.text}"')
-        doc.text = 'I changed the executor in place' 
+    @requests(on='/return_different_docarray')
+    def ret_docs(self, docs, **kwargs):
+        # This executor will only work on `docs` and will not consider any other arguments
+        ret = DocumentArray()
+        for doc in docs:
+            print(f' ProcessDocuments: received document with text: "{doc.text}"')
+            ret.append(Document(text='I returned a different Document'))
+        return ret
 
-   @requests(on='/return_different_docarray')
-   def ret_docs(self, docs, **kwargs):
-      # This executor will only work on `docs` and will not consider any other arguments
-      ret = DocumentArray()
-      for doc in docs:
-        print(f' ProcessDocuments: received document with text: "{doc.text}"')
-        ret.append(Document(text='I returned a different Document'))
-      return ret
 
 f = Flow().add(uses=ProcessDocuments).add(uses=PrintDocuments)
 
 with f:
     f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request')))
-    f.post(on='/return_different_docarray', inputs=DocumentArray(Document(text='request')))
+    f.post(
+        on='/return_different_docarray', inputs=DocumentArray(Document(text='request'))
+    )
 ```
 
 ```console
@@ -250,7 +257,6 @@ from jina import Executor, requests
 
 
 class MyExec(Executor):
-
     @requests
     def foo(self, docs, **kwargs):
         for d in docs:
@@ -277,17 +283,18 @@ from jina import Executor, requests
 
 
 class MyExecutor(Executor):
+    @requests
+    async def foo(self, **kwargs):
+        await asyncio.sleep(1.0)
+        print(kwargs)
 
-  @requests
-  async def foo(self, **kwargs):
-      await asyncio.sleep(1.0)
-      print(kwargs)
 
 async def main():
     m = MyExecutor()
     call1 = asyncio.create_task(m.foo())
     call2 = asyncio.create_task(m.foo())
     await asyncio.gather(call1, call2)
+
 
 asyncio.run(main())
 ```
