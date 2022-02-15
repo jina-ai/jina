@@ -88,12 +88,11 @@ Learn to share and reuse Executors from the Jina community.
 :caption: Get started
 :hidden:
 
-
+get-started/what-is-jina
 get-started/neural-search
 get-started/install/index
 get-started/create-app
 get-started/hello-world/index
-get-started/comparing-to-alternatives
 ```
 
 ```{toctree}
