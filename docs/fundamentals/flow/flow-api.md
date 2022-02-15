@@ -224,6 +224,13 @@ executors:
 
 ## Working with the Python Client
 The most convenient way to work with the `Flow` API is the Python Client. It enables you to send `Documents` to the `Flow` API in a number of different ways shown below:
+
+```{admonition} Caution
+:class: caution
+`Flow` provides a `.post()` method that follows the same interface as `client.post()`. Due to reasons of performance and
+code clarity, however, `flow.post()` is not recommended outside of testing or debugging use cases.
+```
+
 ```python
 from docarray import Document, DocumentArray
 from jina import Client, Flow
