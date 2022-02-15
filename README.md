@@ -148,7 +148,7 @@ if __name__ == "__main__":
 </p>
 
 
-The images with the same id are expected to be matched. The pretrained ResNet50 indeed find some similar images.
+The images with the same id are expected to be matched. The pretrained ResNet50 indeed finds some similar images.
 You will find the query image at `query.png` and the top 9 matches at `matches.png`. 
 This is everything: You just level up your neural search application as an API service! 🎉
 
