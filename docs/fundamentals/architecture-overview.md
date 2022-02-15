@@ -2,7 +2,7 @@
 
 {ref}`Executor <executor>` and {ref}`Flow <flow>` are the two fundamental concepts in Jina. 
 
-The figure below shows details on how `Flow` and `Executor` abstractions translate into concrete entities, providing all the 
+The figure below shows details on how the Flow and Executor abstractions translate into concrete entities, providing all the 
 serving and scaling features of Jina.
 
 
