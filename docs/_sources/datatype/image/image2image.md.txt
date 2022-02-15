@@ -9,7 +9,29 @@ will subsequently refer to as the pets dataset. It contains 12.5K images of cats
 problem as selecting an image of cat or dog, and getting back images of similar cats or dogs respectively.
 
 Jina searches semantically, and the results will vary depending on the neural network that we use for image encoding. Our
-task is to search for similar images so we will consider visually-similar images as semantically-related.
+task is to search for similar images so, we will consider visually-similar images as semantically-related.
+
+```{tip}
+The full source code of this tutorial is available in this [Google Colab notebook](https://colab.research.google.com/drive/1JUWCZRH88uAvofUomTZYxvIR2jSm7H6Z?usp=sharing)
+```
+
+## Pre-requisites
+
+Before we begin building our Flow we need to do a few things. 
+
+* Install the following dependencies.
+
+```shell
+pip install jina "lightning-flash[image]==0.5.0" "vissl" "fairscale" pytorch-lightning==1.4.9
+```
+
+* Download [the dataset](https://www.kaggle.com/c/dogs-vs-cats/data?select=test1.zip) and unzip it.
+
+You can use the link or the following commands:
+```shell
+gdown https://drive.google.com/uc?id=1T8IzCJDf3qNBq2Lg2vRKsNV0StOFeOVR
+unzip test1.zip
+```
 
 ## Build the Flow
 
@@ -148,7 +170,7 @@ from jina.types.request import Response
 
 def print_matches(resp: Response):  # the callback function invoked when task is done
     for idx, d in enumerate(resp.docs[0].matches[:3]):  # print top-3 matches
-        print(f'[{idx}]{d.scores["euclidean"].value:2f}: "{d.text}"')
+        print(f'[{idx}]{d.scores["cosine"].value:2f}: "{d.uri}"')
 
 
 c = Client(protocol='http', port=12345)  # connect to localhost:12345

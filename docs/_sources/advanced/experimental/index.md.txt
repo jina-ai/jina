@@ -16,5 +16,7 @@ That said, have fun!
 :hidden:
 
 kubernetes
+docker-compose
+sandbox
 indexers
 ```
