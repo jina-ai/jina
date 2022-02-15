@@ -397,6 +397,7 @@ f = (Flow()
 ```
 
 ```{figure} replicas-flow.svg
+:width: 70%
 :align: center
 Flow with 3 replicas of slow_encoder and 1 replica of fast_indexer
 ```
