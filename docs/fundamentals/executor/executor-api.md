@@ -139,11 +139,16 @@ All Executor methods decorated by `@requests` need to follow the signature below
 ```python
 from typing import Dict, Optional, Union, List
 from docarray import DocumentArray
+from jina import Executor, requests
 
-async def foo(docs: DocumentArray,
-              parameters: Dict,
-              docs_matrix: List[DocumentArray]) -> Optional[Union[DocumentArray, Dict]]:
-    pass
+class MyExecutor(Executor):
+
+    @requests
+    async def foo(self,
+                  docs: DocumentArray,
+                  parameters: Dict,
+                  docs_matrix: List[DocumentArray]) -> Optional[Union[DocumentArray, Dict]]:
+        pass
 ```
 
 Let's take a look at all these arguments:
