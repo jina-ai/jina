@@ -54,9 +54,11 @@ data, _ = fetch_20newsgroups(
 vectorizer = TfidfVectorizer()
 vectorizer.fit(data)
 
+
 def news_generator():
     for item in data:
         yield Document(text=item)
+
 
 class MyVectorizer(Executor):
     @requests
@@ -132,15 +134,21 @@ And you add this `PQLiteIndexer` to your Flow:
 ```python
 from jina import Flow
 
-f = Flow().add(
-    name='fast_executor').add(
-    name='slow_executor', uses=MyVectorizer).add(
-    name='pqlite_executor', uses='jinahub://PQLiteIndexer/v0.2.3-rc', uses_with={
-      'dim': 130107,  # the dimension is fitted on the corpus in news dataset
-      'metric': 'cosine'
-    },
-    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
-    install_requirements=True)
+f = (
+    Flow()
+    .add(name='fast_executor')
+    .add(name='slow_executor', uses=MyVectorizer)
+    .add(
+        name='pqlite_executor',
+        uses='jinahub://PQLiteIndexer/v0.2.3-rc',
+        uses_with={
+            'dim': 130107,  # the dimension is fitted on the corpus in news dataset
+            'metric': 'cosine',
+        },
+        uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+        install_requirements=True,
+    )
+)
 ```
 
 ### Partitioning the Data
@@ -158,16 +166,18 @@ All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` where `0` is
 If you want to distribute your data to different places, Jina allows you to use `shards` to specify the number of shards.
 
 ```python
-f = Flow().add(
-    name='fast_executor').add(
-    name='slow_executor', uses=MyVectorizer).add(
-    name='pqlite_executor', uses='jinahub://PQLiteIndexer', uses_with={
-      'dim': 130107,
-      'metric': 'cosine'
-    },
-    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
-    install_requirements=True,
-    shards=2,
+f = (
+    Flow()
+    .add(name='fast_executor')
+    .add(name='slow_executor', uses=MyVectorizer)
+    .add(
+        name='pqlite_executor',
+        uses='jinahub://PQLiteIndexer',
+        uses_with={'dim': 130107, 'metric': 'cosine'},
+        uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+        install_requirements=True,
+        shards=2,
+    )
 )
 ```
 
@@ -195,17 +205,19 @@ The new `Flow`:
 # At index time, use ALL, at search time use ANY, the rest use ALL.
 polling_config = {'/index': 'ANY', '/search': 'ALL', '*': 'ALL'}
 
-f = Flow().add(
-    name='fast_executor').add(
-    name='slow_executor', uses=MyVectorizer).add(
-    name='pqlite_executor', uses='jinahub://PQLiteIndexer/v0.2.3-rc', uses_with={
-      'dim': 130107,
-      'metric': 'cosine'
-    },
-    uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
-    install_requirements=True,
-    shards=2,
-    polling=polling_config,
+f = (
+    Flow()
+    .add(name='fast_executor')
+    .add(name='slow_executor', uses=MyVectorizer)
+    .add(
+        name='pqlite_executor',
+        uses='jinahub://PQLiteIndexer/v0.2.3-rc',
+        uses_with={'dim': 130107, 'metric': 'cosine'},
+        uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+        install_requirements=True,
+        shards=2,
+        polling=polling_config,
+    )
 )
 ```
 

@@ -35,13 +35,13 @@ with f:
 ````{tab} 😔 Don't
 ```python
 from docarray import Document, DocumentArray
-from jina import Flow 
+from jina import Flow
 
-my_input = DocumentArray([Document() for _ in range(1000)]) 
+my_input = DocumentArray([Document() for _ in range(1000)])
 
 f = Flow()
 with f:
-   f.post('/', my_input)
+    f.post('/', my_input)
 ```
 ````
 
@@ -95,9 +95,10 @@ No need to implement `__init__` if your `Executor` does not contain initial stat
 ```python
 from jina import Executor
 
+
 class MyExecutor(Executor):
-   def foo(self, **kwargs):
-      ...
+    def foo(self, **kwargs):
+        ...
 ```
 ````
 
@@ -124,11 +125,11 @@ Use `@requests` without specifying `on=` if your function is meant to work on al
 ```python
 from jina import Executor, requests
 
-class MyExecutor(Executor):
 
-   @requests
-   def _skip_all(self, **kwargs):
-      print('default do sth')
+class MyExecutor(Executor):
+    @requests
+    def _skip_all(self, **kwargs):
+        print('default do sth')
 ```
 ````
 
@@ -193,11 +194,10 @@ from jina import Executor, requests
 
 
 class MyExec(Executor):
-
-   @requests
-   def foo(self, docs, **kwargs):
-      for d in docs:
-         d.text = 'hello world'
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
 
 
 m = MyExec()
@@ -214,17 +214,16 @@ from jina import Executor, requests, Flow
 
 
 class MyExec(Executor):
-
-   @requests
-   def foo(self, docs, **kwargs):
-      for d in docs:
-         d.text = 'hello world'
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
 
 
 da = DocumentArray([Document(text='test')])
 
 with Flow().add(uses=MyExec) as f:
-   f.post('/', da, on_done=print)
+    f.post('/', da, on_done=print)
 ```
 ````
 
@@ -288,19 +287,22 @@ import glob
 from docarray import Document
 from jina import Executor, Flow, requests
 
-class MyExecutor(Executor):
 
+class MyExecutor(Executor):
     @requests
     def to_blob_conversion(self, docs: DocumentArray, **kwargs):
         for doc in docs:
             doc.load_uri_to_image_tensor()  # conversion happens inside Flow
 
+
 f = Flow().add(uses=MyExecutor, replicas=2)
+
 
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')
     for image_uri in image_uris:
         yield Document(uri=image_uri)
+
 
 with f:
     f.post('/foo', inputs=my_input)
@@ -314,12 +316,14 @@ import glob
 from docarray import Document
 from jina import Executor
 
+
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
         doc.load_uri_to_image_tensor()  # time consuming-job on client side
         yield doc
+
 
 f = Flow().add()
 
@@ -369,13 +373,13 @@ class SecondExecutor(Executor):
 from jina import Executor, requests
 
 class FirstExecutor(Executor):
-    
+
     @requests
     def foo(self, docs, **kwargs):
         # some process on docs
 
 class SecondExecutor(Executor):
-    
+
     @requests
     def bar(self, docs, **kwargs):
         # do follow up processing, even though `.embedding` and `.blob` are never used 

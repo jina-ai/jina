@@ -122,7 +122,7 @@ First let's define a client:
 ```python
 from jina.clients import Client
 
-client = Client(host='localhost', protocol='http',port=8080)
+client = Client(host='localhost', protocol='http', port=8080)
 client.show_progress = True
 ```
 
@@ -140,7 +140,7 @@ indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
     lambda d: d.load_uri_to_image_tensor()
 )
 
-resp_index= client.post('/index', inputs=indexing_documents, return_results=True)
+resp_index = client.post('/index', inputs=indexing_documents, return_results=True)
 
 print(f'Indexed Documents: {len(resp_index[0].docs)}')
 ```

@@ -14,8 +14,8 @@ Functions decorated by `requests`  can be directly implemented as async `corouti
 ```python
 from jina import Executor, requests, Flow
 
+
 class MyExecutor(Executor):
-    
     @requests
     async def encode(self, docs, *kwargs):
         await some_coroutines()
@@ -38,7 +38,6 @@ from jina import Flow, Executor, requests
 
 
 class DummyAsyncExecutor(Executor):
-
     @requests
     async def process(self, docs: DocumentArray, **kwargs):
         await asyncio.sleep(1)
@@ -52,9 +51,8 @@ with f:
     f.index(
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
         request_size=1,
-        show_progress=True
+        show_progress=True,
     )
-
 ```
 
 ```console
@@ -79,7 +77,6 @@ from jina import Flow, Executor, requests
 
 
 class DummyExecutor(Executor):
-
     @requests
     def process(self, docs: DocumentArray, **kwargs):
         time.sleep(1)
@@ -93,7 +90,7 @@ with f:
     f.index(
         inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
         request_size=1,
-        show_progress=True
+        show_progress=True,
     )
 ```
 

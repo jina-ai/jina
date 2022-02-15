@@ -20,11 +20,9 @@ from jina import Executor, requests
 
 
 class MyExecutor(Executor):
-
     @requests
     def foo(self, **kwargs):
         print(kwargs)
-
 ```
 
 ````
@@ -43,7 +41,6 @@ from jina import Flow, Executor, requests
 
 
 class MyExecutor(Executor):
-
     @requests(on='/bar')
     def foo(self, docs, **kwargs):
         print(docs)

@@ -36,6 +36,7 @@ import torch
 from docarray import DocumentArray
 from jina import Executor, requests
 
+
 class MyGPUExec(Executor):
     def __init__(self, device: str = 'cpu', *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -300,11 +301,13 @@ from jina import Flow
 
 from executor import SentenceEncoder
 
+
 def generate_docs():
     for _ in range(10_000):
         yield Document(
             text='Using a GPU allows you to significantly speed up encoding.'
         )
+
 
 f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})
 with f:
@@ -443,7 +446,7 @@ f = Flow().add(
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
-    volumes="/home/ubuntu/.cache:/root/.cache"
+    volumes="/home/ubuntu/.cache:/root/.cache",
 )
 ```
 

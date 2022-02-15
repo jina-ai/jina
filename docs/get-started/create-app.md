@@ -54,7 +54,6 @@ from jina import Executor, DocumentArray, requests
 
 
 class MyExecutor(Executor):
-
     @requests(on='/get-tensor')
     def bar(self, docs: DocumentArray, **kwargs):
         docs[0].tensor = torch.tensor(np.random.random([10, 2]))

@@ -104,9 +104,11 @@ from docarray import Document, DocumentArray
 
 docs = DocumentArray([Document(text='Embed me please!') for _ in range(5)])
 
+
 def print_embedding(resp):
     doc = resp.docs[0]
     print(f'"{doc.text}" has been embedded to shape {doc.embedding.shape}')
+
 
 with f:
     f.index(inputs=docs, on_done=print_embedding)
@@ -127,13 +129,12 @@ First, we create a file `exec.py`, and in it we define our custom Executor:
 ```python
 from jina import Executor, requests
 
-class MyExecutor(Executor):
 
+class MyExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
             print(f'Received: "{doc.text}"')
-            
 ```
 
 Since we can't rely on the Hub this time around, we need to tell Jina how to find the Executor that we just defined.
@@ -165,8 +166,12 @@ from docarray import Document, DocumentArray
 f1 = Flow().add(host='localhost', port_in=12345, external=True)
 f2 = Flow().add(host='localhost', port_in=12345, external=True)
 with f1:
-    f1.index(inputs=DocumentArray([Document(text='Greetings from Flow1') for _ in range(1)]))
-    f2.index(inputs=DocumentArray([Document(text='Greetings from Flow2') for _ in range(1)]))
+    f1.index(
+        inputs=DocumentArray([Document(text='Greetings from Flow1') for _ in range(1)])
+    )
+    f2.index(
+        inputs=DocumentArray([Document(text='Greetings from Flow2') for _ in range(1)])
+    )
 ```
 
 ```console

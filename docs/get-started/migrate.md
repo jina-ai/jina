@@ -129,7 +129,7 @@ docs.batch(traversal_paths=paths, batch_size=bs, require_attr='attr')
 ````{tab} Jina 3 
 
 ```python
-DocumentArray(filter(lambda x : bool(x.attr), docs['@paths'])).batch(batch_size=bs)
+DocumentArray(filter(lambda x: bool(x.attr), docs['@paths'])).batch(batch_size=bs)
 ```
 
 ````
