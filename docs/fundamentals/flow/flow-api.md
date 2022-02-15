@@ -10,17 +10,18 @@
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-class FooExecutor(Executor):
 
+class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
+
 f = Flow(protocol='grpc', port_expose=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345)
-    response = client.post(on='/')
-    print(response[0].data.docs.texts)
+    docs = client.post(on='/')
+    print(docs.texts)
 ```
 ````
 
@@ -29,17 +30,18 @@ with f:
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-class FooExecutor(Executor):
 
+class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
+
 f = Flow(protocol='http', port_expose=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='http')
-    response = client.post(on='/')
-    print(response[0].data.docs.texts)
+    docs = client.post(on='/')
+    print(docs.texts)
     f.block()
 ```
 
@@ -54,45 +56,47 @@ with f:
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-class FooExecutor(Executor):
 
+class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
+
 f = Flow(protocol='websocket', port_expose=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='websocket')
-    response = client.post(on='/')
-    print(response[0].data.docs.texts)
+    docs = client.post(on='/')
+    print(docs.texts)
 ```
 
 ````
 
 ## Configure the API
-The `Flow` API can expose different endpoints depending on the configured Executors. Endpoints are defined by the Executor methods annotated with the `@requests(on='/endpoint_path'')` decorator.
+The `Flow` API can expose different endpoints depending on the configured Executors. Endpoints are defined by the Executor methods annotated with the `@requests(on='/endpoint_path')` decorator.
 
 ```python
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-class EndpointExecutor(Executor):
 
+class EndpointExecutor(Executor):
     @requests(on='/foo')
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was called'))
-        
+
     @requests(on='/bar')
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='bar was called'))
 
+
 f = Flow(protocol='grpc', port_expose=12345).add(uses=EndpointExecutor)
 with f:
     client = Client(port=12345)
-    foo_response = client.post(on='/foo')
-    bar_response = client.post(on='/bar')
-    print(foo_response[0].data.docs.texts)
-    print(bar_response[0].data.docs.texts)
+    foo_response_docs = client.post(on='/foo')
+    bar_response_docs = client.post(on='/bar')
+    print(foo_response_docs.texts)
+    print(bar_response_docs.texts)
 ```
 
 This will print
@@ -151,9 +155,8 @@ It is possible to hide CRUD and debug endpoints in production. This might be use
 
 ```python
 from jina import Flow
-f = Flow(protocol='http',
-         no_debug_endpoints=True,
-         no_crud_endpoints=True)
+
+f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 ```
 
 ```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
@@ -171,11 +174,12 @@ f = Flow(protocol='http',
 ```python
 from jina import Executor, requests, Flow
 
-class MyExec(Executor):
 
+class MyExec(Executor):
     @requests(on='/foo')
     def foo(self, docs, **kwargs):
         pass
+
 
 f = Flow(protocol='http').add(uses=MyExec)
 f.expose_endpoint('/foo', summary='my endpoint')
@@ -192,11 +196,7 @@ Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo'
 You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 
 ```python
-f.expose_endpoint('/bar',
-                  summary='my endpoint',
-                  tags=['fine-tuning'],
-                  methods=['PUT']
-                  )
+f.expose_endpoint('/bar', summary='my endpoint', tags=['fine-tuning'], methods=['PUT'])
 ```
 
 You can enable custom endpoints in a Flow using yaml syntax as well.
@@ -231,9 +231,11 @@ from jina import Client, Flow
 d1 = Document(content='hello')
 d2 = Document(content='world')
 
+
 def doc_gen():
     for j in range(10):
         yield Document(content=f'hello {j}')
+
 
 with Flow() as f:
     client = Client(port=12345)
@@ -264,26 +266,29 @@ Usually a `Flow` will send each request to all Executors with matching Endpoints
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
-class FooExecutor(Executor):
 
+class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'foo was here and got {len(docs)} document'))
 
-class BarExecutor(Executor):
 
+class BarExecutor(Executor):
     @requests
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'bar was here and got {len(docs)} document'))
 
-f = Flow() \
-    .add(uses=FooExecutor, name='fooExecutor') \
+
+f = (
+    Flow()
+    .add(uses=FooExecutor, name='fooExecutor')
     .add(uses=BarExecutor, name='barExecutor')
+)
 
 with f:  # Using it as a Context Manager will start the Flow
     client = Client(port=f.port_expose)
-    response = client.post(on='/', target_executor='barExecutor')
-    print(response[0].data.docs.texts)
+    docs = client.post(on='/', target_executor='barExecutor')
+    print(docs.texts)
 ```
 
 ### Request parameters
@@ -331,15 +336,18 @@ import asyncio
 from docarray import Document
 from jina import Client, Flow
 
+
 async def async_inputs():
     for _ in range(10):
         yield Document()
         await asyncio.sleep(0.1)
 
+
 async def run_client(port):
     client = Client(port=port, asyncio=True)
     async for resp in client.post('/', async_inputs, request_size=1):
         print(resp)
+
 
 with Flow() as f:  # Using it as a Context Manager will start the Flow
     asyncio.run(run_client(f.port_expose))
