@@ -51,7 +51,7 @@ More install options including Conda, Docker, and Windows [can be found here](ht
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-get-started.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
 </p>
 
-We promise you can build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
+We promise you can build a **scalable** ResNet-powered image search **service** in 20 minutes or less, **from scratch**. If not, you can forget about Jina.
 
 ### Basic Concepts
 
