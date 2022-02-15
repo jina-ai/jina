@@ -189,7 +189,7 @@ curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -
 If we want to further upgade your Flow with Docker Compose or Kubernetes, we will first need to containerize the Executors. 
 The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
 
-Move each of the two Executors to a separate folder with one Python file in each and keep the Flow codes in `main.py`:
+Move each of the two Executors to a separate folder with one Python file in each:
    - `ImageEmbeddingExecutor` -> 📁 `embed_img/exec.py`
    - `IndexExecutor` -> 📁 `match_img/exec.py`
    
@@ -200,7 +200,6 @@ Create a `requirements.txt` in `embed_img` and add `torchvision` as a requiremen
 ├── embed_img
 │         ├── exec.py
 │         └── requirements.txt
-├── main.py
 └── match_img
           └── exec.py
 ```
@@ -237,21 +236,22 @@ You will get two Hub Executors that can be used for any container.
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Replace the `uses` arguments in the previous codes with the values you have got from Jina Hub. This will run the Flow with containerized Executors:
     
 ```python
-f = (Flow(protocol='http', port_expose=12345)
-    .add(uses='jinahub+docker://1ylut0gf')
-    .add(uses='jinahub+docker://258lzh3c'))
 ```
 
 #### Deploy Flow via Docker Compose
 
 A Flow can generate a `docker-compose.yml` file so that you can easily start a `Flow` via `docker-compose up`.
 
+Replace the `uses` arguments in the Flow with the values you have got from Jina Hub. This will run the Flow with containerized Executors:
+
 Generate the docker compose configuration from the Flow using one line of Python code. By default, the configuration is stored at `docker-compose.yml`.
 
 ```python
+f = (Flow(protocol='http', port_expose=12345)
+     .add(uses='jinahub+docker://1ylut0gf')
+     .add(uses='jinahub+docker://258lzh3c'))
 f.to_docker_compose_yaml()
 ```
 
@@ -376,7 +376,9 @@ Do port forwarding so that you can send requests to our application in Kubernete
 kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
 ```
 
-Now we have the Flow up running in Kubernetes and we can use the `Client` or cURL to send requests.
+Now we have the Flow up running in Kubernetes and we can use the `Client` or cURL to send requests. 
+
+> Note that we are running everything in the cloud and make sure the image URIs are accessible from the Kubernetes cluster.
 
 
 ## Run Quick Demo
