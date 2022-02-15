@@ -12,7 +12,7 @@ serving and scaling features of Jina.
 
 It illustrates how Jina deploys and serves its Flows and Executors.
 
-You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But it is useful in order to understand how Jina works, regardless of whether it runs locally, orchestrated only by the Flow, or if it runs in 
+You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But it is useful in order to understand how Jina works, regardless of whether it runs locally, orchestrated only by the Flow, or in 
 a cloud-native infrastructure such as Kubernetes. In fact, you can notice how some naming and concepts are inspired by the Kubernetes architecture.
 
 The following concepts may appear in the docs, but you don't need to master them, as they are designed to be used internal-only:
