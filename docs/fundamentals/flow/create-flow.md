@@ -33,6 +33,22 @@ with f: # Using it as a Context Manager will start the Flow
 ```
 ````
 
+## Visualize a `Flow`
+
+`Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
+```python
+from jina import Flow
+
+f = Flow().add().add()
+f.plot('flow.svg')
+```
+
+```{figure} flow.svg
+:width: 70%
+```
+
+This will output mermaid link visualizing the `Flow`.
+
 ## Add Executors
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
 
@@ -108,10 +124,7 @@ with f:
 ```
 ````
 
-```{figure} ../../../.github/images/foobar_flow.png
-:align: center
-Simple Flow with two Executors being chained one after the other
-```
+
 The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
 ### Executor discovery
@@ -428,14 +441,4 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 - all other endpoints will have polling `ANY` due to the usage of `*` as a wildcard to catch all other cases
 
 
-## Visualize a `Flow`
 
-`Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
-```python
-from jina import Flow
-
-f = Flow().add().add()
-f.plot()
-```
-
-This will output mermaid link visualizing the `Flow`.
