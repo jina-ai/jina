@@ -204,7 +204,10 @@ def test_remote_workspace_value():
     )
     args = client.flows.get(flow_id)['arguments']['object']['arguments']
     response = Client(
-        host=HOST, port=args['port_expose'], protocol=args['protocol']
+        host=HOST,
+        port=args['port_expose'],
+        protocol=args['protocol'],
+        return_responses=True,
     ).post(on='/', inputs=[Document()], show_progress=True, return_results=True)
     assert (
         response[0]
