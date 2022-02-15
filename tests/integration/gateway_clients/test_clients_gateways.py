@@ -174,9 +174,7 @@ def client_send(client_id: int, port_in: int, protocol: str):
 
     # send requests
     return c.post(
-        on='/',
-        inputs=DocumentArray([Document(text=f'client{client_id}-Request')]),
-        return_results=True,
+        on='/', inputs=DocumentArray([Document(text=f'client{client_id}-Request')])
     )
 
 

@@ -80,7 +80,7 @@ def test_flow_with_external_deployment(
             external=True,
         )
         with flow:
-            resp = flow.index(inputs=input_docs, return_results=True)
+            resp = flow.index(inputs=input_docs)
 
         # expect 50 reduced Documents in total after sharding
         validate_response(resp, 50)
@@ -113,13 +113,13 @@ def test_two_flow_with_shared_external_deployment(
             )
         )
         with flow1, flow2:
-            results = flow1.index(inputs=input_docs, return_results=True)
+            results = flow1.index(inputs=input_docs)
 
             # Reducing applied after shards, expect only 50 docs
             validate_response(results, 50)
 
             # Reducing applied after sharding, but not for the needs, expect 100 docs
-            results = flow2.index(inputs=input_docs, return_results=True)
+            results = flow2.index(inputs=input_docs)
             validate_response(results, 100)
 
 
@@ -210,7 +210,7 @@ def test_flow_with_external_deployment_shards(
         )
 
         with flow:
-            resp = flow.index(inputs=input_docs, return_results=True)
+            resp = flow.index(inputs=input_docs)
 
         # Reducing applied on shards and needs, expect 50 docs
         validate_response(resp, 50)
@@ -272,7 +272,7 @@ def test_flow_with_external_deployment_pre_shards(
             .join(needs=['executor1', 'executor2'])
         )
         with flow:
-            resp = flow.index(inputs=input_docs, return_results=True)
+            resp = flow.index(inputs=input_docs)
 
         # Reducing applied on shards and needs, expect 50 docs
         validate_response(resp, 50)
@@ -339,7 +339,7 @@ def test_flow_with_external_deployment_join(
             )
         )
         with flow:
-            resp = flow.index(inputs=input_docs, return_results=True)
+            resp = flow.index(inputs=input_docs)
 
         # Reducing applied for shards, not for uses, expect 100 docs
         validate_response(resp, 100)

@@ -55,9 +55,7 @@ def test_crud(tmpdir, rest):
             for doc in results['data']:
                 assert Document.from_dict(doc).text == 'hello world'
         else:
-            results = c.post(
-                on='/search', inputs=inputs, parameters=PARAMS, return_results=True
-            )
+            results = c.post(on='/search', inputs=inputs, parameters=PARAMS)
             matches = results[0].docs[0].matches
             for doc in results[0].docs:
                 assert doc.text == 'hello world'
@@ -83,9 +81,7 @@ def test_crud(tmpdir, rest):
             matches = results['data'][0]['matches']
 
         else:
-            results = c.post(
-                on='/search', inputs=inputs, parameters=PARAMS, return_results=True
-            )
+            results = c.post(on='/search', inputs=inputs, parameters=PARAMS)
             matches = results[0].docs[0].matches
 
         assert len(matches) == 5
@@ -110,9 +106,7 @@ def test_crud(tmpdir, rest):
                 results['data'][0]['matches'], key=lambda match: match['id']
             )
         else:
-            results = c.post(
-                on='/search', inputs=inputs, parameters=PARAMS, return_results=True
-            )
+            results = c.post(on='/search', inputs=inputs, parameters=PARAMS)
             matches = sorted(results[0].docs[0].matches, key=lambda match: match.id)
 
         assert len(matches) == 5

@@ -15,7 +15,7 @@ def flow(request):
     if flow_src == 'flow-yml':
         return Flow().load_config(os.path.join(cur_dir, 'flow.yml'))
     elif flow_src == 'uses-yml':
-        return Flow(return_results=True, port_expose=exposed_port).add(
+        return Flow(port_expose=exposed_port).add(
             uses=os.path.join(cur_dir, 'default_config.yml'),
             uses_with={'param1': 50, 'param2': 30},
             uses_metas={'workspace': 'different_workspace'},
@@ -23,7 +23,7 @@ def flow(request):
     elif flow_src == 'class':
         from .executor import Override
 
-        return Flow(return_results=True, port_expose=exposed_port).add(
+        return Flow(port_expose=exposed_port).add(
             uses=Override,
             uses_with={'param1': 50, 'param2': 30, 'param3': 10},
             uses_metas={'workspace': 'different_workspace', 'name': 'name'},
@@ -34,7 +34,7 @@ def flow(request):
 def test_override_config_params(flow):
     with flow:
         resps = Client(port=exposed_port, return_responses=True).search(
-            inputs=[Document()], return_results=True
+            inputs=[Document()]
         )
     doc = resps[0].docs[0]
     assert doc.tags['param1'] == 50
@@ -45,7 +45,7 @@ def test_override_config_params(flow):
 
 
 def test_override_config_params_shards():
-    flow = Flow(return_results=True, port_expose=exposed_port).add(
+    flow = Flow(port_expose=exposed_port).add(
         uses=os.path.join(cur_dir, 'default_config.yml'),
         uses_with={'param1': 50, 'param2': 30},
         uses_metas={'workspace': 'different_workspace'},
@@ -53,7 +53,7 @@ def test_override_config_params_shards():
     )
     with flow:
         resps = Client(port=exposed_port, return_responses=True).search(
-            inputs=[Document()], return_results=True
+            inputs=[Document()]
         )
     doc = resps[0].docs[0]
     assert doc.tags['param1'] == 50
@@ -83,7 +83,7 @@ def test_override_requests():
     f = Flow(port_expose=exposed_port).add(uses=MyExec)
     with f:
         req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document(), return_results=True
+            '/index', Document()
         )
         assert req[0].docs[0].text == 'foo'
 
@@ -91,13 +91,11 @@ def test_override_requests():
     f = Flow(port_expose=exposed_port).add(uses=MyExec, uses_requests={'/index': 'bar'})
     with f:
         req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document(), return_results=True
+            '/index', Document()
         )
         assert req[0].docs[0].text == 'bar'
 
-        req = Client(port=exposed_port, return_responses=True).post(
-            '/1', Document(), return_results=True
-        )
+        req = Client(port=exposed_port, return_responses=True).post('/1', Document())
         assert req[0].docs[0].text == 'foobar'
 
     # change bind to foobar()
@@ -106,12 +104,12 @@ def test_override_requests():
     )
     with f:
         req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document(), return_results=True
+            '/index', Document()
         )
         assert req[0].docs[0].text == 'foobar'
 
         req = Client(port=exposed_port, return_responses=True).post(
-            '/index-blah', Document(), return_results=True
+            '/index-blah', Document()
         )
         assert req[0].docs[0].text == 'foo'
 
@@ -121,6 +119,6 @@ def test_override_requests():
     )
     with f:
         req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document(), return_results=True
+            '/index', Document()
         )
         assert req[0].docs[0].text == 'bar'

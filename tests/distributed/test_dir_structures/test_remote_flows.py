@@ -42,6 +42,5 @@ def test_remote_flow_with_directory(directory, filename, mul):
         resp = Client(port=12345, return_responses=True).post(
             on='/',
             inputs=Document(text=directory),
-            return_results=True,
         )
     assert resp[0].data.docs[0].text == directory * mul

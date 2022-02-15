@@ -23,6 +23,6 @@ def test_custom_dockerfile():
                 Document(text=f'{i}', embedding=np.random.rand(2, 3)) for i in range(5)
             ),
         )
-        resp = c.search(inputs=[Document(text='3')], return_results=True)
+        resp = c.search(inputs=[Document(text='3')])
         assert resp[0].docs[0].matches[0].text == '3'
         assert resp[0].docs[0].matches[0].embedding.shape == (2, 3)

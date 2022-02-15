@@ -71,13 +71,11 @@ def test_scale_success(remote_flow_with_runtime: Flow, deployment_params):
     with remote_flow_with_runtime as f:
         ret1 = Client(port=exposed_port, return_responses=True).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
             request_size=10,
         )
         f.scale(deployment_name='executor', replicas=scale_to)
         ret2 = Client(port=exposed_port, return_responses=True).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
-            return_results=True,
             request_size=10,
         )
 
@@ -117,7 +115,6 @@ def test_scale_with_concurrent_client(
         rv = Client(protocol=protocol, port=port, return_responses=True).index(
             [Document(text=peer_hash) for _ in range(NUM_DOCS_SENT_BY_CLIENTS)],
             request_size=5,
-            return_results=True,
         )
         for r in rv:
             for doc in r.docs:
@@ -146,9 +143,7 @@ def test_scale_with_concurrent_client(
             t.join()
 
         c = Client(protocol=protocol, port=port_expose, return_responses=True)
-        rv = c.index(
-            [Document() for _ in range(5)], request_size=1, return_results=True
-        )
+        rv = c.index([Document() for _ in range(5)], request_size=1)
 
     all_docs = []
     while not queue.empty():

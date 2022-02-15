@@ -233,9 +233,7 @@ async def test_pseudo_remote_pods_topologies(gateway, head, worker):
         c = Client(
             host='127.0.0.1', port=port_expose, asyncio=True, return_responses=True
         )
-        responses = c.post(
-            '/', inputs=async_inputs, request_size=1, return_results=True
-        )
+        responses = c.post('/', inputs=async_inputs, request_size=1)
         response_list = []
         async for response in responses:
             response_list.append(response)
@@ -298,7 +296,7 @@ async def test_pseudo_remote_pods_shards(gateway, head, worker, polling):
     await asyncio.sleep(1.0)
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -366,7 +364,7 @@ async def test_pseudo_remote_pods_replicas(gateway, head, worker):
     await asyncio.sleep(1.0)
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -486,7 +484,7 @@ async def test_pseudo_remote_pods_executor(
     await asyncio.sleep(1.0)
 
     c = Client(host=HOST, port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response.docs)

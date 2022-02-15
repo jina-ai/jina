@@ -135,29 +135,21 @@ async def test_run_async_flow_other_task_concurrent(protocol):
 
 @pytest.mark.slow
 @pytest.mark.asyncio
-@pytest.mark.parametrize('return_results', [False])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 @pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
-async def test_return_results_async_flow(return_results, protocol, flow_cls):
-    with flow_cls(
-        protocol=protocol, asyncio=True, return_results=return_results
-    ).add() as f:
+async def test_return_results_async_flow(protocol, flow_cls):
+    with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in f.index(from_ndarray(np.random.random([10, 2]))):
             assert isinstance(r.response, Response)
 
 
 @pytest.mark.slow
 @pytest.mark.asyncio
-@pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 @pytest.mark.parametrize('flow_api', ['delete', 'index', 'update', 'search'])
 @pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
-async def test_return_results_async_flow_crud(
-    return_results, protocol, flow_api, flow_cls
-):
-    with flow_cls(
-        protocol=protocol, asyncio=True, return_results=return_results
-    ).add() as f:
+async def test_return_results_async_flow_crud(protocol, flow_api, flow_cls):
+    with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
             assert isinstance(r.response, Response)
 

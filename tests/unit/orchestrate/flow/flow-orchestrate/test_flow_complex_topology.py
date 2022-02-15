@@ -16,6 +16,6 @@ def test_flow_complex_toploogy(protocol):
     )
 
     with f:
-        res = f.index(Document(), return_results=True)
+        res = f.index(Document())
 
     assert len(res) > 0

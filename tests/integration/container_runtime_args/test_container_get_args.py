@@ -37,7 +37,6 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
     with f:
         ret1 = Client(return_responses=True, port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(2000)]),
-            return_results=True,
             request_size=10,
         )
 

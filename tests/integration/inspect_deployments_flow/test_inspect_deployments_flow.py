@@ -58,7 +58,7 @@ def test_flow1(inspect, protocol, temp_folder):
     )
 
     with f:
-        res = f.post(on='/index', inputs=docs, return_results=True)
+        res = f.post(on='/index', inputs=docs)
 
     assert len(res) > 0
 
@@ -76,7 +76,7 @@ def test_flow2(inspect, protocol, temp_folder):
     )
 
     with f:
-        res = f.index(docs, return_results=True)
+        res = f.index(docs)
 
     assert len(res) > 0
     validate([1], expect=f.args.inspect.is_keep)
@@ -97,7 +97,7 @@ def test_flow3(inspect, protocol, temp_folder):
     )
 
     with f:
-        res = f.index(docs, return_results=True)
+        res = f.index(docs)
 
     assert len(res) > 0
     validate([1, 2], expect=f.args.inspect.is_keep)
@@ -120,7 +120,7 @@ def test_flow4(inspect, protocol, temp_folder):
     )
 
     with f:
-        res = f.index(docs, return_results=True)
+        res = f.index(docs)
 
     assert len(res) > 0
     validate([1, 2, 3], expect=f.args.inspect.is_keep)
@@ -162,7 +162,7 @@ def test_flow_returned_collect(protocol):
     with f:
         response = Client(
             port=exposed_port, protocol=protocol, return_responses=True
-        ).index(inputs=docs, return_results=True)
+        ).index(inputs=docs)
     validate_func(response[0])
 
 
@@ -184,7 +184,7 @@ def test_flow_not_returned(inspect, protocol):
 
     with f:
         res = Client(protocol=protocol, port=exposed_port, return_responses=True).index(
-            inputs=docs, return_results=True
+            inputs=docs
         )
 
     validate_func(res[0])

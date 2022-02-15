@@ -371,7 +371,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     order_of_ids = list(
         Client(protocol=protocol, port=port_in, return_responses=True)
-        .post(on='/status', inputs=[Document()], return_results=True)[0]
+        .post(on='/status', inputs=[Document()])[0]
         .docs[0]
         .tags['ids']
     )

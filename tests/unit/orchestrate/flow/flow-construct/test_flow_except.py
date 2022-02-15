@@ -152,7 +152,6 @@ def test_no_error_callback(mocker, protocol):
         results = f.index(
             [Document(text='abbcs'), Document(text='efgh')],
             on_error=on_error_mock,
-            return_results=True,
         )
 
     assert len(results) > 0

@@ -16,7 +16,7 @@ def test_compression(compress_algo):
     f = Flow(compress=str(compress_algo)).add().add(name='DummyEncoder', shards=2).add()
 
     with f:
-        results = f.index(random_docs(10), return_results=True)
+        results = f.index(random_docs(10))
 
     assert len(results) > 0
 
@@ -46,7 +46,6 @@ def test_gateway_concurrency(protocol, reraise):
                 port=PORT_EXPOSE, protocol=protocol, return_responses=True
             ).index(
                 inputs=(Document() for _ in range(256)),
-                return_results=True,
                 _size=16,
             )
             assert len(results) > 0
