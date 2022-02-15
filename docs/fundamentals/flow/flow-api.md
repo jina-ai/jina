@@ -400,8 +400,20 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 ## Returning results from .post()
 
 If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
+
 By setting `return_responses=True` when creating a Client, this behavior can be modified to return a list of Responses instead.
+
 If a callback is provided, no results will be returned.
+
+```{admonition} Danger
+:class: danger
+Not using a callback function and instead returning results can come with a **serious performance penalty**.
+
+Callbacks operate on each individual Request, which represents a batch of the data.
+In contrast, returning results requires the accumulation of all results of all Requests.
+This means that you will not receive results until all Requests have been processed.
+This may not only be slower, but also require more memory.
+```
 
 ````{tab} Returning DocumentArray
 
