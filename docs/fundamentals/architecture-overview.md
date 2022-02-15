@@ -1,10 +1,6 @@
 # Architecture Overview
 
-*Executor* and *Flow* are the two fundamental concepts in Jina: 
-
-- **Executor**: Each {ref}`Executor <executor>` performs a single task on `DocumentArray`s.
-
-- **Flow**: The {ref}`Flow <flow>` ties Executors together into a processing pipeline.
+{ref}`Executor <executor>` and {ref}`Flow <flow>` are the two fundamental concepts in Jina. 
 
 The figure below shows details on how `Flow` and `Executor` abstractions translate into concrete entities, providing all the 
 serving and scaling features of Jina.

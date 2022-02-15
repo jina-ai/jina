@@ -1,11 +1,10 @@
 (concepts)=
 # Basic Concepts
 
-*Executor* and *Flow* are the two fundamental concepts in Jina. Understanding these will help you build your
-search engine.
+{ref}`Executor <executor>` and {ref}`Flow <flow>` are the two fundamental concepts in Jina. Understanding these will help you build your neural search system.
 
-- **Executor** is how Jina processes Documents;
-- **Flow** is how Jina streamlines and scales Executors.
+- **Executor** is a self-contained component and performs a single task on a `DocumentArray`.
+- **Flow** ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
 *Learn them both, nothing more, you are good to go.*
 

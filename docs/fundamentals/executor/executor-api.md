@@ -1,6 +1,9 @@
+(executor)=
+
 # Executor API
 
-{class}`~jina.Executor`s encapsulate functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
+{class}`~jina.Executor` is a self-contained component and performs a single task on a `DocumentArray`. 
+It encapsulates functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
 1. An `Executor` should subclass directly from the `jina.Executor` class.
 2. An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
@@ -11,7 +14,7 @@
 
 ### Subclass
 
-Every new executor should be a subclass of `jina.Executor`.
+Every new executor should be a subclass of {class}`~jina.Executor`.
 
 You can name your executor class freely.
 
