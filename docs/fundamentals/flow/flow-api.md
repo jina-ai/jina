@@ -365,11 +365,7 @@ from jina.types.request import Response
 
 
 def my_callback(rep: Response):
-    docs_list = [r.data.docs for r in result]
-    if len(docs_list) < 1:
-        docs = docs_list
-    else:  # collect into DocArray
-        docs = docs_list[0].reduce_all(docs_list[1:])
+    docs = resp.docs
     ...  # process docs here
 ```
 
