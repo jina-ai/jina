@@ -23,7 +23,7 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 
 🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on local, [Docker compose](https://docs.jina.ai/how-to/docker-compose/), [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
 
-🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minute. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Jina Hub](https://hub.jina.ai).
+🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minute. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Hub](https://hub.jina.ai).
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with fragmented, multi-vendor, generic legacy tools. Enjoy the integration with the neural search ecosystem including [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai).
 
@@ -31,15 +31,16 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 
 ## Install 
 ```bash
-pip install -U jina
+pip install jina
 ```
 
-More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/). 
+For Jina 2.x users, please follow the below and [read the migration guide](https://docs.jina.ai/get-started/migrate/):
 
-If you are upgrading from Jina 2:
 ```bash
-pip uninstall jina && pip install -U jina
+pip uninstall jina && pip install jina
 ```
+
+More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/).
 
 ## [Documentation](https://docs.jina.ai)
 
@@ -210,7 +211,7 @@ jina hub push match_img  # publish at jinahub+docker://258lzh3c
 You will get two Hub Executors that can be used for any container.
 
 <p align="center">
-<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
+<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
 </p>
 
 #### Run Flow with Docker Compose
@@ -241,7 +242,7 @@ docker-compose up
 ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
 </p>
 
 #### Deploy Flow with Kubernetes
@@ -283,7 +284,7 @@ kubectl apply -R -f ./k8s_config
 ```
 
 <p align="center">
-<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
+<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
 </p>
 
 Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
