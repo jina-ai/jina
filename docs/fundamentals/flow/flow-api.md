@@ -108,7 +108,7 @@ This will print
 
 The `Client` also offers the convenience functions `.search()` and  `.index()`, which are just shortcuts for `.post(on='/search')` and `.post(on='/index')`.
 
-### Limiting outstanding requests
+## Limiting outstanding requests
 By default, a Client will just send requests as fast as possible without any throttling. This can potentially put a lot of load on the `Flow` if the Client can send requests faster than they are processed in the `Flow`. Typically, this is most likely to happen for expensive index Flows. 
 
 You can control the number of in flight requests per Client with the `prefetch` argument, e.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
@@ -136,7 +136,7 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
 
-### Extend HTTP Interface
+## Extend HTTP Interface
 
 By default the following endpoints are exposed to the public by the API:
 
@@ -149,7 +149,7 @@ By default the following endpoints are exposed to the public by the API:
 | `/update` | Corresponds to `f.post('/update')` method in Python |
 | `/delete` | Corresponds to `f.post('/delete')` method in Python |
 
-#### Hide CRUD and debug endpoints from HTTP interface
+### Hide CRUD and debug endpoints from HTTP interface
 
 It is possible to hide CRUD and debug endpoints in production. This might be useful when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
 
@@ -163,7 +163,7 @@ f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 :align: center
 ```
 
-#### Expose customized endpoints to HTTP interface
+### Expose customized endpoints to HTTP interface
 
 `Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
 
@@ -222,284 +222,6 @@ executors:
 :align: center
 ```
 
-## Working with the Python Client
-The most convenient way to work with the `Flow` API is the Python Client. It enables you to send `Documents` to the `Flow` API in a number of different ways shown below:
-
-```{admonition} Caution
-:class: caution
-`Flow` provides a `.post()` method that follows the same interface as `client.post()`. Due to reasons of performance and
-code clarity, however, `flow.post()` is not recommended outside of testing or debugging use cases.
-```
-
-```python
-from docarray import Document, DocumentArray
-from jina import Client, Flow
-
-d1 = Document(content='hello')
-d2 = Document(content='world')
-
-
-def doc_gen():
-    for j in range(10):
-        yield Document(content=f'hello {j}')
-
-
-with Flow() as f:
-    client = Client(port=12345)
-    client.post('/endpoint', d1)  # Single document
-
-    client.post('/endpoint', [d1, d2])  # a list of Document
-
-    client.post('/endpoint', doc_gen)  # Document generator
-
-    client.post('/endpoint', DocumentArray([d1, d2]))  # DocumentArray
-
-    client.post('/endpoint')  # empty
-```
-
-Especially during indexing a Client often sends thousands of Documents to a `Flow`. Those Documents are internally batched into a `Request`. The size of these batches can be controlled with the `request_size` keyword. The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
-```python
-from docarray import Document, DocumentArray
-from jina import Flow
-
-with Flow() as f:
-    f.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
-```
-
-### Target a specific Executor
-Usually a `Flow` will send each request to all Executors with matching Endpoints as configured. But the `Client` also allows you to only target a specific Executor in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.
-
-```python
-from docarray import Document, DocumentArray
-from jina import Client, Executor, Flow, requests
-
-
-class FooExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
-
-
-class BarExecutor(Executor):
-    @requests
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
-
-
-f = (
-    Flow()
-    .add(uses=FooExecutor, name='fooExecutor')
-    .add(uses=BarExecutor, name='barExecutor')
-)
-
-with f:  # Using it as a Context Manager will start the Flow
-    client = Client(port=f.port_expose)
-    docs = client.post(on='/', target_executor='barExecutor')
-    print(docs.texts)
-```
-
-### Request parameters
-
-The Client can also send parameters to the Executors as shown below:
-
-```{code-block} python
----
-emphasize-lines: 14
----
-from docarray import Document
-from jina import Executor, Flow, requests
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, parameters, **kwargs):
-        print(parameters['hello'])
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post('/', Document(), parameters={'hello': 'world'})
-```
-
-````{admonition} Note
-:class: note
-You can send a parameters-only data request via:
-
-```python
-with f:
-    f.post('/', parameters={'hello': 'world'})
-```
-
-This might be useful to control `Executor` objects during their lifetime.
-````
-
-### Processing results using callback functions
-
-After performing `client.post()`, you may want to further process the obtained results.
-
-For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:
-
-- `on_done` is executed after successful completion of `client.post()`
-- `on_error` is executed whenever an error occurs in `client.post()`
-- `on_always` is always performed, no matter the success or failure of `client.post()`
-
-Callback functions in Jina expect an argument of the type `jina.types.request.Response`, which contains resulting Documents,
-parameters, and other information.
-Accordingly, a callback function can be defined in the following way:
-
-````{tab} General callback function
-
-```python
-from jina.types.request import Response
-
-
-def my_callback(rep: Response):
-    ...  # process response here
-```
-
-````
-````{tab} Processing documents
-
-```python
-from jina.types.request import Response
-
-
-def my_callback(rep: Response):
-    docs = resp.docs
-    ...  # process docs here
-```
-
-````
-
-In the example below, our Flow passes the message then prints the result when successful.
-If something goes wrong, it beeps. Finally, the result is written to output.txt.
-
-```python
-from jina import Flow, Client
-from docarray import Document
-
-
-def beep(*args):
-    # make a beep sound
-    import sys
-
-    sys.stdout.write('\a')
-
-
-with Flow().add() as f, open('output.txt', 'w') as fp:
-    client = Client(port=f.port_expose)
-    client.post(
-        '/',
-        Document(),
-        on_done=print,
-        on_error=beep,
-        on_always=lambda x: x.docs.save(fp),
-    )
-```
-
-## Returning results from .post()
-
-If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
-
-By setting `return_responses=True` when creating a Client, this behavior can be modified to return a list of Responses instead.
-
-If a callback is provided, no results will be returned.
-
-```{admonition} Danger
-:class: danger
-Not using a callback function and instead returning results can come with a **serious performance penalty**.
-
-Callbacks operate on each individual Request, which represents a batch of the data.
-In contrast, returning results requires the accumulation of all results of all Requests.
-This means that you will not receive results until all Requests have been processed.
-This may not only be slower, but also require more memory.
-```
-
-````{tab} Returning DocumentArray
-
-```python
-from jina import Flow, Client
-from docarray import Document
-
-with Flow() as f:
-    client = Client(port=f.port_expose)
-    docs = client.post(on='', inputs=Document(text='Hi there!'))
-    print(docs)
-    print(docs.texts)
-```
-```  
->>> <DocumentArray (length=1) at 140619524357664>
->>> ['Hi there!']
-```
-
-````
-````{tab} Returning Responses
-
-```python
-from jina import Flow, Client
-from docarray import Document
-
-with Flow() as f:
-    client = Client(port=f.port_expose, return_responses=True)
-    resp = client.post(on='', inputs=Document(text='Hi there!'))
-    print(resp)
-    print(resp[0].docs.texts)
-```
-``` 
->>> [<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 140619524354592>]
->>> ['Hi there!']
-```
-
-````
-````{tab} Using callback function
-
-```python
-from jina import Flow, Client
-from docarray import Document
-
-with Flow() as f:
-    client = Client(port=f.port_expose)
-    resp = client.post(
-        on='',
-        inputs=Document(text='Hi there!'),
-        on_done=lambda resp: print(resp.docs.texts),
-    )
-    print(resp)
-```
-```
->>> ['Hi there!']
->>> None
-```
-
-````
-
-### Async Python Client
-
-There is also an async version of the Python Client so that it can easily be used from `asyncio` context:
-
-```python
-import asyncio
-
-from docarray import Document
-from jina import Client, Flow
-
-
-async def async_inputs():
-    for _ in range(10):
-        yield Document()
-        await asyncio.sleep(0.1)
-
-
-async def run_client(port):
-    client = Client(port=port, asyncio=True)
-    async for resp in client.post('/', async_inputs, request_size=1):
-        print(resp)
-
-
-with Flow() as f:  # Using it as a Context Manager will start the Flow
-    asyncio.run(run_client(f.port_expose))
-```
-
 ## Deployment
 To deploy a `Flow` you will need to deploy the Executors it is composed of. The `Flow` is offering convenience functions to generate the necessary configuration files for some use cases. At the moment `Docker-Compose` and `Kubernetes` are supprted.
 
@@ -519,4 +241,3 @@ with Flow() as f:
 ```
 This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`. The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
 More in depth information can be found in {ref}`this How-TO <docker-compos>`.
-
