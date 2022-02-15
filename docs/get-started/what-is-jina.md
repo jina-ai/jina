@@ -17,8 +17,8 @@ in every phase of the development cycle.
 
 Jina is designed as a lean and easy to use framework, and there are only two main concept to learn:
 
-- {ref}`**Executor** <fundamentals/executor-cookbook>` is a self-contained component and performs a single task on Documents.
-- {ref}`**Flow** <fundamentals/flow-cookbook>` ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
+- {ref}`Executor <executor-cookbook>` is a self-contained component and performs a single task on Documents.
+- {ref}`Flow <flow-cookbook>` ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
 
 # Comparing to Alternatives
