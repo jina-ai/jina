@@ -166,11 +166,16 @@ class DocVectorIndexer(Executor):
             limit=int(parameters['top_k']),
         )
 
+    @requests(on='/dump')
+    def dump(self, **kwargs):
+        self._docs.save(self.workspace + f'/{self._index_file_name}')
+
     def close(self):
         """
         Stores the DocumentArray to disk
         """
-        self._docs.save(self.workspace + f'/{self._index_file_name}')
+        self.dump()
+        super().close()
 
 
 class KeyValueIndexer(Executor):
@@ -195,11 +200,16 @@ class KeyValueIndexer(Executor):
                 new_matches.append(extracted_doc)
             doc.matches = new_matches
 
+    @requests(on='/dump')
+    def dump(self, **kwargs):
+        self._docs.save(self.workspace + f'/kv-idx')
+
     def close(self):
         """
         Stores the DocumentArray to disk
         """
-        self._docs.save(self.workspace + '/kv-idx')
+        self.dump()
+        super().close()
 
 
 class WeightedRanker(Executor):

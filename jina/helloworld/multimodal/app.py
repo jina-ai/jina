@@ -61,6 +61,9 @@ def hello_world(args):
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
         f.index(inputs=DocumentArray.from_csv(fp), request_size=10, show_progress=True)
+        f.post(on='/dump', target_executor='textIndexer')
+        f.post(on='/dump', target_executor='imageIndexer')
+        f.post(on='/dump', target_executor='keyValueIndexer')
 
     # search it!
     f = Flow.load_config('flow-search.yml')
