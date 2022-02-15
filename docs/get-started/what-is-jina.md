@@ -7,7 +7,7 @@ of separate microservices that can be scaled independently, but can be combined 
 
 Jina gives the power to the developers to build their business logic. It guides the user with abstractions that will help to modularize, serve and scale your applications in the cloud.
 
-Jina heavily uses other components of Jina Ecosystem as [**DocArray**](https://docarray.jina.ai/) to serve as the main data structure and [**Jina Hub**](https://hub.jina.ai/)  to help share, containerize and reuse 
+Jina heavily uses other components of Jina Ecosystem: [**DocArray**](https://docarray.jina.ai/) to serve as the main data structure; [**Jina Hub**](https://hub.jina.ai/) to share, containerize and reuse 
 components of the search pipelines.
 
 Jina is designed to provide a similar experience when developing your solutions locally and when deploying them int he cloud, helping the developer 
@@ -15,7 +15,7 @@ in every phase of the development cycle.
 
 ## Design 
 
-Jina is designed as a lean and easy to use framework, and there are only two main concept to learn:
+Jina is designed as a lean and easy-to-use framework. There are only two main concepts to learn:
 
 - {ref}`Executor <executor-cookbook>` is a self-contained component and performs a single task on Documents.
 - {ref}`Flow <flow-cookbook>` ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
