@@ -16,7 +16,7 @@ on how this image needs to be built, the main ones being:
 To be able to understand how a Container image is built for an Executor, you need an understanding of [Docker](https://docs.docker.com/) generally, of how to write 
 a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and of how to build a Docker image.
 
-In addition, to reproduce the example below it is required to have `docker` installed locally.
+In addition, to reproduce the example below it is required to have Docker installed locally.
 
 
 ## Installing Jina in the Docker image
