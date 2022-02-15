@@ -5,7 +5,7 @@ so that you can isolate its dependencies and make it ready to run in the cloud o
 
 One option is to leverage {ref}`Jina Hub <hub/index>` infrastructure to make sure your Executor can run as a container.
 
-However, you can also build a `docker` image yourself and use it like any other Executor. There are some requirements
+However, you can also build a Docker image yourself and use it like any other Executor. There are some requirements
 on how this image needs to be built, the main ones being:
 
 - Jina must be installed inside the image
