@@ -63,7 +63,6 @@ def test_sharding_tail_pod(num_replicas, num_shards):
         results = Client(port=1234, return_responses=True).post(
             on='/search',
             inputs=Document(matches=[Document()]),
-            return_results=True,
         )
         assert len(results[0].docs[0].matches) == num_shards
 
@@ -92,7 +91,6 @@ def test_merging_head_pod():
         results = Client(port=1234, return_responses=True).post(
             on='/search',
             inputs=multimodal_generator(),
-            return_results=True,
         )
         assert len(results[0].docs[0].chunks) == 2
         assert len(results[0].docs) == 5

@@ -208,7 +208,7 @@ def test_remote_workspace_value():
         port=args['port_expose'],
         protocol=args['protocol'],
         return_responses=True,
-    ).post(on='/', inputs=[Document()], show_progress=True, return_results=True)
+    ).post(on='/', inputs=[Document()], show_progress=True)
     assert (
         response[0]
         .data.docs[0]

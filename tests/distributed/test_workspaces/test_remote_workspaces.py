@@ -50,7 +50,6 @@ def test_upload_via_pymodule(replicas):
             inputs=(
                 Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
             ),
-            return_results=True,
         )
     assert len(responses) > 0
     assert len(responses[0].docs) > 0
@@ -76,7 +75,6 @@ def test_upload_via_yaml(replicas):
             inputs=(
                 Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
             ),
-            return_results=True,
         )
     assert len(responses) > 0
     assert len(responses[0].docs) > 0
@@ -111,7 +109,6 @@ def test_upload_multiple_workspaces(replicas):
             inputs=(
                 Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
             ),
-            return_results=True,
         )
     assert len(responses) > 0
     assert len(responses[0].docs) > 0
@@ -195,7 +192,6 @@ async def test_custom_project():
     ).post(
         on='/search',
         inputs=Document(tags={'key': 'first', 'value': 's'}),
-        return_results=True,
     ):
         tags = resp.data.docs[0].matches[0].tags
         assert tags['first'] == 's'
@@ -235,7 +231,6 @@ def test_upload_simple_non_standard_rootworkspace(docker_compose):
             inputs=(
                 Document(tensor=np.random.random([1, 100])) for _ in range(NUM_DOCS)
             ),
-            return_results=True,
         )
     assert len(responses) > 0
     assert len(responses[0].docs) > 0

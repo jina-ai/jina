@@ -22,7 +22,7 @@ def RemoteFlow(workspace_id):
         port=args['port_expose'],
         protocol=args['protocol'],
         return_responses=True,
-    ).post(on='/', inputs=[Document()], show_progress=True, return_results=True)
+    ).post(on='/', inputs=[Document()], show_progress=True)
     assert client.flows.delete(flow_id)
 
 
@@ -71,7 +71,7 @@ def test_cache_validate_remote_executor():
     )
     with f:
         response = Client(port=exposed_port, return_responses=True).post(
-            on='/', inputs=[Document()], show_progress=True, return_results=True
+            on='/', inputs=[Document()], show_progress=True
         )
         assert not response[0].data.docs[0].tags['exists']
 
@@ -85,6 +85,6 @@ def test_cache_validate_remote_executor():
     )
     with f:
         response = Client(port=exposed_port, return_responses=True).post(
-            on='/', inputs=[Document()], show_progress=True, return_results=True
+            on='/', inputs=[Document()], show_progress=True
         )
         assert response[0].data.docs[0].tags['exists']

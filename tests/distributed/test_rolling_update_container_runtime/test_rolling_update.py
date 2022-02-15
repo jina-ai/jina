@@ -69,13 +69,13 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     # check that there are no matches in Query Flow
     r = Client(
         host=HOST, port=REST_PORT_QUERY, protocol='http', return_responses=True
-    ).search(inputs=[doc for doc in docs[:nr_search]], return_results=True)
+    ).search(inputs=[doc for doc in docs[:nr_search]])
     assert r[0].data.docs[0].matches is None or len(r[0].data.docs[0].matches) == 0
 
     # index on DBMS flow
     Client(
         host=HOST, port=REST_PORT_DBMS, protocol='http', return_responses=True
-    ).index(inputs=docs, return_results=True)
+    ).index(inputs=docs)
 
     # dump data for DBMS flow
     Client(host=HOST, port=REST_PORT_DBMS, protocol='http', return_responses=True).post(
@@ -101,7 +101,6 @@ def test_dump_dbms_remote(executor_images, docker_compose):
         host=HOST, port=REST_PORT_QUERY, protocol='http', return_responses=True
     ).search(
         inputs=[doc for doc in docs[:nr_search]],
-        return_results=True,
         parameters={'top_k': 10},
     )
     for doc in r[0].data.docs:

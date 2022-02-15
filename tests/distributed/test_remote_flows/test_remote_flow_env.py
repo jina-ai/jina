@@ -50,7 +50,6 @@ def test_remote_flow_local_executors(replicas, jinad_client):
         resp = Client(host=HOST, port=FLOW_PORT, return_responses=True).post(
             on='/',
             inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
-            return_results=True,
         )
         for doc in resp[0].data.docs:
             assert doc.tags['key1'] == 'val1'
@@ -74,7 +73,6 @@ def test_port_expose_env_var(port_expose, func, jinad_client):
     ).post(
         on='/blah',
         inputs=(Document(text=f'text {i}') for i in range(2)),
-        return_results=True,
     )
     for d in r[0].data.docs:
         assert d.text.endswith(func)

@@ -36,7 +36,6 @@ def test_single_executor():
         results = Client(port=exposed_port, return_responses=True).post(
             on='index',
             inputs=Document(),
-            return_results=True,
         )
     validate_results(results)
 
@@ -53,6 +52,5 @@ def test_multi_executor():
         results = Client(port=exposed_port, return_responses=True).post(
             on='index',
             inputs=Document(),
-            return_results=True,
         )
     validate_results(results)

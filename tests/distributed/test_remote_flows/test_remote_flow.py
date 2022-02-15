@@ -84,7 +84,6 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
     ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
-        return_results=True,
     )
     assert len(resp[0].data.docs) == NUM_DOCS
     assert jinad_client.flows.delete(flow_id)
@@ -120,7 +119,6 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
     ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
-        return_results=True,
     )
     num_items_in_response = 0
     async for item in resp:
@@ -160,7 +158,6 @@ async def test_remote_jinad_flow_get_delete_all(async_jinad_client):
     ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
-        return_results=True,
     )
     num_items_in_response = 0
     async for item in resp:
@@ -198,7 +195,6 @@ async def test_jinad_flow_container_runtime(async_jinad_client, executor_image):
     ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
-        return_results=True,
     )
     num_items_in_response = 0
     async for item in resp:

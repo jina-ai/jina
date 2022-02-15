@@ -48,7 +48,7 @@ def test_this_will_fail(protocol):
     )
 
     with f:
-        da = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
+        da = f.index(inputs=random_docs(10, chunks_per_doc=0))
 
     validate(da)
 
@@ -70,6 +70,6 @@ def test_this_should_work(protocol):
     )
 
     with f:
-        da = f.index(inputs=random_docs(10, chunks_per_doc=0), return_results=True)
+        da = f.index(inputs=random_docs(10, chunks_per_doc=0))
 
     validate(da)

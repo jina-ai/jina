@@ -14,13 +14,10 @@ def test_override_requests():
         uses=FooExecutor, uses_requests={'/non_foo': 'foo'}
     ) as f:
         c = Client(port=exposed_port, return_responses=True)
-        resp1 = c.post(
-            on='/foo', inputs=DocumentArray([Document(text='')]), return_results=True
-        )
+        resp1 = c.post(on='/foo', inputs=DocumentArray([Document(text='')]))
         resp2 = c.post(
             on='/non_foo',
             inputs=DocumentArray([Document(text='')]),
-            return_results=True,
         )
 
     assert resp1[0].docs[0].text == ''
@@ -47,17 +44,12 @@ def test_override_requests_uses_after():
         uses_before=OtherExecutor,
     ) as f:
         c = Client(port=exposed_port, return_responses=True)
-        resp1 = c.post(
-            on='/foo', inputs=DocumentArray([Document(text='')]), return_results=True
-        )
+        resp1 = c.post(on='/foo', inputs=DocumentArray([Document(text='')]))
         resp2 = c.post(
             on='/non_foo',
             inputs=DocumentArray([Document(text='')]),
-            return_results=True,
         )
-        resp3 = c.post(
-            on='/bar', inputs=DocumentArray([Document(text='')]), return_results=True
-        )
+        resp3 = c.post(on='/bar', inputs=DocumentArray([Document(text='')]))
 
     assert resp1[0].docs[0].text == 'foo called'
     assert resp2[0].docs[0].text == ''

@@ -19,7 +19,6 @@ def test_func_simple_routing():
             on='/search',
             inputs=[(Document(), Document()) for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
-            return_results=True,
         )
         assert results[0].header.status.code == 0
         assert results[0].data.docs[0].tags['hello'] == 'world'
@@ -29,7 +28,6 @@ def test_func_simple_routing():
             on='/random',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
-            return_results=True,
         )
         assert results[0].header.status.code == 0
 
@@ -46,7 +44,6 @@ def test_func_failure():
         results = Client(return_responses=True, port=1234).post(
             on='/search',
             inputs=[(Document(), Document()) for _ in range(3)],
-            return_results=True,
         )
         assert results[0].header.status.code == 3
 
@@ -210,7 +207,6 @@ def test_target_executor_with_one_pathways():
         results = Client(return_responses=True, port=1234).post(
             on='/search',
             inputs=Document(),
-            return_results=True,
             target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1
@@ -226,7 +222,6 @@ def test_target_executor_with_two_pathways():
         results = Client(return_responses=True, port=1234).post(
             on='/search',
             inputs=Document(),
-            return_results=True,
             target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1
@@ -243,7 +238,6 @@ def test_target_executor_with_two_pathways_one_skip():
         results = Client(return_responses=True, port=1234).post(
             on='/search',
             inputs=Document(),
-            return_results=True,
             target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1
@@ -255,7 +249,6 @@ def test_target_executor_with_shards():
         results = Client(return_responses=True, port=1234).post(
             on='/search',
             inputs=Document(),
-            return_results=True,
             target_executor='my_target',
         )
         assert len(results[0].data.docs) == 1

@@ -49,7 +49,6 @@ def test_override_params(mocker):
             inputs=DocumentArray([Document()]),
             parameters={'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}},
             on_error=error_mock,
-            return_results=True,
         )
     error_mock.assert_not_called()
 

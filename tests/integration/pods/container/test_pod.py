@@ -94,9 +94,7 @@ async def test_pods_trivial_topology(
         c = Client(
             return_responses=True, host='localhost', port=port_expose, asyncio=True
         )
-        responses = c.post(
-            '/', inputs=async_inputs, request_size=1, return_results=True
-        )
+        responses = c.post('/', inputs=async_inputs, request_size=1)
         response_list = []
         async for response in responses:
             response_list.append(response)

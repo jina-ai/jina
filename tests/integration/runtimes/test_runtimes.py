@@ -72,7 +72,7 @@ async def test_runtimes_trivial_topology(port_generator):
 
     # send requests to the gateway
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -194,7 +194,7 @@ async def test_runtimes_flow_topology(
 
     # send requests to the gateway
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -265,7 +265,7 @@ async def test_runtimes_shards(polling, port_generator):
     )
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -338,7 +338,7 @@ async def test_runtimes_replicas(port_generator):
     )
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -426,7 +426,7 @@ async def test_runtimes_with_executor(port_generator):
     )
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response.docs)
@@ -484,7 +484,7 @@ async def test_runtimes_gateway_worker_direct_connection(port_generator):
     )
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -550,7 +550,7 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
 
     c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
-    responses = c.post('/', inputs=input_docs, request_size=1, return_results=True)
+    responses = c.post('/', inputs=input_docs, request_size=1)
     response_list = []
     async for response in responses:
         response_list.append(response)

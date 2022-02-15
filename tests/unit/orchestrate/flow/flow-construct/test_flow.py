@@ -235,9 +235,7 @@ def test_flow_with_publish_driver(protocol):
     )
 
     with f:
-        da = f.index(
-            [Document(text='text_1'), Document(text='text_2')], return_results=True
-        )
+        da = f.index([Document(text='text_1'), Document(text='text_2')])
         _validate_flow(f)
 
     validate(da)
@@ -331,17 +329,15 @@ def test_flow_with_pod_envs():
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 @pytest.mark.parametrize('on_done', [None, lambda x: x])
-def test_return_results_sync_flow(return_results, protocol, on_done):
+def test_return_results_sync_flow(protocol, on_done):
     with Flow(protocol=protocol).add() as f:
         da = f.index(
             from_ndarray(np.random.random([10, 2])),
-            return_results=return_results,
             on_done=on_done,
         )
-        if return_results or on_done is None:
+        if on_done is None:
             assert isinstance(da, DocumentArray)
             assert len(da) == 10
             for doc in da:
@@ -561,12 +557,12 @@ def test_flow_routes_list():
         )
 
     with Flow().add(name='executor1') as simple_flow:
-        simple_flow.index(inputs=Document(), return_results=True, on_done=my_cb_one)
+        simple_flow.index(inputs=Document(), on_done=my_cb_one)
 
     with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
         name='merge', needs=['a2', 'b1']
     ) as shards_flow:
-        shards_flow.index(inputs=Document(), return_results=True, on_done=my_cb_two)
+        shards_flow.index(inputs=Document(), on_done=my_cb_two)
 
 
 def _extract_route_entries(gateway_entry, routes):
@@ -589,14 +585,14 @@ def test_flow_load_executor_yaml_extra_search_paths():
         uses='config.yml'
     )
     with f:
-        da = f.post('/', inputs=Document(), return_results=True)
+        da = f.post('/', inputs=Document())
     assert da[0].text == 'done'
 
 
 def test_flow_load_yaml_extra_search_paths():
     f = Flow.load_config(os.path.join(cur_dir, 'flow/flow.yml'))
     with f:
-        da = f.post('/', inputs=Document(), return_results=True)
+        da = f.post('/', inputs=Document())
     assert da[0].text == 'done'
 
 

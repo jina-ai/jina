@@ -251,7 +251,7 @@ def test_multiple_clients(prefetch, protocol):
 
         order_of_ids = list(
             Client(protocol=protocol, port=f.port_expose, return_responses=True)
-            .post(on='/status', inputs=[Document()], return_results=True)[0]
+            .post(on='/status', inputs=[Document()])[0]
             .docs[0]
             .tags['ids']
         )

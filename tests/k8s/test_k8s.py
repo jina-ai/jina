@@ -132,7 +132,6 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         async for resp in client.post(
             endpoint,
             inputs=[Document() for _ in range(n_docs)],
-            return_results=True,
             request_size=request_size,
         ):
             responses.append(resp)

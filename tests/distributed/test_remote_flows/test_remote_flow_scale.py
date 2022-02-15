@@ -68,7 +68,6 @@ def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
         host=HOST, port=FLOW_PORT, protocol='http', asyncio=False, return_responses=True
     ).index(
         inputs=DocumentArray([Document() for _ in range(200)]),
-        return_results=True,
         request_size=10,
     )
 
@@ -87,7 +86,6 @@ def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
         host=HOST, port=FLOW_PORT, protocol='http', asyncio=False, return_responses=True
     ).index(
         inputs=DocumentArray([Document() for _ in range(200)]),
-        return_results=True,
         request_size=10,
     )
 
@@ -125,7 +123,6 @@ async def test_scale_remote_flow_async(
         host=HOST, port=FLOW_PORT, protocol='http', asyncio=True, return_responses=True
     ).index(
         inputs=DocumentArray([Document() for _ in range(1000)]),
-        return_results=True,
         request_size=10,
     )
 
@@ -144,7 +141,6 @@ async def test_scale_remote_flow_async(
         host=HOST, port=FLOW_PORT, protocol='http', asyncio=True, return_responses=True
     ).index(
         inputs=DocumentArray([Document() for _ in range(1000)]),
-        return_results=True,
         request_size=10,
     )
 

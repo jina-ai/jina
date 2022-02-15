@@ -41,7 +41,7 @@ def flow(request):
 def test_override_config_params(docker_image, flow):
     with flow:
         resps = Client(port=exposed_port, return_responses=True).search(
-            inputs=[Document()], return_results=True
+            inputs=[Document()]
         )
     doc = resps[0].docs[0]
     assert doc.tags['param1'] == 50
@@ -52,7 +52,7 @@ def test_override_config_params(docker_image, flow):
 
 
 def test_override_config_params_shards(docker_image):
-    flow = Flow(port_expose=exposed_port, return_results=True).add(
+    flow = Flow(port_expose=exposed_port).add(
         uses='docker://override-config-test',
         uses_with={'param1': 50, 'param2': 30},
         uses_metas={'workspace': 'different_workspace'},
@@ -60,7 +60,7 @@ def test_override_config_params_shards(docker_image):
     )
     with flow:
         resps = Client(port=exposed_port, return_responses=True).search(
-            inputs=[Document()], return_results=True
+            inputs=[Document()]
         )
     doc = resps[0].docs[0]
     assert doc.tags['param1'] == 50
