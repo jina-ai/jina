@@ -1,9 +1,12 @@
 import traceback
-from typing import Optional
+from typing import Optional, Dict, TYPE_CHECKING
 
 from jina.serve.executors import BaseExecutor
 from jina.proto import jina_pb2
 from jina.types.mixin import ProtoTypeMixin
+
+if TYPE_CHECKING:
+    from docarray import DocumentArray
 
 
 class Request(ProtoTypeMixin):
@@ -24,6 +27,20 @@ class Request(ProtoTypeMixin):
 
     def __getattr__(self, name: str):
         return getattr(self.proto, name)
+
+    @property
+    def docs(self) -> 'DocumentArray':
+        """Get the documents attached with the Request
+        :return: documents attached to the Request
+        """
+        return self.docs
+
+    @property
+    def parameters(self) -> Dict:
+        """Get the parameters attached with the Request
+        :return: parameters attached to the Request.
+        """
+        return self.parameters
 
     def add_exception(
         self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None
