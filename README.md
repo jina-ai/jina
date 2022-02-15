@@ -68,7 +68,8 @@ Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset
 We first build an Executor generating embeddings with PyTorch and ResNet50:
 
 ```python
-from jina import Document, DocumentArray, Executor, requests
+from jina import Executor, requests
+from docarray import Document, DocumentArray
 
 
 class ImageEmbeddingExecutor(Executor):
