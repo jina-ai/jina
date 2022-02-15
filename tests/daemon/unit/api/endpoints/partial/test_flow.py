@@ -21,7 +21,7 @@ def test_flow_api(monkeypatch, partial_flow_client):
 
     get_response = partial_flow_client.get(api)
 
-    endpoint_responses = Client(port=56789).post(
+    endpoint_responses = Client(port=56789, return_responses=True).post(
         on='/any_endpoint', inputs=Document(), return_results=True
     )
 

@@ -221,7 +221,7 @@ def test_multiple_clients(prefetch, protocol):
             yield get_document(i)
 
     def client(gen, port, protocol):
-        Client(protocol=protocol, port=port).post(
+        Client(protocol=protocol, port=port, return_responses=True).post(
             on='/index', inputs=gen, request_size=1
         )
 
@@ -250,7 +250,7 @@ def test_multiple_clients(prefetch, protocol):
             p.join()
 
         order_of_ids = list(
-            Client(protocol=protocol, port=f.port_expose)
+            Client(protocol=protocol, port=f.port_expose, return_responses=True)
             .post(on='/status', inputs=[Document()], return_results=True)[0]
             .docs[0]
             .tags['ids']

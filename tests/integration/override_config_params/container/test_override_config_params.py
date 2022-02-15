@@ -40,7 +40,7 @@ def flow(request):
 @pytest.mark.parametrize('flow', ['yml', 'python'], indirect=['flow'])
 def test_override_config_params(docker_image, flow):
     with flow:
-        resps = Client(port=exposed_port).search(
+        resps = Client(port=exposed_port, return_responses=True).search(
             inputs=[Document()], return_results=True
         )
     doc = resps[0].docs[0]
@@ -59,7 +59,7 @@ def test_override_config_params_shards(docker_image):
         shards=2,
     )
     with flow:
-        resps = Client(port=exposed_port).search(
+        resps = Client(port=exposed_port, return_responses=True).search(
             inputs=[Document()], return_results=True
         )
     doc = resps[0].docs[0]

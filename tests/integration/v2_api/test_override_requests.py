@@ -13,7 +13,7 @@ def test_override_requests():
     with Flow(port_expose=exposed_port).add(
         uses=FooExecutor, uses_requests={'/non_foo': 'foo'}
     ) as f:
-        c = Client(port=exposed_port)
+        c = Client(port=exposed_port, return_responses=True)
         resp1 = c.post(
             on='/foo', inputs=DocumentArray([Document(text='')]), return_results=True
         )
@@ -46,7 +46,7 @@ def test_override_requests_uses_after():
         uses_after=OtherExecutor,
         uses_before=OtherExecutor,
     ) as f:
-        c = Client(port=exposed_port)
+        c = Client(port=exposed_port, return_responses=True)
         resp1 = c.post(
             on='/foo', inputs=DocumentArray([Document(text='')]), return_results=True
         )

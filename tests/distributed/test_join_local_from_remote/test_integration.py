@@ -30,13 +30,13 @@ def doc_to_index():
 
 @pytest.fixture
 def client():
-    return Client(host='localhost', port=45678)
+    return Client(host='localhost', port=45678, return_responses=True)
 
 
 @pytest.fixture
 def grpc_client():
     args = set_client_cli_parser().parse_args(
-        ['--host', 'localhost', '--port', '45678']
+        ['--host', 'localhost', '--port', '45678', '--return-responses']
     )
 
     return GRPCClient(args)

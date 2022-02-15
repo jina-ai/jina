@@ -32,8 +32,8 @@ def mixin_client_features_parser(parser):
     )
 
     parser.add_argument(
-        '--results-as-docarray',
+        '--return-responses',
         action='store_true',
         default=False,
-        help="If set, return results as DocArray instead of Request.",
+        help="If set, return results as List of Requests instead of a reduced DocArray.",
     )

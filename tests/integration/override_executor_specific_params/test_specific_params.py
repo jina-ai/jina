@@ -45,7 +45,7 @@ def test_override_params(mocker):
     error_mock = mocker.Mock()
 
     with f:
-        resp = Client(port=exposed_port).index(
+        resp = Client(port=exposed_port, return_responses=True).index(
             inputs=DocumentArray([Document()]),
             parameters={'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}},
             on_error=error_mock,

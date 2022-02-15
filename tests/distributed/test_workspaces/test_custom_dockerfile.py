@@ -17,7 +17,7 @@ def test_custom_dockerfile():
         host='localhost:8000',
     )
     with f:
-        c = Client(port=exposed_port)
+        c = Client(port=exposed_port, return_responses=True)
         c.index(
             inputs=(
                 Document(text=f'{i}', embedding=np.random.rand(2, 3)) for i in range(5)

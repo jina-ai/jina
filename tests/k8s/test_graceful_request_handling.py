@@ -180,6 +180,7 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
         # send requests and validate
         time.sleep(0.1)
         client_kwargs = dict(
+            return_responses=True,
             host='localhost',
             port=flow.port_expose,
         )

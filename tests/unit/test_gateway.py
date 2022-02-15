@@ -42,7 +42,9 @@ def test_gateway_concurrency(protocol, reraise):
                 durations=durations,
                 index=index,
             )
-            results = Client(port=PORT_EXPOSE, protocol=protocol).index(
+            results = Client(
+                port=PORT_EXPOSE, protocol=protocol, return_responses=True
+            ).index(
                 inputs=(Document() for _ in range(256)),
                 return_results=True,
                 _size=16,

@@ -170,7 +170,7 @@ def create_runtime(
 def client_send(client_id: int, port_in: int, protocol: str):
     from jina.clients import Client
 
-    c = Client(protocol=protocol, port=port_in)
+    c = Client(protocol=protocol, port=port_in, return_responses=True)
 
     # send requests
     return c.post(

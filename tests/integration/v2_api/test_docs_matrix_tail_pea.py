@@ -60,7 +60,7 @@ def test_sharding_tail_pod(num_replicas, num_shards):
         uses_after=MatchMerger,
     )
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=1234, return_responses=True).post(
             on='/search',
             inputs=Document(matches=[Document()]),
             return_results=True,
@@ -89,7 +89,7 @@ def test_merging_head_pod():
         )
     )
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=1234, return_responses=True).post(
             on='/search',
             inputs=multimodal_generator(),
             return_results=True,

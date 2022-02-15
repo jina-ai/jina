@@ -215,7 +215,7 @@ def test_disable_prefetch_slow_client_fast_executor(
 
     final_da = DocumentArray()
 
-    client = Client(protocol=protocol, port=port_in)
+    client = Client(protocol=protocol, port=port_in, return_responses=True)
     client.post(
         on='/',
         inputs=inputs,
@@ -270,7 +270,7 @@ def test_disable_prefetch_fast_client_slow_executor(
     )
     p.start()
     time.sleep(1.0)
-    client = Client(protocol=protocol, port=port_in)
+    client = Client(protocol=protocol, port=port_in, return_responses=True)
     client.post(
         on='/',
         inputs=inputs,
@@ -325,7 +325,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
             yield get_document(i)
 
     def client(gen, port, protocol):
-        Client(protocol=protocol, port=port).post(
+        Client(protocol=protocol, port=port, return_responses=True).post(
             on='/index', inputs=gen, request_size=1
         )
 
@@ -370,7 +370,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         p.join()
 
     order_of_ids = list(
-        Client(protocol=protocol, port=port_in)
+        Client(protocol=protocol, port=port_in, return_responses=True)
         .post(on='/status', inputs=[Document()], return_results=True)[0]
         .docs[0]
         .tags['ids']

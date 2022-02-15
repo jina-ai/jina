@@ -69,13 +69,13 @@ def remote_flow_with_runtime(request):
 def test_scale_success(remote_flow_with_runtime: Flow, deployment_params):
     num_replicas, scale_to, shards = deployment_params
     with remote_flow_with_runtime as f:
-        ret1 = Client(port=exposed_port).index(
+        ret1 = Client(port=exposed_port, return_responses=True).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
         )
         f.scale(deployment_name='executor', replicas=scale_to)
-        ret2 = Client(port=exposed_port).index(
+        ret2 = Client(port=exposed_port, return_responses=True).index(
             inputs=DocumentArray([Document() for _ in range(200)]),
             return_results=True,
             request_size=10,
@@ -114,7 +114,7 @@ def test_scale_with_concurrent_client(
     remote_flow_with_runtime: Flow, deployment_params, protocol
 ):
     def peer_client(port, protocol, peer_hash, queue):
-        rv = Client(protocol=protocol, port=port).index(
+        rv = Client(protocol=protocol, port=port, return_responses=True).index(
             [Document(text=peer_hash) for _ in range(NUM_DOCS_SENT_BY_CLIENTS)],
             request_size=5,
             return_results=True,
@@ -145,7 +145,7 @@ def test_scale_with_concurrent_client(
         for t in thread_pool:
             t.join()
 
-        c = Client(protocol=protocol, port=port_expose)
+        c = Client(protocol=protocol, port=port_expose, return_responses=True)
         rv = c.index(
             [Document() for _ in range(5)], request_size=1, return_results=True
         )

@@ -79,7 +79,9 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
     assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
-    resp = Client(host=HOST, port=MINI_FLOW1_PORT, protocol='http').post(
+    resp = Client(
+        host=HOST, port=MINI_FLOW1_PORT, protocol='http', return_responses=True
+    ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
@@ -109,7 +111,13 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
     assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
-    resp = Client(host=HOST, port=MINI_FLOW1_PORT, protocol='http', asyncio=True).post(
+    resp = Client(
+        host=HOST,
+        port=MINI_FLOW1_PORT,
+        protocol='http',
+        asyncio=True,
+        return_responses=True,
+    ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
@@ -143,7 +151,13 @@ async def test_remote_jinad_flow_get_delete_all(async_jinad_client):
     # get all flows
     remote_flow_args = await async_jinad_client.flows.list()
     assert len(remote_flow_args.keys()) == 2
-    resp = Client(host=HOST, port=MINI_FLOW2_PORT, protocol='http', asyncio=True).post(
+    resp = Client(
+        host=HOST,
+        port=MINI_FLOW2_PORT,
+        protocol='http',
+        asyncio=True,
+        return_responses=True,
+    ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],
         return_results=True,
@@ -176,7 +190,11 @@ async def test_jinad_flow_container_runtime(async_jinad_client, executor_image):
     remote_flow_args = await async_jinad_client.flows.get(DaemonID(flow_id))
     assert remote_flow_args
     resp = Client(
-        host=HOST, port=CONTAINER_FLOW_PORT, protocol='http', asyncio=True
+        host=HOST,
+        port=CONTAINER_FLOW_PORT,
+        protocol='http',
+        asyncio=True,
+        return_responses=True,
     ).post(
         on='/',
         inputs=[Document(id=str(idx)) for idx in range(NUM_DOCS)],

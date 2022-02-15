@@ -248,7 +248,9 @@ def test_override_uses_with(docs):
     )
     with flow:
         # test rolling update does not hang
-        ret1 = Client(port=exposed_port).search(docs, return_results=True)
+        ret1 = Client(port=exposed_port, return_responses=True).search(
+            docs, return_results=True
+        )
         flow.rolling_update(
             'executor1',
             uses_with={
@@ -257,7 +259,9 @@ def test_override_uses_with(docs):
                 'argument2': 'version2',
             },
         )
-        ret2 = Client(port=exposed_port).search(docs, return_results=True)
+        ret2 = Client(port=exposed_port, return_responses=True).search(
+            docs, return_results=True
+        )
 
     assert len(ret1) > 0
     assert len(ret1[0].docs) > 0
@@ -286,12 +290,12 @@ def test_scale_after_rolling_update(docs, replicas, scale_to):
         replicas=replicas,
     )
     with flow:
-        ret1 = Client(port=exposed_port).search(
+        ret1 = Client(port=exposed_port, return_responses=True).search(
             docs, return_results=True, request_size=1
         )
         flow.rolling_update('executor1', None)
         flow.scale('executor1', replicas=scale_to)
-        ret2 = Client(port=exposed_port).search(
+        ret2 = Client(port=exposed_port, return_responses=True).search(
             docs, return_results=True, request_size=1
         )
 
@@ -316,7 +320,7 @@ def send_requests(
     doc_count: int,
     request_count: int,
 ):
-    client = Client(port=port_expose)
+    client = Client(port=port_expose, return_responses=True)
     for i in range(request_count):
         responses = client.search(
             [Document(id=f'{idx}', text=f'doc{idx}') for idx in range(doc_count)],

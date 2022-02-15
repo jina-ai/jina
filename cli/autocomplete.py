@@ -317,7 +317,7 @@ ac_table = {
             '--port',
             '--https',
             '--asyncio',
-            '--results-as-docarray',
+            '--return-responses',
             '--protocol',
         ],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],

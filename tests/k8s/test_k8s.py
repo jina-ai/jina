@@ -121,6 +121,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         client_kwargs = dict(
             host='localhost',
             port=flow.port_expose,
+            return_responses=True,
             asyncio=True,
         )
         client_kwargs.update(flow._common_kwargs)

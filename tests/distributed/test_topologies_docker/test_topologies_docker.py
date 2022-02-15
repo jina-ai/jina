@@ -150,6 +150,7 @@ def test_remote_flow_containerized_executors(docker_image, mocker):
             host=__default_host__,
             port=args['port_expose'],
             protocol=args['protocol'],
+            return_responses=True,
         ).post(
             on='/',
             inputs=(
