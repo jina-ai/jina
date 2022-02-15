@@ -45,7 +45,7 @@ f.plot('flow.svg')
 
 ```{figure} flow.svg
 :width: 70%
-This will output a file flow.svg with a visualization of the `Flow`.
+The generated SVG file visualizing the `Flow` above.
 ```
 
 
