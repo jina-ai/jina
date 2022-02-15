@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="150px"></a>
 </p>
 
 <p align="center">
@@ -155,7 +155,7 @@ docs = DocumentArray.pull('demo-leftda', show_progress=True)
 </table>
 
     
-8. Index image data:
+7. Index image data:
     ```python
     with f:
         f.post(
