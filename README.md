@@ -30,8 +30,9 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 <!-- end jina-description -->
 
 ## Install 
+
 ```bash
-pip install jina
+pip install --pre jina
 ```
 
 For Jina 2.x users, please first uninstall old Jina via `pip uninstall jina` before installation. Please also [read 2to3 migration guide](https://docs.jina.ai/get-started/migrate/).
