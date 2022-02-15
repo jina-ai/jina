@@ -94,7 +94,6 @@ class ImageEmbeddingExecutor(Executor):
             .set_image_tensor_normalization()  # normalize color
             .set_image_tensor_channel_axis(-1, 0)
         )  # switch color axis for the PyTorch model later
-
 ```
 
 We need to build the second Executor for storing and retrieving images:
@@ -175,7 +174,6 @@ if __name__ == '__main__':
     
     with f:
         f.block()
-
 ```
 
 Now you can use cURL to send search requests:
@@ -230,7 +228,6 @@ f = (
     .add(uses='jinahub+docker://258lzh3c')
 )
 f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
-
 ```
 
 ```shell
