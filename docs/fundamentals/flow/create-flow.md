@@ -169,7 +169,7 @@ Now, in `app/main.py`, to correctly load the Executor, you can specify the direc
 ````{tab} Load from YAML
 ```{code-block} python
 ---
-emphasize-lines: 2
+emphasize-lines: 3
 ---
 from docarray import Document
 from jina import Flow
