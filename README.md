@@ -19,15 +19,13 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Build solutions of videos, images, long/short text, audio, source code, PDFs.
+⏱️ **Save time** - *The* design pattern of neural search systems. Quickly build solutions of indexing, querying, understanding multi-/cross-modal data such as video, image, text, audio, source code, PDF.
 
 🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on local, [Docker compose](https://docs.jina.ai/how-to/docker-compose/), [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
 
 🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minute. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Jina Hub](https://hub.jina.ai).
 
-
-
-Jina AI offers a complete neural search ecosystem besides Jina, including [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai). They are well-integrated with Jina.
+🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with fragmented, multi-vendor, generic legacy tools. Enjoy the integration with the neural search ecosystem including [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai).
 
 <!-- end jina-description -->
 
