@@ -80,7 +80,7 @@ class ImageEmbeddingExecutor(Executor):
     @requests
     def embedding(self, docs: DocumentArray, **kwargs):
         docs.apply(self.preproc)  # preprocess images
-        docs.embed(self.model, device="cuda")  # embed via GPU to speed up
+        docs.embed(self.model, device='cuda')  # embed via GPU to speed up
 
     def preproc(self, d: Document):
         return (
@@ -89,7 +89,6 @@ class ImageEmbeddingExecutor(Executor):
             .set_image_tensor_normalization()  # normalize color
             .set_image_tensor_channel_axis(-1, 0)
         )  # switch color axis for the PyTorch model later
-
 ```
 
 We need to build the second Executor for storing and retrieving images:
@@ -99,12 +98,12 @@ class IndexExecutor(Executor):
 
     _docs = DocumentArray()
 
-    @requests(on="/index")  # set the function to handle the `/index` endpoint
+    @requests(on='/index')  # set the function to handle the `/index` endpoint
     def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
         docs.clear()  # save bandwidth as it is not needed
 
-    @requests(on="/search")  # set the function to handle the `/search` endpoint
+    @requests(on='/search')  # set the function to handle the `/search` endpoint
     def search(self, docs: DocumentArray, **kwargs):
         docs.match(self._docs, limit=9)  # limit to returning top 9 matches
         docs[...].embeddings = None  # save bandwidth as it is not needed
@@ -121,15 +120,15 @@ Building a Flow to wire up the Executors, we can index some images and start sea
 ```python
 from jina import Client, Flow
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     f = Flow(port_expose=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
     with f:
-        left_da = DocumentArray.from_files("left/*.jpg")
+        left_da = DocumentArray.from_files('left/*.jpg')
         client = Client(port=12345)
-        client.post("/index", left_da[:100])  # index only 100 images
-        right_da = DocumentArray.from_files("right/*.jpg")[:1]
-        right_da.plot_image_sprites(output="query.png")  # save the query image
-        response = client.post("/search", right_da)
+        client.post('/index', left_da[:100])  # index only 100 images
+        right_da = DocumentArray.from_files('right/*.jpg')[:1]
+        right_da.plot_image_sprites(output='query.png')  # save the query image
+        response = client.post('/search', right_da)
         (
             response[0]
             .docs[0]
@@ -138,7 +137,7 @@ if __name__ == "__main__":
                     0, -1
                 ).set_image_tensor_inv_normalization()
             )
-            .plot_image_sprites(output="matches.png")
+            .plot_image_sprites(output='matches.png')
         )  # save the matched images
 ```
 
@@ -161,9 +160,9 @@ just set the protocol of the Flow to `http`:
 
 ```python
 ...
-if __name__ == "__main__":
+if __name__ == '__main__':
     f = (
-        Flow(protocol="http", port_expose=12345)
+        Flow(protocol='http', port_expose=12345)
         .add(uses=ImageEmbeddingExecutor)
         .add(uses=IndexExecutor)
     )
@@ -171,7 +170,6 @@ if __name__ == "__main__":
     with f:
         ...
         f.block()
-
 ```
 
 Now you can use cURL to send search requests:
@@ -221,12 +219,11 @@ Generate the docker compose configuration from the Flow using one line of Python
 
 ```python
 f = (
-    Flow(protocol="http", port_expose=12345)
-    .add(uses="jinahub+docker://1ylut0gf")
-    .add(uses="jinahub+docker://258lzh3c")
+    Flow(protocol='http', port_expose=12345)
+    .add(uses='jinahub+docker://1ylut0gf')
+    .add(uses='jinahub+docker://258lzh3c')
 )
 f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
-
 ```
 
 ```shell
