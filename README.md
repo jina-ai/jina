@@ -19,13 +19,13 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
-🥤 **Serve** - level up your local neural search application as an API service via HTTP, WebSockets or gRPC.
+🥤 **Serve** - Level up your local neural search application as an API service via HTTP, WebSockets or gRPC.
 
-🐙 **Orchestrate** - break down your complicated neural search application to a pipeline of Executors. Compose and share pipelines with the help of pre-built Executors [on the Hub](https://hub.jina.ai).
+🐙 **Orchestrate** - Break down your complicated neural search application to a pipeline of Executors. Compose and share pipelines with the help of pre-built Executors [on the Hub](https://hub.jina.ai).
 
-🚀 **Scale** - scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
+🚀 **Scale** - Scale your neural search applications to meet your availability and throughput requirements. All of Jina's microservices can be scaled independently as needed.
 
-☁️ **Cloud Native** - built and designed to work and scale in the cloud. It offers easy integration with [Docker compose](https://docs.jina.ai/how-to/docker-compose/) and [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
+☁️ **Cloud Native** - Built and designed to work and scale in the cloud. It offers easy integration with [Docker compose](https://docs.jina.ai/how-to/docker-compose/) and [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
 
 Beside Jina, Jina AI offers a neural search ecosystem composed of [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai). They are nicely integrated with Jina.
 
