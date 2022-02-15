@@ -511,44 +511,42 @@ metas:
         flow_plain = f'''from jina import Flow
 
 f = Flow().add(uses='jinahub://{executor_name}')
-
-with f:
-    ...'''
+'''
 
         flow_docker = f'''from jina import Flow
 
 f = Flow().add(uses='jinahub+docker://{executor_name}')
+'''
 
-with f:
-    ...'''
+        flow_sandbox = f'''from jina import Flow
 
-        p1 = Panel(
-            Syntax(
-                flow_plain, 'python', theme='monokai', line_numbers=True, word_wrap=True
-            ),
-            title='Usage',
-            width=80,
-            expand=False,
-        )
-        p2 = Panel(
-            Syntax(
-                flow_docker,
-                'python',
-                theme='monokai',
-                line_numbers=True,
-                word_wrap=True,
-            ),
-            title='Docker usage',
-            width=80,
-            expand=False,
-        )
+f = Flow().add(uses='jinahub+sandbox://{executor_name}')
+'''
+        panels = [
+            Panel(
+                Syntax(
+                    p[0],
+                    'python',
+                    theme='monokai',
+                    word_wrap=True,
+                ),
+                title=p[1],
+                width=80,
+                expand=False,
+            )
+            for p in [
+                (flow_plain, 'Use via source'),
+                (flow_docker, 'Use in Docker'),
+                (flow_sandbox, 'Use in Sandbox'),
+            ]
+        ]
 
         if usage_kind == 'docker':
-            console.print(p2)
+            console.print(panels[2])
         elif usage_kind == 'source':
-            console.print(p1)
+            console.print(panels[1])
         else:
-            console.print(p1, p2)
+            console.print(*reversed(panels))
 
     @staticmethod
     @disk_cache_offline(cache_file=str(_cache_file))
