@@ -33,14 +33,22 @@ class Request(ProtoTypeMixin):
         """Get the documents attached with the Request
         :return: documents attached to the Request
         """
-        return self.docs
+        return self.proto.docs
+
+    @docs.setter
+    def docs(self, docs: 'DocumentArray'):
+        self.proto.docs = docs
 
     @property
     def parameters(self) -> Dict:
         """Get the parameters attached with the Request
         :return: parameters attached to the Request.
         """
-        return self.parameters
+        return self.proto.parameters
+
+    @parameters.setter
+    def parameters(self, parameters: Dict):
+        self.proto.parameters = parameters
 
     def add_exception(
         self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None
