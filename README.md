@@ -237,7 +237,23 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     jina hub push embed_img
     jina hub push match_img
     ```
-   You will get three Hub Executors that can be used via Docker container. 
+   You will get three Hub Executors that can be used via Sandbox, Docker container or the source. 
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/jinahub-push.png?raw=true" alt="Jina hub push gives you the sandbox" width="60%"></a>
+</p>
+
+4. In particular, sandbox hosts your Executor on Jina Cloud and allows you to play with it from local:
+    ```python
+    from docarray import Document
+
+    from jina import Flow
+
+    f = Flow().add(uses='jinahub+sandbox://2k7gsejl')
+
+    with f:
+        f.post('/', Document())
+    ```
 
 ### Deploy the service via Docker Compose
 
