@@ -379,7 +379,8 @@ In the example below, our Flow passes the message then prints the result when su
 If something goes wrong, it beeps. Finally, the result is written to output.txt.
 
 ```python
-from jina import Document, Flow
+from jina import Flow, Client
+from docarray import Document
 
 
 def beep(*args):
@@ -390,7 +391,8 @@ def beep(*args):
 
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
-    f.post(
+    client = Client(port=f.port_expose)
+    client.post(
         '/',
         Document(),
         on_done=print,
@@ -398,6 +400,70 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
         on_always=lambda x: x.docs.save(fp),
     )
 ```
+
+## Returning results from .post()
+
+If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
+By setting `return_responses=True` when creating a Client, this behavior can be modified to return a list of Responses instead.
+If a callback is provided, no results will be returned.
+
+````{tab} Returning DocumentArray
+
+```python
+from jina import Flow, Client
+from docarray import Document
+
+with Flow() as f:
+    client = Client(port=f.port_expose)
+    docs = client.post(on='', inputs=Document(text='Hi there!'))
+    print(docs)
+    print(docs.texts)
+```
+```  
+>>> <DocumentArray (length=1) at 140619524357664>
+>>> ['Hi there!']
+```
+
+````
+````{tab} Returning Responses
+
+```python
+from jina import Flow, Client
+from docarray import Document
+
+with Flow() as f:
+    client = Client(port=f.port_expose, return_responses=True)
+    resp = client.post(on='', inputs=Document(text='Hi there!'))
+    print(resp)
+    print(resp[0].docs.texts)
+```
+``` 
+>>> [<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 140619524354592>]
+>>> ['Hi there!']
+```
+
+````
+````{tab} Using callback function
+
+```python
+from jina import Flow, Client
+from docarray import Document
+
+with Flow() as f:
+    client = Client(port=f.port_expose)
+    resp = client.post(
+        on='',
+        inputs=Document(text='Hi there!'),
+        on_done=lambda resp: print(resp.docs.texts),
+    )
+    print(resp)
+```
+```
+>>> ['Hi there!']
+>>> None
+```
+
+````
 
 ### Async Python Client
 
