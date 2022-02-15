@@ -244,7 +244,7 @@ docker-compose up
 <img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
 </p>
 
-#### Deploy Flow via Kubernetes
+#### Deploy Flow with Kubernetes
 
 You can easily deploy a Flow with containerized Executors to a Kubernetes cluster as well.
 
