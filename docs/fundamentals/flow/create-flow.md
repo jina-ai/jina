@@ -193,7 +193,6 @@ with f:
 ````
 
 ````{tab} Load from YAML
-```
 `flow.yml`:
 ```yaml
 jtype: Flow
