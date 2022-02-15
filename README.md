@@ -143,30 +143,17 @@ if __name__ == "__main__":
         )  # save the matched images
 ```
 
-```shell
-⠋ 0/3 waiting executor0 executor1 gateway to be ready...
-       Flow@59338[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52097
-	🔒 Private network:	172.20.10.2:52097
-query image: /Users/nanwang/Downloads/right/04354.jpg
-matches: /Users/nanwang/Downloads/left/04354.jpg, 0.2617139220237732
-matches: /Users/nanwang/Downloads/left/03349.jpg, 0.2904244065284729
-matches: /Users/nanwang/Downloads/left/02057.jpg, 0.3914386034011841
-matches: /Users/nanwang/Downloads/left/02043.jpg, 0.43008697032928467
-matches: /Users/nanwang/Downloads/left/02725.jpg, 0.4447172284126282
-matches: /Users/nanwang/Downloads/left/04426.jpg, 0.46958935260772705
-matches: /Users/nanwang/Downloads/left/00654.jpg, 0.4706113934516907
-matches: /Users/nanwang/Downloads/left/05738.jpg, 0.5737641453742981
-matches: /Users/nanwang/Downloads/left/00132.jpg, 0.5990374088287354
-```
+<p align="center">
+<img alt="Shell outputs running Flow" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-orchestrate-executors.png" title="running Flow" width="60%"/>
+</p>
+
 
 The images with the same id are expected to be matched. The pretrained ResNet50 indeed find some similar images.
 You will find the query image at `query.png` and the top 9 matches at `matches.png`. 
 This is everything: You just level up your neural search application as an API service! 🎉
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/main/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
 </p>
 
 
@@ -220,31 +207,10 @@ jina hub push match_img  # publish at jinahub+docker://258lzh3c
 ```
 
 You will get two Hub Executors that can be used for any container.
-```shell
-╭────────────────────────── Published ──────────────────────────╮
-│ 🔗 Hub URL          https://hub.jina.ai/executor/1ylut0gf/    │
-│ 🔒 Secret           *****          │
-│                     ☝️ Please keep this token in a safe place! │
-│ 👀 Visibility       public                                    │
-╰───────────────────────────────────────────────────────────────╯
-╭─────────────────────────────────── Usage ────────────────────────────────────╮
-│   1 from jina import Flow                                                    │
-│   2                                                                          │
-│   3 f = Flow().add(uses='jinahub://1ylut0gf')                                │
-│   4                                                                          │
-│   5 with f:                                                                  │
-│   6     ...                                                                  │
-╰──────────────────────────────────────────────────────────────────────────────╯
-╭──────────────────────────────── Docker usage ────────────────────────────────╮
-│   1 from jina import Flow                                                    │
-│   2                                                                          │
-│   3 f = Flow().add(uses='jinahub+docker://1ylut0gf')                         │
-│   4                                                                          │
-│   5 with f:                                                                  │
-│   6     ...                                                                  │
-╰──────────────────────────────────────────────────────────────────────────────╯
-```
 
+<p align="center">
+<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
+</p>
 
 #### Deploy Flow via Docker Compose
 
@@ -274,44 +240,9 @@ Now you can start your neural search application with docker compose.
 docker-compose up
 ```
 
-<details>
-<summary>Click to see logs</summary>
-
-```shell
-Creating network "readme_demo_2_jina-network" with driver "bridge"
-Pulling executor0-head (jinaai/jina:master-py38-perf)...
-master-py38-perf: Pulling from jinaai/jina
-5eb5b503b376: Pull complete
-5c69ac0246d0: Pull complete
-a80ce345656c: Pull complete
-56c1ff7766ad: Pull complete
-216eb72c6d88: Pull complete
-a13ddc1a2e34: Pull complete
-d529fa767cd1: Pull complete
-8895ee64f256: Pull complete
-505c872900f7: Pull complete
-Digest: sha256:3b9510b99ada34377d3d7c22898b831b8959a5ed922f5e887635cf6ba1f531ca
-...
-Creating readme_demo_2_executor1_1      ... done
-Creating readme_demo_2_gateway_1        ... done
-Creating readme_demo_2_executor0_1      ... done
-Creating readme_demo_2_executor1-head_1 ... done
-Creating readme_demo_2_executor0-head_1 ... done
-Attaching to readme_demo_2_executor1-head_1, readme_demo_2_executor0_1, readme_demo_2_executor0-head_1, readme_demo_2_executor1_1, readme_demo_2_gateway_1
-...
-executor0_1       | 🔧️                           uses = config.yml
-executor0_1       |                uses-after-address = None
-executor0_1       |               uses-before-address = None
-executor0_1       | 🔧️                     uses-metas = {'pod_id': 0}
-executor0_1       |                     uses-requests = None
-executor0_1       |                         uses-with = None
-executor0_1       |                           volumes = None
-executor0_1       |                         workspace = None
-executor0_1       |                      workspace-id = 24bbf1f0f41e419d90cef020903da9
-executor0_1       |
-executor0_1       |       executor0@ 1[L]: Executor ImageEmbeddingExecutor started
-```
-</details>
+<p align="center">
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
+</p>
 
 #### Deploy Flow via Kubernetes
 
@@ -351,33 +282,9 @@ Use `kubectl` to deploy your neural search application:
 kubectl apply -R -f ./k8s_config
 ```
 
-```shell
-role.rbac.authorization.k8s.io/connection-pool created
-rolebinding.rbac.authorization.k8s.io/connection-pool-binding created
-configmap/executor0-head-configmap created
-service/executor0-head created
-deployment.apps/executor0-head created
-role.rbac.authorization.k8s.io/connection-pool unchanged
-rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
-configmap/executor0-configmap created
-service/executor0 created
-deployment.apps/executor0 created
-role.rbac.authorization.k8s.io/connection-pool unchanged
-rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
-configmap/executor1-head-configmap created
-service/executor1-head created
-deployment.apps/executor1-head created
-role.rbac.authorization.k8s.io/connection-pool unchanged
-rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
-configmap/executor1-configmap created
-service/executor1 created
-deployment.apps/executor1 created
-role.rbac.authorization.k8s.io/connection-pool unchanged
-rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
-configmap/gateway-configmap created
-service/gateway created
-deployment.apps/gateway created
-```
+<p align="center">
+<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
+</p>
 
 Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
 
