@@ -13,10 +13,10 @@ on how this image needs to be built, the main ones being:
 
 ## Prerequisites
 
-To be able to understand how a Container image is built for an Executor, you need an understanding of [Docker](https://docs.docker.com/) generally, of how to write 
-a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and of how to build a Docker image.
+To understand how a container image for an Executor is built, you need a basic understanding of [Docker](https://docs.docker.com/), both of how to write 
+a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and how to build a Docker image.
 
-In addition, to reproduce the example below it is required to have Docker installed locally.
+To reproduce the example below it is required to have Docker installed locally.
 
 
 ## Installing Jina in the Docker image
@@ -30,7 +30,7 @@ This will make sure that everything needed for Jina to run the Executor is insta
 FROM jinaai/jina:3.0-py37-perf
 ```
 
-- Simply install Jina like any other Python package. You can do this by specifying Jina in the `requirements.txt`, 
+- Install Jina like any other Python package. You can do this by specifying Jina in the `requirements.txt`, 
 or by including the `pip install jina` command as part of the image building process.  
 
 ```dockerfile
@@ -40,9 +40,9 @@ RUN pip install jina==3.0
 ## Setting Jina Executor CLI as entrypoint
 
 When a containerized Executor is run inside a Flow,
-under the hood Jina basically executes `docker run` with some extra arguments.
+under the hood Jina executes `docker run` with extra arguments.
 
-This means that Jina assumes that whatever runs inside the container runs just like it would in a regular OS process. Therefore, you need to make sure that
+This means that Jina assumes that whatever runs inside the container, also runs like it would in a regular OS process. Therefore, you need to make sure that
 the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/cli>` command.
 
 ```dockerfile
@@ -57,7 +57,7 @@ Here we will show how to build a basic Executor with a dependency on another ext
 ### Writing the Executor
 
 You can define your soon-to-be-Dockerized Executor exactly like any other Executor.
-Here that is done in the `my_executor.py` file.
+We do this here in the `my_executor.py` file.
 
 ```python
 import torch # Our Executor has dependency on torch
@@ -94,7 +94,7 @@ metas:
 
 ### Writing `requirements.txt`
 
-In this case, our Executor has only one requirement besides Jina, `torch`.
+In this case, our Executor has only one requirement besides Jina: `torch`.
 
 So, in `requirements.txt`, we specify just a single requirement:
 
