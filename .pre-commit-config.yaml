@@ -26,3 +26,9 @@ repos:
     exclude: ^(jina/proto/jina_pb2.py|docs/|jina/resources/)
     args:
       - -S
+-   repo: https://github.com/asottile/blacken-docs
+    rev: v1.12.1
+    hooks:
+    -   id: blacken-docs
+        args:
+          - -S
