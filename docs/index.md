@@ -114,7 +114,7 @@ how-to/executor
 
 
 ```{toctree}
-:caption: Developer References
+:caption: Developer Reference
 :hidden:
 :maxdepth: 1
 

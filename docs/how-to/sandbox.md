@@ -2,11 +2,11 @@
 
 # Use Hub Executor Remotely
 
-It is often the case, that a Jina Executor is just a Docker image that contains some logic to process Documents. Therefore, you can run it locally if you have Docker installed. But the Docker image could be up to several GBs, and you need to download it first, then run it afterwards. That would be annoying in some cases.
+A Jina Executor is often just a Docker image that contains some logic to process Documents. Therefore, you can run it locally if you have Docker installed. But that Docker image could be huge, and you need to download it first then run it afterwards. That would be annoying in many cases.
 
-Jina Sandbox provides a way to make the downloading and running happen in a cloud environment. It will give back a pair of host and port, which you can connect with. Jina will automatically take care of this connection.
+Jina Sandbox provides a way to download and run in a cloud environment. It will give you a host and port to connect with. Jina automatically takes care of this connection.
 
-It will save a lot of time when you just want to try out one Executor. In addition, it will also save lot of computing resources for your local machine.
+It saves a lot of time when you just want to try out one Executor. In addition, it also saves a lot of computing resources for your local machine.
 
 Here is a graph to show the difference between using and not using Sandbox.
 
@@ -27,11 +27,11 @@ with f:
     print(r[0].text)
 ```
 
-This will start a Flow that only has one online Executor, and will send a Document to it. The Document will be processed by the Executor and the result will be returned.
+This starts a Flow that only has one Executor, and sends a Document to it. The Document is processed by the Executor and the result is returned.
 
 ## Sandbox Lifecycle
 
-The sandbox will not be removed immediately after the Flow is closed. It will be kept alive until there is no traffic during this certain period. For now, the default period is 15 mins.
+The sandbox will not be removed immediately after the Flow is closed. It will be kept alive until there is no traffic during this certain period. The default period is currently 15 minutes.
 
 **Sandbox will be shared with other users**. Sometimes you will start the sandbox very quickly because the other users already started it.
 
@@ -47,7 +47,7 @@ If all these three factors match, then it will reuse the existing sandboxes.
 If the Jina version of Gateway is later than the latest released Jina version (things happens when you are in the master branch of jina repository), then the sandbox will always be created instead of reused.
 ```
 
-## Version Consistency
+## Version consistency
 
 The Jina version inside the Sandbox will be the same as the one in the place where the Flow was run. For example, if you run the Flow in your local machine, then it's the version of Jina in your local pip packages.
 
@@ -84,6 +84,6 @@ to override its default configurations, therefore `uses_with`, `uses_metas`, etc
 
 You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.
 
-### 2. Don't support GPU
+### 2. No GPU support
 
-Computation using GPU is most likely several times faster than using CPU in many use cases. But unfortunately,  we don't support using GPU for computation in Sandbox container yet.
+Computation using GPU is most likely several times faster than using CPU in many use cases. However we don't yet support using a GPU for computation in Sandbox containers.

@@ -9,22 +9,22 @@ The most important methods of the `Flow` object are the following:
 
 | Method                             | Description                                                                                                                                  |
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| `.add()`                           | Add an Executor to the `Flow`                                                                                                                |
-| `.start()`                         | Starts the `Flow`. This will start all its Executors and check if they are ready to be used.                                                 |
-| `.stop()`                          | Stops the `Flow`. This will stop all its Executors.                                                                                          |
-| `with` context manager             | You can use the `Flow` as a context manager. It will automatically start and stop your `Flow`.                                         |                                                                |
+| `.add()`                           | Add an Executor to the Flow                                                                                                                |
+| `.start()`                         | Starts the Flow. This will start all its Executors and check if they are ready to be used.                                                 |
+| `.stop()`                          | Stops the Flow. This will stop all its Executors.                                                                                          |
+| `with` context manager             | Use the Flow as a context manager. It will automatically start and stop your Flow.                                         |                                                                |
 | `.plot()`                          | Visualizes the Flow. Helpful for building complex pipelines.                                                                                 |
 | `.post()`                          | Sends requests to the Flow API.                                                                                                     |
 | `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
 | `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
-| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files into <output_directory>.        
+| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`.        
 
-## Why should you use Flow?
+## Why should you use a Flow?
 
-Once you have learned `DocumentArray` and `Executor`, you have been able to split your neural search application into different independent modules and services.
+Once you have learned DocumentArray and Executor, you have been able to split your neural search application into different independent modules and services.
 But you need to chain them together in order to bring real value and to build and serve an application out of it. That's exactly what Flows enable you to do.
 
-- Flow connects the microservices (Executor) to build an service with proper C/S style interface in HTTP/gRPC/Websockets
+- Flow connects the microservices (Executors) to build an service with proper client/server style interface in HTTP/gRPC/Websockets
 
 - Flow lets you scale these Executors independently to adjust to your requirements.
 

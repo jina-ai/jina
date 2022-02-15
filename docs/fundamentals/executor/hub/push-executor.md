@@ -53,7 +53,8 @@ jina hub push <path_to_executor_folder> -t TAG1 -t TAG2
 
 You can specify `-t` or `--tags` parameter to tag an Executor.
 
-If there is no `-t` parameter provided, the default tag is `latest`. And if you provide `-t` parameters and you still want to have `latest` tag, you must write it as another `-t` parameter.
+- If you **don't** add the `-t` parameter, the default tag is `latest`
+- If you **do** add the `-t` parameter and you still want to have the `latest` tag, you must write it as another `-t` parameter.
 
 ```bash
 jina hub push .                     # Result in one tag: latest

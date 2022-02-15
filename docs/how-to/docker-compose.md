@@ -10,16 +10,16 @@ your Flow.
 
 By default, if you are serving your Flow locally they will live within processes. Nevertheless, 
 because Jina is cloud native your Flow can easily manage Executors that live in containers and that are
-orchestrated by your favorite tools. One of the simplest is `Docker Compose` which is supported out of the box. 
+orchestrated by your favorite tools. One of the simplest is Docker Compose which is supported out of the box. 
 
-Under the hood, with one line:
+You can use this with one line:
 
 ```python
 flow.to_docker_compose_yaml('docker-compose.yml')
 ```
 
 Jina will generate a `docker-compose.yml` configuration file that you can use directly with 
-`docker-compose` and corresponds to your `Flow`, avoiding the overhead of defining manually all the services needed for the `Flow`.
+`docker-compose` and corresponds to your `Flow`, avoiding the overhead of manually defining all the services needed for the `Flow`.
 
 ```{caution}
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
@@ -126,7 +126,7 @@ client = Client(host='localhost', protocol='http', port=8080)
 client.show_progress = True
 ```
 
-then let's index the set of images we want to search :
+Then let's index the set of images we want to search:
 
 ```{admonition} Caution
 :class: caution
@@ -145,7 +145,7 @@ resp_index = client.post('/index', inputs=indexing_documents, return_results=Tru
 print(f'Indexed Documents: {len(resp_index[0].docs)}')
 ```
 
-Then let's search for the closest image to our query image
+Then let's search for the closest image to our query image:
 
 ```python
 query_doc = indexing_documents[0]

@@ -21,7 +21,7 @@ In addition, to reproduce the example below it is required to have Docker instal
 
 ## Installing Jina in the Docker image
 
-It is strictly needed for Jina to be installed inside the docker image. This can be achieved in 2 ways:
+Jina **must** be installed inside the Docker image. This can be achieved in one of two ways:
 
 - Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile.
 This will make sure that everything needed for Jina to run the Executor is installed.
@@ -42,8 +42,8 @@ RUN pip install jina==3.0
 When a containerized Executor is run inside a Flow,
 under the hood Jina basically executes `docker run` with some extra arguments.
 
-This means that Jina assumes that what runs inside the `container` runs just like it would run in a regular OS process. Therefore, you need to make sure that
-the basic entrypoint of the `image` calls `jina executor` {ref}`CLI <../api/cli>` command.
+This means that Jina assumes that whatever runs inside the container runs just like it would in a regular OS process. Therefore, you need to make sure that
+the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/cli>` command.
 
 ```dockerfile
 ENTRYPOINT ["jina", "executor", "--uses", "PATH_TO_YOUR_EXECUTOR_CONFIGURATION"]
@@ -51,12 +51,12 @@ ENTRYPOINT ["jina", "executor", "--uses", "PATH_TO_YOUR_EXECUTOR_CONFIGURATION"]
 
 ## Example: Dockerized Executor
 
-Here we will show how to build a basic executor with a dependency on another external package.
+Here we will show how to build a basic Executor with a dependency on another external package
 
 
 ### Writing the Executor
 
-You can define your soon-to-be dockerized Executor exactly like any other Executor.
+You can define your soon-to-be-Dockerized Executor exactly like any other Executor.
 Here that is done in the `my_executor.py` file.
 
 ```python
@@ -92,7 +92,7 @@ metas:
     - my_executor.py
 ```
 
-### Writing requirements.txt
+### Writing `requirements.txt`
 
 In this case, our Executor has only one requirement besides Jina, `torch`.
 

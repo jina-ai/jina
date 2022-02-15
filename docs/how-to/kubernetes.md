@@ -157,7 +157,7 @@ adapt it to your own needs. For instance, no Persistent Volume Object is added.
 
 ```{admonition} Caution
 :class: caution
-Using the HTTP protocol for this example means image tensors are serialized to JSON, which is not convenient and 
+Using the HTTP protocol for this example means image tensors are serialized to JSON, which is not convenient or 
 efficient. We can avoid this by using the GRPC protocol or by converting images to data URIs instead.
 ```
 

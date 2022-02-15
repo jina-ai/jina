@@ -6,13 +6,13 @@ Let's see the [Hub portal](https://hub.jina.ai) in detail.
 
 ## Catalog page
 
-The main page contains a list of all Executors created by Jina developers all over the world. By default, you will see the Editors Pick first at the top of the list. Those are the Executors that were Highlighted by the Jina team. 
+The main page contains a list of all Executors created by Jina developers all over the world. You will see the Editor's Pick at the top of the list. Those are the Executors highlighted by the Jina team. 
 
 ```{figure} ../../../../.github/hub-website-list.png
 :align: center
 ```
 
-You can sort the list of displayed Executors by *Trending* and *Recent* using the drop-down menu on top. Otherwise, if you want to search for a specific Executor, you can use the search box on the top or use the tags for specific keywords such as Image, Video, TensorFlow, and so on:
+You can sort the list of Executors by *Trending* and *Recent* using the drop-down menu on top. Otherwise, if you want to search for a specific Executor, you can use the search box at the top or use tags for specific keywords like Image, Video, TensorFlow, and so on:
 
 ```{figure} ../../../../.github/hub-website-search-2.png
 :align: center
@@ -20,19 +20,19 @@ You can sort the list of displayed Executors by *Trending* and *Recent* using th
 
 ## Detail page
 
-After you find an Executor that interests you, you can get more detail about it by clicking on it. You will then see a description of the Executor with basic information, usage, parameters, etc. If you need more in-depth details, you can click on "More" and you will be directed to a new page with all the information available about that Executor. 
+After you find an Executor that interests you, you can get more detail by clicking on it. You will see a description of the Executor with basic information, usage, parameters, etc. If you need more details, click "More" and you will be directed to a page with all the information about that Executor. 
 
 ```{figure} ../../../../.github/hub-website-detail.png
 :align: center
 ```
 
-There are several tabs you can explore: **README**, **Arguments**, **Tag** and **Dependencies**.
+There are several tabs you can explore: **Readme**, **Arguments**, **Tags** and **Dependencies**.
 
 ```{figure} ../../../../.github/hub-website-detail-arguments.png
 :align: center
 ```
 
-1. **README** introduces basic information about this Executor, how it works internally, and its basic usage.
+1. **Readme** introduces basic information about the Executor, how it works internally, and basic usage.
 
 2. **Arguments** describe the detailed API of this Executor. This is generated automatically from the Python docstrings of the Executor so it's always in sync with the code base, and Executor developers don't need to write it themselves.
 
@@ -44,7 +44,7 @@ There are several tabs you can explore: **README**, **Arguments**, **Tag** and *
 
 4. **Dependencies** lists all the required Python dependencies to use this Executor
 
-On the right side, you will see two possible ways to use this Executor. Either via Docker Image or Source Code
+On the right side, you will see two possible ways to use this Executor. Either via Docker image or source code
 
 ```{figure} ../../../../.github/hub-website-usage.png
 :align: center

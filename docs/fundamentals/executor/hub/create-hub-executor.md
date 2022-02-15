@@ -47,7 +47,7 @@ carefully set `manifest.yml` to the correct values:
 | `name`             | Human-readable title of the Executor                                                       | None    |
 | `description`      | Human-readable description of the Executor                                                 | None    |
 | `url`              | URL to find more information about the Executor, normally the GitHub repo URL              | None    |
-| `keywords`         | A list of strings helps users filter and locate your package                             | None    |
+| `keywords`         | A list of strings to help users filter and locate your package                             | None    |
 
 ```{admonition} See Also
 :class: seealso
