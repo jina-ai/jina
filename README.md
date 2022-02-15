@@ -75,12 +75,13 @@ class ImageEmbeddingExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         import torchvision
-        self.model = torchvision.models.resnet50(pretrained=True)   
-    
+
+        self.model = torchvision.models.resnet50(pretrained=True)
+
     @requests
     def embedding(self, docs: DocumentArray, **kwargs):
         docs.apply(self.preproc)  # preprocess images
-        docs.embed(self.model, device='cuda')  # embed via GPU to speed up
+        docs.embed(self.model, device="cuda")  # embed via GPU to speed up
 
     def preproc(self, d: Document):
         return (
@@ -99,12 +100,12 @@ class IndexExecutor(Executor):
 
     _docs = DocumentArray()
 
-    @requests(on='/index')
+    @requests(on="/index")  # set the function to handle the `/index` endpoint
     def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
         docs.clear()  # save bandwidth as it is not needed
 
-    @requests(on='/search')
+    @requests(on="/search")  # set the function to handle the `/search` endpoint
     def search(self, docs: DocumentArray, **kwargs):
         docs.match(self._docs, limit=9)  # limit to returning top 9 matches
         docs[...].embeddings = None  # save bandwidth as it is not needed
@@ -121,20 +122,25 @@ Building a Flow to wire up the Executors, we can index some images and start sea
 ```python
 from jina import Client, Flow
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     f = Flow(port_expose=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
     with f:
-        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
+        left_da = DocumentArray.from_files("left/*.jpg")
         client = Client(port=12345)
-        client.post('/index', left_da[:100])  # index only 100 images
-        right_da = DocumentArray.from_files('~/Downloads/right/*.jpg')[:1]
-        right_da.plot_image_sprites(output='query.png')  # save the query image
-        response = client.post('/search', right_da)
-        (response[0].docs[0].matches
-         .apply(
-            lambda d: d.set_image_tensor_channel_axis(0, -1)
-                       .set_image_tensor_inv_normalization())
-         .plot_image_sprites(output='matches.png'))  # save the matched images
+        client.post("/index", left_da[:100])  # index only 100 images
+        right_da = DocumentArray.from_files("right/*.jpg")[:1]
+        right_da.plot_image_sprites(output="query.png")  # save the query image
+        response = client.post("/search", right_da)
+        (
+            response[0]
+            .docs[0]
+            .matches.apply(
+                lambda d: d.set_image_tensor_channel_axis(
+                    0, -1
+                ).set_image_tensor_inv_normalization()
+            )
+            .plot_image_sprites(output="matches.png")
+        )  # save the matched images
 ```
 
 ```shell
@@ -160,26 +166,29 @@ You will find the query image at `query.png` and the top 9 matches at `matches.p
 This is everything: You just level up your neural search application as an API service! 🎉
 
 <p align="center">
-<a href="https://docarray.jina.ai"><img src="https://github.com/jina-ai/jina/blob/main/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/main/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
 </p>
 
 
 If you want to expose your application with a REST API so that you can send HTTP requests, 
-just set the protocol of the `Flow` to `HTTP` and you can use cURL to query it:
+just set the protocol of the Flow to `http`:
 
 ```python
 ...
-if __name__ == '__main__':
-    f = (Flow(protocol='http', port_expose=12345)
-         .add(uses=ImageEmbeddingExecutor)
-         .add(uses=IndexExecutor))
+if __name__ == "__main__":
+    f = (
+        Flow(protocol="http", port_expose=12345)
+        .add(uses=ImageEmbeddingExecutor)
+        .add(uses=IndexExecutor)
+    )
     ...
     with f:
         ...
         f.block()
+
 ```
 
-Now use cURL to send search requests:
+Now you can use cURL to send search requests:
 ```bash
 curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "<data_set_path>/right/00000.jpg"}]}' > curl_response
 ```
@@ -198,10 +207,10 @@ Create a `requirements.txt` in `embed_img` and add `torchvision` as a requiremen
 ```shell
 .
 ├── embed_img
-│         ├── exec.py
-│         └── requirements.txt
+│     ├── exec.py  # copy-paste codes of ImageEmbeddingExecutor
+│     └── requirements.txt  # add the requirement `torchvision`
 └── match_img
-          └── exec.py
+      └── exec.py  # copy-paste codes of IndexExecutor
 ```
 
 Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the usage. It looks like this `jinahub://1ylut0gf`)
@@ -236,23 +245,23 @@ You will get two Hub Executors that can be used for any container.
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-    
-```python
-```
 
 #### Deploy Flow via Docker Compose
 
-A Flow can generate a `docker-compose.yml` file so that you can easily start a `Flow` via `docker-compose up`.
+A Flow can generate a Docker Compose configuration file so that you can easily start a Flow via `docker-compose up`.
 
-Replace the `uses` arguments in the Flow with the values you have got from Jina Hub. This will run the Flow with containerized Executors:
+Replace the `uses` arguments in the Flow with the values you have got from Jina Hub from previous steps. This will run the Flow with containerized Executors.
 
-Generate the docker compose configuration from the Flow using one line of Python code. By default, the configuration is stored at `docker-compose.yml`.
+Generate the docker compose configuration from the Flow using one line of Python code. 
 
 ```python
-f = (Flow(protocol='http', port_expose=12345)
-     .add(uses='jinahub+docker://1ylut0gf')
-     .add(uses='jinahub+docker://258lzh3c'))
-f.to_docker_compose_yaml()
+f = (
+    Flow(protocol="http", port_expose=12345)
+    .add(uses="jinahub+docker://1ylut0gf")
+    .add(uses="jinahub+docker://258lzh3c")
+)
+f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
+
 ```
 
 ```shell
@@ -327,13 +336,13 @@ f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
 ```shell
 k8s_config
 ├── executor0
-│         ├── executor0-head.yml
-│         └── executor0.yml
+│     ├── executor0-head.yml
+│     └── executor0.yml
 ├── executor1
-│         ├── executor1-head.yml
-│         └── executor1.yml
+│     ├── executor1-head.yml
+│     └── executor1.yml
 └── gateway
-    └── gateway.yml
+      └── gateway.yml
 ```
 
 Use `kubectl` to deploy your neural search application: 
@@ -370,7 +379,7 @@ service/gateway created
 deployment.apps/gateway created
 ```
 
-Do port forwarding so that you can send requests to our application in Kubernetes: 
+Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
 
 ```shell
 kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
