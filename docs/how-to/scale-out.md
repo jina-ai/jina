@@ -77,7 +77,7 @@ from jina import Flow
 f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer)
 ```
 
-### Scale-Up an Executor
+### Scale up an Executor
 
 When you start your `Flow`, you might discover to process all the text corpus, this process takes a while:
 
