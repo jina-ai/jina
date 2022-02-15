@@ -53,7 +53,7 @@ with Flow() as f:
 ```
 
 ## Targeting a specific Executor
-Usually a `Flow` will send each request to all Executors with matching Endpoints as configured. But the `Client` also allows you to only target a specific Executor in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.
+Usually a `Flow` will send each request to all Executors with matching endpoints as configured. But the `Client` also allows you to only target a specific Executor in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.
 
 ```python
 from docarray import Document, DocumentArray
@@ -132,28 +132,28 @@ For this purpose, Jina implements a promise-like interface, letting you specify 
 - `on_error` is executed whenever an error occurs in `client.post()`
 - `on_always` is always performed, no matter the success or failure of `client.post()`
 
-Callback functions in Jina expect an argument of the type `jina.types.request.Response`, which contains resulting Documents,
+Callback functions in Jina expect a `Response` of the type `jina.types.request.data.DataRequest`, which contains resulting Documents,
 parameters, and other information.
 Accordingly, a callback function can be defined in the following way:
 
 ````{tab} General callback function
 
 ```python
-from jina.types.request import Response
+from jina.types.request.data import DataRequest
 
 
-def my_callback(rep: Response):
-    ...  # process response here
+def my_callback(resp: DataRequest):
+    ...  # process request here
 ```
 
 ````
 ````{tab} Processing documents
 
 ```python
-from jina.types.request import Response
+from jina.types.request.data import DataRequest
 
 
-def my_callback(rep: Response):
+def my_callback(resp: DataRequest):
     docs = resp.docs
     ...  # process docs here
 ```
