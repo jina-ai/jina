@@ -4,11 +4,11 @@ Jina is a neural search framework written in Python that helps developers build 
 
 
 
-Jina empowers the developers to focus their business logic. Jina guides the user with abstractions that will help to modularize, serve and scale your applications in the cloud.
+Jina empowers developers to focus on their business logic, by guiding them with abstractions that will help to modularize, serve and scale applications in the cloud.
 
-Jina helps the developer in every phase of the development cycle. Jina is designed to provide a similar experience when developing your solutions locally and in the cloud. It builds your applications with a set of separate microservices that can be scaled independently. 
+Jina can help you in every phase of the development cycle, from prototyping to deployment. It is designed to provide a unified experience when developing your solutions locally and in the cloud. It builds your applications with a set of separate microservices that can be scaled independently and easily.
 
-As part of Jina AI ecosystem, Jina brings your search to production. [**DocArray**](https://docarray.jina.ai/) to serve as the main data structure; [**Jina Hub**](https://hub.jina.ai/) to share, containerize and reuse components of the search pipelines.
+As part of [Jina AI ecosystem](https://jina.ai/), Jina brings your search to production. [**DocArray**](https://docarray.jina.ai/) to serve as the main data structure; [**Jina Hub**](https://hub.jina.ai/) to share, containerize and reuse components of the search pipelines.
 
 
 
