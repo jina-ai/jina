@@ -1,5 +1,5 @@
-from jina.serve.runtimes.head import HeadRuntime
 from typing import TYPE_CHECKING
+
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -41,11 +41,14 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.serve.runtimes.worker import WorkerRuntime
 
     if args.runtime_cls == 'WorkerRuntime':
+        from jina.serve.runtimes.worker import WorkerRuntime
+
         runtime_cls = WorkerRuntime
     elif args.runtime_cls == 'HeadRuntime':
+        from jina.serve.runtimes.head import HeadRuntime
+
         runtime_cls = HeadRuntime
     else:
         raise RuntimeError(
@@ -224,6 +227,19 @@ def hub(args: 'Namespace'):
     from jina.hubble.hubio import HubIO
 
     getattr(HubIO(args), args.hub)()
+
+
+def new(args: 'Namespace'):
+    """
+    Create a new jina project
+    :param args:  arguments coming from the CLI.
+    """
+    import shutil, os
+    from jina import __resources_path__
+
+    shutil.copytree(
+        os.path.join(__resources_path__, 'project-template'), os.path.abspath(args.name)
+    )
 
 
 def help(args: 'Namespace'):

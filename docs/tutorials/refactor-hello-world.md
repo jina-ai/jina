@@ -21,14 +21,16 @@ Now that you understand how to use public Executor from Hub, let's practice our 
 
    ```python
    f = (
-      Flow()
-      .add(uses='jinahub+docker://ImageTorchEncoder',
-         uses_with={'model_name': 'alexnet'},
-         replicas=2)
-      .add(uses=MyConverter)
-      .add(uses=MyIndexer, workspace=args.workdir)
-      .add(uses=MyEvaluator)
-      )
+       Flow()
+       .add(
+           uses='jinahub+docker://ImageTorchEncoder',
+           uses_with={'model_name': 'alexnet'},
+           replicas=2,
+       )
+       .add(uses=MyConverter)
+       .add(uses=MyIndexer, workspace=args.workdir)
+       .add(uses=MyEvaluator)
+   )
    ```
    ````{admonition} Note
    :class: note

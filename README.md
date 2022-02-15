@@ -1,10 +1,5 @@
 <p align="center">
-<!--startmsg-->
-<a href="https://www.meetup.com/de-DE/jina-community-meetup/events/279857975/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg?raw=true"></a>
-<!--endmsg-->
-</p>
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
 <p align="center">
@@ -20,226 +15,291 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.2k%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
-<!-- start elevator-pitch -->
+<!-- start jina-description -->
 
-Jina is a neural search framework that empowers anyone to build SOTA and scalable deep learning search applications in minutes.
+Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Native support for PyTorch/Keras/ONNX/Paddle. Build solutions in just minutes.
+⏱️ **Save time** - *The* design pattern of neural search systems. Quickly build solutions of indexing, querying, understanding multi-/cross-modal data such as video, image, text, audio, source code, PDF.
 
-🌌 **All data types** - Process, index, query, and understand videos, images, long/short text, audio, source code, PDFs, etc.
+🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on local, [Docker compose](https://docs.jina.ai/how-to/docker-compose/), [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
 
-🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on both local and cloud. 
+🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minute. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Hub](https://hub.jina.ai).
 
-🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with
-fragmented, multi-vendor, generic legacy tools.
+🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with fragmented, multi-vendor, generic legacy tools. Enjoy the integration with the neural search ecosystem including [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai).
 
-<!-- end elevator-pitch -->
+<!-- end jina-description -->
 
 ## Install 
+```bash
+pip install jina
 ```
-pip install -U jina
+
+For Jina 2.x users, please follow the below and [read the migration guide](https://docs.jina.ai/get-started/migrate/):
+
+```bash
+pip uninstall jina && pip install jina
 ```
-More install options including Conda, Docker, Windows [can be found here](https://docs.jina.ai/get-started/install/). 
 
-## Learning and Docs
+More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/).
 
-- Brand new to Jina? Check our **[Learning Bootcamp](https://learn.jina.ai)** to get up to speed.
-- Check our **[comprehensive docs](https://docs.jina.ai)** for deeper tutorials, more advanced topics, and API reference.
+## [Documentation](https://docs.jina.ai)
 
 ## Get Started
+
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-get-started.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
 </p>
 
-We promise you can build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
+We promise you can build a **scalable** ResNet-powered image search **service** in 20 minutes or less, **from scratch to Kubernetes**. If not, you can forget about Jina.
 
+### Basic Concepts
 
-### Basic Concepts <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-1min.svg?raw=true"></img>
+Document, Executor and Flow are three fundamental concepts in Jina.
 
-Document, Executor, and Flow are three fundamental concepts in Jina.
+- [**Document**](https://docarray.jina.ai/) is a data structure contains multi-modal data.
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a group of tasks on Documents.
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
-- [**Document**](https://docs.jina.ai/fundamentals/document/) is the basic data type in Jina;
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is how Jina processes Documents;
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/) is how Jina streamlines and distributes Executors.
+Leveraging these three concepts, let's build a simple image search with the [Totally Looks Like](https://sites.google.com/view/totally-looks-like-dataset) dataset. This is a microservice version of the [DocArray example](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
-
-Leveraging these three components, let's build an app that **find similar images using ResNet50**.
-
-### ResNet50 Image Search in 20 Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-5min.svg?raw=true"></img>
-
-
-<sup>💡 Preliminaries: <a href="https://drive.google.com/file/d/1OLg-JRBJJgTYYcXBJ2x35wJyzqSty4mu/view?usp=sharing">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
-</sup>
-
-```python
-from jina import DocumentArray, Document
-
-def preproc(d: Document):
-    return (d.load_uri_to_image_blob()  # load
-             .set_image_blob_normalization()  # normalize color 
-             .set_image_blob_channel_axis(-1, 0))  # switch color axis
-docs = DocumentArray.from_files('img/*.jpg').apply(preproc)
-
-import torchvision
-model = torchvision.models.resnet50(pretrained=True)  # load ResNet50
-docs.embed(model, device='cuda')  # embed via GPU to speedup
-
-q = (Document(uri='img/00021.jpg')  # build query image & preprocess
-     .load_uri_to_image_blob()
-     .set_image_blob_normalization()
-     .set_image_blob_channel_axis(-1, 0))
-q.embed(model)  # embed
-q.match(docs)  # find top-20 nearest neighbours, done!
-```
-
-Done! Now print `q.matches` and you'll see the URIs of the most similar images.
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-q-match.png?raw=true" alt="Print q.matches to get visual similar images in Jina using ResNet50" width="50%"></a>
-</p>
-
-Add three lines of code to visualize them:
-
-```python
-for m in q.matches:
-    m.set_image_blob_channel_axis(0, -1).set_image_blob_inv_normalization()
-q.matches.plot_image_sprites()
-```
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/cat-similar.png?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="50%"></a>
-</p>
-
-Sweet! FYI, you can use Keras, ONNX, or PaddlePaddle for the embedding model. Jina supports them well.
-
-### As-a-Service in 10 Extra Lines <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
-
-With an extremely trivial refactoring and ten extra lines of code, you can make the local script a ready-to-serve service:
-
-1. Import what we need.
-    ```python
-    from jina import Document, DocumentArray, Executor, Flow, requests
-    ```
-2. Copy-paste the preprocessing step and wrap it via `Executor`:
-    ```python
-    class PreprocImg(Executor):
-        @requests
-        def foo(self, docs: DocumentArray, **kwargs):
-            for d in docs:
-                (d.load_uri_to_image_blob()  # load
-                 .set_image_blob_normalization()  # normalize color
-                 .set_image_blob_channel_axis(-1, 0))  # switch color axis
-    ```
-3. Copy-paste the embedding step and wrap it via `Executor`:
-    
-    ```python   
-    class EmbedImg(Executor):
-        def __init__(self, **kwargs):
-            super().__init__(**kwargs)
-            import torchvision
-            self.model = torchvision.models.resnet50(pretrained=True)        
-   
-        @requests
-        def foo(self, docs: DocumentArray, **kwargs):
-            docs.embed(self.model)
-    ```
-4. Wrap the matching step into an `Executor`:
-    ```python
-    class MatchImg(Executor):
-        _da = DocumentArray()
-    
-        @requests(on='/index')
-        def index(self, docs: DocumentArray, **kwargs):
-            self._da.extend(docs)
-            docs.clear()  # clear content to save bandwidth
-    
-        @requests(on='/search')
-        def foo(self, docs: DocumentArray, **kwargs):
-            docs.match(self._da)
-            for d in docs.traverse_flat('r,m'):  # only require for visualization
-                d.convert_uri_to_datauri()  # convert to datauri
-                d.pop('embedding', 'blob')  # remove unnecessary fields for save bandwidth
-    ```
-5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
-    ```python
-    f = Flow(port_expose=12345, protocol='http').add(uses=PreprocImg).add(uses=EmbedImg, replicas=3).add(uses=MatchImg)
-    ```
-    Plot it via `f.plot('flow.svg')` and you get:
-    ![](.github/images/readme-flow-plot.svg)
-
-6. Index image data and serve REST query publicly:
-    ```python
-    with f:
-        f.post('/index', DocumentArray.from_files('img/*.jpg'), show_progress=True, request_size=8)
-        f.block()
-    ```
-
-Done! Now query it via `curl` and you get the most similar images:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
-</p>
-
-Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
-</p>
-
-Or use a Python client to access the service:
-
-```python
-from jina import Client, Document
-from jina.types.request import Response
-
-def print_matches(resp: Response):  # the callback function invoked when task is done
-    for idx, d in enumerate(resp.docs[0].matches):  # print top-3 matches
-        print(f'[{idx}]{d.scores["cosine"].value:2f}: "{d.uri}"')
-
-c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', Document(uri='img/00021.jpg'), on_done=print_matches)
-```
-
-At this point, you probably have taken 15 minutes but here we are: an image search service with rich features:
+### Create `Executor` for embedding and storing images
 
 <sup>
-
-||||
-|---|---|---|
-|✅ Solution as microservices | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
-|✅ Distribute/Dockerize components | ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
-
+Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
-### Deploy to Kubernetes in 7 Minutes <img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/images/clock-7min.svg?raw=true"></img>
+We first build an Executor generating embeddings with PyTorch and ResNet50:
 
-Have another seven minutes? We'll show you how to bring your service to the next level by deploying it to Kubernetes.
+```python
+from jina import Executor, requests
+from docarray import Document, DocumentArray
 
-1. Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
-   ```bash
-   gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
-   gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
-   ```
-2. Move each `Executor` class to a separate folder with one Python file in each:
-   - `PreprocImg` -> 📁 `preproc_img/exec.py`
-   - `EmbedImg` -> 📁 `embed_img/exec.py`
-   - `MatchImg` -> 📁 `match_img/exec.py`
-3. Push all Executors to [Jina Hub](https://hub.jina.ai):
-    ```bash
-    jina hub push preproc_img
-    jina hub push embed_img
-    jina hub push match_img
-    ```
-   You will get three Hub Executors that can be used via Docker container. 
-4. Adjust `Flow` a bit and open it:
-    ```python
-    f = Flow(name='readme-flow', port_expose=12345, infrastructure='k8s').add(uses='jinahub+docker://PreprocImg').add(uses='jinahub+docker://EmbedImg', replicas=3).add(uses='jinahub+docker://MatchImg')
+
+class ImageEmbeddingExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        import torchvision
+
+        self.model = torchvision.models.resnet50(pretrained=True)
+
+    @requests
+    def embedding(self, docs: DocumentArray, **kwargs):
+        docs.apply(self.preproc)  # preprocess images
+        docs.embed(self.model, device='cuda')  # embed via GPU to speed up
+
+    def preproc(self, d: Document):
+        return (
+            d.load_uri_to_image_tensor()  # load
+            .set_image_tensor_shape((200, 200))  # resize all to 200x200
+            .set_image_tensor_normalization()  # normalize color
+            .set_image_tensor_channel_axis(-1, 0)
+        )  # switch color axis for the PyTorch model later
+```
+
+We need to build the second Executor for storing and retrieving images:
+
+```python
+class IndexExecutor(Executor):
+
+    _docs = DocumentArray()
+
+    @requests(on='/index')  # set the function to handle the `/index` endpoint
+    def index(self, docs: DocumentArray, **kwargs):
+        self._docs.extend(docs)
+        docs.clear()  # save bandwidth as it is not needed
+
+    @requests(on='/search')  # set the function to handle the `/search` endpoint
+    def search(self, docs: DocumentArray, **kwargs):
+        docs.match(self._docs, limit=9)  # limit to returning top 9 matches
+        docs[...].embeddings = None  # save bandwidth as it is not needed
+        docs[...].blobs = None  # save bandwidth as it is not needed
+```
+
+
+### Orchestrate Executors in a Flow
+
+Building a Flow to wire up the Executors, we can index some images and start searching by sending requests to the Flow APIs. 
+
+> Note that we only index the 100 images now for quick reproducible demo:
+
+```python
+from jina import Client, Flow, DocumentArray, Document
+
+img_dataset = DocumentArray.from_files('left/*.jpg')[:100]
+
+if __name__ == '__main__':
+    f = Flow(port_expose=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
+    
+    with f:        
+        client = Client(port=12345)
+        client.post('/index', img_dataset)
+        
+        query_img = Document(uri='right/000001.jpg')
+        
+        response = client.post('/search', query_img)
+        (
+            response[0]
+            .docs[0]
+            .matches.apply(
+                lambda d: d.set_image_tensor_channel_axis(
+                    0, -1
+                ).set_image_tensor_inv_normalization()
+            )
+            .plot_image_sprites(output='matches.png')
+        )  # save the matched images
+```
+
+<p align="center">
+<img alt="Shell outputs running Flow" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-orchestrate-executors.png" title="running Flow" width="60%"/>
+</p>
+
+
+You will find the query image at `query.png` and the top 9 matches at `matches.png`. 
+This is everything: You just level up your neural search application as an API service! 🎉
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
+</p>
+
+
+If you want to expose your application with a REST API so that you can send HTTP requests, 
+just set the protocol of the Flow to `http`:
+
+```python
+from jina import Flow
+
+if __name__ == '__main__':
+    f = (
+        Flow(protocol='http', port_expose=12345)
+        .add(uses=ImageEmbeddingExecutor)
+        .add(uses=IndexExecutor)
+    )
+    
     with f:
         f.block()
-    ```
+```
 
-Intrigued? [Find more about Jina from our docs](https://docs.jina.ai).
+Now you can use cURL to send search requests:
+```bash
+curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "<data_set_path>/right/00000.jpg"}]}' > curl_response
+```
+
+### Use Docker Compose or Kubernetes
+
+If we want to further upgrade your Flow with Docker Compose or Kubernetes, we will first need to containerize the Executors. 
+The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
+
+Move each of the two Executors to a separate folder with one Python file in each:
+   - `ImageEmbeddingExecutor` -> 📁 `embed_img/exec.py`
+   - `IndexExecutor` -> 📁 `match_img/exec.py`
+   
+Create a `requirements.txt` in `embed_img` and add `torchvision` as a requirement.
+
+```shell
+.
+├── embed_img
+│     ├── exec.py  # copy-paste codes of ImageEmbeddingExecutor
+│     └── requirements.txt  # add the requirement `torchvision`
+└── match_img
+      └── exec.py  # copy-paste codes of IndexExecutor
+```
+
+Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the usage. It looks like this `jinahub://1ylut0gf`)
+```bash
+jina hub push embed_img  # publish at jinahub+docker://1ylut0gf  
+jina hub push match_img  # publish at jinahub+docker://258lzh3c 
+```
+
+You will get two Hub Executors that can be used for any container.
+
+<p align="center">
+<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
+</p>
+
+#### Run Flow with Docker Compose
+
+A Flow can generate a Docker Compose configuration file so that you can easily start a Flow via `docker-compose up`.
+
+Replace the `uses` arguments in the Flow with the values you have got from Jina Hub from previous steps. This will run the Flow with containerized Executors.
+
+Generate the docker compose configuration from the Flow using one line of Python code. 
+
+```python
+f = (
+    Flow(protocol='http', port_expose=12345)
+    .add(uses='jinahub+docker://1ylut0gf')
+    .add(uses='jinahub+docker://258lzh3c')
+)
+f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
+```
+
+```shell
+Flow@62548[I]:Docker compose file has been created under docker-compose.yml. You can use it by running `docker-compose up -f docker-compose.yml`
+```
+   
+Now you can start your neural search application with docker compose.
+
+```shell
+docker-compose up
+```
+
+<p align="center">
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
+</p>
+
+#### Deploy Flow with Kubernetes
+
+You can easily deploy a Flow with containerized Executors to a Kubernetes cluster as well.
+
+Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
+```bash
+gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
+gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
+```
+
+Create a namespace `flow-k8s-namespace` for demonstration purpose ,
+```bash
+kubectl create namespace flow-k8s-namespace
+```
+
+Generate the kubernetes configuration files using one line of code:
+```python
+f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
+```
+
+```shell
+k8s_config
+├── executor0
+│     ├── executor0-head.yml
+│     └── executor0.yml
+├── executor1
+│     ├── executor1-head.yml
+│     └── executor1.yml
+└── gateway
+      └── gateway.yml
+```
+
+Use `kubectl` to deploy your neural search application: 
+
+```shell
+kubectl apply -R -f ./k8s_config
+```
+
+<p align="center">
+<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
+</p>
+
+Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
+
+```shell
+kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
+```
+
+Now we have the Flow up running in Kubernetes and we can use the `Client` or cURL to send requests. 
+
+> Note that we are running everything in the cloud and make sure the image URIs are accessible from the Kubernetes cluster.
+
 
 ## Run Quick Demo
 
@@ -247,7 +307,7 @@ Intrigued? [Find more about Jina from our docs](https://docs.jina.ai).
 - [🤖 QA chatbot](https://docs.jina.ai/get-started/hello-world/covid-19-chatbot/): `pip install "jina[demo]" && jina hello chatbot`
 - [📰 Multimodal search](https://docs.jina.ai/get-started/hello-world/multimodal/): `pip install "jina[demo]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
-
+- Create a new Jina project: `jina new hello-jina`
 
 <!-- start support-pitch -->
 
