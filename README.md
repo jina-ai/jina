@@ -124,17 +124,20 @@ Building a Flow to wire up the Executors, we can index some images and start sea
 > Note that we only index the 100 images now for quick reproducible demo:
 
 ```python
-from jina import Client, Flow
+from jina import Client, Flow, DocumentArray, Document
+
+img_dataset = DocumentArray.from_files('left/*.jpg')[:100]
 
 if __name__ == '__main__':
     f = Flow(port_expose=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
-    with f:
-        left_da = DocumentArray.from_files('left/*.jpg')
+    
+    with f:        
         client = Client(port=12345)
-        client.post('/index', left_da[:100])  # index only 100 images
-        right_da = DocumentArray.from_files('right/*.jpg')[:1]
-        right_da.plot_image_sprites(output='query.png')  # save the query image
-        response = client.post('/search', right_da)
+        client.post('/index', img_dataset)
+        
+        query_img = Document(uri='right/000001.jpg')
+        
+        response = client.post('/search', query_img)
         (
             response[0]
             .docs[0]
@@ -152,7 +155,6 @@ if __name__ == '__main__':
 </p>
 
 
-The images with the same id are expected to be matched. The pretrained ResNet50 indeed finds some similar images.
 You will find the query image at `query.png` and the top 9 matches at `matches.png`. 
 This is everything: You just level up your neural search application as an API service! 🎉
 
@@ -165,7 +167,8 @@ If you want to expose your application with a REST API so that you can send HTTP
 just set the protocol of the Flow to `http`:
 
 ```python
-...
+from jina import Flow
+
 if __name__ == '__main__':
     f = (
         Flow(protocol='http', port_expose=12345)
