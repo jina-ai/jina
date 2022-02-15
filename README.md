@@ -122,7 +122,7 @@ Building a Flow to wire up the Executors, we can index some images and start sea
 from jina import Client, Flow
 
 if __name__ == '__main__':
-    f = Flow(expose_port=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
+    f = Flow(port_expose=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
     with f:
         left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
         client = Client(port=12345)
@@ -170,7 +170,7 @@ just set the protocol of the `Flow` to `HTTP` and you can use cURL to query it:
 ```python
 ...
 if __name__ == '__main__':
-    f = (Flow(protocol='http', expose_port=12345)
+    f = (Flow(protocol='http', port_expose=12345)
          .add(uses=ImageEmbeddingExecutor)
          .add(uses=IndexExecutor))
     ...
@@ -240,7 +240,7 @@ You will get two Hub Executors that can be used for any container.
 Replace the `uses` arguments in the previous codes with the values you have got from Jina Hub. This will run the Flow with containerized Executors:
     
 ```python
-f = (Flow(protocol='http', expose_port=12345)
+f = (Flow(protocol='http', port_expose=12345)
     .add(uses='jinahub+docker://1ylut0gf')
     .add(uses='jinahub+docker://258lzh3c'))
 ```
@@ -314,6 +314,11 @@ gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1
 gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
 ```
 
+Create a namespace `flow-k8s-namespace` for demonstration purpose ,
+```bash
+kubectl create namespace flow-k8s-namespace
+```
+
 Generate the kubernetes configuration files using one line of code:
 ```python
 f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
@@ -334,7 +339,35 @@ k8s_config
 Use `kubectl` to deploy your neural search application: 
 
 ```shell
-kubctl apply -R -f ./k8s_config
+kubectl apply -R -f ./k8s_config
+```
+
+```shell
+role.rbac.authorization.k8s.io/connection-pool created
+rolebinding.rbac.authorization.k8s.io/connection-pool-binding created
+configmap/executor0-head-configmap created
+service/executor0-head created
+deployment.apps/executor0-head created
+role.rbac.authorization.k8s.io/connection-pool unchanged
+rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
+configmap/executor0-configmap created
+service/executor0 created
+deployment.apps/executor0 created
+role.rbac.authorization.k8s.io/connection-pool unchanged
+rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
+configmap/executor1-head-configmap created
+service/executor1-head created
+deployment.apps/executor1-head created
+role.rbac.authorization.k8s.io/connection-pool unchanged
+rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
+configmap/executor1-configmap created
+service/executor1 created
+deployment.apps/executor1 created
+role.rbac.authorization.k8s.io/connection-pool unchanged
+rolebinding.rbac.authorization.k8s.io/connection-pool-binding configured
+configmap/gateway-configmap created
+service/gateway created
+deployment.apps/gateway created
 ```
 
 Do port forwarding so that you can send requests to our application in Kubernetes: 
