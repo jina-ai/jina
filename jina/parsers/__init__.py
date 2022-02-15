@@ -153,6 +153,7 @@ def get_main_parser():
     from jina.parsers.base import set_base_parser
     from jina.parsers.helloworld import set_hello_parser
     from jina.parsers.helper import _chf, _SHOW_ALL_ARGS
+    from jina.parsers.create import set_new_project_parser
 
     from jina.parsers.export_api import set_export_api_parser
     from jina.parsers.flow import set_flow_parser
@@ -205,6 +206,15 @@ def get_main_parser():
             'ping',
             help='Ping an Executor',
             description='Ping a Deployment and check its network connectivity.',
+            formatter_class=_chf,
+        )
+    )
+
+    set_new_project_parser(
+        sp.add_parser(
+            'new',
+            help='Create a new Jina project',
+            description='Create a new Jina toy project with the predefined template.',
             formatter_class=_chf,
         )
     )

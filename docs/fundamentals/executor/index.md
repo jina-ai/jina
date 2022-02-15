@@ -1,48 +1,52 @@
 (executor-cookbook)=
 # Executor
 
-{class}`~jina.Executor` represents a processing component in a Jina Flow. It performs a single task on a `Document` or 
-`DocumentArray`. 
+{class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
 
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
+
+
+## Why should you use Executors?
+
+Once you have learned `DocumentArray`, you can use all its power and expressiveness to build a neural search application.
+But what if you want to go bigger? Organize your code into modules, serve and scale them independently as microservices? That's exactly what Executors enable you to do.
+
+- Executors let you organize your DocumentArray-based functions into logical entities that can share configuration state, following OOP.
+
+- Executors convert your local functions into functions that can be distributed inside a Flow.
+
+- Executors inside a Flow can process multiple DocumentArrays concurrently, and be deployed easily to the cloud as part of your neural search application.
+
+- Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`
+
+## Minimum working example
+
+```python
+from jina import Executor, requests
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        print(docs)  # process docs here
+```
+
+````{admonition} See Also
+:class: seealso
+
+Executor and Flow are the two fundamental concepts in Jina.
+
+- {ref}`Executor <executor>` is how Jina processes Documents;
+- {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
+````
 
 
 ```{toctree}
 :hidden:
 
 executor-api
-executor-built-in-features
-executors-in-action
+executor-in-flow
 repository-structure
-../../tutorials/gpu-executor
+hub/index
+containerize-executor
 ```
-
-````{admonition} See Also
-:class: seealso
-
-Document, Executor, and Flow are the three fundamental concepts in Jina.
-
-- {doc}`Document <../document/index>` is the basic data type in Jina;
-- {ref}`Executor <executor>` is how Jina processes Documents;
-- {ref}`Flow <flow>` is how Jina streamlines and scales Executors.
-````
-
-````{dropdown} Design Principle of Executor
-
-In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to
-keep development simple. We do not provide subclasses of `Executor` that are specific to each category. The design
-principles are (`user` here means "Executor developer"):
-
-- **Do not surprise the user**: keep `Executor` class as Pythonic as possible. It should be as light and unintrusive as
-  a `mixin` class:
-    - do not customize the class constructor logic;
-    - do not change its built-in interfaces `__getstate__`, `__setstate__`;
-    - do not add new members to the `Executor` object unless needed.
-- **Do not overpromise to the user**: do not promise features that we can hardly deliver. Trying to control the
-  interface while delivering just loosely-implemented features is bad for scaling the core framework. For
-  example, `save`, `load`, `on_gpu`, etc.
-
-We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they
-should pick up `Executor` in no time. It is as simple as subclassing `Executor` and adding an endpoint.
-
-````

@@ -24,9 +24,9 @@ from jina import DocumentArray, Executor, requests, Document, Flow
 
 example_sentences = [
     'Document is the basic data type that Jina operates with',
-    'Executor processes a DocumentArray in-place', 
+    'Executor processes a DocumentArray in-place',
     ...,
-    'Jina uses the concept of a flow to tie different executors together'
+    'Jina uses the concept of a flow to tie different executors together',
 ]
 
 docs = DocumentArray([Document(content=sentence) for sentence in example_sentences])
@@ -74,7 +74,10 @@ The flow for searching is much simpler than the one for indexing and looks like 
 query_flow = (
     Flow()
     # Create vector representations from query
-    .add(name='query_transformer', uses=TextEncoder,)
+    .add(
+        name='query_transformer',
+        uses=TextEncoder,
+    )
     # Use encoded question to search our index
     .add(
         name='simple_indexer',

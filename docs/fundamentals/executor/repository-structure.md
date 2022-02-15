@@ -1,8 +1,59 @@
-(structure-of-the-repository)=
-
 # Executor File Structure
 
-Besides organizing your Executor code inline-ly (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
+Besides organizing your Executor code inline (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
+
+
+`````{tab} Separate module
+
+````{dropdown} foo.py
+
+
+```python
+from docarray import Document
+from jina import Executor, Flow, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
+
+```
+
+````
+
+
+````{dropdown} config.yml
+
+```yaml
+jtype: MyExecutor
+metas:
+  py_modules:
+    - foo.py
+  name: awesomeness
+  description: my first awesome executor
+requests:
+  /random_work: foo
+```
+
+````
+
+````{dropdown} flow.py
+
+```python
+from docarray import Document
+from jina import Flow
+
+f = Flow().add(uses='config.yml')
+
+with f:
+    f.post(on='/random_work', inputs=Document(), on_done=print)
+```
+
+````
+
+`````
 
 ````{tab} Inline manner
 
@@ -27,60 +78,15 @@ with f:
 
 ````
 
-`````{tab} Separate module
+## Best practice
 
-````{dropdown} foo.py
+Use 
 
-
-```python
-from jina import Executor, Flow, Document, requests
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        print(kwargs)
-
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
+```bash
+jina hub new
 ```
 
-````
-
-
-````{dropdown} my.yml
-
-```yaml
-jtype: MyExecutor
-metas:
-  py_modules:
-    - foo.py
-  name: awesomeness
-  description: my first awesome executor
-requests:
-  /random_work: foo
-```
-
-````
-
-````{dropdown} flow.py
-
-```python
-from jina import Flow, Document
-
-f = Flow().add(uses='my.yml')
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
-```
-
-````
-
-`````
+in the terminal to create an Executor bundle.
 
 ## Single Python file
 
@@ -168,8 +174,3 @@ Here you can then import from `utils/data.py` in `my_executor.py` like this: `fr
 
 The best thing is that no matter how complicated your package structure, "importing" it in your `config.yml` file is super easy - you always put only `executor/__init__.py` under `py_modules`.
 
-```{hint}
-
-For a remote Executor used with JinaD, please read the guidelines about [uploading files to remote](../../advanced/daemon/remote-executors.md#file-structures-with-remote-executors).
-
-```

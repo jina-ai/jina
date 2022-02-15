@@ -7,6 +7,7 @@ ac_table = {
         'executor',
         'flow',
         'ping',
+        'new',
         'gateway',
         'hub',
         'help',
@@ -115,6 +116,7 @@ ac_table = {
             '--inspect',
         ],
         'ping': ['--help', '--timeout', '--retries'],
+        'new': ['--help'],
         'gateway': [
             '--help',
             '--name',

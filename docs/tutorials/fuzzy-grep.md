@@ -45,7 +45,10 @@ class CharEmbed(Executor):  # a simple character embedding with mean-pooling
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         for d in docs:
-            r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1) for c in d.text]
+            r_emb = [
+                ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1)
+                for c in d.text
+            ]
             d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # average pooling
 ```
 
@@ -65,7 +68,6 @@ class Indexer(Executor):
     @requests(on='/search')
     def bar(self, docs: DocumentArray, **kwargs):
         docs.match(self._docs, metric='euclidean', limit=20)
-
 ```
 
 ### Put it together in a Flow
@@ -73,10 +75,11 @@ class Indexer(Executor):
 ```python
 from jina import Flow
 
-f = (Flow(port_expose=12345, protocol='http', cors=True)
-        .add(uses=CharEmbed, replicas=2)
-        .add(uses=Indexer))  # build a Flow, with 2 shard CharEmbed, tho unnecessary
-
+f = (
+    Flow(port_expose=12345, protocol='http', cors=True)
+    .add(uses=CharEmbed, replicas=2)
+    .add(uses=Indexer)
+)  # build a Flow, with 2 shard CharEmbed, tho unnecessary
 ```
 
 ### Start the Flow and index data
@@ -85,7 +88,9 @@ f = (Flow(port_expose=12345, protocol='http', cors=True)
 from jina import Document
 
 with f:
-    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
+    f.post(
+        '/index', (Document(text=t.strip()) for t in open(__file__) if t.strip())
+    )  # index all lines of _this_ file
     f.block()  # block for listening request
 ```
 

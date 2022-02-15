@@ -43,6 +43,7 @@ In our case, the content of our Document needs to be the dataset we want to use:
 
 ``` python
 from jina.types.document.generators import from_csv
+
 with open('dataset.csv') as fp:
     docs = from_csv(fp, field_resolver={'question': 'text'})
 ```
@@ -56,6 +57,7 @@ like this:
 
 ``` python
 from jina.types.document.generators import from_csv
+
 with flow, open('dataset.csv') as fp:
     flow.index(from_csv(fp, field_resolver={'question': 'text'}))
 ```
@@ -119,11 +121,11 @@ def tutorial(port_expose):
         @requests(on='/bar')
         def bar(self, **kwargs):
             print(f'bar is doing cool stuff: {kwargs}')
-    
+
     flow = (
         Flow()
-            .add(name='MyTransformer', uses=MyTransformer)
-            .add(name='MyIndexer', uses=MyIndexer)
+        .add(name='MyTransformer', uses=MyTransformer)
+        .add(name='MyIndexer', uses=MyIndexer)
     )
     with flow, open('dataset.csv') as fp:
         flow.index(from_csv(fp, field_resolver={'question': 'text'}))
@@ -224,11 +226,11 @@ class MyTransformer(Executor):
     """Transformer executor class """
 
     def __init__(
-            self,
-            pretrained_model_name_or_path: str = 'paraphrase-mpnet-base-v2',
-            device: str = 'cpu',
-            *args,
-            **kwargs,
+        self,
+        pretrained_model_name_or_path: str = 'paraphrase-mpnet-base-v2',
+        device: str = 'cpu',
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.model = SentenceTransformer(pretrained_model_name_or_path, device=device)
@@ -324,8 +326,8 @@ from my_executors import MyTransformer, MyIndexer
 def tutorial(port_expose):
     flow = (
         Flow(cors=True)
-            .add(name='MyTransformer', uses=MyTransformer)
-            .add(name='MyIndexer', uses=MyIndexer)
+        .add(name='MyTransformer', uses=MyTransformer)
+        .add(name='MyIndexer', uses=MyIndexer)
     )
     with flow, open('dataset.csv') as fp:
         flow.index(from_csv(fp, field_resolver={'question': 'text'}))
