@@ -178,8 +178,16 @@ if __name__ == '__main__':
 
 Now you can use cURL to send search requests:
 ```bash
-curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "<data_set_path>/right/00000.jpg"}]}' > curl_response
+curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{"uri": "right/00000.jpg"}]}'
 ```
+
+or via Swagger UI:
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
+</p>
+
+
 
 ### Use Docker Compose or Kubernetes
 
