@@ -66,7 +66,6 @@ f = (
         shards=2,
     )
 )
-
 ```
 
 Now, we can generate Kubernetes YAML configs from the Flow:
@@ -130,14 +129,15 @@ import portforward
 from jina.clients import Client
 from docarray import DocumentArray
 
-with portforward.forward(
-    'custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8080
-):
+with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8080):
     client = Client(host='localhost', port=8080)
     client.show_progress = True
     docs = client.post(
-        '/index', inputs=DocumentArray.from_files('./imgs/*.png').apply(lambda d: d.load_uri_to_image_tensor()),
-        return_results=True
+        '/index',
+        inputs=DocumentArray.from_files('./imgs/*.png').apply(
+            lambda d: d.load_uri_to_image_tensor()
+        ),
+        return_results=True,
     )
 
     print(f' Indexed documents: {len(docs)}')

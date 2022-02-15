@@ -122,22 +122,26 @@ And finally, we need to create the file, in case it doesn't exist.
 
 ```python
 if not os.path.exists(self.log_path):
-    with open(self.log_path, 'w'): pass
+    with open(self.log_path, 'w'):
+        pass
 ```
 
 Ok, that's it for our constructor, by now we should have something like this:
 
 ```python
-class RequestLogger(Executor):                                                                      # needs to inherit from Executor
-    def __init__(self,
-                default_log_docs: int = 1,                                                          # number of documents to log
-                *args, **kwargs):                                                                   # *args and **kwargs are required for Executor
-        super().__init__(*args, **kwargs)                                                           # before any custom logic
+class RequestLogger(Executor):  # needs to inherit from Executor
+    def __init__(
+        self, default_log_docs: int = 1, *args, **kwargs  # number of documents to log
+    ):  # *args and **kwargs are required for Executor
+        super().__init__(*args, **kwargs)  # before any custom logic
         self.default_log_docs = default_log_docs
-        self.logger = JinaLogger('req_logger')                                                      # create instance of JinaLogger
-        self.log_path = os.path.join(self.workspace, 'log.txt')                                     # set path to save the log.txt
-        if not os.path.exists(self.log_path):                                                       # check the file doesn't exist already
-            with open(self.log_path, 'w'): pass
+        self.logger = JinaLogger('req_logger')  # create instance of JinaLogger
+        self.log_path = os.path.join(
+            self.workspace, 'log.txt'
+        )  # set path to save the log.txt
+        if not os.path.exists(self.log_path):  # check the file doesn't exist already
+            with open(self.log_path, 'w'):
+                pass
 ```
 
 We can start creating our `log` method now. First of all, we need the `@requests` decorator. This is to communicate to the `Flow` when the function will be called and on which endpoint. We use `@requests` without any endpoint, so we will call our function on every request:
@@ -177,7 +181,9 @@ Now we can add the logic for our function. First, we will print a line that disp
 
 ```python
 self.logger.info('Request being processed...')
-nr_docs = int(parameters.get('log_docs', self.default_log_docs))         # accesing parameters (nr are passed as float due to Protobuf)
+nr_docs = int(
+    parameters.get('log_docs', self.default_log_docs)
+)  # accesing parameters (nr are passed as float due to Protobuf)
 with open(self.log_path, 'a') as f:
     f.write(f'request at time {time.time()} with {len(docs)} documents:\n')
     for i, doc in enumerate(docs):
@@ -197,25 +203,30 @@ from jina import Executor, DocumentArray, requests
 from jina.logging.logger import JinaLogger
 
 
-class RequestLogger(Executor):                                                                      # needs to inherit from Executor
-    def __init__(self,
-                default_log_docs: int = 1,                                                          # your arguments
-                *args, **kwargs):                                                                   # *args and **kwargs are required for Executor
-        super().__init__(*args, **kwargs)                                                           # before any custom logic
+class RequestLogger(Executor):  # needs to inherit from Executor
+    def __init__(
+        self, default_log_docs: int = 1, *args, **kwargs  # your arguments
+    ):  # *args and **kwargs are required for Executor
+        super().__init__(*args, **kwargs)  # before any custom logic
         self.default_log_docs = default_log_docs
         self.logger = JinaLogger('req_logger')
         self.log_path = os.path.join(self.workspace, 'log.txt')
         if not os.path.exists(self.log_path):
-            with open(self.log_path, 'w'): pass
+            with open(self.log_path, 'w'):
+                pass
 
-    @requests                                                                                       # decorate, by default it will be called on every request
-    def log(self,                                                                                   # arguments are automatically received
-            docs: Optional[DocumentArray],
-            parameters: Dict,
-            **kwargs):
+    @requests  # decorate, by default it will be called on every request
+    def log(
+        self,  # arguments are automatically received
+        docs: Optional[DocumentArray],
+        parameters: Dict,
+        **kwargs,
+    ):
         self.logger.info('Request being processed...')
 
-        nr_docs = int(parameters.get('log_docs', self.default_log_docs))                            # accesing parameters (nr are passed as float due to Protobuf)
+        nr_docs = int(
+            parameters.get('log_docs', self.default_log_docs)
+        )  # accesing parameters (nr are passed as float due to Protobuf)
         with open(self.log_path, 'a') as f:
             f.write(f'request at time {time.time()} with {len(docs)} documents:\n')
             for i, doc in enumerate(docs):
@@ -272,7 +283,7 @@ The Executor we just created logs whatever Documents we pass to it. So we need t
 ```python
 def main():
     docs = DocumentArray()
-    docs.append(Document(content='I love cats'))                # creating documents
+    docs.append(Document(content='I love cats'))  # creating documents
     docs.append(Document(content='I love every type of cat'))
     docs.append(Document(content='I guess dogs are ok'))
 ```
@@ -280,30 +291,26 @@ def main():
 We have three Documents in one `DocumentArray`. Now let's create a `Flow` and add the Executor we created. We will reference it by the ID we got when we pushed it (in my case, it was `zsor7fe6`):
 
 ```python
-flow = Flow().add(                                              
-        uses='jinahub+docker://zsor7fe6',                   # here we choose to use the Executor inside a docker container
-        uses_with={                                         # RequestLogger arguments
-            'default_log_docs': 3
-        },
-        volumes='workspace:/internal_workspace',            # mapping local folders to docker instance folders
-        uses_metas={                                        # Executor (parent class) arguments
-            'workspace': '/internal_workspace',             # this should match the above
-        },
-    )
+flow = Flow().add(
+    uses='jinahub+docker://zsor7fe6',  # here we choose to use the Executor inside a docker container
+    uses_with={'default_log_docs': 3},  # RequestLogger arguments
+    volumes='workspace:/internal_workspace',  # mapping local folders to docker instance folders
+    uses_metas={  # Executor (parent class) arguments
+        'workspace': '/internal_workspace',  # this should match the above
+    },
+)
 ```
 
 This seems like plenty of details, so let's explain them:
 
 ```python
-uses='jinahub+docker://zsor7fe6',
+uses = ('jinahub+docker://zsor7fe6',)
 ```
 
 Here you use `uses=` to specify the image of your Executor. This will start a Docker container with the image of the Executor we built and deployed in the previous step. So don't forget to change the ID to the correct one.
 
 ```python
-uses_with={                                         # RequestLogger arguments
-            'default_log_docs': 3
-        },
+uses_with = ({'default_log_docs': 3},)  # RequestLogger arguments
 ```
 
 We need `uses_with=` to pass the arguments we need. In our case, we have only one argument: `default_log_docs`. In the constructor of our `RequestLogger` Executor, we defined the `default_log_docs` as `1`, but we override it here with `3`, so `3` will be the new value. 
@@ -311,16 +318,18 @@ We need `uses_with=` to pass the arguments we need. In our case, we have only on
 The next line refers to our workspace:
 
 ```python
-volumes='workspace:/internal_workspace',
+volumes = ('workspace:/internal_workspace',)
 ```
 Here we are mapping the `workspace` folder that will be created when we run our app to a folder called `internal_workspace` in Docker. We do this because our Executor logs the Documents into a file, and we want to save that file on our local disk. If we don't do that, the information would be saved in the Docker container, and you would need to access that container to see files.  To do this, we use `volumes=` and set it to our internal workspace. 
 
 The last part overrides arguments too, but this time for the `Executor` parent class:
 
 ```python
-uses_metas={                                                # Executor (parent class) arguments
-            'workspace': '/internal_workspace',             # this should match the above
-        },
+uses_metas = (
+    {  # Executor (parent class) arguments
+        'workspace': '/internal_workspace',  # this should match the above
+    },
+)
 ```
 
 In our case, the only argument we want to override is the name of the `workspace`. If you don't do this, a folder with the same name of your Executor class (`RequestLogger`) would be created, and your information would have been saved there. But since we just mounted our workspace with the name `internal_workspace` in Docker, we need to make a folder with that same name.
@@ -328,11 +337,11 @@ In our case, the only argument we want to override is the name of the `workspace
 Ok, we have our `Flow` ready with the Executor we deployed previously. We can use it now. Let's start by indexing the Documents:
 
 ```python
-with flow as f:                                                 # Flow is a context manager
-        f.post(
-            on='/index',                                        # the endpoint
-            inputs=docs,                                        # the documents we send as input
-        )
+with flow as f:  # Flow is a context manager
+    f.post(
+        on='/index',  # the endpoint
+        inputs=docs,  # the documents we send as input
+    )
 ```
 
 The Executor we created doesn't care about what endpoint is used, so it will perform the same operation no matter what endpoint you specify here. In this example, we set it to `on='/index'` anyway. Here you could use one for `index` and another one for `query` if you need it and your Executor has the proper endpoints. 
@@ -345,25 +354,23 @@ from jina import Flow, DocumentArray, Document
 
 def main():
     docs = DocumentArray()
-    docs.append(Document(content='I love cats'))                # creating documents
+    docs.append(Document(content='I love cats'))  # creating documents
     docs.append(Document(content='I love every type of cat'))
     docs.append(Document(content='I guess dogs are ok'))
 
-    flow = Flow().add(                                          # provide as class name or jinahub+docker URI
+    flow = Flow().add(  # provide as class name or jinahub+docker URI
         uses='jinahub+docker://7dne55rj',
-        uses_with={                                             # RequestLogger arguments
-            'default_log_docs': 3
-        },
-        volumes='workspace:/internal_workspace',                # mapping local folders to docker instance folders
-        uses_metas={                                            # Executor (parent class) arguments
-            'workspace': '/internal_workspace',                 # this should match the above
+        uses_with={'default_log_docs': 3},  # RequestLogger arguments
+        volumes='workspace:/internal_workspace',  # mapping local folders to docker instance folders
+        uses_metas={  # Executor (parent class) arguments
+            'workspace': '/internal_workspace',  # this should match the above
         },
     )
 
-    with flow as f:                                             # Flow is a context manager
+    with flow as f:  # Flow is a context manager
         f.post(
-            on='/index',                                        # the endpoint
-            inputs=docs,                                        # the documents we send as input
+            on='/index',  # the endpoint
+            inputs=docs,  # the documents we send as input
         )
 
 

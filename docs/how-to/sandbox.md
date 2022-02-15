@@ -58,11 +58,13 @@ The Jina version inside the Sandbox will be the same as the one in the place whe
 from docarray import Document
 from jina import Flow, Executor, requests
 
+
 class MyExecutor(Executor):
     @requests
     def process(self, docs, **kwargs):
         for doc in docs:
             doc.text = '(first hello, from MyExecutor)' + doc.text
+
 
 f = Flow().add(uses=MyExecutor).add(uses='jinahub+sandbox://Hello')
 
