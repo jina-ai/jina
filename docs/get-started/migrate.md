@@ -175,8 +175,62 @@ print(docs.texts)
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
-**Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
-    such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
+
+### DocumentArray: new storage options
+Jina 2 used to offer persistence of DocumentArray through `DocumentArrayMemmap`. In Jina 3, this data structure is 
+deprecated and we introduce different [Document Stores](https://docarray.jina.ai/advanced/document-store/) within the 
+`DocumentArray` API. Thus, you can enjoy a consistent `DocumentArray` API across different storage backends and leverage
+ modern databases.
+
+For example, you can use [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/) as a replacement 
+for `DocumentArrayMemmap`:
+
+```python
+from docarray import Document, DocumentArray
+das = DocumentArray(storage='sqlite', config={'connection': 'my_connection', 'table_name': 'my_table_name'})
+das.extend([Document() for _ in range(10)])
+```
+
+This will persist the Documents into disk using SQLite and therefore, you should find the Documents within another 
+session:
+
+```python
+from docarray import DocumentArray
+das = DocumentArray(storage='sqlite', config={'connection': 'my_connection', 'table_name': 'my_table_name'})
+das.summary()
+```
+
+
+```text
+        Documents Summary         
+                                  
+  Length                 10       
+  Homogenous Documents   True     
+  Common Attributes      ('id',)  
+                                  
+                     Attributes Summary                     
+                                                            
+  Attribute   Data type   #Unique values   Has empty value  
+ ────────────────────────────────────────────────────────── 
+  id          ('str',)    10               False            
+                                                            
+                      Storage Summary                       
+                                                            
+  Backend                  SQLite (https://www.sqlite.org)  
+  Connection               my_connection                    
+  Table Name               my_table_name                    
+  Serialization Protocol                                    
+  Class                    DocumentArraySqlite
+```
+
+The API is **almost the same** as the deprecated `DocumentArrayMemmap` and is consistent across storage backends and 
+in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor algorithms and are more convenient in 
+production.
+
+````{admonition} See Also
+:class: seealso
+Read more about [Document Stores](https://docarray.jina.ai/advanced/document-store/) in DocArray
+````
 
 ## Flow: Simplified `.post()` behavior
 
