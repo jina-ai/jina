@@ -53,25 +53,25 @@ Try Jina on fashion image search, QA chatbot and multimodal search.
 
 ::::
 
-::::{grid-item-card} {octicon}`book;1.5em` Understand Basics
-:link: fundamentals/concepts
+::::{grid-item-card} {octicon}`workflow;1.5em` Understand the Architecture 
+:link: fundamentals/architecture-overview
 :link-type: doc
 
-Executor, and Flow are the fundamental concepts in Jina.
+Executor and Flow are the fundamental concepts in Jina.
 
 ::::
 
-::::{grid-item-card} {octicon}`infinity;1.5em` How to use Jina
-:link: how-to/index
+::::{grid-item-card} {octicon}`light-bulb;1.5em` Create a Jina Project
+:link: get-started/create-app
 :link-type: doc
-:class-card: color-gradient-card
 
-Learn how to use Jina to build neural search applications.
+Create a new Jina project with one line in the terminal
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
 :link: fundamentals/executor/hub/index
 :link-type: doc
+:class-card: color-gradient-card
 
 Learn to share and reuse Executors from the Jina community.
 ::::
