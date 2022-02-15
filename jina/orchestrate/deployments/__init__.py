@@ -911,7 +911,6 @@ class Deployment(BaseDeployment):
                         f'subgraph {shard_name};',
                         f'\ndirection TB;\n',
                     ]
-                    print(f' pod_args {pod_args}')
                     names = [
                         args.name for args in pod_args
                     ]  # all the names of each of the replicas
