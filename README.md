@@ -45,9 +45,14 @@ pip uninstall jina && pip install -U jina
 
 ## Get Started
 
-### Basic Concepts
 
-> 💡 We recommend familiarizing yourself beforehand with [DocArray](https://docarray.jina.ai).
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-get-started.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
+</p>
+
+We promise you can build a scalable ResNet-powered image search service in 20 minutes or less, from scratch. If not, you can forget about Jina.
+
+### Basic Concepts
 
 Document, Executor and Flow are three fundamental concepts in Jina.
 
@@ -80,7 +85,7 @@ class ImageEmbeddingExecutor(Executor):
     @requests
     def embedding(self, docs: DocumentArray, **kwargs):
         docs.apply(self.preproc)  # preprocess images
-        docs.embed(self.model, device="cuda")  # embed via GPU to speed up
+        docs.embed(self.model, device='cuda')  # embed via GPU to speed up
 
     def preproc(self, d: Document):
         return (
@@ -99,12 +104,12 @@ class IndexExecutor(Executor):
 
     _docs = DocumentArray()
 
-    @requests(on="/index")  # set the function to handle the `/index` endpoint
+    @requests(on='/index')  # set the function to handle the `/index` endpoint
     def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
         docs.clear()  # save bandwidth as it is not needed
 
-    @requests(on="/search")  # set the function to handle the `/search` endpoint
+    @requests(on='/search')  # set the function to handle the `/search` endpoint
     def search(self, docs: DocumentArray, **kwargs):
         docs.match(self._docs, limit=9)  # limit to returning top 9 matches
         docs[...].embeddings = None  # save bandwidth as it is not needed
@@ -116,20 +121,20 @@ class IndexExecutor(Executor):
 
 Building a Flow to wire up the Executors, we can index some images and start searching by sending requests to the Flow APIs. 
 
-> Note that we only index the 100 images now for demonstration purpose:
+> Note that we only index the 100 images now for quick reproducible demo:
 
 ```python
 from jina import Client, Flow
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     f = Flow(port_expose=12345).add(uses=ImageEmbeddingExecutor).add(uses=IndexExecutor)
     with f:
-        left_da = DocumentArray.from_files("left/*.jpg")
+        left_da = DocumentArray.from_files('left/*.jpg')
         client = Client(port=12345)
-        client.post("/index", left_da[:100])  # index only 100 images
-        right_da = DocumentArray.from_files("right/*.jpg")[:1]
-        right_da.plot_image_sprites(output="query.png")  # save the query image
-        response = client.post("/search", right_da)
+        client.post('/index', left_da[:100])  # index only 100 images
+        right_da = DocumentArray.from_files('right/*.jpg')[:1]
+        right_da.plot_image_sprites(output='query.png')  # save the query image
+        response = client.post('/search', right_da)
         (
             response[0]
             .docs[0]
@@ -138,12 +143,12 @@ if __name__ == "__main__":
                     0, -1
                 ).set_image_tensor_inv_normalization()
             )
-            .plot_image_sprites(output="matches.png")
+            .plot_image_sprites(output='matches.png')
         )  # save the matched images
 ```
 
 <p align="center">
-<img alt="Shell outputs running Flow" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-orchestrate-executors.png" title="running Flow" width="60%"/>
+<img alt="Shell outputs running Flow" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-orchestrate-executors.png" title="running Flow" width="60%"/>
 </p>
 
 
@@ -152,7 +157,7 @@ You will find the query image at `query.png` and the top 9 matches at `matches.p
 This is everything: You just level up your neural search application as an API service! 🎉
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
 </p>
 
 
@@ -161,15 +166,14 @@ just set the protocol of the Flow to `http`:
 
 ```python
 ...
-if __name__ == "__main__":
+if __name__ == '__main__':
     f = (
-        Flow(protocol="http", port_expose=12345)
+        Flow(protocol='http', port_expose=12345)
         .add(uses=ImageEmbeddingExecutor)
         .add(uses=IndexExecutor)
     )
-    ...
+    
     with f:
-        ...
         f.block()
 
 ```
@@ -181,7 +185,7 @@ curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -
 
 ### Use Docker Compose or Kubernetes
 
-If we want to further upgade your Flow with Docker Compose or Kubernetes, we will first need to containerize the Executors. 
+If we want to further upgrade your Flow with Docker Compose or Kubernetes, we will first need to containerize the Executors. 
 The easiest way to do that is by using [Jina Hub](https://hub.jina.ai).
 
 Move each of the two Executors to a separate folder with one Python file in each:
@@ -221,9 +225,9 @@ Generate the docker compose configuration from the Flow using one line of Python
 
 ```python
 f = (
-    Flow(protocol="http", port_expose=12345)
-    .add(uses="jinahub+docker://1ylut0gf")
-    .add(uses="jinahub+docker://258lzh3c")
+    Flow(protocol='http', port_expose=12345)
+    .add(uses='jinahub+docker://1ylut0gf')
+    .add(uses='jinahub+docker://258lzh3c')
 )
 f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
 
