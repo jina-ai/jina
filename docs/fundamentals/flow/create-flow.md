@@ -368,7 +368,8 @@ with f:  # Using it as a Context Manager will start the Flow
     print(response.texts)
 ```
 
-```{figure} ../../../.github/images/foobarbaz_flow_needs.png
+```{figure} needs-flow.svg
+:width: 70%
 :align: center
 Complex Flow where one Executor requires two Executors to process Documents before
 ```
