@@ -45,9 +45,9 @@ f.plot('flow.svg')
 
 ```{figure} flow.svg
 :width: 70%
+The generated SVG file visualizing the `Flow` above.
 ```
 
-This will output mermaid link visualizing the `Flow`.
 
 ## Add Executors
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
@@ -368,7 +368,8 @@ with f:  # Using it as a Context Manager will start the Flow
     print(response.texts)
 ```
 
-```{figure} ../../../.github/images/foobarbaz_flow_needs.png
+```{figure} needs-flow.svg
+:width: 70%
 :align: center
 Complex Flow where one Executor requires two Executors to process Documents before
 ```
@@ -395,8 +396,10 @@ f = (Flow()
      .add(name='fast_indexer'))
 ```
 
-```{figure} ../../../.github/2.0/parallel-explain.svg
+```{figure} replicas-flow.svg
+:width: 70%
 :align: center
+Flow with 3 replicas of slow_encoder and 1 replica of fast_indexer
 ```
 
 The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Flow` will send every 
