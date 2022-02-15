@@ -937,27 +937,16 @@ class Deployment(BaseDeployment):
                             f'{shard_name} --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
                         )
             else:
-                # single shard case
-                names = [
-                    args.name for args in self.pod_args['pods'][0]
-                ]  # all the names of each of the replicas
-                uses = [
-                    args.uses for args in self.pod_args['pods'][0]
-                ]  # all the uses should be the same but let's keep it this way
+                # single shard case, no uses_before or uses_after_considered
+                name = list(self.pod_args['pods'].values())[0][0].name
+                uses = list(self.pod_args['pods'].values())[0][0].uses
+                num_replicas = list(self.pod_args['pods'].values())[0][0].replicas
 
-                if uses_before_name is None and uses_after_name is None:
-                    # just put the replicas in parallel
-                    for rep_i, (name, use) in enumerate(zip(names, uses)):
-                        mermaid_graph.append(f'{name}/rep-{rep_i}[{use}]:::pod;')
-                if uses_before_name is not None:
-                    for name, use in zip(names, uses):
-                        mermaid_graph.append(
-                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {name}[{use}]:::pod;'
-                        )
-                if uses_after_name is not None:
-                    for name, use in zip(names, uses):
-                        mermaid_graph.append(
-                            f'{name}[{use}]:::pod --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
-                        )
+                # just put the replicas in parallel
+                if num_replicas > 1:
+                    for rep_i in range(num_replicas):
+                        mermaid_graph.append(f'{name}/rep-{rep_i}[{uses}]:::pod;')
+                else:
+                    mermaid_graph.append(f'{name}[{uses}]:::pod;')
             mermaid_graph.append('end;')
         return mermaid_graph
