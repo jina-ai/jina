@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
 <p align="center">
@@ -58,7 +58,7 @@ We promise you can build a **scalable** ResNet-powered image search **service** 
 Document, Executor and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docarray.jina.ai/) is a data structure contains multi-modal data.
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a single task on Documents.
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a group of tasks on Documents.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
 Leveraging these three concepts, let's build a simple image search with the [Totally Looks Like](https://sites.google.com/view/totally-looks-like-dataset) dataset. This is a microservice version of the [DocArray example](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 

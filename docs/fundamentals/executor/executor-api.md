@@ -2,7 +2,7 @@
 
 # Executor API
 
-{class}`~jina.Executor` is a self-contained component and performs a single task on a `DocumentArray`. 
+{class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
 It encapsulates functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
 1. An `Executor` should subclass directly from the `jina.Executor` class.

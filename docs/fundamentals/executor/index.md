@@ -1,7 +1,7 @@
 (executor-cookbook)=
 # Executor
 
-{class}`~jina.Executor` is a self-contained component and performs a single task on a `DocumentArray`. 
+{class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
 
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 
