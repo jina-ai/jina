@@ -37,7 +37,7 @@ with Flow() as f:
 
 ## Batching Requests
 
-Especially during indexing, a Client often sends thousands of Documents to a `Flow`.
+Especially during indexing, a Client can send up to thousands or millions of Documents to a `Flow`.
 Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
 to {ref}`callback functions <callback-functions>`.
 
