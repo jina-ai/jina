@@ -121,7 +121,7 @@ As you can see, now it only takes 3 seconds to finish the task.
 Quite intuitive, right?
 If you are deploying Jina with K8s, you can consider this `Executor` as a K8s `Deployment` and each `replica` as a K8s `Pod`.
 
-## Split Data into Partitions: Shard
+## Split data into partitions: Shards
 
 ### Context
 
