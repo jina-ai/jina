@@ -32,10 +32,10 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 ## Install 
 
 ```bash
-pip install --pre jina
+pip install jina
 ```
 
-For Jina 2.x users, please first uninstall old Jina via `pip uninstall jina` before installation. Please also [read 2to3 migration guide](https://docs.jina.ai/get-started/migrate/).
+For Jina 2.x users, please first uninstall old Jina via `pip uninstall jina` before installation. Please also read [the 2to3 migration guide](https://docs.jina.ai/get-started/migrate/).
 
 More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/).
 
@@ -58,12 +58,12 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a group of tasks on Documents.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
-Leveraging these three concepts, let's build a simple image search with the [Totally Looks Like](https://sites.google.com/view/totally-looks-like-dataset) dataset. This is a microservice version of the [DocArray example](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
+Leveraging these three concepts, let's build a simple image search service, as an extension of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
 ### Build a service from scratch
 
 <sup>
-Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset">download dataset</a>, <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
+Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
 </sup>
 
 1. Import what we need.
@@ -124,12 +124,14 @@ Preliminaries: <a href="https://sites.google.com/view/totally-looks-like-dataset
     Plot it via `f.plot('flow.svg')` and you get:
     ![](.github/images/readme-flow-plot.svg)
 
-6. Index image data and serve REST query publicly:
+6. Download and index image data and serve REST query publicly:
     ```python
+    img_data = DocumentArray.pull('demo-leftda', show_progress=True)
+
     with f:
         f.post(
             '/index',
-            DocumentArray.from_files('img/*.jpg'),
+            img_data,
             show_progress=True,
             request_size=8,
         )
@@ -151,10 +153,10 @@ Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
 Or use a Python client to access the service:
 
 ```python
-from jina import Client, Document
+from jina import Client
 
 c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', Document(uri='img/00021.jpg'), return_results=True)
+c.post('/search', img_da[0], return_results=True)
 ```
 
 At this point, you probably have taken 7 minutes but here we are: an image search service with rich features:
