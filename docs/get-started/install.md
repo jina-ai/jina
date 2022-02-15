@@ -87,18 +87,9 @@ docker run jinaai/jina:latest-perf
 ````
 
 
-### With Daemon (JinaD)
-
-Same as perf install, but also installs the `daemon` depdencies enabling Jina to be run remotely.
-
-```shell
-pip install "jina[daemon]"
-```
-
-
 ### Full development dependencies
 
-This installs additional depencies, useful for developing Jina itself. This includes Pytest, CI components etc.
+This installs additional dependencies, useful for developing Jina itself. This includes Pytest, CI components etc.
 
 
 ````{tab} via PyPI
