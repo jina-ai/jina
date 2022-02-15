@@ -75,13 +75,15 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
     ```python
     class PreprocImg(Executor):
         @requests
-        def foo(self, docs: DocumentArray, **kwargs):
+        async def foo(self, docs: DocumentArray, **kwargs):
             for d in docs:
                 (
                     d.load_uri_to_image_tensor(200, 200)  # load
                     .set_image_tensor_normalization()  # normalize color
-                    .set_image_tensor_channel_axis(-1, 0)
-                )  # switch color axis for the PyTorch model later
+                    .set_image_tensor_channel_axis(
+                        -1, 0
+                    )  # switch color axis for the PyTorch model later
+                )
     ```
 3. Copy-paste the embedding step and wrap it via `Executor`:
     
@@ -93,7 +95,7 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
             self.model = torchvision.models.resnet50(pretrained=True)        
    
         @requests
-        def foo(self, docs: DocumentArray, **kwargs):
+        async def foo(self, docs: DocumentArray, **kwargs):
             docs.embed(self.model)
     ```
 4. Wrap the matching step into an `Executor`:
@@ -102,20 +104,19 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
         _da = DocumentArray()
 
         @requests(on='/index')
-        def index(self, docs: DocumentArray, **kwargs):
+        async def index(self, docs: DocumentArray, **kwargs):
             self._da.extend(docs)
             docs.clear()  # clear content to save bandwidth
 
         @requests(on='/search')
-        def foo(self, docs: DocumentArray, **kwargs):
+        async def foo(self, docs: DocumentArray, **kwargs):
             docs.match(self._da, limit=9)
-            docs[...].embeddings = None  # save bandwidth as it is not needed
-            docs[...].blobs = None  # save bandwidth as it is not needed
+            del docs[...][:, ('embedding', 'tensor')]  # save bandwidth as it is not needed
     ```
 5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
     ```python
     f = (
-        Flow(port_expose=12345, protocol='http')
+        Flow(port_expose=12345)
         .add(uses=PreprocImg)
         .add(uses=EmbedImg, replicas=3)
         .add(uses=MatchImg)
@@ -124,21 +125,69 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
     Plot it via `f.plot('flow.svg')` and you get:
     ![](.github/images/readme-flow-plot.svg)
 
-6. Download and index image data and serve REST query publicly:
-    ```python
-    img_data = DocumentArray.pull('demo-leftda', show_progress=True)
+6. Download the image dataset.
 
+
+<table>
+<tr>
+<th> Pull from Cloud </th> 
+<th> Manually download, unzip and load </th>
+</tr>
+<tr>
+<td> 
+
+```python
+docs = DocumentArray.pull('demo-leftda', show_progress=True)
+```
+     
+</td>
+<td>
+
+1. Download `left.zip` from [Google Drive](https://sites.google.com/view/totally-looks-like-dataset)
+2. Unzip all images to `./left/`
+3. Load into DocumentArray
+    ```python
+    docs = DocumentArray.from_files('left/*.jpg')
+    ```
+
+</td>
+</tr>
+</table>
+
+    
+8. Index image data:
+    ```python
     with f:
         f.post(
             '/index',
-            img_data,
+            docs,
             show_progress=True,
             request_size=8,
         )
         f.block()
     ```
 
-Done! Now query it via `curl` and you get the most similar images:
+The full indexing on 6000 images should take ~8 mins on a Macbook Air 2020.
+
+Now you can use a Python client to access the service:
+
+```python
+from jina import Client
+
+c = Client(port=12345)  # connect to localhost:12345
+print(c.post('/search', docs[0])['@m'])  # '@m' is the matches-selector
+```
+
+To switch from gRPC interface to REST API, one can simply set `protocol='http'`:
+
+```python
+with f:
+    ...
+    f.protocol = 'http'
+    f.block()
+```
+
+Now you can query it via `curl`:
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
@@ -150,14 +199,6 @@ Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
 </p>
 
-Or use a Python client to access the service:
-
-```python
-from jina import Client
-
-c = Client(protocol='http', port=12345)  # connect to localhost:12345
-c.post('/search', img_da[0], return_results=True)
-```
 
 At this point, you probably have taken 7 minutes but here we are: an image search service with rich features:
 
