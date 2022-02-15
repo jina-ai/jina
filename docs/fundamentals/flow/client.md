@@ -35,7 +35,14 @@ with Flow() as f:
     client.post('/endpoint')  # empty
 ```
 
-Especially during indexing a Client often sends thousands of Documents to a `Flow`. Those Documents are internally batched into a `Request`. The size of these batches can be controlled with the `request_size` keyword. The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
+## Batching Requests
+
+Especially during indexing, a Client often sends thousands of Documents to a `Flow`.
+Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
+to {ref}`callback functions <callback-functions>`.
+
+The size of these batches can be controlled with the `request_size` keyword.
+The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
 ```python
 from docarray import Document, DocumentArray
 from jina import Flow, Client
@@ -45,7 +52,7 @@ with Flow() as f:
     client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
 ```
 
-## Target a specific Executor
+## Targeting a specific Executor
 Usually a `Flow` will send each request to all Executors with matching Endpoints as configured. But the `Client` also allows you to only target a specific Executor in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.
 
 ```python
@@ -114,6 +121,7 @@ with f:
 This might be useful to control `Executor` objects during their lifetime.
 ````
 
+(callback-functions)=
 ## Processing results using callback functions
 
 After performing `client.post()`, you may want to further process the obtained results.
