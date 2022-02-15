@@ -172,7 +172,9 @@ just set the protocol of the `Flow` to `HTTP` with a port number so that you can
 ```python
 ...
 if __name__ == '__main__':
-    f = Flow(protocol='http', expose_port=1234)
+    f = (Flow(protocol='http', expose_port=12345)
+         .add(uses=ImageEmbeddingExecutor)
+         .add(uses=IndexExecutor))
     ...
     with f:
         ...
@@ -196,26 +198,42 @@ If we want to use our Executors via Docker Compose or in Kubernetes we will need
 
 3. Push all Executors to [Jina Hub](https://hub.jina.ai). (**Important**: Write down the string you get for the usage. It looks like this `jinahub://1ylut0gf`)
     ```bash
-    jina hub push embed_img
+    jina hub push embed_img  
     jina hub push match_img
     ```
+   
    You will get two Hub Executors that can be used for any container.
+    ```shell
+   ╭────────────────────────── Published ──────────────────────────╮
+   │ 🔗 Hub URL          https://hub.jina.ai/executor/1ylut0gf/    │
+   │ 🔒 Secret           *****          │
+   │                     ☝️ Please keep this token in a safe place! │
+   │ 👀 Visibility       public                                    │
+   ╰───────────────────────────────────────────────────────────────╯
+   ╭─────────────────────────────────── Usage ────────────────────────────────────╮
+   │   1 from jina import Flow                                                    │
+   │   2                                                                          │
+   │   3 f = Flow().add(uses='jinahub://1ylut0gf')                                │
+   │   4                                                                          │
+   │   5 with f:                                                                  │
+   │   6     ...                                                                  │
+   ╰──────────────────────────────────────────────────────────────────────────────╯
+   ╭──────────────────────────────── Docker usage ────────────────────────────────╮
+   │   1 from jina import Flow                                                    │
+   │   2                                                                          │
+   │   3 f = Flow().add(uses='jinahub+docker://1ylut0gf')                         │
+   │   4                                                                          │
+   │   5 with f:                                                                  │
+   │   6     ...                                                                  │
+   ╰──────────────────────────────────────────────────────────────────────────────╯
+    ```
 
-4. Now you are able to run the `Flow` from the previous example with your containerized Executors. Just replace the `uses` strings with the values you got from Jina Hub:
+5. Now you are able to run the `Flow` from the previous example with your containerized Executors. Just replace the `uses` strings with the values you got from Jina Hub:
     
     ```python
-    from jina import Flow, DocumentArray, Client
-    
-    f = (
-        Flow(port_expose=12345)
+    f = (Flow(protocol='http', expose_port=12345)
         .add(uses='jinahub+docker://1ylut0gf')
-        .add(uses='jinahub+docker://258lzh3c')
-    )
-    
-    with f:
-        left_da = DocumentArray.from_files('~/Downloads/left/*.jpg')
-        client = Client(port=f.port_expose)
-        client.post('/index', left_da)
+        .add(uses='jinahub+docker://258lzh3c'))
     ```
 
 ### Deploy `Flow` via Docker Compose
@@ -225,16 +243,53 @@ A `Flow` can generate a `docker-compose.yml` file so that you can easily start a
     ```python
     f.to_docker_compose_yaml()
     ```
-2. Now you can start your neural search application with `docker-compose up`.
-3. Your `Flow` should be up and running now, and you can use the `Client` or `curl` to send requests:
     
-    ```python
-    from jina import Client
-    
-    client = Client(port=12345)
-    
-    print(client.post('/search', right_da))
+    ```shell
+    Flow@62548[I]:Docker compose file has been created under docker-compose.yml. You can use it by running `docker-compose up -f docker-compose.yml`
     ```
+   
+2. Now you can start your neural search application with `docker-compose up`. You can use the `Client` or `curl` as above
+    ```shell
+    docker-compose up
+    ```
+<details>
+<summary>Click to see logs</summary>
+
+```shell
+Creating network "readme_demo_2_jina-network" with driver "bridge"
+Pulling executor0-head (jinaai/jina:master-py38-perf)...
+master-py38-perf: Pulling from jinaai/jina
+5eb5b503b376: Pull complete
+5c69ac0246d0: Pull complete
+a80ce345656c: Pull complete
+56c1ff7766ad: Pull complete
+216eb72c6d88: Pull complete
+a13ddc1a2e34: Pull complete
+d529fa767cd1: Pull complete
+8895ee64f256: Pull complete
+505c872900f7: Pull complete
+Digest: sha256:3b9510b99ada34377d3d7c22898b831b8959a5ed922f5e887635cf6ba1f531ca
+...
+Creating readme_demo_2_executor1_1      ... done
+Creating readme_demo_2_gateway_1        ... done
+Creating readme_demo_2_executor0_1      ... done
+Creating readme_demo_2_executor1-head_1 ... done
+Creating readme_demo_2_executor0-head_1 ... done
+Attaching to readme_demo_2_executor1-head_1, readme_demo_2_executor0_1, readme_demo_2_executor0-head_1, readme_demo_2_executor1_1, readme_demo_2_gateway_1
+...
+executor0_1       | 🔧️                           uses = config.yml
+executor0_1       |                uses-after-address = None
+executor0_1       |               uses-before-address = None
+executor0_1       | 🔧️                     uses-metas = {'pod_id': 0}
+executor0_1       |                     uses-requests = None
+executor0_1       |                         uses-with = None
+executor0_1       |                           volumes = None
+executor0_1       |                         workspace = None
+executor0_1       |                      workspace-id = 24bbf1f0f41e419d90cef020903da9
+executor0_1       |
+executor0_1       |       executor0@ 1[L]: Executor ImageEmbeddingExecutor started
+```
+</details>
 
 ### Deploy `Flow` via Kubernetes
 
@@ -253,16 +308,8 @@ You can easily deploy any `Flow` with containerized Executors to a Kubernetes cl
     ```
 3. Use `kubectl` to deploy your neural search application: `kubctl apply -R -f <your_folder_path>`
 4. Do port forwarding so that you can send requests to our application in Kubernetes: `kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345`
-5. Your Flow should be up in running now in K8s and you can use the `Client` or `Curl` to send requests:
-    ```python
-    from jina import Client
-    
-    client = Client(port=12345)
-    
-    print(client.post('/search', right_da))
-    ```
+5. Your Flow should be up in running now in K8s and you can use the `Client` or `Curl` to send requests.
 
-Intrigued? [Find more about Jina from our docs](https://docs.jina.ai).
 
 ## Run Quick Demo
 
