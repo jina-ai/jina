@@ -44,7 +44,7 @@ def test_local_flow_use_external_executor(
     local_flow, documents_to_index, docker_compose
 ):
     with local_flow as f:
-        responses = Client(port=exposed_port).index(
+        responses = Client(port=exposed_port, return_responses=True).index(
             inputs=documents_to_index, return_results=True, request_size=100
         )
         assert len(responses) == 2

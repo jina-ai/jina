@@ -76,6 +76,5 @@ def test_flow_client_defaults():
         results = c.post(on='/index', inputs=[Document()], return_results=True)
     assert isinstance(docs, DocumentArray)
     assert docs[0].text == 'Hello World!'
-    assert isinstance(results, list)
-    assert isinstance(results[0], types.request.data.DataRequest)
-    assert results[0].docs[0].text == 'Hello World!'
+    assert isinstance(results, DocumentArray)
+    assert results[0].text == 'Hello World!'

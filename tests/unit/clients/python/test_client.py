@@ -46,13 +46,13 @@ def test_img_2():
     'inputs', [iter([b'1234', b'45467']), iter([Document(), Document()])]
 )
 def test_check_input_success(inputs):
-    client = Client(host='localhost', port_jinad=12345)
+    client = Client(return_responses=True, host='localhost', port_jinad=12345)
     client.check_input(inputs)
 
 
 @pytest.mark.parametrize('inputs', [iter([list(), list(), {12, 2, 3}])])
 def test_check_input_fail(inputs):
-    client = Client(host='localhost', port_jinad=12345)
+    client = Client(return_responses=True, host='localhost', port_jinad=12345)
     with pytest.raises(BadClientInput):
         client.check_input(inputs)
 
@@ -101,6 +101,7 @@ def test_client_websocket(mocker, flow_with_websocket):
     with flow_with_websocket:
         time.sleep(0.5)
         client = Client(
+            return_responses=True,
             host='localhost',
             port=str(flow_with_websocket.port_expose),
             protocol='websocket',
@@ -124,13 +125,18 @@ def test_client_websocket(mocker, flow_with_websocket):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_from_kwargs(protocol):
-    Client(port=12345, host='0.0.0.1', protocol=protocol)
+    Client(return_responses=True, port=12345, host='0.0.0.1', protocol=protocol)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_independent_client(protocol):
     with Flow(protocol=protocol) as f:
-        c = Client(host='localhost', port=f.port_expose, protocol=protocol)
+        c = Client(
+            return_responses=True,
+            host='localhost',
+            port=f.port_expose,
+            protocol=protocol,
+        )
         assert type(c) == type(f.client)
         c.post('/')
 
@@ -151,7 +157,12 @@ def test_all_sync_clients(protocol, mocker):
     m3 = mocker.Mock()
     m4 = mocker.Mock()
     with f:
-        c = Client(host='localhost', port=f.port_expose, protocol=protocol)
+        c = Client(
+            return_responses=True,
+            host='localhost',
+            port=f.port_expose,
+            protocol=protocol,
+        )
         c.post('/', on_done=m1)
         c.post('/foo', docs, on_done=m2)
         c.post('/foo', on_done=m3)

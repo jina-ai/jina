@@ -33,7 +33,7 @@ def test_single_executor():
     )
 
     with f:
-        results = Client(port=exposed_port).post(
+        results = Client(port=exposed_port, return_responses=True).post(
             on='index',
             inputs=Document(),
             return_results=True,
@@ -50,7 +50,7 @@ def test_multi_executor():
     )
 
     with f:
-        results = Client(port=exposed_port).post(
+        results = Client(port=exposed_port, return_responses=True).post(
             on='index',
             inputs=Document(),
             return_results=True,

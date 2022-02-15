@@ -28,7 +28,7 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
             queue.put((peer_hash, d.text))
 
     def peer_client(port, protocol, peer_hash, queue):
-        c = Client(protocol=protocol, port=port)
+        c = Client(protocol=protocol, port=port, return_responses=True)
         for _ in range(NUM_REQUESTS):
             c.post(
                 '/ping',

@@ -64,7 +64,9 @@ def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
     )
     assert flow_id
 
-    ret1 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=False).index(
+    ret1 = Client(
+        host=HOST, port=FLOW_PORT, protocol='http', asyncio=False, return_responses=True
+    ).index(
         inputs=DocumentArray([Document() for _ in range(200)]),
         return_results=True,
         request_size=10,
@@ -81,7 +83,9 @@ def test_scale_remote_flow(docker_image_built, jinad_client, deployment_params):
         id=flow_id, deployment_name=SCALE_EXECUTOR, replicas=scale_to
     )
 
-    ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=False).index(
+    ret2 = Client(
+        host=HOST, port=FLOW_PORT, protocol='http', asyncio=False, return_responses=True
+    ).index(
         inputs=DocumentArray([Document() for _ in range(200)]),
         return_results=True,
         request_size=10,
@@ -117,7 +121,9 @@ async def test_scale_remote_flow_async(
     )
     assert flow_id
 
-    ret1 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=True).index(
+    ret1 = Client(
+        host=HOST, port=FLOW_PORT, protocol='http', asyncio=True, return_responses=True
+    ).index(
         inputs=DocumentArray([Document() for _ in range(1000)]),
         return_results=True,
         request_size=10,
@@ -134,7 +140,9 @@ async def test_scale_remote_flow_async(
         id=flow_id, deployment_name=SCALE_EXECUTOR, replicas=scale_to
     )
 
-    ret2 = Client(host=HOST, port=FLOW_PORT, protocol='http', asyncio=True).index(
+    ret2 = Client(
+        host=HOST, port=FLOW_PORT, protocol='http', asyncio=True, return_responses=True
+    ).index(
         inputs=DocumentArray([Document() for _ in range(1000)]),
         return_results=True,
         request_size=10,

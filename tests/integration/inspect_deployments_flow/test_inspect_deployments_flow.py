@@ -160,9 +160,9 @@ def test_flow_returned_collect(protocol):
     )
 
     with f:
-        response = Client(port=exposed_port, protocol=protocol).index(
-            inputs=docs, return_results=True
-        )
+        response = Client(
+            port=exposed_port, protocol=protocol, return_responses=True
+        ).index(inputs=docs, return_results=True)
     validate_func(response[0])
 
 
@@ -183,7 +183,7 @@ def test_flow_not_returned(inspect, protocol):
     )
 
     with f:
-        res = Client(protocol=protocol, port=exposed_port).index(
+        res = Client(protocol=protocol, port=exposed_port, return_responses=True).index(
             inputs=docs, return_results=True
         )
 

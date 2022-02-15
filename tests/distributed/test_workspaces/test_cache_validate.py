@@ -17,9 +17,12 @@ def RemoteFlow(workspace_id):
         workspace_id=workspace_id, filename='flow_cache_validator.yml'
     )
     args = client.flows.get(flow_id)['arguments']['object']['arguments']
-    yield Client(host=HOST, port=args['port_expose'], protocol=args['protocol']).post(
-        on='/', inputs=[Document()], show_progress=True, return_results=True
-    )
+    yield Client(
+        host=HOST,
+        port=args['port_expose'],
+        protocol=args['protocol'],
+        return_responses=True,
+    ).post(on='/', inputs=[Document()], show_progress=True, return_results=True)
     assert client.flows.delete(flow_id)
 
 
@@ -67,7 +70,7 @@ def test_cache_validate_remote_executor():
         workspace_id=workspace_id,
     )
     with f:
-        response = Client(port=exposed_port).post(
+        response = Client(port=exposed_port, return_responses=True).post(
             on='/', inputs=[Document()], show_progress=True, return_results=True
         )
         assert not response[0].data.docs[0].tags['exists']
@@ -81,7 +84,7 @@ def test_cache_validate_remote_executor():
         workspace_id=workspace_id,
     )
     with f:
-        response = Client(port=exposed_port).post(
+        response = Client(port=exposed_port, return_responses=True).post(
             on='/', inputs=[Document()], show_progress=True, return_results=True
         )
         assert response[0].data.docs[0].tags['exists']

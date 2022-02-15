@@ -67,18 +67,18 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     dbms_flow_id, query_flow_id, workspace_id = _create_flows()
 
     # check that there are no matches in Query Flow
-    r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
-        inputs=[doc for doc in docs[:nr_search]], return_results=True
-    )
+    r = Client(
+        host=HOST, port=REST_PORT_QUERY, protocol='http', return_responses=True
+    ).search(inputs=[doc for doc in docs[:nr_search]], return_results=True)
     assert r[0].data.docs[0].matches is None or len(r[0].data.docs[0].matches) == 0
 
     # index on DBMS flow
-    Client(host=HOST, port=REST_PORT_DBMS, protocol='http').index(
-        inputs=docs, return_results=True
-    )
+    Client(
+        host=HOST, port=REST_PORT_DBMS, protocol='http', return_responses=True
+    ).index(inputs=docs, return_results=True)
 
     # dump data for DBMS flow
-    Client(host=HOST, port=REST_PORT_DBMS, protocol='http').post(
+    Client(host=HOST, port=REST_PORT_DBMS, protocol='http', return_responses=True).post(
         on='/dump',
         parameters={'shards': SHARDS, 'dump_path': DUMP_PATH},
         target_executor='indexer_dbms',
@@ -97,7 +97,9 @@ def test_dump_dbms_remote(executor_images, docker_compose):
     )
 
     # validate that there are matches now
-    r = Client(host=HOST, port=REST_PORT_QUERY, protocol='http').search(
+    r = Client(
+        host=HOST, port=REST_PORT_QUERY, protocol='http', return_responses=True
+    ).search(
         inputs=[doc for doc in docs[:nr_search]],
         return_results=True,
         parameters={'top_k': 10},

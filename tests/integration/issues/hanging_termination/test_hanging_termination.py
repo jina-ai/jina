@@ -63,7 +63,7 @@ class MergeExecutor(Executor):
 
 def get_client(port):
     args = set_client_cli_parser().parse_args(
-        ['--host', 'localhost', '--port', str(port)]
+        ['--host', 'localhost', '--port', str(port), '--return-responses']
     )
 
     return Client(args)
