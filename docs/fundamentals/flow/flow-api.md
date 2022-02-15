@@ -333,6 +333,72 @@ with f:
 This might be useful to control `Executor` objects during their lifetime.
 ````
 
+### Processing results using callback functions
+
+After performing `client.post()`, you may want to further process the obtained results.
+
+For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:
+
+- `on_done` is executed after successful completion of `client.post()`
+- `on_error` is executed whenever an error occurs in `client.post()`
+- `on_always` is always performed, no matter the success or failure of `client.post()`
+
+Callback functions in Jina expect an argument of the type `jina.types.request.Response`, which contains resulting Documents,
+parameters, and other information.
+Accordingly, a callback function can be defined in the following way:
+
+````{tab} General callback function
+
+```python
+from jina.types.request import Response
+
+
+def my_callback(rep: Response):
+    ...  # process response here
+```
+
+````
+````{tab} Processing documents
+
+```python
+from jina.types.request import Response
+
+
+def my_callback(rep: Response):
+    docs_list = [r.data.docs for r in result]
+    if len(docs_list) < 1:
+        docs = docs_list
+    else:  # collect into DocArray
+        docs = docs_list[0].reduce_all(docs_list[1:])
+    ...  # process docs here
+```
+
+````
+
+In the example below, our Flow passes the message then prints the result when successful.
+If something goes wrong, it beeps. Finally, the result is written to output.txt.
+
+```python
+from jina import Document, Flow
+
+
+def beep(*args):
+    # make a beep sound
+    import sys
+
+    sys.stdout.write('\a')
+
+
+with Flow().add() as f, open('output.txt', 'w') as fp:
+    f.post(
+        '/',
+        Document(),
+        on_done=print,
+        on_error=beep,
+        on_always=lambda x: x.docs.save(fp),
+    )
+```
+
 ### Async Python Client
 
 There is also an async version of the Python Client so that it can easily be used from `asyncio` context:
