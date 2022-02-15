@@ -212,7 +212,7 @@ You will get two Hub Executors that can be used for any container.
 <img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
 </p>
 
-#### Deploy Flow via Docker Compose
+#### Run Flow with Docker Compose
 
 A Flow can generate a Docker Compose configuration file so that you can easily start a Flow via `docker-compose up`.
 
