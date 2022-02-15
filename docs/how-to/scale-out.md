@@ -29,7 +29,7 @@ pip install sklearn==1.0.2
 pip install pqlite==0.2.3
 ```
 
-## Speed-Up A Slow Executor: Replicas
+## Speed up a slow Executor: Replicas
 
 ### Context
 
