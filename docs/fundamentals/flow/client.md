@@ -4,8 +4,9 @@ The most convenient way to work with the `Flow` API is the Python Client. It ena
 
 ```{admonition} Caution
 :class: caution
-`Flow` provides a `.post()` method that follows the same interface as `client.post()`. Due to reasons of performance and
-code clarity, however, `flow.post()` is not recommended outside of testing or debugging use cases.
+`Flow` provides a `.post()` method that follows the same interface as `client.post()`.
+However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
+Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
 ```python
