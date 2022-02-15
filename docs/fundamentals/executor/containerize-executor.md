@@ -96,7 +96,7 @@ metas:
 
 In this case, our Executor has only one requirement besides Jina: `torch`.
 
-So, in `requirements.txt`, we specify just a single requirement:
+In `requirements.txt`, we specify a single requirement:
 
 ```requirements.txt
 torch
