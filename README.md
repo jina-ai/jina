@@ -144,7 +144,7 @@ if __name__ == "__main__":
 ```
 
 <p align="center">
-<img alt="Shell outputs running Flow" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-orchestrate-executors.png" title="running Flow" width="60%"/>
+<img alt="Shell outputs running Flow" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-orchestrate-executors.png" title="running Flow" width="60%"/>
 </p>
 
 
@@ -153,7 +153,7 @@ You will find the query image at `query.png` and the top 9 matches at `matches.p
 This is everything: You just level up your neural search application as an API service! 🎉
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-totally-look-like.png?raw=true" alt="Visualizing Top 9 Matches" width="60%"></a>
 </p>
 
 
@@ -209,7 +209,7 @@ jina hub push match_img  # publish at jinahub+docker://258lzh3c
 You will get two Hub Executors that can be used for any container.
 
 <p align="center">
-<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
+<img alt="Shell outputs publishing Executors" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-publish-executors.png" title="publish executors" width="60%"/>
 </p>
 
 #### Deploy Flow via Docker Compose
@@ -241,7 +241,7 @@ docker-compose up
 ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="60%"/>
 </p>
 
 #### Deploy Flow via Kubernetes
@@ -283,7 +283,7 @@ kubectl apply -R -f ./k8s_config
 ```
 
 <p align="center">
-<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/tree/docs3_0-review-readme-3/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
+<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/docs3_0-review-readme-3/.github/images/readme-k8s.png" title="kubernetes outputs" width="60%"/>
 </p>
 
 Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
