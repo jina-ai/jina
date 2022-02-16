@@ -462,7 +462,7 @@ f = (
 )
 
 with f:
-    returned_docs = f.post(on='/', inputs=DocumentArray.empty(1), return_results=True)
+    returned_docs = f.post(on='/', inputs=DocumentArray.empty(1))
 
 print(f'Resulting documents {returned_docs[0].text}')
 ```

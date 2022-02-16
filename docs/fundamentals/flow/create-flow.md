@@ -10,9 +10,9 @@ The most trivial `Flow` is the empty `Flow` as shown below:
 ```python
 from jina import Flow
 
-f = Flow() # Create the empty Flow
-with f: # Using it as a Context Manager will start the Flow
-    f.post(on='/search') # This sends a request to the /search endpoint of the Flow
+f = Flow()  # Create the empty Flow
+with f:  # Using it as a Context Manager will start the Flow
+    f.post(on='/search')  # This sends a request to the /search endpoint of the Flow
 ```
 ````
 
@@ -26,10 +26,10 @@ jtype: Flow
 ```python
 from jina import Flow
 
-f = Flow.load_config('flow.yml') # Load the Flow definition from Yaml file
+f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 
-with f: # Using it as a Context Manager will start the Flow
-    f.post(on='/search') # This sends a request to the /search endpoint of the Flow
+with f:  # Using it as a Context Manager will start the Flow
+    f.post(on='/search')  # This sends a request to the /search endpoint of the Flow
 ```
 ````
 
@@ -58,21 +58,28 @@ A `Flow` orchestrates its Executors as a graph and will send requests to all Exe
 from docarray import Document, DocumentArray
 from jina import Executor, Flow, requests
 
-class FooExecutor(Executor):
 
+class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
-class BarExecutor(Executor):
 
+class BarExecutor(Executor):
     @requests
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='bar was here'))
 
-f = Flow().add(uses=FooExecutor, name='fooExecutor').add(uses=BarExecutor, name='barExecutor')  # Create the empty Flow
+
+f = (
+    Flow()
+    .add(uses=FooExecutor, name='fooExecutor')
+    .add(uses=BarExecutor, name='barExecutor')
+)  # Create the empty Flow
 with f:  # Using it as a Context Manager will start the Flow
-    response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
+    response = f.post(
+        on='/search'
+    )  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
 ````
@@ -99,14 +106,12 @@ from jina import Executor, requests
 
 
 class FooExecutor(Executor):
-
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
 
 class BarExecutor(Executor):
-
     @requests
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='bar was here'))
@@ -118,7 +123,9 @@ from jina import Flow
 f = Flow.load_config('flow.yml')
 
 with f:
-    response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
+    response = f.post(
+        on='/search'
+    )  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
 ```
@@ -132,16 +139,17 @@ As explained above, the type of Executor is defined by providing the `uses` keyw
 
 ```python
 class ExecutorFromCode(Executor):
-
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
 
-f = Flow()\
-    .add(uses='docker://sentence-encoder', name='executor1')\
-    .add(uses='jinahub+docker://TransformerTorchEncoder/', name='executor2')\
-    .add(uses=ExecutorFromCode, name='executor3')
 
+f = (
+    Flow()
+    .add(uses='docker://sentence-encoder', name='executor1')
+    .add(uses='jinahub+docker://TransformerTorchEncoder/', name='executor2')
+    .add(uses=ExecutorFromCode, name='executor3')
+)
 ```
 * `executor1` is using a Docker image tagged as `sentence-encoder` and will be created as a docker container of this image. 
 * `executor2` will use a Docker image coming from the Hub and will be created as a docker container of this image.
@@ -163,6 +171,7 @@ You can use Executors from code, being defined outside your current `PATH` envir
 ```python
 from docarray import DocumentArray
 from jina import Executor, requests
+
 
 class MyExecutor(Executor):
     @requests
@@ -205,6 +214,7 @@ executors:
 ```python
 from docarray import Document
 from jina import Flow
+
 f = Flow.load_config('../flow/flow.yml')
 with f:
     r = f.post('/', inputs=Document())
@@ -218,10 +228,13 @@ You can override the various configuration options available to Executors when a
 To override the `metas` configuration of an executor, use `uses_metas`:
 ```python
 from jina import Executor, requests, Flow
+
+
 class MyExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
         print(self.metas.workspace)
+
 
 flow = Flow().add(
     uses=MyExecutor,
@@ -248,6 +261,7 @@ constructor kwargs.
 ```python
 from jina import Executor, requests, Flow
 
+
 class MyExecutor(Executor):
     def __init__(self, param1=1, param2=2, param3=3, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -260,6 +274,7 @@ class MyExecutor(Executor):
         print('param1:', self.param1)
         print('param2:', self.param2)
         print('param3:', self.param3)
+
 
 flow = Flow().add(uses=MyExecutor, uses_with={'param1': 10, 'param3': 30})
 with flow as f:
@@ -284,19 +299,27 @@ You can override the `requests` configuration of an executor and bind methods to
 ```python
 from jina import Executor, requests, Flow
 
+
 class MyExecutor(Executor):
     @requests
     def all_req(self, parameters, **kwargs):
         print(f'all req {parameters.get("recipient")}')
-        
+
     @requests(on='/foo')
     def foo(self, parameters, **kwargs):
         print(f'foo {parameters.get("recipient")}')
-    
+
     def bar(self, parameters, **kwargs):
         print(f'bar {parameters.get("recipient")}')
 
-flow = Flow().add(uses=MyExecutor, uses_requests={'/bar': 'bar', '/non_foo': 'foo', })
+
+flow = Flow().add(
+    uses=MyExecutor,
+    uses_requests={
+        '/bar': 'bar',
+        '/non_foo': 'foo',
+    },
+)
 with flow as f:
     f.post('/bar', parameters={'recipient': 'bar()'})
     f.post('/non_foo', parameters={'recipient': 'foo()'})
@@ -321,6 +344,7 @@ In some cases it is desirable though to use externally managed Executors. These 
 Those Executors are marked with the `external` keyword when added to a `Flow`:
 ```python
 from jina import Flow
+
 Flow().add(host='123.45.67.89', port_in=12345, external=True)
 ```
 This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
@@ -337,34 +361,35 @@ from jina import Executor, Flow, requests
 
 
 class FooExecutor(Executor):
-
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'foo was here and got {len(docs)} document'))
 
 
 class BarExecutor(Executor):
-
     @requests
     def bar(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'bar was here and got {len(docs)} document'))
 
 
 class BazExecutor(Executor):
-
     @requests
     def baz(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=f'baz was here and got {len(docs)} document'))
 
 
-f = Flow() \
-    .add(uses=FooExecutor, name='fooExecutor') \
-    .add(uses=BarExecutor, name='barExecutor', needs='fooExecutor') \
-    .add(uses=BazExecutor, name='bazExecutor', needs='fooExecutor') \
+f = (
+    Flow()
+    .add(uses=FooExecutor, name='fooExecutor')
+    .add(uses=BarExecutor, name='barExecutor', needs='fooExecutor')
+    .add(uses=BazExecutor, name='bazExecutor', needs='fooExecutor')
     .add(needs=['barExecutor', 'bazExecutor'])
+)
 
 with f:  # Using it as a Context Manager will start the Flow
-    response = f.post(on='/search', return_results=True)  # This sends a request to the /search endpoint of the Flow
+    response = f.post(
+        on='/search'
+    )  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
 
@@ -391,9 +416,7 @@ Replication can be used to create multiple copies of the same Executor. Each req
 ```python
 from jina import Flow
 
-f = (Flow()
-     .add(name='slow_encoder', replicas=3)
-     .add(name='fast_indexer'))
+f = Flow().add(name='slow_encoder', replicas=3).add(name='fast_indexer')
 ```
 
 ```{figure} replicas-flow.svg

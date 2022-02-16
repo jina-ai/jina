@@ -137,7 +137,6 @@ with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8
         inputs=DocumentArray.from_files('./imgs/*.png').apply(
             lambda d: d.load_uri_to_image_tensor()
         ),
-        return_results=True,
     )
 
     print(f' Indexed documents: {len(docs)}')
@@ -199,9 +198,9 @@ client.show_progress = True
 docs = DocumentArray.from_files("./imgs/*.png").apply(
     lambda d: d.load_uri_to_image_tensor()
 )
-resp_query = client.post("/search", inputs=docs, return_results=True)
+queried_docs = client.post("/search", inputs=docs)
 
-matches = resp_query[0].docs[0].matches
+matches = queried_docs[0].matches
 print(f"Matched documents: {len(matches)}")
 ```
 

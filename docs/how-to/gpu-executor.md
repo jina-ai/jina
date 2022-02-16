@@ -62,7 +62,7 @@ from jina import Flow
 f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cpu'})
 docs = DocumentArray(Document())
 with f:
-    docs = f.post(on='/encode', inputs=docs, return_results=True)
+    docs = f.post(on='/encode', inputs=docs)
 print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
@@ -89,7 +89,7 @@ from jina import Flow
 f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cuda'})
 docs = DocumentArray(Document())
 with f:
-    docs = f.post(on='/encode', inputs=docs, return_results=True)
+    docs = f.post(on='/encode', inputs=docs)
 print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
