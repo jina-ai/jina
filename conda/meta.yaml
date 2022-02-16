@@ -1,5 +1,5 @@
 {% set name = "jina" %}
-{% set version = "2.1.5" %}
+{% set version = "3.0.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 3894ecbf06250ffd7e5c8dc17a636321f3f3b178281c946892826af1adaf96f2
+  sha256: d8c033d34f31a7086385242087fd8d1d567699eddad67f401ef8b216c9636cff
 
 build:
   number: 0
@@ -37,12 +37,11 @@ outputs:
       run:
         - __unix
         - python >=3.7
+        - docarray >=0.6.3
         - grpcio >=1.33.1
         - numpy
-        - protobuf >=3.13.0
+        - protobuf >=3.19.1
         - pyyaml >=5.3.1
-        - pyzmq >=17.1.0
-        - tornado >=5.1.0
   - name: jina-perf
     test:
       requires:
@@ -67,13 +66,13 @@ outputs:
       run:
         - __unix
         - python >=3.7
+        - docarray >=0.6.3
         - grpcio >=1.33.1
         - lz4 <3.1.2
         - numpy
-        - protobuf >=3.13.0
+        - protobuf >=3.19.1
+        - python-kubernetes >=18.20.0
         - pyyaml >=5.3.1
-        - pyzmq >=17.1.0
-        - tornado >=5.1.0
         - uvloop
   - name: jina
     test:
@@ -101,6 +100,7 @@ outputs:
         - aiohttp
         - aiostream
         - cryptography
+        - docarray >=0.6.3
         - docker-py
         - fastapi
         - filelock
@@ -108,16 +108,14 @@ outputs:
         - lz4 <3.1.2
         - numpy
         - pathspec
-        - protobuf >=3.13.0
+        - protobuf >=3.19.1
         - pydantic
         - python-kubernetes >=18.20.0
         - python-multipart
         - pyyaml >=5.3.1
-        - pyzmq >=17.1.0
         - requests
         - rich
-        - tornado >=5.1.0
-        - uvicorn >=0.14.0
+        - uvicorn >=0.14.0,<=0.16.0
         - uvloop
         - websockets
 
@@ -132,7 +130,7 @@ about:
 extra:
   recipe-maintainers:
     - tadejsv
-    - maateen
+    - JoanFM
     - nan-wang
     - hanxiao
   feedstock-name: jina

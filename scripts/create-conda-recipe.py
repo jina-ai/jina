@@ -170,7 +170,7 @@ recipe_object = {
         'doc_url': 'https://docs.jina.ai',
     },
     'extra': {
-        'recipe-maintainers': ['tadejsv', 'maateen', 'nan-wang', 'hanxiao'],
+        'recipe-maintainers': ['tadejsv', 'JoanFM', 'nan-wang', 'hanxiao'],
         'feedstock-name': 'jina',
     },
 }
