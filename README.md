@@ -137,7 +137,7 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
 <td> 
 
 ```python
-docs = DocumentArray.pull('demo-leftda', show_progress=True)
+index_data = DocumentArray.pull('demo-leftda', show_progress=True)
 ```
      
 </td>
@@ -147,7 +147,7 @@ docs = DocumentArray.pull('demo-leftda', show_progress=True)
 2. Unzip all images to `./left/`
 3. Load into DocumentArray
     ```python
-    docs = DocumentArray.from_files('left/*.jpg')
+    index_data = DocumentArray.from_files('left/*.jpg')
     ```
 
 </td>
@@ -160,7 +160,7 @@ docs = DocumentArray.pull('demo-leftda', show_progress=True)
     with f:
         f.post(
             '/index',
-            docs,
+            index_data,
             show_progress=True,
             request_size=8,
         )
@@ -175,7 +175,7 @@ Now you can use a Python client to access the service:
 from jina import Client
 
 c = Client(port=12345)  # connect to localhost:12345
-print(c.post('/search', docs[0])['@m'])  # '@m' is the matches-selector
+print(c.post('/search', index_data[0])['@m'])  # '@m' is the matches-selector
 ```
 
 To switch from gRPC interface to REST API, one can simply set `protocol='http'`:
@@ -245,15 +245,17 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
 
 4. In particular, sandbox hosts your Executor on Jina Cloud and allows you to play with it from local:
     ```python
-    from docarray import Document
-
     from jina import Flow
 
     f = Flow().add(uses='jinahub+sandbox://2k7gsejl')
 
     with f:
-        f.post('/', Document())
+        print(f.post('/', index_data[:10]))
     ```
+
+<p align="center">
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/sandabox-play.png" title="outputs of docker-compose"  width="60%"/>
+</p>
 
 ### Deploy the service via Docker Compose
 
