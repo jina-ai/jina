@@ -246,7 +246,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
    You will get three Hub Executors that can be used via Sandbox, Docker container or the source. 
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/jinahub-push.png?raw=true" alt="Jina hub push gives you the sandbox" width="70%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-hub-push.png?raw=true" alt="Jina hub push gives you the sandbox" width="70%"></a>
 </p>
 
 4. In particular, sandbox hosts your Executor on Jina Cloud and allows you to play with it from local:
@@ -260,7 +260,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/sandbox-play.png" title="outputs of docker-compose"  width="90%"/>
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-sandbox-play.png" title="outputs of docker-compose"  width="90%"/>
 </p>
 
 
