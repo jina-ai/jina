@@ -251,7 +251,10 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
 
 4. In particular, sandbox hosts your Executor on Jina Cloud and allows you to play with it from local:
     ```python
+    from docarray import DocumentArray
     from jina import Flow
+
+    index_data = DocumentArray.pull('demo-leftda', show_progress=True)
 
     f = Flow().add(uses='jinahub+sandbox://2k7gsejl')
 
