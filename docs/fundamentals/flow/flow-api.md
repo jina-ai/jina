@@ -8,8 +8,8 @@ Every `Flow` provides an API to receive requests over the network. Supported pro
 ```{admonition} Jina Client
 :class: seealso
 
-To showcase the workings of Flow, the examples below use a Client connecting to it. More information about the Client itself
-can be found in the {ref}`next section <client>`.
+To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon file.
+For more prope use of the Client, and more information about the Client itself, see the {ref}`next section <client>`.
 ```
 
 ````{tab} gRPC
