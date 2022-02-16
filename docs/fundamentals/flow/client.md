@@ -302,10 +302,11 @@ with Flow() as f:
 
 ## Async Python Client
 
-There also exists an async version of the Python Client so that it can easily be used from an `asyncio` context.
+There also exists an async version of the Python Client.
 
 While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
-by allowing *coroutines* as input, and returning an *asynchronous iterator*:
+by allowing *coroutines* as input, and returning an *asynchronous iterator*.
+This means you can iterate over Responses one by one, as they come in.
 
 ```python
 import asyncio
