@@ -60,6 +60,11 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 
 Leveraging these three concepts, let's build a simple image search service, as an extension of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner1.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
+</p>
+
 ### Build a service from scratch
 
 <sup>
@@ -211,6 +216,10 @@ At this point, you probably have taken 7 minutes but here we are: an image searc
 
 </sup>
 
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner2.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
+</p>
+
 ### Play with Containerized Executors
 
 You can containerize the Executors and play them in a sandbox thanks to [Hub](https://hub.jina.ai).
@@ -256,6 +265,12 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
 <p align="center">
 <img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/sandabox-play.png" title="outputs of docker-compose"  width="90%"/>
 </p>
+
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner3.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
+</p>
+
 
 ### Deploy the service via Docker Compose
 
