@@ -127,8 +127,11 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
     )
     ```
     Plot it via `f.plot('flow.svg')` and you get:
-    ![](.github/images/readme-flow-plot.svg)
-
+    
+    <p align="center">
+    <img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-flow-plot.svg?raw=true" title="Jina Flow.plot visualization" width="65%">
+    </p>
+    
 6. Download the image dataset.
 
 
