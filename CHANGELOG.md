@@ -131,6 +131,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12098,4 +12099,55 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```c71410b6```](https://github.com/jina-ai/jina/commit/c71410b64af0aed18bf9b1f4d5958a9855ec5376)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```5cef9643```](https://github.com/jina-ai/jina/commit/5cef964356fcb6a55ab711876ed10b2ade982d41)] __-__ Revert &#34;fix: rescue docarray in setup&#34; (#4219) (*Tobias Jacobowitz*)
  - [[```bc9f8e0d```](https://github.com/jina-ai/jina/commit/bc9f8e0d4070156522f2ff165b688b508acd8a67)] __-__ __deps__: bump pillow in /scripts/latency-tracking (#4169) (*dependabot[bot]*)
+
+<a name=release-note-3-0-0></a>
+## Release Note (`3.0.0`)
+
+> Release time: 2022-02-16 12:53:31
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Tobias Jacobowitz,  Han Xiao,  Joan Fontanals,  Johannes Messner,  Jina Dev Bot,  AlaeddineAbdessalem,  samsja,  🙇
+
+
+### 🆕 New Features
+
+ - [[```c07f3c15```](https://github.com/jina-ai/jina/commit/c07f3c151d985b207af87ccc9115bc94c3164e55)] __-__ add sandbox after push (#4349) (*Han Xiao*)
+ - [[```0eae3281```](https://github.com/jina-ai/jina/commit/0eae3281cd2afb4582d07616345ddf9b140a7f1f)] __-__ add blacken docs to precommit (#4342) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```3420f5e1```](https://github.com/jina-ai/jina/commit/3420f5e19b5decea0fd41bf86c5f23bc6ff322fc)] __-__ fix override of empty docs (#4350) (*Joan Fontanals*)
+ - [[```ae6df58f```](https://github.com/jina-ai/jina/commit/ae6df58f80d20fe4d8a11dbd3927593f228e990f)] __-__ remove return_results (#4347) (*Tobias Jacobowitz*)
+ - [[```22f0653b```](https://github.com/jina-ai/jina/commit/22f0653b51361bda4d7cc59d6d5aca1debda9119)] __-__ template proper import (#4345) (*Joan Fontanals*)
+ - [[```2efe175c```](https://github.com/jina-ai/jina/commit/2efe175c975975532f6e3fd326ed280addf20eba)] __-__ return responses (#4343) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```0765a24c```](https://github.com/jina-ai/jina/commit/0765a24c04ac9f451914ce40c32e291fa2e7f799)] __-__ complete containerization example (#4356) (*Tobias Jacobowitz*)
+ - [[```28af6d97```](https://github.com/jina-ai/jina/commit/28af6d9714abe5cdba281ef1e826db76bf148a5a)] __-__ replace flow svg plot (#4355) (*Tobias Jacobowitz*)
+ - [[```7d5e1401```](https://github.com/jina-ai/jina/commit/7d5e140145b8447ffb831bd6acb9950b643a4333)] __-__ improve readme (#4354) (*Han Xiao*)
+ - [[```85271f2b```](https://github.com/jina-ai/jina/commit/85271f2b5b526e10eb3463c84af55d63ba272cb7)] __-__ adjust docs to new .post() behaviour (#4344) (*Johannes Messner*)
+ - [[```56eb7556```](https://github.com/jina-ai/jina/commit/56eb7556cd7b8696126484b3047f5eea9f8fecd2)] __-__ add explain on return (#4351) (*Han Xiao*)
+ - [[```d566e5bd```](https://github.com/jina-ai/jina/commit/d566e5bd7ae210541eb18887466867373c0c2b73)] __-__ migrate from memmap to sqlite (#4348) (*AlaeddineAbdessalem*)
+ - [[```07e2ef0a```](https://github.com/jina-ai/jina/commit/07e2ef0a5cd2baf90a0e30c32e5898d1fdfc4d48)] __-__ adapt to 3.0 (#4254) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```9ef9e27b```](https://github.com/jina-ai/jina/commit/9ef9e27bda1753d9070192248cbcb65addf404a3)] __-__ fix readme (*Han Xiao*)
+ - [[```d63933a1```](https://github.com/jina-ai/jina/commit/d63933a1b45c9305554aebc803acd729388349ed)] __-__ fix readme image (*Han Xiao*)
+ - [[```99623386```](https://github.com/jina-ai/jina/commit/99623386431ae5a5ddf312c35634e8790300055f)] __-__ update images (*Han Xiao*)
+ - [[```775d16fe```](https://github.com/jina-ai/jina/commit/775d16feab0fedfe3650a95c2acc8ac332432636)] __-__ remove progress image (*Han Xiao*)
+ - [[```ae72ea1e```](https://github.com/jina-ai/jina/commit/ae72ea1e706dc8e1e16bbc9dba5e174c9f53f86d)] __-__ fix image width (*Han Xiao*)
+ - [[```509fad04```](https://github.com/jina-ai/jina/commit/509fad040c769eef2aa4f28122bfae1dacb0f082)] __-__ fix broken image (*Han Xiao*)
+ - [[```a9ccf356```](https://github.com/jina-ai/jina/commit/a9ccf356f59f1dbb05dcc5febb7060ede11422e1)] __-__ fix contributing code (#4353) (*Joan Fontanals*)
+ - [[```beb931f7```](https://github.com/jina-ai/jina/commit/beb931f7e2ece00874122634cf22a5f3add3ed0f)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```1dcb50a5```](https://github.com/jina-ai/jina/commit/1dcb50a56ab3485c529635dc4c04918ba73f5595)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ffa680b4```](https://github.com/jina-ai/jina/commit/ffa680b40fdb820383e07a45c836787407215f59)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b9ee834f```](https://github.com/jina-ai/jina/commit/b9ee834fb61ad597648948b8d0ba0ef5fd14a9b8)] __-__ set next release number to 3.0.0 (*Han Xiao*)
+ - [[```6fbae36f```](https://github.com/jina-ai/jina/commit/6fbae36faa6e2299e32f3a916835a71e7f294026)] __-__ update readme (*Han Xiao*)
+ - [[```0feea0ac```](https://github.com/jina-ai/jina/commit/0feea0acce52fa0f067053875e40121f8ed7b361)] __-__ revert README to 2.x for delayed release (*Han Xiao*)
+ - [[```f8166670```](https://github.com/jina-ai/jina/commit/f8166670d3c43c26d723e2ea307827c22b7d2a7f)] __-__ fix typo (*Han Xiao*)
+ - [[```d29bd2e5```](https://github.com/jina-ai/jina/commit/d29bd2e54adfd298db7731b985ed8a9bf9e782b0)] __-__ __version__: the next version will be 2.7.1 (*Jina Dev Bot*)
 
