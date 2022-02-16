@@ -37,6 +37,12 @@ class MergeChangeDocsExecutor(Executor):
         return docs
 
 
+class ClearDocsExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        docs.clear()
+
+
 @pytest.fixture()
 def logger():
     return JinaLogger('data request handler')
@@ -112,3 +118,19 @@ async def test_data_request_handler_change_docs_from_partial_requests(logger):
     assert len(response.docs) == 10 * NUM_PARTIAL_REQUESTS
     for doc in response.docs:
         assert doc.text == 'changed document'
+
+
+@pytest.mark.asyncio
+async def test_data_request_handler_clear_docs(logger):
+    args = set_pod_parser().parse_args(['--uses', 'ClearDocsExecutor'])
+    handler = DataRequestHandler(args, logger)
+
+    req = list(
+        request_generator(
+            '/', DocumentArray([Document(text='input document') for _ in range(10)])
+        )
+    )[0]
+    assert len(req.docs) == 10
+    response = await handler.handle(requests=[req])
+
+    assert len(response.docs) == 0
