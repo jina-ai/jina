@@ -1,5 +1,7 @@
 <p align="center">
+<br><br><br>
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="150px"></a>
+<br><br><br>
 </p>
 
 <p align="center">
