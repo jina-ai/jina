@@ -194,11 +194,11 @@ class MyExecutor(Executor):
 
 ### Method return
 
-Every Executor method can return 3 types: 
+Every Executor method can `return` in 3 ways: 
 
 - If you return a `DocumentArray` object, then it will be sent over to the next Executor.
 - If you return `None` or if you don't have a `return` in your method, then the original `doc` object (potentially mutated by your function) will be sent over to the next Executor.
-- If you return a `dict` object, then it will be considered as a set of parameters and sent to the next Executor. You can leverage this feature to {ref}`send config from Executor to Executor<pass-parameters>`. The original `doc` object (potentially mutated by your function) will be sent over to the next Executor.
+- If you return a `dict` object, then it will be considered as a result and passed on behind `parameters['__results__']`. The original `doc` object (potentially mutated by your function) will be sent over to the next Executor.
   
 
 ### Example
