@@ -134,6 +134,25 @@ For this purpose, Jina implements a promise-like interface, letting you specify 
 
 Callback functions in Jina expect a `Response` of the type `jina.types.request.data.DataRequest`, which contains resulting Documents,
 parameters, and other information.
+
+
+````{admonition} Understanding DataRequest
+:class: note
+
+`DataRequest`s are objects that are sent by Jina internally. Callback functions process DataRequests, and `client.post()`
+can return DataRequests.
+
+`DataRequest` objects can be seen as a container for data relevant for a given request, most importantly:
+
+- `dr.docs`: The DocumentArray associated with the request. These are the Document usually processed in a callback function.
+- `dr.parameters`: The input parameters of the associated request.
+- `dr.parameters['__results__']`: Reserved field that gets populated by Executors returning a Python `dict`.
+    Information in those returned `dict`s gets collected here, behind each Executor's *pod_id*.
+- `dr.data`: Contains `dr.data.docs`, which refers to the same object as `dr.docs`, and `dr.data.docs_bytes`, which is
+    the serialized version of the same DocumentArray.
+
+````
+
 Accordingly, a callback function can be defined in the following way:
 
 ````{tab} General callback function
@@ -190,7 +209,8 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 
 If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
 
-By setting `return_responses=True` when creating a Client, this behavior can be modified to return a list of Responses instead.
+By setting `return_responses=True` when creating a Client, this behavior can be modified to return a list of Responses
+(`DataRequest`s) instead.
 
 If a callback is provided, no results will be returned.
 
