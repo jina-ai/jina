@@ -254,7 +254,9 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     from docarray import DocumentArray
     from jina import Flow
 
-    index_data = DocumentArray.pull('demo-leftda', show_progress=True)
+    index_data = DocumentArray.pull(
+        'demo-leftda', show_progress=True
+    )  # Download the dataset as shown in the tutorial above
 
     f = Flow().add(uses='jinahub+sandbox://2k7gsejl')
 
