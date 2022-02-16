@@ -65,10 +65,12 @@ will connect PostgreSQL server which was started locally. Then you must use it w
 from docarray import Document
 from jina import Flow
 
-f = Flow().add(uses='jinahub+docker://PostgreSQLStorage', 
-               uses_with={'hostname': 'host.docker.internal'})
+f = Flow().add(
+    uses='jinahub+docker://PostgreSQLStorage',
+    uses_with={'hostname': 'host.docker.internal'},
+)
 with f:
-    resp = f.post(on='/index', inputs=Document(), return_results=True)
+    resp = f.post(on='/index', inputs=Document())
     print(f'{resp}')
 ```
 ````
@@ -91,9 +93,11 @@ any of these by passing `uses_with` and `uses_metas` as parameters.
 ```python
 from jina import Flow
 
-f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]', 
-               uses_with={'param1': 'new_value'},
-               uses_metas={'name': 'new_name'})
+f = Flow().add(
+    uses='jinahub://<UUID>[:<SECRET>][/<TAG>]',
+    uses_with={'param1': 'new_value'},
+    uses_metas={'name': 'new_name'},
+)
 ```
 
 

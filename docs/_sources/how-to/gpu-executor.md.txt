@@ -10,9 +10,9 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 ```{admonition} Important
 :class: important
 
-This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the [Hub](../advanced/hub/index) is also needed for the last part of the tutorial.
+This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the [Hub](../fundamentals/executor/hub/index) is also needed for the last part of the tutorial.
 
-If you're not yet familiar with these concepts, first read the [Basic Concepts](../fundamentals/concepts) and related documentation, and return to this tutorial once you feel comfortable performing baisc operations in Jina.
+If you're not yet familiar with these concepts, first read the [Executor](../fundamentals/executor/index) and [Flow](../fundamentals/executor/index) documentation, and return to this tutorial once you feel comfortable performing basic operations in Jina.
 ```
 
 ## Jina & GPUs in a nutshell
@@ -62,7 +62,7 @@ from jina import Flow
 f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cpu'})
 docs = DocumentArray(Document())
 with f:
-    docs = f.post(on='/encode', inputs=docs, return_results=True)
+    docs = f.post(on='/encode', inputs=docs)
 print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
@@ -89,7 +89,7 @@ from jina import Flow
 f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cuda'})
 docs = DocumentArray(Document())
 with f:
-    docs = f.post(on='/encode', inputs=docs, return_results=True)
+    docs = f.post(on='/encode', inputs=docs)
 print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```

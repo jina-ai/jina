@@ -137,7 +137,6 @@ with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8
         inputs=DocumentArray.from_files('./imgs/*.png').apply(
             lambda d: d.load_uri_to_image_tensor()
         ),
-        return_results=True,
     )
 
     print(f' Indexed documents: {len(docs)}')
@@ -199,9 +198,9 @@ client.show_progress = True
 docs = DocumentArray.from_files("./imgs/*.png").apply(
     lambda d: d.load_uri_to_image_tensor()
 )
-resp_query = client.post("/search", inputs=docs, return_results=True)
+queried_docs = client.post("/search", inputs=docs)
 
-matches = resp_query[0].docs[0].matches
+matches = queried_docs[0].matches
 print(f"Matched documents: {len(matches)}")
 ```
 
@@ -212,7 +211,7 @@ In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type and is typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with indexers since they store state.
 
-Check {ref}`here <how-to-replica-shard>` for more information.
+Check {ref}`here <scale-out>` for more information.
 
 Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas of a Deployment.
 

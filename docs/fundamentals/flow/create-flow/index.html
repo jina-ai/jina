@@ -7,10 +7,10 @@
   <meta property="og:title" content="Create a Flow" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/create-flow.html" />
-  <meta property="og:site_name" content="Jina 3.0.0 Documentation" />
+  <meta property="og:site_name" content="Jina 3.0.1 Documentation" />
   <meta property="og:description" content="A Flow can be created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the Flow will be started and closed correctly. Starting a Flow means starting all its Executors. The most trivial Flow is the empty Flow as shown below: Pythonic style Loa..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  <meta property="og:image:alt" content="Jina 3.0.0 Documentation" />
+  <meta property="og:image:alt" content="Jina 3.0.1 Documentation" />
   <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,7 +32,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Flow API" href="../flow-api/" /><link rel="prev" title="Flow" href="../" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Create a Flow - Jina 3.0.0 documentation</title>
+        <title>Create a Flow - Jina 3.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -166,7 +166,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.0.0 documentation</div>
+                <div class="brand">Jina 3.0.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -623,9 +623,9 @@
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Pythonic style</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span> <span class="c1"># Create the empty Flow</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span> <span class="c1"># Using it as a Context Manager will start the Flow</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span> <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>  <span class="c1"># Create the empty Flow</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
 </pre></div>
 </div>
 </div>
@@ -636,10 +636,10 @@
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'flow.yml'</span><span class="p">)</span> <span class="c1"># Load the Flow definition from Yaml file</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'flow.yml'</span><span class="p">)</span>  <span class="c1"># Load the Flow definition from Yaml file</span>
 
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span> <span class="c1"># Using it as a Context Manager will start the Flow</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span> <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
 </pre></div>
 </div>
 </div>
@@ -668,21 +668,28 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
 
-<span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 
+<span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
 
-<span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
 
+<span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'bar was here'</span><span class="p">))</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'barExecutor'</span><span class="p">)</span>  <span class="c1"># Create the empty Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'barExecutor'</span><span class="p">)</span>
+<span class="p">)</span>  <span class="c1"># Create the empty Flow</span>
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span>
+    <span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -706,14 +713,12 @@
 
 
 <span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'bar was here'</span><span class="p">))</span>
@@ -724,7 +729,9 @@
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'flow.yml'</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span>
+    <span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -738,16 +745,17 @@
 <h3>Executor discovery<a class="headerlink" href="#executor-discovery" title="Permalink to this headline">¶</a></h3>
 <p>As explained above, the type of Executor is defined by providing the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. The source of an Executor can be code, docker images or Hub images.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExecutorFromCode</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>\
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'docker://sentence-encoder'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor1'</span><span class="p">)</span>\
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://TransformerTorchEncoder/'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor2'</span><span class="p">)</span>\
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">ExecutorFromCode</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor3'</span><span class="p">)</span>
 
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'docker://sentence-encoder'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor1'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://TransformerTorchEncoder/'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor2'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">ExecutorFromCode</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor3'</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -768,6 +776,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">executor/my_executor.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
 
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
@@ -804,6 +813,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'../flow/flow.yml'</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">())</span>
@@ -819,10 +829,13 @@
 <h4>Override <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration<a class="headerlink" href="#override-metas-configuration" title="Permalink to this headline">¶</a></h4>
 <p>To override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
+
+
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">workspace</span><span class="p">)</span>
+
 
 <span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
@@ -848,6 +861,7 @@ different_workspace
 constructor kwargs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
+
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">param2</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">param3</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -860,6 +874,7 @@ constructor kwargs.</p>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'param1:'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param1</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'param2:'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param2</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'param3:'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param3</span><span class="p">)</span>
+
 
 <span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'param1'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">'param3'</span><span class="p">:</span> <span class="mi">30</span><span class="p">})</span>
 <span class="k">with</span> <span class="n">flow</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -884,19 +899,27 @@ param3: 30
 <p>You can override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration of an executor and bind methods to endpoints that you provide. In the following codes, we replace the endpoint <code class="docutils literal notranslate"><span class="pre">/foo</span></code> binded to the <code class="docutils literal notranslate"><span class="pre">foo()</span></code> function with <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and add a new endpoint <code class="docutils literal notranslate"><span class="pre">/bar</span></code> for binding <code class="docutils literal notranslate"><span class="pre">bar()</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">all_req()</span></code> function is binded to <strong>all</strong> the endpoints except those explicitly binded to other functions, i.e. <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/bar</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
+
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">all_req</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'all req </span><span class="si">{</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"recipient"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        
+
     <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/foo'</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'foo </span><span class="si">{</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"recipient"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-    
+
     <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'bar </span><span class="si">{</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"recipient"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span><span class="s1">'/bar'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">,</span> <span class="s1">'/non_foo'</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">,</span> <span class="p">})</span>
+
+<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
+    <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">'/bar'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">,</span>
+        <span class="s1">'/non_foo'</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
 <span class="k">with</span> <span class="n">flow</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/bar'</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'recipient'</span><span class="p">:</span> <span class="s1">'bar()'</span><span class="p">})</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/non_foo'</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'recipient'</span><span class="p">:</span> <span class="s1">'foo()'</span><span class="p">})</span>
@@ -922,6 +945,7 @@ foo
 In some cases it is desirable though to use externally managed Executors. These are named <code class="docutils literal notranslate"><span class="pre">external</span> <span class="pre">Executors</span></code>. This is especially useful to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
 Those Executors are marked with the <code class="docutils literal notranslate"><span class="pre">external</span></code> keyword when added to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'123.45.67.89'</span><span class="p">,</span> <span class="n">port_in</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -938,34 +962,35 @@ To define a custom <code class="docutils literal notranslate"><span class="pre">
 
 
 <span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'foo was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document'</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'bar was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document'</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">BazExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">baz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'baz was here and got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> document'</span><span class="p">))</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span> \
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span> \
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'barExecutor'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span> \
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BazExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'bazExecutor'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span> \
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'barExecutor'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BazExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'bazExecutor'</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="s1">'fooExecutor'</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'barExecutor'</span><span class="p">,</span> <span class="s1">'bazExecutor'</span><span class="p">])</span>
+<span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span>
+    <span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -989,9 +1014,7 @@ To define a custom <code class="docutils literal notranslate"><span class="pre">
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">Flow</span><span class="p">()</span>
-     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'slow_encoder'</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'fast_indexer'</span><span class="p">))</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'slow_encoder'</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'fast_indexer'</span><span class="p">)</span>
 </pre></div>
 </div>
 <figure class="align-center" id="id3">
