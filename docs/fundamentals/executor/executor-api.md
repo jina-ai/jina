@@ -147,7 +147,7 @@ class MyExecutor(Executor):
     @requests
     async def foo(
         self, docs: DocumentArray, parameters: Dict, docs_matrix: List[DocumentArray]
-    ) -> Optional[Union[DocumentArray, Dict]]:
+    ) -> Union[DocumentArray, Dict, None]:
         pass
 ```
 
@@ -161,8 +161,7 @@ any other `list`-like object in a Python function.
 - `docs_matrix`:  This is the least common parameter to be used for an `Executor`. This argument is needed when an `Executor` is used inside a `Flow` to merge or reduce the output of more than one other `Executor`.
 As a user, you will rarely touch this parameter. 
 
-- `return`: Every Executor method can process data in 3 ways: Update `docs` on the fly, return a `DocumentArray` object, or return a `Dict` object. 
-  
+
 
 ````{admonition} Hint
 :class: hint
@@ -192,6 +191,17 @@ class MyExecutor(Executor):
         print(kwargs['docs_matrix'])
 ```
 ````
+
+### Method return
+
+Every Executor method can `return` in 3 ways: 
+
+- If you return a `DocumentArray` object, then it will be sent over to the next Executor.
+- If you return `None` or if you don't have a `return` in your method, then the original `doc` object (potentially mutated by your function) will be sent over to the next Executor.
+- If you return a `dict` object, then it will be considered as a result and passed on behind `parameters['__results__']`. The original `doc` object (potentially mutated by your function) will be sent over to the next Executor.
+  
+
+### Example
 
 Let's understand how `Executor`s processes `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
 
@@ -246,8 +256,11 @@ with f:
  PrintExecutor: received document with text: "I returned a different Document"
 ```
 
+## Other usages
 
-## Use Executor out of Flow
+Beside running Executor inside the Flow, we list two other usages that may help you debug.  
+
+### Use Executor out of Flow
 
 `Executor` objects can be used directly, just like a regular Python object. For example:
 
@@ -274,7 +287,7 @@ Text: hello world
 ```
 
 
-## Using Executors in an AsyncIO runner
+### Use Executors in an AsyncIO runner
 
 
 ```python
