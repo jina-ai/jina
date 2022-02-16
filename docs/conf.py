@@ -67,7 +67,6 @@ html_theme_options = {
 
     # start-announce
 
-
     # end-announce
 }
 
