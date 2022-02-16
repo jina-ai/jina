@@ -1221,7 +1221,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             host=self.host,
             port=self.port_expose,
             protocol=self.protocol,
-            results_as_docarray=True,
         )
         kwargs.update(self._common_kwargs)
         return Client(**kwargs)
