@@ -18,6 +18,7 @@ Submodules
 
    jina.parsers.base
    jina.parsers.client
+   jina.parsers.create
    jina.parsers.deprecated
    jina.parsers.export_api
    jina.parsers.flow

@@ -6,7 +6,8 @@ tips to help you write beautiful and efficient code.
 ## Clean import
 
 ```python
-from jina import Document, DocumentArray, Executor, Flow, requests
+from docarray import Document, DocumentArray
+from jina import Executor, Flow, requests
 ```
 is often all you need. Copy-paste it as the first line of your code.
 
@@ -18,7 +19,8 @@ Use a [Python generator](https://docs.python.org/3/glossary.html#term-generator)
 ---
 emphasize-lines: 3, 4, 5
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 def my_input():
    for _ in range(1000):
@@ -32,13 +34,14 @@ with f:
 
 ````{tab} 😔 Don't
 ```python
-from jina import Flow, Document, DocumentArray
+from docarray import Document, DocumentArray
+from jina import Flow
 
-my_input = DocumentArray([Document() for _ in range(1000)]) 
+my_input = DocumentArray([Document() for _ in range(1000)])
 
 f = Flow()
 with f:
-   f.post('/', my_input)
+    f.post('/', my_input)
 ```
 ````
 
@@ -51,7 +54,8 @@ with f:
 ---
 emphasize-lines: 10
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 def my_input():
    for _ in range(1000):
@@ -69,7 +73,8 @@ with f:
 ---
 emphasize-lines: 10
 ---
-from jina import Flow, Document
+from docarray import Document
+from jina import Flow
 
 def my_input():
    for _ in range(1000):
@@ -90,9 +95,10 @@ No need to implement `__init__` if your `Executor` does not contain initial stat
 ```python
 from jina import Executor
 
+
 class MyExecutor(Executor):
-   def foo(self, **kwargs):
-      ...
+    def foo(self, **kwargs):
+        ...
 ```
 ````
 
@@ -119,11 +125,11 @@ Use `@requests` without specifying `on=` if your function is meant to work on al
 ```python
 from jina import Executor, requests
 
-class MyExecutor(Executor):
 
-   @requests
-   def _skip_all(self, **kwargs):
-      print('default do sth')
+class MyExecutor(Executor):
+    @requests
+    def _skip_all(self, **kwargs):
+        print('default do sth')
 ```
 ````
 
@@ -173,7 +179,7 @@ from jina import Executor, requests
 class MyExecutor(Executor):
 
    @requests
-   def foo_need_pars_only(self, docs, parameters, docs_matrix, groundtruths_matrix, **kwargs):
+   def foo_need_pars_only(self, docs, parameters, docs_matrix, **kwargs):
       print(parameters)
 ```
 ````
@@ -183,15 +189,15 @@ class MyExecutor(Executor):
 To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.
 ````{tab} ✅ Do
 ```python
-from jina import Executor, requests, DocumentArray, Document
+from docarray import Document, DocumentArrayMemmap
+from jina import Executor, requests
 
 
 class MyExec(Executor):
-
-   @requests
-   def foo(self, docs, **kwargs):
-      for d in docs:
-         d.text = 'hello world'
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
 
 
 m = MyExec()
@@ -203,21 +209,21 @@ print(da)
 
 ````{tab} 😔 Don't
 ```python
-from jina import Executor, requests, DocumentArray, Document, Flow
+from docarray import Document, DocumentArray
+from jina import Executor, requests, Flow
 
 
 class MyExec(Executor):
-
-   @requests
-   def foo(self, docs, **kwargs):
-      for d in docs:
-         d.text = 'hello world'
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
 
 
 da = DocumentArray([Document(text='test')])
 
 with Flow().add(uses=MyExec) as f:
-   f.post('/', da, on_done=print)
+    f.post('/', da, on_done=print)
 ```
 ````
 
@@ -251,7 +257,8 @@ with f:
 ---
 emphasize-lines: 12
 ---
-from jina import Executor, Flow, Document, requests
+from docarray import Document
+from jina import Executor, Flow, requests
 
 class MyExecutor(Executor):
 
@@ -277,21 +284,25 @@ It also reduces the network overhead.
 ```python
 import glob
 
-from jina import Executor, Flow, requests, Document
+from docarray import Document
+from jina import Executor, Flow, requests
+
 
 class MyExecutor(Executor):
-
     @requests
     def to_blob_conversion(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            doc.load_uri_to_image_blob()  # conversion happens inside Flow
+            doc.load_uri_to_image_tensor()  # conversion happens inside Flow
+
 
 f = Flow().add(uses=MyExecutor, replicas=2)
+
 
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')
     for image_uri in image_uris:
         yield Document(uri=image_uri)
+
 
 with f:
     f.post('/foo', inputs=my_input)
@@ -302,14 +313,17 @@ with f:
 ```python
 import glob
 
-from jina import Executor, Document
+from docarray import Document
+from jina import Executor
+
 
 def my_input():
     image_uris = glob.glob('/.workspace/*.png')  # load high resolution images.
     for image_uri in image_uris:
         doc = Document(uri=image_uri)
-        doc.load_uri_to_image_blob()  # time consuming-job on client side
+        doc.load_uri_to_image_tensor()  # time consuming-job on client side
         yield doc
+
 
 f = Flow().add()
 
@@ -359,13 +373,13 @@ class SecondExecutor(Executor):
 from jina import Executor, requests
 
 class FirstExecutor(Executor):
-    
+
     @requests
     def foo(self, docs, **kwargs):
         # some process on docs
 
 class SecondExecutor(Executor):
-    
+
     @requests
     def bar(self, docs, **kwargs):
         # do follow up processing, even though `.embedding` and `.blob` are never used 

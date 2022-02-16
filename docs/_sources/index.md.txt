@@ -1,8 +1,8 @@
 # Welcome to Jina!
 
 ```{include} ../README.md
-:start-after: <!-- start elevator-pitch -->
-:end-before: <!-- end elevator-pitch -->
+:start-after: <!-- start jina-description -->
+:end-before: <!-- end jina-description -->
 ```
 
 ## Install
@@ -53,46 +53,27 @@ Try Jina on fashion image search, QA chatbot and multimodal search.
 
 ::::
 
-::::{grid-item-card} {octicon}`book;1.5em` Understand Basics
-:link: fundamentals/concepts
+::::{grid-item-card} {octicon}`workflow;1.5em` Understand the Architecture 
+:link: fundamentals/architecture-overview
 :link-type: doc
 
-Document, Executor, and Flow are the three fundamental concepts in Jina.
+Executor and Flow are the fundamental concepts in Jina.
 
 ::::
 
-::::{grid-item-card} {octicon}`infinity;1.5em` Tasks on Multi Data Types
-:link: datatype/text/index
+::::{grid-item-card} {octicon}`light-bulb;1.5em` Create a Jina Project
+:link: get-started/create-app
 :link-type: doc
-:class-card: color-gradient-card
 
-Learn to use Jina to build neural search solution for different types of data.
+Create a new Jina project with one line in the terminal
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
-:link: advanced/hub/index
+:link: fundamentals/executor/hub/index
 :link-type: doc
+:class-card: color-gradient-card
 
 Learn to share and reuse Executors from the Jina community.
-
-::::
-
-
-::::{grid-item-card} {octicon}`workflow;1.5em`  Manage Remote Jina 
-:link: advanced/daemon/index
-:link-type: doc
-
-Learn to deploy and manage Jina on remote via a RESTful interface.
-::::
-
-
-
-
-::::{grid-item-card} {octicon}`beaker;1.5em` Try Experimental Features
-:link: advanced/experimental/index
-:link-type: doc
-
-Preview the next big things we are building. Careful not to get zapped!
 ::::
 
 
@@ -108,52 +89,39 @@ Preview the next big things we are building. Careful not to get zapped!
 :hidden:
 
 get-started/neural-search
+get-started/what-is-jina
 get-started/install/index
+get-started/create-app
 get-started/hello-world/index
 ```
 
 ```{toctree}
-:caption: Fundamentals
+:caption: User Guides
 :hidden:
 
-fundamentals/concepts
-fundamentals/document/index
+fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/clean-code
 ```
 
-
 ```{toctree}
-:caption: Data Types
+:caption: How-to
 :hidden:
-
-datatype/text/index
-datatype/image/index
-datatype/video/index
-datatype/audio/index
-datatype/mesh/index
-datatype/tabular/index
-```
-
-```{toctree}
-:caption: Advanced
-:hidden:
-
-advanced/hub/index
-advanced/daemon/index
-advanced/experimental/index
+how-to/deploy
+how-to/executor
 ```
 
 
 ```{toctree}
-:caption: API Reference
+:caption: Developer Reference
 :hidden:
 :maxdepth: 1
 
+get-started/migrate
 api
 cli/index
-proto/index
+proto/docs
 ```
 
 
