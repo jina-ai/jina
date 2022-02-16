@@ -1,6 +1,7 @@
 (client)=
 # Jina Python Client
-The most convenient way to work with the `Flow` API is the Python Client. It enables you to send `Documents` to the `Flow` API in a number of different ways shown below:
+The most convenient way to work with the `Flow` API is the Python Client.
+It enables you to send `Documents` to a running `Flow` in a number of different ways, as shown below.
 
 ```{admonition} Caution
 :class: caution
@@ -9,9 +10,24 @@ However, once your solution is deployed in the cloud, the Flow interface is not 
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
+Starting the Flow:
+
+```python
+from jina import Flow
+
+PORT_EXPOSE = 12345
+
+with Flow(port_expose=PORT_EXPOSE) as f:
+    f.block()
+```
+
+Using the Client:
+
 ```python
 from docarray import Document, DocumentArray
-from jina import Client, Flow
+from jina import Client
+
+PORT = 12345
 
 d1 = Document(content='hello')
 d2 = Document(content='world')
@@ -22,18 +38,19 @@ def doc_gen():
         yield Document(content=f'hello {j}')
 
 
-with Flow() as f:
-    client = Client(port=f.port_expose)
-    client.post('/endpoint', d1)  # Single document
+client = Client(port=PORT)
 
-    client.post('/endpoint', [d1, d2])  # a list of Document
+client.post('/endpoint', d1)  # Single Document
 
-    client.post('/endpoint', doc_gen)  # Document generator
+client.post('/endpoint', [d1, d2])  # List of Documents
 
-    client.post('/endpoint', DocumentArray([d1, d2]))  # DocumentArray
+client.post('/endpoint', doc_gen)  # Document generator
 
-    client.post('/endpoint')  # empty
+client.post('/endpoint', DocumentArray([d1, d2]))  # DocumentArray
+
+client.post('/endpoint')  # Empty
 ```
+
 
 ## Batching Requests
 
