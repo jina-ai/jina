@@ -9,7 +9,7 @@ Every `Flow` provides an API to receive requests over the network. Supported pro
 :class: seealso
 
 To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon file.
-For more prope use of the Client, and more information about the Client itself, see the {ref}`next section <client>`.
+For more proper use of the Client, and more information about the Client itself, see the {ref}`next section <client>`.
 ```
 
 ````{tab} gRPC
