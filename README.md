@@ -263,7 +263,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/sandabox-play.png" title="outputs of docker-compose"  width="90%"/>
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/sandbox-play.png" title="outputs of docker-compose"  width="90%"/>
 </p>
 
 
