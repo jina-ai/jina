@@ -140,18 +140,18 @@ indexing_documents = DocumentArray.from_files('./imgs/*.jpg').apply(
     lambda d: d.load_uri_to_image_tensor()
 )
 
-resp_index = client.post('/index', inputs=indexing_documents, return_results=True)
+indexed_docs = client.post('/index', inputs=indexing_documents)
 
-print(f'Indexed Documents: {len(resp_index[0].docs)}')
+print(f'Indexed Documents: {len(indexed_docs)}')
 ```
 
 Then let's search for the closest image to our query image:
 
 ```python
 query_doc = indexing_documents[0]
-resp_query = client.post("/search", inputs=[query_doc], return_results=True)
+queried_docs = client.post("/search", inputs=[query_doc])
 
-matches = resp_query[0].docs[0].matches
+matches = queried_docs[0].matches
 print(f'Matched documents: {len(matches)}')
 ```
 

@@ -23,7 +23,7 @@ from jina import Flow
 f = Flow().add(uses='jinahub+sandbox://Hello')
 
 with f:
-    r = f.post('/', inputs=Document(text='world'), return_results=True)
+    r = f.post('/', inputs=Document(text='world'))
     print(r[0].text)
 ```
 
@@ -69,7 +69,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor).add(uses='jinahub+sandbox://Hello')
 
 with f:
-    r = f.post('/', inputs=Document(text='world'), return_results=True)
+    r = f.post('/', inputs=Document(text='world'))
     print(r[0].text)
 ```
 

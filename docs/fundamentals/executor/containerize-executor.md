@@ -60,13 +60,13 @@ You can define your soon-to-be-Dockerized Executor exactly like any other Execut
 We do this here in the `my_executor.py` file.
 
 ```python
-import torch # Our Executor has dependency on torch
+import torch  # Our Executor has dependency on torch
 from jina import Executor, requests
 
-class ContainerizedEncoder(Executor):
 
-   @requests
-   def foo(self, docs, **kwargs):
+class ContainerizedEncoder(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
         for doc in docs:
             doc.text = 'This Document is embedded by ContainerizedEncoder'
             doc.embedding = torch.randn(10)
@@ -155,7 +155,7 @@ from jina import Flow
 f = Flow().add(uses='docker://my_containerized_executor')
 
 with f:
-    returned_docs = f.post(on='/', inputs=DocumentArray([Document()]), return_results=True)
+    returned_docs = f.post(on='/', inputs=DocumentArray([Document()]))
 
 for doc in returned_docs:
     print(f'Document returned with text: "{doc.text}"')
