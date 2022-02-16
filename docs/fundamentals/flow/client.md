@@ -144,12 +144,13 @@ can return DataRequests.
 
 `DataRequest` objects can be seen as a container for data relevant for a given request, most importantly:
 
-- `dr.docs`: The DocumentArray associated with the request. These are the Document usually processed in a callback function.
+- `dr.docs`: The DocumentArray being passed between and returned by the Executors.
+    These are the Documents usually processed in a callback function, and are often the main payload.
 - `dr.parameters`: The input parameters of the associated request.
-- `dr.parameters['__results__']`: Reserved field that gets populated by Executors returning a Python `dict`.
-    Information in those returned `dict`s gets collected here, behind each Executor's *pod_id*.
-- `dr.data`: Contains `dr.data.docs`, which refers to the same object as `dr.docs`, and `dr.data.docs_bytes`, which is
-    the serialized version of the same DocumentArray.
+    - `dr.parameters['__results__']`: Reserved field that gets populated by Executors returning a Python `dict`.
+        Information in those returned `dict`s gets collected here, behind each Executor's *pod_id*.
+- `dr.data`: Contains information associated with the data in the request. Most importatnly, `dr.data.docs` refers to the
+    same object as `dr.docs`.
 
 ````
 
