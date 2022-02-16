@@ -46,7 +46,7 @@ class DataRequest(Request):
 
             :param value: a DocumentArray
             """
-            if value:
+            if value is not None:
                 self._loaded_doc_array = None
                 self._content.docs.CopyFrom(value.to_protobuf())
 
