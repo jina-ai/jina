@@ -13,7 +13,6 @@ from jina import Executor
 
 
 class MyExecutor(Executor):
-
     def __init__(self, foo: str, bar: int, **kwargs):
         super().__init__(**kwargs)
         self.bar = bar
@@ -110,17 +109,18 @@ When using an Executor in a Flow, there are two ways of passing arguments to its
 ```python
 from jina import Executor, Flow
 
-class MyExecutor(Executor):
 
-   def __init__(self, foo, bar, **kwargs):
-      super().__init__(**kwargs)
-      self.foo = foo
-      self.bar = bar
+class MyExecutor(Executor):
+    def __init__(self, foo, bar, **kwargs):
+        super().__init__(**kwargs)
+        self.foo = foo
+        self.bar = bar
+
 
 f = Flow().add(uses=MyExecutor, uses_with={'foo': 'hello', 'bar': 1})
 
 with f:
-  ...
+    ...
 ```
 ````
 
@@ -143,17 +143,18 @@ with:
 ```python
 from jina import Executor, Flow
 
-class MyExecutor(Executor):
 
-   def __init__(self, foo, bar, **kwargs):
-      super().__init__(**kwargs)
-      self.foo = foo
-      self.bar = bar
+class MyExecutor(Executor):
+    def __init__(self, foo, bar, **kwargs):
+        super().__init__(**kwargs)
+        self.foo = foo
+        self.bar = bar
+
 
 f = Flow().add(uses='my-exec.yml')
 
 with f:
-  ...
+    ...
 ```
 ````
 
@@ -170,12 +171,13 @@ from jina import Executor, requests, Flow
 
 
 class MyExecutor(Executor):
-
     def __init__(self, parameter_1, parameter_2, **kwargs):
         super().__init__(**kwargs)
         self.parameter_1 = parameter_1
         self.parameter_2 = parameter_2
-        print(f' \nparameter_1: {parameter_1}\nparameter_2: {parameter_2}\nmetas: {self.metas}\nrequests: {self.requests}')
+        print(
+            f' \nparameter_1: {parameter_1}\nparameter_2: {parameter_2}\nmetas: {self.metas}\nrequests: {self.requests}'
+        )
 
     @requests(on='/default')
     def default_fn(self, **kwargs):
@@ -210,10 +212,15 @@ print(f'\nStarting Flow with default Executor parameters')
 with flow1:
     pass
 
-flow2 = Flow().add(uses=exec_yaml,
-                   uses_with={'parameter_1': 'overriden_parameter_1', 'parameter_2': 'overriden_parameter_2'},
-                   uses_metas={'name': 'Dynamic Name', 'workspace': 'overriden_worskpace'},
-                   uses_requests={'/index': 'foo', '/search': 'bar'})
+flow2 = Flow().add(
+    uses=exec_yaml,
+    uses_with={
+        'parameter_1': 'overriden_parameter_1',
+        'parameter_2': 'overriden_parameter_2',
+    },
+    uses_metas={'name': 'Dynamic Name', 'workspace': 'overriden_worskpace'},
+    uses_requests={'/index': 'foo', '/search': 'bar'},
+)
 
 print(f'\nStarting Flow with overriden Executor parameters')
 with flow2:
@@ -246,6 +253,7 @@ requests: {'/index': <function MyExecutor.foo at 0x7fc3163ddb90>, '/search': <fu
 	🌐 Public address:	212.231.186.65:58267
 ```
 
+(pass-parameters)=
 ## Passing and changing request parameters
 
 An important feature of `Executor`, beyond the capacity of *processing* Documents, is the capacity to receive `parameters` and to return additional results.
@@ -263,7 +271,6 @@ from jina import requests, Executor, Flow
 
 
 class MyExec(Executor):
-
     def __init__(self, parameter=20, **kwargs):
         super().__init__(**kwargs)
         self.parameter = parameter
@@ -310,7 +317,6 @@ from jina import Executor, requests, Flow
 
 
 class MyExecutor(Executor):
-
     @requests
     def foo(self, **kwargs):
         raise NotImplementedError('no time for it')
@@ -372,7 +378,6 @@ from jina import Flow, Executor, requests
 
 
 class MyExec(Executor):
-
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
@@ -388,7 +393,7 @@ with MyExec() as executor:
 f = Flow().add(uses=MyExec)
 
 with f:
-    f.post(inputs=DocumentArray([Document(text='hello world')])
+    f.post(inputs=DocumentArray([Document(text='hello world')]))
 ```
 
 ```console
@@ -440,12 +445,21 @@ class MergeExec(Executor):
     def foo(self, docs_matrix, **kwargs):
         documents_to_return = DocumentArray()
         for doc1, doc2 in zip(*docs_matrix):
-            print(f'MergeExec processing pairs of Documents "{doc1.text}" and "{doc2.text}"')
-            documents_to_return.append(Document(text=f'Document merging from "{doc1.text}" and "{doc2.text}"'))
+            print(
+                f'MergeExec processing pairs of Documents "{doc1.text}" and "{doc2.text}"'
+            )
+            documents_to_return.append(
+                Document(text=f'Document merging from "{doc1.text}" and "{doc2.text}"')
+            )
         return documents_to_return
 
 
-f = Flow().add(uses=Exec1, name='exec1').add(uses=Exec2, name='exec2').add(uses=MergeExec, needs=['exec1', 'exec2'])
+f = (
+    Flow()
+    .add(uses=Exec1, name='exec1')
+    .add(uses=Exec2, name='exec2')
+    .add(uses=MergeExec, needs=['exec1', 'exec2'])
+)
 
 with f:
     returned_docs = f.post(on='/', inputs=DocumentArray.empty(1), return_results=True)

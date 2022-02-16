@@ -255,6 +255,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/client/">Jina Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -742,7 +743,7 @@ processing.</p>
     <span class="nd">@requests</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">pass</span>
 </pre></div>
 </div>
@@ -753,7 +754,6 @@ any other <code class="docutils literal notranslate"><span class="pre">list</spa
 <li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that can be used to pass extra parameters to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> functions.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>:  This is the least common parameter to be used for an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. This argument is needed when an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is used inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to merge or reduce the output of more than one other <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.
 As a user, you will rarely touch this parameter.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">return</span></code>: Every Executor method can process data in 3 ways: Update <code class="docutils literal notranslate"><span class="pre">docs</span></code> on the fly, return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, or return a <code class="docutils literal notranslate"><span class="pre">Dict</span></code> object.</p></li>
 </ul>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
@@ -779,6 +779,18 @@ As a user, you will rarely touch this parameter.</p></li>
 </pre></div>
 </div>
 </div>
+</section>
+<section id="method-return">
+<h3>Method return<a class="headerlink" href="#method-return" title="Permalink to this headline">¶</a></h3>
+<p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in 3 ways:</p>
+<ul class="simple">
+<li><p>If you return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, then it will be sent over to the next Executor.</p></li>
+<li><p>If you return <code class="docutils literal notranslate"><span class="pre">None</span></code> or if you don’t have a <code class="docutils literal notranslate"><span class="pre">return</span></code> in your method, then the original <code class="docutils literal notranslate"><span class="pre">doc</span></code> object (potentially mutated by your function) will be sent over to the next Executor.</p></li>
+<li><p>If you return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object, then it will be considered as a result and passed on behind <code class="docutils literal notranslate"><span class="pre">parameters['__results__']</span></code>. The original <code class="docutils literal notranslate"><span class="pre">doc</span></code> object (potentially mutated by your function) will be sent over to the next Executor.</p></li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>Let’s understand how <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s processes <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s inside a Flow, and how the changes are chained and applied, affecting downstream <code class="docutils literal notranslate"><span class="pre">Executors</span></code> in the Flow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
@@ -831,8 +843,11 @@ As a user, you will rarely touch this parameter.</p></li>
 </div>
 </section>
 </section>
+<section id="other-usages">
+<h2>Other usages<a class="headerlink" href="#other-usages" title="Permalink to this headline">¶</a></h2>
+<p>Beside running Executor inside the Flow, we list two other usages that may help you debug.</p>
 <section id="use-executor-out-of-flow">
-<h2>Use Executor out of Flow<a class="headerlink" href="#use-executor-out-of-flow" title="Permalink to this headline">¶</a></h2>
+<h3>Use Executor out of Flow<a class="headerlink" href="#use-executor-out-of-flow" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Executor</span></code> objects can be used directly, just like a regular Python object. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -855,8 +870,8 @@ As a user, you will rarely touch this parameter.</p></li>
 </pre></div>
 </div>
 </section>
-<section id="using-executors-in-an-asyncio-runner">
-<h2>Using Executors in an AsyncIO runner<a class="headerlink" href="#using-executors-in-an-asyncio-runner" title="Permalink to this headline">¶</a></h2>
+<section id="use-executors-in-an-asyncio-runner">
+<h3>Use Executors in an AsyncIO runner<a class="headerlink" href="#use-executors-in-an-asyncio-runner" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -878,6 +893,7 @@ As a user, you will rarely touch this parameter.</p></li>
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 
@@ -951,10 +967,15 @@ As a user, you will rarely touch this parameter.</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#method-arguments">Method arguments</a></li>
+<li><a class="reference internal" href="#method-return">Method return</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#other-usages">Other usages</a><ul>
 <li><a class="reference internal" href="#use-executor-out-of-flow">Use Executor out of Flow</a></li>
-<li><a class="reference internal" href="#using-executors-in-an-asyncio-runner">Using Executors in an AsyncIO runner</a></li>
+<li><a class="reference internal" href="#use-executors-in-an-asyncio-runner">Use Executors in an AsyncIO runner</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

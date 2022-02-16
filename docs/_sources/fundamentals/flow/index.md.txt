@@ -39,11 +39,12 @@ But you need to chain them together in order to bring real value and to build an
 from docarray import Document
 from jina import Flow, Executor, requests
 
-class MyExecutor(Executor):
 
+class MyExecutor(Executor):
     @requests(on='/bar')
     def foo(self, docs, **kwargs):
         print(docs)
+
 
 f = Flow().add(name='myexec1', uses=MyExecutor)
 
@@ -61,11 +62,12 @@ Server:
 ```python
 from jina import Flow, Executor, requests
 
-class MyExecutor(Executor):
 
+class MyExecutor(Executor):
     @requests(on='/bar')
     def foo(self, docs, **kwargs):
         print(docs)
+
 
 f = Flow(port_expose=12345).add(name='myexec1', uses=MyExecutor)
 
@@ -102,8 +104,8 @@ from docarray import Document, DocumentArray
 
 from jina import Executor, requests
 
-class FooExecutor(Executor):
 
+class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
@@ -137,5 +139,6 @@ Executor and Flow are the two fundamental concepts in Jina.
 
 create-flow
 flow-api
+client
 remarks
 ```
