@@ -57,7 +57,7 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a group of tasks on Documents.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 
-Leveraging these three concepts, let's build a simple image search service, as an extension of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
+Leveraging these three concepts, let's build a simple image search service, as a "productization" of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
 
 <p align="center">
@@ -207,16 +207,7 @@ Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
 </p>
 
 
-At this point, you probably have taken 7 minutes but here we are: an image search service with rich features:
 
-<sup>
-
-||||
-|---|---|---|
-|✅ Solution as microservices | ✅ Scale in/out any component| ✅ Query via HTTP/WebSocket/gRPC/Client  |
-|✅ Distribute/Dockerize components | ✅ Async/non-blocking I/O | ✅ Extendable REST interface |
-
-</sup>
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner2.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
@@ -270,12 +261,12 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-sandbox-play.png?raw=ture" title="outputs of docker-compose"  width="90%"/>
+<a href="https://docs.jina.ai"><img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-sandbox-play.png?raw=ture" title="outputs of docker-compose" width="90%"></a>
 </p>
 
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner3.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner3.svg?raw=true" alt="Containerize, share and play in one-place like a pro" width="100%"></a>
 </p>
 
 
@@ -299,7 +290,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png?raw=ture" title="outputs of docker-compose"  width="85%"/>
+<a href="https://docs.jina.ai"><img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png?raw=ture" title="She;; outputs of docker-compose"  width="85%"></a>
 </p>
 
 ### Deploy the service via Kubernetes
@@ -340,7 +331,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png?raw=ture" title="kubernetes outputs" width="70%"/>
+<a href="https://docs.jina.ai"><img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png?raw=ture" title="kubernetes outputs" width="70%"></a>
 </p>
 
 6. Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
