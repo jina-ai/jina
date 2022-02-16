@@ -175,8 +175,41 @@ print(docs.texts)
   - Creating a `DocumentArray` from serialized data using `DocumentArray(bytes)` is removed in favour of
   `DocumentArray.from_bytes(bytes)` and `DocumentArray.from_json(bytes)`
 
-**Persistence**: `DocumentArrayMemmap` is deprecated, its advantages will now be offered by different storage backends
-    such as the [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/).
+
+**New storage options**:
+
+Jina 2 used to offer persistence of DocumentArray through `DocumentArrayMemmap`. In Jina 3, this data structure is 
+deprecated and we introduce different [Document Stores](https://docarray.jina.ai/advanced/document-store/) within the 
+`DocumentArray` API. Thus, you can enjoy a consistent `DocumentArray` API across different storage backends and leverage
+ modern databases.
+
+For example, you can use [SQLite backend](https://docarray.jina.ai/advanced/document-store/sqlite/) as a replacement 
+for `DocumentArrayMemmap`, which lets you persist Documents to disk and load them in another session:
+
+````{tab} Storing to disk
+```python
+from docarray import Document, DocumentArray
+das = DocumentArray(storage='sqlite', config={'connection': 'my_connection', 'table_name': 'my_table_name'})
+das.extend([Document() for _ in range(10)])
+```
+````
+
+````{tab} Loading from disk
+```python
+from docarray import DocumentArray
+das = DocumentArray(storage='sqlite', config={'connection': 'my_connection', 'table_name': 'my_table_name'})
+print(len(das))
+```
+
+```text
+10
+```
+````
+
+The API is **almost the same** as the deprecated `DocumentArrayMemmap` and is consistent across storage backends and 
+in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor algorithms and are more convenient in 
+production.
+
 
 ## Flow: Simplified `.post()` behavior
 
