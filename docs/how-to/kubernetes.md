@@ -212,7 +212,7 @@ In Jina we support two ways of scaling:
 - **Replicas** can be used with any Executor type and is typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with indexers since they store state.
 
-Check {ref}`here <how-to-replica-shard>` for more information.
+Check {ref}`here <scale-out>` for more information.
 
 Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) to create multiple Replicas of a Deployment.
 

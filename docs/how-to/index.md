@@ -4,7 +4,7 @@ Jina is a very powerful framework that can help you build distributed neural sea
 
 ```{admonition} See Also
 :class: seealso
-If you are completely new to Jina, you should check out its {ref}`basic concepts <concepts>` first.
+If you are completely new to Jina, you should check out its {ref}`overview <architecture-overview>` first.
 You may also find the [learning portal](https://learn.jina.ai/) useful to get off the ground.
 ```
 
@@ -52,6 +52,6 @@ can put that into practice you can find {ref}`here <kubernetes>`.
 docker-compose
 kubernetes
 gpu-executor
-async-executor
+async-executors
 sandbox
 ```

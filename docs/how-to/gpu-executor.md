@@ -10,9 +10,9 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 ```{admonition} Important
 :class: important
 
-This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the [Hub](../advanced/hub/index) is also needed for the last part of the tutorial.
+This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the [Hub](../fundamentals/executor/hub/index) is also needed for the last part of the tutorial.
 
-If you're not yet familiar with these concepts, first read the [Basic Concepts](../fundamentals/concepts) and related documentation, and return to this tutorial once you feel comfortable performing baisc operations in Jina.
+If you're not yet familiar with these concepts, first read the [Executor](../fundamentals/executor) and [Flow](../fundamentals/executor) documentation, and return to this tutorial once you feel comfortable performing baisc operations in Jina.
 ```
 
 ## Jina & GPUs in a nutshell

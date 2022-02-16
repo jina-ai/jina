@@ -1,3 +1,4 @@
+(architecture-overview)=
 # Architecture Overview
 
 {ref}`Executor <executor>` and {ref}`Flow <flow>` are the two fundamental concepts in Jina. 
