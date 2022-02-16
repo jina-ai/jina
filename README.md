@@ -270,7 +270,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-sandbox-play.png" title="outputs of docker-compose"  width="90%"/>
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-sandbox-play.png?raw=ture" title="outputs of docker-compose"  width="90%"/>
 </p>
 
 
@@ -299,7 +299,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png" title="outputs of docker-compose"  width="85%"/>
+<img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png?raw=ture" title="outputs of docker-compose"  width="85%"/>
 </p>
 
 ### Deploy the service via Kubernetes
@@ -340,7 +340,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     ```
 
 <p align="center">
-<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png" title="kubernetes outputs" width="70%"/>
+<img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png?raw=ture" title="kubernetes outputs" width="70%"/>
 </p>
 
 6. Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
