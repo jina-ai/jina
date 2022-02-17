@@ -542,9 +542,9 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         ]
 
         if usage_kind == 'docker':
-            console.print(panels[2])
-        elif usage_kind == 'source':
             console.print(panels[1])
+        elif usage_kind == 'source':
+            console.print(panels[0])
         else:
             console.print(*reversed(panels))
 
