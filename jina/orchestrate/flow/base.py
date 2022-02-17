@@ -13,50 +13,50 @@ import uuid
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import (
-    Optional,
-    Union,
-    Tuple,
-    List,
-    Set,
-    Dict,
-    overload,
-    Type,
     TYPE_CHECKING,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    overload,
 )
 
-from jina.orchestrate.flow.builder import allowed_levels, _hanging_deployments
 from jina import __default_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
 from jina.enums import (
-    FlowBuildLevel,
     DeploymentRoleType,
+    FlowBuildLevel,
     FlowInspectType,
     GatewayProtocolType,
 )
 from jina.excepts import (
-    FlowTopologyError,
     FlowMissingDeploymentError,
+    FlowTopologyError,
     RuntimeFailToStart,
 )
 from jina.helper import (
-    colored,
-    get_public_ip,
-    get_internal_ip,
-    typename,
     ArgNamespace,
-    download_mermaid_url,
     CatchAllCleanupContextManager,
+    colored,
+    download_mermaid_url,
+    get_internal_ip,
+    get_public_ip,
+    typename,
 )
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
+from jina.orchestrate.deployments import Deployment
+from jina.orchestrate.flow.builder import _hanging_deployments, allowed_levels
 from jina.parsers import (
-    set_gateway_parser,
-    set_deployment_parser,
     set_client_cli_parser,
+    set_deployment_parser,
+    set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
-from jina.orchestrate.deployments import Deployment
 
 __all__ = ['Flow']
 
@@ -70,9 +70,9 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 if TYPE_CHECKING:
-    from jina.serve.executors import BaseExecutor
     from jina.clients.base import BaseClient
     from jina.orchestrate.flow.asyncio import AsyncFlow
+    from jina.serve.executors import BaseExecutor
 
 GATEWAY_NAME = 'gateway'
 FALLBACK_PARSERS = [
@@ -84,7 +84,7 @@ FALLBACK_PARSERS = [
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
-    """Flow is how Jina streamlines and distributes Executors. """
+    """Flow is how Jina streamlines and distributes Executors."""
 
     # overload_inject_start_client_flow
     @overload
@@ -229,7 +229,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param replicas: The number of replicas in the deployment
         :param runtime_backend: The parallel backend of the runtime inside the Pod
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -336,8 +336,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger = JinaLogger(self.__class__.__name__, **self._common_kwargs)
 
     def _update_args(self, args, **kwargs):
-        from jina.parsers.flow import set_flow_parser
         from jina.helper import ArgNamespace
+        from jina.parsers.flow import set_flow_parser
 
         _flow_parser = set_flow_parser()
         if args is None:
@@ -459,8 +459,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self, k8s_namespace: str, k8s_connection_pool: bool
     ) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.serve.networking import K8sGrpcConnectionPool
         from jina.orchestrate.deployments.config.helper import to_compatible_name
+        from jina.serve.networking import K8sGrpcConnectionPool
 
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
@@ -668,7 +668,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param replicas: The number of replicas in the deployment
         :param runtime_backend: The parallel backend of the runtime inside the Pod
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/topology/
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
@@ -1349,7 +1349,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         showed = False
         if inline_display:
             try:
-                from IPython.display import display, Image
+                from IPython.display import Image, display
 
                 display(Image(url=url))
                 showed = True

@@ -1,8 +1,8 @@
 """Argparser module for Pod runtimes"""
 import argparse
 
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 from jina.enums import PodRoleType, RuntimeBackendType
+from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
 def mixin_pod_parser(parser):
@@ -106,7 +106,7 @@ def mixin_pod_parser(parser):
         type=int,
         default=1,
         help='The number of shards in the deployment running at the same time. For more details check '
-        'https://docs.jina.ai/fundamentals/flow/topology/',
+        'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies',
     )
 
     gp.add_argument(
