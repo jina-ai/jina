@@ -82,10 +82,10 @@ def _is_latest_version(suppress_on_error=True):
             req, timeout=5
         ) as resp:  # 'with' is important to close the resource after use
             latest_ver = json.load(resp)['version']
-            from distutils.version import LooseVersion
+            from packaging.version import Version
 
-            latest_ver = LooseVersion(latest_ver)
-            cur_ver = LooseVersion(__version__)
+            latest_ver = Version(latest_ver)
+            cur_ver = Version(__version__)
             if cur_ver < latest_ver:
                 from jina.logging.predefined import default_logger
 
