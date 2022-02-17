@@ -165,7 +165,7 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 
         for p in path.iterdir():
             rel_path = p.relative_to(base_path)
-            if ignored_spec.match_file(rel_path):
+            if ignored_spec.match_file(str(rel_path)):
                 continue
             if p.is_dir():
                 _zip(base_path, p, archive)
