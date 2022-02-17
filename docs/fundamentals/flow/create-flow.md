@@ -138,7 +138,7 @@ The response of the `Flow` defined above is `['foo was here', 'bar was here']`, 
 As explained above, the type of Executor is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
 
 ```python
-class ExecutorFromCode(Executor):
+class ExecutorClass(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was here'))
@@ -146,17 +146,25 @@ class ExecutorFromCode(Executor):
 
 f = (
     Flow()
-    .add(uses='docker://sentence-encoder', name='executor1')
-    .add(uses='jinahub+docker://TransformerTorchEncoder/', name='executor2')
-    .add(uses=ExecutorFromCode, name='executor3')
+    .add(uses=ExecutorClass, name='executor1')
+    .add(uses='jinahub://TransformerTorchEncoder/', name='executor2')
+    .add(uses='jinahub+docker://TransformerTorchEncoder', name='executor3')
+    .add(uses='jinahub+sandbox://TransformerTorchEncoder', name='executor4')
+    .add(uses='docker://sentence-encoder', name='executor5')
+    .add(uses='executor-config.yml', name='executor6')
 )
 ```
-* `executor1` is using a Docker image tagged as `sentence-encoder` and will be created as a docker container of this image. 
-* `executor2` will use a Docker image coming from the Hub and will be created as a docker container of this image.
-* `executor3` will be used from code and will be created as a separate process.
+
+* `executor1` will use `ExecutorClass` from code, and will be created as a separate process.
+* `executor2` will download the Executor class from Hub, and will be created as a separate process.
+* `executor3` will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.
+* `executor4` will use a {ref}`Sandbox Executor <sandbox>` run by Hubble, in the cloud.
+* `executor5` will use a Docker image tagged as `sentence-encoder`, and will be created as a docker container of this image.
+* `executor6` will use an Executor configuration file defining the {ref}`Executor YAML interface <executor-yaml-interface>`, and will be created as a separate process.
 
 More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
 
+### Executor from configuration
 You can use Executors from code, being defined outside your current `PATH` environment variable. To do this you need to define your Executor configuration in a separate configuration yaml, which will be used in the `Flow`:
 
 ```
@@ -188,7 +196,7 @@ metas:
 ```
 
 Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor in Python or in a `Flow` yaml:
-````{tab} Load from YAML
+````{tab} Load from Python
 ```{code-block} python
 ---
 emphasize-lines: 3
