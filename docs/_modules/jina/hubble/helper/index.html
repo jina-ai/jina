@@ -756,7 +756,7 @@
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
             <span class="n">rel_path</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="n">rel_path</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)):</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
                 <span class="n">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">archive</span><span class="p">)</span>
@@ -1033,7 +1033,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 16, 2022.
+                    Last updated on Feb 17, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

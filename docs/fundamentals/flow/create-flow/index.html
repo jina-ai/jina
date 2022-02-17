@@ -744,7 +744,7 @@
 <section id="executor-discovery">
 <h3>Executor discovery<a class="headerlink" href="#executor-discovery" title="Permalink to this headline">¶</a></h3>
 <p>As explained above, the type of Executor is defined by providing the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. The source of an Executor can be code, docker images or Hub images.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExecutorFromCode</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExecutorClass</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
@@ -752,18 +752,27 @@
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Flow</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'docker://sentence-encoder'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor1'</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://TransformerTorchEncoder/'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor2'</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">ExecutorFromCode</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor3'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">ExecutorClass</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor1'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub://TransformerTorchEncoder/'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor2'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://TransformerTorchEncoder'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor3'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+sandbox://TransformerTorchEncoder'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor4'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'docker://sentence-encoder'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor5'</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'executor-config.yml'</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'executor6'</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">executor1</span></code> is using a Docker image tagged as <code class="docutils literal notranslate"><span class="pre">sentence-encoder</span></code> and will be created as a docker container of this image.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor2</span></code> will use a Docker image coming from the Hub and will be created as a docker container of this image.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor3</span></code> will be used from code and will be created as a separate process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor1</span></code> will use <code class="docutils literal notranslate"><span class="pre">ExecutorClass</span></code> from code, and will be created as a separate process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor2</span></code> will download the Executor class from Hub, and will be created as a separate process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor3</span></code> will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor4</span></code> will use a <a class="reference internal" href="../../../how-to/sandbox/#sandbox"><span class="std std-ref">Sandbox Executor</span></a> run by Hubble, in the cloud.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor5</span></code> will use a Docker image tagged as <code class="docutils literal notranslate"><span class="pre">sentence-encoder</span></code>, and will be created as a docker container of this image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor6</span></code> will use an Executor configuration file defining the <a class="reference internal" href="../../executor/executor-in-flow/#executor-yaml-interface"><span class="std std-ref">Executor YAML interface</span></a>, and will be created as a separate process.</p></li>
 </ul>
 <p>More complex Executors typically are used from Docker images or will be structured into separate Python modules.</p>
+</section>
+<section id="executor-from-configuration">
+<h3>Executor from configuration<a class="headerlink" href="#executor-from-configuration" title="Permalink to this headline">¶</a></h3>
 <p>You can use Executors from code, being defined outside your current <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable. To do this you need to define your Executor configuration in a separate configuration yaml, which will be used in the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 ├── app
@@ -793,7 +802,7 @@
 </div>
 <p>Now, in <code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>, to correctly load the Executor, you can specify the directory of the Executor in Python or in a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> yaml:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Load from YAML</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Load from Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">extra_search_paths</span><span class="o">=</span><span class="p">[</span><span class="s1">'../executor'</span><span class="p">])</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">'config.yml'</span><span class="p">)</span>
@@ -1098,7 +1107,7 @@ For searching, you probably need to send the search request to all Shards, becau
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 16, 2022.
+                    Last updated on Feb 17, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1127,6 +1136,7 @@ For searching, you probably need to send the search request to all Shards, becau
 <li><a class="reference internal" href="#visualize-a-flow">Visualize a <code class="docutils literal notranslate"><span class="pre">Flow</span></code></a></li>
 <li><a class="reference internal" href="#add-executors">Add Executors</a><ul>
 <li><a class="reference internal" href="#executor-discovery">Executor discovery</a></li>
+<li><a class="reference internal" href="#executor-from-configuration">Executor from configuration</a></li>
 <li><a class="reference internal" href="#override-executor-configuration">Override Executor configuration</a><ul>
 <li><a class="reference internal" href="#override-metas-configuration">Override <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration</a></li>
 <li><a class="reference internal" href="#override-with-configuration">Override <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration</a></li>

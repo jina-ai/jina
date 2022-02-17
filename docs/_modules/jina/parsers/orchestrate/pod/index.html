@@ -592,8 +592,8 @@
 <span></span><span class="sd">"""Argparser module for Pod runtimes"""</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
 <div class="viewcode-block" id="mixin_pod_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -697,7 +697,7 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'The number of shards in the deployment running at the same time. For more details check '</span>
-        <span class="s1">'https://docs.jina.ai/fundamentals/flow/topology/'</span><span class="p">,</span>
+        <span class="s1">'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -717,7 +717,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 16, 2022.
+                    Last updated on Feb 17, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
