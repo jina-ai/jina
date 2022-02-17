@@ -106,7 +106,7 @@ def mixin_pod_parser(parser):
         type=int,
         default=1,
         help='The number of shards in the deployment running at the same time. For more details check '
-        'https://docs.jina.ai/how-to/scale-out/',
+        'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies',
     )
 
     gp.add_argument(
