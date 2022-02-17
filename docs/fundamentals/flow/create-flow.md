@@ -155,12 +155,12 @@ f = (
 )
 ```
 
-* `executor1` will be used from code and will be created as a separate process.
-* `executor2` will download the Executor class from Hub and created a separate process.
-* `executor3` will use an Executor docker image coming from the Hub and will be created as a docker container of this image.
-* `executor4` will use a {ref}`Sandbox Executor <sandbox>` run by Hubble.
-* `executor5` is using a Docker image tagged as `sentence-encoder` and will be created as a docker container of this image.
-* `executor6` is using an Executor configuration file defining the {ref}`Executor YAML interface <executor-yaml-interface>`
+* `executor1` will use `ExecutorClass` from code, and will be created as a separate process.
+* `executor2` will download the Executor class from Hub, and will be created as a separate process.
+* `executor3` will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.
+* `executor4` will use a {ref}`Sandbox Executor <sandbox>` run by Hubble, in the cloud.
+* `executor5` will use a Docker image tagged as `sentence-encoder`, and will be created as a docker container of this image.
+* `executor6` will use an Executor configuration file defining the {ref}`Executor YAML interface <executor-yaml-interface>`, and will be created as a separate process.
 
 More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
 
