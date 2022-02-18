@@ -21,11 +21,11 @@
 
 Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Quickly build solutions of indexing, querying, understanding multi-/cross-modal data such as video, image, text, audio, source code, PDF.
+⏱️ **Save time** - *The* design pattern of neural search systems. Quickly build solutions for indexing, querying, understanding multi-/cross-modal data such as video, image, text, audio, source code, PDF.
 
-🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on local, [Docker compose](https://docs.jina.ai/how-to/docker-compose/), [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
+🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on local, [Docker Compose](https://docs.jina.ai/how-to/docker-compose/), [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
 
-🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minute. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Hub](https://hub.jina.ai).
+🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minutes. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Hub](https://hub.jina.ai).
 
 🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with fragmented, multi-vendor, generic legacy tools. Enjoy the integration with the neural search ecosystem including [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai).
 
@@ -37,7 +37,7 @@ Jina is a neural search framework that empowers anyone to build SOTA and scalabl
 pip install jina
 ```
 
-For Jina 2.x users, please first uninstall old Jina via `pip uninstall jina` before installation. Please also read [the 2to3 migration guide](https://docs.jina.ai/get-started/migrate/).
+For Jina 2.x users, please uninstall it via `pip uninstall jina` before installing Jina 3. Please also read [the 2 to 3 migration guide](https://docs.jina.ai/get-started/migrate/).
 
 More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/).
 
@@ -174,7 +174,7 @@ index_data = DocumentArray.pull('demo-leftda', show_progress=True)
         f.block()
     ```
 
-The full indexing on 6000 images should take ~8 mins on a Macbook Air 2020.
+The full indexing on 6,000 images should take ~8 minutes on a MacBook Air 2020.
 
 Now you can use a Python client to access the service:
 
@@ -185,7 +185,7 @@ c = Client(port=12345)  # connect to localhost:12345
 print(c.post('/search', index_data[0])['@m'])  # '@m' is the matches-selector
 ```
 
-To switch from gRPC interface to REST API, one can simply set `protocol='http'`:
+To switch from gRPC interface to REST API, you can simply set `protocol = 'http'`:
 
 ```python
 with f:
@@ -215,7 +215,7 @@ Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
 
 ### Play with Containerized Executors
 
-You can containerize the Executors and play them in a sandbox thanks to [Hub](https://hub.jina.ai).
+You can containerize the Executors and use them in a sandbox thanks to [Hub](https://hub.jina.ai).
 
 1. Move each `Executor` class to a separate folder with one Python file in each:
    - `PreprocImg` -> 📁 `preproc_img/exec.py`
@@ -239,13 +239,13 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     jina hub push embed_img
     jina hub push match_img
     ```
-   You will get three Hub Executors that can be used via Sandbox, Docker container or the source. 
+   You will get three Hub Executors that can be used via Sandbox, Docker container or source code. 
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-hub-push.png?raw=true" alt="Jina hub push gives you the sandbox" width="70%"></a>
 </p>
 
-4. In particular, sandbox hosts your Executor on Jina Cloud and allows you to play with it from local:
+4. In particular, Sandbox hosts your Executor on Jina Cloud and allows you to use it from your local machine:
     ```python
     from docarray import DocumentArray
     from jina import Flow
@@ -272,7 +272,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
 
 ### Deploy the service via Docker Compose
 
-1. Now that all Executors are in container, we can easily use Docker compose to orchestrate the Flow.
+1. Now that all Executors are in containers, we can easily use Docker Compose to orchestrate the Flow:
 
     ```python
     f = (
@@ -283,7 +283,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
     ```
 
-2. Now in the console do:
+2. Now in the console run:
 
     ```shell
     docker-compose up
@@ -311,7 +311,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
     f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
     ```
     
-4. You `k8s_config` folder would look like the following:
+4. Your `k8s_config` folder will look like the following:
     ```shell
     k8s_config
     ├── executor0
@@ -334,7 +334,7 @@ You can containerize the Executors and play them in a sandbox thanks to [Hub](ht
 <a href="https://docs.jina.ai"><img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png?raw=ture" title="kubernetes outputs" width="70%"></a>
 </p>
 
-6. Run port forwarding so that you can send requests to our Kubernetes application from local CLI : 
+6. Run port forwarding so that you can send requests to your Kubernetes application from local CLI : 
 
     ```shell
     kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
@@ -374,7 +374,7 @@ ecosystem in open source.
 
 <!-- end support-pitch -->
 
-## Contributing
+## Contribute
 
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
 your active involvement.
