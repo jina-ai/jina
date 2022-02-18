@@ -132,6 +132,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12151,4 +12152,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0feea0ac```](https://github.com/jina-ai/jina/commit/0feea0acce52fa0f067053875e40121f8ed7b361)] __-__ revert README to 2.x for delayed release (*Han Xiao*)
  - [[```f8166670```](https://github.com/jina-ai/jina/commit/f8166670d3c43c26d723e2ea307827c22b7d2a7f)] __-__ fix typo (*Han Xiao*)
  - [[```d29bd2e5```](https://github.com/jina-ai/jina/commit/d29bd2e54adfd298db7731b985ed8a9bf9e782b0)] __-__ __version__: the next version will be 2.7.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-0-1></a>
+## Release Note (`3.0.1`)
+
+> Release time: 2022-02-18 16:06:50
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Delgermurun,  Alex Cureton-Griffiths,  cristian,  Jina Dev Bot,  Joan Fontanals,  Wang Bo,  felix-wang,  Tobias Jacobowitz,  Tadej Svetina,  Han Xiao,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```70bcc67d```](https://github.com/jina-ai/jina/commit/70bcc67d55763d4a8d0b13c2f7423381ba88884f)] __-__ __hubble__: fix usage message mismatch (#4369) (*Delgermurun*)
+ - [[```36a80597```](https://github.com/jina-ai/jina/commit/36a805971ff6889cc9cc3afc743cd7313ffe3c65)] __-__ broken link in docstring (#4364) (*Wang Bo*)
+ - [[```1353b225```](https://github.com/jina-ai/jina/commit/1353b225ccf4fec410e9aa7bc3f0d38e8a4903b4)] __-__ __hubble__: pathspec match (#4360) (*felix-wang*)
+
+### 🧼 Code Refactoring
+
+ - [[```a9beeadc```](https://github.com/jina-ai/jina/commit/a9beeadc35a45606ea2b7f74bb72026392e930e5)] __-__ __cli__: replace distuils with packaging (#4362) (*felix-wang*)
+
+### 📗 Documentation
+
+ - [[```7fe77097```](https://github.com/jina-ai/jina/commit/7fe77097ca0f5101802e24a2153186b2ef6dc691)] __-__ __readme__: polish (#4368) (*Alex Cureton-Griffiths*)
+ - [[```1f2afcd5```](https://github.com/jina-ai/jina/commit/1f2afcd551382dfbb6790969b10c4c6d7ce35598)] __-__ improve quality of Executor API page (#4371) (*cristian*)
+ - [[```fb720759```](https://github.com/jina-ai/jina/commit/fb72075991cbfd8dce90abd0e960fc29e5a739e3)] __-__ improve executor discovery (#4365) (*Joan Fontanals*)
+ - [[```79fe02ad```](https://github.com/jina-ai/jina/commit/79fe02ad8b73806fc353d209d9bd62ca64f38a66)] __-__ remove leftovers (#4358) (*Tobias Jacobowitz*)
+ - [[```36b0ed57```](https://github.com/jina-ai/jina/commit/36b0ed57c4a89ac1559aa2aa24f54a1a9f6a33fc)] __-__ remove return_results (#4359) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```8584c396```](https://github.com/jina-ai/jina/commit/8584c396af8f718cbd11aa0bde0455c19608725a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```4b0e5996```](https://github.com/jina-ai/jina/commit/4b0e59963220ef1224400e1c0d53401f73350d0b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ba6e22b5```](https://github.com/jina-ai/jina/commit/ba6e22b5e2a8dc1a01f9a184ada838c376715480)] __-__ update conda script (#4357) (*Tadej Svetina*)
+ - [[```088bc6c9```](https://github.com/jina-ai/jina/commit/088bc6c9c352e2919b2f00861199a313063767c8)] __-__ fix readme image (*Han Xiao*)
+ - [[```fab0624c```](https://github.com/jina-ai/jina/commit/fab0624c1b1407bbbb2b05a2842abbe4bccb58c3)] __-__ fix raw image in readme (*Han Xiao*)
+ - [[```c1083e24```](https://github.com/jina-ai/jina/commit/c1083e24592d7256ddb6d36e6deb6dd719960129)] __-__ update images (*Han Xiao*)
+ - [[```5e73954e```](https://github.com/jina-ai/jina/commit/5e73954e7ed9d0fedfd2421b0fe25538e2e52616)] __-__ __version__: the next version will be 3.0.1 (*Jina Dev Bot*)
 
