@@ -125,6 +125,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
+        conditions: Optional[str] = '{}',
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
@@ -176,6 +177,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing

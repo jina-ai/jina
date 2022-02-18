@@ -155,6 +155,7 @@ ac_table = {
             '--proxy',
             '--port-expose',
             '--graph-description',
+            '--conditions',
             '--deployments-addresses',
             '--daemon',
             '--runtime-backend',
