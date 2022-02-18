@@ -184,6 +184,7 @@ class MyExecutor(Executor):
 ```
 ````
 
+(debug-executor)=
 ## Debug Executor outside of a Flow
 
 To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.

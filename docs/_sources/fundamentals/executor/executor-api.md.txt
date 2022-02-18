@@ -63,7 +63,7 @@ You can import the `requests` decorator via
 from jina import requests
 ```
 
-`requests` is a decorator that takes an optional parameter: `on=`. It defines the to which specific network endpoints each `Executor` method will bind. 
+`requests` is a decorator that takes an optional parameter: `on=`. It binds the decorated method of the `Executor` to the specified route. 
 
 ```python
 from jina import Executor, requests
@@ -107,8 +107,8 @@ Calling foo
 
 #### Default binding
 
-A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints. That means it
-is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`
+A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
+That means it is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`.
 
 ```python
 from jina import Executor, requests
@@ -129,16 +129,17 @@ class MyExecutor(Executor):
 
 #### No binding
 
-A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any
-processing.
+A class with no `@requests` binding plays no part in the Flow. 
+The request will simply pass through without any processing.
 
 ### Method arguments
 
-All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a `Flow`.The `async`-definition is optional.
+All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a `Flow`.
+The `async` definition is optional.
 
 
 ```python
-from typing import Dict, Optional, Union, List
+from typing import Dict, Union, List
 from docarray import DocumentArray
 from jina import Executor, requests
 
@@ -203,7 +204,10 @@ Every Executor method can `return` in 3 ways:
 
 ### Example
 
-Let's understand how `Executor`s processes `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
+Let's understand how `Executor`s process `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
+
+<details>
+<summary>Code and output</summary>
 
 ```python
 from docarray import DocumentArray, Document
@@ -244,6 +248,7 @@ with f:
     )
 ```
 
+
 ```console
            Flow@23300[I]:🎉 Flow is ready to use!                                                   
 	🔗 Protocol: 		GRPC
@@ -255,6 +260,8 @@ with f:
  ProcessDocuments: received document with text: "request2"
  PrintExecutor: received document with text: "I returned a different Document"
 ```
+
+</details>
 
 ## Other usages
 
@@ -287,7 +294,7 @@ Text: hello world
 ```
 
 
-### Use Executors in an AsyncIO runner
+### Use async Executors
 
 
 ```python
@@ -311,3 +318,10 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## See further
+
+- {ref}`Executor in Flow <executor-in-flow>` 
+- {ref}`Debugging an Executor <debug-executor>`
+- {ref}`Using an Executor on a GPU <gpu-executor>`
+- {ref}`How to use external Executors <external-executor>`

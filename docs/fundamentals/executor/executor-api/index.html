@@ -667,7 +667,7 @@ or modify their values before passing them to <code class="docutils literal notr
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">requests</span></code> is a decorator that takes an optional parameter: <code class="docutils literal notranslate"><span class="pre">on=</span></code>. It defines the to which specific network endpoints each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> method will bind.</p>
+<p><code class="docutils literal notranslate"><span class="pre">requests</span></code> is a decorator that takes an optional parameter: <code class="docutils literal notranslate"><span class="pre">on=</span></code>. It binds the decorated method of the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> to the specified route.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -707,8 +707,8 @@ or modify their values before passing them to <code class="docutils literal notr
 </div>
 <section id="default-binding">
 <h4>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this headline">¶</a></h4>
-<p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">@requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints. That means it
-is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code></p>
+<p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">@requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints.
+That means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -727,14 +727,15 @@ is the fallback handler for endpoints that are not found. <code class="docutils 
 </section>
 <section id="no-binding">
 <h4>No binding<a class="headerlink" href="#no-binding" title="Permalink to this headline">¶</a></h4>
-<p>A class with no <code class="docutils literal notranslate"><span class="pre">@requests</span></code> binding plays no part in the Flow. The request will simply pass through without any
-processing.</p>
+<p>A class with no <code class="docutils literal notranslate"><span class="pre">@requests</span></code> binding plays no part in the Flow.
+The request will simply pass through without any processing.</p>
 </section>
 </section>
 <section id="method-arguments">
 <h3>Method arguments<a class="headerlink" href="#method-arguments" title="Permalink to this headline">¶</a></h3>
-<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">@requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.The <code class="docutils literal notranslate"><span class="pre">async</span></code>-definition is optional.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">@requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -791,7 +792,9 @@ As a user, you will rarely touch this parameter.</p></li>
 </section>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
-<p>Let’s understand how <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s processes <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s inside a Flow, and how the changes are chained and applied, affecting downstream <code class="docutils literal notranslate"><span class="pre">Executors</span></code> in the Flow.</p>
+<p>Let’s understand how <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s inside a Flow, and how the changes are chained and applied, affecting downstream <code class="docutils literal notranslate"><span class="pre">Executors</span></code> in the Flow.</p>
+<details>
+<summary>Code and output</summary>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
@@ -841,6 +844,7 @@ As a user, you will rarely touch this parameter.</p></li>
 <span class="go"> PrintExecutor: received document with text: "I returned a different Document"</span>
 </pre></div>
 </div>
+</details>
 </section>
 </section>
 <section id="other-usages">
@@ -870,8 +874,8 @@ As a user, you will rarely touch this parameter.</p></li>
 </pre></div>
 </div>
 </section>
-<section id="use-executors-in-an-asyncio-runner">
-<h3>Use Executors in an AsyncIO runner<a class="headerlink" href="#use-executors-in-an-asyncio-runner" title="Permalink to this headline">¶</a></h3>
+<section id="use-async-executors">
+<h3>Use async Executors<a class="headerlink" href="#use-async-executors" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -894,6 +898,15 @@ As a user, you will rarely touch this parameter.</p></li>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="see-further">
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../executor-in-flow/#executor-in-flow"><span class="std std-ref">Executor in Flow</span></a></p></li>
+<li><p><a class="reference internal" href="../../clean-code/#debug-executor"><span class="std std-ref">Debugging an Executor</span></a></p></li>
+<li><p><a class="reference internal" href="../../../how-to/gpu-executor/#gpu-executor"><span class="std std-ref">Using an Executor on a GPU</span></a></p></li>
+<li><p><a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">How to use external Executors</span></a></p></li>
+</ul>
 </section>
 </section>
 
@@ -929,7 +942,7 @@ As a user, you will rarely touch this parameter.</p></li>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 17, 2022.
+                    Last updated on Feb 18, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -973,9 +986,10 @@ As a user, you will rarely touch this parameter.</p></li>
 </li>
 <li><a class="reference internal" href="#other-usages">Other usages</a><ul>
 <li><a class="reference internal" href="#use-executor-out-of-flow">Use Executor out of Flow</a></li>
-<li><a class="reference internal" href="#use-executors-in-an-asyncio-runner">Use Executors in an AsyncIO runner</a></li>
+<li><a class="reference internal" href="#use-async-executors">Use async Executors</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>
 </li>
 </ul>
