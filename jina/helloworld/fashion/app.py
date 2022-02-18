@@ -14,6 +14,7 @@ if __name__ == '__main__':
         query_generator,
         get_groundtruths,
     )
+    from my_executors import MyEncoder, MyIndexer
 else:
     from .helper import (
         print_result,
