@@ -425,6 +425,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         needs: str,
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
+        conditions: Dict[str, Dict],
         **kwargs,
     ):
         kwargs.update(
@@ -443,6 +444,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
+        args.conditions = json.dumps(conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
@@ -495,6 +497,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             graph_dict[node] = [deployment_docker_compose_address]
 
         return graph_dict
+
+    def _get_conditions(self) -> Dict[str, Dict]:
+        return {}
 
     def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
@@ -963,6 +968,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 needs={op_flow.last_deployment},
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
+                conditions=op_flow._get_conditions(),
             )
 
         removed_deployments = []

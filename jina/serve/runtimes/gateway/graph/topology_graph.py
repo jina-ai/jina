@@ -6,6 +6,7 @@ from typing import List, Optional, Dict, Tuple
 
 from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.data import DataRequest
+from jina.serve.runtimes.gateway.graph.condition import Condition
 
 
 class TopologyGraph:
@@ -16,10 +17,18 @@ class TopologyGraph:
     :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
         determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
         will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.
+
+    :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.
     """
 
     class _ReqReplyNode:
-        def __init__(self, name: str, number_of_parts: int = 1, hanging: bool = False):
+        def __init__(
+            self,
+            name: str,
+            number_of_parts: int = 1,
+            hanging: bool = False,
+            condition: Optional[Condition] = None,
+        ):
             self.name = name
             self.outgoing_nodes = []
             self.number_of_parts = number_of_parts
@@ -28,10 +37,15 @@ class TopologyGraph:
             self.start_time = None
             self.end_time = None
             self.status = None
+            self._condition = condition
 
         @property
         def leaf(self):
             return len(self.outgoing_nodes) == 0
+
+        def _update_requests(self):
+            for req in self.parts_to_send:
+                req.docs = self._condition.filter(req.docs)
 
         async def _wait_previous_and_send(
             self,
@@ -40,6 +54,7 @@ class TopologyGraph:
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
         ):
+            # Check my condition and send request with the condition
             metadata = {}
             if previous_task is not None:
                 result = await previous_task
@@ -51,6 +66,8 @@ class TopologyGraph:
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
+                    if self._condition is not None:
+                        self._update_requests()
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
                         deployment=self.name,
@@ -149,7 +166,9 @@ class TopologyGraph:
                 request = outgoing_node.add_route(request=request)
             return request
 
-    def __init__(self, graph_representation: Dict, *args, **kwargs):
+    def __init__(
+        self, graph_representation: Dict, conditions: Dict = {}, *args, **kwargs
+    ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
             origin_node_names = graph_representation['start-gateway']
@@ -175,6 +194,7 @@ class TopologyGraph:
                 if num_parts_per_node[node_name] > 0
                 else 1,
                 hanging=node_name in hanging_deployment_names,
+                condition=conditions.get(node_name, None),
             )
 
         for node_name, outgoing_node_names in graph_representation.items():
