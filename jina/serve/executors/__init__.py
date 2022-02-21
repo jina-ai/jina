@@ -49,7 +49,7 @@ class ExecutorType(type(JAMLCompatible), type):
         reg_cls_set = getattr(cls, '_registered_class', set())
 
         cls_id = f'{cls.__module__}.{cls.__name__}'
-        if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
+        if cls_id not in reg_cls_set:
             arg_spec = inspect.getfullargspec(cls.__init__)
 
             if not arg_spec.varkw and not __args_executor_init__.issubset(
@@ -78,7 +78,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     .. code-block:: python
 
         class MyAwesomeExecutor:
-            def __init__(awesomeness = 5):
+            def __init__(awesomeness=5):
                 pass
 
     is equal to

@@ -41,7 +41,7 @@ class EnumType(EnumMeta):
         :return: Registered class.
         """
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+        if cls.__name__ not in reg_cls_set:
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
         from jina.jaml import JAML
