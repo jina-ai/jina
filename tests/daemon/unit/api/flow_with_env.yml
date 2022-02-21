@@ -9,5 +9,5 @@ with:
     key3: ${ context_var3 }  # this should not be replaced
 executors:
   - name: local_replicas
-    port_in: 45678
+    port: 45678
     replicas: 2

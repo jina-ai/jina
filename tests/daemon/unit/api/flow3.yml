@@ -5,5 +5,5 @@ with:
   protocol: http
 executors:
   - name: local_replicas
-    port_in: 45678
+    port: 45678
     replicas: 2
