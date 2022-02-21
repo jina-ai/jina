@@ -52,7 +52,7 @@ spec:
         command: {command_uses_before}
         args: {args_uses_before}
         ports:
-          - containerPort: {port_in_uses_before}
+          - containerPort: {port_uses_before}
         envFrom:
           - configMapRef:
               name: {name}-configmap
@@ -66,6 +66,6 @@ spec:
 
         readinessProbe:
           tcpSocket:
-            port: {port_in_uses_before}
+            port: {port_uses_before}
           initialDelaySeconds: 5
           periodSeconds: 10
