@@ -110,7 +110,6 @@ def test_func_joiner(mocker):
         .add(uses=Joiner, needs=['executor0', 'executor1'])
     )
 
-
     with f:
         resp = Client(return_responses=True, port=1234).post(
             on='/some_endpoint',
