@@ -128,7 +128,7 @@ def test_request_generate_dict():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
             doc = {
-                'id': 'root',
+                'id': f'root {j}',
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
                 'tags': {'id': 1000},
@@ -145,6 +145,7 @@ def test_request_generate_dict():
     assert len(request.docs) == 100
     for index, doc in enumerate(request.docs, 1):
         assert doc.text == f'i\'m dummy doc {index}'
+        assert doc.id == f'root {index}'
         assert doc.offset == 1000
         assert doc.tags['id'] == 1000
         assert len(doc.chunks) == 2
@@ -160,7 +161,7 @@ def test_request_generate_dict_str():
     def random_docs(num_docs):
         for j in range(1, num_docs + 1):
             doc = {
-                'id': 'root',
+                'id': f'root {j}',
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
                 'tags': {'id': 1000},
@@ -176,6 +177,7 @@ def test_request_generate_dict_str():
     request = next(req)
     assert len(request.docs) == 100
     for index, doc in enumerate(request.docs, 1):
+        assert doc.id == f'root {index}'
         assert doc.text == f'i\'m dummy doc {index}'
         assert doc.offset == 1000
         assert doc.tags['id'] == 1000
