@@ -804,7 +804,11 @@ class Deployment(BaseDeployment):
                 else:
                     _args.name = f'{replica_id}'
 
-                _args.port = helper.random_port()
+                # the gateway needs to respect the assigned port
+                if args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.port = args.port
+                else:
+                    _args.port = helper.random_port()
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:

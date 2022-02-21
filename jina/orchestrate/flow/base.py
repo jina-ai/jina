@@ -763,7 +763,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
-            if key not in kwargs:
+            # do not inherit the port argument from the flow
+            if key not in kwargs and key != 'port':
                 kwargs[key] = value
 
         # check if host is set to remote:port

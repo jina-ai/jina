@@ -125,7 +125,7 @@ class FlowDepends:
             - yaml is stored in `workspace` directory, so we'll `cd` there
             - yaml might include env vars. so we'll set them (passed via query params)
         2. `build` the Flow so that `gateway` gets added.
-            - get the list of ports to be published (port, port, port_out, port_ctrl)
+            - get the list of ports to be published
             - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
             - Deployment level args for ports are enough, as we don't need to publish Pod ports
         3. `save` the Flow config.

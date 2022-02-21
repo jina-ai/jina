@@ -7,7 +7,6 @@ class Ports(BaseModel):
     """Port names"""
 
     port: Optional[int]
-    port: Optional[int]
 
     def __len__(self):
         return len(self.__fields_set__)
