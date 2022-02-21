@@ -338,7 +338,7 @@ def test_worker_services(name: str, shards: str):
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
 def test_docker_compose_gateway(deployments_addresses):
     args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465', '--port', '33455']
+        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
     # ignored for gateway
     deployment_config = DockerComposeConfig(
@@ -348,14 +348,12 @@ def test_docker_compose_gateway(deployments_addresses):
     assert name == 'gateway'
     assert gateway_config['image'] == 'jinaai/jina:test-pip'
     assert gateway_config['entrypoint'] == ['jina']
-    assert gateway_config['ports'] == [
-        f'{args.port}:{args.port}',
-        f'{args.port}:{args.port}',
-    ]
-    assert gateway_config['expose'] == [f'{args.port}', f'{args.port}']
+    assert gateway_config['ports'] == [f'{args.port}:{args.port}']
+    assert gateway_config['expose'] == [f'{args.port}']
     args = gateway_config['command']
     assert args[0] == 'gateway'
     assert '--port' in args
+    assert args[args.index('--port') + 1] == '32465'
     assert '--env' not in args
     assert '--pod-role' in args
     assert args[args.index('--pod-role') + 1] == 'GATEWAY'

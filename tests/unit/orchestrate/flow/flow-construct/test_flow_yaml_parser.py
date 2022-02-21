@@ -127,8 +127,6 @@ def test_dump_load_build(monkeypatch):
     assert f['executor2'].args.host == f1['executor2'].args.host
     # this was set during `load_config`
     assert f['executor2'].args.port == f1['executor2'].args.port
-    # gateway args are not set, if `JINA_FULL_CLI` is not set
-    assert f['gateway'].args.port != f1['gateway'].args.port
 
     monkeypatch.setenv('JINA_FULL_CLI', 'true')
     f2: Flow = Flow.load_config(JAML.dump(f)).build()

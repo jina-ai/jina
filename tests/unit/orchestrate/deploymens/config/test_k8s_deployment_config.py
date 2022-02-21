@@ -130,11 +130,11 @@ def test_parse_args(
     else:
         if shards > 1:
             candidate_connection_list = {
-                str(i): f'executor-{i}.default-namespace.svc:8081'
+                str(i): f'executor-{i}.default-namespace.svc:8080'
                 for i in range(shards)
             }
         else:
-            candidate_connection_list = {'0': f'executor.default-namespace.svc:8081'}
+            candidate_connection_list = {'0': f'executor.default-namespace.svc:8080'}
         assert deployment_config.deployment_args[
             'head_deployment'
         ].connection_list == json.dumps(candidate_connection_list)
@@ -404,8 +404,6 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     assert args[0] == 'gateway'
     assert '--k8s-namespace' in args
     assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
-    assert '--port' in args
-    assert args[args.index('--port') + 1] == '8081'
     assert '--port' in args
     assert args[args.index('--port') + 1] == '32465'
     assert '--env' not in args

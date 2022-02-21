@@ -324,7 +324,8 @@ class K8sDeploymentConfig:
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
-            cargs.port = K8sGrpcConnectionPool.K8S_port
+            if args.name != 'gateway':
+                cargs.port = K8sGrpcConnectionPool.K8S_port
             cargs.uses_before_address = None
             cargs.uses_after_address = None
             if shards > 1:
