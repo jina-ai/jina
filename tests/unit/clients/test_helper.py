@@ -25,7 +25,7 @@ async def test_http_clientlet():
     from jina.helper import random_port
 
     port = random_port()
-    with Flow(port_expose=port, protocol='http').add():
+    with Flow(port=port, protocol='http').add():
         async with HTTPClientlet(
             url=f'http://localhost:{port}/post', logger=logger
         ) as iolet:

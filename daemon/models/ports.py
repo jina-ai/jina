@@ -6,8 +6,8 @@ from pydantic import BaseModel
 class Ports(BaseModel):
     """Port names"""
 
-    port_in: Optional[int]
-    port_expose: Optional[int]
+    port: Optional[int]
+    port: Optional[int]
 
     def __len__(self):
         return len(self.__fields_set__)

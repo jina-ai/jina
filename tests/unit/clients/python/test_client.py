@@ -58,14 +58,14 @@ def test_check_input_fail(inputs):
 
 
 @pytest.mark.parametrize(
-    'port_expose, route, status_code',
+    'port, route, status_code',
     [(helper.random_port(), '/status', 200), (helper.random_port(), '/api/ass', 404)],
 )
-def test_gateway_ready(port_expose, route, status_code):
+def test_gateway_ready(port, route, status_code):
     p = set_gateway_parser().parse_args(
         [
-            '--port-expose',
-            str(port_expose),
+            '--port',
+            str(port),
             '--protocol',
             'http',
             '--graph-description',
@@ -76,7 +76,7 @@ def test_gateway_ready(port_expose, route, status_code):
     )
     with PodFactory.build_pod(p):
         time.sleep(0.5)
-        a = requests.get(f'http://localhost:{p.port_expose}{route}')
+        a = requests.get(f'http://localhost:{p.port}{route}')
     assert a.status_code == status_code
 
 
@@ -84,7 +84,7 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
     with flow_with_http:
         time.sleep(0.5)
         r = requests.post(
-            f'http://localhost:{flow_with_http.port_expose}/index',
+            f'http://localhost:{flow_with_http.port}/index',
             json={'data': {'docs': [{'uri': test_img_1}, {'uri': test_img_2}]}},
         )
 
@@ -103,7 +103,7 @@ def test_client_websocket(mocker, flow_with_websocket):
         client = Client(
             return_responses=True,
             host='localhost',
-            port=str(flow_with_websocket.port_expose),
+            port=str(flow_with_websocket.port),
             protocol='websocket',
         )
         # Test that a regular index request triggers the correct callbacks
@@ -134,7 +134,7 @@ def test_independent_client(protocol):
         c = Client(
             return_responses=True,
             host='localhost',
-            port=f.port_expose,
+            port=f.port,
             protocol=protocol,
         )
         assert type(c) == type(f.client)
@@ -160,7 +160,7 @@ def test_all_sync_clients(protocol, mocker):
         c = Client(
             return_responses=True,
             host='localhost',
-            port=f.port_expose,
+            port=f.port,
             protocol=protocol,
         )
         c.post('/', on_done=m1)

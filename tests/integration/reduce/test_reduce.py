@@ -48,7 +48,7 @@ class DummyExecutor(Executor):
 @pytest.mark.parametrize('n_docs', [3, 5])
 def test_reduce_shards(n_docs):
     n_shards = 3
-    search_flow = Flow(port_expose=exposed_port).add(
+    search_flow = Flow(port=exposed_port).add(
         uses=ShardsExecutor,
         shards=n_shards,
         polling='all',
@@ -86,7 +86,7 @@ def test_reduce_shards(n_docs):
 @pytest.mark.parametrize('n_shards', [3, 5])
 @pytest.mark.parametrize('n_docs', [3, 5])
 def test_uses_after_no_reduce(n_shards, n_docs):
-    search_flow = Flow(port_expose=exposed_port).add(
+    search_flow = Flow(port=exposed_port).add(
         uses=ShardsExecutor,
         shards=n_shards,
         uses_after=DummyExecutor,
@@ -142,7 +142,7 @@ class ExecutorStatus(Executor):
 
 def test_reduce_needs():
     flow = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -163,7 +163,7 @@ def test_reduce_needs():
 
 def test_uses_before_reduce():
     flow = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -180,7 +180,7 @@ def test_uses_before_reduce():
 
 def test_uses_before_no_reduce_real_executor():
     flow = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -198,7 +198,7 @@ def test_uses_before_no_reduce_real_executor():
 
 def test_uses_before_no_reduce_real_executor_uses():
     flow = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
@@ -216,7 +216,7 @@ def test_uses_before_no_reduce_real_executor_uses():
 
 def test_reduce_status():
     n_shards = 2
-    flow = Flow(port_expose=exposed_port).add(
+    flow = Flow(port=exposed_port).add(
         uses=ExecutorStatus, name='pod0', shards=n_shards, polling='all'
     )
 

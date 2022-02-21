@@ -48,7 +48,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
-        bind_addr = f'{__default_host__}:{self.args.port_expose}'
+        bind_addr = f'{__default_host__}:{self.args.port}'
         self.server.add_insecure_port(bind_addr)
         self.logger.debug(f' Start server bound to {bind_addr}')
         await self.server.start()

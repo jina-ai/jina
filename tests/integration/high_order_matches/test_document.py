@@ -28,7 +28,7 @@ class MatchAdder(Executor):
 
 def test_single_executor():
 
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'r,m'}}
     )
 
@@ -43,7 +43,7 @@ def test_single_executor():
 def test_multi_executor():
 
     f = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'r'}})
         .add(uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'm'}})
     )

@@ -76,7 +76,7 @@ def test_parse_args(
         skip_attr=(
             'runtime_cls',
             'pod_role',
-            'port_in',
+            'port',
             'k8s_namespace',
             'k8s_connection_pool',
             'name',
@@ -197,7 +197,7 @@ def test_parse_args(
             skip_attr=(
                 'runtime_cls',
                 'pod_role',
-                'port_in',
+                'port',
                 'k8s_namespace',
                 'k8s_connection_pool',
                 'uses_before',  # the uses_before and after is head business
@@ -294,7 +294,7 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
             skip_attr=(
                 'uses_before',
                 'uses_after',
-                'port_in',
+                'port',
                 'k8s_namespace',
                 'k8s_connection_pool',
                 'name',
@@ -338,7 +338,7 @@ def test_worker_services(name: str, shards: str):
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
 def test_docker_compose_gateway(deployments_addresses):
     args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465', '--port-in', '33455']
+        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465', '--port', '33455']
     )  # envs are
     # ignored for gateway
     deployment_config = DockerComposeConfig(
@@ -349,16 +349,13 @@ def test_docker_compose_gateway(deployments_addresses):
     assert gateway_config['image'] == 'jinaai/jina:test-pip'
     assert gateway_config['entrypoint'] == ['jina']
     assert gateway_config['ports'] == [
-        f'{args.port_expose}:{args.port_expose}',
-        f'{args.port_in}:{args.port_in}',
+        f'{args.port}:{args.port}',
+        f'{args.port}:{args.port}',
     ]
-    assert gateway_config['expose'] == [f'{args.port_expose}', f'{args.port_in}']
+    assert gateway_config['expose'] == [f'{args.port}', f'{args.port}']
     args = gateway_config['command']
     assert args[0] == 'gateway'
-    assert '--port-in' in args
-    assert args[args.index('--port-in') + 1] == '33455'
-    assert '--port-expose' in args
-    assert args[args.index('--port-expose') + 1] == '32465'
+    assert '--port' in args
     assert '--env' not in args
     assert '--pod-role' in args
     assert args[args.index('--pod-role') + 1] == 'GATEWAY'
@@ -449,8 +446,8 @@ def test_docker_compose_yaml_regular_deployment(
     assert head_args[head_args.index('--runtime-cls') + 1] == 'HeadRuntime'
     assert '--name' in head_args
     assert head_args[head_args.index('--name') + 1] == 'executor/head'
-    assert '--port-in' in head_args
-    assert head_args[head_args.index('--port-in') + 1] == '8081'
+    assert '--port' in head_args
+    assert head_args[head_args.index('--port') + 1] == '8081'
     assert '--env' not in head_args
     assert '--pod-role' in head_args
     assert head_args[head_args.index('--pod-role') + 1] == 'HEAD'
@@ -504,8 +501,8 @@ def test_docker_compose_yaml_regular_deployment(
             uses_before_args[uses_before_args.index('--name') + 1]
             == 'executor/uses-before'
         )
-        assert '--port-in' in uses_before_args
-        assert uses_before_args[uses_before_args.index('--port-in') + 1] == '8081'
+        assert '--port' in uses_before_args
+        assert uses_before_args[uses_before_args.index('--port') + 1] == '8081'
         assert '--connection-list' not in uses_before_args
         assert '--polling' not in uses_before_args
 
@@ -525,8 +522,8 @@ def test_docker_compose_yaml_regular_deployment(
             uses_after_args[uses_after_args.index('--name') + 1]
             == 'executor/uses-after'
         )
-        assert '--port-in' in uses_after_args
-        assert uses_after_args[uses_after_args.index('--port-in') + 1] == '8081'
+        assert '--port' in uses_after_args
+        assert uses_after_args[uses_after_args.index('--port') + 1] == '8081'
         assert '--connection-list' not in uses_after_args
         assert '--polling' not in uses_after_args
 
@@ -557,8 +554,8 @@ def test_docker_compose_yaml_regular_deployment(
             assert '--native' in replica_args
             assert '--name' in replica_args
             assert replica_args[replica_args.index('--name') + 1] == expected_arg_name
-            assert '--port-in' in replica_args
-            assert replica_args[replica_args.index('--port-in') + 1] == '8081'
+            assert '--port' in replica_args
+            assert replica_args[replica_args.index('--port') + 1] == '8081'
             assert '--env' in replica_args
             assert (
                 replica_args[replica_args.index('--env') + 1]

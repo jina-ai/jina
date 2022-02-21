@@ -72,7 +72,7 @@ def hello_world(args):
     f = Flow.load_config('flow-search.yml')
     # switch to HTTP gateway
     f.protocol = 'http'
-    f.port_expose = args.port_expose
+    f.port = args.port
 
     url_html_path = 'file://' + os.path.abspath(
         os.path.join(cur_dir, 'static/index.html')

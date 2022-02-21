@@ -26,7 +26,7 @@ gateway_schema = gateway_app.openapi()
 gateway_schema['info']['x-logo'] = {'url': JINA_LOGO_URL}
 gateway_schema['servers'] = []
 gateway_schema['servers'].append(
-    {'url': f'http://localhost:{args.port_expose}', 'description': 'Local Jina gateway'}
+    {'url': f'http://localhost:{args.port}', 'description': 'Local Jina gateway'}
 )
 with open(GATEWAY_SCHEMA_FILENAME, 'w') as f:
     json.dump(gateway_schema, f)

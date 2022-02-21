@@ -17,7 +17,7 @@ def get_deployment_yamls(
     jina_deployment_name: str,
     pod_type: str,
     shard_id: Optional[int] = None,
-    port_expose: Optional[int] = None,
+    port: Optional[int] = None,
     env: Optional[Dict] = None,
     gpus: Optional[Union[int, str]] = None,
     image_name_uses_before: Optional[str] = None,
@@ -39,7 +39,7 @@ def get_deployment_yamls(
     :param jina_deployment_name: Name of the Jina Deployment this deployment belongs to
     :param pod_type: type os this pod, can be gateway/head/worker
     :param shard_id: id of this shard, None if shards=1 or this is gateway/head
-    :param port_expose: port which will be exposed by the deployed containers
+    :param port: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
     :param image_name_uses_before: image for uses_before container in the k8s deployment
@@ -52,13 +52,8 @@ def get_deployment_yamls(
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
-    if not port_expose:
-        port_expose = K8sGrpcConnectionPool.K8S_PORT_EXPOSE
-    port_in = K8sGrpcConnectionPool.K8S_PORT_IN
-    if name == 'gateway':
-        port_ready_probe = port_expose
-    else:
-        port_ready_probe = port_in
+    if not port:
+        port = K8sGrpcConnectionPool.K8S_port
 
     deployment_params = {
         'name': name,
@@ -67,10 +62,9 @@ def get_deployment_yamls(
         'replicas': replicas,
         'command': container_cmd,
         'args': container_args,
-        'port_expose': port_expose,
-        'port_in': port_in,
-        'port_in_uses_before': K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
-        'port_in_uses_after': K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
+        'port': port,
+        'port_uses_before': K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
+        'port_uses_after': K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
         'args_uses_before': container_args_uses_before,
         'args_uses_after': container_args_uses_after,
         'command_uses_before': container_cmd_uses_before,
@@ -81,7 +75,6 @@ def get_deployment_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
-        'port_ready_probe': port_ready_probe,
     }
 
     if gpus:
@@ -123,8 +116,7 @@ def get_deployment_yamls(
                 'name': name,
                 'target': name,
                 'namespace': namespace,
-                'port_expose': port_expose,
-                'port_in': port_in,
+                'port': port,
                 'type': 'ClusterIP',
             },
         ),
@@ -135,13 +127,13 @@ def get_deployment_yamls(
 
 
 def get_cli_params(
-    arguments: Namespace, skip_list: Tuple[str] = (), port_in: Optional[int] = None
+    arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
 ) -> str:
     """Get cli parameters based on the arguments.
 
     :param arguments: arguments where the cli parameters are generated from
     :param skip_list: list of arguments which should be ignored
-    :param port_in: overwrite port_in with the provided value if set
+    :param port: overwrite port with the provided value if set
 
     :return: string which contains all cli parameters
     """
@@ -157,8 +149,8 @@ def get_cli_params(
         'uses_before',
         'replicas',
     ] + list(skip_list)
-    if port_in:
-        arguments.port_in = port_in
+    if port:
+        arguments.port = port
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
         for attribute, value in arguments.__dict__.items()

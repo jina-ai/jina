@@ -125,7 +125,7 @@ class FlowDepends:
             - yaml is stored in `workspace` directory, so we'll `cd` there
             - yaml might include env vars. so we'll set them (passed via query params)
         2. `build` the Flow so that `gateway` gets added.
-            - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)
+            - get the list of ports to be published (port, port, port_out, port_ctrl)
             - ports need to be published for gateway & executors that are not `ContainerRuntime` or `JinadRuntime` based
             - Deployment level args for ports are enough, as we don't need to publish Pod ports
         3. `save` the Flow config.
@@ -151,7 +151,7 @@ class FlowDepends:
                 PortMapping(
                     deployment_name='gateway',
                     pod_name='gateway',
-                    ports=Ports(port_expose=f.port_expose),
+                    ports=Ports(port=f.port),
                 )
             )
             for deployment_name, deployment in f._deployment_nodes.items():
@@ -246,7 +246,7 @@ class PodDepends:
 
         :return: dict of port mappings
         """
-        # Container pods are started in separate docker containers, so we should not expose port_in here
+        # Container pods are started in separate docker containers, so we should not expose port here
         if (
             (
                 self.params.pod_role
@@ -257,7 +257,7 @@ class PodDepends:
         ):
             return {}
         else:
-            return {f'{self.params.port_in}/tcp': self.params.port_in}
+            return {f'{self.params.port}/tcp': self.params.port}
 
     def update_args(self):
         """TODO: update docs"""

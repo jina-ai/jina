@@ -9,7 +9,7 @@ from jina import Flow
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     flow = (
-        Flow(name='test-flow', port_in=9090, port_expose=8080, protocol=protocol)
+        Flow(name='test-flow', port=9090, protocol=protocol)
         .add(name='executor0', uses_with={'param': 0})
         .add(name='executor1', shards=2, uses_with={'param': 0})
         .add(
@@ -55,14 +55,12 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
 
     gateway_service = services['gateway']
     assert gateway_service['entrypoint'] == ['jina']
-    assert gateway_service['expose'] == ['8080', '9090']
-    assert gateway_service['ports'] == ['8080:8080', '9090:9090']
+    assert gateway_service['expose'] == ['9090']
+    assert gateway_service['ports'] == ['9090:9090']
     gateway_args = gateway_service['command']
     assert gateway_args[0] == 'gateway'
-    assert '--port-in' in gateway_args
-    assert gateway_args[gateway_args.index('--port-in') + 1] == '9090'
-    assert '--port-expose' in gateway_args
-    assert gateway_args[gateway_args.index('--port-expose') + 1] == '8080'
+    assert '--port' in gateway_args
+    assert gateway_args[gateway_args.index('--port') + 1] == '9090'
     assert '--graph-description' in gateway_args
     assert (
         gateway_args[gateway_args.index('--graph-description') + 1]

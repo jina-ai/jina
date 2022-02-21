@@ -30,7 +30,7 @@ def test_regular_data_case():
     _add_worker(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port_in}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -51,13 +51,13 @@ def test_control_message_processing():
     # no connection registered yet
     with pytest.raises(RpcError):
         GrpcConnectionPool.send_request_sync(
-            _create_test_data_message(), f'{args.host}:{args.port_in}'
+            _create_test_data_message(), f'{args.host}:{args.port}'
         )
 
     _add_worker(args, 'ip1')
     # after adding a connection, sending should work
     result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port_in}'
+        _create_test_data_message(), f'{args.host}:{args.port}'
     )
     assert result
 
@@ -65,7 +65,7 @@ def test_control_message_processing():
     # after removing the connection again, sending does not work anymore
     with pytest.raises(RpcError):
         GrpcConnectionPool.send_request_sync(
-            _create_test_data_message(), f'{args.host}:{args.port_in}'
+            _create_test_data_message(), f'{args.host}:{args.port}'
         )
 
     _destroy_runtime(args, cancel_event, runtime_thread)
@@ -88,7 +88,7 @@ def test_message_merging(disable_reduce):
 
     data_request = _create_test_data_message()
     result = GrpcConnectionPool.send_requests_sync(
-        [data_request, data_request], f'{args.host}:{args.port_in}'
+        [data_request, data_request], f'{args.host}:{args.port}'
     )
     assert result
     assert _queue_length(handle_queue) == 3
@@ -111,7 +111,7 @@ def test_uses_before_uses_after():
     assert handle_queue.empty()
 
     result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port_in}'
+        _create_test_data_message(), f'{args.host}:{args.port}'
     )
     assert result
     assert _queue_length(handle_queue) == 5  # uses_before + 3 workers + uses_after
@@ -144,7 +144,7 @@ def test_decompress(monkeypatch):
     _add_worker(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port_in}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -178,7 +178,7 @@ def test_dynamic_polling(polling):
     _add_worker(args, shard_id=1)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port_in}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -190,7 +190,7 @@ def test_dynamic_polling(polling):
     assert _queue_length(handle_queue) == 2
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port_in}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -220,7 +220,7 @@ def test_base_polling(polling):
     _add_worker(args, shard_id=1)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port_in}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -232,7 +232,7 @@ def test_base_polling(polling):
     assert _queue_length(handle_queue) == 2 if polling == 'all' else 1
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port_in}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -283,7 +283,7 @@ def _create_runtime(args):
     runtime_thread.start()
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port_in}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
     return cancel_event, handle_queue, runtime_thread
@@ -293,7 +293,7 @@ def _add_worker(args, ip='fake_ip', shard_id=None):
     activate_msg = ControlRequest(command='ACTIVATE')
     activate_msg.add_related_entity('worker', ip, 8080, shard_id)
     assert GrpcConnectionPool.send_request_sync(
-        activate_msg, f'{args.host}:{args.port_in}'
+        activate_msg, f'{args.host}:{args.port}'
     )
 
 
@@ -301,14 +301,14 @@ def _remove_worker(args, ip='fake_ip', shard_id=None):
     activate_msg = ControlRequest(command='DEACTIVATE')
     activate_msg.add_related_entity('worker', ip, 8080, shard_id)
     assert GrpcConnectionPool.send_request_sync(
-        activate_msg, f'{args.host}:{args.port_in}'
+        activate_msg, f'{args.host}:{args.port}'
     )
 
 
 def _destroy_runtime(args, cancel_event, runtime_thread):
     cancel_event.set()
     runtime_thread.join()
-    assert not HeadRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not HeadRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 def _queue_length(queue: 'multiprocessing.Queue'):

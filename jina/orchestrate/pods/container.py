@@ -128,7 +128,7 @@ def _docker_run(
         del args.gpus
 
     _args = ArgNamespace.kwargs2list(non_defaults)
-    ports = {f'{args.port_in}/tcp': args.port_in} if not net_mode else None
+    ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
@@ -318,7 +318,7 @@ class ContainerPod(BasePod):
             else:
                 ctrl_host = self.args.host
 
-            ctrl_address = f'{ctrl_host}:{self.args.port_in}'
+            ctrl_address = f'{ctrl_host}:{self.args.port}'
 
             net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
                 client, ctrl_address
@@ -342,7 +342,7 @@ class ContainerPod(BasePod):
             try:
                 bridge_network = client.networks.get('bridge')
                 if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port_in}'
+                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
             except Exception as ex:
                 self.logger.warning(
                     f'Unable to set control address from "bridge" network: {ex!r}'

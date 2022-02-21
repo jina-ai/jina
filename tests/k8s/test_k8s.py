@@ -116,11 +116,11 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port_expose, flow.port_expose, config_path
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         client_kwargs = dict(
             host='localhost',
-            port=flow.port_expose,
+            port=flow.port,
             return_responses=True,
             asyncio=True,
         )
@@ -141,7 +141,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
 
 @pytest.fixture()
 def k8s_flow_with_sharding(docker_images, polling):
-    flow = Flow(name='test-flow-with-sharding', port_expose=9090, protocol='http').add(
+    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
         name='test_executor',
         shards=2,
         replicas=2,
@@ -154,7 +154,7 @@ def k8s_flow_with_sharding(docker_images, polling):
 
 @pytest.fixture
 def k8s_flow_configmap(docker_images):
-    flow = Flow(name='k8s-flow-configmap', port_expose=9090, protocol='http').add(
+    flow = Flow(name='k8s-flow-configmap', port=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
@@ -164,7 +164,7 @@ def k8s_flow_configmap(docker_images):
 
 @pytest.fixture
 def k8s_flow_gpu(docker_images):
-    flow = Flow(name='k8s-flow-gpu', port_expose=9090, protocol='http').add(
+    flow = Flow(name='k8s-flow-gpu', port=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         gpus=1,
@@ -174,7 +174,7 @@ def k8s_flow_gpu(docker_images):
 
 @pytest.fixture
 def k8s_flow_with_reload_executor(docker_images):
-    flow = Flow(name='test-flow-with-reload', port_expose=9090, protocol='http').add(
+    flow = Flow(name='test-flow-with-reload', port=9090, protocol='http').add(
         name='test_executor',
         replicas=2,
         uses_with={'argument': 'value1'},
@@ -187,7 +187,7 @@ def k8s_flow_with_reload_executor(docker_images):
 def k8s_flow_scale(docker_images, shards):
     DEFAULT_REPLICAS = 2
 
-    flow = Flow(name='test-flow-scale', port_expose=9090, protocol='http').add(
+    flow = Flow(name='test-flow-scale', port=9090, protocol='http').add(
         name='test_executor',
         shards=shards,
         replicas=DEFAULT_REPLICAS,
@@ -200,7 +200,7 @@ def k8s_flow_with_needs(docker_images):
     flow = (
         Flow(
             name='test-flow-with-needs',
-            port_expose=9090,
+            port=9090,
             protocol='http',
         )
         .add(
@@ -521,7 +521,7 @@ async def test_rolling_update_simple(
     indirect=True,
 )
 async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, tmpdir):
-    flow = Flow(name='k8s_flow-with_workspace', port_expose=9090, protocol='http').add(
+    flow = Flow(name='k8s_flow-with_workspace', port=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         workspace='/shared',
@@ -571,7 +571,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     indirect=True,
 )
 async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, tmpdir):
-    flow = Flow(name='k8s_flow_connection_pool', port_expose=9090, protocol='http').add(
+    flow = Flow(name='k8s_flow_connection_pool', port=9090, protocol='http').add(
         name='test_executor',
         replicas=2,
         uses=f'docker://{docker_images[0]}',
@@ -640,11 +640,11 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
 
     args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
     with Deployment(args) as external_deployment:
-        flow = Flow(name='k8s_flow-with_external_deployment', port_expose=9090).add(
+        flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
             name='external_executor',
             external=True,
             host=f'172.17.0.1',
-            port_in=external_deployment.head_port_in,
+            port=external_deployment.head_port,
         )
 
         namespace = 'test-flow-with-external-deployment'
@@ -697,11 +697,11 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
 
     await _create_external_deployment(api_client, app_client, docker_images, tmpdir)
 
-    flow = Flow(name='k8s_flow-with_external_deployment', port_expose=9090).add(
+    flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
         name='external_executor',
         external=True,
         host='external-deployment-head.external-deployment-ns.svc',
-        port_in=K8sGrpcConnectionPool.K8S_PORT_IN,
+        port=K8sGrpcConnectionPool.K8S_port,
     )
 
     dump_path = os.path.join(str(tmpdir), namespace)

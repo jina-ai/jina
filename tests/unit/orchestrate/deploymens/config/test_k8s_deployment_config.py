@@ -71,7 +71,7 @@ def test_parse_args(
         skip_attr=(
             'runtime_cls',
             'pod_role',
-            'port_in',
+            'port',
             'k8s_namespace',
             'k8s_connection_pool',
             'name',
@@ -111,7 +111,7 @@ def test_parse_args(
     else:
         assert (
             deployment_config.deployment_args['head_deployment'].uses_before_address
-            == '127.0.0.1:8082'
+            == '127.0.0.1:8081'
         )
     if uses_after is None:
         assert (
@@ -121,7 +121,7 @@ def test_parse_args(
     else:
         assert (
             deployment_config.deployment_args['head_deployment'].uses_after_address
-            == '127.0.0.1:8083'
+            == '127.0.0.1:8082'
         )
     if k8s_connection_pool_call:
         assert (
@@ -155,7 +155,7 @@ def test_parse_args(
             skip_attr=(
                 'runtime_cls',
                 'pod_role',
-                'port_in',
+                'port',
                 'k8s_namespace',
                 'k8s_connection_pool',
                 'uses_before',  # the uses_before and after is head business
@@ -225,7 +225,7 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
             skip_attr=(
                 'uses_before',
                 'uses_after',
-                'port_in',
+                'port',
                 'k8s_namespace',
                 'k8s_connection_pool',
                 'name',
@@ -322,7 +322,7 @@ def assert_config_map_config(
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port-expose', '32465']
+        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
     # ignored for gateway
     deployment_config = K8sDeploymentConfig(
@@ -362,16 +362,16 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     spec_service = service['spec']
     assert spec_service['type'] == 'ClusterIP'
     assert len(spec_service['ports']) == 2
-    port_expose = spec_service['ports'][0]
-    assert port_expose['name'] == 'port-expose'
-    assert port_expose['protocol'] == 'TCP'
-    assert port_expose['port'] == 32465
-    assert port_expose['targetPort'] == 32465
-    port_in = spec_service['ports'][1]
-    assert port_in['name'] == 'port-in'
-    assert port_in['protocol'] == 'TCP'
-    assert port_in['port'] == 8081
-    assert port_in['targetPort'] == 8081
+    port = spec_service['ports'][0]
+    assert port['name'] == 'port'
+    assert port['protocol'] == 'TCP'
+    assert port['port'] == 32465
+    assert port['targetPort'] == 32465
+    port = spec_service['ports'][1]
+    assert port['name'] == 'port'
+    assert port['protocol'] == 'TCP'
+    assert port['port'] == 8081
+    assert port['targetPort'] == 8081
     assert spec_service['selector'] == {'app': 'gateway'}
 
     deployment = configs[4]
@@ -409,10 +409,10 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     assert args[0] == 'gateway'
     assert '--k8s-namespace' in args
     assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
-    assert '--port-in' in args
-    assert args[args.index('--port-in') + 1] == '8081'
-    assert '--port-expose' in args
-    assert args[args.index('--port-expose') + 1] == '32465'
+    assert '--port' in args
+    assert args[args.index('--port') + 1] == '8081'
+    assert '--port' in args
+    assert args[args.index('--port') + 1] == '32465'
     assert '--env' not in args
     assert '--pod-role' in args
     assert args[args.index('--pod-role') + 1] == 'GATEWAY'
@@ -530,10 +530,10 @@ def test_k8s_yaml_regular_deployment(
     head_spec_service = head_service['spec']
     assert head_spec_service['type'] == 'ClusterIP'
     assert len(head_spec_service['ports']) == 2
-    head_port_expose = head_spec_service['ports'][0]
-    assert_port_config(head_port_expose, 'port-expose', 8080)
-    head_port_in = head_spec_service['ports'][1]
-    assert_port_config(head_port_in, 'port-in', 8081)
+    head_port = head_spec_service['ports'][0]
+    assert_port_config(head_port, 'port', 8080)
+    head_port = head_spec_service['ports'][1]
+    assert_port_config(head_port, 'port', 8081)
     assert head_spec_service['selector'] == {'app': 'executor-head'}
 
     head_deployment = head_configs[4]
@@ -593,9 +593,9 @@ def test_k8s_yaml_regular_deployment(
         ]
         == 'default-namespace'
     )
-    assert '--port-in' in head_runtime_container_args
+    assert '--port' in head_runtime_container_args
     assert (
-        head_runtime_container_args[head_runtime_container_args.index('--port-in') + 1]
+        head_runtime_container_args[head_runtime_container_args.index('--port') + 1]
         == '8081'
     )
     assert '--env' not in head_runtime_container_args
@@ -660,12 +660,12 @@ def test_k8s_yaml_regular_deployment(
             ]
             == 'default-namespace'
         )
-        assert '--port-in' in uses_before_runtime_container_args
+        assert '--port' in uses_before_runtime_container_args
         assert (
             uses_before_runtime_container_args[
-                uses_before_runtime_container_args.index('--port-in') + 1
+                uses_before_runtime_container_args.index('--port') + 1
             ]
-            == '8082'
+            == '8081'
         )
         assert '--env' not in uses_before_runtime_container_args
         assert '--connection-list' not in uses_before_runtime_container_args
@@ -695,12 +695,12 @@ def test_k8s_yaml_regular_deployment(
             ]
             == 'default-namespace'
         )
-        assert '--port-in' in uses_after_runtime_container_args
+        assert '--port' in uses_after_runtime_container_args
         assert (
             uses_after_runtime_container_args[
-                uses_after_runtime_container_args.index('--port-in') + 1
+                uses_after_runtime_container_args.index('--port') + 1
             ]
-            == '8083'
+            == '8082'
         )
         assert '--env' not in uses_after_runtime_container_args
         assert '--connection-list' not in uses_after_runtime_container_args
@@ -737,10 +737,10 @@ def test_k8s_yaml_regular_deployment(
         shard_spec_service = shard_service['spec']
         assert shard_spec_service['type'] == 'ClusterIP'
         assert len(shard_spec_service['ports']) == 2
-        shard_port_expose = shard_spec_service['ports'][0]
-        assert_port_config(shard_port_expose, 'port-expose', 8080)
-        shard_port_in = shard_spec_service['ports'][1]
-        assert_port_config(shard_port_in, 'port-in', 8081)
+        shard_port = shard_spec_service['ports'][0]
+        assert_port_config(shard_port, 'port', 8080)
+        shard_port = shard_spec_service['ports'][1]
+        assert_port_config(shard_port, 'port', 8081)
         assert shard_spec_service['selector'] == {'app': name}
 
         shard_deployment = shard_configs[4]
@@ -795,10 +795,10 @@ def test_k8s_yaml_regular_deployment(
             ]
             == 'default-namespace'
         )
-        assert '--port-in' in shard_container_runtime_container_args
+        assert '--port' in shard_container_runtime_container_args
         assert (
             shard_container_runtime_container_args[
-                shard_container_runtime_container_args.index('--port-in') + 1
+                shard_container_runtime_container_args.index('--port') + 1
             ]
             == '8081'
         )

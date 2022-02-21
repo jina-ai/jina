@@ -54,7 +54,7 @@ async def test_pods_trivial_topology(
 ):
     worker_port = random_port()
     head_port = random_port()
-    port_expose = random_port()
+    port = random_port()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -65,7 +65,7 @@ async def test_pods_trivial_topology(
     head_pod = _create_head_pod(head_port)
 
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
 
     with gateway_pod, worker_pod, head_pod:
         await asyncio.sleep(1.0)
@@ -91,9 +91,7 @@ async def test_pods_trivial_topology(
         )
 
         # send requests to the gateway
-        c = Client(
-            return_responses=True, host='localhost', port=port_expose, asyncio=True
-        )
+        c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
         responses = c.post('/', inputs=async_inputs, request_size=1)
         response_list = []
         async for response in responses:
@@ -105,7 +103,7 @@ async def test_pods_trivial_topology(
 
 def _create_worker_pod(port):
     args = set_pod_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = 'worker'
     args.uses = 'docker://worker-runtime'
     return ContainerPod(args)
@@ -113,7 +111,7 @@ def _create_worker_pod(port):
 
 def _create_head_pod(port):
     args = set_pod_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = 'head'
     args.pod_role = PodRoleType.HEAD
     args.polling = PollingType.ANY
@@ -121,7 +119,7 @@ def _create_head_pod(port):
     return ContainerPod(args)
 
 
-def _create_gateway_pod(graph_description, pod_addresses, port_expose):
+def _create_gateway_pod(graph_description, pod_addresses, port):
     return Pod(
         set_gateway_parser().parse_args(
             [
@@ -129,8 +127,8 @@ def _create_gateway_pod(graph_description, pod_addresses, port_expose):
                 graph_description,
                 '--deployments-addresses',
                 pod_addresses,
-                '--port-expose',
-                str(port_expose),
+                '--port',
+                str(port),
             ]
         )
     )

@@ -57,26 +57,24 @@ def test_remote_flow_local_executors(replicas, jinad_client):
             assert doc.tags['replicas'] == replicas
 
 
-@pytest.mark.parametrize('port_expose, func', [('12345', 'foo'), (23456, 'bar')])
-def test_port_expose_env_var(port_expose, func, jinad_client):
+@pytest.mark.parametrize('port, func', [('12345', 'foo'), (23456, 'bar')])
+def test_port_env_var(port, func, jinad_client):
     workspace_id = jinad_client.workspaces.create(
         paths=[os.path.join(cur_dir, 'executors', 'envvars_ws1')]
     )
     flow_id = jinad_client.flows.create(
         workspace_id=workspace_id,
         filename='flow.yml',
-        envs={'PORT_EXPOSE': port_expose, 'FUNC': func},
+        envs={'port': port, 'FUNC': func},
     )
 
-    r = Client(
-        host=HOST, port=port_expose, protocol='http', return_responses=True
-    ).post(
+    r = Client(host=HOST, port=port, protocol='http', return_responses=True).post(
         on='/blah',
         inputs=(Document(text=f'text {i}') for i in range(2)),
     )
     for d in r[0].data.docs:
         assert d.text.endswith(func)
-    r = requests.get(f'http://{HOST}:{port_expose}/status')
+    r = requests.get(f'http://{HOST}:{port}/status')
     assert r.status_code == 200
     envs = r.json()['envs']
     assert envs['JINA_LOG_WORKSPACE'] == '/workspace/logs'

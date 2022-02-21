@@ -105,8 +105,8 @@ def test_dump_reload(tmpdir, shards, nr_docs, emb_size, times_to_index=2):
         ) as flow_reload:
             for run_number in range(times_to_index):
                 dump_path = os.path.join(tmpdir, f'dump-{str(run_number)}')
-                client_dbms = get_client(flow_dump.port_expose)
-                client_query = get_client(flow_reload.port_expose)
+                client_dbms = get_client(flow_dump.port)
+                client_query = get_client(flow_reload.port)
                 docs = list(
                     get_documents(
                         count=nr_docs * (run_number + 1),

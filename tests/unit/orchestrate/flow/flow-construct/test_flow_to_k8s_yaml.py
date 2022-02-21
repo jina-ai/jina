@@ -10,7 +10,7 @@ from jina import Flow
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
 def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
     flow = (
-        Flow(name='test-flow', port_expose=8080, protocol=protocol)
+        Flow(name='test-flow', port=8080, protocol=protocol)
         .add(name='executor0', uses_with={'param': 0})
         .add(name='executor1', shards=2, uses_with={'param': 0})
         .add(
@@ -95,10 +95,8 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         'args'
     ]
     assert gateway_args[0] == 'gateway'
-    assert '--port-in' in gateway_args
-    assert gateway_args[gateway_args.index('--port-in') + 1] == '8081'
-    assert '--port-expose' in gateway_args
-    assert gateway_args[gateway_args.index('--port-expose') + 1] == '8080'
+    assert '--port' in gateway_args
+    assert gateway_args[gateway_args.index('--port') + 1] == '8080'
     assert '--k8s-namespace' in gateway_args
     assert gateway_args[gateway_args.index('--k8s-namespace') + 1] == namespace
     assert '--graph-description' in gateway_args
@@ -110,7 +108,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head.test-flow-ns.svc:8081"], "executor1": ["executor1-head.test-flow-ns.svc:8081"], "executor2": ["executor2-head.test-flow-ns.svc:8081"]}'
+            == '{"executor0": ["executor0-head.test-flow-ns.svc:8080"], "executor1": ["executor1-head.test-flow-ns.svc:8080"], "executor2": ["executor2-head.test-flow-ns.svc:8080"]}'
         )
     assert '--pod-role' in gateway_args
     assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
@@ -173,7 +171,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         assert '--connection-list' in executor0_head0_args
         assert (
             executor0_head0_args[executor0_head0_args.index('--connection-list') + 1]
-            == '{"0": "executor0.test-flow-ns.svc:8081"}'
+            == '{"0": "executor0.test-flow-ns.svc:8080"}'
         )
     else:
         assert '--k8s-disable-connection-pool' not in executor0_head0_args
@@ -273,7 +271,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         assert '--connection-list' in executor1_head0_args
         assert (
             executor1_head0_args[executor1_head0_args.index('--connection-list') + 1]
-            == '{"0": "executor1-0.test-flow-ns.svc:8081", "1": "executor1-1.test-flow-ns.svc:8081"}'
+            == '{"0": "executor1-0.test-flow-ns.svc:8080", "1": "executor1-1.test-flow-ns.svc:8080"}'
         )
     else:
         assert '--k8s-disable-connection-pool' not in executor1_head0_args
@@ -435,7 +433,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
         assert '--connection-list' in executor2_head0_args
         assert (
             executor2_head0_args[executor2_head0_args.index('--connection-list') + 1]
-            == '{"0": "executor2.test-flow-ns.svc:8081"}'
+            == '{"0": "executor2.test-flow-ns.svc:8080"}'
         )
     else:
         assert '--k8s-disable-connection-pool' not in executor2_head0_args
@@ -540,13 +538,13 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, k8s_connection_pool):
 @pytest.mark.parametrize('has_external', [False, True])
 def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external):
 
-    flow = Flow(name='test-flow', port_expose=8080).add(
+    flow = Flow(name='test-flow', port=8080).add(
         name='executor0',
     )
 
     if has_external:
         flow = flow.add(
-            name='external_executor', external=True, host='1.2.3.4', port_in=9090
+            name='external_executor', external=True, host='1.2.3.4', port=9090
         )
     else:
         flow = flow.add(name='external_executor')
@@ -586,7 +584,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head.test-flow-ns.svc:8081"], "external_executor": ["1.2.3.4:9090"]}'
+            == '{"executor0": ["executor0-head.test-flow-ns.svc:8080"], "external_executor": ["1.2.3.4:9090"]}'
         )
     elif k8s_connection_pool and has_external:
         assert '--deployments-addresses' in gateway_args
@@ -600,7 +598,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, k8s_connection_pool, has_external
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0-head.test-flow-ns.svc:8081"], "external_executor": ["external-executor-head.test-flow-ns.svc:8081"]}'
+            == '{"executor0": ["executor0-head.test-flow-ns.svc:8080"], "external_executor": ["external-executor-head.test-flow-ns.svc:8080"]}'
         )
 
 

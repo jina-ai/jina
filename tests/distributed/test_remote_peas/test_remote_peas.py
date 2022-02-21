@@ -23,7 +23,7 @@ is_remote = lambda l_or_r: l_or_r == 'remote'
 
 
 def is_pod_ready(args):
-    return is_ready(f'{HOST}:{args.port_in}')
+    return is_ready(f'{HOST}:{args.port}')
 
 
 @pytest.fixture
@@ -129,7 +129,7 @@ def _create_worker_pod(
         args.host = HOST
         args.port_jinad = PORT
     args.name = name if name else f'worker-{l_or_r}'
-    args.port_in = port
+    args.port = port
     args.runtime_cls = 'WorkerRuntime'
     if executor:
         args.uses = executor
@@ -148,7 +148,7 @@ def _create_head_pod(
         args.host = HOST
         args.port_jinad = PORT
     args.name = name if name else f'head-{l_or_r}'
-    args.port_in = port
+    args.port = port
     args.pod_role = PodRoleType.HEAD
     args.polling = polling
     args.runtime_cls = 'HeadRuntime'
@@ -159,14 +159,14 @@ def _create_head_pod(
     return PodFactory.build_pod(args)
 
 
-def _create_gateway_pod(l_or_r, graph_description, deployments_addresses, port_expose):
+def _create_gateway_pod(l_or_r, graph_description, deployments_addresses, port):
     args = set_gateway_parser().parse_args([])
     if l_or_r == 'remote':
         args.host = HOST
         args.port_jinad = PORT
     args.graph_description = graph_description
     args.deployments_addresses = deployments_addresses
-    args.port_expose = port_expose
+    args.port = port
     args.runtime_cls = 'GRPCGatewayRuntime'
     return PodFactory.build_pod(args)
 
@@ -196,7 +196,7 @@ async def test_pseudo_remote_pods_topologies(gateway, head, worker):
     """
     worker_port = random_port()
     head_port = random_port()
-    port_expose = random_port()
+    port = random_port()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -213,7 +213,7 @@ async def test_pseudo_remote_pods_topologies(gateway, head, worker):
 
     # create a single gateway pod
     gateway_pod = _create_gateway_pod(
-        gateway, graph_description, deployments_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port
     )
 
     with gateway_pod, worker_pod, head_pod:
@@ -230,9 +230,7 @@ async def test_pseudo_remote_pods_topologies(gateway, head, worker):
         )
 
         # send requests to the gateway
-        c = Client(
-            host='127.0.0.1', port=port_expose, asyncio=True, return_responses=True
-        )
+        c = Client(host='127.0.0.1', port=port, asyncio=True, return_responses=True)
         responses = c.post('/', inputs=async_inputs, request_size=1)
         response_list = []
         async for response in responses:
@@ -255,7 +253,7 @@ async def test_pseudo_remote_pods_topologies(gateway, head, worker):
 # test simple topology with shards on remote
 async def test_pseudo_remote_pods_shards(gateway, head, worker, polling):
     head_port = random_port()
-    port_expose = random_port()
+    port = random_port()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -289,13 +287,13 @@ async def test_pseudo_remote_pods_shards(gateway, head, worker, polling):
 
     # create a single gateway pod
     gateway_pod = _create_gateway_pod(
-        gateway, graph_description, deployments_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port
     )
     gateway_pod.start()
 
     await asyncio.sleep(1.0)
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -324,7 +322,7 @@ async def test_pseudo_remote_pods_shards(gateway, head, worker, polling):
 async def test_pseudo_remote_pods_replicas(gateway, head, worker):
     NUM_REPLICAS = 3
     head_port = random_port()
-    port_expose = random_port()
+    port = random_port()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -357,13 +355,13 @@ async def test_pseudo_remote_pods_replicas(gateway, head, worker):
 
     # create a single gateway pod
     gateway_pod = _create_gateway_pod(
-        gateway, graph_description, deployments_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port
     )
     gateway_pod.start()
 
     await asyncio.sleep(1.0)
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -472,18 +470,18 @@ async def test_pseudo_remote_pods_executor(
         )
 
     # create a single gateway pod
-    port_expose = random_port()
+    port = random_port()
     gateway_pod = _create_gateway_pod(
-        gateway, graph_description, deployments_addresses, port_expose
+        gateway, graph_description, deployments_addresses, port
     )
-    print(f'head_port: {head_port}, port_expose: {port_expose}')
+    print(f'head_port: {head_port}, port: {port}')
 
     gateway_pod.start()
     pods.append(gateway_pod)
 
     await asyncio.sleep(1.0)
 
-    c = Client(host=HOST, port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host=HOST, port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:

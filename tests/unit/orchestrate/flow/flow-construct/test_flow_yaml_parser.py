@@ -70,18 +70,18 @@ def test_load_modify_dump_load(tmpdir):
     f: Flow = Flow.load_config('yaml/flow-gateway.yml')
     # assert vars inside `with`
     assert f._kwargs['name'] == 'abc'
-    assert f.port_expose == 12345
+    assert f.port == 12345
     assert f.protocol == GatewayProtocolType.HTTP
     # assert executor args
     assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
-    assert f._deployment_nodes['custom2'].args.port_in == 23456
+    assert f._deployment_nodes['custom2'].args.port == 23456
 
     # change args inside `with`
-    f.port_expose = 12346
+    f.port = 12346
     f.protocol = GatewayProtocolType.WEBSOCKET
     # change executor args
-    f._deployment_nodes['custom2'].args.port_in = 23457
+    f._deployment_nodes['custom2'].args.port = 23457
 
     f.save_config(str(Path(tmpdir) / 'a0.yml'))
     f1: Flow = Flow.load_config(str(Path(tmpdir) / 'a0.yml'))
@@ -93,9 +93,9 @@ def test_load_modify_dump_load(tmpdir):
     assert f1._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f1._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
     # assert args modified in code
-    assert f1.port_expose == 12346
+    assert f1.port == 12346
     assert f1.protocol == GatewayProtocolType.WEBSOCKET
-    assert f1._deployment_nodes['custom2'].args.port_in == 23457
+    assert f1._deployment_nodes['custom2'].args.port == 23457
 
 
 def test_dump_load_build(monkeypatch):
@@ -104,11 +104,11 @@ def test_dump_load_build(monkeypatch):
     jtype: Flow
     with:
         name: abc
-        port_expose: 12345
+        port: 12345
         protocol: http
     executors:
         - name: executor1
-          port_in: 45678
+          port: 45678
           shards: 2
         - name: executor2
           uses: docker://exec
@@ -121,34 +121,34 @@ def test_dump_load_build(monkeypatch):
 
     f1: Flow = Flow.load_config(JAML.dump(f)).build()
     # these were passed by the user
-    assert f.port_expose == f1.port_expose
+    assert f.port == f1.port
     assert f.protocol == f1.protocol
-    assert f['executor1'].args.port_in == f1['executor1'].args.port_in
+    assert f['executor1'].args.port == f1['executor1'].args.port
     assert f['executor2'].args.host == f1['executor2'].args.host
     # this was set during `load_config`
-    assert f['executor2'].args.port_in == f1['executor2'].args.port_in
+    assert f['executor2'].args.port == f1['executor2'].args.port
     # gateway args are not set, if `JINA_FULL_CLI` is not set
-    assert f['gateway'].args.port_in != f1['gateway'].args.port_in
+    assert f['gateway'].args.port != f1['gateway'].args.port
 
     monkeypatch.setenv('JINA_FULL_CLI', 'true')
     f2: Flow = Flow.load_config(JAML.dump(f)).build()
     # these were passed by the user
-    assert f.port_expose == f2.port_expose
+    assert f.port == f2.port
     # validate gateway args (set during build)
-    assert f['gateway'].args.port_in == f2['gateway'].args.port_in
+    assert f['gateway'].args.port == f2['gateway'].args.port
 
 
 def test_load_flow_with_port():
     f = Flow.load_config('yaml/test-flow-port.yml')
     with f:
-        assert f.port_expose == 12345
+        assert f.port == 12345
 
 
 def test_load_flow_from_cli():
     a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
     f = Flow.load_config(a.uses)
     with f:
-        assert f.port_expose == 12345
+        assert f.port == 12345
 
 
 def test_load_flow_from_yaml():
