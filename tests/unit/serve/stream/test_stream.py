@@ -41,23 +41,21 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
         assert len(requests_handled) == num_requests
         assert len(results_handled) < num_requests
 
+    def _yield_data_request():
+        req = DataRequest()
+        req.header.request_id = random_identity()
+        da = DocumentArray()
+        da.append(Document())
+        req.data.docs = da
+        return req
+
     def _get_sync_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = DataRequest()
-            req.header.request_id = random_identity()
-            da = DocumentArray()
-            da.append(Document())
-            req.data.docs = da
-            yield req
+            yield _yield_data_request()
 
     async def _get_async_requests_iterator(num_requests):
         for i in range(num_requests):
-            req = DataRequest()
-            req.header.request_id = random_identity()
-            da = DocumentArray()
-            da.append(Document())
-            req.data.docs = da
-            yield req
+            yield _yield_data_request()
             await asyncio.sleep(0.1)
 
     args = Namespace()
