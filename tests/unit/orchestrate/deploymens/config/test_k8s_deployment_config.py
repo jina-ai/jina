@@ -361,17 +361,12 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     }
     spec_service = service['spec']
     assert spec_service['type'] == 'ClusterIP'
-    assert len(spec_service['ports']) == 2
+    assert len(spec_service['ports']) == 1
     port = spec_service['ports'][0]
     assert port['name'] == 'port'
     assert port['protocol'] == 'TCP'
     assert port['port'] == 32465
     assert port['targetPort'] == 32465
-    port = spec_service['ports'][1]
-    assert port['name'] == 'port'
-    assert port['protocol'] == 'TCP'
-    assert port['port'] == 8081
-    assert port['targetPort'] == 8081
     assert spec_service['selector'] == {'app': 'gateway'}
 
     deployment = configs[4]
@@ -529,11 +524,9 @@ def test_k8s_yaml_regular_deployment(
     }
     head_spec_service = head_service['spec']
     assert head_spec_service['type'] == 'ClusterIP'
-    assert len(head_spec_service['ports']) == 2
+    assert len(head_spec_service['ports']) == 1
     head_port = head_spec_service['ports'][0]
     assert_port_config(head_port, 'port', 8080)
-    head_port = head_spec_service['ports'][1]
-    assert_port_config(head_port, 'port', 8081)
     assert head_spec_service['selector'] == {'app': 'executor-head'}
 
     head_deployment = head_configs[4]
@@ -596,7 +589,7 @@ def test_k8s_yaml_regular_deployment(
     assert '--port' in head_runtime_container_args
     assert (
         head_runtime_container_args[head_runtime_container_args.index('--port') + 1]
-        == '8081'
+        == '8080'
     )
     assert '--env' not in head_runtime_container_args
     assert '--pod-role' in head_runtime_container_args
@@ -613,13 +606,13 @@ def test_k8s_yaml_regular_deployment(
         if shards > 1:
             assert connection_list_string == json.dumps(
                 {
-                    str(shard_id): f'executor-{shard_id}.default-namespace.svc:8081'
+                    str(shard_id): f'executor-{shard_id}.default-namespace.svc:8080'
                     for shard_id in range(shards)
                 }
             )
         else:
             assert connection_list_string == json.dumps(
-                {'0': 'executor.default-namespace.svc:8081'}
+                {'0': 'executor.default-namespace.svc:8080'}
             )
     else:
         assert '--k8s-disable-connection-pool' not in head_runtime_container_args
@@ -736,11 +729,9 @@ def test_k8s_yaml_regular_deployment(
         }
         shard_spec_service = shard_service['spec']
         assert shard_spec_service['type'] == 'ClusterIP'
-        assert len(shard_spec_service['ports']) == 2
+        assert len(shard_spec_service['ports']) == 1
         shard_port = shard_spec_service['ports'][0]
         assert_port_config(shard_port, 'port', 8080)
-        shard_port = shard_spec_service['ports'][1]
-        assert_port_config(shard_port, 'port', 8081)
         assert shard_spec_service['selector'] == {'app': name}
 
         shard_deployment = shard_configs[4]
@@ -800,7 +791,7 @@ def test_k8s_yaml_regular_deployment(
             shard_container_runtime_container_args[
                 shard_container_runtime_container_args.index('--port') + 1
             ]
-            == '8081'
+            == '8080'
         )
         assert '--env' in shard_container_runtime_container_args
         assert (
