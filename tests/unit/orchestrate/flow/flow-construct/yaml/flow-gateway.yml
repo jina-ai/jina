@@ -2,7 +2,7 @@ jtype: Flow
 version: 1
 with:
   name: abc
-  port_expose: 12345
+  port: 12345
   protocol: http
   abc: def
 executors:

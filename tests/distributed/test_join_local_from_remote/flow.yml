@@ -1,7 +1,7 @@
 jtype: Flow
 version: '1'
 with:
-  port_expose: 45678
+  port: 45678
   show_exc_info: true
   host: flow
 executors:

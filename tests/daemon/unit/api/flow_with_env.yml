@@ -1,7 +1,7 @@
 jtype: Flow
 with:
   name: my-flow
-  port_expose: 12345
+  port: 12345
   protocol: http
   env:
     key1: ${{ context_var1 }}  # this should be replaced

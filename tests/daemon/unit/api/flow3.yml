@@ -1,7 +1,7 @@
 jtype: Flow
 with:
   name: abc
-  port_expose: 12345
+  port: 12345
   protocol: http
 executors:
   - name: local_replicas

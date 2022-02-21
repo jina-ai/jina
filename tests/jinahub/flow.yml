@@ -2,7 +2,7 @@
 version: '1'
 with:
   protocol: http
-  port_expose: 45678
+  port: 45678
 executors:
   - name: executor1
     uses: docker://hubpod:test

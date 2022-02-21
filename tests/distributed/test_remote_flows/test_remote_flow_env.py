@@ -65,7 +65,7 @@ def test_port_env_var(port, func, jinad_client):
     flow_id = jinad_client.flows.create(
         workspace_id=workspace_id,
         filename='flow.yml',
-        envs={'port': port, 'FUNC': func},
+        envs={'PORT': port, 'FUNC': func},
     )
 
     r = Client(host=HOST, port=port, protocol='http', return_responses=True).post(
