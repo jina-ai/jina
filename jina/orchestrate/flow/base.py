@@ -212,8 +212,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port that the gateway exposes for clients for GRPC connections.
-        :param port: The port for input data to bind to, default a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -656,7 +655,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
