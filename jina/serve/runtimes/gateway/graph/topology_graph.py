@@ -68,6 +68,8 @@ class TopologyGraph:
                     self.start_time = datetime.utcnow()
                     if self._condition is not None:
                         self._update_requests()
+                    # TODO: Check if request needs to be sent or we can bypass.
+                    #  Potentially check if `docs` is None or empty and params, check only if condition to avoid extra serialization
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
                         deployment=self.name,
@@ -188,13 +190,17 @@ class TopologyGraph:
 
         nodes = {}
         for node_name in node_set:
+            condition = None
+            condition_repr = conditions.get(node_name, None)
+            if condition_repr is not None:
+                condition = Condition(condition_repr)
             nodes[node_name] = self._ReqReplyNode(
                 name=node_name,
                 number_of_parts=num_parts_per_node[node_name]
                 if num_parts_per_node[node_name] > 0
                 else 1,
                 hanging=node_name in hanging_deployment_names,
-                condition=conditions.get(node_name, None),
+                condition=condition,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

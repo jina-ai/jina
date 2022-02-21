@@ -134,8 +134,11 @@ def test_topology_graph_build_linear(linear_graph_dict):
     assert not node_deployment3.hanging
 
 
-def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
-    graph = TopologyGraph(bifurcation_graph_dict)
+@pytest.mark.parametrize(
+    'conditions', [{}, {'deployment1': 'key:5', 'deployment2': 'key:4'}]
+)
+def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
+    graph = TopologyGraph(bifurcation_graph_dict, conditions)
     node_names_list = [node.name for node in graph.origin_nodes]
     assert set(node_names_list) == {'deployment0', 'deployment4', 'deployment6'}
     assert (
@@ -161,6 +164,10 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
         outgoing_deployment0_list.index('deployment1')
     ]
     assert node_deployment1.name == 'deployment1'
+    if conditions == {}:
+        assert node_deployment1._condition is None
+    else:
+        assert node_deployment1._condition._condition == 'key:5'
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
     assert node_deployment1.hanging
@@ -169,6 +176,10 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
         outgoing_deployment0_list.index('deployment2')
     ]
     assert node_deployment2.name == 'deployment2'
+    if conditions == {}:
+        assert node_deployment2._condition is None
+    else:
+        assert node_deployment2._condition._condition == 'key:4'
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
     assert not node_deployment2.hanging
@@ -543,12 +554,12 @@ class DummyMockConnectionPool:
 
 
 class DummyMockGatewayRuntime:
-    def __init__(self, graph_representation, *args, **kwargs):
+    def __init__(self, graph_representation, conditions={}, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.connection_pool = DummyMockConnectionPool(*args, **kwargs)
-        self.graph = TopologyGraph(graph_representation)
+        self.graph = TopologyGraph(graph_representation, conditions)
 
-    async def receive_from_client(self, client_id, msg: 'Message'):
+    async def receive_from_client(self, client_id, msg: 'DataRequest'):
         graph = copy.deepcopy(self.graph)
         # important that the gateway needs to have an instance of the graph per request
         tasks_to_respond = []
