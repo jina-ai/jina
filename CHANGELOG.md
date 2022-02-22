@@ -133,6 +133,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12192,4 +12193,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fab0624c```](https://github.com/jina-ai/jina/commit/fab0624c1b1407bbbb2b05a2842abbe4bccb58c3)] __-__ fix raw image in readme (*Han Xiao*)
  - [[```c1083e24```](https://github.com/jina-ai/jina/commit/c1083e24592d7256ddb6d36e6deb6dd719960129)] __-__ update images (*Han Xiao*)
  - [[```5e73954e```](https://github.com/jina-ai/jina/commit/5e73954e7ed9d0fedfd2421b0fe25538e2e52616)] __-__ __version__: the next version will be 3.0.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-0-2></a>
+## Release Note (`3.0.2`)
+
+> Release time: 2022-02-22 15:07:55
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Zhaofeng Miao,  Deepankar Mahapatro,  Nan Wang,  Alex Cureton-Griffiths,  Johannes Messner,  Narek Maloyan,  Han Xiao,  Jina Dev Bot,  AlaeddineAbdessalem,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a5fd192b```](https://github.com/jina-ai/jina/commit/a5fd192b186c66aa983137ca3a179caac7f6b786)] __-__ optimize create hub root (#4388) (*Zhaofeng Miao*)
+ - [[```2e6104ad```](https://github.com/jina-ai/jina/commit/2e6104ad822062048fe529fbba670a22340332e7)] __-__ __helloworld__: use sqlite store for qa chatbot example (#4379) (*Johannes Messner*)
+
+### 🐞 Bug fixes
+
+ - [[```9f113645```](https://github.com/jina-ai/jina/commit/9f11364516fc9bbd3455b5cf715296b8830d3515)] __-__ docsqa to new url (#4389) (*Deepankar Mahapatro*)
+ - [[```e26c81a2```](https://github.com/jina-ai/jina/commit/e26c81a27e7cbfc426d362a60eced0703304aea3)] __-__ __strings__: sandbox wording (#4386) (*Alex Cureton-Griffiths*)
+ - [[```9b4e182f```](https://github.com/jina-ai/jina/commit/9b4e182f559773892a968472bb1c2133d2d5edd7)] __-__ missing import in fashion example (#4375) (*Narek Maloyan*)
+ - [[```cca0610a```](https://github.com/jina-ai/jina/commit/cca0610aaf4393a28db189cbbb6bdab52d24297e)] __-__ fix docarray version (#4378) (*AlaeddineAbdessalem*)
+
+### 🧼 Code Refactoring
+
+ - [[```d4a441e9```](https://github.com/jina-ai/jina/commit/d4a441e98225cb322150256c446f9d0ecc13b58e)] __-__ remove duplicate codes in the unit tests for streaming (#4383) (*Nan Wang*)
+
+### 📗 Documentation
+
+ - [[```f939e3e3```](https://github.com/jina-ai/jina/commit/f939e3e3a6e3194527fb8ba28b1a333135d60449)] __-__ fix migration guide (#4387) (*Johannes Messner*)
+ - [[```25fefd31```](https://github.com/jina-ai/jina/commit/25fefd31aeffeb19cf93954202e75ac63d2fe6e8)] __-__ fix client api section title and flow vis (#4380) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```31ffa37e```](https://github.com/jina-ai/jina/commit/31ffa37e5b5f380e5f6e55e23c09f866cf630995)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```2a574c06```](https://github.com/jina-ai/jina/commit/2a574c06058aa3a4555057c3618c81b6c1d20d65)] __-__ remove the legacy codes for force register (#4377) (*Nan Wang*)
+ - [[```e35eab2c```](https://github.com/jina-ai/jina/commit/e35eab2c3bfed8d3dd5afdc1b8ccc9cf98f67498)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```93404a95```](https://github.com/jina-ai/jina/commit/93404a9545b3ca1870df61ac8b34910277770f38)] __-__ __version__: the next version will be 3.0.2 (*Jina Dev Bot*)
 
