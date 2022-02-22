@@ -4,14 +4,21 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta property="og:title" content="Migration to Jina 3" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://docs.jina.ai/get-started/migrate.html" />
-  <meta property="og:site_name" content="Jina 3.0.1 Documentation" />
-  <meta property="og:description" content="Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some tweaks to your existing Jina 2 code. One of the major changes in Jina 3 is DocArray being an external dependency: The previously included Document and DocumentArray data structures now form their own..." />
-  <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  <meta property="og:image:alt" content="Jina 3.0.1 Documentation" />
-  <meta name="twitter:card" content="summary_large_image">
+<meta property="og:title" content="Migration to Jina 3" />
+  
+<meta property="og:type" content="website" />
+  
+<meta property="og:url" content="https://docs.jina.ai/get-started/migrate.html" />
+  
+<meta property="og:site_name" content="Jina 3.0.2 Documentation" />
+  
+<meta property="og:description" content="Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some tweaks to your existing Jina 2 code. One of the major changes in Jina 3 is DocArray being an external dependency: The previously included Document and DocumentArray data structures now form their own..." />
+  
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+  
+<meta property="og:image:alt" content="Jina 3.0.2 Documentation" />
+  
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
 <meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">
@@ -32,7 +39,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Python API" href="../../api/" /><link rel="prev" title="How to use external Executors" href="../../how-to/external-executor/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Migration to Jina 3 - Jina 3.0.1 documentation</title>
+        <title>Migration to Jina 3 - Jina 3.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -166,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.0.1 documentation</div>
+                <div class="brand">Jina 3.0.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -255,7 +262,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Jina Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -728,10 +735,15 @@ Additionally, you can access a specific key in <code class="docutils literal not
 <span class="n">docs</span> <span class="o">=</span> <span class="n">nested_docs</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="s1">'r,c'</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'rooot2'</span><span class="p">,</span> <span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">,</span> <span class="s1">'root2'</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'rooot2'</span><span class="p">,</span> <span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">,</span> <span class="s1">'root2'</span><span class="p">]</span>
 
 </pre></div>
 </div>
@@ -742,10 +754,15 @@ Additionally, you can access a specific key in <code class="docutils literal not
 <span class="n">docs</span> <span class="o">=</span> <span class="n">nested_docs</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="s1">'@r,c'</span><span class="p">]</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'rooot2'</span><span class="p">,</span> <span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">,</span> <span class="s1">'root2'</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'rooot2'</span><span class="p">,</span> <span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">,</span> <span class="s1">'root2'</span><span class="p">]</span>
 
 </pre></div>
 </div>
@@ -780,11 +797,16 @@ important when migrating code that checks for the presence of a certain attribut
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s1">''</span>
-
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">''</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -793,11 +815,16 @@ important when migrating code that checks for the presence of a certain attribut
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s1">''</span>
-
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">''</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kc">None</span>
 </pre></div>
 </div>
 </div>
@@ -819,14 +846,22 @@ for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMe
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">Storing to disk</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="s1">'sqlite'</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'my_connection'</span><span class="p">,</span> <span class="s1">'table_name'</span><span class="p">:</span> <span class="s1">'my_table_name'</span><span class="p">})</span>
+
+<span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
+    <span class="n">storage</span><span class="o">=</span><span class="s1">'sqlite'</span><span class="p">,</span>
+    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'my_connection'</span><span class="p">,</span> <span class="s1">'table_name'</span><span class="p">:</span> <span class="s1">'my_table_name'</span><span class="p">},</span>
+<span class="p">)</span>
 <span class="n">das</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">Loading from disk</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-<span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="s1">'sqlite'</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'my_connection'</span><span class="p">,</span> <span class="s1">'table_name'</span><span class="p">:</span> <span class="s1">'my_table_name'</span><span class="p">})</span>
+
+<span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
+    <span class="n">storage</span><span class="o">=</span><span class="s1">'sqlite'</span><span class="p">,</span>
+    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'my_connection'</span><span class="p">,</span> <span class="s1">'table_name'</span><span class="p">:</span> <span class="s1">'my_table_name'</span><span class="p">},</span>
+<span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">das</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -839,14 +874,12 @@ for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMe
 in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor algorithms and are more convenient in
 production.</p>
 </section>
-<section id="flow-simplified-post-behavior">
-<h2>Flow: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-simplified-post-behavior" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> now returns a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> instead of a list of <code class="docutils literal notranslate"><span class="pre">Response</span></code>s when <code class="docutils literal notranslate"><span class="pre">return_results=True</span></code> is
-set. This makes it easier to immediately use the returned results.</p></li>
-</ul>
-<p>The behavior of <code class="docutils literal notranslate"><span class="pre">client.post()</span></code> remains unchanged compared to Jina 2, exposing entire <code class="docutils literal notranslate"><span class="pre">Response</span></code>s to the user. By setting or unsetting the <code class="docutils literal notranslate"><span class="pre">results_as_docarray=</span></code> argument,
-the user can override these default behaviors.</p>
+<section id="flow-and-client-simplified-post-behavior">
+<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> and <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> now return a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> instead of a list of <code class="docutils literal notranslate"><span class="pre">Response</span></code>s when no
+callback function is specified.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.post()</span></code> can still be configured to return a list of Responses, by passing <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code> to the Client or Flow
+constructors.</p>
 </section>
 <section id="consistent-yaml-parsing-syntax">
 <h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this headline">¶</a></h2>
@@ -942,7 +975,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 18, 2022.
+                    Last updated on Feb 22, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -971,7 +1004,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 <li><a class="reference internal" href="#simple-changes-at-a-glance">Simple changes at a glance</a></li>
 <li><a class="reference internal" href="#document-more-natural-attribute-names-and-pythonic-serialization">Document: More natural attribute names and Pythonic serialization</a></li>
 <li><a class="reference internal" href="#documentarray-simplified-attribute-element-access-and-new-storage-options">DocumentArray: Simplified attribute, element access and new storage options</a></li>
-<li><a class="reference internal" href="#flow-simplified-post-behavior">Flow: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior</a></li>
+<li><a class="reference internal" href="#flow-and-client-simplified-post-behavior">Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior</a></li>
 <li><a class="reference internal" href="#consistent-yaml-parsing-syntax">Consistent YAML parsing syntax</a></li>
 <li><a class="reference internal" href="#common-errors-and-solutions">Common errors and solutions</a></li>
 </ul>
