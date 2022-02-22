@@ -24,6 +24,63 @@ from jina.logging.predefined import default_logger
 
 
 @lru_cache()
+def _get_hub_root() -> Path:
+    hub_root = Path(os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina')))
+
+    if not hub_root.exists():
+        hub_root.mkdir(parents=True, exist_ok=True)
+
+    return hub_root
+
+
+@lru_cache()
+def get_hub_packages_dir() -> Path:
+    """Get the path of folder where the hub packages are stored
+
+    :return: the path of folder where the hub packages are stored
+    """
+    root = _get_hub_root()
+    hub_packages = root.joinpath('hub-package')
+
+    if not hub_packages.exists():
+        hub_packages.mkdir(parents=True, exist_ok=True)
+
+    return hub_packages
+
+
+@lru_cache()
+def get_cache_db() -> Path:
+    """Get the path of cache db of hub Executors
+
+    :return: the path of cache db of hub Executors
+    """
+    root = _get_hub_root()
+    cache_db = root.joinpath('disk_cache.db')
+
+    return cache_db
+
+
+@lru_cache()
+def get_download_cache_dir() -> Path:
+    """Get the path of cache folder where the downloading cache is stored
+
+    :return: the path of cache folder where the downloading cache is stored
+    """
+    root = _get_hub_root()
+    cache_dir = Path(
+        os.environ.get(
+            'JINA_HUB_CACHE_DIR',
+            root.joinpath('.cache'),
+        )
+    )
+
+    if not cache_dir.exists():
+        cache_dir.mkdir(parents=True, exist_ok=True)
+
+    return cache_dir
+
+
+@lru_cache()
 def _get_hubble_base_url() -> str:
     """Get base Hubble Url from api.jina.ai or os.environ
 
