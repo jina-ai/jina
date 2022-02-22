@@ -636,9 +636,9 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             raise
 
         if host and port:
-            console.log(f"There is already one sandbox existing, reusing it.")
+            console.log(f"A sandbox already exists, reusing it.")
             console.log(
-                f"[bold green]This sandbox will be removed when no traffic during {livetime}"
+                f"[bold green]This sandbox will be removed when there has been no traffic for {livetime}"
             )
 
             return host, port
