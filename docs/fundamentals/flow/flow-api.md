@@ -25,7 +25,7 @@ class FooExecutor(Executor):
         docs.append(Document(text='foo was here'))
 
 
-f = Flow(protocol='grpc', port_expose=12345).add(uses=FooExecutor)
+f = Flow(protocol='grpc', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345)
     docs = client.post(on='/')
@@ -45,7 +45,7 @@ class FooExecutor(Executor):
         docs.append(Document(text='foo was here'))
 
 
-f = Flow(protocol='http', port_expose=12345).add(uses=FooExecutor)
+f = Flow(protocol='http', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='http')
     docs = client.post(on='/')
@@ -71,7 +71,7 @@ class FooExecutor(Executor):
         docs.append(Document(text='foo was here'))
 
 
-f = Flow(protocol='websocket', port_expose=12345).add(uses=FooExecutor)
+f = Flow(protocol='websocket', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='websocket')
     docs = client.post(on='/')
@@ -98,7 +98,7 @@ class EndpointExecutor(Executor):
         docs.append(Document(text='bar was called'))
 
 
-f = Flow(protocol='grpc', port_expose=12345).add(uses=EndpointExecutor)
+f = Flow(protocol='grpc', port=12345).add(uses=EndpointExecutor)
 with f:
     client = Client(port=12345)
     foo_response_docs = client.post(on='/foo')

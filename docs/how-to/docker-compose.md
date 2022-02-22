@@ -54,7 +54,7 @@ neighbor retrieval on image embeddings.
 from jina import Flow
 
 f = (
-    Flow(port_expose=8080, protocol='http')
+    Flow(port=8080, protocol='http')
     .add(name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2)
     .add(
         name='indexer',
