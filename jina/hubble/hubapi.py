@@ -11,13 +11,9 @@ from jina.hubble.helper import (
     unpack_package,
     install_requirements,
     is_requirements_installed,
+    get_hub_packages_dir,
 )
 from jina.helper import random_identity
-
-_hub_root = Path(
-    os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina', 'hub-packages'))
-)
-_hub_root.mkdir(parents=True, exist_ok=True)
 
 
 def get_dist_path(uuid: str, tag: str) -> Tuple[Path, Path]:
@@ -26,7 +22,7 @@ def get_dist_path(uuid: str, tag: str) -> Tuple[Path, Path]:
     :param tag: the TAG of the executor
     :return: package and its dist-info path
     """
-    pkg_path = _hub_root / uuid
+    pkg_path = get_hub_packages_dir() / uuid
     pkg_dist_path = pkg_path / f'{tag}.dist-info'
     return pkg_path, pkg_dist_path
 
@@ -53,14 +49,14 @@ def get_config_path(local_id: str) -> 'Path':
     :param local_id: the random local ID of the executor
     :return: json config path
     """
-    return _hub_root / f'{local_id}.json'
+    return get_hub_packages_dir() / f'{local_id}.json'
 
 
 def get_lockfile() -> str:
     """Get the path of file locker
     :return: the path of file locker
     """
-    return str(_hub_root / 'LOCK')
+    return str(get_hub_packages_dir() / 'LOCK')
 
 
 def load_secret(work_path: 'Path') -> Tuple[str, str]:
@@ -197,7 +193,7 @@ def uninstall_local(uuid: str):
     :param uuid: the UUID of the executor
     """
     pkg_path, _ = get_dist_path(uuid, None)
-    for dist in _hub_root.glob(f'{uuid}/*.dist-info'):
+    for dist in get_hub_packages_dir().glob(f'{uuid}/*.dist-info'):
         shutil.rmtree(dist)
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
@@ -209,7 +205,7 @@ def list_local():
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in _hub_root.glob(r'*/v*.dist-info'):
+    for dist_name in get_hub_packages_dir().glob(r'*/v*.dist-info'):
         result.append(dist_name)
 
     return result

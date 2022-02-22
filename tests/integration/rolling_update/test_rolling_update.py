@@ -42,7 +42,8 @@ class DummyMarkExecutor(Executor):
     def close(self) -> None:
         import os
 
-        os.makedirs(self.workspace, exist_ok=True)
+        if self.workspace:
+            os.makedirs(self.workspace, exist_ok=True)
 
 
 def test_normal(docs):

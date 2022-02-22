@@ -17,6 +17,8 @@ from jina.hubble.helper import (
     parse_hub_uri,
     upload_file,
     disk_cache_offline,
+    get_cache_db,
+    get_download_cache_dir,
 )
 from jina.hubble.hubapi import (
     install_local,
@@ -31,8 +33,6 @@ from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.parsers.hubble import set_hub_parser
-
-_cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
 
 class HubIO:
@@ -549,7 +549,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             console.print(*reversed(panels))
 
     @staticmethod
-    @disk_cache_offline(cache_file=str(_cache_file))
+    @disk_cache_offline(cache_file=str(get_cache_db()))
     def fetch_meta(
         name: str,
         tag: str,
@@ -814,18 +814,10 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                                     name, tag, secret=secret, force=True
                                 )
 
-                            cache_dir = Path(
-                                os.environ.get(
-                                    'JINA_HUB_CACHE_DIR',
-                                    Path.home().joinpath('.cache', 'jina'),
-                                )
-                            )
-                            cache_dir.mkdir(parents=True, exist_ok=True)
-
                             st.update(f'Downloading {name} ...')
                             cached_zip_file = download_with_resume(
                                 executor.archive_url,
-                                cache_dir,
+                                get_download_cache_dir(),
                                 f'{executor.uuid}-{executor.md5sum}.zip',
                                 md5sum=executor.md5sum,
                             )
