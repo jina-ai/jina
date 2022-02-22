@@ -86,10 +86,10 @@ def test_func_return_():
 def test_func_joiner(mocker):
     class Joiner(Executor):
         @requests
-        def foo(self, docs, **kwargs):
-            for d in docs:
-                d.text += '!!!'
-            return docs
+        def foo(self, docs_matrix, **kwargs):
+            for d1, d2 in zip(docs_matrix[0], docs_matrix[1]):
+                d1.text = d1.text + d2.text + '!!!'
+            return docs_matrix[0]
 
     class M1(Executor):
         @requests
@@ -110,22 +110,15 @@ def test_func_joiner(mocker):
         .add(uses=Joiner, needs=['executor0', 'executor1'])
     )
 
-    mock = mocker.Mock()
-
-    def validate(req):
-        texts = {d.text for d in req.docs}
-        assert len(texts) == 6
-        mock()
-
     with f:
-        Client(return_responses=True, port=1234).post(
+        resp = Client(return_responses=True, port=1234).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
-            on_done=validate,
         )
 
-    mock.assert_called_once()
+    texts = {d.text for r in resp for d in r.docs}
+    assert len(texts) == 3
 
 
 def test_dealer_routing(mocker):

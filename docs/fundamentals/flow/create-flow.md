@@ -45,9 +45,19 @@ f.plot('flow.svg')
 
 ```{figure} flow.svg
 :width: 70%
-The generated SVG file visualizing the `Flow` above.
+
 ```
 
+```python
+from jina import Flow
+
+f = Flow().add(name='e1').add(needs='e1').add(needs='e1')
+f.plot('flow-2.svg')
+```
+
+```{figure} flow-2.svg
+:width: 70%
+```
 
 ## Add Executors
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:

@@ -74,10 +74,14 @@ class MyIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if os.path.exists(self.workspace + '/indexer'):
-            self._docs = DocumentArray.load(self.workspace + '/indexer')
-        else:
-            self._docs = DocumentArray()
+        self.table_name = 'qabot_docs'
+        self._docs = DocumentArray(
+            storage='sqlite',
+            config={
+                'connection': os.path.join(self.workspace, 'indexer.db'),
+                'table_name': self.table_name,
+            },
+        )
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -97,9 +101,3 @@ class MyIndexer(Executor):
             normalization=(1, 0),
             limit=1,
         )
-
-    def close(self):
-        """
-        Stores the DocumentArray to disk
-        """
-        self._docs.save(self.workspace + '/indexer')
