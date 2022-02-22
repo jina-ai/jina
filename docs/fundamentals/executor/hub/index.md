@@ -35,6 +35,20 @@ The Hub architecture looks like the following:
 :align: center
 ```
 
+## Environment Variables
+
+A list of environment variables which takes effects during Jina Hub operations. e.g. `jina hub push`
+
+### `JINA_HUB_ROOT`
+
+**Define the place where the Executor package cache lives.** Default value is `Path.home().joinpath('.jina', 'hub-packages')`
+
+````{admonition} Hint
+:class: hint
+You don't have permissions to create a directory in the home folder sometime. This is the right time to change the value.
+````
+
+
 ```{toctree}
 :hidden:
 
