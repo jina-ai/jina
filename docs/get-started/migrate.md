@@ -86,9 +86,14 @@ from docarray import Document, DocumentArray
 docs = nested_docs()
 
 print(docs.traverse_flat('r,c').texts)
+```
+```
 >>> ['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
-
+```
+```python
 print(docs.flatten().texts)
+```
+```
 >>> ['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
 
 ```
@@ -103,9 +108,14 @@ from docarray import Document, DocumentArray
 docs = nested_docs()
 
 print(docs['@r,c'].texts)
+```
+```
 >>> ['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
-
+```
+```python
 print(docs[...].texts)
+```
+```
 >>> ['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
 
 ```
@@ -145,10 +155,15 @@ from docarray import Document, DocumentArray
 
 d = Document()
 print(d.text)
+```
+```
 >>> ''
-
+```
+```python
 docs = DocumentArray([d, d])
 print(docs.texts)
+```
+```
 >>> ['', '']
 ```
 
@@ -161,10 +176,15 @@ from docarray import Document, DocumentArray
 
 d = Document()
 print(d.text)
+```
+```
 >>> ''
-
+```
+```python
 docs = DocumentArray([d, d])
 print(docs.texts)
+```
+```
 >>> None
 ```
 
@@ -189,7 +209,11 @@ for `DocumentArrayMemmap`, which lets you persist Documents to disk and load the
 ````{tab} Storing to disk
 ```python
 from docarray import Document, DocumentArray
-das = DocumentArray(storage='sqlite', config={'connection': 'my_connection', 'table_name': 'my_table_name'})
+
+das = DocumentArray(
+    storage='sqlite',
+    config={'connection': 'my_connection', 'table_name': 'my_table_name'},
+)
 das.extend([Document() for _ in range(10)])
 ```
 ````
@@ -197,7 +221,11 @@ das.extend([Document() for _ in range(10)])
 ````{tab} Loading from disk
 ```python
 from docarray import DocumentArray
-das = DocumentArray(storage='sqlite', config={'connection': 'my_connection', 'table_name': 'my_table_name'})
+
+das = DocumentArray(
+    storage='sqlite',
+    config={'connection': 'my_connection', 'table_name': 'my_table_name'},
+)
 print(len(das))
 ```
 
@@ -211,13 +239,13 @@ in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor
 production.
 
 
-## Flow: Simplified `.post()` behavior
+## Flow and Client: Simplified `.post()` behavior
 
-- `flow.post()` now returns a flattened `DocumentArray` instead of a list of `Response`s when `return_results=True` is
-set. This makes it easier to immediately use the returned results. 
+`client.post()` and `flow.post()` now return a flattened `DocumentArray` instead of a list of `Response`s when no
+callback function is specified.
 
-The behavior of `client.post()` remains unchanged compared to Jina 2, exposing entire `Response`s to the user. By setting or unsetting the `results_as_docarray=` argument,
-the user can override these default behaviors.
+`.post()` can still be configured to return a list of Responses, by passing `return_responses=True` to the Client or Flow
+constructors.
 
 
 ## Consistent YAML parsing syntax
