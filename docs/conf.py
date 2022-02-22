@@ -227,7 +227,7 @@ def setup(app):
     )
     app.add_config_value(
         name='server_address',
-        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://jina-ai-jina-docsqa.jina.ai'),
+        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://jina-ai-jina.docsqa.jina.ai'),
         rebuild='',
     )
     app.connect('builder-inited', set_qa_server_address)
