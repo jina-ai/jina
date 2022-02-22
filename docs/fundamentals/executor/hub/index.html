@@ -650,8 +650,24 @@ Executors to share privately or publicly.</p>
 <p>The Hub architecture looks like the following:</p>
 <figure class="align-center">
 <img alt="../../../_images/hub-system.svg" src="../../../_images/hub-system.svg"/></figure>
+</section>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>A list of environment variables which takes effects during Jina Hub operations. e.g. <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">push</span></code></p>
+<section id="jina-hub-root">
+<h3><code class="docutils literal notranslate"><span class="pre">JINA_HUB_ROOT</span></code><a class="headerlink" href="#jina-hub-root" title="Permalink to this headline">¶</a></h3>
+<p><strong>Define the place where the Executor package cache lives.</strong> Default value is <code class="docutils literal notranslate"><span class="pre">Path.home().joinpath('.jina',</span> <span class="pre">'hub-packages')</span></code></p>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>You don’t have permissions to create a directory in the home folder sometime. This is the right time to change the value.</p>
+</div>
+</section>
+<section id="jina-hub-cache-dir">
+<h3><code class="docutils literal notranslate"><span class="pre">JINA_HUB_CACHE_DIR</span></code><a class="headerlink" href="#jina-hub-cache-dir" title="Permalink to this headline">¶</a></h3>
+<p><strong>Define the place where the cache is stored during the downloading.</strong> The cache will be deleted after finishing the download. Default value is <code class="docutils literal notranslate"><span class="pre">Path(os.environ.get('JINA_HUB_ROOT')).joinpath('.cache')</span></code>. By default, it will be a subfolder of <code class="docutils literal notranslate"><span class="pre">JINA_HUB_ROOT</span></code>. You can specify its value separately if you want.</p>
 <div class="toctree-wrapper compound">
 </div>
+</section>
 </section>
 </section>
 
@@ -714,6 +730,11 @@ Executors to share privately or publicly.</p>
                         <ul>
 <li><a class="reference internal" href="#">Share Executors via Jina Hub</a><ul>
 <li><a class="reference internal" href="#hub-architecture">Hub architecture</a></li>
+<li><a class="reference internal" href="#environment-variables">Environment Variables</a><ul>
+<li><a class="reference internal" href="#jina-hub-root"><code class="docutils literal notranslate"><span class="pre">JINA_HUB_ROOT</span></code></a></li>
+<li><a class="reference internal" href="#jina-hub-cache-dir"><code class="docutils literal notranslate"><span class="pre">JINA_HUB_CACHE_DIR</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -748,7 +769,7 @@ Executors to share privately or publicly.</p>
     <script src="../../../_static/design-tabs.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina-docsqa.jina.ai");
+            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
         });
         </script>
     </body>

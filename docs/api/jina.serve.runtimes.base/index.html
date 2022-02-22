@@ -656,7 +656,7 @@ and after. In subclasses, <cite>teardown</cite> is optional.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Use <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code> or <cite>multiprocessing.Event</cite>, while <a class="reference internal" href="#jina.serve.runtimes.base.BaseRuntime.run_forever" title="jina.serve.runtimes.base.BaseRuntime.run_forever"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_forever()</span></code></a> polls for this event</p></li>
-<li><p>Use GrpcConnectionPool to send a TERMINATE message, while <a class="reference internal" href="#jina.serve.runtimes.base.BaseRuntime.run_forever" title="jina.serve.runtimes.base.BaseRuntime.run_forever"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_forever()</span></code></a> polls for this message</p></li>
+<li><p>Use <code class="xref py py-class docutils literal notranslate"><span class="pre">GrpcConnectionPool</span></code> to send a TERMINATE message, while <a class="reference internal" href="#jina.serve.runtimes.base.BaseRuntime.run_forever" title="jina.serve.runtimes.base.BaseRuntime.run_forever"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_forever()</span></code></a> polls for this message</p></li>
 </ul>
 </div></blockquote>
 <p>Note, another way to jump out from <a class="reference internal" href="#jina.serve.runtimes.base.BaseRuntime.run_forever" title="jina.serve.runtimes.base.BaseRuntime.run_forever"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_forever()</span></code></a> is raise exceptions from it. This will immediately move to
@@ -771,7 +771,7 @@ You can tidy up things here.  Optional in subclasses. The default implementation
     <script src="../../_static/design-tabs.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina-docsqa.jina.ai");
+            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
         });
         </script>
     </body>

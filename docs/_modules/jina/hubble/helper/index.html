@@ -615,6 +615,63 @@
 
 
 <span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">_get_hub_root</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="n">hub_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_HUB_ROOT'</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'.jina'</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hub_root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">hub_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hub_root</span>
+
+
+<div class="viewcode-block" id="get_hub_packages_dir"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hub_packages_dir">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_hub_packages_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">"""Get the path of folder where the hub packages are stored</span>
+
+<span class="sd">    :return: the path of folder where the hub packages are stored</span>
+<span class="sd">    """</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
+    <span class="n">hub_packages</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'hub-package'</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hub_packages</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">hub_packages</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hub_packages</span></div>
+
+
+<div class="viewcode-block" id="get_cache_db"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_cache_db">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_cache_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">"""Get the path of cache db of hub Executors</span>
+
+<span class="sd">    :return: the path of cache db of hub Executors</span>
+<span class="sd">    """</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
+    <span class="n">cache_db</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'disk_cache.db'</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cache_db</span></div>
+
+
+<div class="viewcode-block" id="get_download_cache_dir"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_download_cache_dir">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_download_cache_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">"""Get the path of cache folder where the downloading cache is stored</span>
+
+<span class="sd">    :return: the path of cache folder where the downloading cache is stored</span>
+<span class="sd">    """</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">'JINA_HUB_CACHE_DIR'</span><span class="p">,</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cache_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cache_dir</span></div>
+
+
+<span class="nd">@lru_cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">_get_hubble_base_url</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Get base Hubble Url from api.jina.ai or os.environ</span>
 
@@ -1077,7 +1134,7 @@
     <script src="../../../../_static/design-tabs.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina-docsqa.jina.ai");
+            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
         });
         </script>
     </body>
