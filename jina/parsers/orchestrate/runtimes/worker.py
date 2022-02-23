@@ -1,7 +1,5 @@
 """Argparser module for WorkerRuntime"""
-import argparse
-
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
+from jina.parsers.helper import add_arg_group, KVAppendAction
 from jina import __default_host__
 from jina import helper
 

@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import DeploymentRoleType
-from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
+from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group, KVAppendAction
 
 
 def mixin_base_deployment_parser(parser):
@@ -27,7 +27,9 @@ def mixin_base_deployment_parser(parser):
 
     gp.add_argument(
         '--condition',
-        type=dict,
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
         help='The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray',
     )
 
