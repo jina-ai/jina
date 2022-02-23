@@ -122,6 +122,7 @@ get-started/migrate
 api
 cli/index
 proto/docs
+Jina 2 Documentation <https://docs2.jina.ai/>
 ```
 
 
