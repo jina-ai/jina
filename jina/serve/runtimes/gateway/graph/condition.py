@@ -20,9 +20,9 @@ class Condition:
         """
         # docs.filter(self._condition)
         ret = DocumentArray()
+        key = list(self._condition.keys())[0]
+        value = list(self._condition.values())[0]
         for doc in docs:
-            if doc.tags[self._condition.split(':')[0]] == float(
-                self._condition.split(':')[1]
-            ):
+            if doc.tags[key] == float(value):
                 ret.append(doc)
         return ret

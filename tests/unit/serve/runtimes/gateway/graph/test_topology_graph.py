@@ -135,7 +135,7 @@ def test_topology_graph_build_linear(linear_graph_dict):
 
 
 @pytest.mark.parametrize(
-    'conditions', [{}, {'deployment1': 'key:5', 'deployment2': 'key:4'}]
+    'conditions', [{}, {'deployment1': {'key': '5'}, 'deployment2': {'key': '4'}}]
 )
 def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     graph = TopologyGraph(bifurcation_graph_dict, conditions)
@@ -167,7 +167,7 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     if conditions == {}:
         assert node_deployment1._condition is None
     else:
-        assert node_deployment1._condition._condition == 'key:5'
+        assert node_deployment1._condition._condition == {'key': '5'}
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
     assert node_deployment1.hanging
@@ -179,7 +179,7 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     if conditions == {}:
         assert node_deployment2._condition is None
     else:
-        assert node_deployment2._condition._condition == 'key:4'
+        assert node_deployment2._condition._condition == {'key': '4'}
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
     assert not node_deployment2.hanging
@@ -616,8 +616,8 @@ async def test_message_ordering_linear_graph(linear_graph_dict):
     'conditions, node_skipped',
     [
         ({}, ''),
-        ({'deployment1': 'key:5', 'deployment2': 'key:4'}, 'deployment1'),
-        ({'deployment1': 'key:4', 'deployment2': 'key:5'}, 'deployment2'),
+        ({'deployment1': {'key': '5'}, 'deployment2': {'key': '4'}}, 'deployment1'),
+        ({'deployment1': {'key': '4'}, 'deployment2': {'key': '5'}}, 'deployment2'),
     ],
 )
 async def test_message_ordering_bifurcation_graph(
