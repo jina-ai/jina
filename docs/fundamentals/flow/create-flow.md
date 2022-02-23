@@ -425,6 +425,63 @@ This will get you the following output:
 
 So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
 
+### Add conditions to Executors
+
+Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release), a Flow topology can make sure that some Executors only receive `Documents` according to the filtering Query Language from `DocumentArray` (#TODO: Link to DocumentArray documentation for this feature).
+
+This feature is used by adding `condition` parameter when adding an `Executor` to the Flow.
+
+````{tab} Pythonic style
+
+```python
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = Flow().add().add(condition={'key': 5})  # Create the empty Flow
+
+with f:  # Using it as a Context Manager will start the Flow
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+assert (
+    len(ret) == 1
+)  # only the Document fullfilling the condition is processed and therefore returned.
+```
+````
+
+````{tab} Load from YAML
+`flow.yml`:
+
+```yaml
+jtype: Flow
+executors:
+  - name: executor
+    condition:
+        - key: 5
+```
+
+```python
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
+
+with f:  # Using it as a Context Manager will start the Flow
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+assert (
+    len(ret) == 1
+)  # only the Document fullfilling the condition is processed and therefore returned.
+```
+````
+
+This feature is useful to model your logic in a `switch-like` style. #TODO: Link to a How-to about this feature showing a 2 graphs Flow using this
+
 ### Replicate Executors
 
 Replication can be used to create multiple copies of the same Executor. Each request in the Flow is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:
