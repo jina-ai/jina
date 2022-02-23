@@ -620,7 +620,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
-        :param condition: The conditions that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray
+        :param condition: The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray
         :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
