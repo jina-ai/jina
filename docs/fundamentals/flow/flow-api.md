@@ -31,6 +31,10 @@ with f:
     docs = client.post(on='/')
     print(docs.texts)
 ```
+
+```text
+['foo was here']
+```
 ````
 
 ````{tab} HTTP
@@ -53,9 +57,10 @@ with f:
     f.block()
 ```
 
-```bash
- curl -X POST http://127.0.0.1:12345/search -H 'Content-type: application/json' -d '{"data":[{}]}'
+```text
+['foo was here']
 ```
+
 ````
 
 ````{tab} WebSocket
@@ -78,10 +83,24 @@ with f:
     print(docs.texts)
 ```
 
+```text
+['foo was here']
+```
 ````
 
-## Configure the API
-The `Flow` API can expose different endpoints depending on the configured Executors. Endpoints are defined by the Executor methods annotated with the `@requests(on='/endpoint_path')` decorator.
+## Add Executor
+
+...
+... arguments are both for the Executor and for the Deployment
+
+
+## Starting / stopping
+
+...
+
+## Expose API endpoints
+
+The `Flow` API can expose different endpoints. Endpoints are defined by the Executor methods annotated with the `@requests(on='/endpoint_path')` decorator.
 
 ```python
 from docarray import Document, DocumentArray
@@ -107,73 +126,16 @@ with f:
     print(bar_response_docs.texts)
 ```
 
-This will print
+This will print:
 
 ```text
 ['foo was called']
 ['bar was called']
 ```
 
-The `Client` also offers the convenience functions `.search()` and  `.index()`, which are just shortcuts for `.post(on='/search')` and `.post(on='/index')`.
-
-## Limiting outstanding requests
-By default, a Client will just send requests as fast as possible without any throttling. This can potentially put a lot of load on the `Flow` if the Client can send requests faster than they are processed in the `Flow`. Typically, this is most likely to happen for expensive index Flows. 
-
-You can control the number of in flight requests per Client with the `prefetch` argument, e.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
-
-```{code-block} python
----
-emphasize-lines: 8, 10
----
-
-def requests_generator():
-    while True:
-        yield Document(...)
-
-class MyExecutor(Executor):
-    @requests
-    def foo(self, **kwargs):
-        slow_operation()
-
-# Makes sure only 2 requests reach the Executor at a time.
-with Flow(prefetch=2).add(uses=MyExecutor) as f:
-    f.post(on='/', inputs=requests_generator)
-```
-
-```{danger}
-When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
-```
-
-## Extend HTTP Interface
-
-By default the following endpoints are exposed to the public by the API:
-
-| Endpoint  | Description                                         |
-| --------- | --------------------------------------------------- |
-| `/status` | Check Jina service running status                   |
-| `/post`   | Corresponds to `f.post()` method in Python          |
-| `/index`  | Corresponds to `f.post('/index')` method in Python  |
-| `/search` | Corresponds to `f.post('/search')` method in Python |
-| `/update` | Corresponds to `f.post('/update')` method in Python |
-| `/delete` | Corresponds to `f.post('/delete')` method in Python |
-
-### Hide CRUD and debug endpoints from HTTP interface
-
-It is possible to hide CRUD and debug endpoints in production. This might be useful when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
-
-```python
-from jina import Flow
-
-f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
-```
-
-```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
-:align: center
-```
-
 ### Expose customized endpoints to HTTP interface
 
-`Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
+`Flow.expose_endpoint` can be used to expose an Executor's endpoint via HTTP, e.g.
 
 ```{figure} ../../../.github/2.0/expose-endpoints.svg
 :align: center
@@ -230,7 +192,135 @@ executors:
 :align: center
 ```
 
-## Deployment
+### Hide CRUD and debug endpoints from HTTP interface
+
+It is possible to hide CRUD and debug endpoints in production. This might be useful when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
+
+```python
+from jina import Flow
+
+f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
+```
+
+```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
+:align: center
+```
+
+## Limit outstanding requests
+
+By default, a Client will just send requests as fast as possible without any throttling. This can potentially put a lot of load on the `Flow` if the Client can send requests faster than they are processed in the `Flow`. Typically, this is most likely to happen for expensive index Flows. 
+
+You can control the number of in flight requests per Client with the `prefetch` argument, e.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
+
+```{code-block} python
+---
+emphasize-lines: 8, 10
+---
+
+def requests_generator():
+    while True:
+        yield Document(...)
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        slow_operation()
+
+# Makes sure only 2 requests reach the Executor at a time.
+with Flow(prefetch=2).add(uses=MyExecutor) as f:
+    f.post(on='/', inputs=requests_generator)
+```
+
+```{danger}
+When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
+```
+
+## Flow with HTTP protocol
+
+### Enable Cross-Origin Resource Sharing (CORS)
+
+CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
+
+```python
+from jina import Flow
+
+f = Flow(cors=True, protocol='http')
+```
+
+[//]: # (TO BE MOVED TO CLIENT)
+
+### Use Swagger UI to send HTTP request
+
+You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
+
+```{figure} ../../../.github/2.0/swagger-ui.png
+:align: center
+```
+
+[//]: # (TO BE MOVED TO CLIENT)
+
+### Use `curl` to send HTTP request
+
+Now you can send data request via `curl`/Postman:
+
+THIS TO BE COLLAPSED
+
+```console
+$ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
+
+{
+  "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
+  "data": {
+    "docs": [
+      {
+        "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
+        "granularity": 0,
+        "adjacency": 0,
+        "parentId": "",
+        "text": "hello world",
+        "chunks": [],
+        "weight": 0.0,
+        "matches": [],
+        "mimeType": "",
+        "tags": {
+          "mimeType": "",
+          "parentId": ""
+        },
+        "location": [],
+        "offset": 0,
+        "embedding": null,
+        "scores": {},
+        "modality": "",
+        "evaluations": {}
+      }
+    ],
+    "groundtruths": []
+  },
+  "header": {
+    "execEndpoint": "/index",
+    "targetPeapod": "",
+    "noPropagate": false
+  },
+  "parameters": {},
+  "routes": [
+    {
+      "pod": "gateway",
+      "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
+      "startTime": "2021-08-05T07:26:58.636258+00:00",
+      "endTime": "2021-08-05T07:26:58.636910+00:00",
+      "status": null
+    }
+  ],
+  "status": {
+    "code": 0,
+    "description": "",
+    "exception": null
+  }
+}
+```
+
+## Generate deployment configuration
+
 To deploy a `Flow` you will need to deploy the Executors it is composed of.
 The `Flow` is offering convenience functions to generate the necessary configuration files for some use cases.
 At the moment, `Docker-Compose` and `Kubernetes` are supported.
@@ -261,3 +351,10 @@ with Flow() as f:
 ```
 This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
 The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
+
+## See further
+
+- {ref}`Access the Flow with the Client <client>`
+- {ref}`Deployment with Kubernetes <kubernetes>` 
+- {ref}`Deployment with Docker Compose <docker-compose>`
+- {ref}`Executors inside a Flow <executor-in-flow>`
