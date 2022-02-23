@@ -235,30 +235,11 @@ def get_fastapi_app(
             import strawberry
             from docarray import DocumentArray
             from docarray.document.strawberry_type import (
-                Base64,
                 JSONScalar,
-                NdArray,
                 StrawberryDocument,
+                StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
-
-            @strawberry.input
-            class StrawberryDocumentInput:
-                id: Optional[str] = None
-                parent_id: Optional[str] = None
-                granularity: Optional[int] = None
-                adjacency: Optional[int] = None
-                blob: Optional[Base64] = None
-                tensor: Optional[NdArray] = None
-                mime_type: Optional[str] = None
-                text: Optional[str] = None
-                weight: Optional[float] = None
-                uri: Optional[str] = None
-                tags: Optional[JSONScalar] = None
-                offset: Optional[float] = None
-                location: Optional[List[float]] = None
-                embedding: Optional[NdArray] = None
-                modality: Optional[str] = None
 
             @strawberry.input
             class JinaRequestModel:
