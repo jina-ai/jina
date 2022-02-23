@@ -28,7 +28,7 @@ def mixin_base_deployment_parser(parser):
     gp.add_argument(
         '--condition',
         type=dict,
-        help='The conditions that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray',
+        help='The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray',
     )
 
     gp.add_argument(
