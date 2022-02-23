@@ -39,26 +39,17 @@ class TopologyGraph:
             self.end_time = None
             self.status = None
             self._condition = condition
-            if self._condition is not None:
-                assert (
-                    self.number_of_parts == 1
-                ), 'Cannot set a Condition on a Deployment receiving from multiple Deployments'
 
         @property
         def leaf(self):
             return len(self.outgoing_nodes) == 0
 
         def _update_requests(self):
-            total_len_docs = 0
-            total_len_params = 0
             for i in range(len(self.parts_to_send)):
                 copy_req = copy.deepcopy(self.parts_to_send[i])
                 filtered_docs = self._condition.filter(copy_req.docs)
                 copy_req.data.docs = filtered_docs
-                total_len_docs += len(filtered_docs)
-                total_len_params += len(copy_req.parameters)
                 self.parts_to_send[i] = copy_req
-            return total_len_docs > 0 or total_len_params > 0
 
         async def _wait_previous_and_send(
             self,
@@ -79,24 +70,20 @@ class TopologyGraph:
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
-                    send = True
                     if self._condition is not None:
-                        send = self._update_requests()
+                        self._update_requests()
 
-                    if send:
-                        resp, metadata = await connection_pool.send_requests_once(
-                            requests=self.parts_to_send,
-                            deployment=self.name,
-                            head=True,
-                            endpoint=endpoint,
-                        )
-                        self.end_time = datetime.utcnow()
-                        if 'is-error' in metadata:
-                            self.status = resp.header.status
-                        return resp, metadata
-                    else:
-                        # send can be false only if one part to send
-                        return self.parts_to_send[0], {}
+                    resp, metadata = await connection_pool.send_requests_once(
+                        requests=self.parts_to_send,
+                        deployment=self.name,
+                        head=True,
+                        endpoint=endpoint,
+                    )
+                    self.end_time = datetime.utcnow()
+                    if 'is-error' in metadata:
+                        self.status = resp.header.status
+                    return resp, metadata
+
             return None, {}
 
         def get_leaf_tasks(

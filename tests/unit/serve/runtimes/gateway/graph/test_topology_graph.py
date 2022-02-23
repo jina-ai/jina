@@ -937,8 +937,3 @@ async def test_message_ordering_two_joins_graph(
 def test_empty_graph():
     graph = TopologyGraph({})
     assert not graph.origin_nodes
-
-
-def test_invalid_graph(two_joins_graph):
-    with pytest.raises(AssertionError):
-        TopologyGraph(two_joins_graph, {'joiner_1': 'key:5'})

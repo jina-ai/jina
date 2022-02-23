@@ -10,6 +10,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class ContitionDumpExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
+        print(f' HEY JOAN {self.metas.name}')
         with open(
             os.path.join(str(self.workspace), f'{self.metas.name}.txt'), 'w'
         ) as fp:
@@ -37,7 +38,7 @@ def flow(request, temp_workspace):
                 uses_metas={'name': 'exec1'},
                 workspace=os.environ['TEMP_WORKSPACE'],
                 name='exec1',
-                needs='first',
+                needs=['first'],
                 condition={'type': '1'},
             )
             .add(
@@ -84,3 +85,48 @@ def test_conditions_filtering(tmpdir, flow):
 
     with open(os.path.join(str(tmpdir), 'exec2', '0', f'exec2.txt'), 'r') as fp:
         assert fp.read() == 'type2'
+
+
+def test_conditions_filtering_on_joiner(tmpdir):
+    flow = (
+        Flow()
+        .add(name='first')
+        .add(
+            uses=ContitionDumpExecutor,
+            uses_metas={'name': 'joiner_test_exec1'},
+            workspace=str(tmpdir),
+            name='joiner_test_exec1',
+            needs=['first'],
+        )
+        .add(
+            uses=ContitionDumpExecutor,
+            workspace=str(tmpdir),
+            uses_metas={'name': 'joiner_test_exec2'},
+            name='joiner_test_exec2',
+            needs='first',
+        )
+        .needs_all('joiner', condition={'type': '3'})
+    )
+    with flow:
+        ret = flow.post(
+            on='index',
+            inputs=DocumentArray(
+                [
+                    Document(text='type1', tags={'type': 1}),
+                    Document(text='type2', tags={'type': 2}),
+                ]
+            ),
+        )
+        assert len(ret) == 0
+
+    with open(
+        os.path.join(str(tmpdir), 'joiner_test_exec1', '0', f'joiner_test_exec1.txt'),
+        'r',
+    ) as fp:
+        assert fp.read() == 'type1type2'
+
+    with open(
+        os.path.join(str(tmpdir), 'joiner_test_exec2', '0', f'joiner_test_exec2.txt'),
+        'r',
+    ) as fp:
+        assert fp.read() == 'type1type2'
