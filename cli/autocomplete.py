@@ -308,6 +308,7 @@ ac_table = {
             '--connection-list',
             '--uses-before',
             '--uses-after',
+            '--condition',
             '--external',
             '--deployment-role',
         ],
