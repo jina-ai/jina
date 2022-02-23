@@ -6,8 +6,8 @@ import webbrowser
 from collections import defaultdict
 
 import numpy as np
+from docarray import Document
 
-from jina import Document
 from jina.helper import colored
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
