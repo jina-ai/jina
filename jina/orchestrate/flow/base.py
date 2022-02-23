@@ -575,7 +575,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
-        condition: Optional[dict] = {},
+        condition: Optional[dict] = None,
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
