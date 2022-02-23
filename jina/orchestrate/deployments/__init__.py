@@ -403,7 +403,7 @@ class Deployment(BaseDeployment):
             self.pod_args = self._parse_args(self.args)
 
         if self.is_sandbox:
-            host, port = HubIO.deploy_public_sandbox(getattr(self.args, 'uses', ''))
+            host, port = HubIO.deploy_public_sandbox(self.args)
             self.first_pod_args.host = host
             self.first_pod_args.port_in = port
             self.pod_args['head'].host = host

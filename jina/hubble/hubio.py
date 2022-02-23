@@ -1,12 +1,13 @@
 """Module for wrapping Jina Hub API calls."""
 
 import argparse
+import copy
 import hashlib
 import json
 import os
 import random
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union, Dict
 from urllib.parse import urlencode
 
 from jina.hubble import HubExecutor
@@ -600,18 +601,23 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         )
 
     @staticmethod
-    def deploy_public_sandbox(uses: str):
+    def deploy_public_sandbox(args: Union[argparse.Namespace, Dict]) -> str:
         """
         Deploy a public sandbox to Jina Hub.
-        :param uses: the executor uses string
+        :param args: arguments parsed from the CLI
 
         :return: the host and port of the sandbox
         """
-        scheme, name, tag, secret = parse_hub_uri(uses)
+        args_copy = copy.deepcopy(args)
+        if not isinstance(args_copy, Dict):
+            args_copy = vars(args_copy)
+
+        scheme, name, tag, secret = parse_hub_uri(args_copy.pop('uses', ''))
         payload = {
             'name': name,
             'tag': tag if tag else 'latest',
             'jina': __version__,
+            'args': args_copy,
         }
 
         from rich.progress import Console
@@ -622,9 +628,9 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         host = None
         port = None
         try:
-            json_response = requests.get(
+            json_response = requests.post(
                 url=get_hubble_url_v2() + '/rpc/sandbox.get',
-                params=payload,
+                json=payload,
                 headers=get_request_header(),
             ).json()
             if json_response.get('code') == 200:
