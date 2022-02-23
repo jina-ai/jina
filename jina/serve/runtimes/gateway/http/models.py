@@ -10,6 +10,12 @@ from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
+import strawberry
+from docarray.document.strawberry_type import (
+    JSONScalar,
+    StrawberryDocumentInput,
+)
+
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
     FieldDescriptor.TYPE_INT32: int,
@@ -277,6 +283,31 @@ class JinaEndpointRequestModel(JinaRequestModel):
     exec_endpoint: str = Field(
         ...,
         example='/foo',
+        description='The endpoint string, by convention starts with `/`. '
+        'All executors bind with `@requests(on="/foo")` will receive this request.',
+    )
+
+
+@strawberry.input
+class JinaRequestModelStrawberry:
+    """
+    Jina HTTP request model.
+    """
+
+    data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
+        default=None,
+        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',  # TODO avoid duplication in the description with JinaRequestModel ?
+    )
+    target_executor: Optional[str] = strawberry.field(
+        default=None,
+        description='A regex string represent the certain pods/deployments request targeted.',
+    )
+    parameters: Optional[JSONScalar] = strawberry.field(
+        default=None,
+        description='A dictionary of parameters to be sent to the executor.',
+    )
+    exec_endpoint: str = strawberry.field(
+        default='/search',
         description='The endpoint string, by convention starts with `/`. '
         'All executors bind with `@requests(on="/foo")` will receive this request.',
     )
