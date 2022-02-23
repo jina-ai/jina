@@ -19,7 +19,6 @@ class Request(ProtoTypeMixin):
     It overrides :meth:`__getattr__` to provide the same get/set interface as an
     :class:`jina_pb2.RequestProto` object.
 
-    :param request: The request.
     """
 
     def __getattr__(self, name: str):
