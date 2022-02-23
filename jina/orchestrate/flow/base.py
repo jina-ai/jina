@@ -125,7 +125,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
-        conditions: Optional[str] = '{}',
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
@@ -135,6 +134,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
+        graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -177,7 +177,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
-        :param conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
@@ -187,6 +186,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
+        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
