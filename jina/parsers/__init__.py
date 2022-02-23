@@ -77,7 +77,6 @@ def set_gateway_parser(parser=None):
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
-    from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
 
     mixin_base_ppr_parser(parser)

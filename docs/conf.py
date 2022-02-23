@@ -173,13 +173,13 @@ ogp_custom_meta_tags = [
     '<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
     '''
     <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164627626-3"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-48ZDWC8GT6');
+  gtag('config', 'UA-164627626-3');
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -227,7 +227,7 @@ def setup(app):
     )
     app.add_config_value(
         name='server_address',
-        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://jina-ai-jina-docsqa.jina.ai'),
+        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://jina-ai-jina.docsqa.jina.ai'),
         rebuild='',
     )
     app.connect('builder-inited', set_qa_server_address)

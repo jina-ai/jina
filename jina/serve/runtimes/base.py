@@ -32,7 +32,7 @@ class BaseRuntime:
      In order to cancel the `run_forever` method of a `Runtime`, you can use their `static` `cancel` method that will make sure that the runtime is properly cancelled.
 
         - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
-        - Use GrpcConnectionPool to send a TERMINATE message, while :meth:`run_forever` polls for this message
+        - Use :class:`GrpcConnectionPool` to send a TERMINATE message, while :meth:`run_forever` polls for this message
 
      Note, another way to jump out from :meth:`run_forever` is raise exceptions from it. This will immediately move to
      :meth:`teardown`.

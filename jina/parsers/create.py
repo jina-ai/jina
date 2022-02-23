@@ -3,7 +3,7 @@ from jina.parsers.base import set_base_parser
 
 
 def set_new_project_parser(parser=None):
-    """Set the parser for `ping`
+    """Set the parser for `new`
 
     :param parser: an existing parser to build upon
     :return: the parser
