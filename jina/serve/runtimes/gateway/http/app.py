@@ -234,42 +234,15 @@ def get_fastapi_app(
 
             import strawberry
             from docarray import DocumentArray
-            from docarray.document.strawberry_type import (
-                JSONScalar,
-                StrawberryDocument,
-                StrawberryDocumentInput,
-            )
             from strawberry.fastapi import GraphQLRouter
-
-            @strawberry.input
-            class JinaRequestModel:
-                """
-                Jina HTTP request model.
-                """
-
-                data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
-                    default=None,
-                    description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
-                )
-                target_executor: Optional[str] = strawberry.field(
-                    default=None,
-                    description='A regex string represent the certain pods/deployments request targeted.',
-                )
-                parameters: Optional[JSONScalar] = strawberry.field(
-                    default=None,
-                    description='A dictionary of parameters to be sent to the executor.',
-                )
-                exec_endpoint: str = strawberry.field(
-                    default='/search',
-                    description='The endpoint string, by convention starts with `/`. '
-                    'All executors bind with `@requests(on="/foo")` will receive this request.',
-                )
+            from .models import JinaRequestModelStrawberry
+            from docarray.document.strawberry_type import StrawberryDocument
 
             @strawberry.type
             class Query:
                 @strawberry.field
                 async def docs(
-                    self, body: JinaRequestModel
+                    self, body: JinaRequestModelStrawberry
                 ) -> List[StrawberryDocument]:
 
                     bd = asdict(body) if body else {'data': None}
