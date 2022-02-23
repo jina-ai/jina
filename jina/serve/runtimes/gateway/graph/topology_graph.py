@@ -186,7 +186,7 @@ class TopologyGraph:
             return request
 
     def __init__(
-        self, graph_representation: Dict, conditions: Dict = {}, *args, **kwargs
+        self, graph_representation: Dict, graph_conditions: Dict = {}, *args, **kwargs
     ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
@@ -208,7 +208,7 @@ class TopologyGraph:
         nodes = {}
         for node_name in node_set:
             condition = None
-            condition_repr = conditions.get(node_name, None)
+            condition_repr = graph_conditions.get(node_name, None)
             if condition_repr is not None:
                 condition = Condition(condition_repr)
             nodes[node_name] = self._ReqReplyNode(
