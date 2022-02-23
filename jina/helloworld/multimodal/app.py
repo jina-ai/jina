@@ -4,12 +4,13 @@ import webbrowser
 import zipfile
 from pathlib import Path
 
+from docarray import DocumentArray
+
 from jina import Flow
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
-from jina import DocumentArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,7 +28,9 @@ def hello_world(args):
         help_text='this demo requires Pytorch and Transformers to be installed, '
         'if you haven\'t, please do `pip install jina[torch,transformers]`',
     ):
-        import transformers, torch, torchvision
+        import torch
+        import torchvision
+        import transformers
 
         assert [
             torch,
