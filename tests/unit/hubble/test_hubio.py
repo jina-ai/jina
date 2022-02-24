@@ -520,10 +520,22 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
 
     monkeypatch.setattr(requests, "post", _mock_post)
 
-    args = Namespace(uses='jinahub+sandbox://dummy_mwu_encoder')
+    args = Namespace(
+        uses='jinahub+sandbox://dummy_mwu_encoder',
+        uses_with={'foo': 'bar'},
+        test_string='text',
+        test_number=1,
+    )
     host, port = HubIO.deploy_public_sandbox(args)
     assert host == 'http://test_existing_deployment.com'
     assert port == 4321
+
+    _, kwargs = mock.call_args
+    assert kwargs['json']['args'] == {
+        'uses_with': {'foo': 'bar'},
+        'test_number': 1,
+        'test_string': 'text',
+    }
 
 
 def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
