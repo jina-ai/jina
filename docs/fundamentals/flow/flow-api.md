@@ -144,6 +144,7 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
 
+(http-interface)=
 ## Extend HTTP Interface
 
 By default the following endpoints are exposed to the public by the API:
@@ -229,6 +230,58 @@ executors:
 ```{figure} ../../../.github/2.0/rich-openapi.png
 :align: center
 ```
+
+## GraphQL Interface
+
+````{admonition} See Also
+:class: seealso
+
+This article does not serve as the introduction to GraphQL.
+If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the official [GraphQL documentation](https://graphql.org/learn/).
+You may also want to learn about [Strawberry](https://strawberry.rocks/), the library that powers Jina's GraphQL support.
+````
+
+Jina Flows that use the HTTP protocol provide a GraphQL API out of the box, which is located behind the '/graphql' endpoint.
+
+This means that you can access the Flow from any GraphQL client, like for example, `sgqlc`.
+
+```python
+from sgqlc.endpoint.http import HTTPEndpoint
+
+HOSTNAME, PORT = ...
+endpoint = HTTPEndpoint(url=f'{HOSTNAME}:{PORT}/graphql')
+mut = '''
+        mutation {
+            docs(data: {text: "abcd"}) { 
+                id
+                matches {
+                    embedding
+                }
+            } 
+        }
+    '''
+response = endpoint(mut)
+```
+
+### Mutations and arguments
+
+The Flow GraphQL API exposes the mutation `docs`, which sends its inputs to the Flow's Executors,
+just like HTTP `post` as described {ref}`above <http-interface>`.
+\
+It can take the following optional arguments:
+
+- `data`: List of Documents, specified as a [Document Strawberry input type](TODO LINK TO DOCS IN DOCARRAY REPO ONCE IT'S THERE). Default is `None`.
+- `execEndpoint`: String specifying the Executor endpoint. Default is '/search'.
+- `parameters`: Dict of parameters passed to the Executors. Default is `None`.
+- `target_executor`: Executor that is targeted by the request. Defaults to targeting all Executors.
+
+
+### Fields
+
+The available fields in the GraphQL API are defined by the [Document Strawberry type](https://docarray.jina.ai/advanced/graphql-support/?highlight=graphql).
+
+Essentially, you can ask for any property of a Document, including `embedding`, `text`, `tensor`, `id`, `matches`, `tags`,
+and more.
 
 ## Deployment
 To deploy a `Flow` you will need to deploy the Executors it is composed of.
