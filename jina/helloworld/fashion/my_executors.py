@@ -13,8 +13,9 @@ class MyIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if os.path.exists(self.workspace + '/indexer'):
-            self._docs = DocumentArray.load(self.workspace + '/indexer')
+        self.index_path = self.workspace + '/indexer'
+        if os.path.exists(self.index_path):
+            self._docs = DocumentArray.load(self.index_path)
         else:
             self._docs = DocumentArray()
 
@@ -46,7 +47,7 @@ class MyIndexer(Executor):
         """
         Stores the DocumentArray to disk
         """
-        self._docs.save(self.workspace + '/indexer')
+        self._docs.save(self.index_path)
 
 
 class MyEncoder(Executor):
