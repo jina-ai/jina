@@ -597,14 +597,6 @@
     <span class="sd">"""A base class for all exceptions raised by Jina"""</span></div>
 
 
-<div class="viewcode-block" id="NoExplicitMessage"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoExplicitMessage">[docs]</a><span class="k">class</span> <span class="nc">NoExplicitMessage</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
-    <span class="sd">"""Waiting until all partial messages are received."""</span></div>
-
-
-<div class="viewcode-block" id="MismatchedVersion"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MismatchedVersion">[docs]</a><span class="k">class</span> <span class="nc">MismatchedVersion</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
-    <span class="sd">"""When the jina version info of the incoming message does not match the local Jina version."""</span></div>
-
-
 <div class="viewcode-block" id="ExecutorFailToLoad"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ExecutorFailToLoad">[docs]</a><span class="k">class</span> <span class="nc">ExecutorFailToLoad</span><span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""When the executor can not be loaded in pod/deployment."""</span></div>
 
@@ -617,20 +609,8 @@
     <span class="sd">"""When scaling is unsuccessful for an Executor."""</span></div>
 
 
-<div class="viewcode-block" id="MemoryOverHighWatermark"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MemoryOverHighWatermark">[docs]</a><span class="k">class</span> <span class="nc">MemoryOverHighWatermark</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
-    <span class="sd">"""When the memory usage is over the defined high water mark."""</span></div>
-
-
-<div class="viewcode-block" id="NoAvailablePortError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoAvailablePortError">[docs]</a><span class="k">class</span> <span class="nc">NoAvailablePortError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
-    <span class="sd">"""When no available random port could be found"""</span></div>
-
-
 <div class="viewcode-block" id="RuntimeTerminated"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RuntimeTerminated">[docs]</a><span class="k">class</span> <span class="nc">RuntimeTerminated</span><span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
     <span class="sd">"""The event loop of BasePod ends."""</span></div>
-
-
-<div class="viewcode-block" id="UnknownControlCommand"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.UnknownControlCommand">[docs]</a><span class="k">class</span> <span class="nc">UnknownControlCommand</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
-    <span class="sd">"""The control command received can not be recognized."""</span></div>
 
 
 <div class="viewcode-block" id="FlowTopologyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowTopologyError">[docs]</a><span class="k">class</span> <span class="nc">FlowTopologyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
@@ -702,7 +682,7 @@
 
 
 <div class="viewcode-block" id="NoContainerizedError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.NoContainerizedError">[docs]</a><span class="k">class</span> <span class="nc">NoContainerizedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">BaseJinaExeception</span><span class="p">):</span>
-    <span class="sd">""" Raised when trying to use non-containerized Executor in K8s or Docker Compose"""</span></div>
+    <span class="sd">"""Raised when trying to use non-containerized Executor in K8s or Docker Compose"""</span></div>
 </pre></div>
             </article>
             <footer>
@@ -714,7 +694,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 23, 2022.
+                    Last updated on Feb 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -732,14 +712,16 @@
             <div class="toc-sticky toc-scroll">
                 
                 <qa-bot
-                    style="position: fixed; width: 15em;"
-                    theme="follow"
-                    animate-by="position"
+                    theme="auto"
+                    title="Jina Docs Bot"
+                    description="@JinaAI"
                 >
-                    <dt>You can ask questions about our docs. Try:</dt>
-                    <dd>Does Jina support Kubernetes?</dd>
-                    <dd>How can I traverse a nested DocumentArray?</dd>
-                    <dd>What are the basic concepts in Jina?</dd>
+                    <dl>
+                        <dt>You can ask questions about our docs. Try:</dt>
+                        <dd>Does Jina support Kubernetes?</dd>
+                        <dd>What are the basic concepts in Jina?</dd>
+                        <dd>How to share my Executor?</dd>
+                    </dl>
                 </qa-bot>
             </div>
 
@@ -757,8 +739,34 @@
     <script src="../../../_static/tabs.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                document.querySelector('qa-bot').setAttribute('theme', theme);
+            }
+        });
+        const ob = new MutationObserver(function(mutations) {
+            let shouldChange = false;
+            for (const m of mutations) {
+                if (m.type !== 'attributes') {
+                    continue;
+                }   
+                if (m.attributeName !== 'data-theme') {
+                    continue;
+                }
+                shouldChange = m.target.dataset.theme;
+            }
+
+            if (!shouldChange) {
+                return;
+            }
+
+            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
+        });
+        ob.observe(document.body, {
+            attribute:true,
+            attributeFilter: ['data-theme']
         });
         </script>
     </body>

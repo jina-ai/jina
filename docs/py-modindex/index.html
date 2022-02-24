@@ -1713,7 +1713,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 23, 2022.
+                    Last updated on Feb 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1731,14 +1731,16 @@
             <div class="toc-sticky toc-scroll">
                 
                 <qa-bot
-                    style="position: fixed; width: 15em;"
-                    theme="follow"
-                    animate-by="position"
+                    theme="auto"
+                    title="Jina Docs Bot"
+                    description="@JinaAI"
                 >
-                    <dt>You can ask questions about our docs. Try:</dt>
-                    <dd>Does Jina support Kubernetes?</dd>
-                    <dd>How can I traverse a nested DocumentArray?</dd>
-                    <dd>What are the basic concepts in Jina?</dd>
+                    <dl>
+                        <dt>You can ask questions about our docs. Try:</dt>
+                        <dd>Does Jina support Kubernetes?</dd>
+                        <dd>What are the basic concepts in Jina?</dd>
+                        <dd>How to share my Executor?</dd>
+                    </dl>
                 </qa-bot>
             </div>
 
@@ -1756,8 +1758,34 @@
     <script src="../_static/tabs.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                document.querySelector('qa-bot').setAttribute('theme', theme);
+            }
+        });
+        const ob = new MutationObserver(function(mutations) {
+            let shouldChange = false;
+            for (const m of mutations) {
+                if (m.type !== 'attributes') {
+                    continue;
+                }   
+                if (m.attributeName !== 'data-theme') {
+                    continue;
+                }
+                shouldChange = m.target.dataset.theme;
+            }
+
+            if (!shouldChange) {
+                return;
+            }
+
+            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
+        });
+        ob.observe(document.body, {
+            attribute:true,
+            attributeFilter: ['data-theme']
         });
         </script>
     </body>

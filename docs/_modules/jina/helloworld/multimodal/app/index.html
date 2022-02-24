@@ -596,12 +596,13 @@
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helloworld</span> <span class="kn">import</span> <span class="n">set_hw_multimodal_parser</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
@@ -619,7 +620,9 @@
         <span class="n">help_text</span><span class="o">=</span><span class="s1">'this demo requires Pytorch and Transformers to be installed, '</span>
         <span class="s1">'if you haven</span><span class="se">\'</span><span class="s1">t, please do `pip install jina[torch,transformers]`'</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">transformers</span><span class="o">,</span> <span class="nn">torch</span><span class="o">,</span> <span class="nn">torchvision</span>
+        <span class="kn">import</span> <span class="nn">torch</span>
+        <span class="kn">import</span> <span class="nn">torchvision</span>
+        <span class="kn">import</span> <span class="nn">transformers</span>
 
         <span class="k">assert</span> <span class="p">[</span>
             <span class="n">torch</span><span class="p">,</span>
@@ -718,7 +721,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 23, 2022.
+                    Last updated on Feb 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -736,14 +739,16 @@
             <div class="toc-sticky toc-scroll">
                 
                 <qa-bot
-                    style="position: fixed; width: 15em;"
-                    theme="follow"
-                    animate-by="position"
+                    theme="auto"
+                    title="Jina Docs Bot"
+                    description="@JinaAI"
                 >
-                    <dt>You can ask questions about our docs. Try:</dt>
-                    <dd>Does Jina support Kubernetes?</dd>
-                    <dd>How can I traverse a nested DocumentArray?</dd>
-                    <dd>What are the basic concepts in Jina?</dd>
+                    <dl>
+                        <dt>You can ask questions about our docs. Try:</dt>
+                        <dd>Does Jina support Kubernetes?</dd>
+                        <dd>What are the basic concepts in Jina?</dd>
+                        <dd>How to share my Executor?</dd>
+                    </dl>
                 </qa-bot>
             </div>
 
@@ -761,8 +766,34 @@
     <script src="../../../../../_static/tabs.js"></script>
     <script src="../../../../../_static/design-tabs.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                document.querySelector('qa-bot').setAttribute('theme', theme);
+            }
+        });
+        const ob = new MutationObserver(function(mutations) {
+            let shouldChange = false;
+            for (const m of mutations) {
+                if (m.type !== 'attributes') {
+                    continue;
+                }   
+                if (m.attributeName !== 'data-theme') {
+                    continue;
+                }
+                shouldChange = m.target.dataset.theme;
+            }
+
+            if (!shouldChange) {
+                return;
+            }
+
+            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
+        });
+        ob.observe(document.body, {
+            attribute:true,
+            attributeFilter: ['data-theme']
         });
         </script>
     </body>

@@ -866,82 +866,6 @@
     <span class="n">ERROR</span> <span class="o">=</span> <span class="mi">3</span></div>
 
 
-<div class="viewcode-block" id="EmbeddingClsType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EmbeddingClsType">[docs]</a><span class="k">class</span> <span class="nc">EmbeddingClsType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">"""Enums for representing the type of embeddings supported."""</span>
-
-    <span class="n">DENSE</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">SCIPY_COO</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">SCIPY_CSR</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">SCIPY_BSR</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">SCIPY_CSC</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">TORCH</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">TF</span> <span class="o">=</span> <span class="mi">6</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_sparse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Check if is of sparse type</span>
-
-<span class="sd">        :return: True if the type is sparse</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_dense</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Check if is of dense type</span>
-
-<span class="sd">        :return: True if the type is dense</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_scipy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Check if is of scipy sparse type</span>
-
-<span class="sd">        :return: True is of scipy sparse type</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Check if is of torch sparse type</span>
-
-<span class="sd">        :return: True is of torch sparse type</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">5</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_tf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Check if is of tf sparse type</span>
-
-<span class="sd">        :return: True is of tf sparse type</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">6</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">scipy_cls_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Return the specific scipy class type (coo, csr, csc, bsr)</span>
-
-<span class="sd">        :return: True is of scipy sparse type</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_scipy</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_scipy_stackable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Return if the specific scipy class is stackable. (BSR and CSC when stacked are converted into COO)</span>
-
-<span class="sd">        :return: True is class is stackable</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span></div>
-
-
 <div class="viewcode-block" id="RemoteWorkspaceState"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.RemoteWorkspaceState">[docs]</a><span class="k">class</span> <span class="nc">RemoteWorkspaceState</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="sd">"""Enum representing state of remote workspace created by JinaD"""</span>
 
@@ -977,7 +901,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 23, 2022.
+                    Last updated on Feb 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -995,14 +919,16 @@
             <div class="toc-sticky toc-scroll">
                 
                 <qa-bot
-                    style="position: fixed; width: 15em;"
-                    theme="follow"
-                    animate-by="position"
+                    theme="auto"
+                    title="Jina Docs Bot"
+                    description="@JinaAI"
                 >
-                    <dt>You can ask questions about our docs. Try:</dt>
-                    <dd>Does Jina support Kubernetes?</dd>
-                    <dd>How can I traverse a nested DocumentArray?</dd>
-                    <dd>What are the basic concepts in Jina?</dd>
+                    <dl>
+                        <dt>You can ask questions about our docs. Try:</dt>
+                        <dd>Does Jina support Kubernetes?</dd>
+                        <dd>What are the basic concepts in Jina?</dd>
+                        <dd>How to share my Executor?</dd>
+                    </dl>
                 </qa-bot>
             </div>
 
@@ -1020,8 +946,34 @@
     <script src="../../../_static/tabs.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                document.querySelector('qa-bot').setAttribute('theme', theme);
+            }
+        });
+        const ob = new MutationObserver(function(mutations) {
+            let shouldChange = false;
+            for (const m of mutations) {
+                if (m.type !== 'attributes') {
+                    continue;
+                }   
+                if (m.attributeName !== 'data-theme') {
+                    continue;
+                }
+                shouldChange = m.target.dataset.theme;
+            }
+
+            if (!shouldChange) {
+                return;
+            }
+
+            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
+        });
+        ob.observe(document.body, {
+            attribute:true,
+            attributeFilter: ['data-theme']
         });
         </script>
     </body>

@@ -8,7 +8,7 @@
   
 <meta property="og:type" content="website" />
   
-<meta property="og:url" content="https://docs.jina.ai/api/jina.enums.html" />
+<meta property="og:url" content="https://docs.jina.ai/api/jina.enums/" />
   
 <meta property="og:site_name" content="Jina 3.0.3 Documentation" />
   
@@ -35,7 +35,7 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.3"></script>
+<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.excepts module" href="../jina.excepts/" /><link rel="prev" title="jina.checker module" href="../jina.checker/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
@@ -1034,131 +1034,6 @@ side-effect.</p>
 <dd></dd></dl>
 </dd></dl>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">EmbeddingClsType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EmbeddingClsType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EmbeddingClsType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
-<p>Enums for representing the type of embeddings supported.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.DENSE">
-<span class="sig-name descname"><span class="pre">DENSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.DENSE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.SCIPY_COO">
-<span class="sig-name descname"><span class="pre">SCIPY_COO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_COO" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.SCIPY_CSR">
-<span class="sig-name descname"><span class="pre">SCIPY_CSR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_CSR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.SCIPY_BSR">
-<span class="sig-name descname"><span class="pre">SCIPY_BSR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_BSR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.SCIPY_CSC">
-<span class="sig-name descname"><span class="pre">SCIPY_CSC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_CSC" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.TORCH">
-<span class="sig-name descname"><span class="pre">TORCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.TORCH" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.TF">
-<span class="sig-name descname"><span class="pre">TF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.TF" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.is_sparse">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_sparse</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_sparse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if is of sparse type</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the type is sparse</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.is_dense">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_dense</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_dense" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if is of dense type</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the type is dense</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.is_scipy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_scipy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_scipy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if is of scipy sparse type</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True is of scipy sparse type</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.is_torch">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_torch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_torch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if is of torch sparse type</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True is of torch sparse type</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.is_tf">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_tf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_tf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if is of tf sparse type</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True is of tf sparse type</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.scipy_cls_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scipy_cls_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.scipy_cls_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the specific scipy class type (coo, csr, csc, bsr)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True is of scipy sparse type</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.enums.EmbeddingClsType.is_scipy_stackable">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_scipy_stackable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_scipy_stackable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return if the specific scipy class is stackable. (BSR and CSC when stacked are converted into COO)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True is class is stackable</p>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.RemoteWorkspaceState">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">RemoteWorkspaceState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#RemoteWorkspaceState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.RemoteWorkspaceState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
@@ -1235,7 +1110,7 @@ side-effect.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 23, 2022.
+                    Last updated on Feb 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1253,14 +1128,16 @@ side-effect.</p>
             <div class="toc-sticky toc-scroll">
                 
                 <qa-bot
-                    style="position: fixed; width: 15em;"
-                    theme="follow"
-                    animate-by="position"
+                    theme="auto"
+                    title="Jina Docs Bot"
+                    description="@JinaAI"
                 >
-                    <dt>You can ask questions about our docs. Try:</dt>
-                    <dd>Does Jina support Kubernetes?</dd>
-                    <dd>How can I traverse a nested DocumentArray?</dd>
-                    <dd>What are the basic concepts in Jina?</dd>
+                    <dl>
+                        <dt>You can ask questions about our docs. Try:</dt>
+                        <dd>Does Jina support Kubernetes?</dd>
+                        <dd>What are the basic concepts in Jina?</dd>
+                        <dd>How to share my Executor?</dd>
+                    </dl>
                 </qa-bot>
             </div>
 
@@ -1278,8 +1155,34 @@ side-effect.</p>
     <script src="../../_static/tabs.js"></script>
     <script src="../../_static/design-tabs.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "https://jina-ai-jina.docsqa.jina.ai");
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                document.querySelector('qa-bot').setAttribute('theme', theme);
+            }
+        });
+        const ob = new MutationObserver(function(mutations) {
+            let shouldChange = false;
+            for (const m of mutations) {
+                if (m.type !== 'attributes') {
+                    continue;
+                }   
+                if (m.attributeName !== 'data-theme') {
+                    continue;
+                }
+                shouldChange = m.target.dataset.theme;
+            }
+
+            if (!shouldChange) {
+                return;
+            }
+
+            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
+        });
+        ob.observe(document.body, {
+            attribute:true,
+            attributeFilter: ['data-theme']
         });
         </script>
     </body>
