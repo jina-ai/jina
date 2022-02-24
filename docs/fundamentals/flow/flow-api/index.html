@@ -864,8 +864,8 @@ At the moment, <code class="docutils literal notranslate"><span class="pre">Dock
 <strong>Docker-Compose</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">()</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This will generate a single <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file containing all the <code class="docutils literal notranslate"><span class="pre">Executors</span></code> of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
@@ -873,8 +873,8 @@ At the moment, <code class="docutils literal notranslate"><span class="pre">Dock
 <strong>Kubernetes</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">to_k8s_yaml</span><span class="p">(</span><span class="s1">'flow_k8s_configuration'</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">to_k8s_yaml</span><span class="p">(</span><span class="s1">'flow_k8s_configuration'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will generate the necessary Kubernetes configuration files for all the <code class="docutils literal notranslate"><span class="pre">Executors</span></code> of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
