@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import asdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
@@ -295,28 +296,4 @@ class JinaEndpointRequestModel(JinaRequestModel):
         example='/foo',
         description='The endpoint string, by convention starts with `/`. '
         'All executors bind with `@requests(on="/foo")` will receive this request.',
-    )
-
-
-@strawberry.input
-class JinaResponseModelStrawberry:
-    """
-    Jina HTTP request model.
-    """
-
-    data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
-        default=None,
-        description=DESCRIPTION_DATA,
-    )
-    target_executor: Optional[str] = strawberry.field(
-        default=None,
-        description=DESCRIPTION_TARGET_EXEC,
-    )
-    parameters: Optional[JSONScalar] = strawberry.field(
-        default=None,
-        description=DESCRIPTION_PARAMETERS,
-    )
-    exec_endpoint: str = strawberry.field(
-        default='/search',
-        description=DESCRIPTION_EXEC_ENDPOINT,
     )

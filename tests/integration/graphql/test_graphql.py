@@ -70,7 +70,7 @@ def test_id_only(req_type):
     response = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}}) { 
+            docs(data: {text: "abcd"}) { 
                 id 
             } 
         }
@@ -88,7 +88,7 @@ def test_id_and_text(req_type):
     response = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}}) { 
+            docs(data: {text: "abcd"}) { 
                 id 
                 text
             } 
@@ -104,7 +104,7 @@ def test_id_in_matches(req_type):
     response = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}}) { 
+            docs(data: {text: "abcd"}) { 
                 id 
                 text
                 matches {
@@ -128,7 +128,7 @@ def test_id_text_in_matches(req_type):
     response = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}}) { 
+            docs(data: {text: "abcd"}) { 
                 id 
                 text
                 matches {
@@ -152,7 +152,7 @@ def test_text_scores_in_matches(req_type):
     response = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}}) { 
+            docs(data: {text: "abcd"}) { 
                 id 
                 text
                 matches {
@@ -184,7 +184,7 @@ def test_parameters(req_type):
     response = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}, parameters: "{\"limit\": 3}"}) {
+            docs(data: {text: "abcd"}, parameters: "{\"limit\": 3}") {
                 id
                 text
                 matches {
@@ -207,7 +207,7 @@ def test_endpoints(req_type, endpoint):
     response_foo = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}, execEndpoint: "%s"}) { 
+            docs(data: {text: "abcd"}, execEndpoint: "%s") { 
                 text
             } 
         }
@@ -227,7 +227,7 @@ def test_target_exec(req_type, target):
     response_foo = graphql_query(
         '''
         %s {
-            docs(body: {data: {text: "abcd"}, targetExecutor: "%s", execEndpoint: "/target-exec"}) { 
+            docs(data: {text: "abcd"}, targetExecutor: "%s", execEndpoint: "/target-exec") { 
                 text
             } 
         }
