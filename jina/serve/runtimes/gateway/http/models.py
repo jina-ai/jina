@@ -299,7 +299,7 @@ class JinaEndpointRequestModel(JinaRequestModel):
 
 
 @strawberry.input
-class JinaMutationModelStrawberry:
+class JinaResponseModelStrawberry:
     """
     Jina HTTP request model.
     """
@@ -319,24 +319,4 @@ class JinaMutationModelStrawberry:
     exec_endpoint: str = strawberry.field(
         default='/search',
         description=DESCRIPTION_EXEC_ENDPOINT,
-    )
-
-
-@strawberry.input
-class JinaQueryModelStrawberry:
-    """
-    Jina HTTP request model.
-    """
-
-    data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
-        default=None,
-        description=DESCRIPTION_DATA,
-    )
-    target_executor: Optional[str] = strawberry.field(
-        default=None,
-        description=DESCRIPTION_TARGET_EXEC,
-    )
-    parameters: Optional[JSONScalar] = strawberry.field(
-        default=None,
-        description=DESCRIPTION_PARAMETERS,
     )
