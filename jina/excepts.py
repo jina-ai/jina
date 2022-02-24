@@ -5,14 +5,6 @@ class BaseJinaExeception:
     """A base class for all exceptions raised by Jina"""
 
 
-class NoExplicitMessage(Exception, BaseJinaExeception):
-    """Waiting until all partial messages are received."""
-
-
-class MismatchedVersion(SystemError, BaseJinaExeception):
-    """When the jina version info of the incoming message does not match the local Jina version."""
-
-
 class ExecutorFailToLoad(SystemError, BaseJinaExeception):
     """When the executor can not be loaded in pod/deployment."""
 
@@ -25,20 +17,8 @@ class ScalingFails(SystemError, BaseJinaExeception):
     """When scaling is unsuccessful for an Executor."""
 
 
-class MemoryOverHighWatermark(Exception, BaseJinaExeception):
-    """When the memory usage is over the defined high water mark."""
-
-
-class NoAvailablePortError(Exception, BaseJinaExeception):
-    """When no available random port could be found"""
-
-
 class RuntimeTerminated(KeyboardInterrupt, BaseJinaExeception):
     """The event loop of BasePod ends."""
-
-
-class UnknownControlCommand(RuntimeError, BaseJinaExeception):
-    """The control command received can not be recognized."""
 
 
 class FlowTopologyError(Exception, BaseJinaExeception):
@@ -110,4 +90,4 @@ class DaemonInvalidDockerfile(FileNotFoundError, BaseJinaExeception):
 
 
 class NoContainerizedError(Exception, BaseJinaExeception):
-    """ Raised when trying to use non-containerized Executor in K8s or Docker Compose"""
+    """Raised when trying to use non-containerized Executor in K8s or Docker Compose"""
