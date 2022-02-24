@@ -300,7 +300,7 @@ class JinaRequestModelStrawberry:
     )
     target_executor: Optional[str] = strawberry.field(
         default=None,
-        description='A regex string represent the certain pods/deployments request targeted.',
+        description='A regex string representing the specific pods/deployments targeted by the request.',
     )
     parameters: Optional[JSONScalar] = strawberry.field(
         default=None,
@@ -309,5 +309,5 @@ class JinaRequestModelStrawberry:
     exec_endpoint: str = strawberry.field(
         default='/search',
         description='The endpoint string, by convention starts with `/`. '
-        'All executors bind with `@requests(on="/foo")` will receive this request.',
+        'All executors bind with `@requests(on=exec_endpoint)` will receive this request.',
     )
