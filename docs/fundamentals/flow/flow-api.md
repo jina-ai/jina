@@ -246,8 +246,8 @@ For more in-depth guides on Flow deployment, take a look at our how-tos for {ref
 ```python
 from jina import Flow
 
-with Flow() as f:
-    f.to_docker_compose_yaml()
+f = Flow().add()
+f.to_docker_compose_yaml()
 ```
 This will generate a single `docker-compose.yml` file containing all the `Executors` of the `Flow`.
 
@@ -256,8 +256,8 @@ This will generate a single `docker-compose.yml` file containing all the `Execut
 ```python
 from jina import Flow
 
-with Flow() as f:
-    f.to_k8s_yaml('flow_k8s_configuration')
+f = Flow().add()
+f.to_k8s_yaml('flow_k8s_configuration')
 ```
 This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
 The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
