@@ -2,6 +2,7 @@ import os
 import urllib.request
 import webbrowser
 import zipfile
+from typing import TYPE_CHECKING
 from pathlib import Path
 
 from docarray import DocumentArray
@@ -12,10 +13,14 @@ from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
 
+
+if TYPE_CHECKING:
+    from argparse import Namespace
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def hello_world(args):
+def hello_world(args: 'NameSpace'):
     """
     Execute the multimodal example.
 
