@@ -235,15 +235,28 @@ def get_fastapi_app(
             import strawberry
             from docarray import DocumentArray
             from strawberry.fastapi import GraphQLRouter
-            from .models import JinaResponseModelStrawberry
             from docarray.document.strawberry_type import StrawberryDocument
+            from docarray.document.strawberry_type import (
+                JSONScalar,
+                StrawberryDocumentInput,
+            )
 
-            async def get_docs_from_endpoint(body):
-                bd = asdict(body) if body else {'data': None}
-                req_generator_input = bd
-                req_generator_input['data_type'] = DataInputType.DICT
+            async def get_docs_from_endpoint(
+                data, target_executor, parameters, exec_endpoint
+            ):
+                print(type(data))
+                req_generator_input = {
+                    'data': [asdict(d) for d in data],
+                    'target_executor': target_executor,
+                    'parameters': parameters,
+                    'exec_endpoint': exec_endpoint,
+                    'data_type': DataInputType.DICT,
+                }
 
-                if bd['data'] is not None and 'docs' in bd['data']:
+                if (
+                    req_generator_input['data'] is not None
+                    and 'docs' in req_generator_input['data']
+                ):
                     req_generator_input['data'] = req_generator_input['data']['docs']
 
                 response = await _get_singleton_result(
@@ -255,17 +268,29 @@ def get_fastapi_app(
             class Mutation:
                 @strawberry.mutation
                 async def docs(
-                    self, body: JinaResponseModelStrawberry
+                    self,
+                    data: Optional[List[StrawberryDocumentInput]] = None,
+                    target_executor: Optional[str] = None,
+                    parameters: Optional[JSONScalar] = None,
+                    exec_endpoint: str = '/search',
                 ) -> List[StrawberryDocument]:
-                    return await get_docs_from_endpoint(body)
+                    return await get_docs_from_endpoint(
+                        data, target_executor, parameters, exec_endpoint
+                    )
 
             @strawberry.type
             class Query:
                 @strawberry.field
                 async def docs(
-                    self, body: JinaResponseModelStrawberry
+                    self,
+                    data: Optional[List[StrawberryDocumentInput]] = None,
+                    target_executor: Optional[str] = None,
+                    parameters: Optional[JSONScalar] = None,
+                    exec_endpoint: str = '/search',
                 ) -> List[StrawberryDocument]:
-                    return await get_docs_from_endpoint(body)
+                    return await get_docs_from_endpoint(
+                        data, target_executor, parameters, exec_endpoint
+                    )
 
             schema = strawberry.Schema(query=Query, mutation=Mutation)
             app.include_router(GraphQLRouter(schema), prefix='/graphql')
