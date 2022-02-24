@@ -235,14 +235,14 @@ def get_fastapi_app(
             import strawberry
             from docarray import DocumentArray
             from strawberry.fastapi import GraphQLRouter
-            from .models import JinaRequestModelStrawberry
+            from .models import JinaMutationModelStrawberry, JinaQueryModelStrawberry
             from docarray.document.strawberry_type import StrawberryDocument
 
             @strawberry.type
-            class Query:
-                @strawberry.field
+            class Mutation:
+                @strawberry.mutation
                 async def docs(
-                    self, body: JinaRequestModelStrawberry
+                    self, body: JinaMutationModelStrawberry
                 ) -> List[StrawberryDocument]:
 
                     bd = asdict(body) if body else {'data': None}
@@ -261,7 +261,30 @@ def get_fastapi_app(
                         response['data']
                     ).to_strawberry_type()
 
-            schema = strawberry.Schema(query=Query)
+            @strawberry.type
+            class Query:
+                @strawberry.field
+                async def docs(
+                    self, body: JinaQueryModelStrawberry
+                ) -> List[StrawberryDocument]:
+                    bd = asdict(body) if body else {'data': None}
+                    req_generator_input = bd
+                    req_generator_input['data_type'] = DataInputType.DICT
+                    req_generator_input['exec_endpoint'] = '/search'
+
+                    if bd['data'] is not None and 'docs' in bd['data']:
+                        req_generator_input['data'] = req_generator_input['data'][
+                            'docs'
+                        ]
+
+                    response = await _get_singleton_result(
+                        request_generator(**req_generator_input)
+                    )
+                    return DocumentArray.from_dict(
+                        response['data']
+                    ).to_strawberry_type()
+
+            schema = strawberry.Schema(query=Query, mutation=Mutation)
             app.include_router(GraphQLRouter(schema), prefix='/graphql')
 
     async def _get_singleton_result(request_iterator) -> Dict:

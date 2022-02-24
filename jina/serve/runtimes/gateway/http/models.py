@@ -289,14 +289,14 @@ class JinaEndpointRequestModel(JinaRequestModel):
 
 
 @strawberry.input
-class JinaRequestModelStrawberry:
+class JinaMutationModelStrawberry:
     """
     Jina HTTP request model.
     """
 
     data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
         default=None,
-        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',  # TODO avoid duplication in the description with JinaRequestModel ?
+        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
     )
     target_executor: Optional[str] = strawberry.field(
         default=None,
@@ -310,4 +310,24 @@ class JinaRequestModelStrawberry:
         default='/search',
         description='The endpoint string, by convention starts with `/`. '
         'All executors bind with `@requests(on=exec_endpoint)` will receive this request.',
+    )
+
+
+@strawberry.input
+class JinaQueryModelStrawberry:
+    """
+    Jina HTTP request model.
+    """
+
+    data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
+        default=None,
+        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
+    )
+    target_executor: Optional[str] = strawberry.field(
+        default=None,
+        description='A regex string representing the specific pods/deployments targeted by the request.',
+    )
+    parameters: Optional[JSONScalar] = strawberry.field(
+        default=None,
+        description='A dictionary of parameters to be sent to the executor.',
     )
