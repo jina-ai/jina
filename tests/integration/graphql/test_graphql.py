@@ -26,19 +26,35 @@ class Indexer(Executor):
             limit = int(parameters.get('limit', 2))
         docs.match(self._docs, limit=limit)
 
+    @requests(on='/foo')
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs[0].text = 'foo'
+
+    @requests(on='/bar')
+    def bar(self, docs: DocumentArray, **kwargs):
+        docs[0].text = 'bar'
+
+    @requests(on='/target-exec')
+    def target_exec(self, docs: DocumentArray, **kwargs):
+        docs[0].text = 'Indexer'
+
 
 class Encoder(Executor):
     @requests
     def embed(self, docs: DocumentArray, **kwargs):
         docs.embeddings = np.random.random([len(docs), 10]).astype(np.float32)
 
+    @requests(on='/target-exec')
+    def target_exec(self, docs: DocumentArray, **kwargs):
+        docs[0].text = 'Encoder'
+
 
 @pytest.fixture(scope="module", autouse=True)
 def flow():
     f = (
         Flow(protocol='http', port_expose=PORT_EXPOSE)
-        .add(uses=Encoder)
-        .add(uses=Indexer)
+        .add(uses=Encoder, name='Encoder')
+        .add(uses=Indexer, name='Indexer')
     )
     with f:
         f.index(inputs=(Document(text=t.strip()) for t in open(__file__) if t.strip()))
@@ -183,3 +199,43 @@ def test_parameters(req_type):
         {'id', 'text', 'matches'}
     )
     assert len(response['data']['docs'][0]['matches']) == 3
+
+
+@pytest.mark.parametrize('req_type', ['mutation', 'query'])
+@pytest.mark.parametrize('endpoint', ['/foo', '/bar'])
+def test_endpoints(req_type, endpoint):
+    response_foo = graphql_query(
+        '''
+        %s {
+            docs(body: {data: {text: "abcd"}, execEndpoint: "%s"}) { 
+                text
+            } 
+        }
+    '''
+        % (req_type, endpoint)
+    )
+
+    assert 'data' in response_foo
+    assert 'docs' in response_foo['data']
+    assert 'text' in response_foo['data']['docs'][0]
+    assert response_foo['data']['docs'][0]['text'] == endpoint[1:]
+
+
+@pytest.mark.parametrize('req_type', ['mutation', 'query'])
+@pytest.mark.parametrize('target', ['Indexer', 'Encoder'])
+def test_target_exec(req_type, target):
+    response_foo = graphql_query(
+        '''
+        %s {
+            docs(body: {data: {text: "abcd"}, targetExecutor: "%s", execEndpoint: "/target-exec"}) { 
+                text
+            } 
+        }
+    '''
+        % (req_type, target)
+    )
+
+    assert 'data' in response_foo
+    assert 'docs' in response_foo['data']
+    assert 'text' in response_foo['data']['docs'][0]
+    assert response_foo['data']['docs'][0]['text'] == target
