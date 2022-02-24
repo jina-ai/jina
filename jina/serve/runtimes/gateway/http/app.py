@@ -235,17 +235,13 @@ def get_fastapi_app(
             import strawberry
             from docarray import DocumentArray
             from strawberry.fastapi import GraphQLRouter
-            from .models import JinaMutationModelStrawberry, JinaQueryModelStrawberry
+            from .models import JinaResponseModelStrawberry
             from docarray.document.strawberry_type import StrawberryDocument
 
-            async def get_docs_from_endpoint(body, is_mutation=False):
+            async def get_docs_from_endpoint(body):
                 bd = asdict(body) if body else {'data': None}
                 req_generator_input = bd
                 req_generator_input['data_type'] = DataInputType.DICT
-                if (
-                    not is_mutation
-                ):  # queries (== not mutations) do always get sent to '/search'
-                    req_generator_input['exec_endpoint'] = '/search'
 
                 if bd['data'] is not None and 'docs' in bd['data']:
                     req_generator_input['data'] = req_generator_input['data']['docs']
@@ -259,17 +255,17 @@ def get_fastapi_app(
             class Mutation:
                 @strawberry.mutation
                 async def docs(
-                    self, body: JinaMutationModelStrawberry
+                    self, body: JinaResponseModelStrawberry
                 ) -> List[StrawberryDocument]:
-                    return await get_docs_from_endpoint(body, is_mutation=True)
+                    return await get_docs_from_endpoint(body)
 
             @strawberry.type
             class Query:
                 @strawberry.field
                 async def docs(
-                    self, body: JinaQueryModelStrawberry
+                    self, body: JinaResponseModelStrawberry
                 ) -> List[StrawberryDocument]:
-                    return await get_docs_from_endpoint(body, is_mutation=False)
+                    return await get_docs_from_endpoint(body)
 
             schema = strawberry.Schema(query=Query, mutation=Mutation)
             app.include_router(GraphQLRouter(schema), prefix='/graphql')
