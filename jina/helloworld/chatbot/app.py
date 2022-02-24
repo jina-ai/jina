@@ -37,7 +37,7 @@ def hello_world(args):
     with ImportExtensions(
         required=True,
         help_text='this demo requires Pytorch and Transformers to be installed, '
-        'if you haven\'t, please do `pip install jina[torch,transformers]`',
+        'if you haven\'t, please do `pip install jina[demo]`',
     ):
         import torch
         import transformers
