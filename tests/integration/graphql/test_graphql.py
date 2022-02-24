@@ -49,37 +49,7 @@ def graphql_query(query):
     return HTTPEndpoint(url=f'http://localhost:{PORT_EXPOSE}/graphql')(query=query)
 
 
-def test_id_only():
-    response = graphql_query(
-        '''
-        query {
-            docs(body: {data: {text: "abcd"}}) { 
-                id 
-            } 
-        }
-    '''
-    )
-    assert 'data' in response
-    assert 'docs' in response['data']
-    assert len(response['data']['docs']) == 1
-    assert set(response['data']['docs'][0].keys()) == {'id'}
-
-
-def test_id_and_text():
-    response = graphql_query(
-        '''
-        query {
-            docs(body: {data: {text: "abcd"}}) { 
-                id 
-                text
-            } 
-        }
-    '''
-    )
-    assert sorted(set(response['data']['docs'][0].keys())) == sorted({'id', 'text'})
-
-
-def test_id_in_matches():
+def test_query_search():
     response = graphql_query(
         '''
         query {
@@ -101,10 +71,75 @@ def test_id_in_matches():
         assert set(match.keys()) == {'id'}
 
 
-def test_id_text_in_matches():
+def test_query_no_endpoint_field():
     response = graphql_query(
         '''
         query {
+            docs(body: {data: {text: "abcd"}, execEndpoint: "/foo"}) { 
+                id
+            } 
+        }
+    '''
+    )
+    assert 'errors' in response
+
+
+def test_id_only():
+    response = graphql_query(
+        '''
+        mutation {
+            docs(body: {data: {text: "abcd"}}) { 
+                id 
+            } 
+        }
+    '''
+    )
+    assert 'data' in response
+    assert 'docs' in response['data']
+    assert len(response['data']['docs']) == 1
+    assert set(response['data']['docs'][0].keys()) == {'id'}
+
+
+def test_id_and_text():
+    response = graphql_query(
+        '''
+        mutation {
+            docs(body: {data: {text: "abcd"}}) { 
+                id 
+                text
+            } 
+        }
+    '''
+    )
+    assert sorted(set(response['data']['docs'][0].keys())) == sorted({'id', 'text'})
+
+
+def test_id_in_matches():
+    response = graphql_query(
+        '''
+        mutation {
+            docs(body: {data: {text: "abcd"}}) { 
+                id 
+                text
+                matches {
+                    id
+                }
+            } 
+        }
+    '''
+    )
+    assert sorted(set(response['data']['docs'][0].keys())) == sorted(
+        {'id', 'text', 'matches'}
+    )
+    assert len(response['data']['docs'][0]['matches']) == 2
+    for match in response['data']['docs'][0]['matches']:
+        assert set(match.keys()) == {'id'}
+
+
+def test_id_text_in_matches():
+    response = graphql_query(
+        '''
+        mutation {
             docs(body: {data: {text: "abcd"}}) { 
                 id 
                 text
@@ -126,7 +161,7 @@ def test_id_text_in_matches():
 def test_text_scores_in_matches():
     response = graphql_query(
         '''
-        query {
+        mutation {
             docs(body: {data: {text: "abcd"}}) { 
                 id 
                 text
@@ -156,7 +191,7 @@ def test_text_scores_in_matches():
 def test_parameters():
     response = graphql_query(
         '''
-        query {
+        mutation {
             docs(body: {data: {text: "abcd"}, parameters: "{\"limit\": 3}"}) {
                 id
                 text
