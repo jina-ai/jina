@@ -30,8 +30,8 @@ def hello_world(args: 'NameSpace'):
 
     with ImportExtensions(
         required=True,
-        help_text='this demo requires Pytorch and Transformers to be installed, '
-        'if you haven\'t, please do `pip install jina[torch,transformers]`',
+        help_text='this demo requires Pytorch, TorchVision and Transformers to be installed, '
+        'if you haven\'t, please do `pip install jina[demo]`',
     ):
         import torch
         import torchvision
@@ -43,7 +43,6 @@ def hello_world(args: 'NameSpace'):
             torchvision,
         ]  #: prevent pycharm auto remove the above line
 
-    # args.workdir = '0bae16ce-5bb2-43be-bcd4-6f1969e8068f'
     targets = {
         'people-img': {
             'url': args.index_data_url,
@@ -68,19 +67,22 @@ def hello_world(args: 'NameSpace'):
     f = Flow.load_config('flow-index.yml')
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
-        f.index(inputs=DocumentArray.from_csv(fp), request_size=10, show_progress=True)
-        f.post(on='/dump', target_executor='textIndexer')
-        f.post(on='/dump', target_executor='imageIndexer')
-        f.post(on='/dump', target_executor='keyValueIndexer')
+        f.post(
+            on='/index',
+            inputs=DocumentArray.from_csv(fp),
+            request_size=10,
+            show_progress=True,
+        )
+        # call the `/dump` endpoint to store the index
+        f.post(on='/dump')
 
     # search it!
     f = Flow.load_config('flow-search.yml')
-    # switch to HTTP gateway
-    f.protocol = 'http'
+    # set port exposed to clients
     f.port_expose = args.port_expose
 
     url_html_path = 'file://' + os.path.abspath(
-        os.path.join(cur_dir, 'static/index.html')
+        os.path.join(cur_dir, 'static', 'index.html')
     )
     with f:
         try:
