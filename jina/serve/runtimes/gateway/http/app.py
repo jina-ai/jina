@@ -238,28 +238,30 @@ def get_fastapi_app(
             from .models import JinaMutationModelStrawberry, JinaQueryModelStrawberry
             from docarray.document.strawberry_type import StrawberryDocument
 
+            async def get_docs_from_endpoint(body, is_mutation=False):
+                bd = asdict(body) if body else {'data': None}
+                req_generator_input = bd
+                req_generator_input['data_type'] = DataInputType.DICT
+                if (
+                    not is_mutation
+                ):  # queries (== not mutations) do always get sent to '/search'
+                    req_generator_input['exec_endpoint'] = '/search'
+
+                if bd['data'] is not None and 'docs' in bd['data']:
+                    req_generator_input['data'] = req_generator_input['data']['docs']
+
+                response = await _get_singleton_result(
+                    request_generator(**req_generator_input)
+                )
+                return DocumentArray.from_dict(response['data']).to_strawberry_type()
+
             @strawberry.type
             class Mutation:
                 @strawberry.mutation
                 async def docs(
                     self, body: JinaMutationModelStrawberry
                 ) -> List[StrawberryDocument]:
-
-                    bd = asdict(body) if body else {'data': None}
-                    req_generator_input = bd
-                    req_generator_input['data_type'] = DataInputType.DICT
-
-                    if bd['data'] is not None and 'docs' in bd['data']:
-                        req_generator_input['data'] = req_generator_input['data'][
-                            'docs'
-                        ]
-
-                    response = await _get_singleton_result(
-                        request_generator(**req_generator_input)
-                    )
-                    return DocumentArray.from_dict(
-                        response['data']
-                    ).to_strawberry_type()
+                    return await get_docs_from_endpoint(body, is_mutation=True)
 
             @strawberry.type
             class Query:
@@ -267,22 +269,7 @@ def get_fastapi_app(
                 async def docs(
                     self, body: JinaQueryModelStrawberry
                 ) -> List[StrawberryDocument]:
-                    bd = asdict(body) if body else {'data': None}
-                    req_generator_input = bd
-                    req_generator_input['data_type'] = DataInputType.DICT
-                    req_generator_input['exec_endpoint'] = '/search'
-
-                    if bd['data'] is not None and 'docs' in bd['data']:
-                        req_generator_input['data'] = req_generator_input['data'][
-                            'docs'
-                        ]
-
-                    response = await _get_singleton_result(
-                        request_generator(**req_generator_input)
-                    )
-                    return DocumentArray.from_dict(
-                        response['data']
-                    ).to_strawberry_type()
+                    return await get_docs_from_endpoint(body, is_mutation=False)
 
             schema = strawberry.Schema(query=Query, mutation=Mutation)
             app.include_router(GraphQLRouter(schema), prefix='/graphql')
