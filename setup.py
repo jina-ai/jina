@@ -111,6 +111,8 @@ def get_extra_requires(path, add_all=True):
             if add_all:
                 extra_deps['all'] = set(vv for v in extra_deps.values() for vv in v)
 
+        extra_deps['core'].add('git+https://github.com/jina-ai/docarray.git@fix-nested-accessor-iterable')
+        extra_deps['all'].add('git+https://github.com/jina-ai/docarray.git@fix-nested-accessor-iterable')
         return extra_deps
     except FileNotFoundError:
         return {}
