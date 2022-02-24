@@ -1,8 +1,11 @@
-import numpy as np
-import pytest
+from typing import Optional
 
 from jina.excepts import BadClientCallback
-from jina import Flow
+from jina import Flow, Client
+
+import numpy as np
+import pytest
+from docarray import DocumentArray
 from docarray.document.generators import from_ndarray
 
 
@@ -43,3 +46,35 @@ def test_client_on_error(protocol):
             continue_on_error=True,
         )
         assert t == 1
+
+
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_on_error_call(protocol):
+
+    with pytest.raises(Exception):
+        Client(host='0.0.0.0', protocol=protocol, port=12345).post(
+            '/blah',
+            inputs=DocumentArray.empty(10),
+        )
+
+
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_on_error_raise_exception(protocol):
+    class OnError:
+        def __init__(self):
+            self.is_called = False
+
+        def __call__(self, response, exception: Optional[Exception] = None):
+            self.is_called = True
+            print('on_error called')
+            print(response.to_dict())
+
+    on_error = OnError()
+
+    Client(host='0.0.0.0', protocol=protocol, port=12345).post(
+        '/blah',
+        inputs=DocumentArray.empty(10),
+        on_error=on_error,
+    )
+
+    assert on_error.is_called
