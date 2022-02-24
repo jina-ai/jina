@@ -37,6 +37,16 @@ PROTOBUF_TO_PYTHON_TYPE = {
     FieldDescriptor.TYPE_MESSAGE: None,
 }
 
+DESCRIPTION_DATA = 'Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects'
+DESCRIPTION_TARGET_EXEC = (
+    'A regex string representing the specific pods/deployments targeted by the request.'
+)
+DESCRIPTION_PARAMETERS = 'A dictionary of parameters to be sent to the executor.'
+DESCRIPTION_EXEC_ENDPOINT = (
+    'The endpoint string, by convention starts with `/`. '
+    'All executors bind with `@requests(on=exec_endpoint)` will receive this request.'
+)
+
 
 class CustomConfig(BaseConfig):
     """Pydantic config for Camel case and enum handling"""
@@ -242,17 +252,17 @@ class JinaRequestModel(BaseModel):
     ] = Field(
         None,
         example=_get_example_data(),
-        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
+        description=DESCRIPTION_DATA,
     )
     target_executor: Optional[str] = Field(
         None,
         example='',
-        description='A regex string represent the certain pods/deployments request targeted.',
+        description=DESCRIPTION_TARGET_EXEC,
     )
     parameters: Optional[Dict] = Field(
         None,
         example={},
-        description='A dictionary of parameters to be sent to the executor.',
+        description=DESCRIPTION_PARAMETERS,
     )
 
     class Config:
@@ -296,20 +306,19 @@ class JinaMutationModelStrawberry:
 
     data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
         default=None,
-        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
+        description=DESCRIPTION_DATA,
     )
     target_executor: Optional[str] = strawberry.field(
         default=None,
-        description='A regex string representing the specific pods/deployments targeted by the request.',
+        description=DESCRIPTION_TARGET_EXEC,
     )
     parameters: Optional[JSONScalar] = strawberry.field(
         default=None,
-        description='A dictionary of parameters to be sent to the executor.',
+        description=DESCRIPTION_PARAMETERS,
     )
     exec_endpoint: str = strawberry.field(
         default='/search',
-        description='The endpoint string, by convention starts with `/`. '
-        'All executors bind with `@requests(on=exec_endpoint)` will receive this request.',
+        description=DESCRIPTION_EXEC_ENDPOINT,
     )
 
 
@@ -321,13 +330,13 @@ class JinaQueryModelStrawberry:
 
     data: Optional[List[StrawberryDocumentInput]] = strawberry.field(
         default=None,
-        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
+        description=DESCRIPTION_DATA,
     )
     target_executor: Optional[str] = strawberry.field(
         default=None,
-        description='A regex string representing the specific pods/deployments targeted by the request.',
+        description=DESCRIPTION_TARGET_EXEC,
     )
     parameters: Optional[JSONScalar] = strawberry.field(
         default=None,
-        description='A dictionary of parameters to be sent to the executor.',
+        description=DESCRIPTION_PARAMETERS,
     )
