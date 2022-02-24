@@ -220,7 +220,7 @@ class JinaStatusModel(BaseModel):
 
 
 def _get_example_data():
-    from jina import Document, DocumentArray
+    from docarray import Document, DocumentArray
 
     docs = DocumentArray()
     docs.append(Document(text='hello, world!'))
