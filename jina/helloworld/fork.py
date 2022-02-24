@@ -1,10 +1,15 @@
 import os
 import shutil
+from typing import TYPE_CHECKING
 
 from jina.logging.predefined import default_logger
 
 
-def fork_hello(args) -> None:
+if TYPE_CHECKING:
+    from argparse import Namespace
+
+
+def fork_hello(args: 'Namespace') -> None:
     """Fork the hello world demos into a new directory
 
     :param args: the arg from cli

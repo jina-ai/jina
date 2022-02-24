@@ -1,9 +1,14 @@
 import os
 from pathlib import Path
 from functools import partial
+from typing import TYPE_CHECKING
 
 from jina import Flow
 from jina.parsers.helloworld import set_hw_parser
+
+
+if TYPE_CHECKING:
+    from argparse import Namespace
 
 if __name__ == '__main__':
     from helper import (
@@ -29,21 +34,11 @@ else:
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def hello_world(args):
+def hello_world(args: 'Namespace'):
     """
-    Runs Jina's Hello World.
+    Executor the fashion example.
 
-    Usage:
-        Use it via CLI :command:`jina hello fashion`.
-
-    Description:
-        It downloads Fashion-MNIST dataset and :term:`Indexer<indexes>` 50,000 images.
-        The index is stored into 4 *shards*. It randomly samples 128 unseen images as :term:`Queries<Searching>`
-        Results are shown in a webpage.
-
-    More options can be found in :command:`jina hello-world --help`
-
-    :param args: Argparse object
+    :param args: arguments passed from CLI
     """
 
     Path(args.workdir).mkdir(parents=True, exist_ok=True)

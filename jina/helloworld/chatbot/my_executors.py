@@ -33,7 +33,6 @@ class MyTransformer(Executor):
         self.model.to(torch.device('cpu'))
 
     def _compute_embedding(self, hidden_states: 'torch.Tensor', input_tokens: Dict):
-
         fill_vals = {'cls': 0.0, 'mean': 0.0, 'max': -np.inf, 'min': np.inf}
         fill_val = torch.tensor(
             fill_vals[self.pooling_strategy], device=torch.device('cpu')
