@@ -11,11 +11,6 @@ from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
-import strawberry
-from docarray.document.strawberry_type import (
-    JSONScalar,
-    StrawberryDocumentInput,
-)
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
