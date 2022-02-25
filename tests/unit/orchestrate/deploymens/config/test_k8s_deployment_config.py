@@ -251,14 +251,22 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
     ],
 )
 @pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
-def test_deployments(name: str, shards: str, k8s_connection_pool_call):
-    args = set_deployment_parser().parse_args(['--name', name, '--shards', shards])
+@pytest.mark.parametrize('gpus', ['0', '1'])
+def test_deployments(name: str, shards: str, k8s_connection_pool_call, gpus):
+    args = set_deployment_parser().parse_args(
+        ['--name', name, '--shards', shards, '--gpus', gpus]
+    )
     deployment_config = K8sDeploymentConfig(args, 'ns', k8s_connection_pool_call)
+
+    if name != 'gateway':
+        head_deployment = deployment_config.head_deployment
+        assert head_deployment.deployment_args.gpus is None
 
     actual_deployments = deployment_config.worker_deployments
 
     assert len(actual_deployments) == int(shards)
     for i, deploy in enumerate(actual_deployments):
+        assert deploy.deployment_args.gpus == gpus
         if int(shards) > 1:
             assert deploy.name == f'{name}-{i}'
         else:
