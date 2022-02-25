@@ -593,12 +593,13 @@
 <span></span><span class="sd">"""Module for wrapping Jina Hub API calls."""</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span>
 
 <span class="kn">from</span> <span class="nn">jina.hubble</span> <span class="kn">import</span> <span class="n">HubExecutor</span>
@@ -1192,18 +1193,23 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.deploy_public_sandbox"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.deploy_public_sandbox">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">deploy_public_sandbox</span><span class="p">(</span><span class="n">uses</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">deploy_public_sandbox</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Deploy a public sandbox to Jina Hub.</span>
-<span class="sd">        :param uses: the executor uses string</span>
+<span class="sd">        :param args: arguments parsed from the CLI</span>
 
 <span class="sd">        :return: the host and port of the sandbox</span>
 <span class="sd">        """</span>
-        <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">uses</span><span class="p">)</span>
+        <span class="n">args_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args_copy</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="n">args_copy</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">args_copy</span><span class="p">)</span>
+
+        <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">args_copy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'uses'</span><span class="p">,</span> <span class="s1">''</span><span class="p">))</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
             <span class="s1">'tag'</span><span class="p">:</span> <span class="n">tag</span> <span class="k">if</span> <span class="n">tag</span> <span class="k">else</span> <span class="s1">'latest'</span><span class="p">,</span>
             <span class="s1">'jina'</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
+            <span class="s1">'args'</span><span class="p">:</span> <span class="n">args_copy</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">Console</span>
@@ -1214,9 +1220,9 @@
         <span class="n">host</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">port</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">json_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">json_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="n">url</span><span class="o">=</span><span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/rpc/sandbox.get'</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
                 <span class="n">headers</span><span class="o">=</span><span class="n">get_request_header</span><span class="p">(),</span>
             <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'code'</span><span class="p">)</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
