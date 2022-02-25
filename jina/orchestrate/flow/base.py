@@ -1492,14 +1492,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 )
             )
             address_table.append(
-                f'\t💬 GraphQL UI:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/graphql',
-                    'cyan',
-                    attrs='underline',
-                )
-            )
-            address_table.append(
                 f'\t📚 Redoc:\t\t'
                 + colored(
                     f'http://localhost:{self.port_expose}/redoc',
@@ -1507,6 +1499,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     attrs='underline',
                 )
             )
+            if not self.args.no_graphql_endpoint:
+                address_table.append(
+                    f'\t💬 GraphQL UI:\t\t'
+                    + colored(
+                        f'http://localhost:{self.port_expose}/graphql',
+                        'cyan',
+                        attrs='underline',
+                    )
+                )
         return address_table
 
     def block(
