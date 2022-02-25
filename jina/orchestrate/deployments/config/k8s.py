@@ -280,6 +280,7 @@ class K8sDeploymentConfig:
             parsed_args['head_deployment'] = BaseDeployment._copy_to_head_args(
                 self.args
             )
+            parsed_args['head_deployment'].gpus = None
             parsed_args['head_deployment'].port_in = K8sGrpcConnectionPool.K8S_PORT_IN
             parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
