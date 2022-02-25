@@ -53,6 +53,10 @@ class BadRequestType(TypeError, BaseJinaExeception):
     """Exception when can not construct a request object from given data."""
 
 
+class BadClientResponse(Exception, BaseJinaExeception):
+    """Exception when can not construct a request object from given data."""
+
+
 class BadImageNameError(Exception, BaseJinaExeception):
     """Exception when an image name can not be found either local & remote"""
 

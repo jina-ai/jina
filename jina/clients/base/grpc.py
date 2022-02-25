@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 import grpc
 
 from jina.clients.base import BaseClient
-from jina.clients.helper import callback_exec
+from jina.clients.helper import callback_exec, callback_exec_on_error
 from jina.excepts import BadClient, BadClientInput
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2_grpc
@@ -68,22 +68,25 @@ class GRPCBaseClient(BaseClient):
             my_code = rpc_ex.code()
             my_details = rpc_ex.details()
             msg = f'gRPC error: {my_code} {my_details}'
-            if my_code == grpc.StatusCode.UNAVAILABLE:
-                self.logger.error(
-                    f'{msg}\nthe ongoing request is terminated as the server is not available or closed already'
-                )
-                raise rpc_ex
-            elif my_code == grpc.StatusCode.INTERNAL:
-                self.logger.error(f'{msg}\ninternal error on the server side')
-                raise rpc_ex
-            elif (
-                my_code == grpc.StatusCode.UNKNOWN
-                and 'asyncio.exceptions.TimeoutError' in my_details
-            ):
-                raise BadClientInput(
-                    f'{msg}\n'
-                    'often the case is that you define/send a bad input iterator to jina, '
-                    'please double check your input iterator'
-                ) from rpc_ex
+            if on_error:
+                callback_exec_on_error(on_error, rpc_ex, self.logger)
             else:
-                raise BadClient(msg) from rpc_ex
+                if my_code == grpc.StatusCode.UNAVAILABLE:
+                    self.logger.error(
+                        f'{msg}\nthe ongoing request is terminated as the server is not available or closed already'
+                    )
+                    raise rpc_ex
+                elif my_code == grpc.StatusCode.INTERNAL:
+                    self.logger.error(f'{msg}\ninternal error on the server side')
+                    raise rpc_ex
+                elif (
+                    my_code == grpc.StatusCode.UNKNOWN
+                    and 'asyncio.exceptions.TimeoutError' in my_details
+                ):
+                    raise BadClientInput(
+                        f'{msg}\n'
+                        'often the case is that you define/send a bad input iterator to jina, '
+                        'please double check your input iterator'
+                    ) from rpc_ex
+                else:
+                    raise BadClient(msg) from rpc_ex

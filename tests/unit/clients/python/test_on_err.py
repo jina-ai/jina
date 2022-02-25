@@ -1,5 +1,8 @@
 from typing import Optional
 
+import aiohttp
+import grpc
+
 from jina.excepts import BadClientCallback
 from jina import Flow, Client
 
@@ -48,26 +51,39 @@ def test_client_on_error(protocol):
         assert t == 1
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_on_error_call(protocol):
+@pytest.mark.parametrize(
+    'protocol,exception',
+    [
+        ('websocket', aiohttp.ClientError),
+        ('grpc', grpc.aio._call.AioRpcError),
+        ('http', aiohttp.ClientError),
+    ],
+)
+def test_client_on_error_call(protocol, exception):
 
-    with pytest.raises(Exception):
+    with pytest.raises(exception):
         Client(host='0.0.0.0', protocol=protocol, port=12345).post(
             '/blah',
             inputs=DocumentArray.empty(10),
         )
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_on_error_raise_exception(protocol):
+@pytest.mark.parametrize(
+    'protocol,exception',
+    [
+        ('websocket', aiohttp.client_exceptions.ClientConnectorError),
+        ('grpc', grpc.aio._call.AioRpcError),
+        ('http', aiohttp.client_exceptions.ClientConnectorError),
+    ],
+)
+def test_client_on_error_raise_exception(protocol, exception):
     class OnError:
         def __init__(self):
             self.is_called = False
 
-        def __call__(self, response, exception: Optional[Exception] = None):
+        def __call__(self, response, exception_param: Optional[Exception] = None):
             self.is_called = True
-            print('on_error called')
-            print(response.to_dict())
+            assert type(exception_param) == exception
 
     on_error = OnError()
 

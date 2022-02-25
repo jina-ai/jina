@@ -1,7 +1,7 @@
 """Helper functions for clients in Jina."""
 
 from functools import wraps
-from typing import Callable
+from typing import Callable, Optional
 
 from jina.excepts import BadClientCallback
 from jina.logging.logger import JinaLogger
@@ -81,3 +81,31 @@ def callback_exec(
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
         _safe_callback(on_always, continue_on_error, logger)(response)
+
+
+def callback_exec_on_error(
+    on_error: Callable,
+    exception: Exception,
+    logger: JinaLogger,
+    response: Optional = None,
+) -> None:
+    """Execute the on_error callback with the response, Use when anerror outside the responde status was thrown.
+
+    :param response: the response
+    :param on_error: the on_error callback
+    :param exception: the exception with was thrown and led to the call of on_error
+    :param logger: a logger instance
+
+    Example:
+
+    >>> def on_error(response, e = None):
+    >>>      print(e)
+    >>>      print(response.docs[0])
+    >>>
+    >>> except aiohttp.ClientError as e:
+    >>> callback_exec_on_error(on_error, e, logger)
+    """
+
+    on_error_wrap = lambda resp: on_error(resp, exception)
+
+    _safe_callback(on_error_wrap, False, logger)(response)

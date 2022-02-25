@@ -6,7 +6,8 @@ from typing import Optional, TYPE_CHECKING, Dict
 
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.base import BaseClient
-from jina.clients.helper import callback_exec
+from jina.clients.helper import callback_exec, callback_exec_on_error
+from jina.excepts import BadClient
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
 from jina.serve.stream import RequestStreamer
@@ -131,6 +132,7 @@ class WebSocketBaseClient(BaseClient):
                     yield response
 
             except aiohttp.ClientError as e:
-                self.logger.error(
-                    f'Error while streaming response from websocket server {e!r}'
-                )
+                if on_error:
+                    callback_exec_on_error(on_error, e, self.logger)
+                else:
+                    raise e
