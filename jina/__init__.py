@@ -143,7 +143,6 @@ JINA_GLOBAL = _types.SimpleNamespace()
 JINA_GLOBAL.scipy_installed = None
 JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
-JINA_GLOBAL.dgl_installed = None
 
 try:
     _signal.signal(_signal.SIGINT, _signal.default_int_handler)
