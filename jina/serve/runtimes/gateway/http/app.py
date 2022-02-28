@@ -244,7 +244,6 @@ def get_fastapi_app(
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint
             ):
-                print(type(data))
                 req_generator_input = {
                     'data': [asdict(d) for d in data],
                     'target_executor': target_executor,
