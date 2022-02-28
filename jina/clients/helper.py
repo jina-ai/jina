@@ -102,7 +102,7 @@ def callback_exec_on_error(
         on_error_wrap = on_error
         warnings.warn(
             "on_error callback taking only the response parameters is deprecated. Please add one parameter "
-            "to handle additional Exception as well",
+            "to handle additional optional Exception as well",
             DeprecationWarning,
         )
     else:
