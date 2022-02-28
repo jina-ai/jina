@@ -1,8 +1,8 @@
 from jina.clients.base.http import HTTPBaseClient
-from jina.clients.mixin import AsyncPostMixin, PostMixin
+from jina.clients.mixin import AsyncPostMixin, PostMixin, MutateMixin
 
 
-class HTTPClient(HTTPBaseClient, PostMixin):
+class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin):
     """
     A client communicates the server with HTTP protocol.
     """
