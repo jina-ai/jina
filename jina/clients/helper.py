@@ -90,20 +90,10 @@ def callback_exec_on_error(
     response: Optional = None,
 ) -> None:
     """Execute the on_error callback with the response, Use when anerror outside the responde status was thrown.
-
-    :param response: the response
     :param on_error: the on_error callback
     :param exception: the exception with was thrown and led to the call of on_error
     :param logger: a logger instance
-
-    Example:
-
-    >>> def on_error(response, e = None):
-    >>>      print(e)
-    >>>      print(response.docs[0])
-    >>>
-    >>> except aiohttp.ClientError as e:
-    >>> callback_exec_on_error(on_error, e, logger)
+    :param response: the response
     """
 
     on_error_wrap = lambda resp: on_error(resp, exception)
