@@ -132,7 +132,17 @@ class WebSocketBaseClient(BaseClient):
                     yield response
 
             except aiohttp.ClientError as e:
-                if on_error:
-                    callback_exec_on_error(on_error, e, self.logger)
+                if on_error or on_always:
+                    if on_error:
+                        callback_exec_on_error(on_error, e, self.logger)
+                    if on_always:
+                        callback_exec(
+                            response=None,
+                            on_error=None,
+                            on_done=None,
+                            on_always=on_always,
+                            continue_on_error=self.continue_on_error,
+                            logger=self.logger,
+                        )
                 else:
                     raise e

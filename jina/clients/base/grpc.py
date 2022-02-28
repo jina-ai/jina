@@ -68,8 +68,18 @@ class GRPCBaseClient(BaseClient):
             my_code = rpc_ex.code()
             my_details = rpc_ex.details()
             msg = f'gRPC error: {my_code} {my_details}'
-            if on_error:
-                callback_exec_on_error(on_error, rpc_ex, self.logger)
+            if on_error or on_always:
+                if on_error:
+                    callback_exec_on_error(on_error, rpc_ex, self.logger)
+                if on_always:
+                    callback_exec(
+                        response=None,
+                        on_error=None,
+                        on_done=None,
+                        on_always=on_always,
+                        continue_on_error=self.continue_on_error,
+                        logger=self.logger,
+                    )
             else:
                 if my_code == grpc.StatusCode.UNAVAILABLE:
                     self.logger.error(
