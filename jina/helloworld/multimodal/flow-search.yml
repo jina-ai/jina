@@ -5,10 +5,9 @@ with:
   protocol: 'http'
 py_modules:
   - ${{ ENV.PY_MODULE }}
-deployments:
+executors:
   - name: craftText
-    uses:
-      jtype: TextCrafter
+    uses: TextCrafter
   - name: encodeText
     uses: TextEncoder
   - name: textIndexer

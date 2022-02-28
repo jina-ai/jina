@@ -2,7 +2,7 @@ jtype: Flow
 version: '1'
 py_modules:
   - ${{ ENV.PY_MODULE }}
-deployments:
+executors:
   - name: segment
     uses: Segmenter
     uses_metas:
