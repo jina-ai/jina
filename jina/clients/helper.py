@@ -1,7 +1,9 @@
 """Helper functions for clients in Jina."""
 
 from functools import wraps
+from inspect import signature
 from typing import Callable, Optional
+import warnings
 
 from jina.excepts import BadClientCallback
 from jina.logging.logger import JinaLogger
@@ -96,6 +98,14 @@ def callback_exec_on_error(
     :param response: the response
     """
 
-    on_error_wrap = lambda resp: on_error(resp, exception)
+    if len(signature(on_error).parameters) == 1:
+        on_error_wrap = on_error
+        warnings.warn(
+            "on_error callback taking only the response parameters is deprecated. Please add one parameter "
+            "to handle additional Exception as well",
+            DeprecationWarning,
+        )
+    else:
+        on_error_wrap = lambda resp: on_error(resp, exception)
 
     _safe_callback(on_error_wrap, False, logger)(response)
