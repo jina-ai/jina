@@ -4,8 +4,7 @@ import numpy as np
 import pytest
 from docarray.array.document import DocumentArray
 from docarray.document import Document
-from jina import Executor, Flow, requests
-from sgqlc.endpoint.http import HTTPEndpoint
+from jina import Executor, Flow, requests, Client
 
 PORT_EXPOSE = 53171
 
@@ -61,8 +60,9 @@ def flow():
         yield
 
 
-def graphql_query(query):
-    return HTTPEndpoint(url=f'http://localhost:{PORT_EXPOSE}/graphql')(query=query)
+def graphql_query(mutation):
+    c = Client(port=PORT_EXPOSE, protocol='HTTP')
+    return c.mutate(mutation=mutation)
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
@@ -77,6 +77,7 @@ def test_id_only(req_type):
     '''
         % req_type
     )
+    print(response)
     assert 'data' in response
     assert 'docs' in response['data']
     assert len(response['data']['docs']) == 1

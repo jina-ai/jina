@@ -1,5 +1,6 @@
 import asyncio
 from contextlib import nullcontext, AsyncExitStack
+from sgqlc.endpoint.http import HTTPEndpoint as SgqlcHTTPEndpoint
 from typing import Optional, TYPE_CHECKING
 
 from jina.clients.base.helper import HTTPClientlet
@@ -18,6 +19,28 @@ if TYPE_CHECKING:
 
 class HTTPBaseClient(BaseClient):
     """A MixIn for HTTP Client."""
+
+    def _graphql_mutate(
+        self,
+        mutation: str,
+        variables: dict = None,
+        timeout: float = None,
+        headers: dict = None,
+    ):
+        """Perform a GraphQL mutation
+
+        :param mutation: the GraphQL mutation as a single string.
+        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.
+        :param timeout: HTTP request timeout
+        :param headers: HTTP headers
+        :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
+        """
+        proto = 'https' if self.args.https else 'http'
+        graphql_url = f'{proto}://{self.args.host}:{self.args.port}/graphql'
+        endpoint = SgqlcHTTPEndpoint(graphql_url)
+        return endpoint(
+            mutation, variables=variables, timeout=timeout, extra_headers=headers
+        )
 
     async def _get_results(
         self,
