@@ -407,8 +407,10 @@ metas:
                     payload = stream_msg.get('payload', '')
                     if t == 'error':
                         msg = stream_msg.get('message')
-                        if payload and isinstance(payload, dict):
-                            msg = payload.get('message')
+                        if not msg and payload and isinstance(payload, dict):
+                            msg = payload.get('readableMessage') or payload.get(
+                                'message'
+                            )
 
                         if 'Process(docker) exited on non-zero code' in msg:
                             self.logger.error(
@@ -589,13 +591,21 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
         resp = resp.json()['data']
 
+        images = resp['package'].get('containers', [])
+        image_name = images[0] if images else None
+        if not image_name:
+            raise Exception(
+                f'No image found for executor "{name}", '
+                f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}'
+            )
+
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
             tag=tag or resp['commit'].get('tags', [None])[0],
             visibility=resp['visibility'],
-            image_name=resp['package'].get('containers', [None])[0],
+            image_name=image_name,
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
         )
