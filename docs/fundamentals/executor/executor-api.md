@@ -294,7 +294,13 @@ Text: hello world
 ```
 
 
-You can even pull an `Executor` from the hub and use it directly as a python object.
+You can even pull an `Executor` from the jina hub and use it directly as a python object.
+
+
+````{admonition} More about the hub? 
+:class: information
+The [hub](https://hub.jina.ai/) is a marketplace for `Executor`.
+````
 
 ```python
 from jina import Executor
