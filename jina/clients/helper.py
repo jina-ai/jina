@@ -98,14 +98,8 @@ def callback_exec_on_error(
     :param response: the response
     """
 
-    if len(signature(on_error).parameters) == 1:
-        on_error_wrap = on_error
-        warnings.warn(
-            "on_error callback taking only the response parameters is deprecated. Please add one parameter "
-            "to handle additional optional Exception as well",
-            DeprecationWarning,
-        )
-    else:
-        on_error_wrap = lambda resp: on_error(resp, exception)
+    @wraps(on_error)
+    def on_error_wrap(resp):
+        on_error(resp, exception)
 
     _safe_callback(on_error_wrap, False, logger)(response)
