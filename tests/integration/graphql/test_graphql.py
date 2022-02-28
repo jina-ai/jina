@@ -77,11 +77,31 @@ def test_id_only(req_type):
     '''
         % req_type
     )
-    print(response)
     assert 'data' in response
     assert 'docs' in response['data']
     assert len(response['data']['docs']) == 1
     assert set(response['data']['docs'][0].keys()) == {'id'}
+
+
+@pytest.mark.parametrize('req_type', ['mutation', 'query'])
+def test_data_list(req_type):
+    texts = 'abcd', 'efgh', 'ijkl'
+    response = graphql_query(
+        '''
+        %s {
+            docs(data: [{text: "%s"}, {text: "%s"}, {text: "%s"}]) { 
+                text
+            } 
+        }
+    '''
+        % (req_type, *texts)
+    )
+    assert 'data' in response
+    assert 'docs' in response['data']
+    assert len(response['data']['docs']) == 3
+    assert response['data']['docs'][0]['text'] == texts[0]
+    assert response['data']['docs'][1]['text'] == texts[1]
+    assert response['data']['docs'][2]['text'] == texts[2]
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
