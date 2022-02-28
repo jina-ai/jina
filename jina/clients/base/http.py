@@ -42,6 +42,23 @@ class HTTPBaseClient(BaseClient):
             mutation, variables=variables, timeout=timeout, extra_headers=headers
         )
 
+    async def _async_graphql_mutate(
+        self,
+        mutation: str,
+        variables: dict = None,
+        timeout: float = None,
+        headers: dict = None,
+    ):
+        """Wrap _graphql_mutate to make async/non-blocking.
+
+        :param mutation: the GraphQL mutation as a single string.
+        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.
+        :param timeout: HTTP request timeout
+        :param headers: HTTP headers
+        :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
+        """
+        return self._graphql_mutate(mutation, variables, timeout, headers)
+
     async def _get_results(
         self,
         inputs: 'InputType',
