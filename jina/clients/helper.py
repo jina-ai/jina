@@ -91,7 +91,7 @@ def callback_exec_on_error(
     logger: JinaLogger,
     response: Optional = None,
 ) -> None:
-    """Execute the on_error callback with the response, Use when anerror outside the responde status was thrown.
+    """Execute the on_error callback with the response, Use when an error outside the response status was thrown.
     :param on_error: the on_error callback
     :param exception: the exception with was thrown and led to the call of on_error
     :param logger: a logger instance
