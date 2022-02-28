@@ -1,6 +1,6 @@
 # Debug Executor
 
-You need to debug Jina Hub Executor for some reasons. It's not so easy to debug inside the Docker container, but Jina Hub Executor provide a way to use source code. It's easy to debug using source code. 
+You need to debug Jina Hub Executor for some reason. It's not so easy to debug inside the Docker container, but Jina Hub Executor provides a way to use source code. It's easy to debug using source code. 
 
 I'll take debugging [Hello Executor](https://hub.jina.ai/executor/9o9yjq1q) as an example. Tell you step by step how to do that. 
 
@@ -28,12 +28,8 @@ with f:
 
 ## Step 2
 
-Open the Jina Hub Executor python file and set the debug point. The source code located in `~/.jina/hub-package`.
+Open the Jina Hub Executor python file and set the debug point. The source code is located in `~/.jina/hub-package`.
 
 ## Step 3
 
 Debugging.
-
-```{figure} screenshots/debug.gif
-:align: center
-```
