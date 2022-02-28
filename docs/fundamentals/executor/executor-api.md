@@ -294,6 +294,24 @@ Text: hello world
 ```
 
 
+You can even pull an `Executor` from the hub and use it directly as a python object.
+
+```python
+from jina import Executor
+from docarray import Document, DocumentArray
+
+executor = Executor.from_hub(uri='jinahub://CLIPTextEncoder', install_requirements=True)
+
+docs = DocumentArray(Document(text='hello'))
+executor.encode(docs, {})
+
+print(docs.embeddings.shape)
+```
+```text
+(1, 512)
+```
+
+
 ### Use async Executors
 
 
