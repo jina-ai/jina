@@ -1,4 +1,5 @@
 from functools import partialmethod, wraps
+import asyncio
 import gql
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 import warnings
@@ -49,6 +50,29 @@ class MutateMixin:
         :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
         """
         return self.client._graphql_mutate(mutation, variables, timeout, headers)
+
+
+class AsyncMutateMixin:
+    """The GraphQL Mutation Mixin for Client and Flow"""
+
+    async def mutate(
+        self,
+        mutation: str,
+        variables: dict = None,
+        timeout: float = None,
+        headers: dict = None,
+    ):
+        """Perform a GraphQL mutation
+
+        :param mutation: the GraphQL mutation as a single string.
+        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.
+        :param timeout: HTTP request timeout
+        :param headers: HTTP headers
+        :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
+        """
+        return await asyncio.create_task(
+            self.client._async_graphql_mutate(mutation, variables, timeout, headers)
+        )
 
 
 class PostMixin:

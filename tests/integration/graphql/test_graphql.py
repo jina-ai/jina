@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict
 
 import numpy as np
@@ -65,9 +66,32 @@ def graphql_query(mutation):
     return c.mutate(mutation=mutation)
 
 
+def async_graphql_query(mutation):
+    c = Client(port=PORT_EXPOSE, protocol='HTTP', asyncio=True)
+    return asyncio.run(c.mutate(mutation=mutation))
+
+
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_id_only(req_type):
     response = graphql_query(
+        '''
+        %s {
+            docs(data: {text: "abcd"}) { 
+                id 
+            } 
+        }
+    '''
+        % req_type
+    )
+    assert 'data' in response
+    assert 'docs' in response['data']
+    assert len(response['data']['docs']) == 1
+    assert set(response['data']['docs'][0].keys()) == {'id'}
+
+
+@pytest.mark.parametrize('req_type', ['mutation', 'query'])
+def test_asyncio(req_type):
+    response = async_graphql_query(
         '''
         %s {
             docs(data: {text: "abcd"}) { 
