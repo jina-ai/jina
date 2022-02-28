@@ -1,7 +1,13 @@
 """This modules defines all kinds of exceptions raised in Jina."""
+from jina.helper import deprecated_method
 
 
 class BaseJinaException(BaseException):
+    """A base class for all exceptions raised by Jina"""
+
+
+@deprecated_method('BaseJinaException')
+class BaseJinaExeception(BaseException):
     """A base class for all exceptions raised by Jina"""
 
 
