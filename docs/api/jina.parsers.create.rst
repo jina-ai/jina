@@ -1,7 +1,7 @@
-jina.schemas.helper module
+jina.parsers.create module
 ==========================
 
-.. automodule:: jina.schemas.helper
+.. automodule:: jina.parsers.create
    :members:
    :undoc-members:
    :show-inheritance:
