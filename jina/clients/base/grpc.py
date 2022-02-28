@@ -6,7 +6,7 @@ import grpc
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec, callback_exec_on_error
-from jina.excepts import BadClient, BadClientInput
+from jina.excepts import BadClient, BadClientInput, BaseJinaException
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -68,19 +68,8 @@ class GRPCBaseClient(BaseClient):
             my_code = rpc_ex.code()
             my_details = rpc_ex.details()
             msg = f'gRPC error: {my_code} {my_details}'
-            if on_error or on_always:
-                if on_error:
-                    callback_exec_on_error(on_error, rpc_ex, self.logger)
-                if on_always:
-                    callback_exec(
-                        response=None,
-                        on_error=None,
-                        on_done=None,
-                        on_always=on_always,
-                        continue_on_error=self.continue_on_error,
-                        logger=self.logger,
-                    )
-            else:
+
+            try:
                 if my_code == grpc.StatusCode.UNAVAILABLE:
                     self.logger.error(
                         f'{msg}\nthe ongoing request is terminated as the server is not available or closed already'
@@ -100,3 +89,22 @@ class GRPCBaseClient(BaseClient):
                     ) from rpc_ex
                 else:
                     raise BadClient(msg) from rpc_ex
+
+            except (
+                grpc.aio._call.AioRpcError,
+                BaseJinaException,
+            ) as e:  # depending on if there are callbacks we catch or not the exception
+                if on_error or on_always:
+                    if on_error:
+                        callback_exec_on_error(on_error, e, self.logger)
+                    if on_always:
+                        callback_exec(
+                            response=None,
+                            on_error=None,
+                            on_done=None,
+                            on_always=on_always,
+                            continue_on_error=self.continue_on_error,
+                            logger=self.logger,
+                        )
+                else:
+                    raise e
