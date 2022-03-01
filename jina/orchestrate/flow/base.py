@@ -143,7 +143,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        no_graphql_endpoint: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         prefetch: Optional[int] = 0,
@@ -205,7 +204,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
-        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -1502,15 +1500,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     attrs='underline',
                 )
             )
-            if not self.args.no_graphql_endpoint:
-                address_table.append(
-                    f'\t💬 GraphQL UI:\t\t'
-                    + colored(
-                        f'http://localhost:{self.port_expose}/graphql',
-                        'cyan',
-                        attrs='underline',
-                    )
+            address_table.append(
+                f'\t💬 GraphQL UI:\t\t'
+                + colored(
+                    f'http://localhost:{self.port_expose}/graphql',
+                    'cyan',
+                    attrs='underline',
                 )
+            )
         return address_table
 
     def block(
