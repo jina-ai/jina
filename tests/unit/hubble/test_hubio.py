@@ -60,8 +60,9 @@ class PostMockResponse:
 
 
 class GetMockResponse:
-    def __init__(self, response_code: int = 200):
+    def __init__(self, response_code: int = 200, no_image=False):
         self.response_code = response_code
+        self.no_image = no_image
 
     def json(self):
         return {
@@ -70,9 +71,11 @@ class GetMockResponse:
                 'id': 'dummy_mwu_encoder',
                 'name': 'alias_dummy',
                 'visibility': 'public',
-                'commit': {'tags': ['v0']},
+                'commit': {'_id': 'commit_id', 'tags': ['v0']},
                 'package': {
-                    'containers': ['jinahub/pod.dummy_mwu_encoder'],
+                    'containers': []
+                    if self.no_image
+                    else ['jinahub/pod.dummy_mwu_encoder'],
                     'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
                     'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
                 },
@@ -170,7 +173,7 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', None)
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', None, force=True)
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.name == 'alias_dummy'
@@ -178,11 +181,27 @@ def test_fetch(mocker, monkeypatch):
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
 
-    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '')
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
     assert executor.tag == 'v0'
 
-    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1')
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1', force=True)
     assert executor.tag == 'v0.1'
+
+
+def test_fetch_with_no_image(mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_get(url, headers=None):
+        mock(url=url)
+        return GetMockResponse(response_code=200, no_image=True)
+
+    monkeypatch.setattr(requests, 'get', _mock_get)
+
+    with pytest.raises(Exception) as exc_info:
+        HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+
+    assert exc_info.match('No image found for executor "dummy_mwu_encoder"')
+    assert mock.call_count == 1
 
 
 class DownloadMockResponse:

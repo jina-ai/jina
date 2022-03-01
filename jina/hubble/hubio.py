@@ -399,6 +399,7 @@ metas:
                 )
 
                 image = None
+                session_id = req_header.get('jinameta-session-id')
                 for stream_line in resp.iter_lines():
                     stream_msg = json.loads(stream_line)
 
@@ -407,8 +408,10 @@ metas:
                     payload = stream_msg.get('payload', '')
                     if t == 'error':
                         msg = stream_msg.get('message')
-                        if payload and isinstance(payload, dict):
-                            msg = payload.get('message')
+                        if not msg and payload and isinstance(payload, dict):
+                            msg = payload.get('readableMessage') or payload.get(
+                                'message'
+                            )
 
                         if 'Process(docker) exited on non-zero code' in msg:
                             self.logger.error(
@@ -420,7 +423,9 @@ metas:
                             '''
                             )
 
-                        raise Exception(msg or 'Unknown Error')
+                        raise Exception(
+                            f'{msg or "Unknown Error"} session_id: {session_id}'
+                        )
                     if t == 'progress' and subject == 'buildWorkspace':
                         legacy_message = stream_msg.get('legacyMessage', {})
                         status = legacy_message.get('status', '')
@@ -448,7 +453,7 @@ metas:
                     if new_uuid8 != uuid8 or new_secret != secret:
                         dump_secret(work_path, new_uuid8, new_secret)
                 else:
-                    raise Exception('Unknown Error')
+                    raise Exception(f'Unknown Error, session_id: {session_id}')
 
             except KeyboardInterrupt:
                 pass
@@ -581,7 +586,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         if path_params:
             pull_url += f'&{urlencode(path_params)}'
 
-        resp = requests.get(pull_url, headers=get_request_header())
+        req_header = get_request_header()
+        resp = requests.get(pull_url, headers=req_header)
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
@@ -589,13 +595,22 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
         resp = resp.json()['data']
 
+        images = resp['package'].get('containers', [])
+        image_name = images[0] if images else None
+        if not image_name:
+            raise Exception(
+                f'No image found for executor "{name}", '
+                f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
+                f'session_id: {req_header.get("jinameta-session-id")}'
+            )
+
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
             sn=resp.get('sn', None),
             tag=tag or resp['commit'].get('tags', [None])[0],
             visibility=resp['visibility'],
-            image_name=resp['package'].get('containers', [None])[0],
+            image_name=image_name,
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
         )
