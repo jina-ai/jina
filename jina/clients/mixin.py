@@ -6,6 +6,7 @@ import warnings
 from inspect import signature
 
 from jina.helper import run_async
+from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
     from jina.clients.base import CallbackFnType, InputType
@@ -49,12 +50,15 @@ class MutateMixin:
         :param headers: HTTP headers
         :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
         """
-        proto = 'https' if self.args.https else 'http'
-        graphql_url = f'{proto}://{self.args.host}:{self.args.port}/graphql'
-        endpoint = SgqlcHTTPEndpoint(graphql_url)
-        return endpoint(
-            mutation, variables=variables, timeout=timeout, extra_headers=headers
-        )
+        with ImportExtensions(required=True):
+            from sgqlc.endpoint.http import HTTPEndpoint as SgqlcHTTPEndpoint
+
+            proto = 'https' if self.args.https else 'http'
+            graphql_url = f'{proto}://{self.args.host}:{self.args.port}/graphql'
+            endpoint = SgqlcHTTPEndpoint(graphql_url)
+            return endpoint(
+                mutation, variables=variables, timeout=timeout, extra_headers=headers
+            )
 
 
 class AsyncMutateMixin(MutateMixin):
