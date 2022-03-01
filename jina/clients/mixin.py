@@ -1,6 +1,6 @@
 import asyncio
 from functools import partialmethod
-import gql
+from sgqlc.endpoint.http import HTTPEndpoint as SgqlcHTTPEndpoint
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 import warnings
 
@@ -48,11 +48,33 @@ class MutateMixin:
         :param headers: HTTP headers
         :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
         """
-        return self.client._graphql_mutate(mutation, variables, timeout, headers)
+        proto = 'https' if self.args.https else 'http'
+        graphql_url = f'{proto}://{self.args.host}:{self.args.port}/graphql'
+        endpoint = SgqlcHTTPEndpoint(graphql_url)
+        return endpoint(
+            mutation, variables=variables, timeout=timeout, extra_headers=headers
+        )
 
 
-class AsyncMutateMixin:
-    """The GraphQL Mutation Mixin for Client and Flow"""
+class AsyncMutateMixin(MutateMixin):
+    """The async GraphQL Mutation Mixin for Client and Flow"""
+
+    async def _async_mutate(
+        self,
+        mutation: str,
+        variables: dict = None,
+        timeout: float = None,
+        headers: dict = None,
+    ):
+        """Wrap mutate to make async/non-blocking.
+
+        :param mutation: the GraphQL mutation as a single string.
+        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.
+        :param timeout: HTTP request timeout
+        :param headers: HTTP headers
+        :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
+        """
+        return super().mutate(mutation, variables, timeout, headers)
 
     async def mutate(
         self,
@@ -61,7 +83,7 @@ class AsyncMutateMixin:
         timeout: float = None,
         headers: dict = None,
     ):
-        """Perform a GraphQL mutation
+        """Perform a GraphQL mutation, asynchronously
 
         :param mutation: the GraphQL mutation as a single string.
         :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.
@@ -70,7 +92,7 @@ class AsyncMutateMixin:
         :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
         """
         return await asyncio.create_task(
-            self.client._async_graphql_mutate(mutation, variables, timeout, headers)
+            self.client._async_mutate(mutation, variables, timeout, headers)
         )
 
 
