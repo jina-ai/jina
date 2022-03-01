@@ -103,18 +103,18 @@ def test_id_only(req_type):
     assert set(response['data']['docs'][0].keys()) == {'id'}
 
 
-@pytest.mark.parametrize('req_type', ['mutation'])
+@pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_asyncio(req_type, tmp_path):
     filepath = os.path.join(tmp_path, 'test.txt')
-    q = '''
+    q = (
+        '''
             %s {
-                docs(data: {text: "%s"}, execEndpoint: "/slow") { 
+                docs(data: {text: "abcd"}, execEndpoint: "/slow") { 
                     id 
                 } 
             }
-        ''' % (
-        req_type,
-        filepath,
+        '''
+        % req_type
     )
 
     async def cuncurrent_mutations():
