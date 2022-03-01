@@ -3,9 +3,10 @@
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
 
-setup.py  @hanxiao @JoanFM @tadejsv
-extra-requirements.txt  @hanxiao @JoanFM @tadejsv
-requirements.txt  @hanxiao @JoanFM @tadejsv
+setup.py  @hanxiao @JoanFM @nan-wang
+extra-requirements.txt  @hanxiao @JoanFM @nan-wang
+requirements.txt  @hanxiao @JoanFM @nan-wang
 jina/__init__.py  @hanxiao
 MANIFEST.in  @hanxiao
 README.md  @hanxiao
+docs/conf.py  @hanxiao @nan-wang
