@@ -117,11 +117,11 @@ def test_asyncio(req_type, tmp_path):
         % req_type
     )
 
-    async def cuncurrent_mutations():
+    async def concurrent_mutations():
         inputs = [async_graphql_query(q, filepath) for _ in range(3)]
         await asyncio.gather(*inputs)
 
-    asyncio.run(cuncurrent_mutations())
+    asyncio.run(concurrent_mutations())
     with open(filepath, 'r') as f:
         lines = f.readlines()
         assert lines[0] == 'before\n'
