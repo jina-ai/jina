@@ -54,9 +54,10 @@ class MutateMixin:
             proto = 'https' if self.args.https else 'http'
             graphql_url = f'{proto}://{self.args.host}:{self.args.port}/graphql'
             endpoint = SgqlcHTTPEndpoint(graphql_url)
-            return endpoint(
+            res = endpoint(
                 mutation, variables=variables, timeout=timeout, extra_headers=headers
             )
+            return res
 
 
 class AsyncMutateMixin(MutateMixin):
@@ -86,8 +87,8 @@ class AsyncMutateMixin(MutateMixin):
         :param headers: HTTP headers
         :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
         """
-        return await asyncio.create_task(
-            self.client._async_mutate(mutation, variables, timeout, headers)
+        return await asyncio.get_event_loop().run_in_executor(
+            None, super().mutate, mutation, variables, timeout, headers
         )
 
 

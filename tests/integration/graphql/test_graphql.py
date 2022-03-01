@@ -79,7 +79,9 @@ async def async_graphql_query(mutation, filepath):
     c = Client(port=PORT_EXPOSE, protocol='HTTP', asyncio=True)
     with open(filepath, 'a+') as f:
         f.write('before\n')
+    print(f' before')
     result = await c.mutate(mutation=mutation)
+    print(f' after')
     with open(filepath, 'a') as f:
         f.write('after\n')
     return result
@@ -124,12 +126,12 @@ def test_asyncio(req_type, tmp_path):
     asyncio.run(cuncurrent_mutations())
     with open(filepath, 'r') as f:
         lines = f.readlines()
-        assert lines[0] == 'before\n'
-        assert lines[1] == 'before\n'
-        assert lines[2] == 'before\n'
-        assert lines[3] == 'after\n'
-        assert lines[4] == 'after\n'
-        assert lines[5] == 'after\n'
+    assert lines[0] == 'before\n'
+    assert lines[1] == 'before\n'
+    assert lines[2] == 'before\n'
+    assert lines[3] == 'after\n'
+    assert lines[4] == 'after\n'
+    assert lines[5] == 'after\n'
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
