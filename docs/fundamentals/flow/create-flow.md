@@ -425,6 +425,8 @@ This will get you the following output:
 
 So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
 
+The automated merging can be disabled by setting `disable_reduce=True`. This can be useful when you need to provide your custom merge logic in a separate Executor. In this case the last `.add()` call would like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, disable_reduce=True)`
+
 ### Replicate Executors
 
 Replication can be used to create multiple copies of the same Executor. Each request in the Flow is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:
