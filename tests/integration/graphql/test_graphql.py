@@ -79,9 +79,7 @@ async def async_graphql_query(mutation, filepath):
     c = Client(port=PORT_EXPOSE, protocol='HTTP', asyncio=True)
     with open(filepath, 'a+') as f:
         f.write('before\n')
-    print(f' before')
     result = await c.mutate(mutation=mutation)
-    print(f' after')
     with open(filepath, 'a') as f:
         f.write('after\n')
     return result
