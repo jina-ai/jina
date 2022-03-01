@@ -30,7 +30,7 @@ def test_flatten_docarrays():
     assert docs[0].text == 'Hello World!'
 
 
-def my_cb(resp):
+def my_cb(resp, e: Exception = None):
     return resp
 
 
