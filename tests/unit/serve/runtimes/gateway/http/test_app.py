@@ -2,6 +2,7 @@ import os
 import ssl
 from tempfile import NamedTemporaryFile
 
+import aiohttp
 import pytest
 import requests as req
 from fastapi.testclient import TestClient
@@ -202,11 +203,11 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         ],
     ) as f:
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
-        Client(protocol=protocol, port=f.port_expose, https=True).index([Document()])
-        assert (
-            '''certificate verify failed: self signed certificate'''
-            in capsys.readouterr().out
-        )
+
+        with pytest.raises(aiohttp.ClientConnectorCertificateError):
+            Client(protocol=protocol, port=f.port_expose, https=True).index(
+                [Document()]
+            )
 
 
 da = DocumentArray([Document(text='text_input')])

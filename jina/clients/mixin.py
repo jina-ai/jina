@@ -1,6 +1,7 @@
-from functools import partialmethod
+from functools import partialmethod, wraps
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 import warnings
+from inspect import signature
 
 from jina.helper import run_async
 
@@ -90,6 +91,7 @@ class PostMixin:
             return_results = True
 
         parameters = _include_results_field_in_param(parameters)
+        on_error = _wrap_on_error(on_error) if on_error is not None else on_error
 
         return run_async(
             _get_results,
@@ -148,6 +150,7 @@ class AsyncPostMixin:
         c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
+        on_error = _wrap_on_error(on_error) if on_error is not None else on_error
 
         async for r in c._get_results(
             inputs=inputs,
@@ -167,3 +170,23 @@ class AsyncPostMixin:
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')
     delete = partialmethod(post, '/delete')
+
+
+def _wrap_on_error(on_error):
+
+    num_args = len(signature(on_error).parameters)
+    if num_args == 1:
+        warnings.warn(
+            "on_error callback taking only the response parameters is deprecated. Please add one parameter "
+            "to handle additional optional Exception as well",
+            DeprecationWarning,
+        )
+
+        @wraps(on_error)
+        def _fn(resp, exception):  # just skip the exception
+            return on_error(resp)
+
+        return _fn
+
+    else:
+        return on_error
