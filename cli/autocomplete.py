@@ -97,6 +97,7 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
+            '--disable-reduce',
         ],
         'flow': [
             '--help',
@@ -172,6 +173,7 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
+            '--disable-reduce',
         ],
         'hub new': [
             '--help',
@@ -254,6 +256,7 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
+            '--disable-reduce',
         ],
         'deployment': [
             '--help',
@@ -305,6 +308,7 @@ ac_table = {
             '--uses-before-address',
             '--uses-after-address',
             '--connection-list',
+            '--disable-reduce',
             '--uses-before',
             '--uses-after',
             '--external',
