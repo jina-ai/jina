@@ -6,7 +6,7 @@ import threading
 import time
 from collections import defaultdict
 from functools import wraps
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, overload
 
 from jina.enums import ProgressBarStatus
 from jina.logging.logger import JinaLogger
@@ -22,6 +22,7 @@ from rich.progress import (
     TimeElapsedColumn,
     TextColumn,
     ProgressColumn,
+    TaskID,
 )
 
 from rich.text import Text
@@ -68,6 +69,37 @@ class ProgressBar2(Progress):
         super().__init__(*columns, **kwargs)
 
         self.task_id = self.add_task('Working...', total=total_length)
+
+    @overload
+    def update(self):
+        """Update the progress bar"""
+        ...
+
+    @overload
+    def update(self, task_id: TaskID, *args, **kwargs):
+        """Update the progress bar
+
+        :param task_id: the task to update
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+        ...
+
+    def update(self, task_id: Optional[TaskID] = None, *args, **kwargs):
+        """Update the progress bar
+
+        :param task_id: the task to update
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+        if not (task_id):
+            super().update(self.task_id, advance=1)
+        else:
+            super().update(task_id, *args, **kwargs)
 
 
 class _OnDoneColumn(ProgressColumn):
