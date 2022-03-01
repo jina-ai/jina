@@ -1,4 +1,5 @@
-# Debug Executor
+(debug-executor)=
+# How to Debug Executor
 
 You need to debug Jina Hub Executor for some reason. It's not so easy to debug inside the Docker container, but Jina Hub Executor provides a way to use source code. It's easy to debug using source code. 
 
