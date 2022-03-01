@@ -131,6 +131,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         default_swagger_ui: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         description: Optional[str] = None,
+        disable_reduce: Optional[bool] = False,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
@@ -182,6 +183,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
@@ -570,6 +572,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
+        disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
@@ -614,6 +617,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
