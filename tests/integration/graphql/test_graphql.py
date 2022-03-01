@@ -1,5 +1,7 @@
 import asyncio
+import os
 from typing import Dict
+import time
 
 import numpy as np
 import pytest
@@ -39,6 +41,12 @@ class Indexer(Executor):
         docs[0].text = 'Indexer'
 
 
+class SlowExec(Executor):
+    @requests(on='/slow')
+    def foo(self, docs: DocumentArray, **kwargs):
+        time.sleep(0.1)
+
+
 class Encoder(Executor):
     @requests
     def embed(self, docs: DocumentArray, **kwargs):
@@ -55,6 +63,7 @@ def flow():
         Flow(protocol='http', port_expose=PORT_EXPOSE)
         .add(uses=Encoder, name='Encoder')
         .add(uses=Indexer, name='Indexer')
+        .add(uses=SlowExec)
     )
     with f:
         f.index(inputs=(Document(text=t.strip()) for t in open(__file__) if t.strip()))
@@ -66,9 +75,14 @@ def graphql_query(mutation):
     return c.mutate(mutation=mutation)
 
 
-def async_graphql_query(mutation):
+async def async_graphql_query(mutation, filepath):
     c = Client(port=PORT_EXPOSE, protocol='HTTP', asyncio=True)
-    return asyncio.run(c.mutate(mutation=mutation))
+    with open(filepath, 'a+') as f:
+        f.write('before\n')
+    result = await c.mutate(mutation=mutation)
+    with open(filepath, 'a') as f:
+        f.write('after\n')
+    return result
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
@@ -89,22 +103,33 @@ def test_id_only(req_type):
     assert set(response['data']['docs'][0].keys()) == {'id'}
 
 
-@pytest.mark.parametrize('req_type', ['mutation', 'query'])
-def test_asyncio(req_type):
-    response = async_graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}) { 
-                id 
-            } 
-        }
-    '''
-        % req_type
+@pytest.mark.parametrize('req_type', ['mutation'])
+def test_asyncio(req_type, tmp_path):
+    filepath = os.path.join(tmp_path, 'test.txt')
+    q = '''
+            %s {
+                docs(data: {text: "%s"}, execEndpoint: "/slow") { 
+                    id 
+                } 
+            }
+        ''' % (
+        req_type,
+        filepath,
     )
-    assert 'data' in response
-    assert 'docs' in response['data']
-    assert len(response['data']['docs']) == 1
-    assert set(response['data']['docs'][0].keys()) == {'id'}
+
+    async def cuncurrent_mutations():
+        inputs = [async_graphql_query(q, filepath) for _ in range(3)]
+        await asyncio.gather(*inputs)
+
+    asyncio.run(cuncurrent_mutations())
+    with open(filepath, 'r') as f:
+        lines = f.readlines()
+        assert lines[0] == 'before\n'
+        assert lines[1] == 'before\n'
+        assert lines[2] == 'before\n'
+        assert lines[3] == 'after\n'
+        assert lines[4] == 'after\n'
+        assert lines[5] == 'after\n'
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
