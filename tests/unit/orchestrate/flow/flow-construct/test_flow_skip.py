@@ -13,7 +13,7 @@ class DummyCrafterSkip(Executor):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_bad_flow_skip_handle(mocker, protocol):
-    def validate(req):
+    def validate(req, e: Exception):
         bad_routes = [
             r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR
         ]
@@ -41,7 +41,7 @@ def test_bad_flow_skip_handle(mocker, protocol):
 def test_bad_flow_skip_handle_join(mocker, protocol):
     """When skipmode is set to handle, reduce driver wont work anymore"""
 
-    def validate(req):
+    def validate(req, e: Exception):
         bad_routes = [
             r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR
         ]
