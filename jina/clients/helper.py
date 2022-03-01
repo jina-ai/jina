@@ -78,7 +78,12 @@ def callback_exec(
     :param logger: a logger instance
     """
     if on_error and response.header.status.code >= jina_pb2.StatusProto.ERROR:
-        _safe_callback(on_error, continue_on_error, logger)(response)
+
+        @wraps(on_error)
+        def on_error_wrap(resp):
+            on_error(resp, None)
+
+        _safe_callback(on_error_wrap, continue_on_error, logger)(response)
     elif on_done and response.header.status.code == jina_pb2.StatusProto.SUCCESS:
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
