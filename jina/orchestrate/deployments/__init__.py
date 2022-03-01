@@ -137,7 +137,7 @@ class BaseDeployment(ExitStack):
             _head_args.port_in = helper.random_port()
         else:
             _head_args.port_in = args.port_in
-        _head_args.uses = args.uses
+        _head_args.uses = None
         _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
         _head_args.replicas = 1

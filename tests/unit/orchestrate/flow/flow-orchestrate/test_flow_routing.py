@@ -58,7 +58,8 @@ class MergeDocsExecutor(Executor):
         return docs
 
 
-def test_complex_flow():
+@pytest.mark.parametrize('disable_reduce', [True, False])
+def test_complex_flow(disable_reduce):
     f = (
         Flow()
         .add(name='first', uses=SimpleAddExecutor, needs=['gateway'])
@@ -75,12 +76,17 @@ def test_complex_flow():
             shards=3,
             needs=['second_shards_needs'],
         )
-        .add(name='merger', uses=MergeDocsExecutor, needs=['forth', 'third'])
+        .add(
+            name='merger',
+            uses=MergeDocsExecutor,
+            needs=['forth', 'third'],
+            disable_reduce=disable_reduce,
+        )
     )
 
     with f:
         docs = f.post(on='/index', inputs=[Document(text='1')])
-    assert len(docs) == 6
+    assert len(docs) == 6 if disable_reduce else 5
 
 
 class DynamicPollingExecutorDefaultNames(Executor):

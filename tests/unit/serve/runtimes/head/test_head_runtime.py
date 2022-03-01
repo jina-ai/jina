@@ -1,7 +1,7 @@
 import asyncio
 import json
 import multiprocessing
-from copy import copy, deepcopy
+from copy import copy
 from multiprocessing import Process
 from typing import List
 
@@ -71,8 +71,12 @@ def test_control_message_processing():
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
-def test_message_merging():
-    args = set_pod_parser().parse_args([])
+@pytest.mark.parametrize('disable_reduce', [False, True])
+def test_message_merging(disable_reduce):
+    if not disable_reduce:
+        args = set_pod_parser().parse_args([])
+    else:
+        args = set_pod_parser().parse_args(['--disable-reduce'])
     args.polling = PollingType.ALL
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
@@ -82,12 +86,13 @@ def test_message_merging():
     _add_worker(args, 'ip3', shard_id=2)
     assert handle_queue.empty()
 
-    result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port_in}'
+    data_request = _create_test_data_message()
+    result = GrpcConnectionPool.send_requests_sync(
+        [data_request, data_request], f'{args.host}:{args.port_in}'
     )
     assert result
     assert _queue_length(handle_queue) == 3
-    assert len(result.response.docs) == 1
+    assert len(result.response.docs) == 2 if disable_reduce else 1
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
