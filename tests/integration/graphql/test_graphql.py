@@ -88,14 +88,14 @@ async def async_graphql_query(mutation, filepath):
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_id_only(req_type):
     response = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}) { 
+        (
+            f'{req_type} {{'
+            '''docs(data: {text: "abcd"}) { 
                 id 
             } 
         }
     '''
-        % req_type
+        )
     )
     assert 'data' in response
     assert 'docs' in response['data']
@@ -107,14 +107,12 @@ def test_id_only(req_type):
 def test_asyncio(req_type, tmp_path):
     filepath = os.path.join(tmp_path, 'test.txt')
     q = (
-        '''
-            %s {
-                docs(data: {text: "abcd"}, execEndpoint: "/slow") { 
+        f'{req_type} {{'
+        '''docs(data: {text: "abcd"}, execEndpoint: "/slow") { 
                     id 
                 } 
             }
         '''
-        % req_type
     )
 
     async def concurrent_mutations():
@@ -136,14 +134,14 @@ def test_asyncio(req_type, tmp_path):
 def test_data_list(req_type):
     texts = 'abcd', 'efgh', 'ijkl'
     response = graphql_query(
-        '''
-        %s {
-            docs(data: [{text: "%s"}, {text: "%s"}, {text: "%s"}]) { 
-                text
+        (
+            f'{req_type} {{'
+            f'docs(data: [{{text: "{texts[0]}"}}, {{text: "{texts[1]}"}}, {{text: "{texts[2]}"}}]) {{'
+            '''text
             } 
         }
     '''
-        % (req_type, *texts)
+        )
     )
     assert 'data' in response
     assert 'docs' in response['data']
@@ -156,15 +154,15 @@ def test_data_list(req_type):
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_id_and_text(req_type):
     response = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}) { 
+        (
+            f'{req_type} {{'
+            '''docs(data: {text: "abcd"}) { 
                 id 
                 text
             } 
         }
     '''
-        % req_type
+        )
     )
     assert sorted(set(response['data']['docs'][0].keys())) == sorted({'id', 'text'})
 
@@ -172,9 +170,9 @@ def test_id_and_text(req_type):
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_id_in_matches(req_type):
     response = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}) { 
+        (
+            f'{req_type} {{'
+            '''docs(data: {text: "abcd"}) { 
                 id 
                 text
                 matches {
@@ -183,7 +181,7 @@ def test_id_in_matches(req_type):
             } 
         }
     '''
-        % req_type
+        )
     )
     assert sorted(set(response['data']['docs'][0].keys())) == sorted(
         {'id', 'text', 'matches'}
@@ -196,9 +194,9 @@ def test_id_in_matches(req_type):
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_id_text_in_matches(req_type):
     response = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}) { 
+        (
+            f'{req_type} {{'
+            '''docs(data: {text: "abcd"}) { 
                 id 
                 text
                 matches {
@@ -208,7 +206,7 @@ def test_id_text_in_matches(req_type):
             } 
         }
     '''
-        % req_type
+        )
     )
     assert sorted(set(response['data']['docs'][0].keys())) == sorted(
         {'id', 'text', 'matches'}
@@ -220,9 +218,9 @@ def test_id_text_in_matches(req_type):
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_text_scores_in_matches(req_type):
     response = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}) { 
+        (
+            f'{req_type} {{'
+            '''docs(data: {text: "abcd"}) { 
                 id 
                 text
                 matches {
@@ -237,7 +235,7 @@ def test_text_scores_in_matches(req_type):
             } 
         }
     '''
-        % req_type
+        )
     )
     assert sorted(set(response['data']['docs'][0].keys())) == sorted(
         {'id', 'text', 'matches'}
@@ -252,9 +250,9 @@ def test_text_scores_in_matches(req_type):
 @pytest.mark.skip('Something wrong with json syntax is python string. Works on browser')
 def test_parameters(req_type):
     response = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}, parameters: "{\"limit\": 3}") {
+        (
+            f'{req_type} {{'
+            '''docs(data: {text: "abcd"}, parameters: "{\"limit\": 3}") {
                 id
                 text
                 matches {
@@ -263,7 +261,7 @@ def test_parameters(req_type):
             }
         }
     '''
-        % req_type
+        )
     )
     assert sorted(set(response['data']['docs'][0].keys())) == sorted(
         {'id', 'text', 'matches'}
@@ -275,14 +273,14 @@ def test_parameters(req_type):
 @pytest.mark.parametrize('endpoint', ['/foo', '/bar'])
 def test_endpoints(req_type, endpoint):
     response_foo = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}, execEndpoint: "%s") { 
-                text
+        (
+            f'{req_type} {{'
+            f'docs(data: {{text: "abcd"}}, execEndpoint: "{endpoint}") {{'
+            '''text
             } 
         }
     '''
-        % (req_type, endpoint)
+        )
     )
 
     assert 'data' in response_foo
@@ -295,14 +293,14 @@ def test_endpoints(req_type, endpoint):
 @pytest.mark.parametrize('target', ['Indexer', 'Encoder'])
 def test_target_exec(req_type, target):
     response_foo = graphql_query(
-        '''
-        %s {
-            docs(data: {text: "abcd"}, targetExecutor: "%s", execEndpoint: "/target-exec") { 
-                text
+        (
+            f'{req_type} {{'
+            f'docs(data: {{text: "abcd"}}, targetExecutor: "{target}", execEndpoint: "/target-exec") {{'
+            '''text
             } 
         }
     '''
-        % (req_type, target)
+        )
     )
 
     assert 'data' in response_foo
