@@ -37,9 +37,9 @@ class MutateMixin:
     def mutate(
         self,
         mutation: str,
-        variables: dict = None,
-        timeout: float = None,
-        headers: dict = None,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
         """Perform a GraphQL mutation
 
@@ -63,26 +63,18 @@ class AsyncMutateMixin(MutateMixin):
     async def _async_mutate(
         self,
         mutation: str,
-        variables: dict = None,
-        timeout: float = None,
-        headers: dict = None,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
-        """Wrap mutate to make async/non-blocking.
-
-        :param mutation: the GraphQL mutation as a single string.
-        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.
-        :param timeout: HTTP request timeout
-        :param headers: HTTP headers
-        :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
-        """
         return super().mutate(mutation, variables, timeout, headers)
 
     async def mutate(
         self,
         mutation: str,
-        variables: dict = None,
-        timeout: float = None,
-        headers: dict = None,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
         """Perform a GraphQL mutation, asynchronously
 
