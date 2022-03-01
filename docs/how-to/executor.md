@@ -7,4 +7,5 @@ async-executors
 scale-out
 gpu-executor
 external-executor
+debug-executor
 ```
