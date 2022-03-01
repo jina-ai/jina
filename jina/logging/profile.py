@@ -13,6 +13,84 @@ from jina.logging.logger import JinaLogger
 from jina import __windows__
 from jina.helper import colored, get_readable_size, get_readable_time
 
+from rich.progress import (
+    Progress,
+    Task,
+    BarColumn,
+    TimeRemainingColumn,
+    SpinnerColumn,
+    TimeElapsedColumn,
+    TextColumn,
+    ProgressColumn,
+)
+
+from rich.text import Text
+from rich.table import Column
+
+
+class ProgressBar2(Progress):
+    """
+    A progress bar made with rich.
+
+    Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            with ProgressBar('loop'):
+                do_busy()
+    """
+
+    def __init__(
+        self,
+        total_length: int,
+        description: str = 'Working...',
+        columns: Optional[Union[str, ProgressColumn]] = None,
+        message_on_done: Optional[
+            Union[str, Callable[..., str]]
+        ] = None,  # todo implement
+        final_line_feed: bool = True,  # todo implement
+        **kwargs,
+    ):
+
+        columns = columns or [
+            SpinnerColumn(),
+            _OnDoneColumn(f'DONE', description, 'progress.description'),
+            BarColumn(),
+            TimeElapsedColumn(),
+            '[progress.percentage]{task.percentage:>3.0f}%',
+            TextColumn('ETA:', style='progress.remaining'),
+            TimeRemainingColumn(),
+            _OnDoneColumn(
+                '{task.completed} steps done in {task.finished_time:.0f} seconds'
+            ),
+        ]
+
+        super().__init__(*columns, **kwargs)
+
+        self.task_id = self.add_task('Working...', total=total_length)
+
+
+class _OnDoneColumn(ProgressColumn):
+    """Renders custom on done for jina progress bar."""
+
+    def __init__(
+        self,
+        text_format: str,
+        text_init_format: str = '',
+        style: Optional[str] = None,
+        table_column: Optional[Column] = None,
+    ):
+        super().__init__(table_column)
+        self.text_format = text_format
+        self.text_init_format = text_init_format
+        self.style = style
+
+    def render(self, task: 'Task') -> Text:
+        if task.finished_time:
+            return Text(self.text_format.format(task=task), style=self.style)
+        else:
+            return Text(self.text_init_format.format(task=task), style=self.style)
+
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     """
