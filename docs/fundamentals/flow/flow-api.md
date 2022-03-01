@@ -88,15 +88,55 @@ with f:
 ```
 ````
 
-## Add Executor
+## Start and stop a Flow
 
-...
-... arguments are both for the Executor and for the Deployment
+Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
+
+```python
+from jina import Flow
+
+f = Flow()
+with f:
+    pass
+```
+
+The statement `with f` starts the Flow, and exiting the indented `with` block closes the Flow.
+
+In most scenarios, a Flow should remain reachable for prolonged periods of time.
+This can be achieved by *blocking* the execution:
+
+```python
+from jina import Flow
+
+f = Flow()
+with f:
+    f.block()
+```
+
+The `.block()` method blocks the execution of the current thread or process, which enables external clients to access the Flow.
+
+In this case, the Flow can be stopped by interrupting the thread or process. \
+Alternatively, a *stop event* can be passed to `.block()`. This is a multiprocessing or threading event that stops the Flow
+once the event is set.
+
+```python
+from jina import Flow
+import threading, multiprocessing
+from typing import Optional, Union
 
 
-## Starting / stopping
+def start_flow(stop_event: Optional[Union[threading.Event, multiprocessing.Event]]):
+    """start a blocking Flow."""
+    with Flow() as f:
+        f.block(stop_event=stop_event)
 
-...
+
+e = threading.Event()  # create new Event
+
+t = threading.Thread(name='Blocked-Flow', target=start_flow, args=(e,))
+t.start()  # start Flow in new Thread
+e.set()  # set event and stop the (unblock) the Flow
+```
 
 ## Expose API endpoints
 
