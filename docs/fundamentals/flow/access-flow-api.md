@@ -63,14 +63,56 @@ methods described below.
 
 Outside of using the Jina Client, various forms of sending HTTP requests are the most common way of interacting with a Flow.
 
+You can always use `post` to interact with a Flow, using the `/post` HTTP endpoint.
 Your HTTP request can include the following parameters:
 
-- `"data"`: List specifying the input Documents. Each Document is specified as a dictionary.
+- `execEndpoint` - required: Executor endpoint string to target.
 
 <details>
   <summary>Example</summary>
-    `"data": [{"text": "hello"}, {"text": "world"]`
+    ```
+    "execEndpoint": "/index"
+    ```
 </details>
+
+- `data` - optional: List specifying the input Documents.
+
+<details>
+  <summary>Example</summary>
+    ```
+    "data": [{"text": "hello"}, {"text": "world"]
+    ```
+</details>
+
+- `paramters` - optional: Dictionary of parameters to be sent to the Executors.
+
+<details>
+  <summary>Example</summary>
+    ```
+    "parameters": {"param1": "hello world"}
+    ```
+</details>
+
+- `targetExecutor` - optional: String indicating an Executor to target. Default targets all Executors.
+
+<details>
+  <summary>Example</summary>
+    ```
+    "targetExecutor": "MyExec"
+    ```
+</details>
+
+Instead of using the generic `/post` endpoint, you can directly use endpoints like `/index` or `/search`.
+In this case your data request will be sent to the corresponding Executor endpoint, so the parameter `execEndpoint` does not need to be specified.
+
+In any case, the response you receive will include `data` (and array of Documents), as well as the fields `routes`, `parameters`, and `header`.
+
+```{admonition} Flow REST API
+:class: seealso
+For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, see [here](https://api.jina.ai/rest/).
+
+For a specific deployed Flow, you can get the same overview by accessing the `/redoc` endpoint.
+```
 
 (swagger-ui)=
 ### Use Swagger UI to send HTTP request
