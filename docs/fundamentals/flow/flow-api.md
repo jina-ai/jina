@@ -139,9 +139,10 @@ This will print:
 These endpoints are automatically reachable through Jina's Python client.
 If you want custom endpoints to be exposed via HTTP, you need to configure that manually.
 
+(custom-http)=
 ## Customize HTTP interface
 
-Not every Executor endpoint will automatically be exposed to the external HTTP interface.
+Not every Executor endpoint will automatically be exposed through the external HTTP interface.
 By default, any Flow exposes the following CRUD and debug HTTP endpoints: `/status`, `/post`, `/index`, `/search`, `/update`, and `/delete`.
 
 Executors that provide additional endpoints (e.g. `/foo`) will be exposed only after manual configuration.
@@ -167,7 +168,7 @@ with f:
     f.block()
 ```
 
-Now, sending HTTP data request to `/foo` is equivalent to calling `f.post('/foo', ...)` in the Python client.
+Now, sending an HTTP data request to the `/foo` endpoint is equivalent to calling `f.post('/foo', ...)` using the Python Client.
 
 You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 
@@ -204,6 +205,8 @@ from jina import Flow
 
 f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 ```
+
+After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-http>` will not be exposed.
 
 ## Limit outstanding requests
 
