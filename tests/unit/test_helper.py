@@ -1,5 +1,4 @@
 import os
-import time
 from types import SimpleNamespace
 
 import numpy as np
@@ -25,7 +24,6 @@ from jina.helper import (
 from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
-from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.request.data import DataRequest
 from tests import random_docs
@@ -63,14 +61,6 @@ def test_cached_property():
     assert first_uncached_test_property != second_uncached_test_property
     assert first_uncached_test_property == "11111"
     assert second_uncached_test_property == "99999"
-
-
-def test_time_context():
-    with TimeContext('dummy') as tc:
-        time.sleep(2)
-
-    assert int(tc.duration) == 2
-    assert tc.readable_duration == '2 seconds'
 
 
 def test_dunder_get():
