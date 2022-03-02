@@ -122,12 +122,12 @@ def test_asyncio(req_type, tmp_path):
     asyncio.run(concurrent_mutations())
     with open(filepath, 'r') as f:
         lines = f.readlines()
-        assert lines[0] == 'before\n'
-        assert lines[1] == 'before\n'
-        assert lines[2] == 'before\n'
-        assert lines[3] == 'after\n'
-        assert lines[4] == 'after\n'
-        assert lines[5] == 'after\n'
+    assert lines[0] == 'before\n'
+    assert lines[1] == 'before\n'
+    assert lines[2] == 'before\n'
+    assert lines[3] == 'after\n'
+    assert lines[4] == 'after\n'
+    assert lines[5] == 'after\n'
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
