@@ -111,7 +111,7 @@ class ProgressBar(Progress):
         columns = columns or [
             SpinnerColumn(),
             _OnDoneColumn(f'DONE', description, 'progress.description'),
-            BarColumn(),
+            BarColumn(complete_style='green', finished_style='yellow'),
             TimeElapsedColumn(),
             '[progress.percentage]{task.percentage:>3.0f}%',
             TextColumn('ETA:', style='progress.remaining'),
