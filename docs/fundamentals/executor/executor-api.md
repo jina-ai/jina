@@ -294,7 +294,7 @@ Text: hello world
 ```
 
 
-You can even pull an `Executor` from the jina hub and use it directly as a python object.
+You can even pull an `Executor` from the Jina Hub and use it directly as a Python object.
 
 
 ````{admonition} More about the hub? 
