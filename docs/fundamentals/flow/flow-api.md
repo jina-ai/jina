@@ -14,7 +14,7 @@ For more proper use of the Client, and more information about the Client itself,
 
 ````{tab} gRPC
 
-```{codeblock} python
+```{code-block} python
 ---
 emphasize-lines: 9, 11
 ---
@@ -42,7 +42,7 @@ with f:
 ````
 
 ````{tab} HTTP
-```{codeblock} python
+```{code-block} python
 ---
 emphasize-lines: 9, 11
 ---
@@ -73,7 +73,7 @@ with f:
 
 ````{tab} WebSocket
 
-```{codeblock} python
+```{code-block} python
 ---
 emphasize-lines: 9, 11
 ---
