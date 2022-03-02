@@ -239,10 +239,14 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
 
+(cors)=
 ### Enable Cross-Origin Resource Sharing (CORS)
 
-CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
+To make a Flow accessible from a website with a different domain, you need to enable [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+Among other things, CORS is necessary to provide a {ref}`Swagger UI interface <swagger-ui>` for your Flow.
 
+Not that CORS is disabled by default, for security reasons.
+To enable CORS, configure your Flow in the following way:
 ```python
 from jina import Flow
 
