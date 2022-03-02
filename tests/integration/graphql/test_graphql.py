@@ -1,5 +1,4 @@
 import asyncio
-import os
 from typing import Dict
 import time
 
@@ -13,7 +12,7 @@ PORT_EXPOSE = 53171
 SLOW_EXEC_DELAY = 1
 
 
-class Indexer(Executor):
+class GraphQLTestIndexer(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._docs = DocumentArray()
@@ -24,9 +23,7 @@ class Indexer(Executor):
 
     @requests(on='/search')
     def process(self, docs: DocumentArray, parameters: Dict, **kwargs):
-        limit = 2
-        if parameters:
-            limit = int(parameters.get('limit', 2))
+        limit = int(parameters.get('limit', 2))
         docs.match(self._docs, limit=limit)
 
     @requests(on='/foo')
@@ -48,7 +45,7 @@ class SlowExec(Executor):
         time.sleep(SLOW_EXEC_DELAY)
 
 
-class Encoder(Executor):
+class GraphQLTestEncoder(Executor):
     @requests
     def embed(self, docs: DocumentArray, **kwargs):
         docs.embeddings = np.random.random([len(docs), 10]).astype(np.float32)
@@ -62,8 +59,8 @@ class Encoder(Executor):
 def flow():
     f = (
         Flow(protocol='http', port_expose=PORT_EXPOSE)
-        .add(uses=Encoder, name='Encoder')
-        .add(uses=Indexer, name='Indexer')
+        .add(uses=GraphQLTestEncoder, name='Encoder')
+        .add(uses=GraphQLTestIndexer, name='Indexer')
         .add(uses=SlowExec)
     )
     with f:
@@ -76,14 +73,9 @@ def graphql_query(mutation):
     return c.mutate(mutation=mutation)
 
 
-async def async_graphql_query(mutation, filepath):
+async def async_graphql_query(mutation):
     c = Client(port=PORT_EXPOSE, protocol='HTTP', asyncio=True)
-    with open(filepath, 'a+') as f:
-        f.write('before\n')
-    result = await c.mutate(mutation=mutation)
-    with open(filepath, 'a') as f:
-        f.write('after\n')
-    return result
+    return await c.mutate(mutation=mutation)
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
@@ -106,7 +98,6 @@ def test_id_only(req_type):
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
 def test_asyncio(req_type, tmp_path):
-    filepath = os.path.join(tmp_path, 'test.txt')
     q = (
         f'{req_type} {{'
         '''docs(data: {text: "abcd"}, execEndpoint: "/slow") { 
@@ -123,7 +114,7 @@ def test_asyncio(req_type, tmp_path):
         await asyncio.sleep(local_delay)
 
     async def concurrent_mutations():
-        inputs = [async_graphql_query(q, filepath) for _ in range(num_requests)]
+        inputs = [async_graphql_query(q) for _ in range(num_requests)]
         inputs.append(slow_local_method())
         await asyncio.gather(*inputs)
 
@@ -134,14 +125,6 @@ def test_asyncio(req_type, tmp_path):
     assert (
         tot_time < local_delay + num_requests * SLOW_EXEC_DELAY
     )  # save time through asyncio
-    with open(filepath, 'r') as f:
-        lines = f.readlines()  # send all request before responses arrive
-    assert lines[0] == 'before\n'
-    assert lines[1] == 'before\n'
-    assert lines[2] == 'before\n'
-    assert lines[3] == 'after\n'
-    assert lines[4] == 'after\n'
-    assert lines[5] == 'after\n'
 
 
 @pytest.mark.parametrize('req_type', ['mutation', 'query'])
