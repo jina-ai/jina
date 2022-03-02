@@ -70,36 +70,44 @@ Your HTTP request can include the following parameters:
 
 <details>
   <summary>Example</summary>
+
     ```
     "execEndpoint": "/index"
     ```
+
 </details>
 
 - `data` - optional: List specifying the input Documents.
 
 <details>
   <summary>Example</summary>
+
     ```
     "data": [{"text": "hello"}, {"text": "world"]
     ```
+
 </details>
 
 - `paramters` - optional: Dictionary of parameters to be sent to the Executors.
 
 <details>
   <summary>Example</summary>
+
     ```
     "parameters": {"param1": "hello world"}
     ```
+
 </details>
 
 - `targetExecutor` - optional: String indicating an Executor to target. Default targets all Executors.
 
 <details>
   <summary>Example</summary>
+
     ```
     "targetExecutor": "MyExec"
     ```
+
 </details>
 
 Instead of using the generic `/post` endpoint, you can directly use endpoints like `/index` or `/search`.
@@ -198,6 +206,7 @@ You can send data requests to a Flow via cURL, Postman, or any other HTTP client
       }
     }
     ```
+
 </details>
 
 ## See further
