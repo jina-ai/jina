@@ -14,7 +14,11 @@ For more proper use of the Client, and more information about the Client itself,
 
 ````{tab} gRPC
 
-```python
+```{codeblock} python
+---
+emphasize-lines: 9, 11
+---
+
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
@@ -38,7 +42,11 @@ with f:
 ````
 
 ````{tab} HTTP
-```python
+```{codeblock} python
+---
+emphasize-lines: 9, 11
+---
+
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
@@ -65,7 +73,11 @@ with f:
 
 ````{tab} WebSocket
 
-```python
+```{codeblock} python
+---
+emphasize-lines: 9, 11
+---
+
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
@@ -88,55 +100,6 @@ with f:
 ```
 ````
 
-## Start and stop a Flow
-
-Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
-
-```python
-from jina import Flow
-
-f = Flow()
-with f:
-    pass
-```
-
-The statement `with f` starts the Flow, and exiting the indented `with` block closes the Flow.
-
-In most scenarios, a Flow should remain reachable for prolonged periods of time.
-This can be achieved by *blocking* the execution:
-
-```python
-from jina import Flow
-
-f = Flow()
-with f:
-    f.block()
-```
-
-The `.block()` method blocks the execution of the current thread or process, which enables external clients to access the Flow.
-
-In this case, the Flow can be stopped by interrupting the thread or process. \
-Alternatively, a *stop event* can be passed to `.block()`. This is a multiprocessing or threading event that stops the Flow
-once the event is set.
-
-```python
-from jina import Flow
-import threading, multiprocessing
-from typing import Optional, Union
-
-
-def start_flow(stop_event: Optional[Union[threading.Event, multiprocessing.Event]]):
-    """start a blocking Flow."""
-    with Flow() as f:
-        f.block(stop_event=stop_event)
-
-
-e = threading.Event()  # create new Event
-
-t = threading.Thread(name='Blocked-Flow', target=start_flow, args=(e,))
-t.start()  # start Flow in new Thread
-e.set()  # set event and stop the (unblock) the Flow
-```
 
 ## Expose API endpoints
 
@@ -173,9 +136,16 @@ This will print:
 ['bar was called']
 ```
 
-### Expose customized endpoints to HTTP interface
+These endpoints are automatically reachable through Jina's Python client.
+If you want custom endpoints to be exposed via HTTP, you need to configure that manually.
 
-`Flow.expose_endpoint` can be used to expose an Executor's endpoint via HTTP, e.g.
+## Customize HTTP interface
+
+Not every Executor endpoint will automatically be exposed to the external HTTP interface.
+By default, any Flow exposes the following CRUD and debug HTTP endpoints: `/status`, `/post`, `/index`, `/search`, `/update`, and `/delete`.
+
+Executors that provide additional endpoints (e.g. `/foo`) will be exposed only after manual configuration.
+These custom endpoints can be added to the HTTP interface using `Flow.expose_endpoint`.
 
 ```{figure} ../../../.github/2.0/expose-endpoints.svg
 :align: center
@@ -201,7 +171,7 @@ with f:
 :align: center
 ```
 
-Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo', ...)` in Python.
+Now, sending HTTP data request to `/foo` is equivalent to calling `f.post('/foo', ...)` in the Python client.
 
 You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 
@@ -232,9 +202,10 @@ executors:
 :align: center
 ```
 
-### Hide CRUD and debug endpoints from HTTP interface
+### Hide default endpoints from HTTP interface
 
-It is possible to hide CRUD and debug endpoints in production. This might be useful when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
+It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
+For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
 
 ```python
 from jina import Flow
@@ -275,8 +246,6 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
 
-## Flow with HTTP protocol
-
 ### Enable Cross-Origin Resource Sharing (CORS)
 
 CORS is by default disabled for security. That means you can not access the service from a webpage with different domain. To override this, simply do:
@@ -287,77 +256,6 @@ from jina import Flow
 f = Flow(cors=True, protocol='http')
 ```
 
-[//]: # (TO BE MOVED TO CLIENT)
-
-### Use Swagger UI to send HTTP request
-
-You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
-
-```{figure} ../../../.github/2.0/swagger-ui.png
-:align: center
-```
-
-[//]: # (TO BE MOVED TO CLIENT)
-
-### Use `curl` to send HTTP request
-
-Now you can send data request via `curl`/Postman:
-
-THIS TO BE COLLAPSED
-
-```console
-$ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
-
-{
-  "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
-  "data": {
-    "docs": [
-      {
-        "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
-        "granularity": 0,
-        "adjacency": 0,
-        "parentId": "",
-        "text": "hello world",
-        "chunks": [],
-        "weight": 0.0,
-        "matches": [],
-        "mimeType": "",
-        "tags": {
-          "mimeType": "",
-          "parentId": ""
-        },
-        "location": [],
-        "offset": 0,
-        "embedding": null,
-        "scores": {},
-        "modality": "",
-        "evaluations": {}
-      }
-    ],
-    "groundtruths": []
-  },
-  "header": {
-    "execEndpoint": "/index",
-    "targetPeapod": "",
-    "noPropagate": false
-  },
-  "parameters": {},
-  "routes": [
-    {
-      "pod": "gateway",
-      "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
-      "startTime": "2021-08-05T07:26:58.636258+00:00",
-      "endTime": "2021-08-05T07:26:58.636910+00:00",
-      "status": null
-    }
-  ],
-  "status": {
-    "code": 0,
-    "description": "",
-    "exception": null
-  }
-}
-```
 
 ## Generate deployment configuration
 
