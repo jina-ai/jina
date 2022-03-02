@@ -10,6 +10,7 @@ from docarray.document import Document
 from jina import Executor, Flow, requests, Client
 
 PORT_EXPOSE = 53171
+SLOW_EXEC_DELAY = 1
 
 
 class Indexer(Executor):
@@ -44,7 +45,7 @@ class Indexer(Executor):
 class SlowExec(Executor):
     @requests(on='/slow')
     def foo(self, docs: DocumentArray, **kwargs):
-        time.sleep(0.1)
+        time.sleep(SLOW_EXEC_DELAY)
 
 
 class Encoder(Executor):
@@ -115,13 +116,26 @@ def test_asyncio(req_type, tmp_path):
         '''
     )
 
+    local_delay = 2
+    num_requests = 3
+
+    async def slow_local_method():
+        await asyncio.sleep(local_delay)
+
     async def concurrent_mutations():
-        inputs = [async_graphql_query(q, filepath) for _ in range(3)]
+        inputs = [async_graphql_query(q, filepath) for _ in range(num_requests)]
+        inputs.append(slow_local_method())
         await asyncio.gather(*inputs)
 
+    start = time.time()
     asyncio.run(concurrent_mutations())
+    tot_time = time.time() - start
+
+    assert (
+        tot_time < local_delay + num_requests * SLOW_EXEC_DELAY
+    )  # save time through asyncio
     with open(filepath, 'r') as f:
-        lines = f.readlines()
+        lines = f.readlines()  # send all request before responses arrive
     assert lines[0] == 'before\n'
     assert lines[1] == 'before\n'
     assert lines[2] == 'before\n'
