@@ -167,10 +167,6 @@ with f:
     f.block()
 ```
 
-```{figure} ../../../.github/2.0/customized-foo-endpoint.png
-:align: center
-```
-
 Now, sending HTTP data request to `/foo` is equivalent to calling `f.post('/foo', ...)` in the Python client.
 
 You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
@@ -198,10 +194,6 @@ executors:
   - name: indexer
 ```
 
-```{figure} ../../../.github/2.0/rich-openapi.png
-:align: center
-```
-
 ### Hide default endpoints from HTTP interface
 
 It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
@@ -211,10 +203,6 @@ For example, in the code snippet below, we didn't implement any CRUD endpoints f
 from jina import Flow
 
 f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
-```
-
-```{figure} ../../../.github/2.0/hide-crud-debug-endpoints.png
-:align: center
 ```
 
 ## Limit outstanding requests
