@@ -37,8 +37,10 @@ class ProgressBar2(Progress):
         .. highlight:: python
         .. code-block:: python
 
-            with ProgressBar('loop'):
-                do_busy()
+            with ProgressBar(100, 'loop') as p_bar:
+                for i in range(100):
+                    do_busy()
+                    p_bar.update()
     """
 
     def __init__(
