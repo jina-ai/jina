@@ -16,7 +16,7 @@ For more proper use of the Client, and more information about the Client itself,
 
 ```{code-block} python
 ---
-emphasize-lines: 9, 11
+emphasize-lines: 11, 13
 ---
 
 from docarray import Document, DocumentArray
@@ -44,7 +44,7 @@ with f:
 ````{tab} HTTP
 ```{code-block} python
 ---
-emphasize-lines: 9, 11
+emphasize-lines: 11, 13
 ---
 
 from docarray import Document, DocumentArray
@@ -75,7 +75,7 @@ with f:
 
 ```{code-block} python
 ---
-emphasize-lines: 9, 11
+emphasize-lines: 11, 13
 ---
 
 from docarray import Document, DocumentArray
@@ -219,7 +219,9 @@ f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 
 ## Limit outstanding requests
 
-By default, a Client will just send requests as fast as possible without any throttling. This can potentially put a lot of load on the `Flow` if the Client can send requests faster than they are processed in the `Flow`. Typically, this is most likely to happen for expensive index Flows. 
+By default, Jina's Client sens requests to the Flow as fast as possible, without any throttling.
+If a client sends his request faster than the Flow can process them, this can put a lot of loan on the Flow.
+Typically, this is most likely to happen for expensive index Flows. 
 
 You can control the number of in flight requests per Client with the `prefetch` argument, e.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
 
