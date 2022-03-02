@@ -40,13 +40,10 @@ class GRPCBaseClient(BaseClient):
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
 
-                cm1 = (
-                    ProgressBar(total_length=self._inputs_length)
-                    if self.show_progress
-                    else nullcontext()
-                )
+                with ProgressBar(
+                    total_length=self._inputs_length, disable=not (self.show_progress)
+                ) as p_bar:
 
-                with cm1 as p_bar:
                     async for resp in stub.Call(req_iter):
                         callback_exec(
                             response=resp,
@@ -59,6 +56,7 @@ class GRPCBaseClient(BaseClient):
                         if self.show_progress:
                             p_bar.update()
                         yield resp
+
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:

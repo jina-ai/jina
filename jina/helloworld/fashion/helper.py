@@ -187,13 +187,17 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
             {'http': download_proxy, 'https': download_proxy}
         )
         opener.add_handler(proxy)
+    from rich import print
+
     urllib.request.install_opener(opener)
-    with ProgressBar(description=task_name) as t:
+    with ProgressBar(total_length=len(targets), description=task_name) as t:
         for k, v in targets.items():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(
-                    v['url'], v['filename'], reporthook=lambda *x: t.update(0.01)
+                    v['url'],
+                    v['filename'],
                 )
+                t.update()
             if k == 'index-labels' or k == 'query-labels':
                 v['data'] = load_labels(v['filename'])
             if k == 'index' or k == 'query':
