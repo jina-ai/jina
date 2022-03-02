@@ -105,6 +105,25 @@ class ProgressBar(Progress):
         disable: bool = False,
         **kwargs,
     ):
+        """Init a custom progress bar based on rich. This is the default progress bar of jina if you want to  customize
+        it you should probably just use a rich `Progress` and add your custom column and task
+
+        :param description: description of your task ex : 'Working...'
+        :param total_length: the number of steps
+        :param message_on_done: The message that you want to print at the end of your task. It can either be a string to
+        be formatted with task (ex '{task.completed}') task or a function which take task as input (ex : lambda task : f'{task.completed}'
+        :param columns: If you want to customize the column of the progress bar. Note that you should probably directly use
+        rich Progress object than overwriting these columns parameters.
+        :param total_length: disable the progress bar
+
+
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+
+        """
+
         def _default_message_on_done(task):
             return f'{task.completed} steps done in {get_readable_time(seconds=task.finished_time)}'
 
@@ -178,7 +197,7 @@ class _OnDoneColumn(ProgressColumn):
             )  # formatting
 
 
-        :param text_on_done_format: Final string to be formatted with task or a function which take task as input
+        :param text_on_done_format: message_on_done
         :param text_init_format: string to be formatted with task or a function which take task as input
         :param style: rich style for the Text
         :param table_column: rich table column
