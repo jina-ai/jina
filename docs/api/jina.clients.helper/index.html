@@ -280,6 +280,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -659,6 +660,15 @@
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.clients.helper.callback_exec_on_error">
+<span class="sig-prename descclassname"><span class="pre">jina.clients.helper.</span></span><span class="sig-name descname"><span class="pre">callback_exec_on_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/helper/#callback_exec_on_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.helper.callback_exec_on_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the on_error callback with the response, Use when an error outside the response status was thrown.
+:param on_error: the on_error callback
+:param exception: the exception with was thrown and led to the call of on_error
+:param logger: a logger instance
+:param response: the response</p>
+</dd></dl>
 </section>
 
             </article>
@@ -693,7 +703,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -246,6 +246,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -593,7 +594,9 @@
 <span></span><span class="sd">"""Helper functions for clients in Jina."""</span>
 
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClientCallback</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -668,11 +671,36 @@
 <span class="sd">    :param logger: a logger instance</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">&gt;=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
-        <span class="n">_safe_callback</span><span class="p">(</span><span class="n">on_error</span><span class="p">,</span> <span class="n">continue_on_error</span><span class="p">,</span> <span class="n">logger</span><span class="p">)(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_error_wrap</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+            <span class="n">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">_safe_callback</span><span class="p">(</span><span class="n">on_error_wrap</span><span class="p">,</span> <span class="n">continue_on_error</span><span class="p">,</span> <span class="n">logger</span><span class="p">)(</span><span class="n">response</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">on_done</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
         <span class="n">_safe_callback</span><span class="p">(</span><span class="n">on_done</span><span class="p">,</span> <span class="n">continue_on_error</span><span class="p">,</span> <span class="n">logger</span><span class="p">)(</span><span class="n">response</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">on_always</span><span class="p">:</span>
         <span class="n">_safe_callback</span><span class="p">(</span><span class="n">on_always</span><span class="p">,</span> <span class="n">continue_on_error</span><span class="p">,</span> <span class="n">logger</span><span class="p">)(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="callback_exec_on_error"><a class="viewcode-back" href="../../../../api/jina.clients.helper/#jina.clients.helper.callback_exec_on_error">[docs]</a><span class="k">def</span> <span class="nf">callback_exec_on_error</span><span class="p">(</span>
+    <span class="n">on_error</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span><span class="p">,</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Optional</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">"""Execute the on_error callback with the response, Use when an error outside the response status was thrown.</span>
+<span class="sd">    :param on_error: the on_error callback</span>
+<span class="sd">    :param exception: the exception with was thrown and led to the call of on_error</span>
+<span class="sd">    :param logger: a logger instance</span>
+<span class="sd">    :param response: the response</span>
+<span class="sd">    """</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_error_wrap</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+        <span class="n">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">)</span>
+
+    <span class="n">_safe_callback</span><span class="p">(</span><span class="n">on_error_wrap</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">logger</span><span class="p">)(</span><span class="n">response</span><span class="p">)</span></div>
 </pre></div>
             </article>
             <footer>
@@ -684,7 +712,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

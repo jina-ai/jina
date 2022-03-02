@@ -246,6 +246,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -598,7 +599,8 @@
 
 <span class="kn">from</span> <span class="nn">jina.clients.base.helper</span> <span class="kn">import</span> <span class="n">WebsocketClientlet</span>
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
-<span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
+<span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span><span class="p">,</span> <span class="n">callback_exec_on_error</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
@@ -725,7 +727,22 @@
             <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Error while streaming response from websocket server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
-                <span class="p">)</span></div>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">on_error</span> <span class="ow">or</span> <span class="n">on_always</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">on_error</span><span class="p">:</span>
+                        <span class="n">callback_exec_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">on_always</span><span class="p">:</span>
+                        <span class="n">callback_exec</span><span class="p">(</span>
+                            <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">on_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">on_done</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                            <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
+                            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">e</span></div>
 </pre></div>
             </article>
             <footer>
@@ -737,7 +754,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

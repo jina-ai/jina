@@ -246,6 +246,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -991,6 +992,7 @@
                 <span class="p">)</span>
 
                 <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">session_id</span> <span class="o">=</span> <span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'jinameta-session-id'</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
                     <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
 
@@ -999,8 +1001,10 @@
                     <span class="n">payload</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'payload'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">'error'</span><span class="p">:</span>
                         <span class="n">msg</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">payload</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                            <span class="n">msg</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span> <span class="ow">and</span> <span class="n">payload</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="n">msg</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'readableMessage'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="s1">'message'</span>
+                            <span class="p">)</span>
 
                         <span class="k">if</span> <span class="s1">'Process(docker) exited on non-zero code'</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -1012,7 +1016,9 @@
 <span class="sd">                            '''</span>
                             <span class="p">)</span>
 
-                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span> <span class="ow">or</span> <span class="s1">'Unknown Error'</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">msg</span> <span class="ow">or</span> <span class="s2">"Unknown Error"</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="p">)</span>
                     <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">'progress'</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">'buildWorkspace'</span><span class="p">:</span>
                         <span class="n">legacy_message</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'legacyMessage'</span><span class="p">,</span> <span class="p">{})</span>
                         <span class="n">status</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'status'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
@@ -1040,7 +1046,7 @@
                     <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
                         <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Unknown Error'</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown Error, session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
             <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
                 <span class="k">pass</span>
@@ -1173,7 +1179,8 @@
         <span class="k">if</span> <span class="n">path_params</span><span class="p">:</span>
             <span class="n">pull_url</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'&amp;</span><span class="si">{</span><span class="n">urlencode</span><span class="p">(</span><span class="n">path_params</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
 
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">get_request_header</span><span class="p">())</span>
+        <span class="n">req_header</span> <span class="o">=</span> <span class="n">get_request_header</span><span class="p">()</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -1181,13 +1188,22 @@
 
         <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'data'</span><span class="p">]</span>
 
+        <span class="n">images</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'containers'</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">image_name</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">images</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">image_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'No image found for executor "</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">", '</span>
+                <span class="sa">f</span><span class="s1">'tag: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">, commit: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"commit"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span><span class="si">}</span><span class="s1">, '</span>
+                <span class="sa">f</span><span class="s1">'session_id: </span><span class="si">{</span><span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"jinameta-session-id"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">HubExecutor</span><span class="p">(</span>
             <span class="n">uuid</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span>
             <span class="n">name</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">sn</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'sn'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">tag</span><span class="o">=</span><span class="n">tag</span> <span class="ow">or</span> <span class="n">resp</span><span class="p">[</span><span class="s1">'commit'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">visibility</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">],</span>
-            <span class="n">image_name</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'containers'</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
             <span class="n">archive_url</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'download'</span><span class="p">],</span>
             <span class="n">md5sum</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'md5'</span><span class="p">],</span>
         <span class="p">)</span></div>
@@ -1456,7 +1472,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

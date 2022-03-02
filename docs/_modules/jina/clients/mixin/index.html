@@ -246,6 +246,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -590,9 +591,10 @@
                     </label>
                 </div>
                 <h1>Source code for jina.clients.mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">run_async</span>
 
@@ -682,6 +684,7 @@
             <span class="n">return_results</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">on_error</span> <span class="o">=</span> <span class="n">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span> <span class="k">if</span> <span class="n">on_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">on_error</span>
 
         <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span>
             <span class="n">_get_results</span><span class="p">,</span>
@@ -740,6 +743,7 @@
         <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">on_error</span> <span class="o">=</span> <span class="n">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span> <span class="k">if</span> <span class="n">on_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">on_error</span>
 
         <span class="k">async</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span>
             <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
@@ -759,6 +763,26 @@
     <span class="n">search</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">'/search'</span><span class="p">)</span>
     <span class="n">update</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">'/update'</span><span class="p">)</span>
     <span class="n">delete</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">'/delete'</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">):</span>
+
+    <span class="n">num_args</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_args</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"on_error callback taking only the response parameters is deprecated. Please add one parameter "</span>
+            <span class="s2">"to handle additional optional Exception as well"</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_fn</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">):</span>  <span class="c1"># just skip the exception</span>
+            <span class="k">return</span> <span class="n">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_fn</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">on_error</span>
 </pre></div>
             </article>
             <footer>
@@ -770,7 +794,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

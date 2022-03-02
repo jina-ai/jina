@@ -280,6 +280,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -626,142 +627,148 @@
                 <section id="module-jina.excepts">
 <span id="jina-excepts-module"></span><h1>jina.excepts module<a class="headerlink" href="#module-jina.excepts" title="Permalink to this headline">¶</a></h1>
 <p>This modules defines all kinds of exceptions raised in Jina.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.excepts.BaseJinaExeception">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BaseJinaExeception</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BaseJinaExeception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BaseJinaExeception" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="jina.excepts.BaseJinaException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BaseJinaException</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BaseJinaException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BaseJinaException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></p>
 <p>A base class for all exceptions raised by Jina</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.ExecutorFailToLoad">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">ExecutorFailToLoad</span></span><a class="reference internal" href="../../_modules/jina/excepts/#ExecutorFailToLoad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.ExecutorFailToLoad" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>When the executor can not be loaded in pod/deployment.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.RuntimeFailToStart">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">RuntimeFailToStart</span></span><a class="reference internal" href="../../_modules/jina/excepts/#RuntimeFailToStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.RuntimeFailToStart" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>When pod/deployment is failed to started.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.ScalingFails">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">ScalingFails</span></span><a class="reference internal" href="../../_modules/jina/excepts/#ScalingFails"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.ScalingFails" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>When scaling is unsuccessful for an Executor.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.RuntimeTerminated">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">RuntimeTerminated</span></span><a class="reference internal" href="../../_modules/jina/excepts/#RuntimeTerminated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.RuntimeTerminated" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>The event loop of BasePod ends.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.FlowTopologyError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">FlowTopologyError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#FlowTopologyError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.FlowTopologyError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Flow exception when the topology is ambiguous.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.FlowMissingDeploymentError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">FlowMissingDeploymentError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#FlowMissingDeploymentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.FlowMissingDeploymentError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Flow exception when a deployment can not be found in the flow.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.FlowBuildLevelError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">FlowBuildLevelError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#FlowBuildLevelError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.FlowBuildLevelError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Flow exception when required build level is higher than the current build level.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadConfigSource">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadConfigSource</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadConfigSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadConfigSource" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>The yaml config file is bad, not loadable or not exist.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadClient">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadClient</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>A wrongly defined client, can not communicate with jina server correctly.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadClientCallback">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadClientCallback</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadClientCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadClientCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.excepts.BadClient" title="jina.excepts.BadClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BadClient</span></code></a>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.excepts.BadClient" title="jina.excepts.BadClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BadClient</span></code></a>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Error in the callback function on the client side.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadClientInput">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadClientInput</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadClientInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadClientInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.excepts.BadClient" title="jina.excepts.BadClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BadClient</span></code></a>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.excepts.BadClient" title="jina.excepts.BadClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BadClient</span></code></a>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Error in the request generator function on the client side.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadRequestType">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadRequestType</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadRequestType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadRequestType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
+<p>Exception when can not construct a request object from given data.</p>
+</dd></dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="jina.excepts.BadClientResponse">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadClientResponse</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadClientResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadClientResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception when can not construct a request object from given data.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadImageNameError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadImageNameError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadImageNameError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadImageNameError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception when an image name can not be found either local &amp; remote</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.BadYAMLVersion">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">BadYAMLVersion</span></span><a class="reference internal" href="../../_modules/jina/excepts/#BadYAMLVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.BadYAMLVersion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception when YAML config specifies a wrong version number.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.DaemonConnectivityError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">DaemonConnectivityError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#DaemonConnectivityError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.DaemonConnectivityError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception to raise when jina daemon is not reachable.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.DaemonWorkspaceCreationFailed">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">DaemonWorkspaceCreationFailed</span></span><a class="reference internal" href="../../_modules/jina/excepts/#DaemonWorkspaceCreationFailed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.DaemonWorkspaceCreationFailed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception to raise when jina daemon is not connectable.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.DaemonPodCreationFailed">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">DaemonPodCreationFailed</span></span><a class="reference internal" href="../../_modules/jina/excepts/#DaemonPodCreationFailed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.DaemonPodCreationFailed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception to raise when jina daemon is not connectable.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.NotSupportedError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">NotSupportedError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#NotSupportedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.NotSupportedError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Exception when user accidentally using a retired argument.</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.RuntimeRunForeverEarlyError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">RuntimeRunForeverEarlyError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#RuntimeRunForeverEarlyError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.RuntimeRunForeverEarlyError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Raised when an error occurs when starting the run_forever of Runtime</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.DockerVersionError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">DockerVersionError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#DockerVersionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.DockerVersionError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Raised when the docker version is incompatible</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.DaemonInvalidDockerfile">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">DaemonInvalidDockerfile</span></span><a class="reference internal" href="../../_modules/jina/excepts/#DaemonInvalidDockerfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.DaemonInvalidDockerfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Raised when invalid dockerfile is passed to JinaD</p>
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.NoContainerizedError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">NoContainerizedError</span></span><a class="reference internal" href="../../_modules/jina/excepts/#NoContainerizedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.NoContainerizedError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaExeception" title="jina.excepts.BaseJinaExeception"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaExeception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Raised when trying to use non-containerized Executor in K8s or Docker Compose</p>
 </dd></dl>
 </section>
@@ -798,7 +805,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

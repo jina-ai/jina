@@ -280,6 +280,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
 </ul>
@@ -757,6 +758,12 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 <li><p><code class="docutils literal notranslate"><span class="pre">on_error</span></code> is executed whenever an error occurs in <code class="docutils literal notranslate"><span class="pre">client.post()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">on_always</span></code> is always performed, no matter the success or failure of <code class="docutils literal notranslate"><span class="pre">client.post()</span></code></p></li>
 </ul>
+<div class="tip admonition">
+<p class="admonition-title">Tip</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">on_done</span></code>and <code class="docutils literal notranslate"><span class="pre">on_always</span></code> callback won’t be trigger if the failure is due to an error happening outside of
+networking or internal jina issues. For example, if a <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code> is triggered by the OS during the handling of the request
+none of the callback will be executed.</p>
+</div>
 <p>Callback functions in Jina expect a <code class="docutils literal notranslate"><span class="pre">Response</span></code> of the type <code class="docutils literal notranslate"><span class="pre">jina.types.request.data.DataRequest</span></code>, which contains resulting Documents,
 parameters, and other information.</p>
 <div class="note admonition">
@@ -821,6 +828,15 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
         <span class="n">on_error</span><span class="o">=</span><span class="n">beep</span><span class="p">,</span>
         <span class="n">on_always</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span>
     <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="on-failure-callback">
+<h2>On failure callback<a class="headerlink" href="#on-failure-callback" title="Permalink to this headline">¶</a></h2>
+<p>Additionally, the <code class="docutils literal notranslate"><span class="pre">on_error</span></code> callback can be triggered by a raise of an exception. The callback must take an optional
+<code class="docutils literal notranslate"><span class="pre">exception</span></code> parameters as an argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
+    <span class="o">...</span>
 </pre></div>
 </div>
 </section>
@@ -955,7 +971,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Feb 28, 2022.
+                    Last updated on Mar 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -985,6 +1001,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 <li><a class="reference internal" href="#targeting-a-specific-executor">Targeting a specific Executor</a></li>
 <li><a class="reference internal" href="#request-parameters">Request parameters</a></li>
 <li><a class="reference internal" href="#processing-results-using-callback-functions">Processing results using callback functions</a></li>
+<li><a class="reference internal" href="#on-failure-callback">On failure callback</a></li>
 <li><a class="reference internal" href="#returning-results-from-post">Returning results from .post()</a></li>
 <li><a class="reference internal" href="#async-python-client">Async Python Client</a></li>
 </ul>

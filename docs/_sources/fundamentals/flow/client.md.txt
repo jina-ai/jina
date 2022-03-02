@@ -149,6 +149,15 @@ For this purpose, Jina implements a promise-like interface, letting you specify 
 - `on_error` is executed whenever an error occurs in `client.post()`
 - `on_always` is always performed, no matter the success or failure of `client.post()`
 
+```{admonition} Tip
+:class: tip
+Both `on_done`and `on_always` callback won't be trigger if the failure is due to an error happening outside of 
+networking or internal jina issues. For example, if a `SIGKILL` is triggered by the OS during the handling of the request
+none of the callback will be executed.   
+```
+
+
+
 Callback functions in Jina expect a `Response` of the type `jina.types.request.data.DataRequest`, which contains resulting Documents,
 parameters, and other information.
 
@@ -221,6 +230,15 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
         on_error=beep,
         on_always=lambda x: x.docs.save(fp),
     )
+```
+## On failure callback
+
+Additionally, the `on_error` callback can be triggered by a raise of an exception. The callback must take an optional 
+`exception` parameters as an argument.
+
+```python
+def on_error(resp, exception: Exception):
+    ...
 ```
 
 ## Returning results from .post()
