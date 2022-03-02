@@ -135,6 +135,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12280,4 +12281,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```09e351ca```](https://github.com/jina-ai/jina/commit/09e351cad8f0b5ac3ce96bf0b84866b6326dd951)] __-__ fix docarray dark logo (*Han Xiao*)
  - [[```fd105b68```](https://github.com/jina-ai/jina/commit/fd105b6845dcbba2917a0611d03c150e35ad3800)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```51c64906```](https://github.com/jina-ai/jina/commit/51c649063c97df54c33b7928e75df0446ce673fe)] __-__ __version__: the next version will be 3.0.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-0-4></a>
+## Release Note (`3.0.4`)
+
+> Release time: 2022-03-02 13:31:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  samsja,  Nan Wang,  Zhaofeng Miao,  Delgermurun,  Han Xiao,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```52607ada```](https://github.com/jina-ai/jina/commit/52607ada81388cfe4f9d9b8dac9a4f1de0fe2c62)] __-__ fix client error 4391 (#4410) (*samsja*)
+ - [[```66649f5d```](https://github.com/jina-ai/jina/commit/66649f5ded079cb90b75a9031d78fe264daddd18)] __-__ __hubble__: show helpful error message (#4419) (*Delgermurun*)
+
+### 📗 Documentation
+
+ - [[```1f2e6d79```](https://github.com/jina-ai/jina/commit/1f2e6d79a455a9e18a8bb494b473c563ee977ab7)] __-__ how to debug executor (#4425) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```bdafa6e0```](https://github.com/jina-ai/jina/commit/bdafa6e0a2091f351e231a1422a3aee2bc325165)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```98cb1704```](https://github.com/jina-ai/jina/commit/98cb170453e2dbed4682ba761fd2607b1bac51eb)] __-__ clean up extra-requirements (#4416) (*Nan Wang*)
+ - [[```b2264793```](https://github.com/jina-ai/jina/commit/b22647934e9e51618f51e8d551e6232af07b30e5)] __-__ update codeowners (#4423) (*Nan Wang*)
+ - [[```d1fb4c3f```](https://github.com/jina-ai/jina/commit/d1fb4c3f4088695084b45d182b00b6dd64cfe6cc)] __-__ Revert &#34;docs: update google analytics tracking ID (#4390)&#34; (#4421) (*Han Xiao*)
+ - [[```d46c29fd```](https://github.com/jina-ai/jina/commit/d46c29fd768138fa880a8936ebcee96efd65f4b5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a7bb4fc7```](https://github.com/jina-ai/jina/commit/a7bb4fc7aaaf4c322db04984ea2dd3bd5105c9a5)] __-__ __version__: the next version will be 3.0.4 (*Jina Dev Bot*)
 
