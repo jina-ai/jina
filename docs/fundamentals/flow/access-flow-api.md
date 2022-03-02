@@ -107,7 +107,7 @@ In this case your data request will be sent to the corresponding Executor endpoi
 
 In any case, the response you receive will include `data` (and array of Documents), as well as the fields `routes`, `parameters`, and `header`.
 
-```{admonition} Flow REST API
+```{admonition} See also: Flow REST API
 :class: seealso
 For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, see [here](https://api.jina.ai/rest/).
 
@@ -199,3 +199,9 @@ You can send data requests to a Flow via cURL, Postman, or any other HTTP client
     }
     ```
 </details>
+
+## See further
+
+- {ref}`Access a Flow with the Client <client>`
+- {ref}`Configure Flow API <flow-api>`
+- [Flow REST API reference](https://api.jina.ai/rest/)
