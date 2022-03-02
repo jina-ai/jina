@@ -297,10 +297,9 @@ Text: hello world
 You can even pull an `Executor` from the Jina Hub and use it directly as a Python object.
 
 
-````{admonition} More about the hub? 
+````{admonition} More about Jina Hub 
 :class: information
-The [hub](https://hub.jina.ai/) is a marketplace for `Executor`.
-````
+The [hub](https://hub.jina.ai/) is our marketplace for `Executor`s.
 
 ```python
 from jina import Executor
