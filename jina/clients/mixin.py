@@ -5,7 +5,7 @@ from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 import warnings
 from inspect import signature
 
-from jina.helper import run_async
+from jina.helper import run_async, get_or_reuse_loop
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
@@ -80,7 +80,7 @@ class AsyncMutateMixin(MutateMixin):
         :param headers: HTTP headers
         :return: dict containing the optional keys ``data`` and ``errors``, for response data and errors.
         """
-        return await asyncio.get_event_loop().run_in_executor(
+        return await get_or_reuse_loop().run_in_executor(
             None, super().mutate, mutation, variables, timeout, headers
         )
 
