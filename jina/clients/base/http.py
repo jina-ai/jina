@@ -86,7 +86,7 @@ class HTTPBaseClient(BaseClient):
                     if 'data' in r_str and r_str['data'] is not None:
                         from docarray import DocumentArray
 
-                        da = DocumentArray.from_dict(r_str['data'])
+                        da = DocumentArray.from_list(r_str['data'])
                         del r_str['data']
 
                     resp = DataRequest(r_str)
