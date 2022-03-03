@@ -239,6 +239,7 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```{danger}
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
@@ -260,6 +261,9 @@ f = Flow(cors=True, protocol='http')
 
 ## Generate deployment configuration
 
+=======
+## Deployment
+>>>>>>> docs(client): document client graphql support
 To deploy a `Flow` you will need to deploy the Executors it is composed of.
 The `Flow` is offering convenience functions to generate the necessary configuration files for some use cases.
 At the moment, `Docker-Compose` and `Kubernetes` are supported.
