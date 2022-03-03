@@ -30,7 +30,7 @@ from jina import Client, Executor, Flow, requests
 class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
+        docs.append(Document(text='foo was called'))
 
 
 f = Flow(protocol='grpc', port_expose=12345).add(uses=FooExecutor)
@@ -41,7 +41,7 @@ with f:
 ```
 
 ```text
-['foo was here']
+['foo was called']
 ```
 ````
 
@@ -58,7 +58,7 @@ from jina import Client, Executor, Flow, requests
 class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
+        docs.append(Document(text='foo was called'))
 
 
 f = Flow(protocol='http', port_expose=12345).add(uses=FooExecutor)
@@ -66,11 +66,10 @@ with f:
     client = Client(port=12345, protocol='http')
     docs = client.post(on='/')
     print(docs.texts)
-    f.block()
 ```
 
 ```text
-['foo was here']
+['foo was called']
 ```
 
 ````
@@ -89,7 +88,7 @@ from jina import Client, Executor, Flow, requests
 class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
+        docs.append(Document(text='foo was called'))
 
 
 f = Flow(protocol='websocket', port_expose=12345).add(uses=FooExecutor)
@@ -100,7 +99,7 @@ with f:
 ```
 
 ```text
-['foo was here']
+['foo was called']
 ```
 ````
 
