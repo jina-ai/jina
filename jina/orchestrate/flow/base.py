@@ -58,6 +58,9 @@ from jina.parsers import (
 )
 from jina.parsers.flow import set_flow_parser
 
+from rich.console import Console
+from rich import print
+
 __all__ = ['Flow']
 
 
@@ -1099,10 +1102,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
-        def _polling_status():
-            spinner = itertools.cycle(
-                ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-            )
+        def _polling_status(status):
 
             while True:
                 num_all = len(results)
@@ -1114,15 +1114,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         pendings.append(_k)
                     else:
                         num_done += 1
-                sys.stdout.write('\r{}\r'.format(' ' * 100))
                 pending_str = colored(' '.join(pendings)[:50], 'yellow')
-                sys.stdout.write(
-                    f'{colored(next(spinner), "green")} {num_done}/{num_all} waiting {pending_str} to be ready...'
+
+                status.update(
+                    f'{num_done}/{num_all} waiting {pending_str} to be ready...'
                 )
-                sys.stdout.flush()
 
                 if not pendings:
-                    sys.stdout.write('\r{}\r'.format(' ' * 100))
                     break
                 time.sleep(0.1)
 
@@ -1139,38 +1137,40 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             threads.append(t)
             t.start()
 
-        # kick off spinner thread
-        t_m = threading.Thread(target=_polling_status, daemon=True)
-        t_m.start()
+        console = Console()
+        with console.status('Wokring...') as status:
+            # kick off spinner thread
+            t_m = threading.Thread(target=_polling_status, args=[status], daemon=True)
+            t_m.start()
 
-        # kick off ip getter thread
-        addr_table = []
-        t_ip = threading.Thread(
-            target=self._get_address_table, args=(addr_table,), daemon=True
-        )
-        t_ip.start()
-
-        for t in threads:
-            t.join()
-        if t_ip is not None:
-            t_ip.join()
-        t_m.join()
-
-        error_deployments = [k for k, v in results.items() if v != 'done']
-        if error_deployments:
-            self.logger.error(
-                f'Flow is aborted due to {error_deployments} can not be started.'
+            # kick off ip getter thread
+            addr_table = []
+            t_ip = threading.Thread(
+                target=self._get_address_table, args=(addr_table,), daemon=True
             )
-            self.close()
-            raise RuntimeFailToStart
-        else:
-            success_msg = colored('🎉 Flow is ready to use!', 'green')
+            t_ip.start()
 
-            if addr_table:
-                self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
-            self.logger.debug(
-                f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
-            )
+            for t in threads:
+                t.join()
+            if t_ip is not None:
+                t_ip.join()
+            t_m.join()
+
+            error_deployments = [k for k, v in results.items() if v != 'done']
+            if error_deployments:
+                self.logger.error(
+                    f'Flow is aborted due to {error_deployments} can not be started.'
+                )
+                self.close()
+                raise RuntimeFailToStart
+            else:
+                success_msg = colored('🎉 Flow is ready to use!', 'green')
+
+                if addr_table:
+                    self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
+                self.logger.debug(
+                    f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
+                )
 
     @property
     def num_deployments(self) -> int:
