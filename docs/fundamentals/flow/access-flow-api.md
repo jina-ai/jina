@@ -102,8 +102,9 @@ For a Flow that is exposed on port `PORT`, you can navigate to the Swagger UI vi
 Here you can see all the endpoints that are exposed by the Flow, such as `/search` and `/index`.
 
 To send a request, click on the endpoint you want to target, then on `try it out`.
-\
+
 Now you can enter your HTTP request, and send it by clicking on `Execute`.
+You can again use the [REST HTTP request schema](https://api.jina.ai/rest/), but do not need to specify `execEndpoint`.
 
 You should see the raw response, together with a visual representation of the returned Documents.
 
