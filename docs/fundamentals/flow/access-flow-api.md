@@ -66,49 +66,10 @@ Outside of using the Jina Client, various forms of sending HTTP requests are the
 You can always use `post` to interact with a Flow, using the `/post` HTTP endpoint.
 Your HTTP request can include the following parameters:
 
-- `execEndpoint` - required: Executor endpoint string to target.
-
-<details>
-  <summary>Example</summary>
-
-    ```
-    "execEndpoint": "/index"
-    ```
-
-</details>
-
-- `data` - optional: List specifying the input Documents.
-
-<details>
-  <summary>Example</summary>
-
-    ```
-    "data": [{"text": "hello"}, {"text": "world"]
-    ```
-
-</details>
-
-- `paramters` - optional: Dictionary of parameters to be sent to the Executors.
-
-<details>
-  <summary>Example</summary>
-
-    ```
-    "parameters": {"param1": "hello world"}
-    ```
-
-</details>
-
-- `targetExecutor` - optional: String indicating an Executor to target. Default targets all Executors.
-
-<details>
-  <summary>Example</summary>
-
-    ```
-    "targetExecutor": "MyExec"
-    ```
-
-</details>
+- `execEndpoint` - required: Executor endpoint string to target, e.g. `"execEndpoint": "/index"`
+- `data` - optional: List specifying the input Documents, e.g. `"data": [{"text": "hello"}, {"text": "world"}]`.
+- `paramters` - optional: Dictionary of parameters to be sent to the Executors, e.g. `"parameters": {"param1": "hello world"}`
+- `targetExecutor` - optional: String indicating an Executor to target. Default targets all Executors, e.g. `"targetExecutor": "MyExec"`
 
 Instead of using the generic `/post` endpoint, you can directly use endpoints like `/index` or `/search`.
 In this case your data request will be sent to the corresponding Executor endpoint, so the parameter `execEndpoint` does not need to be specified.
