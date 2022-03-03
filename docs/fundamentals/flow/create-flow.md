@@ -37,7 +37,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ## Start and stop a Flow
 
 Creating a Flow means defining your microservice architecture, and starting a Flow means launching it.
-When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service throgh its API <access-flow-api>`.
+When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
 Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
 
