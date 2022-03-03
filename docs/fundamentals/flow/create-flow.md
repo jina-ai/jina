@@ -1,7 +1,8 @@
 (flow)=
 # Create a Flow
 
-A `Flow` can be created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting all its Executors.
+Creating a Flow, on its face, means instantiating a Python object.
+More importantly, however, creating and configuring a Flow means defining your {ref}`search microservice architecture <architecture-overview>`.
 
 The most trivial `Flow` is the empty `Flow` as shown below:
 
@@ -34,6 +35,9 @@ with f:  # Using it as a Context Manager will start the Flow
 ````
 
 ## Start and stop a Flow
+
+Creating a Flow means defining your microservice architecture, and starting a Flow means launching it.
+When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service throgh its API <access-flow-api>`.
 
 Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
 
@@ -84,7 +88,7 @@ e.set()  # set event and stop (unblock) the Flow
 ```
 
 
-
+(flow-add-executors)=
 ## Add Executors
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
 
