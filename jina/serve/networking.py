@@ -652,6 +652,45 @@ class GrpcConnectionPool:
                     raise
 
     @staticmethod
+    def send_requests_sync(
+        requests: List[Request],
+        target: str,
+        timeout=100.0,
+        https=False,
+        root_certificates: Optional[str] = None,
+        endpoint: Optional[str] = None,
+    ) -> Request:
+        """
+        Sends a list of requests synchronically to the target via grpc
+
+        :param requests: the requests to send
+        :param target: where to send the request to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :param https: if True, use https for the grpc channel
+        :param root_certificates: the path to the root certificates for https, only used if https is True
+        :param endpoint: endpoint to target with the request
+
+        :returns: the response request
+        """
+
+        for i in range(3):
+            try:
+                with GrpcConnectionPool.get_grpc_channel(
+                    target,
+                    https=https,
+                    root_certificates=root_certificates,
+                ) as channel:
+                    metadata = (('endpoint', endpoint),) if endpoint else None
+                    stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
+                    response, call = stub.process_data.with_call(
+                        requests, timeout=timeout, metadata=metadata
+                    )
+                    return response
+            except grpc.RpcError as e:
+                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    raise
+
+    @staticmethod
     def get_default_grpc_options():
         """
         Returns a list of default options used for creating grpc channels.

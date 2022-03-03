@@ -117,7 +117,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self.connection_pool.add_connection(
                 deployment='uses_after', address=self.uses_after_address
             )
-        self._has_uses = args.uses is not None and args.uses != __default_executor__
+        self._reduce = not args.disable_reduce
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(
@@ -252,7 +252,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 requests, deployment='uses_before'
             )
             requests = [response]
-        elif len(requests) > 1 and not self._has_uses:
+        elif len(requests) > 1 and self._reduce:
             requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
@@ -279,8 +279,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ) = await self.connection_pool.send_requests_once(
                 worker_results, deployment='uses_after'
             )
-        elif len(worker_results) > 1:
+        elif len(worker_results) > 1 and self._reduce:
             DataRequestHandler.reduce_requests(worker_results)
+        elif len(worker_results) > 1 and not self._reduce:
+            # worker returned multiple responsed, but the head is configured to skip reduction
+            # just concatenate the docs in this case
+            response_request.data.docs = DataRequestHandler.get_docs_from_request(
+                requests, field='docs'
+            )
 
         merged_metadata = self._merge_metadata(
             metadata, uses_after_metadata, uses_before_metadata

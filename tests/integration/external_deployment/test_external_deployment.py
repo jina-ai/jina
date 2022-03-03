@@ -91,6 +91,7 @@ def test_flow_with_external_deployment(
 def test_two_flow_with_shared_external_deployment(
     external_deployment, external_deployment_args, input_docs, num_replicas, num_shards
 ):
+    external_deployment.head_args.disable_reduce = True
     with external_deployment:
         external_args = vars(external_deployment_args)
         del external_args['name']
@@ -295,6 +296,7 @@ def external_deployment_join_args(num_replicas, num_shards):
         str(num_replicas),
         '--polling',
         'all',
+        '--disable-reduce',
     ]
     return set_deployment_parser().parse_args(args)
 

@@ -55,6 +55,7 @@ executors:
         py_modules:
           - ${{ ENV.PY_MODULE }}
     needs: [ textIndexer, imageIndexer ]
+    disable_reduce: True
   - name: keyvalueIndexer
     uses:
       jtype: KeyValueIndexer
