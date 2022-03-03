@@ -80,7 +80,7 @@ e = threading.Event()  # create new Event
 
 t = threading.Thread(name='Blocked-Flow', target=start_flow, args=(e,))
 t.start()  # start Flow in new Thread
-e.set()  # set event and stop the (unblock) the Flow
+e.set()  # set event and stop (unblock) the Flow
 ```
 
 
