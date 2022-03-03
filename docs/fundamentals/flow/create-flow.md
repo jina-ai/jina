@@ -1,7 +1,8 @@
 (flow)=
 # Create a Flow
 
-A `Flow` can be created as a Python object and can be easily used as a Context Manager. The Context Manager will make sure that the `Flow` will be started and closed correctly. Starting a `Flow` means starting all its Executors.
+Creating a Flow, on its face, means instantiating a Python object.
+More importantly, however, creating and configuring a Flow means defining your {ref}`search microservice architecture <architecture-overview>`.
 
 The most trivial `Flow` is the empty `Flow` as shown below:
 
@@ -33,32 +34,61 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-## Visualize a `Flow`
+## Start and stop a Flow
 
-`Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
-```python
-from jina import Flow
+Creating a Flow means defining your microservice architecture, and starting a Flow means launching it.
+When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
-f = Flow().add().add()
-f.plot('flow.svg')
-```
-
-```{figure} flow.svg
-:width: 70%
-
-```
+Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
 
 ```python
 from jina import Flow
 
-f = Flow().add(name='e1').add(needs='e1').add(needs='e1')
-f.plot('flow-2.svg')
+f = Flow()
+with f:
+    pass
 ```
 
-```{figure} flow-2.svg
-:width: 70%
+The statement `with f` starts the Flow, and exiting the indented `with` block closes the Flow.
+
+In most scenarios, a Flow should remain reachable for prolonged periods of time.
+This can be achieved by *blocking* the execution:
+
+```python
+from jina import Flow
+
+f = Flow()
+with f:
+    f.block()
 ```
 
+The `.block()` method blocks the execution of the current thread or process, which enables external clients to access the Flow.
+
+In this case, the Flow can be stopped by interrupting the thread or process. \
+Alternatively, a *stop event* can be passed to `.block()`. This is a multiprocessing or threading event that stops the Flow
+once the event is set.
+
+```python
+from jina import Flow
+import threading, multiprocessing
+from typing import Optional, Union
+
+
+def start_flow(stop_event: Optional[Union[threading.Event, multiprocessing.Event]]):
+    """start a blocking Flow."""
+    with Flow() as f:
+        f.block(stop_event=stop_event)
+
+
+e = threading.Event()  # create new Event
+
+t = threading.Thread(name='Blocked-Flow', target=start_flow, args=(e,))
+t.start()  # start Flow in new Thread
+e.set()  # set event and stop (unblock) the Flow
+```
+
+
+(flow-add-executors)=
 ## Add Executors
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
 
@@ -485,5 +515,29 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 - `/custom` has polling `ALL`
 - all other endpoints will have polling `ANY` due to the usage of `*` as a wildcard to catch all other cases
 
+## Visualize a `Flow`
 
+`Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
+```python
+from jina import Flow
+
+f = Flow().add().add()
+f.plot('flow.svg')
+```
+
+```{figure} flow.svg
+:width: 70%
+
+```
+
+```python
+from jina import Flow
+
+f = Flow().add(name='e1').add(needs='e1').add(needs='e1')
+f.plot('flow-2.svg')
+```
+
+```{figure} flow-2.svg
+:width: 70%
+```
 

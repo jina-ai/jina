@@ -4,6 +4,9 @@
 A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
 Documents "flow" through the created pipeline and are processed by Executors.
 
+You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
+while the heavy lifting is done by the {ref}`services <executor-cookbook>` themselves.
+
 
 The most important methods of the `Flow` object are the following:
 
@@ -139,6 +142,7 @@ Executor and Flow are the two fundamental concepts in Jina.
 
 create-flow
 flow-api
+access-flow-api
 client
 remarks
 ```
