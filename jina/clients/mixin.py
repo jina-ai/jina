@@ -65,15 +65,6 @@ class MutateMixin:
 class AsyncMutateMixin(MutateMixin):
     """The async GraphQL Mutation Mixin for Client and Flow"""
 
-    async def _async_mutate(
-        self,
-        mutation: str,
-        variables: Optional[dict] = None,
-        timeout: Optional[float] = None,
-        headers: Optional[dict] = None,
-    ):
-        return super().mutate(mutation, variables, timeout, headers)
-
     async def mutate(
         self,
         mutation: str,
