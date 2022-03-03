@@ -238,6 +238,7 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
     f.post(on='/', inputs=requests_generator)
 ```
 
+<<<<<<< HEAD
 ```{danger}
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
