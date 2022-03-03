@@ -701,7 +701,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
         name='external_executor',
         external=True,
         host='external-deployment-head.external-deployment-ns.svc',
-        port=K8sGrpcConnectionPool.K8S_port,
+        port=K8sGrpcConnectionPool.K8S_PORT,
     )
 
     dump_path = os.path.join(str(tmpdir), namespace)

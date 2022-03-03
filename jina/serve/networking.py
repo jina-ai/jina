@@ -779,7 +779,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
     :param logger: the logger to use
     """
 
-    K8S_port = 8080
+    K8S_PORT = 8080
     K8S_PORT_USES_BEFORE = 8081
     K8S_PORT_USES_AFTER = 8082
 
@@ -872,7 +872,7 @@ class K8sGrpcConnectionPool(GrpcConnectionPool):
 
             is_deleted = item.metadata.deletion_timestamp is not None
             ip = item.status.pod_ip
-            port = self.K8S_port
+            port = self.K8S_PORT
 
             if (
                 ip

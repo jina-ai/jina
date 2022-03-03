@@ -476,7 +476,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             # we only need hard coded addresses if the k8s connection pool is disabled or if this deployment is external
             if not k8s_connection_pool or v.external:
                 graph_dict[node] = [
-                    f'{deployment_k8s_address}:{v.head_port if v.external else K8sGrpcConnectionPool.K8S_port}'
+                    f'{deployment_k8s_address}:{v.head_port if v.external else K8sGrpcConnectionPool.K8S_PORT}'
                 ]
 
         return graph_dict if graph_dict else None

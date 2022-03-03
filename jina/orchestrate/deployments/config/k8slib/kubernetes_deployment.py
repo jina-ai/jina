@@ -53,7 +53,7 @@ def get_deployment_yamls(
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port:
-        port = K8sGrpcConnectionPool.K8S_port
+        port = K8sGrpcConnectionPool.K8S_PORT
 
     deployment_params = {
         'name': name,

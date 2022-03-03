@@ -281,7 +281,7 @@ class K8sDeploymentConfig:
                 self.args
             )
             parsed_args['head_deployment'].gpus = None
-            parsed_args['head_deployment'].port = K8sGrpcConnectionPool.K8S_PORT_IN
+            parsed_args['head_deployment'].port = K8sGrpcConnectionPool.K8S_PORT
             parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
             parsed_args['head_deployment'].uses_with = None
@@ -300,7 +300,7 @@ class K8sDeploymentConfig:
                     )
                     connection_list[
                         str(i)
-                    ] = f'{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_port}'
+                    ] = f'{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT}'
 
                 parsed_args['head_deployment'].connection_list = json.dumps(
                     connection_list
@@ -325,7 +325,7 @@ class K8sDeploymentConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             if args.name != 'gateway':
-                cargs.port = K8sGrpcConnectionPool.K8S_port
+                cargs.port = K8sGrpcConnectionPool.K8S_PORT
             cargs.uses_before_address = None
             cargs.uses_after_address = None
             if shards > 1:
