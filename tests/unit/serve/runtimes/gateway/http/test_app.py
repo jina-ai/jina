@@ -205,9 +205,7 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
         with pytest.raises(aiohttp.ClientConnectorCertificateError):
-            Client(protocol=protocol, port=f.port, https=True).index(
-                [Document()]
-            )
+            Client(protocol=protocol, port=f.port, https=True).index([Document()])
 
 
 da = DocumentArray([Document(text='text_input')])
