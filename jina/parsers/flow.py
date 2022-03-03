@@ -33,6 +33,13 @@ def mixin_flow_features_parser(parser):
     ''',
     )
 
+    gp.add_argument(
+        '--no-graphql-endpoint',
+        action='store_true',
+        default=False,
+        help='If set, /graphql endpoint is removed from HTTP interface. ',
+    )
+
 
 def set_flow_parser(parser=None):
     """Set the parser for the flow
