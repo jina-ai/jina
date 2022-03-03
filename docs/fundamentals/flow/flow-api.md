@@ -1,6 +1,6 @@
 (flow)=
 
-# Flow API
+# Configure Flow API
 
 **Flow** ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets.
