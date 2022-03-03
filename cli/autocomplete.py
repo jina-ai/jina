@@ -116,6 +116,7 @@ ac_table = {
             '--uses',
             '--env',
             '--inspect',
+            '--no-graphql-endpoint',
         ],
         'ping': ['--help', '--timeout', '--retries'],
         'new': ['--help'],
