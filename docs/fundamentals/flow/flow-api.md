@@ -6,10 +6,14 @@
 Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets.
 
 ```{admonition} Jina Client
-:class: seealso
+:class: caution
 
-To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon file.
-For more proper use of the Client, and more information about the Client itself, see the {ref}`next section <client>`.
+To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon script.
+
+In most cases, this is not how a real user would access a Flow. Rather, they would use one of {ref}`several ways of connecting over a network<access-flow-api>`.
+This does not affect how you have to configure your Flow API, so the examples here should translate seamlessly.
+
+For more proper use of the Client, and more information about the Client itself, see the {ref}`Client documentation <client>`.
 ```
 
 ````{tab} gRPC
