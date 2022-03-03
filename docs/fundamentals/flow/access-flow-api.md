@@ -173,5 +173,5 @@ You can send data requests to a Flow via cURL, Postman, or any other HTTP client
 ## See further
 
 - {ref}`Access a Flow with the Client <client>`
-- {ref}`Configure Flow API <flow-api>`
+- {ref}`Configure Flow API <flow>`
 - [Flow REST API reference](https://api.jina.ai/rest/)
