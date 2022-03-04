@@ -1511,7 +1511,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 address_table.append(
                     f'\t💬 GraphQL UI:\t\t'
                     + colored(
-                        f'http://localhost:{self.port_expose}/graphql',
+                        f'http://localhost:{self.port}/graphql',
                         'cyan',
                         attrs='underline',
                     )
