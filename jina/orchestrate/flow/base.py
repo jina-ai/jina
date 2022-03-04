@@ -1138,7 +1138,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             t.start()
 
         console = Console()
-        with console.status('Wokring...') as status:
+        with console.status('Working...') as status:
             # kick off spinner thread
             t_m = threading.Thread(target=_polling_status, args=[status], daemon=True)
             t_m.start()
