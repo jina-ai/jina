@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.serve.networking - Jina 3.0.4 documentation</title>
+        <title>jina.serve.networking - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -1244,6 +1245,45 @@
                 <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">raise</span></div>
 
+<div class="viewcode-block" id="GrpcConnectionPool.send_requests_sync"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_sync">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">send_requests_sync</span><span class="p">(</span>
+        <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
+        <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">https</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Sends a list of requests synchronically to the target via grpc</span>
+
+<span class="sd">        :param requests: the requests to send</span>
+<span class="sd">        :param target: where to send the request to, like 127.0.0.1:8080</span>
+<span class="sd">        :param timeout: timeout for the send</span>
+<span class="sd">        :param https: if True, use https for the grpc channel</span>
+<span class="sd">        :param root_certificates: the path to the root certificates for https, only used if https is True</span>
+<span class="sd">        :param endpoint: endpoint to target with the request</span>
+
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        """</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
+                    <span class="n">target</span><span class="p">,</span>
+                    <span class="n">https</span><span class="o">=</span><span class="n">https</span><span class="p">,</span>
+                    <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+                    <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">'endpoint'</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
+                    <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+                    <span class="n">response</span><span class="p">,</span> <span class="n">call</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_data</span><span class="o">.</span><span class="n">with_call</span><span class="p">(</span>
+                        <span class="n">requests</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">RpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span></div>
+
 <div class="viewcode-block" id="GrpcConnectionPool.get_default_grpc_options"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.get_default_grpc_options">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_default_grpc_options</span><span class="p">():</span>
         <span class="sd">"""</span>
@@ -1333,10 +1373,9 @@
 <span class="sd">    :param logger: the logger to use</span>
 <span class="sd">    """</span>
 
-    <span class="n">K8S_PORT_EXPOSE</span> <span class="o">=</span> <span class="mi">8080</span>
-    <span class="n">K8S_PORT_IN</span> <span class="o">=</span> <span class="mi">8081</span>
-    <span class="n">K8S_PORT_USES_BEFORE</span> <span class="o">=</span> <span class="mi">8082</span>
-    <span class="n">K8S_PORT_USES_AFTER</span> <span class="o">=</span> <span class="mi">8083</span>
+    <span class="n">K8S_PORT</span> <span class="o">=</span> <span class="mi">8080</span>
+    <span class="n">K8S_PORT_USES_BEFORE</span> <span class="o">=</span> <span class="mi">8081</span>
+    <span class="n">K8S_PORT_USES_AFTER</span> <span class="o">=</span> <span class="mi">8082</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1427,7 +1466,7 @@
 
             <span class="n">is_deleted</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">deletion_timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="n">ip</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">pod_ip</span>
-            <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K8S_PORT_IN</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K8S_PORT</span>
 
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">ip</span>
@@ -1543,7 +1582,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

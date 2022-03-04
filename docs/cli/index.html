@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/cli/index/" />
   
-<meta property="og:site_name" content="Jina 3.0.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.1.0 Documentation" />
   
 <meta property="og:description" content="Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. subcommands: Use%(prog)-8s [sub-command] –help to get detailed information about each sub-command. To show all commands, run JINA_FULL_CLI=1 jina –help. cli,, Possible choices: hell..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.0.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.1.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="cli.lookup module" href="../api/cli.lookup/" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Command-Line Interface - Jina 3.0.4 documentation</title>
+        <title>Command-Line Interface - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,7 +261,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -685,7 +686,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “27f223402e3c40a78afa447227f4840f”</p>
+<p>Default: “acd0109b372740b0be9184aebe022f81”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -731,7 +732,7 @@
 <h5>chatbot<a class="headerlink" href="#chatbot" title="Permalink to this headline">¶</a></h5>
 <p>Run a chatbot QA demo</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">chatbot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat1">
@@ -741,7 +742,7 @@
 <dd><p>The url of index csv data</p>
 <p>Default: “<a class="reference external" href="https://static.jina.ai/chatbot/dataset.csv">https://static.jina.ai/chatbot/dataset.csv</a>”</p>
 </dd>
-<dt><kbd>--port-expose</kbd></dt>
+<dt><kbd>--port</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
 <p>Default: 8080</p>
 </dd>
@@ -756,7 +757,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “feb1220cf47842bda32f8ccc3bb2ce30”</p>
+<p>Default: “fd3c57e6e11b4936965927d781a6b12b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -768,7 +769,7 @@
 <h5>multimodal<a class="headerlink" href="#multimodal" title="Permalink to this headline">¶</a></h5>
 <p>Run a multimodal search demo</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">multimodal</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat2">
@@ -778,7 +779,7 @@
 <dd><p>The url of index csv data</p>
 <p>Default: “<a class="reference external" href="https://static.jina.ai/multimodal/people-img.zip">https://static.jina.ai/multimodal/people-img.zip</a>”</p>
 </dd>
-<dt><kbd>--port-expose</kbd></dt>
+<dt><kbd>--port</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
 <p>Default: 8080</p>
 </dd>
@@ -789,7 +790,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1fc8dec09a8649d9928cddbb4410033d”</p>
+<p>Default: “5ef4fcad89974a3d9282b6f9baa5d3a1”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -833,10 +834,10 @@
               <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Essential arguments">
@@ -926,7 +927,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 55148</p>
+<p>Default: 62186</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1040,6 +1041,10 @@ Python files, data files.</p>
 <dd><p>The number of replicas in the deployment</p>
 <p>Default: 1</p>
 </dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 52578</p>
+</dd>
 </dl>
 </section>
 <section id="Pull arguments">
@@ -1067,6 +1072,10 @@ Python files, data files.</p>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
 </dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
+</dd>
 </dl>
 </section>
 </section>
@@ -1074,7 +1083,7 @@ Python files, data files.</p>
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this headline">¶</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
@@ -1122,6 +1131,15 @@ JSON dict, {endpoint: PollingType}
 {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
 </div></blockquote>
 <p>Default: “ANY”</p>
+</dd>
+</dl>
+</section>
+<section id="GraphQL arguments">
+<h4>GraphQL arguments<a class="headerlink" href="#GraphQL arguments" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--no-graphql-endpoint</kbd></dt>
+<dd><p>If set, /graphql endpoint is removed from HTTP interface.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1206,14 +1224,16 @@ JSON dict, {endpoint: PollingType}
              <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="p">{</span><span class="n">NONE</span><span class="p">,</span> <span class="n">LZ4</span><span class="p">,</span> <span class="n">ZLIB</span><span class="p">,</span> <span class="n">GZIP</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="nb">bytes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">ratio</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat4">
@@ -1322,7 +1342,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 55395</p>
+<p>Default: 52549</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1387,6 +1407,15 @@ which should be structured as a python package. For more details, please see the
 </dd>
 </dl>
 </section>
+<section id="GraphQL arguments_repeat1">
+<h4>GraphQL arguments<a class="headerlink" href="#GraphQL arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--no-graphql-endpoint</kbd></dt>
+<dd><p>If set, /graphql endpoint is removed from HTTP interface.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
 <section id="Compression arguments">
 <h4>Compression arguments<a class="headerlink" href="#Compression arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
@@ -1422,7 +1451,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 61447</p>
+<p>Default: 57897</p>
 </dd>
 </dl>
 </section>
@@ -1461,6 +1490,10 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <dd><p>The number of replicas in the deployment</p>
 <p>Default: 1</p>
 </dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 57242</p>
+</dd>
 </dl>
 </section>
 <section id="Head arguments_repeat1">
@@ -1474,6 +1507,10 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
+</dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1654,9 +1691,9 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
          <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Essential arguments_repeat3">
@@ -1746,7 +1783,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 61262</p>
+<p>Default: 50498</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1860,6 +1897,10 @@ Python files, data files.</p>
 <dd><p>The number of replicas in the deployment</p>
 <p>Default: 1</p>
 </dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 56406</p>
+</dd>
 </dl>
 </section>
 <section id="Pull arguments_repeat2">
@@ -1887,6 +1928,10 @@ Python files, data files.</p>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
 </dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
+</dd>
 </dl>
 </section>
 </section>
@@ -1906,11 +1951,11 @@ Python files, data files.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Essential arguments_repeat4">
@@ -2000,7 +2045,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 49889</p>
+<p>Default: 59896</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2114,6 +2159,10 @@ Python files, data files.</p>
 <dd><p>The number of replicas in the deployment</p>
 <p>Default: 1</p>
 </dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 50684</p>
+</dd>
 </dl>
 </section>
 <section id="Pull arguments_repeat3">
@@ -2140,6 +2189,10 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
+</dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -2197,7 +2250,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 59929</p>
+<p>Default: 49723</p>
 </dd>
 <dt><kbd>--https</kbd></dt>
 <dd><p>If set, connect to gateway using https</p>
@@ -2264,7 +2317,7 @@ Python files, data files.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -2333,6 +2386,7 @@ Python files, data files.</p>
 </li>
 <li><a class="reference internal" href="#flow">flow</a><ul>
 <li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
+<li><a class="reference internal" href="#GraphQL arguments">GraphQL arguments</a></li>
 <li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
 </ul>
 </li>
@@ -2351,6 +2405,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#WorkerRuntime arguments_repeat1">WorkerRuntime arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments">Prefetch arguments</a></li>
 <li><a class="reference internal" href="#HTTP Gateway arguments">HTTP Gateway arguments</a></li>
+<li><a class="reference internal" href="#GraphQL arguments_repeat1">GraphQL arguments</a></li>
 <li><a class="reference internal" href="#Compression arguments">Compression arguments</a></li>
 <li><a class="reference internal" href="#Gateway arguments">Gateway arguments</a></li>
 <li><a class="reference internal" href="#Pod arguments_repeat1">Pod arguments</a></li>

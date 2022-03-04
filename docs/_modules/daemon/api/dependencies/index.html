@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>daemon.api.dependencies - Jina 3.0.4 documentation</title>
+        <title>daemon.api.dependencies - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -718,7 +719,7 @@
 <span class="sd">            - yaml is stored in `workspace` directory, so we'll `cd` there</span>
 <span class="sd">            - yaml might include env vars. so we'll set them (passed via query params)</span>
 <span class="sd">        2. `build` the Flow so that `gateway` gets added.</span>
-<span class="sd">            - get the list of ports to be published (port_expose, port_in, port_out, port_ctrl)</span>
+<span class="sd">            - get the list of ports to be published</span>
 <span class="sd">            - ports need to be published for gateway &amp; executors that are not `ContainerRuntime` or `JinadRuntime` based</span>
 <span class="sd">            - Deployment level args for ports are enough, as we don't need to publish Pod ports</span>
 <span class="sd">        3. `save` the Flow config.</span>
@@ -744,7 +745,7 @@
                 <span class="n">PortMapping</span><span class="p">(</span>
                     <span class="n">deployment_name</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">,</span>
                     <span class="n">pod_name</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">,</span>
-                    <span class="n">ports</span><span class="o">=</span><span class="n">Ports</span><span class="p">(</span><span class="n">port_expose</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port_expose</span><span class="p">),</span>
+                    <span class="n">ports</span><span class="o">=</span><span class="n">Ports</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">deployment_name</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -839,7 +840,7 @@
 
 <span class="sd">        :return: dict of port mappings</span>
 <span class="sd">        """</span>
-        <span class="c1"># Container pods are started in separate docker containers, so we should not expose port_in here</span>
+        <span class="c1"># Container pods are started in separate docker containers, so we should not expose port here</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">pod_role</span>
@@ -850,7 +851,7 @@
         <span class="p">):</span>
             <span class="k">return</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">port_in</span><span class="p">}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">port</span><span class="p">}</span>
 
 <div class="viewcode-block" id="PodDepends.update_args"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends.update_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""TODO: update docs"""</span>
@@ -910,7 +911,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

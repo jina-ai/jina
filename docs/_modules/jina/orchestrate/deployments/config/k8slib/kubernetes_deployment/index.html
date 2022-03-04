@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment - Jina 3.0.4 documentation</title>
+        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -610,7 +611,7 @@
     <span class="n">jina_deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">pod_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">image_name_uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -632,7 +633,7 @@
 <span class="sd">    :param jina_deployment_name: Name of the Jina Deployment this deployment belongs to</span>
 <span class="sd">    :param pod_type: type os this pod, can be gateway/head/worker</span>
 <span class="sd">    :param shard_id: id of this shard, None if shards=1 or this is gateway/head</span>
-<span class="sd">    :param port_expose: port which will be exposed by the deployed containers</span>
+<span class="sd">    :param port: port which will be exposed by the deployed containers</span>
 <span class="sd">    :param env: environment variables to be passed into configmap.</span>
 <span class="sd">    :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.</span>
 <span class="sd">    :param image_name_uses_before: image for uses_before container in the k8s deployment</span>
@@ -645,13 +646,8 @@
 <span class="sd">    """</span>
     <span class="c1"># we can always assume the ports are the same for all executors since they run on different k8s pods</span>
     <span class="c1"># port expose can be defined by the user</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">port_expose</span><span class="p">:</span>
-        <span class="n">port_expose</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_EXPOSE</span>
-    <span class="n">port_in</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_IN</span>
-    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
-        <span class="n">port_ready_probe</span> <span class="o">=</span> <span class="n">port_expose</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">port_ready_probe</span> <span class="o">=</span> <span class="n">port_in</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
 
     <span class="n">deployment_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
@@ -660,10 +656,9 @@
         <span class="s1">'replicas'</span><span class="p">:</span> <span class="n">replicas</span><span class="p">,</span>
         <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
         <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
-        <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
-        <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
-        <span class="s1">'port_in_uses_before'</span><span class="p">:</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span><span class="p">,</span>
-        <span class="s1">'port_in_uses_after'</span><span class="p">:</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span><span class="p">,</span>
+        <span class="s1">'port'</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
+        <span class="s1">'port_uses_before'</span><span class="p">:</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span><span class="p">,</span>
+        <span class="s1">'port_uses_after'</span><span class="p">:</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span><span class="p">,</span>
         <span class="s1">'args_uses_before'</span><span class="p">:</span> <span class="n">container_args_uses_before</span><span class="p">,</span>
         <span class="s1">'args_uses_after'</span><span class="p">:</span> <span class="n">container_args_uses_after</span><span class="p">,</span>
         <span class="s1">'command_uses_before'</span><span class="p">:</span> <span class="n">container_cmd_uses_before</span><span class="p">,</span>
@@ -674,7 +669,6 @@
         <span class="s1">'jina_deployment_name'</span><span class="p">:</span> <span class="n">jina_deployment_name</span><span class="p">,</span>
         <span class="s1">'shard_id'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\"</span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="se">\"</span><span class="s1">'</span> <span class="k">if</span> <span class="n">shard_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">'</span><span class="se">\"\"</span><span class="s1">'</span><span class="p">,</span>
         <span class="s1">'pod_type'</span><span class="p">:</span> <span class="n">pod_type</span><span class="p">,</span>
-        <span class="s1">'port_ready_probe'</span><span class="p">:</span> <span class="n">port_ready_probe</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">gpus</span><span class="p">:</span>
@@ -716,8 +710,7 @@
                 <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                 <span class="s1">'target'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                 <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-                <span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">,</span>
-                <span class="s1">'port_in'</span><span class="p">:</span> <span class="n">port_in</span><span class="p">,</span>
+                <span class="s1">'port'</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
                 <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'ClusterIP'</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">),</span>
@@ -728,13 +721,13 @@
 
 
 <div class="viewcode-block" id="get_cli_params"><a class="viewcode-back" href="../../../../../../../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_cli_params">[docs]</a><span class="k">def</span> <span class="nf">get_cli_params</span><span class="p">(</span>
-    <span class="n">arguments</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">skip_list</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">arguments</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">skip_list</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Get cli parameters based on the arguments.</span>
 
 <span class="sd">    :param arguments: arguments where the cli parameters are generated from</span>
 <span class="sd">    :param skip_list: list of arguments which should be ignored</span>
-<span class="sd">    :param port_in: overwrite port_in with the provided value if set</span>
+<span class="sd">    :param port: overwrite port with the provided value if set</span>
 
 <span class="sd">    :return: string which contains all cli parameters</span>
 <span class="sd">    """</span>
@@ -750,8 +743,8 @@
         <span class="s1">'uses_before'</span><span class="p">,</span>
         <span class="s1">'replicas'</span><span class="p">,</span>
     <span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip_list</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">port_in</span><span class="p">:</span>
-        <span class="n">arguments</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">port_in</span>
+    <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
+        <span class="n">arguments</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
     <span class="n">arg_list</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span><span class="n">attribute</span><span class="p">,</span> <span class="n">attribute</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">),</span> <span class="n">value</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">arguments</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -793,7 +786,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

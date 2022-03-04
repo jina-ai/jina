@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments - Jina 3.0.4 documentation</title>
+        <title>jina.orchestrate.deployments - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -705,11 +706,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">head_port_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Get the port_in of the HeadPod of this deployment</span>
+    <span class="k">def</span> <span class="nf">head_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the port of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseDeployment'</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -726,10 +727,10 @@
 
         <span class="n">_head_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'port_in'</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="p">:</span>
-            <span class="n">_head_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'port'</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">_head_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_in</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'HeadRuntime'</span>
@@ -776,7 +777,7 @@
             <span class="p">{</span>
                 <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s1">'head_host'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
-                <span class="s1">'head_port_in'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">,</span>
+                <span class="s1">'head_port'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">]</span></div>
 
@@ -829,8 +830,8 @@
                     <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
                         <span class="n">_args</span><span class="p">,</span> <span class="n">old_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
                     <span class="p">),</span>
-                    <span class="n">worker_port</span><span class="o">=</span><span class="n">_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">,</span>
-                    <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="n">worker_port</span><span class="o">=</span><span class="n">_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                    <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">old_pod</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -843,8 +844,8 @@
                     <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
                         <span class="n">_args</span><span class="p">,</span> <span class="n">new_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
                     <span class="p">),</span>
-                    <span class="n">worker_port</span><span class="o">=</span><span class="n">_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">,</span>
-                    <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="n">worker_port</span><span class="o">=</span><span class="n">_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                    <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_args</span>
@@ -857,7 +858,7 @@
                 <span class="n">new_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">new_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">new_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_args</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
-                <span class="n">new_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                <span class="n">new_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
                 <span class="c1"># no exception should happen at create and enter time</span>
                 <span class="n">new_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
                 <span class="n">new_args_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span>
@@ -869,8 +870,8 @@
                         <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
                             <span class="n">new_args</span><span class="p">,</span> <span class="n">new_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
                         <span class="p">),</span>
-                        <span class="n">worker_port</span><span class="o">=</span><span class="n">new_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">,</span>
-                        <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                        <span class="n">worker_port</span><span class="o">=</span><span class="n">new_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                        <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                         <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span>
@@ -902,8 +903,8 @@
                         <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
                         <span class="p">),</span>
-                        <span class="n">worker_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">port_in</span><span class="p">,</span>
-                        <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                        <span class="n">worker_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                        <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                         <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -998,9 +999,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">deploy_public_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">port</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">port</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="Deployment.update_worker_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_worker_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">""" Update args of all its worker pods based on Deployment args. Does not touch head and tail"""</span>
@@ -1052,6 +1053,13 @@
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">host</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        :return: the port of this deployment</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
 
     <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -1160,7 +1168,7 @@
                     <span class="p">)</span>
                     <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">activate_worker_sync</span><span class="p">(</span>
                         <span class="n">worker_host</span><span class="p">,</span>
-                        <span class="nb">int</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">port</span><span class="p">),</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
                         <span class="n">shard_id</span><span class="p">,</span>
                     <span class="p">)</span></div>
@@ -1390,7 +1398,11 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">'</span>
 
-                <span class="n">_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                <span class="c1"># the gateway needs to respect the assigned port</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
 
                 <span class="c1"># pod workspace if not set then derive from workspace</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_args</span><span class="o">.</span><span class="n">workspace</span><span class="p">:</span>
@@ -1405,7 +1417,7 @@
         <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">__default_host__</span>
-        <span class="n">_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0'</span>
@@ -1447,7 +1459,7 @@
                 <span class="p">)</span>
                 <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_before_args</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1458,7 +1470,7 @@
                 <span class="p">)</span>
                 <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_after_args</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
 
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseDeployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -1554,7 +1566,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

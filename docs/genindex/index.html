@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="../search/" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/><title>Index - Jina 3.0.4 documentation</title>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/><title>Index - Jina 3.1.0 documentation</title>
 <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -138,7 +138,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -226,7 +226,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -819,6 +820,8 @@
         <li><a href="../api/jina.clients.http/#jina.clients.http.AsyncHTTPClient">AsyncHTTPClient (class in jina.clients.http)</a>
 </li>
         <li><a href="../api/daemon.clients/#daemon.clients.AsyncJinaDClient">AsyncJinaDClient (class in daemon.clients)</a>
+</li>
+        <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin">AsyncMutateMixin (class in jina.clients.mixin)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">AsyncNewLoopRuntime (class in jina.serve.runtimes.asyncio)</a>
 </li>
@@ -2012,7 +2015,7 @@
         </ul></li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.head_host">head_host (jina.orchestrate.deployments.BaseDeployment property)</a>
 </li>
-        <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.head_port_in">head_port_in (jina.orchestrate.deployments.BaseDeployment property)</a>
+        <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.head_port">head_port (jina.orchestrate.deployments.BaseDeployment property)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.header">header (jina.serve.runtimes.gateway.http.models.JinaResponseModel attribute)</a>
 </li>
@@ -3210,9 +3213,7 @@
   <h2>K</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.serve.networking/#jina.serve.networking.K8sGrpcConnectionPool.K8S_PORT_EXPOSE">K8S_PORT_EXPOSE (jina.serve.networking.K8sGrpcConnectionPool attribute)</a>
-</li>
-        <li><a href="../api/jina.serve.networking/#jina.serve.networking.K8sGrpcConnectionPool.K8S_PORT_IN">K8S_PORT_IN (jina.serve.networking.K8sGrpcConnectionPool attribute)</a>
+        <li><a href="../api/jina.serve.networking/#jina.serve.networking.K8sGrpcConnectionPool.K8S_PORT">K8S_PORT (jina.serve.networking.K8sGrpcConnectionPool attribute)</a>
 </li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.K8sGrpcConnectionPool.K8S_PORT_USES_AFTER">K8S_PORT_USES_AFTER (jina.serve.networking.K8sGrpcConnectionPool attribute)</a>
 </li>
@@ -3220,10 +3221,10 @@
 </li>
         <li><a href="../api/jina.orchestrate.deployments.config.k8s/#jina.orchestrate.deployments.config.k8s.K8sDeploymentConfig">K8sDeploymentConfig (class in jina.orchestrate.deployments.config.k8s)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.K8sGrpcConnectionPool">K8sGrpcConnectionPool (class in jina.serve.networking)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.JsonFormatter.KEYS">KEYS (jina.logging.formatter.JsonFormatter attribute)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.keys">keys() (daemon.stores.base.BaseStore method)</a>
@@ -3353,6 +3354,8 @@
         <li><a href="../api/jina.parsers.flow/#jina.parsers.flow.mixin_flow_features_parser">mixin_flow_features_parser() (in module jina.parsers.flow)</a>
 </li>
         <li><a href="../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_gateway_parser">mixin_gateway_parser() (in module jina.parsers.orchestrate.runtimes.remote)</a>
+</li>
+        <li><a href="../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_graphql_parser">mixin_graphql_parser() (in module jina.parsers.orchestrate.runtimes.remote)</a>
 </li>
         <li><a href="../api/jina.parsers.orchestrate.runtimes.head/#jina.parsers.orchestrate.runtimes.head.mixin_head_parser">mixin_head_parser() (in module jina.parsers.orchestrate.runtimes.head)</a>
 </li>
@@ -3747,6 +3750,14 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin.mutate">mutate() (jina.clients.mixin.AsyncMutateMixin method)</a>
+
+        <ul>
+          <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate">(jina.clients.mixin.MutateMixin method)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin">MutateMixin (class in jina.clients.mixin)</a>
+</li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyConverter">MyConverter (class in jina.helloworld.fashion.my_executors)</a>
 </li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder">MyEncoder (class in jina.helloworld.fashion.my_executors)</a>
@@ -3957,16 +3968,16 @@
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.pop">pop() (jina.types.mixin.ProtoTypeMixin method)</a>
 </li>
-        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port_expose">port_expose (daemon.models.ports.Ports attribute)</a>
+        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port">port (daemon.models.ports.Ports attribute)</a>
 
         <ul>
-          <li><a href="../api/jina/#jina.Flow.port_expose">(jina.Flow property)</a>
+          <li><a href="../api/jina/#jina.Flow.port">(jina.Flow property)</a>
 </li>
-          <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port_expose">(jina.orchestrate.flow.base.Flow property)</a>
+          <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.port">(jina.orchestrate.deployments.Deployment property)</a>
+</li>
+          <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port">(jina.orchestrate.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.ports/#daemon.models.ports.Ports.port_in">port_in (daemon.models.ports.Ports attribute)</a>
-</li>
         <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMapping">PortMapping (class in daemon.models.ports)</a>
 </li>
         <li><a href="../api/daemon.models.ports/#daemon.models.ports.PortMappings">PortMappings (class in daemon.models.ports)</a>
@@ -4364,6 +4375,8 @@
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests">send_requests() (jina.serve.networking.GrpcConnectionPool method)</a>
 </li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_once">send_requests_once() (jina.serve.networking.GrpcConnectionPool method)</a>
+</li>
+        <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_sync">send_requests_sync() (jina.serve.networking.GrpcConnectionPool static method)</a>
 </li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.ControlRequestProto.SerializeToString">SerializeToString() (jina.proto.serializer.ControlRequestProto static method)</a>
 
@@ -4806,7 +4819,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

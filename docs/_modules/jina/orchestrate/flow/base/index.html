@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.flow.base - Jina 3.0.4 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -724,6 +725,7 @@
         <span class="n">default_swagger_ui</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">expose_public</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -735,9 +737,9 @@
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
-        <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -775,6 +777,7 @@
 <span class="sd">        :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.</span>
 <span class="sd">        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
 <span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods</span>
@@ -796,6 +799,7 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.</span>
+<span class="sd">        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
 <span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
 <span class="sd">              Define per Deployment:</span>
@@ -804,8 +808,7 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}</span>
-<span class="sd">        :param port_expose: The port that the gateway exposes for clients for GRPC connections.</span>
-<span class="sd">        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</span>
@@ -861,6 +864,7 @@
         <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">no_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -885,6 +889,7 @@
 <span class="sd">          - ...</span>
 
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
+<span class="sd">        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
 <span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
 <span class="sd">              Define per Deployment:</span>
@@ -1026,7 +1031,7 @@
                 <span class="n">ctrl_with_ipc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># otherwise ctrl port would be conflicted</span>
                 <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                 <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
-                <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
                 <span class="n">deployment_role</span><span class="o">=</span><span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
                 <span class="n">expose_endpoints</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span><span class="p">),</span>
             <span class="p">)</span>
@@ -1035,6 +1040,9 @@
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
         <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span>
+        <span class="p">)</span>  <span class="c1"># also used in Flow, thus not in kwargs</span>
         <span class="n">args</span><span class="o">.</span><span class="n">graph_description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">graph_description</span><span class="p">)</span>
         <span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">deployments_addresses</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
@@ -1044,7 +1052,7 @@
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
+            <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span>
 
@@ -1069,21 +1077,21 @@
             <span class="c1"># we only need hard coded addresses if the k8s connection pool is disabled or if this deployment is external</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">k8s_connection_pool</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
                 <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port_in</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_IN</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span> <span class="k">if</span> <span class="n">graph_dict</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_get_docker_compose_deployments_addresses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="n">graph_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="n">PORT_IN</span>
+        <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.docker_compose</span> <span class="kn">import</span> <span class="n">port</span>
         <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.helper</span> <span class="kn">import</span> <span class="n">to_compatible_name</span>
 
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">PORT_IN</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">deployment_docker_compose_address</span><span class="p">]</span>
 
@@ -1163,6 +1171,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">daemon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1177,7 +1186,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
-        <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_jinad</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
         <span class="n">pull_latest</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1207,6 +1216,7 @@
 
 <span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
 <span class="sd">        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing</span>
+<span class="sd">        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '</span>
 <span class="sd">          container.</span>
 
@@ -1246,7 +1256,7 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}</span>
-<span class="sd">        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param port_jinad: The port of the remote machine for usage with JinaD.</span>
 <span class="sd">        :param pull_latest: Pull the latest image before running</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
@@ -1354,7 +1364,8 @@
 
         <span class="c1"># set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="c1"># do not inherit the port argument from the flow</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">'port'</span><span class="p">:</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># check if host is set to remote:port</span>
@@ -1393,10 +1404,10 @@
         <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span>
 
-        <span class="n">port_in</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port_in'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">port_in</span><span class="p">:</span>
-            <span class="n">port_in</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">port_in</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
 
         <span class="n">op_flow</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
 
@@ -1511,7 +1522,7 @@
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="s1">'host'</span><span class="p">:</span> <span class="n">gateway_deployment</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
-                <span class="s1">'port'</span><span class="p">:</span> <span class="n">gateway_deployment</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">,</span>
+                <span class="s1">'port'</span><span class="p">:</span> <span class="n">gateway_deployment</span><span class="o">.</span><span class="n">head_port</span><span class="p">,</span>
                 <span class="s1">'expected_parts'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
@@ -1812,7 +1823,7 @@
 
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
             <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
@@ -1976,26 +1987,26 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'https://mermaid.ink/</span><span class="si">{</span><span class="n">img_type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">encoded_str</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""Return the exposed port of the gateway</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">port</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port_expose'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="nd">@port_expose</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="nd">@port</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">"""Set the new exposed port of the Flow (affects Gateway and Client)</span>
 
 <span class="sd">        :param value: the new port to expose</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port'</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port'</span><span class="p">]</span>
 
         <span class="c1"># Flow is running already, then close the existing gateway</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
@@ -2055,10 +2066,10 @@
             <span class="p">[</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔗 Protocol: </span><span class="se">\t\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🏠 Local access:</span><span class="se">\t</span><span class="s1">'</span>
-                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">),</span>
+                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">),</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Private network:</span><span class="se">\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="s1">'cyan'</span><span class="p">,</span>
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">),</span>
@@ -2068,7 +2079,7 @@
             <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🌐 Public address:</span><span class="se">\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="s1">'cyan'</span><span class="p">,</span>
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -2077,7 +2088,7 @@
             <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 Swagger UI:</span><span class="se">\t\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs'</span><span class="p">,</span>
                     <span class="s1">'cyan'</span><span class="p">,</span>
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -2085,11 +2096,20 @@
             <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📚 Redoc:</span><span class="se">\t\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc'</span><span class="p">,</span>
                     <span class="s1">'cyan'</span><span class="p">,</span>
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span><span class="p">:</span>
+                <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 GraphQL UI:</span><span class="se">\t\t</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql'</span><span class="p">,</span>
+                        <span class="s1">'cyan'</span><span class="p">,</span>
+                        <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="n">address_table</span>
 
 <div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
@@ -2434,9 +2454,9 @@
 
 <span class="sd">        # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="s1">'port_expose'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'port'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">:</span>
             <span class="n">kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'port'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'port'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port'</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_client_cli_parser</span><span class="p">())</span>
 
@@ -2465,7 +2485,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

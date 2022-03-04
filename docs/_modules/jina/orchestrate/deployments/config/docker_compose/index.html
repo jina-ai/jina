@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments.config.docker_compose - Jina 3.0.4 documentation</title>
+        <title>jina.orchestrate.deployments.config.docker_compose - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -607,7 +608,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments</span> <span class="kn">import</span> <span class="n">BaseDeployment</span>
 
-<span class="n">PORT_IN</span> <span class="o">=</span> <span class="mi">8081</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">8081</span>
 
 
 <div class="viewcode-block" id="DockerComposeConfig"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.docker_compose/#jina.orchestrate.deployments.config.docker_compose.DockerComposeConfig">[docs]</a><span class="k">class</span> <span class="nc">DockerComposeConfig</span><span class="p">:</span>
@@ -677,12 +678,10 @@
                 <span class="s1">'entrypoint'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'jina'</span><span class="p">],</span>
                 <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
                 <span class="s1">'expose'</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                 <span class="p">],</span>
                 <span class="s1">'ports'</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                 <span class="p">],</span>
             <span class="p">}</span>
 
@@ -826,7 +825,7 @@
 
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'gateway'</span><span class="p">:</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseDeployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">PORT_IN</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span><span class="o">.</span><span class="n">uses_metas</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="kc">None</span>
@@ -846,7 +845,7 @@
                         <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">i_rep</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">shard_name</span>
                     <span class="p">)</span>
                     <span class="n">connection_list</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">shard_id</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">replica_name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">PORT_IN</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">replica_name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
 
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_service'</span><span class="p">]</span><span class="o">.</span><span class="n">connection_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">connection_list</span><span class="p">)</span>
@@ -862,7 +861,7 @@
             <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_metas</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">PORT_IN</span>
+            <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">connection_list</span> <span class="o">=</span> <span class="kc">None</span>
@@ -871,7 +870,9 @@
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'uses_before_service'</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_before_cargs</span>
             <span class="n">parsed_args</span><span class="p">[</span>
                 <span class="s1">'head_service'</span>
-            <span class="p">]</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">uses_after</span><span class="p">:</span>
             <span class="n">uses_after_cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">shard_id</span> <span class="o">=</span> <span class="mi">0</span>
@@ -883,7 +884,7 @@
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_metas</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">PORT_IN</span>
+            <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">connection_list</span> <span class="o">=</span> <span class="kc">None</span>
@@ -892,7 +893,9 @@
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'uses_after_service'</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_after_cargs</span>
             <span class="n">parsed_args</span><span class="p">[</span>
                 <span class="s1">'head_service'</span>
-            <span class="p">]</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">port_in</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
             <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -907,7 +910,7 @@
             <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                 <span class="n">cargs</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">cargs</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">PORT_IN</span>
+                <span class="n">cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'services'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">parsed_args</span>
@@ -971,7 +974,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

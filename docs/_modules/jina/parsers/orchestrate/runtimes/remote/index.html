@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.parsers.orchestrate.runtimes.remote - Jina 3.0.4 documentation</title>
+        <title>jina.parsers.orchestrate.runtimes.remote - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -227,7 +227,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -592,10 +593,9 @@
                 </div>
                 <h1>Source code for jina.parsers.orchestrate.runtimes.remote</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for remote runtime"""</span>
-<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
 <div class="viewcode-block" id="mixin_remote_runtime_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_remote_runtime_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -647,6 +647,7 @@
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--port-expose'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'port'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'The port that the gateway exposes for clients for GRPC connections.'</span><span class="p">,</span>
     <span class="p">)</span>
@@ -685,6 +686,21 @@
         <span class="s1">'otherwise, it will unset these proxy variables before start. '</span>
         <span class="s1">'gRPC seems to prefer no proxy'</span><span class="p">,</span>
     <span class="p">)</span>
+
+
+<div class="viewcode-block" id="mixin_graphql_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_graphql_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_graphql_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">"""Add the options to rest server</span>
+
+<span class="sd">    :param parser: the parser</span>
+<span class="sd">    """</span>
+
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'GraphQL'</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--no-graphql-endpoint'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, /graphql endpoint is removed from HTTP interface. '</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mixin_http_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_http_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_http_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -823,7 +839,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

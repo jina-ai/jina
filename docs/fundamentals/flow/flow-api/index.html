@@ -4,19 +4,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Flow API" />
+<meta property="og:title" content="Configure Flow API" />
   
 <meta property="og:type" content="website" />
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/flow-api/" />
   
-<meta property="og:site_name" content="Jina 3.0.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.1.0 Documentation" />
   
-<meta property="og:description" content="Flow ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud. Every Flow provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets. gRPC HTTP WebSocket Configure the API: The Flow API can expos..." />
+<meta property="og:description" content="Flow ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud. Every Flow provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets. gRPC HTTP WebSocket Expose API endpoints: The Flow API can ex..." />
   
-<meta property="og:image" content="https://docs.jina.ai/_images/hide-crud-debug-endpoints.png" />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.0.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.1.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,10 +36,10 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Client API" href="../client/" /><link rel="prev" title="Create a Flow" href="../create-flow/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Access Flow API" href="../access-flow-api/" /><link rel="prev" title="Create a Flow" href="../create-flow/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Flow API - Jina 3.0.4 documentation</title>
+        <title>Configure Flow API - Jina 3.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.0.4 documentation</div>
+                <div class="brand">Jina 3.1.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -261,7 +261,8 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../create-flow/">Create a Flow</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Flow API</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Configure Flow API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../remarks/">Remarks</a></li>
 </ul>
@@ -624,14 +625,16 @@
                         </i>
                     </label>
                 </div>
-                <section class="tex2jax_ignore mathjax_ignore" id="flow-api">
-<span id="flow"></span><h1>Flow API<a class="headerlink" href="#flow-api" title="Permalink to this headline">¶</a></h1>
+                <section class="tex2jax_ignore mathjax_ignore" id="configure-flow-api">
+<span id="flow"></span><h1>Configure Flow API<a class="headerlink" href="#configure-flow-api" title="Permalink to this headline">¶</a></h1>
 <p><strong>Flow</strong> ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 Every <code class="docutils literal notranslate"><span class="pre">Flow</span></code> provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets.</p>
-<div class="seealso admonition">
+<div class="caution admonition">
 <p class="admonition-title">Jina Client</p>
-<p>To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon file.
-For more proper use of the Client, and more information about the Client itself, see the <a class="reference internal" href="../client/#client"><span class="std std-ref">next section</span></a>.</p>
+<p>To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon script.</p>
+<p>In most cases, this is not how a real user would access a Flow. Rather, they would use one of <a class="reference internal" href="../access-flow-api/#access-flow-api"><span class="std std-ref">several ways of connecting over a network</span></a>.
+This does not affect how you have to configure your Flow API, so the examples here should translate seamlessly.</p>
+<p>For more proper use of the Client, and more information about the Client itself, see the <a class="reference internal" href="../client/#client"><span class="std std-ref">Client documentation</span></a>.</p>
 </div>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">gRPC</label><div class="tab-content docutils">
@@ -642,14 +645,17 @@ For more proper use of the Client, and more information about the Client itself,
 <span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was called'</span><span class="p">))</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">)</span>
+<span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">)</span>
+</span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+</span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>['foo was called']
 </pre></div>
 </div>
 </div>
@@ -661,18 +667,17 @@ For more proper use of the Client, and more information about the Client itself,
 <span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was called'</span><span class="p">))</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">)</span>
+<span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">)</span>
+</span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
+</span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span> curl -X POST http://127.0.0.1:12345/search -H <span class="s1">'Content-type: application/json'</span> -d <span class="s1">'{"data":[{}]}'</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>['foo was called']
 </pre></div>
 </div>
 </div>
@@ -684,21 +689,24 @@ For more proper use of the Client, and more information about the Client itself,
 <span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was here'</span><span class="p">))</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'foo was called'</span><span class="p">))</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">)</span>
+<span class="hll"><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">)</span>
+</span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="hll">    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">)</span>
+</span>    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>['foo was called']
 </pre></div>
 </div>
 </div>
 </div>
-<section id="configure-the-api">
-<h2>Configure the API<a class="headerlink" href="#configure-the-api" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Flow</span></code> API can expose different endpoints depending on the configured Executors. Endpoints are defined by the Executor methods annotated with the <code class="docutils literal notranslate"><span class="pre">@requests(on='/endpoint_path')</span></code> decorator.</p>
+<section id="expose-api-endpoints">
+<h2>Expose API endpoints<a class="headerlink" href="#expose-api-endpoints" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Flow</span></code> API can expose different endpoints. Endpoints are defined by the Executor methods annotated with the <code class="docutils literal notranslate"><span class="pre">@requests(on='/endpoint_path')</span></code> decorator.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -713,7 +721,7 @@ For more proper use of the Client, and more information about the Client itself,
         <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">'bar was called'</span><span class="p">))</span>
 
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">EndpointExecutor</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">EndpointExecutor</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
     <span class="n">foo_response_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/foo'</span><span class="p">)</span>
@@ -722,88 +730,20 @@ For more proper use of the Client, and more information about the Client itself,
     <span class="nb">print</span><span class="p">(</span><span class="n">bar_response_docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will print</p>
+<p>This will print:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>['foo was called']
 ['bar was called']
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Client</span></code> also offers the convenience functions <code class="docutils literal notranslate"><span class="pre">.search()</span></code> and  <code class="docutils literal notranslate"><span class="pre">.index()</span></code>, which are just shortcuts for <code class="docutils literal notranslate"><span class="pre">.post(on='/search')</span></code> and <code class="docutils literal notranslate"><span class="pre">.post(on='/index')</span></code>.</p>
+<p>These endpoints are automatically reachable through Jina’s Python client.
+If you want custom endpoints to be exposed via HTTP, you need to configure that manually.</p>
 </section>
-<section id="limiting-outstanding-requests">
-<h2>Limiting outstanding requests<a class="headerlink" href="#limiting-outstanding-requests" title="Permalink to this headline">¶</a></h2>
-<p>By default, a Client will just send requests as fast as possible without any throttling. This can potentially put a lot of load on the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> if the Client can send requests faster than they are processed in the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>. Typically, this is most likely to happen for expensive index Flows.</p>
-<p>You can control the number of in flight requests per Client with the <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument, e.g. setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requests_generator</span><span class="p">():</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="hll">        <span class="n">slow_operation</span><span class="p">()</span>
-</span>
-<span class="hll"><span class="c1"># Makes sure only 2 requests reach the Executor at a time.</span>
-</span><span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">prefetch</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">requests_generator</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>When working with very slow executors and a big amount of data, you must set <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> to some small number to prevent out of memory problems. If you are unsure, always set <code class="docutils literal notranslate"><span class="pre">prefetch=1</span></code>.</p>
-</div>
-</section>
-<section id="extend-http-interface">
-<h2>Extend HTTP Interface<a class="headerlink" href="#extend-http-interface" title="Permalink to this headline">¶</a></h2>
-<p>By default the following endpoints are exposed to the public by the API:</p>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Endpoint</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/status</code></td>
-<td>Check Jina service running status</td>
-</tr>
-<tr>
-<td><code>/post</code></td>
-<td>Corresponds to <code>f.post()</code> method in Python</td>
-</tr>
-<tr>
-<td><code>/index</code></td>
-<td>Corresponds to <code>f.post('/index')</code> method in Python</td>
-</tr>
-<tr>
-<td><code>/search</code></td>
-<td>Corresponds to <code>f.post('/search')</code> method in Python</td>
-</tr>
-<tr>
-<td><code>/update</code></td>
-<td>Corresponds to <code>f.post('/update')</code> method in Python</td>
-</tr>
-<tr>
-<td><code>/delete</code></td>
-<td>Corresponds to <code>f.post('/delete')</code> method in Python</td>
-</tr>
-</tbody>
-</table></div>
-<section id="hide-crud-and-debug-endpoints-from-http-interface">
-<h3>Hide CRUD and debug endpoints from HTTP interface<a class="headerlink" href="#hide-crud-and-debug-endpoints-from-http-interface" title="Permalink to this headline">¶</a></h3>
-<p>It is possible to hide CRUD and debug endpoints in production. This might be useful when the context is not applicable. For example, in the code snippet below, we didn’t implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">no_debug_endpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">no_crud_endpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<figure class="align-center">
-<img alt="../../../_images/hide-crud-debug-endpoints.png" src="../../../_images/hide-crud-debug-endpoints.png"/>
-</figure>
-</section>
-<section id="expose-customized-endpoints-to-http-interface">
-<h3>Expose customized endpoints to HTTP interface<a class="headerlink" href="#expose-customized-endpoints-to-http-interface" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">Flow.expose_endpoint</span></code> can be used to expose executor’s endpoint to HTTP interface, e.g.</p>
+<section id="customize-http-interface">
+<span id="custom-http"></span><h2>Customize HTTP interface<a class="headerlink" href="#customize-http-interface" title="Permalink to this headline">¶</a></h2>
+<p>Not every Executor endpoint will automatically be exposed through the external HTTP interface.
+By default, any Flow exposes the following CRUD and debug HTTP endpoints: <code class="docutils literal notranslate"><span class="pre">/status</span></code>, <code class="docutils literal notranslate"><span class="pre">/post</span></code>, <code class="docutils literal notranslate"><span class="pre">/index</span></code>, <code class="docutils literal notranslate"><span class="pre">/search</span></code>, <code class="docutils literal notranslate"><span class="pre">/update</span></code>, and <code class="docutils literal notranslate"><span class="pre">/delete</span></code>.</p>
+<p>Executors that provide additional endpoints (e.g. <code class="docutils literal notranslate"><span class="pre">/foo</span></code>) will be exposed only after manual configuration.
+These custom endpoints can be added to the HTTP interface using <code class="docutils literal notranslate"><span class="pre">Flow.expose_endpoint</span></code>.</p>
 <figure class="align-center">
 <img alt="../../../_images/expose-endpoints.svg" src="../../../_images/expose-endpoints.svg"/></figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
@@ -821,10 +761,7 @@ For more proper use of the Client, and more information about the Client itself,
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<img alt="../../../_images/customized-foo-endpoint.png" src="../../../_images/customized-foo-endpoint.png"/>
-</figure>
-<p>Now, sending HTTP data request to <code class="docutils literal notranslate"><span class="pre">/foo</span></code> is equivalent as calling <code class="docutils literal notranslate"><span class="pre">f.post('/foo',</span> <span class="pre">...)</span></code> in Python.</p>
+<p>Now, sending an HTTP data request to the <code class="docutils literal notranslate"><span class="pre">/foo</span></code> endpoint is equivalent to calling <code class="docutils literal notranslate"><span class="pre">f.post('/foo',</span> <span class="pre">...)</span></code> using the Python Client.</p>
 <p>You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">expose_endpoint</span><span class="p">(</span><span class="s1">'/bar'</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="s1">'my endpoint'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'fine-tuning'</span><span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'PUT'</span><span class="p">])</span>
 </pre></div>
@@ -846,13 +783,57 @@ For more proper use of the Client, and more information about the Client itself,
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
 </pre></div>
 </div>
-<figure class="align-center">
-<img alt="../../../_images/rich-openapi.png" src="../../../_images/rich-openapi.png"/>
-</figure>
+<section id="hide-default-endpoints-from-http-interface">
+<h3>Hide default endpoints from HTTP interface<a class="headerlink" href="#hide-default-endpoints-from-http-interface" title="Permalink to this headline">¶</a></h3>
+<p>It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
+For example, in the code snippet below, we didn’t implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">no_debug_endpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">no_crud_endpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After setting up a Flow in this way, the <a class="reference internal" href="#custom-http"><span class="std std-ref">default HTTP endpoints</span></a> will not be exposed.</p>
 </section>
 </section>
-<section id="deployment">
-<h2>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h2>
+<section id="limit-outstanding-requests">
+<h2>Limit outstanding requests<a class="headerlink" href="#limit-outstanding-requests" title="Permalink to this headline">¶</a></h2>
+<p>By default, Jina’s Client sens requests to the Flow as fast as possible, without any throttling.
+If a client sends his request faster than the Flow can process them, this can put a lot of loan on the Flow.
+Typically, this is most likely to happen for expensive index Flows.</p>
+<p>You can control the number of in flight requests per Client with the <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument, e.g. setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requests_generator</span><span class="p">():</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="hll">        <span class="n">slow_operation</span><span class="p">()</span>
+</span>
+<span class="hll"><span class="c1"># Makes sure only 2 requests reach the Executor at a time.</span>
+</span><span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">prefetch</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">requests_generator</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>When working with very slow executors and a big amount of data, you must set <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> to some small number to prevent out of memory problems. If you are unsure, always set <code class="docutils literal notranslate"><span class="pre">prefetch=1</span></code>.</p>
+</div>
+<section id="enable-cross-origin-resource-sharing-cors">
+<span id="cors"></span><h3>Enable Cross-Origin Resource Sharing (CORS)<a class="headerlink" href="#enable-cross-origin-resource-sharing-cors" title="Permalink to this headline">¶</a></h3>
+<p>To make a Flow accessible from a website with a different domain, you need to enable <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>.
+Among other things, CORS is necessary to provide a <a class="reference internal" href="../access-flow-api/#swagger-ui"><span class="std std-ref">Swagger UI interface</span></a> for your Flow.</p>
+<p>Not that CORS is disabled by default, for security reasons.
+To enable CORS, configure your Flow in the following way:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="generate-deployment-configuration">
+<h2>Generate deployment configuration<a class="headerlink" href="#generate-deployment-configuration" title="Permalink to this headline">¶</a></h2>
 <p>To deploy a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> you will need to deploy the Executors it is composed of.
 The <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is offering convenience functions to generate the necessary configuration files for some use cases.
 At the moment, <code class="docutils literal notranslate"><span class="pre">Docker-Compose</span></code> and <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> are supported.</p>
@@ -881,18 +862,27 @@ At the moment, <code class="docutils literal notranslate"><span class="pre">Dock
 <p>This will generate the necessary Kubernetes configuration files for all the <code class="docutils literal notranslate"><span class="pre">Executors</span></code> of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
 The generated folder can be used directly with <code class="docutils literal notranslate"><span class="pre">kubectl</span></code> to deploy the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to an existing Kubernetes cluster.</p>
 </section>
+<section id="see-further">
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../client/#client"><span class="std std-ref">Access the Flow with the Client</span></a></p></li>
+<li><p><a class="reference internal" href="../../../how-to/kubernetes/#kubernetes"><span class="std std-ref">Deployment with Kubernetes</span></a></p></li>
+<li><p><a class="reference internal" href="../../../how-to/docker-compose/#docker-compose"><span class="std std-ref">Deployment with Docker Compose</span></a></p></li>
+<li><p><a class="reference internal" href="../../executor/executor-in-flow/#executor-in-flow"><span class="std std-ref">Executors inside a Flow</span></a></p></li>
+</ul>
+</section>
 </section>
 
             </article>
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../client/">
+                    <a class="next-page" href="../access-flow-api/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Client API</div>
+                            <div class="title">Access Flow API</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -915,7 +905,7 @@ The generated folder can be used directly with <code class="docutils literal not
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 02, 2022.
+                    Last updated on Mar 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -940,15 +930,18 @@ The generated folder can be used directly with <code class="docutils literal not
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Flow API</a><ul>
-<li><a class="reference internal" href="#configure-the-api">Configure the API</a></li>
-<li><a class="reference internal" href="#limiting-outstanding-requests">Limiting outstanding requests</a></li>
-<li><a class="reference internal" href="#extend-http-interface">Extend HTTP Interface</a><ul>
-<li><a class="reference internal" href="#hide-crud-and-debug-endpoints-from-http-interface">Hide CRUD and debug endpoints from HTTP interface</a></li>
-<li><a class="reference internal" href="#expose-customized-endpoints-to-http-interface">Expose customized endpoints to HTTP interface</a></li>
+<li><a class="reference internal" href="#">Configure Flow API</a><ul>
+<li><a class="reference internal" href="#expose-api-endpoints">Expose API endpoints</a></li>
+<li><a class="reference internal" href="#customize-http-interface">Customize HTTP interface</a><ul>
+<li><a class="reference internal" href="#hide-default-endpoints-from-http-interface">Hide default endpoints from HTTP interface</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#deployment">Deployment</a></li>
+<li><a class="reference internal" href="#limit-outstanding-requests">Limit outstanding requests</a><ul>
+<li><a class="reference internal" href="#enable-cross-origin-resource-sharing-cors">Enable Cross-Origin Resource Sharing (CORS)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generate-deployment-configuration">Generate deployment configuration</a></li>
+<li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>
 </li>
 </ul>
