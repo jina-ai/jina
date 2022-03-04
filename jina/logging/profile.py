@@ -4,7 +4,7 @@ from typing import Optional, Union, Callable
 
 
 from jina import __windows__
-from jina.helper import get_readable_size, get_readable_time
+from jina.helper import get_readable_size, get_readable_time, colored
 
 from rich.progress import (
     Progress,
@@ -217,3 +217,67 @@ class _OnDoneColumn(ProgressColumn):
                 )
         else:
             return Text(self.text_init_format.format(task=task), style=self.style)
+
+
+class TimeContext:
+    """Timing a code snippet with a context manager."""
+
+    time_attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
+
+    def __init__(self, task_name: str, logger: 'JinaLogger' = None):
+        """
+        Create the context manager to timing a code snippet.
+
+        :param task_name: The context/message.
+        :param logger: Use existing logger or use naive :func:`print`.
+
+        Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            with TimeContext('loop'):
+                do_busy()
+
+        """
+        self.task_name = task_name
+        self._logger = logger
+        self.duration = 0
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        self._enter_msg()
+        return self
+
+    def _enter_msg(self):
+        if self._logger:
+            self._logger.info(self.task_name + '...')
+        else:
+            print(self.task_name, end=' ...\t', flush=True)
+
+    def __exit__(self, typ, value, traceback):
+        self.duration = self.now()
+
+        self.readable_duration = get_readable_time(seconds=self.duration)
+
+        self._exit_msg()
+
+    def now(self) -> float:
+        """
+        Get the passed time from start to now.
+
+        :return: passed time
+        """
+        return time.perf_counter() - self.start
+
+    def _exit_msg(self):
+        if self._logger:
+            self._logger.info(
+                f'{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)'
+            )
+        else:
+            print(
+                colored(
+                    f'{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)'
+                ),
+                flush=True,
+            )
