@@ -1,4 +1,5 @@
 import asyncio
+import urllib.error
 from typing import Dict
 import time
 
@@ -9,6 +10,7 @@ from docarray.document import Document
 from jina import Executor, Flow, requests, Client
 
 PORT_EXPOSE = 53171
+PORT_EXPOSE_NO_GRAPHQL = 53172
 SLOW_EXEC_DELAY = 1
 
 
@@ -68,8 +70,28 @@ def flow():
         yield
 
 
-def graphql_query(mutation):
-    c = Client(port=PORT_EXPOSE, protocol='HTTP')
+@pytest.fixture(scope="module", autouse=True)
+def no_graphql_flow():
+    f = (
+        Flow(
+            protocol='http',
+            port_expose=PORT_EXPOSE_NO_GRAPHQL,
+            no_graphql_endpoint=True,
+            cors=True,
+            no_crud_endpoints=True,
+        )
+        .add(uses=GraphQLTestEncoder, name='Encoder')
+        .add(uses=GraphQLTestIndexer, name='Indexer')
+        .add(uses=SlowExec)
+    )
+    with f:
+        f.index(inputs=(Document(text=t.strip()) for t in open(__file__) if t.strip()))
+        yield
+
+
+def graphql_query(mutation, use_nogql_flow=False):
+    p = PORT_EXPOSE_NO_GRAPHQL if use_nogql_flow else PORT_EXPOSE
+    c = Client(port=p, protocol='HTTP')
     return c.mutate(mutation=mutation)
 
 
@@ -304,3 +326,22 @@ def test_target_exec(req_type, target):
     assert 'docs' in response_foo['data']
     assert 'text' in response_foo['data']['docs'][0]
     assert response_foo['data']['docs'][0]['text'] == target
+
+
+def test_disable_graphql_endpoint():
+    response = graphql_query(
+        (
+            '''mutation {
+               docs(data: {text: "abcd"}) { 
+                id 
+            } 
+        }
+    '''
+        ),
+        use_nogql_flow=True,
+    )
+    assert 'errors' in response
+    assert isinstance(response['errors'], list)
+    assert 'exception' in response['errors'][0]
+    assert isinstance(response['errors'][0]['exception'], urllib.error.HTTPError)
+    assert response['errors'][0]['exception'].code == 404
