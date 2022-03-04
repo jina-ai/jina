@@ -1,6 +1,10 @@
 import time
+import typing
 from functools import wraps
 from typing import Optional, Union, Callable
+
+if typing.TYPE_CHECKING:
+    from jina.logging.logger import JinaLogger
 
 
 from jina import __windows__
