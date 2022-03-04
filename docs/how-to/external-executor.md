@@ -71,7 +71,7 @@ jina executor --uses jinahub+docker://CLIPTextEncoder --port 12345
 ````{tab} Without Docker
 
 ```bash
-jina executor --uses jinahub://CLIPTextEncoder --port12345
+jina executor --uses jinahub://CLIPTextEncoder --port 12345
 ```
 
 ````

@@ -10287,7 +10287,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🐞 Bug fixes
 
- - [[```0147ad76```](https://github.com/jina-ai/jina/commit/0147ad769bbcd8c2181083b2aade4eece82d1b3d)] __-__ __script__: fix port in jinad (*Han Xiao*)
+ - [[```0147ad76```](https://github.com/jina-ai/jina/commit/0147ad769bbcd8c2181083b2aade4eece82d1b3d)] __-__ __script__: fix port_expose in jinad (*Han Xiao*)
  - [[```cb16849f```](https://github.com/jina-ai/jina/commit/cb16849fd4be8972e722b613632064f76352a0ee)] __-__ __dam__: warning truncate doc id (#3264) (*felix-wang*)
  - [[```fa444fa9```](https://github.com/jina-ai/jina/commit/fa444fa9009cc584d8325a12436665174da1cd73)] __-__ __ci__: fixed benchmark ci (#3285) (*Maksudur Rahman Maateen*)
  - [[```07f7636d```](https://github.com/jina-ai/jina/commit/07f7636d3c6e3a7d20ad71441f340e589e7090f4)] __-__ fix multiple import problem (#3276) (*Joan Fontanals*)
