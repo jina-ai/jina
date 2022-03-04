@@ -3,4 +3,5 @@ kind: Namespace
 metadata:
   name: {name}
   annotations:
+    linkerd.io/inject: enabled
 
