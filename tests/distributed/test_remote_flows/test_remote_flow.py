@@ -77,7 +77,7 @@ def test_remote_jinad_flow(jinad_client, flow_envs):
     # get flow status
     remote_flow_args = jinad_client.flows.get(DaemonID(flow_id))
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
-    assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
+    assert remote_flow_args['port'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
     resp = Client(
         host=HOST, port=MINI_FLOW1_PORT, protocol='http', return_responses=True
@@ -108,7 +108,7 @@ async def test_remote_jinad_flow_async(async_jinad_client, flow_envs):
     # get flow status
     remote_flow_args = await async_jinad_client.flows.get(DaemonID(flow_id))
     remote_flow_args = remote_flow_args['arguments']['object']['arguments']
-    assert remote_flow_args['port_expose'] == MINI_FLOW1_PORT
+    assert remote_flow_args['port'] == MINI_FLOW1_PORT
     assert remote_flow_args['protocol'] == PROTOCOL
     resp = Client(
         host=HOST,

@@ -29,8 +29,7 @@ spec:
         command: {command}
         args: {args}
         ports:
-          - containerPort: {port_expose}
-          - containerPort: {port_in}
+          - containerPort: {port}
         env:
         - name: POD_UID
           valueFrom:

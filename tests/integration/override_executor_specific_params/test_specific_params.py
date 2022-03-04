@@ -34,7 +34,7 @@ class DummyAssertIfParamsCanBeChangedInsidePods(Executor):
 
 def test_override_params(mocker):
     f = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(
             uses={'jtype': 'DummyOverrideParams', 'metas': {'name': 'exec_name'}},
         )

@@ -3,7 +3,7 @@ version: '1'
 with:
   read_only: true
   protocol: http
-  port_expose: 45630
+  port: 45630
 executors:
   - name: executor1
     uses: docker://hubpod:test

@@ -20,7 +20,7 @@ else:
 def _get_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
     return (
-        Flow(cors=True, protocol='http', port_expose=args.port_expose)
+        Flow(cors=True, protocol='http', port=args.port)
         .add(uses=MyTransformer, replicas=args.replicas)
         .add(uses=MyIndexer, workspace=args.workdir)
     )

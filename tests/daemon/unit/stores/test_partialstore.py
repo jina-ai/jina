@@ -60,7 +60,7 @@ def test_flowstore_add(monkeypatch, partial_flow_store):
     assert partial_store_item
     assert isinstance(partial_flow_store.object, Flow)
     assert 'executor1' in partial_store_item.yaml_source
-    assert partial_flow_store.object.port_expose == 12345
+    assert partial_flow_store.object.port == 12345
 
 
 @pytest.mark.asyncio

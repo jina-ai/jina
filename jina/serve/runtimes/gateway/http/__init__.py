@@ -64,7 +64,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                     )
                 ),
                 host=__default_host__,
-                port=self.args.port_expose,
+                port=self.args.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
                 **uvicorn_kwargs
             )

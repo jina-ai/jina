@@ -26,11 +26,9 @@ def docker_image():
 def flow(request):
     flow_src = request.param
     if flow_src == 'yml':
-        return Flow(port_expose=exposed_port).load_config(
-            os.path.join(cur_dir, 'flow.yml')
-        )
+        return Flow(port=exposed_port).load_config(os.path.join(cur_dir, 'flow.yml'))
     elif flow_src == 'python':
-        return Flow(port_expose=exposed_port).add(
+        return Flow(port=exposed_port).add(
             uses='docker://override-config-test',
             uses_with={'param1': 50, 'param2': 30},
             uses_metas={'workspace': 'different_workspace'},
@@ -52,7 +50,7 @@ def test_override_config_params(docker_image, flow):
 
 
 def test_override_config_params_shards(docker_image):
-    flow = Flow(port_expose=exposed_port).add(
+    flow = Flow(port=exposed_port).add(
         uses='docker://override-config-test',
         uses_with={'param1': 50, 'param2': 30},
         uses_metas={'workspace': 'different_workspace'},

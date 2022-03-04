@@ -14,7 +14,7 @@ from jina.orchestrate.deployments.config.helper import (
 )
 from jina.orchestrate.deployments import BaseDeployment
 
-PORT_IN = 8081
+port = 8081
 
 
 class DockerComposeConfig:
@@ -84,12 +84,10 @@ class DockerComposeConfig:
                 'entrypoint': ['jina'],
                 'command': container_args,
                 'expose': [
-                    f'{cargs.port_expose}',
-                    f'{cargs.port_in}',
+                    f'{cargs.port}',
                 ],
                 'ports': [
-                    f'{cargs.port_expose}:{cargs.port_expose}',
-                    f'{cargs.port_in}:{cargs.port_in}',
+                    f'{cargs.port}:{cargs.port}',
                 ],
             }
 
@@ -233,7 +231,7 @@ class DockerComposeConfig:
 
         if args.name != 'gateway':
             parsed_args['head_service'] = BaseDeployment._copy_to_head_args(self.args)
-            parsed_args['head_service'].port_in = PORT_IN
+            parsed_args['head_service'].port = port
             parsed_args['head_service'].uses = None
             parsed_args['head_service'].uses_metas = None
             parsed_args['head_service'].uses_with = None
@@ -253,7 +251,7 @@ class DockerComposeConfig:
                         f'{shard_name}/rep-{i_rep}' if replicas > 1 else shard_name
                     )
                     connection_list[str(shard_id)].append(
-                        f'{to_compatible_name(replica_name)}:{PORT_IN}'
+                        f'{to_compatible_name(replica_name)}:{port}'
                     )
 
             parsed_args['head_service'].connection_list = json.dumps(connection_list)
@@ -269,7 +267,7 @@ class DockerComposeConfig:
             uses_before_cargs.uses_with = None
             uses_before_cargs.uses_metas = None
             uses_before_cargs.env = None
-            uses_before_cargs.port_in = PORT_IN
+            uses_before_cargs.port = port
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
             uses_before_cargs.connection_list = None
@@ -278,7 +276,9 @@ class DockerComposeConfig:
             parsed_args['uses_before_service'] = uses_before_cargs
             parsed_args[
                 'head_service'
-            ].uses_before_address = f'{to_compatible_name(uses_before_cargs.name)}:{uses_before_cargs.port_in}'
+            ].uses_before_address = (
+                f'{to_compatible_name(uses_before_cargs.name)}:{uses_before_cargs.port}'
+            )
         if uses_after:
             uses_after_cargs = copy.deepcopy(args)
             uses_after_cargs.shard_id = 0
@@ -290,7 +290,7 @@ class DockerComposeConfig:
             uses_after_cargs.uses_with = None
             uses_after_cargs.uses_metas = None
             uses_after_cargs.env = None
-            uses_after_cargs.port_in = PORT_IN
+            uses_after_cargs.port = port
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
             uses_after_cargs.connection_list = None
@@ -299,7 +299,9 @@ class DockerComposeConfig:
             parsed_args['uses_after_service'] = uses_after_cargs
             parsed_args[
                 'head_service'
-            ].uses_after_address = f'{to_compatible_name(uses_after_cargs.name)}:{uses_after_cargs.port_in}'
+            ].uses_after_address = (
+                f'{to_compatible_name(uses_after_cargs.name)}:{uses_after_cargs.port}'
+            )
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
@@ -314,7 +316,7 @@ class DockerComposeConfig:
             if args.name == 'gateway':
                 cargs.pod_role = PodRoleType.GATEWAY
             else:
-                cargs.port_in = PORT_IN
+                cargs.port = port
             parsed_args['services'].append(cargs)
 
         return parsed_args

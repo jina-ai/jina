@@ -31,7 +31,7 @@ async def test_process_up_down_events(docker_images):
         utils.create_from_dict(k8s_client, namespace_object)
     except:
         pass
-    container_args = ['executor', '--native', '--port-in', '8081']
+    container_args = ['executor', '--native', '--port', '8081']
     if 'test-executor' in docker_images[0]:
         container_args.extend(['--uses', 'config.yml'])
     deployment_object = {

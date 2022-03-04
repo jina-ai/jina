@@ -54,6 +54,7 @@ def mixin_gateway_parser(parser):
     gp.add_argument(
         '--port-expose',
         type=int,
+        dest='port',
         default=helper.random_port(),
         help='The port that the gateway exposes for clients for GRPC connections.',
     )

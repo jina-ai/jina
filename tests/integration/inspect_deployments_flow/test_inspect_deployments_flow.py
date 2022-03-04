@@ -152,7 +152,7 @@ def test_flow_returned_collect(protocol):
         assert 10.0 in scores
 
     f = (
-        Flow(protocol=protocol, inspect='COLLECT', port_expose=exposed_port)
+        Flow(protocol=protocol, inspect='COLLECT', port=exposed_port)
         .add()
         .inspect(
             uses=AddEvaluationExecutor,
@@ -175,7 +175,7 @@ def test_flow_not_returned(inspect, protocol):
             assert len(doc.evaluations) == 0
 
     f = (
-        Flow(protocol=protocol, inspect=inspect, port_expose=exposed_port)
+        Flow(protocol=protocol, inspect=inspect, port=exposed_port)
         .add()
         .inspect(
             uses=AddEvaluationExecutor,

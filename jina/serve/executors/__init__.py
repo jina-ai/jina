@@ -278,6 +278,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param kwargs: other kwargs accepted by the CLI ``jina hub pull``
         :return: the Hub Executor object.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            from jina import Executor
+            from docarray import Document, DocumentArray
+
+            executor = Executor.from_hub(
+                uri='jinahub://CLIPImageEncoder', install_requirements=True
+            )
+
         """
         from jina.hubble.helper import is_valid_huburi
 

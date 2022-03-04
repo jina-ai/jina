@@ -57,7 +57,7 @@ This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImage
 from jina import Flow
 
 f = (
-    Flow(port_expose=8080)
+    Flow(port=8080)
     .add(name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2)
     .add(
         name='indexer',

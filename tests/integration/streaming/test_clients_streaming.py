@@ -232,7 +232,7 @@ def test_multiple_clients(prefetch, protocol):
         # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
         for i in range(GOOD_CLIENTS):
             p = Process(
-                target=partial(client, good_client_gen, f.port_expose, protocol),
+                target=partial(client, good_client_gen, f.port, protocol),
                 name=f'goodguy_{i}',
             )
             p.start()
@@ -240,7 +240,7 @@ def test_multiple_clients(prefetch, protocol):
 
         # and 1 malicious client, sending lot of requests (trying to block others)
         p = Process(
-            target=partial(client, malicious_client_gen, f.port_expose, protocol),
+            target=partial(client, malicious_client_gen, f.port, protocol),
             name='badguy',
         )
         p.start()
@@ -250,7 +250,7 @@ def test_multiple_clients(prefetch, protocol):
             p.join()
 
         order_of_ids = list(
-            Client(protocol=protocol, port=f.port_expose, return_responses=True)
+            Client(protocol=protocol, port=f.port, return_responses=True)
             .post(on='/status', inputs=[Document()])[0]
             .docs[0]
             .tags['ids']

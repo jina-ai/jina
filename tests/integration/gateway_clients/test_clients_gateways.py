@@ -125,7 +125,7 @@ class DummyMockConnectionPool:
 
 
 def create_runtime(
-    graph_dict: Dict, protocol: str, port_in: int, call_counts=None, monkeypatch=None
+    graph_dict: Dict, protocol: str, port: int, call_counts=None, monkeypatch=None
 ):
     import json
 
@@ -155,8 +155,8 @@ def create_runtime(
     with runtime_cls(
         set_gateway_parser().parse_args(
             [
-                '--port-expose',
-                f'{port_in}',
+                '--port',
+                f'{port}',
                 '--graph-description',
                 f'{graph_description}',
                 '--deployments-addresses',
@@ -167,10 +167,10 @@ def create_runtime(
         runtime.run_forever()
 
 
-def client_send(client_id: int, port_in: int, protocol: str):
+def client_send(client_id: int, port: int, protocol: str):
     from jina.clients import Client
 
-    c = Client(protocol=protocol, port=port_in, return_responses=True)
+    c = Client(protocol=protocol, port=port, return_responses=True)
 
     # send requests
     return c.post(
@@ -190,10 +190,10 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     def client_validate(client_id: int):
-        responses = client_send(client_id, port_in, protocol)
+        responses = client_send(client_id, port, protocol)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         assert (
@@ -205,7 +205,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': linear_graph_dict,
         },
     )
@@ -233,17 +233,17 @@ def test_grpc_gateway_runtime_lazy_request_access(linear_graph_dict, monkeypatch
         'send_requests_once',
         DummyNoDocAccessMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     def client_validate(client_id: int):
-        responses = client_send(client_id, port_in, 'grpc')
+        responses = client_send(client_id, port, 'grpc')
         assert len(responses) > 0
 
     p = multiprocessing.Process(
         target=create_runtime,
         kwargs={
             'protocol': 'grpc',
-            'port_in': port_in,
+            'port': port,
             'graph_dict': linear_graph_dict,
             'call_counts': call_counts,
             'monkeypatch': monkeypatch,
@@ -277,10 +277,10 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     def client_validate(client_id: int):
-        responses = client_send(client_id, port_in, protocol)
+        responses = client_send(client_id, port, protocol)
         assert len(responses) > 0
         # reducing is supposed to happen in the deployments, in the test it will get a single doc in non deterministic order
         assert len(responses[0].docs) == 1
@@ -295,7 +295,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': bifurcation_graph_dict,
         },
     )
@@ -325,10 +325,10 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     def client_validate(client_id: int):
-        responses = client_send(client_id, port_in, protocol)
+        responses = client_send(client_id, port, protocol)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         deployment1_path = (
@@ -345,7 +345,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': merge_graph_dict_directly_merge_in_gateway,
         },
     )
@@ -375,10 +375,10 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     def client_validate(client_id: int):
-        responses = client_send(client_id, port_in, protocol)
+        responses = client_send(client_id, port, protocol)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         deployment1_path = (
@@ -395,7 +395,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': merge_graph_dict_directly_merge_in_last_deployment,
         },
     )
@@ -425,10 +425,10 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     def client_validate(client_id: int):
-        responses = client_send(client_id, port_in, protocol)
+        responses = client_send(client_id, port, protocol)
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         # there are 3 incoming paths to merger, it could be any
@@ -445,7 +445,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': complete_graph_dict,
         },
     )

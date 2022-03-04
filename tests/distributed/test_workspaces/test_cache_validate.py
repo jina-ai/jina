@@ -19,7 +19,7 @@ def RemoteFlow(workspace_id):
     args = client.flows.get(flow_id)['arguments']['object']['arguments']
     yield Client(
         host=HOST,
-        port=args['port_expose'],
+        port=args['port'],
         protocol=args['protocol'],
         return_responses=True,
     ).post(on='/', inputs=[Document()], show_progress=True)
@@ -62,7 +62,7 @@ def test_cache_validate_remote_executor():
 
     workspace_id = random_identity()
     # 1st Executor in remote workspace should download the file.
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         uses=CacheValidator,
         host='localhost:8000',
         py_modules='cache_validator.py',
@@ -76,7 +76,7 @@ def test_cache_validate_remote_executor():
         assert not response[0].data.docs[0].tags['exists']
 
     # 2nd Executor in remote workspace should be able to access the file.
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         uses=CacheValidator,
         host='localhost:8000',
         py_modules='cache_validator.py',

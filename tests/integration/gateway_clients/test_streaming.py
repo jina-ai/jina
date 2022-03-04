@@ -148,7 +148,7 @@ def on_done(response, final_da: DocumentArray):
     final_da.extend(docs)
 
 
-def create_runtime(graph_dict: Dict, protocol: str, port_in: int, prefetch: int = 0):
+def create_runtime(graph_dict: Dict, protocol: str, port: int, prefetch: int = 0):
     import json
 
     graph_description = json.dumps(graph_dict)
@@ -161,8 +161,8 @@ def create_runtime(graph_dict: Dict, protocol: str, port_in: int, prefetch: int 
         runtime_cls = WebSocketGatewayRuntime
     args = set_gateway_parser().parse_args(
         [
-            '--port-expose',
-            f'{port_in}',
+            '--port',
+            f'{port}',
             '--graph-description',
             f'{graph_description}',
             '--deployments-addresses',
@@ -200,13 +200,13 @@ def test_disable_prefetch_slow_client_fast_executor(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     p = multiprocessing.Process(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': simple_graph_dict_fast,
         },
     )
@@ -215,7 +215,7 @@ def test_disable_prefetch_slow_client_fast_executor(
 
     final_da = DocumentArray()
 
-    client = Client(protocol=protocol, port=port_in, return_responses=True)
+    client = Client(protocol=protocol, port=port, return_responses=True)
     client.post(
         on='/',
         inputs=inputs,
@@ -258,19 +258,19 @@ def test_disable_prefetch_fast_client_slow_executor(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
     final_da = DocumentArray()
     p = multiprocessing.Process(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': simple_graph_dict_slow,
         },
     )
     p.start()
     time.sleep(1.0)
-    client = Client(protocol=protocol, port=port_in, return_responses=True)
+    client = Client(protocol=protocol, port=port, return_responses=True)
     client.post(
         on='/',
         inputs=inputs,
@@ -334,14 +334,14 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
-    port_in = random_port()
+    port = random_port()
 
     pool = []
     runtime_process = multiprocessing.Process(
         target=create_runtime,
         kwargs={
             'protocol': protocol,
-            'port_in': port_in,
+            'port': port,
             'graph_dict': simple_graph_dict_indexer,
             'prefetch': prefetch,
         },
@@ -352,7 +352,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
     # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
     for i in range(GOOD_CLIENTS):
         cp = multiprocessing.Process(
-            target=partial(client, good_client_gen, port_in, protocol),
+            target=partial(client, good_client_gen, port, protocol),
             name=f'goodguy_{i}',
         )
         cp.start()
@@ -360,7 +360,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     # and 1 malicious client, sending lot of requests (trying to block others)
     cp = multiprocessing.Process(
-        target=partial(client, malicious_client_gen, port_in, protocol),
+        target=partial(client, malicious_client_gen, port, protocol),
         name='badguy',
     )
     cp.start()
@@ -370,7 +370,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         p.join()
 
     order_of_ids = list(
-        Client(protocol=protocol, port=port_in, return_responses=True)
+        Client(protocol=protocol, port=port, return_responses=True)
         .post(on='/status', inputs=[Document()])[0]
         .docs[0]
         .tags['ids']

@@ -2,7 +2,7 @@
 version: '1'
 with:
   read_only: true  # better add this in the query time
-  port_expose: 5555
+  port: 5555
 executors:
   - name: loader
     read_only: true

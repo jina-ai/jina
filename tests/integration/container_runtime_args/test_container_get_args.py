@@ -27,7 +27,7 @@ def docker_image_built():
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 3, 4])
 def test_containerruntime_args(docker_image_built, shards, replicas):
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         name='executor_container',
         uses=f'docker://{img_name}',
         replicas=replicas,

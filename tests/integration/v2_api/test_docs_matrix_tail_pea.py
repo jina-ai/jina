@@ -53,7 +53,7 @@ class ChunkMerger(Executor):
 def test_sharding_tail_pod(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
 
-    f = Flow(port_expose=1234).add(
+    f = Flow(port=1234).add(
         uses=DummyExecutor,
         replicas=num_replicas,
         shards=num_shards,
@@ -76,7 +76,7 @@ def test_merging_head_pod():
             yield document
 
     f = (
-        Flow(port_expose=1234)
+        Flow(port=1234)
         .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='executor1')
         .add(
             uses={'jtype': 'DummyExecutor', 'with': {'mode': '2'}},

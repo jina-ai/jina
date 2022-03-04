@@ -14,7 +14,7 @@ from jina.orchestrate.deployments import Deployment
 # test gateway, head and worker pod by creating them manually in the most simple configuration
 async def test_deployments_trivial_topology(port_generator):
     deployment_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -25,15 +25,13 @@ async def test_deployments_trivial_topology(port_generator):
 
     # create a single gateway pod
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port_expose
+        graph_description, deployments_addresses, port
     )
 
     with gateway_deployment, worker_deployment:
 
         # send requests to the gateway
-        c = Client(
-            host='localhost', port=port_expose, asyncio=True, return_responses=True
-        )
+        c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
         responses = c.post('/', inputs=async_inputs, request_size=1)
 
         response_list = []
@@ -90,19 +88,19 @@ async def test_deployments_flow_topology(
     # remove last comma
     deployments_addresses = deployments_addresses[:-1]
     deployments_addresses += '}'
-    port_expose = port_generator()
+    port = port_generator()
 
     # create a single gateway pod
 
     gateway_deployment = _create_gateway_deployment(
-        json.dumps(complete_graph_dict), deployments_addresses, port_expose
+        json.dumps(complete_graph_dict), deployments_addresses, port
     )
     gateway_deployment.start()
 
     await asyncio.sleep(0.1)
 
     # send requests to the gateway
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -127,7 +125,7 @@ async def test_deployments_flow_topology(
 # test simple topology with shards
 async def test_deployments_shards(polling, port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -139,13 +137,13 @@ async def test_deployments_shards(polling, port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port_expose
+        graph_description, deployments_addresses, port
     )
     gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -162,7 +160,7 @@ async def test_deployments_shards(polling, port_generator):
 # test simple topology with replicas
 async def test_deployments_replicas(port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -174,13 +172,13 @@ async def test_deployments_replicas(port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port_expose
+        graph_description, deployments_addresses, port
     )
     gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -212,15 +210,15 @@ async def test_deployments_with_executor(port_generator):
     )
     regular_deployment.start()
 
-    port_expose = port_generator()
+    port = port_generator()
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port_expose
+        graph_description, deployments_addresses, port
     )
     gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -241,7 +239,7 @@ async def test_deployments_with_executor(port_generator):
 @pytest.mark.asyncio
 async def test_deployments_with_replicas_advance_faster(port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
@@ -253,13 +251,13 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port_expose
+        graph_description, deployments_addresses, port
     )
     gateway_deployment.start()
 
     await asyncio.sleep(1.0)
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
     responses = c.post('/', inputs=input_docs, request_size=1)
     response_list = []
@@ -307,7 +305,7 @@ def _create_regular_deployment(
     replicas=None,
 ):
     args = set_deployment_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = name
     if shards:
         args.shards = shards
@@ -323,7 +321,7 @@ def _create_regular_deployment(
     return Deployment(args)
 
 
-def _create_gateway_deployment(graph_description, deployments_addresses, port_expose):
+def _create_gateway_deployment(graph_description, deployments_addresses, port):
     return Deployment(
         set_gateway_parser().parse_args(
             [
@@ -331,8 +329,8 @@ def _create_gateway_deployment(graph_description, deployments_addresses, port_ex
                 graph_description,
                 '--deployments-addresses',
                 deployments_addresses,
-                '--port-expose',
-                str(port_expose),
+                '--port',
+                str(port),
             ]
         )
     )

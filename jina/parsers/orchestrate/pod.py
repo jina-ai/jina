@@ -1,6 +1,7 @@
 """Argparser module for Pod runtimes"""
 import argparse
 
+from jina import helper
 from jina.enums import PodRoleType, RuntimeBackendType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
@@ -114,4 +115,11 @@ def mixin_pod_parser(parser):
         type=int,
         default=1,
         help='The number of replicas in the deployment',
+    )
+
+    gp.add_argument(
+        '--port',
+        type=int,
+        default=helper.random_port(),
+        help='The port for input data to bind to, default is a random port between [49152, 65535]',
     )

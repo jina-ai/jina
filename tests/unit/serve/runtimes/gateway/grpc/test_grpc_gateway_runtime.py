@@ -20,14 +20,14 @@ from jina.types.request.data import DataRequest
 def test_grpc_gateway_runtime_init_close():
     deployment0_port = random_port()
     deployment1_port = random_port()
-    port_expose = random_port()
+    port = random_port()
 
     def _create_runtime():
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    str(port_expose),
+                    '--port',
+                    str(port),
                     '--graph-description',
                     '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}',
                     '--deployments-addresses',
@@ -44,7 +44,7 @@ def test_grpc_gateway_runtime_init_close():
     p = multiprocessing.Process(target=_create_runtime)
     p.start()
     time.sleep(1.0)
-    assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port_expose}')
+    assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port}')
     p.terminate()
     p.join()
 
@@ -145,13 +145,13 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
             'send_requests_once',
             DummyMockConnectionPool.send_requests_once,
         )
-        port_in = random_port()
+        port = random_port()
 
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    f'{port_in}',
+                    '--port',
+                    f'{port}',
                     '--graph-description',
                     f'{json.dumps(linear_graph_dict)}',
                     '--deployments-addresses',
@@ -192,13 +192,13 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
             'send_requests_once',
             DummyMockConnectionPool.send_requests_once,
         )
-        port_in = random_port()
+        port = random_port()
 
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    f'{port_in}',
+                    '--port',
+                    f'{port}',
                     '--graph-description',
                     f'{json.dumps(bifurcation_graph_dict)}',
                     '--deployments-addresses',
@@ -241,13 +241,13 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
             'send_requests_once',
             DummyMockConnectionPool.send_requests_once,
         )
-        port_in = random_port()
+        port = random_port()
 
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    f'{port_in}',
+                    '--port',
+                    f'{port}',
                     '--graph-description',
                     f'{json.dumps(merge_graph_dict_directly_merge_in_gateway)}',
                     '--deployments-addresses',
@@ -293,13 +293,13 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
             'send_requests_once',
             DummyMockConnectionPool.send_requests_once,
         )
-        port_in = random_port()
+        port = random_port()
 
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    f'{port_in}',
+                    '--port',
+                    f'{port}',
                     '--graph-description',
                     f'{json.dumps(merge_graph_dict_directly_merge_in_last_deployment)}',
                     '--deployments-addresses',
@@ -345,13 +345,13 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
             'send_requests_once',
             DummyMockConnectionPool.send_requests_once,
         )
-        port_in = random_port()
+        port = random_port()
 
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    f'{port_in}',
+                    '--port',
+                    f'{port}',
                     '--graph-description',
                     f'{json.dumps(complete_graph_dict)}',
                     '--deployments-addresses',
@@ -395,13 +395,13 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
 
 def test_grpc_gateway_runtime_handle_empty_graph():
     def process_wrapper():
-        port_in = random_port()
+        port = random_port()
 
         with GRPCGatewayRuntime(
             set_gateway_parser().parse_args(
                 [
-                    '--port-expose',
-                    f'{port_in}',
+                    '--port',
+                    f'{port}',
                     '--graph-description',
                     f'{json.dumps({})}',
                     '--deployments-addresses',

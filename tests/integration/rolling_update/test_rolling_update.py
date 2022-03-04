@@ -133,7 +133,7 @@ def test_search_while_updating(docs, reraise, docker_image, uses):
         client_process = multiprocessing.Process(
             target=send_requests,
             args=(
-                flow.port_expose,
+                flow.port,
                 start_event,
                 result_queue,
                 len(docs),
@@ -170,14 +170,14 @@ def test_vector_indexer_thread(config, docs, reraise):
 
         client_process = multiprocessing.Process(
             target=send_requests,
-            args=(flow.port_expose, start_event, multiprocessing.Queue(), len(docs), 5),
+            args=(flow.port, start_event, multiprocessing.Queue(), len(docs), 5),
         )
         client_process.start()
         client_process.join()
         result_queue = multiprocessing.Queue()
         client_process = multiprocessing.Process(
             target=send_requests,
-            args=(flow.port_expose, start_event, result_queue, len(docs), 40),
+            args=(flow.port, start_event, result_queue, len(docs), 40),
         )
         client_process.start()
         update_rolling(flow, 'executor1', start_event)
@@ -241,7 +241,7 @@ class UpdateExecutor(Executor):
 
 @pytest.mark.timeout(60)
 def test_override_uses_with(docs):
-    flow = Flow(port_expose=exposed_port).add(
+    flow = Flow(port=exposed_port).add(
         name='executor1',
         uses=UpdateExecutor,
         replicas=2,
@@ -281,7 +281,7 @@ def test_override_uses_with(docs):
     [(2, 3), (3, 2)],
 )
 def test_scale_after_rolling_update(docs, replicas, scale_to):
-    flow = Flow(port_expose=exposed_port).add(
+    flow = Flow(port=exposed_port).add(
         name='executor1',
         uses=DummyMarkExecutor,
         replicas=replicas,
@@ -311,13 +311,13 @@ def test_scale_after_rolling_update(docs, replicas, scale_to):
 
 
 def send_requests(
-    port_expose,
+    port,
     start_rolling_update_event: multiprocessing.Event,
     result_queue: multiprocessing.Queue,
     doc_count: int,
     request_count: int,
 ):
-    client = Client(port=port_expose, return_responses=True)
+    client = Client(port=port, return_responses=True)
     for i in range(request_count):
         responses = client.search(
             [Document(id=f'{idx}', text=f'doc{idx}') for idx in range(doc_count)],

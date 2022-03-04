@@ -35,7 +35,7 @@ def external_deployment_args(num_replicas, num_shards):
         'MyExternalExecutor',
         '--name',
         'external_real',
-        '--port-in',
+        '--port',
         str(random_port()),
         '--host-in',
         '0.0.0.0',
@@ -91,6 +91,7 @@ def test_flow_with_external_deployment(
 def test_two_flow_with_shared_external_deployment(
     external_deployment, external_deployment_args, input_docs, num_replicas, num_shards
 ):
+    external_deployment.head_args.disable_reduce = True
     with external_deployment:
         external_args = vars(external_deployment_args)
         del external_args['name']
@@ -130,7 +131,7 @@ def external_deployment_shards_1_args(num_replicas, num_shards):
         'MyExternalExecutor',
         '--name',
         'external_real_1',
-        '--port-in',
+        '--port',
         str(random_port()),
         '--shards',
         str(num_shards),
@@ -154,7 +155,7 @@ def external_deployment_shards_2_args(num_replicas, num_shards):
         'MyExternalExecutor',
         '--name',
         'external_real_2',
-        '--port-in',
+        '--port',
         str(random_port()),
         '--shards',
         str(num_shards),
@@ -206,7 +207,7 @@ def test_flow_with_external_deployment_shards(
                 external=True,
                 needs=['executor1'],
             )
-            .join(needs=['external_fake_1', 'external_fake_2'], port_in=random_port())
+            .join(needs=['external_fake_1', 'external_fake_2'], port=random_port())
         )
 
         with flow:
@@ -223,7 +224,7 @@ def external_deployment_pre_shards_args(num_replicas, num_shards):
         'MyExternalExecutor',
         '--name',
         'external_real',
-        '--port-in',
+        '--port',
         str(random_port()),
         '--shards',
         str(num_shards),
@@ -285,7 +286,7 @@ def external_deployment_join_args(num_replicas, num_shards):
         'MyExternalExecutor',
         '--name',
         'external_real',
-        '--port-in',
+        '--port',
         str(random_port()),
         '--deployment-role',
         'JOIN',
@@ -295,6 +296,7 @@ def external_deployment_join_args(num_replicas, num_shards):
         str(num_replicas),
         '--polling',
         'all',
+        '--disable-reduce',
     ]
     return set_deployment_parser().parse_args(args)
 

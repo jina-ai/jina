@@ -15,9 +15,9 @@ Starting the Flow:
 ```python
 from jina import Flow
 
-PORT_EXPOSE = 12345
+port = 12345
 
-with Flow(port_expose=PORT_EXPOSE) as f:
+with Flow(port=port) as f:
     f.block()
 ```
 
@@ -65,7 +65,7 @@ from docarray import Document, DocumentArray
 from jina import Flow, Client
 
 with Flow() as f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
 ```
 
@@ -96,7 +96,7 @@ f = (
 )
 
 with f:  # Using it as a Context Manager will start the Flow
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     docs = client.post(on='/', target_executor='barExecutor')
     print(docs.texts)
 ```
@@ -121,7 +121,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor)
 
 with f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post('/', Document(), parameters={'hello': 'world'})
 ```
 
@@ -131,7 +131,7 @@ You can send a parameters-only data request via:
 
 ```python
 with f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post('/', parameters={'hello': 'world'})
 ```
 
@@ -222,7 +222,7 @@ def beep(*args):
 
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post(
         '/',
         Document(),
@@ -267,7 +267,7 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     docs = client.post(on='', inputs=Document(text='Hi there!'))
     print(docs)
     print(docs.texts)
@@ -285,7 +285,7 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port_expose, return_responses=True)
+    client = Client(port=f.port, return_responses=True)
     resp = client.post(on='', inputs=Document(text='Hi there!'))
     print(resp)
     print(resp[0].docs.texts)
@@ -303,7 +303,7 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     resp = client.post(
         on='',
         inputs=Document(text='Hi there!'),
@@ -346,6 +346,6 @@ async def run_client(port):
 
 
 with Flow() as f:  # Using it as a Context Manager will start the Flow
-    asyncio.run(run_client(f.port_expose))
+    asyncio.run(run_client(f.port))
 ```
 
