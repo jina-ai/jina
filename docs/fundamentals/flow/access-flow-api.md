@@ -171,6 +171,7 @@ You can send data requests to a Flow via cURL, Postman, or any other HTTP client
 
 </details>
 
+(flow-graphql)=
 ## GraphQL Interface
 
 ````{admonition} See Also
