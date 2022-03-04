@@ -141,7 +141,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
         )
-        bind_addr = f'0.0.0.0:{self.args.port_in}'
+        bind_addr = f'0.0.0.0:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'Start listening on {bind_addr}')
         await self._grpc_server.start()

@@ -66,7 +66,7 @@ def test_empty_docarray():
 
 def test_flow_client_defaults():
     exposed_port = 12345
-    f = Flow(port_expose=exposed_port).add(uses=SimplExecutor)
+    f = Flow(port=exposed_port).add(uses=SimplExecutor)
     c = Client(port=exposed_port)
     with f:
         docs = f.post(on='/index', inputs=[Document()])

@@ -1,7 +1,7 @@
 jtype: Flow
 version: 1
 with:
-  port_expose: 9000
+  port: 9000
   protocol: http
 executors:
   - name: local

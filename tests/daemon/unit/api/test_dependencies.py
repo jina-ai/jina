@@ -47,17 +47,17 @@ def test_flow_depends_load_and_dump(monkeypatch, tmpdir):
     )
     with change_cwd(tmpdir):
         f: Flow = Flow.load_config(fd.params.uses).build()
-        assert f.port_expose == 12345
+        assert f.port == 12345
         assert f.protocol == GatewayProtocolType.HTTP
-        assert f['local_replicas'].args.port_in == 45678
-        assert f['local_replicas'].args.port_in is not None
+        assert f['local_replicas'].args.port == 45678
+        assert f['local_replicas'].args.port is not None
         assert all(
             port in fd.ports.ports
             for port in [
-                f.port_expose,
-                f['gateway'].args.port_in,
-                f['local_replicas'].args.port_in,
-                f['local_compound'].head_args.port_in,
+                f.port,
+                f['gateway'].args.port,
+                f['local_replicas'].args.port,
+                f['local_compound'].head_args.port,
             ]
         )
 
@@ -79,9 +79,9 @@ def test_dump(monkeypatch, tmpdir):
     )
     with change_cwd(tmpdir):
         f: Flow = Flow.load_config(fd.params.uses).build()
-        assert f.port_expose == 12345
+        assert f.port == 12345
         assert f.protocol == GatewayProtocolType.HTTP
-        assert f['local_replicas'].args.port_in == 45678
+        assert f['local_replicas'].args.port == 45678
 
 
 @pytest.mark.parametrize(
@@ -89,8 +89,8 @@ def test_dump(monkeypatch, tmpdir):
     [
         (['a=b'], {'a': 'b'}),
         (
-            ['PORT_EXPOSE=12345', 'password=*dU-rTAv3 u'],
-            {'PORT_EXPOSE': '12345', 'password': '*dU-rTAv3 u'},
+            ['port=12345', 'password=*dU-rTAv3 u'],
+            {'port': '12345', 'password': '*dU-rTAv3 u'},
         ),
         (['a=\nbd'], {'a': 'bd'}),
         (['a:b'], {}),

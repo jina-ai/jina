@@ -8,7 +8,7 @@ exposed_port = 12345
 
 
 def test_custom_dockerfile():
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         uses='DummyRedisIndexer',
         py_modules='redis_executor.py',
         upload_files=[

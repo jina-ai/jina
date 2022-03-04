@@ -112,11 +112,11 @@ class BaseDeployment(ExitStack):
         return self.head_args.host
 
     @property
-    def head_port_in(self):
-        """Get the port_in of the HeadPod of this deployment
+    def head_port(self):
+        """Get the port of the HeadPod of this deployment
         .. # noqa: DAR201
         """
-        return self.head_args.port_in
+        return self.head_args.port
 
     def __enter__(self) -> 'BaseDeployment':
         with CatchAllCleanupContextManager(self):
@@ -133,10 +133,10 @@ class BaseDeployment(ExitStack):
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        if not hasattr(args, 'port_in') or not args.port_in:
-            _head_args.port_in = helper.random_port()
+        if not hasattr(args, 'port') or not args.port:
+            _head_args.port = helper.random_port()
         else:
-            _head_args.port_in = args.port_in
+            _head_args.port = args.port
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
@@ -183,7 +183,7 @@ class BaseDeployment(ExitStack):
             {
                 'name': self.name,
                 'head_host': self.head_host,
-                'head_port_in': self.head_port_in,
+                'head_port': self.head_port,
             }
         ]
 
@@ -236,8 +236,8 @@ class Deployment(BaseDeployment):
                     worker_host=Deployment.get_worker_host(
                         _args, old_pod, self.head_pod
                     ),
-                    worker_port=_args.port_in,
-                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
+                    worker_port=_args.port,
+                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
                     shard_id=self.shard_id,
                 )
                 old_pod.close()
@@ -250,8 +250,8 @@ class Deployment(BaseDeployment):
                     worker_host=Deployment.get_worker_host(
                         _args, new_pod, self.head_pod
                     ),
-                    worker_port=_args.port_in,
-                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
+                    worker_port=_args.port,
+                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
                     shard_id=self.shard_id,
                 )
                 self.args[i] = _args
@@ -264,7 +264,7 @@ class Deployment(BaseDeployment):
                 new_args = copy.copy(self.args[0])
                 new_args.noblock_on_start = True
                 new_args.name = new_args.name[:-1] + f'{i}'
-                new_args.port_in = helper.random_port()
+                new_args.port = helper.random_port()
                 # no exception should happen at create and enter time
                 new_pods.append(PodFactory.build_pod(new_args).start())
                 new_args_list.append(new_args)
@@ -276,8 +276,8 @@ class Deployment(BaseDeployment):
                         worker_host=Deployment.get_worker_host(
                             new_args, new_pod, self.head_pod
                         ),
-                        worker_port=new_args.port_in,
-                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
+                        worker_port=new_args.port,
+                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
                         shard_id=self.shard_id,
                     )
                 except (
@@ -309,8 +309,8 @@ class Deployment(BaseDeployment):
                         worker_host=Deployment.get_worker_host(
                             self.args[i], self._pods[i], self.head_pod
                         ),
-                        worker_port=self.args[i].port_in,
-                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port_in}',
+                        worker_port=self.args[i].port,
+                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
                         shard_id=self.shard_id,
                     )
                     self._pods[i].close()
@@ -405,9 +405,9 @@ class Deployment(BaseDeployment):
         if self.is_sandbox:
             host, port = HubIO.deploy_public_sandbox(self.args)
             self.first_pod_args.host = host
-            self.first_pod_args.port_in = port
+            self.first_pod_args.port = port
             self.pod_args['head'].host = host
-            self.pod_args['head'].port_in = port
+            self.pod_args['head'].port = port
 
     def update_worker_pod_args(self):
         """ Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
@@ -459,6 +459,13 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         return self.first_pod_args.host
+
+    @property
+    def port(self):
+        """
+        :return: the port of this deployment
+        """
+        return self.first_pod_args.port
 
     def _parse_args(
         self, args: Namespace
@@ -567,7 +574,7 @@ class Deployment(BaseDeployment):
                     )
                     GrpcConnectionPool.activate_worker_sync(
                         worker_host,
-                        int(pod_args.port_in),
+                        int(pod_args.port),
                         self.head_pod.runtime_ctrl_address,
                         shard_id,
                     )
@@ -797,7 +804,11 @@ class Deployment(BaseDeployment):
                 else:
                     _args.name = f'{replica_id}'
 
-                _args.port_in = helper.random_port()
+                # the gateway needs to respect the assigned port
+                if args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.port = args.port
+                else:
+                    _args.port = helper.random_port()
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:
@@ -812,7 +823,7 @@ class Deployment(BaseDeployment):
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = __default_host__
-        _args.port_in = helper.random_port()
+        _args.port = helper.random_port()
 
         if _args.name:
             _args.name += f'/{entity_type}-0'
@@ -854,7 +865,7 @@ class Deployment(BaseDeployment):
                 )
                 parsed_args['uses_before'] = uses_before_args
                 args.uses_before_address = (
-                    f'{uses_before_args.host}:{uses_before_args.port_in}'
+                    f'{uses_before_args.host}:{uses_before_args.port}'
                 )
             if (
                 getattr(args, 'uses_after', None)
@@ -865,7 +876,7 @@ class Deployment(BaseDeployment):
                 )
                 parsed_args['uses_after'] = uses_after_args
                 args.uses_after_address = (
-                    f'{uses_after_args.host}:{uses_after_args.port_in}'
+                    f'{uses_after_args.host}:{uses_after_args.port}'
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)

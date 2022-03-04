@@ -22,7 +22,7 @@ from jina.types.request.control import ControlRequest
 async def test_runtimes_trivial_topology(port_generator):
     worker_port = port_generator()
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -41,7 +41,7 @@ async def test_runtimes_trivial_topology(port_generator):
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, port_expose),
+        args=(graph_description, pod_addresses, port),
     )
     gateway_process.start()
 
@@ -61,7 +61,7 @@ async def test_runtimes_trivial_topology(port_generator):
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
@@ -71,7 +71,7 @@ async def test_runtimes_trivial_topology(port_generator):
     GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # send requests to the gateway
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -175,12 +175,12 @@ async def test_runtimes_flow_topology(
     # remove last comma
     pod_addresses = pod_addresses[:-1]
     pod_addresses += '}'
-    port_expose = port_generator()
+    port = port_generator()
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(json.dumps(complete_graph_dict), pod_addresses, port_expose),
+        args=(json.dumps(complete_graph_dict), pod_addresses, port),
     )
     gateway_process.start()
 
@@ -188,12 +188,12 @@ async def test_runtimes_flow_topology(
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
     # send requests to the gateway
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -221,7 +221,7 @@ async def test_runtimes_flow_topology(
 # test simple topology with shards
 async def test_runtimes_shards(polling, port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -252,7 +252,7 @@ async def test_runtimes_shards(polling, port_generator):
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, port_expose),
+        args=(graph_description, pod_addresses, port),
     )
     gateway_process.start()
 
@@ -260,11 +260,11 @@ async def test_runtimes_shards(polling, port_generator):
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -294,7 +294,7 @@ async def test_runtimes_shards(polling, port_generator):
 # test simple topology with replicas
 async def test_runtimes_replicas(port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -325,7 +325,7 @@ async def test_runtimes_replicas(port_generator):
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, port_expose),
+        args=(graph_description, pod_addresses, port),
     )
     gateway_process.start()
 
@@ -333,11 +333,11 @@ async def test_runtimes_replicas(port_generator):
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -409,10 +409,10 @@ async def test_runtimes_with_executor(port_generator):
     await _activate_runtimes(head_port, worker_ports)
 
     # create a single gateway runtime
-    port_expose = port_generator()
+    port = port_generator()
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, port_expose),
+        args=(graph_description, pod_addresses, port),
     )
     gateway_process.start()
     runtime_processes.append(gateway_process)
@@ -421,11 +421,11 @@ async def test_runtimes_with_executor(port_generator):
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -457,7 +457,7 @@ async def test_runtimes_with_executor(port_generator):
 @pytest.mark.asyncio
 async def test_runtimes_gateway_worker_direct_connection(port_generator):
     worker_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
@@ -471,7 +471,7 @@ async def test_runtimes_gateway_worker_direct_connection(port_generator):
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, port_expose),
+        args=(graph_description, pod_addresses, port),
     )
     gateway_process.start()
 
@@ -479,11 +479,11 @@ async def test_runtimes_gateway_worker_direct_connection(port_generator):
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -504,7 +504,7 @@ async def test_runtimes_gateway_worker_direct_connection(port_generator):
 @pytest.mark.asyncio
 async def test_runtimes_with_replicas_advance_faster(port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -536,7 +536,7 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, port_expose),
+        args=(graph_description, pod_addresses, port),
     )
     gateway_process.start()
 
@@ -544,11 +544,11 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'0.0.0.0:{port_expose}',
+        ctrl_address=f'0.0.0.0:{port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port_expose, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
     responses = c.post('/', inputs=input_docs, request_size=1)
     response_list = []
@@ -619,7 +619,7 @@ async def _create_worker(pod, port_generator, type='worker', executor=None):
 
 def _create_worker_runtime(port, name='', executor=None):
     args = set_pod_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = name
     if executor:
         args.uses = executor
@@ -631,7 +631,7 @@ def _create_head_runtime(
     port, name='', polling='ANY', uses_before=None, uses_after=None
 ):
     args = set_pod_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = name
     args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL
     if uses_before:
@@ -643,7 +643,7 @@ def _create_head_runtime(
         runtime.run_forever()
 
 
-def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
+def _create_gateway_runtime(graph_description, pod_addresses, port):
     with GRPCGatewayRuntime(
         set_gateway_parser().parse_args(
             [
@@ -651,8 +651,8 @@ def _create_gateway_runtime(graph_description, pod_addresses, port_expose):
                 graph_description,
                 '--deployments-addresses',
                 pod_addresses,
-                '--port-expose',
-                str(port_expose),
+                '--port',
+                str(port),
             ]
         )
     ) as runtime:

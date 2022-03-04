@@ -17,7 +17,7 @@ from jina.types.request.control import ControlRequest
 async def test_pods_trivial_topology(port_generator):
     worker_port = port_generator()
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -28,7 +28,7 @@ async def test_pods_trivial_topology(port_generator):
     head_pod = _create_head_pod(head_port)
 
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
 
     with gateway_pod, head_pod, worker_pod:
         # this would be done by the Pod, its adding the worker to the head
@@ -42,9 +42,7 @@ async def test_pods_trivial_topology(port_generator):
 
         # send requests to the gateway
         gateway_pod.wait_start_success()
-        c = Client(
-            return_responses=True, host='localhost', port=port_expose, asyncio=True
-        )
+        c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
         responses = c.post('/', inputs=async_inputs, request_size=1)
 
         response_list = []
@@ -127,12 +125,12 @@ async def test_pods_flow_topology(
     # remove last comma
     pod_addresses = pod_addresses[:-1]
     pod_addresses += '}'
-    port_expose = port_generator()
+    port = port_generator()
 
     # create a single gateway pod
 
     gateway_pod = _create_gateway_pod(
-        json.dumps(complete_graph_dict), pod_addresses, port_expose
+        json.dumps(complete_graph_dict), pod_addresses, port
     )
     gateway_pod.start()
     gateway_pod.wait_start_success()
@@ -140,7 +138,7 @@ async def test_pods_flow_topology(
     await asyncio.sleep(0.1)
 
     # send requests to the gateway
-    c = Client(return_responses=True, host='localhost', port=port_expose, asyncio=True)
+    c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -160,7 +158,7 @@ async def test_pods_flow_topology(
 # test simple topology with shards
 async def test_pods_shards(polling, port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -186,18 +184,18 @@ async def test_pods_shards(polling, port_generator):
         pod.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
         activate_msg.add_related_entity(
-            'worker', '127.0.0.1', pod.args.port_in, shard_id=i
+            'worker', '127.0.0.1', pod.args.port, shard_id=i
         )
         GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
     gateway_pod.start()
 
     await asyncio.sleep(1.0)
 
     gateway_pod.wait_start_success()
-    c = Client(return_responses=True, host='localhost', port=port_expose, asyncio=True)
+    c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -217,7 +215,7 @@ async def test_pods_shards(polling, port_generator):
 # test simple topology with replicas
 async def test_pods_replicas(port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -242,17 +240,17 @@ async def test_pods_replicas(port_generator):
     for worker_pod in replica_pods:
         worker_pod.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', worker_pod.args.port_in)
+        activate_msg.add_related_entity('worker', '127.0.0.1', worker_pod.args.port)
         GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
     gateway_pod.start()
 
     await asyncio.sleep(1.0)
 
     gateway_pod.wait_start_success()
-    c = Client(return_responses=True, host='localhost', port=port_expose, asyncio=True)
+    c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -311,8 +309,8 @@ async def test_pods_with_executor(port_generator):
         pod.wait_start_success()
 
     # create a single gateway pod
-    port_expose = port_generator()
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    port = port_generator()
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
 
     gateway_pod.start()
     gateway_pod.wait_start_success()
@@ -320,7 +318,7 @@ async def test_pods_with_executor(port_generator):
 
     await asyncio.sleep(1.0)
 
-    c = Client(return_responses=True, host='localhost', port=port_expose, asyncio=True)
+    c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -346,7 +344,7 @@ async def test_pods_with_executor(port_generator):
 @pytest.mark.asyncio
 async def test_pods_gateway_worker_direct_connection(port_generator):
     worker_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
@@ -356,7 +354,7 @@ async def test_pods_gateway_worker_direct_connection(port_generator):
 
     await asyncio.sleep(0.1)
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
 
     gateway_pod.start()
 
@@ -364,7 +362,7 @@ async def test_pods_gateway_worker_direct_connection(port_generator):
 
     worker_pod.wait_start_success()
     gateway_pod.wait_start_success()
-    c = Client(return_responses=True, host='localhost', port=port_expose, asyncio=True)
+    c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
     responses = c.post('/', inputs=async_inputs, request_size=1)
     response_list = []
     async for response in responses:
@@ -381,7 +379,7 @@ async def test_pods_gateway_worker_direct_connection(port_generator):
 @pytest.mark.asyncio
 async def test_pods_with_replicas_advance_faster(port_generator):
     head_port = port_generator()
-    port_expose = port_generator()
+    port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
@@ -390,7 +388,7 @@ async def test_pods_with_replicas_advance_faster(port_generator):
     head_pod.start()
 
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port_expose)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
     gateway_pod.start()
 
     # create the shards
@@ -411,10 +409,10 @@ async def test_pods_with_replicas_advance_faster(port_generator):
         # this would be done by the Pod, its adding the worker to the head
         pod.wait_start_success()
         activate_msg = ControlRequest(command='ACTIVATE')
-        activate_msg.add_related_entity('worker', '127.0.0.1', pod.args.port_in)
+        activate_msg.add_related_entity('worker', '127.0.0.1', pod.args.port)
         GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
-    c = Client(return_responses=True, host='localhost', port=port_expose, asyncio=True)
+    c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
     responses = c.post('/', inputs=input_docs, request_size=1)
     response_list = []
@@ -474,7 +472,7 @@ async def _start_create_pod(pod, port_generator, type='worker', executor=None):
 
 def _create_worker_pod(port, name='', executor=None):
     args = set_pod_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = name
     args.no_block_on_start = True
     if executor:
@@ -484,7 +482,7 @@ def _create_worker_pod(port, name='', executor=None):
 
 def _create_head_pod(port, name='', polling='ANY', uses_before=None, uses_after=None):
     args = set_pod_parser().parse_args([])
-    args.port_in = port
+    args.port = port
     args.name = name
     args.pod_cls = 'HeadRuntime'
     args.pod_role = PodRoleType.HEAD
@@ -498,7 +496,7 @@ def _create_head_pod(port, name='', polling='ANY', uses_before=None, uses_after=
     return Pod(args)
 
 
-def _create_gateway_pod(graph_description, pod_addresses, port_expose):
+def _create_gateway_pod(graph_description, pod_addresses, port):
     return Pod(
         set_gateway_parser().parse_args(
             [
@@ -506,8 +504,8 @@ def _create_gateway_pod(graph_description, pod_addresses, port_expose):
                 graph_description,
                 '--deployments-addresses',
                 pod_addresses,
-                '--port-expose',
-                str(port_expose),
+                '--port',
+                str(port),
                 '--noblock-on-start',
             ]
         )

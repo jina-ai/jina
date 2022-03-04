@@ -33,7 +33,7 @@ def test_upload_via_pymodule(replicas):
     from .mwu_encoder import MWUEncoder
 
     f = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add()
         .add(
             uses=MWUEncoder,
@@ -60,7 +60,7 @@ def test_upload_via_pymodule(replicas):
 @pytest.mark.parametrize('replicas', [1, 2])
 def test_upload_via_yaml(replicas):
     f = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add()
         .add(
             uses='mwu_encoder.yml',
@@ -86,7 +86,7 @@ def test_upload_multiple_workspaces(replicas):
     indexer_workspace = 'tdb_indexer_ws'
 
     f = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add(
             name='sklearn_encoder',
             uses='sklearn.yml',
@@ -217,7 +217,7 @@ def docker_compose(request):
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_upload_simple_non_standard_rootworkspace(docker_compose):
     f = (
-        Flow(port_expose=exposed_port)
+        Flow(port=exposed_port)
         .add()
         .add(
             uses='mwu_encoder.yml',

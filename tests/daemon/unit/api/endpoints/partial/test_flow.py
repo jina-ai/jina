@@ -37,7 +37,7 @@ def test_flow_api(monkeypatch, partial_flow_client):
 
     assert create_response
     assert get_response
-    assert get_response.json()['arguments']['port_expose'] == 56789
+    assert get_response.json()['arguments']['port'] == 56789
     assert endpoint_responses[0].docs[0].content == 'https://jina.ai'
     assert rolling_update_response.status_code == 200
     assert delete_response

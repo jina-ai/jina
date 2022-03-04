@@ -77,6 +77,7 @@ which should be structured as a python package. For more details, please see the
         '--port-in',
         type=int,
         default=helper.random_port(),
+        dest='port',
         help='The port for input data to bind to, default a random port between [49152, 65535]',
     )
     gp.add_argument(

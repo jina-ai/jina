@@ -115,8 +115,8 @@ class BasePod(ABC):
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
 
-        if hasattr(self.args, 'port_expose'):
-            self.args.port_in = self.args.port_expose
+        if hasattr(self.args, 'port'):
+            self.args.port = self.args.port
         self.args.parallel = self.args.shards
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False
@@ -154,7 +154,7 @@ class BasePod(ABC):
         self._timeout_ctrl = self.args.timeout_ctrl
 
     def _get_control_address(self):
-        return f'{self.args.host}:{self.args.port_in}'
+        return f'{self.args.host}:{self.args.port}'
 
     def close(self) -> None:
         """Close the Pod

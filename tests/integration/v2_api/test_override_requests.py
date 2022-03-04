@@ -10,7 +10,7 @@ def test_override_requests():
             for doc in docs:
                 doc.text = 'foo called'
 
-    with Flow(port_expose=exposed_port).add(
+    with Flow(port=exposed_port).add(
         uses=FooExecutor, uses_requests={'/non_foo': 'foo'}
     ) as f:
         c = Client(port=exposed_port, return_responses=True)
@@ -37,7 +37,7 @@ def test_override_requests_uses_after():
             for doc in docs:
                 doc.text = 'bar called'
 
-    with Flow(port_expose=exposed_port).add(
+    with Flow(port=exposed_port).add(
         uses=FooExecutor,
         uses_requests={'/foo': 'foo'},
         uses_after=OtherExecutor,

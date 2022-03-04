@@ -1,4 +1,4 @@
 !Flow
 version: '1'
 with:
-  port_expose: 12345
+  port: 12345

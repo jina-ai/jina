@@ -39,7 +39,7 @@ async def test_flow_store(workspace):
         workspace_id=workspace,
         params=flow_model,
         ports={},
-        port_expose=56789,
+        port=56789,
     )
     assert len(store) == 1
     assert flow_id in store
@@ -60,7 +60,7 @@ async def test_flow_store_rolling_update(workspace):
         workspace_id=workspace,
         params=flow_model,
         ports={},
-        port_expose=56789,
+        port=56789,
     )
     assert len(store) == 1
     assert flow_id in store
@@ -84,7 +84,7 @@ async def test_flow_store_scale(workspace):
         workspace_id=workspace,
         params=flow_model,
         ports={},
-        port_expose=56789,
+        port=56789,
     )
     assert len(store) == 1
     assert flow_id in store

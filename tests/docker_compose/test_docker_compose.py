@@ -28,7 +28,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
 
     client_kwargs = dict(
         host='localhost',
-        port=flow.port_expose,
+        port=flow.port,
         return_responses=True,
         asyncio=True,
     )
@@ -49,7 +49,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
 
 @pytest.fixture()
 def flow_with_sharding(docker_images, polling):
-    flow = Flow(name='test-flow-with-sharding', port_expose=9090, protocol='http').add(
+    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
         name='test_executor',
         shards=2,
         replicas=2,
@@ -62,7 +62,7 @@ def flow_with_sharding(docker_images, polling):
 
 @pytest.fixture
 def flow_configmap(docker_images):
-    flow = Flow(name='k8s-flow-configmap', port_expose=9090, protocol='http').add(
+    flow = Flow(name='k8s-flow-configmap', port=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
@@ -75,7 +75,7 @@ def flow_with_needs(docker_images):
     flow = (
         Flow(
             name='test-flow-with-needs',
-            port_expose=9090,
+            port=9090,
             protocol='http',
         )
         .add(
@@ -211,7 +211,7 @@ async def test_flow_with_configmap(flow_configmap, docker_images, tmpdir):
     indirect=True,
 )
 async def test_flow_with_workspace(logger, docker_images, tmpdir):
-    flow = Flow(name='k8s_flow-with_workspace', port_expose=9090, protocol='http').add(
+    flow = Flow(name='k8s_flow-with_workspace', port=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         workspace='/shared',

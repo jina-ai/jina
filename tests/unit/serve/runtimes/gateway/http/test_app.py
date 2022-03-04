@@ -38,16 +38,16 @@ class TestExecutor(Executor):
 
 
 def test_tag_update():
-    port_expose = random_port()
+    port = random_port()
 
-    f = Flow(port_expose=port_expose, protocol='http').add(uses=TestExecutor)
+    f = Flow(port=port, protocol='http').add(uses=TestExecutor)
     d1 = Document(id='1', prop1='val')
     d2 = Document(id='2', prop2='val')
     with f:
         d1 = {'data': [d1.to_dict()]}
         d2 = {'data': [d2.to_dict()]}
-        r1 = req.post(f'http://localhost:{port_expose}/index', json=d1)
-        r2 = req.post(f'http://localhost:{port_expose}/index', json=d2)
+        r1 = req.post(f'http://localhost:{port}/index', json=d1)
+        r2 = req.post(f'http://localhost:{port}/index', json=d2)
     assert r1.json()['data'][0]['tags'] == {'prop1': 'val'}
     assert r2.json()['data'][0]['tags'] == {'prop2': 'val'}
 
@@ -205,9 +205,7 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
         with pytest.raises(aiohttp.ClientConnectorCertificateError):
-            Client(protocol=protocol, port=f.port_expose, https=True).index(
-                [Document()]
-            )
+            Client(protocol=protocol, port=f.port, https=True).index([Document()])
 
 
 da = DocumentArray([Document(text='text_input')])
@@ -228,6 +226,6 @@ def test_app_models_acceptance(docs_input):
     f = Flow(protocol='http').add()
 
     with f:
-        r = req.post(f'http://localhost:{f.port_expose}/index', json=docs_input)
+        r = req.post(f'http://localhost:{f.port}/index', json=docs_input)
 
     assert DocumentArray.from_dict(r.json()['data'])[0].text == 'text_input'

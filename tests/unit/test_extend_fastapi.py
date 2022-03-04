@@ -16,6 +16,6 @@ def test_extend_fastapi():
     f = Flow(protocol='http')
 
     with f:
-        response = requests.get(f'http://localhost:{f.port_expose}/hello')
+        response = requests.get(f'http://localhost:{f.port}/hello')
         assert response.status_code == 200
         assert response.json() == {'msg': 'hello world'}
