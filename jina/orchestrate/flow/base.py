@@ -59,6 +59,7 @@ from jina.parsers import (
 from jina.parsers.flow import set_flow_parser
 
 from rich.console import Console
+from rich.table import Table
 from rich import print
 
 __all__ = ['Flow']
@@ -1144,7 +1145,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             t_m.start()
 
             # kick off ip getter thread
-            addr_table = []
+            addr_table = self._init_table()
+
             t_ip = threading.Thread(
                 target=self._get_address_table, args=(addr_table,), daemon=True
             )
@@ -1163,14 +1165,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 )
                 self.close()
                 raise RuntimeFailToStart
-            else:
-                success_msg = colored('🎉 Flow is ready to use!', 'green')
 
-                if addr_table:
-                    self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
-                self.logger.debug(
-                    f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
-                )
+        success_msg = colored('🎉 Flow is ready to use!', 'green')
+        self.logger.info(success_msg)
+        if addr_table:
+            print(addr_table)  # todo use logging
+        self.logger.debug(
+            f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
+        )
 
     @property
     def num_deployments(self) -> int:
@@ -1457,46 +1459,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __iter__(self):
         return self._deployment_nodes.items().__iter__()
 
+    def _init_table(self):
+        table = Table(title=None, box=None)
+        table.add_column('', justify='right')
+        table.add_column('', justify='right')
+        table.add_column('', justify='right')
+        table.add_column('', justify='right')
+
+        return table
+
     def _get_address_table(self, address_table):
-        address_table.extend(
-            [
-                f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
-                f'\t🏠 Local access:\t'
-                + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
-                f'\t🔒 Private network:\t'
-                + colored(
-                    f'{self.address_private}:{self.port_expose}',
-                    'cyan',
-                    attrs='underline',
-                ),
-            ]
+        address_table.add_row('🔗', 'Protocol: ', f'[bold]{self.protocol}[/bold]')
+        address_table.add_row(
+            '🏠',
+            'Local access: ',
+            f'[underline]{self.host}:{self.port_expose}[/underline]',
         )
+        address_table.add_row(
+            '🔒',
+            'Private network: ',
+            f'[underline]{self.address_private}:{self.port_expose}[/underline]',  # todo make the ip colored correctly
+        )
+
         if self.address_public:
-            address_table.append(
-                f'\t🌐 Public address:\t'
-                + colored(
-                    f'{self.address_public}:{self.port_expose}',
-                    'cyan',
-                    attrs='underline',
-                )
+            address_table.add_row(
+                '🌐',
+                'Public address: ',
+                f'[underline]{self.address_public}:{self.port_expose}[/underline]',
             )
+
         if self.protocol == GatewayProtocolType.HTTP:
-            address_table.append(
-                f'\t💬 Swagger UI:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/docs',
-                    'cyan',
-                    attrs='underline',
-                )
+            address_table.add_row(
+                '💬',
+                'Swagger UI: ',
+                f'[underline]http://localhost:{self.port_expose}/docs[/underline]',
             )
-            address_table.append(
-                f'\t📚 Redoc:\t\t'
-                + colored(
-                    f'http://localhost:{self.port_expose}/redoc',
-                    'cyan',
-                    attrs='underline',
-                )
+
+            address_table.add_row(
+                '📚',
+                'Redoc: ',
+                f'[underline]http://localhost:{self.port_expose}/redoc[/underline]',
             )
+
         return address_table
 
     def block(
