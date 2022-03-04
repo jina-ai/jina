@@ -1,6 +1,4 @@
 from functools import partialmethod, wraps
-import asyncio
-from sgqlc.endpoint.http import HTTPEndpoint as SgqlcHTTPEndpoint
 from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 import warnings
 from inspect import signature
