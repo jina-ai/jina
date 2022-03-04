@@ -136,6 +136,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12311,4 +12312,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d1fb4c3f```](https://github.com/jina-ai/jina/commit/d1fb4c3f4088695084b45d182b00b6dd64cfe6cc)] __-__ Revert &#34;docs: update google analytics tracking ID (#4390)&#34; (#4421) (*Han Xiao*)
  - [[```d46c29fd```](https://github.com/jina-ai/jina/commit/d46c29fd768138fa880a8936ebcee96efd65f4b5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```a7bb4fc7```](https://github.com/jina-ai/jina/commit/a7bb4fc7aaaf4c322db04984ea2dd3bd5105c9a5)] __-__ __version__: the next version will be 3.0.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-0></a>
+## Release Note (`3.1.0`)
+
+> Release time: 2022-03-04 16:42:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Johannes Messner,  Tobias Jacobowitz,  samsja,  Jina Dev Bot,  cristian,  🙇
+
+
+### 🆕 New Features
+
+ - [[```bb8ab48d```](https://github.com/jina-ai/jina/commit/bb8ab48d2008b6165a8d08cd9942c07e938f8dd5)] __-__ __gateway__: add graphql support (#4403) (*Johannes Messner*)
+
+### 🧼 Code Refactoring
+
+ - [[```51403a57```](https://github.com/jina-ai/jina/commit/51403a57d03f0b1ddfd7fc533ccee78e23f5faa1)] __-__ unify port args (#4382) (*Tobias Jacobowitz*)
+ - [[```c7ad27e5```](https://github.com/jina-ai/jina/commit/c7ad27e5614dfb2b1684f4718c5508840cd55de0)] __-__ add disable_reduce args (#4424) (*Tobias Jacobowitz*)
+
+### 📗 Documentation
+
+ - [[```7788e2cc```](https://github.com/jina-ai/jina/commit/7788e2cccd91e1cb5b4f98e060ac49cffeb27349)] __-__ adjust port args (#4384) (*Tobias Jacobowitz*)
+ - [[```9c0e3cd8```](https://github.com/jina-ai/jina/commit/9c0e3cd823ba6420e8e8554f58477e03f7bcf10a)] __-__ Document Executor from hub (#4420) (*samsja*)
+ - [[```d41b2e49```](https://github.com/jina-ai/jina/commit/d41b2e4945eba84d6958e39c27fcfc8190393ede)] __-__ flow api improvements (#4398) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```ba0cf5f8```](https://github.com/jina-ai/jina/commit/ba0cf5f80684b34194374d639b429390c70f7920)] __-__ bump version to 3.1 (#4435) (*Joan Fontanals*)
+ - [[```021b3fcd```](https://github.com/jina-ai/jina/commit/021b3fcdcabf8473434d22464cac645a51953c7a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```55d900d4```](https://github.com/jina-ai/jina/commit/55d900d42f17211f3d6c7792fd36b937e4f1ef44)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5547aa01```](https://github.com/jina-ai/jina/commit/5547aa015b4b9734775e9c34043ec687b2c3811c)] __-__ __version__: the next version will be 3.0.5 (*Jina Dev Bot*)
 
