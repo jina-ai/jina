@@ -120,7 +120,7 @@ Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorc
 5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
     ```python
     f = (
-        Flow(port_expose=12345)
+        Flow(port=12345)
         .add(uses=PreprocImg)
         .add(uses=EmbedImg, replicas=3)
         .add(uses=MatchImg)
@@ -276,7 +276,7 @@ You can containerize the Executors and use them in a sandbox thanks to [Hub](htt
 
     ```python
     f = (
-        Flow(port_expose=12345)
+        Flow(port=12345)
         .add(uses='jinahub+docker://1ylut0gf')
         .add(uses='jinahub+docker://258lzh3c')
     )

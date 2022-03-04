@@ -22,7 +22,7 @@ If you want to add an external Executor to your Flow, all you really need to kno
 You need:
 
 - `host`, the host address of the Executor
-- `port_in`, the port on which the Executor receives information
+- `port`, the port on which the Executor receives information
 
 Then, adding the Executor is a simple call to `Flow.add()` with the `external` argument set to True. This tells the Flow that
 it does not need to start the Executor itself.:
@@ -31,7 +31,7 @@ it does not need to start the Executor itself.:
 from jina import Flow
 
 exec_host, exec_port = 'localhost', 12345
-f = Flow().add(host=exec_host, port_in=exec_port, external=True)
+f = Flow().add(host=exec_host, port=exec_port, external=True)
 ```
 
 After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
@@ -63,7 +63,7 @@ Here we pick `12345`.
 ````{tab} Using Docker
 
 ```bash
-jina executor --uses jinahub+docker://CLIPTextEncoder --port-in 12345
+jina executor --uses jinahub+docker://CLIPTextEncoder --port 12345
 ```
 
 ````
@@ -71,7 +71,7 @@ jina executor --uses jinahub+docker://CLIPTextEncoder --port-in 12345
 ````{tab} Without Docker
 
 ```bash
-jina executor --uses jinahub://CLIPTextEncoder --port-in 12345
+jina executor --uses jinahub://CLIPTextEncoder --port 12345
 ```
 
 ````
@@ -94,7 +94,7 @@ the following Flow in a Python file:
 ```python
 from jina import Flow
 
-f = Flow().add(host='localhost', port_in=12345, external=True)
+f = Flow().add(host='localhost', port=12345, external=True)
 ```
 
 Now we can encode our Documents:
@@ -154,7 +154,7 @@ This simply points Jina to our file and Executor class.
 Now we can run the CLI command again, this time using our custom Executor:
 
 ```bash
-jina executor --uses my-exec.yml --port-in 12345
+jina executor --uses my-exec.yml --port 12345
 ```
 
 Now that your Executor is up and running, we can tap into it just like before, and even use it from two different Flows.
@@ -163,8 +163,8 @@ Now that your Executor is up and running, we can tap into it just like before, a
 from jina import Flow
 from docarray import Document, DocumentArray
 
-f1 = Flow().add(host='localhost', port_in=12345, external=True)
-f2 = Flow().add(host='localhost', port_in=12345, external=True)
+f1 = Flow().add(host='localhost', port=12345, external=True)
+f2 = Flow().add(host='localhost', port=12345, external=True)
 with f1:
     f1.index(
         inputs=DocumentArray([Document(text='Greetings from Flow1') for _ in range(1)])

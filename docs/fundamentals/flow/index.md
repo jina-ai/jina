@@ -72,7 +72,7 @@ class MyExecutor(Executor):
         print(docs)
 
 
-f = Flow(port_expose=12345).add(name='myexec1', uses=MyExecutor)
+f = Flow(port=12345).add(name='myexec1', uses=MyExecutor)
 
 with f:
     f.block()

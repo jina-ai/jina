@@ -393,7 +393,7 @@ Those Executors are marked with the `external` keyword when added to a `Flow`:
 ```python
 from jina import Flow
 
-Flow().add(host='123.45.67.89', port_in=12345, external=True)
+Flow().add(host='123.45.67.89', port=12345, external=True)
 ```
 This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
 
