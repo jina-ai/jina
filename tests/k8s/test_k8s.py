@@ -11,7 +11,7 @@ from jina import Executor, Flow, Document, requests
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
-from jina.serve.networking import K8sGrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -228,20 +228,15 @@ def k8s_flow_with_needs(docker_images):
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images',
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_needs(
-    logger, k8s_connection_pool, k8s_flow_with_needs, tmpdir
-):
+async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
-    namespace = f'test-flow-with-needs-{k8s_connection_pool}'.lower()
-    k8s_flow_with_needs.to_k8s_yaml(
-        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
-    )
+    namespace = f'test-flow-with-needs'.lower()
+    k8s_flow_with_needs.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -288,21 +283,16 @@ async def test_flow_with_needs(
 
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
-@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images',
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
-async def test_flow_with_sharding(
-    k8s_flow_with_sharding, k8s_connection_pool, polling, tmpdir, logger
-):
+async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
-    namespace = f'test-flow-with-sharding-{polling}-{k8s_connection_pool}'.lower()
-    k8s_flow_with_sharding.to_k8s_yaml(
-        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
-    )
+    namespace = f'test-flow-with-sharding-{polling}'.lower()
+    k8s_flow_with_sharding.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -355,18 +345,13 @@ async def test_flow_with_sharding(
 
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
-@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
-async def test_flow_with_configmap(
-    k8s_flow_configmap, k8s_connection_pool, docker_images, tmpdir, logger
-):
+async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-configmap')
-    namespace = f'test-flow-with-configmap-{k8s_connection_pool}'.lower()
-    k8s_flow_configmap.to_k8s_yaml(
-        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
-    )
+    namespace = f'test-flow-with-configmap'.lower()
+    k8s_flow_configmap.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -514,13 +499,12 @@ async def test_rolling_update_simple(
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize('k8s_connection_pool', [True, False])
 @pytest.mark.parametrize(
     'docker_images',
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, tmpdir):
+async def test_flow_with_workspace(logger, docker_images, tmpdir):
     flow = Flow(name='k8s_flow-with_workspace', port=9090, protocol='http').add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
@@ -528,7 +512,7 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     )
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-workspace')
-    namespace = f'test-flow-with-workspace-{k8s_connection_pool}'.lower()
+    namespace = f'test-flow-with-workspace'.lower()
     flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
@@ -560,67 +544,6 @@ async def test_flow_with_workspace(logger, k8s_connection_pool, docker_images, t
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
     core_client.delete_namespace(namespace)
-
-
-@pytest.mark.asyncio
-@pytest.mark.timeout(3600)
-@pytest.mark.parametrize('k8s_connection_pool', [True, False])
-@pytest.mark.parametrize(
-    'docker_images',
-    [['test-executor', 'jinaai/jina']],
-    indirect=True,
-)
-async def test_flow_connection_pool(logger, k8s_connection_pool, docker_images, tmpdir):
-    flow = Flow(name='k8s_flow_connection_pool', port=9090, protocol='http').add(
-        name='test_executor',
-        replicas=2,
-        uses=f'docker://{docker_images[0]}',
-    )
-
-    dump_path = os.path.join(str(tmpdir), 'test-flow-connection-pool')
-    namespace = f'test-flow-connection-pool-{k8s_connection_pool}'.lower()
-    flow.to_k8s_yaml(
-        dump_path, k8s_namespace=namespace, k8s_connection_pool=k8s_connection_pool
-    )
-
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-    await create_all_flow_deployments_and_wait_ready(
-        dump_path,
-        namespace=namespace,
-        api_client=api_client,
-        app_client=app_client,
-        core_client=core_client,
-        deployment_replicas_expected={
-            'gateway': 1,
-            'test-executor-head': 1,
-            'test-executor': 2,
-        },
-        logger=logger,
-    )
-
-    resp = await run_test(
-        flow=flow,
-        namespace=namespace,
-        core_client=core_client,
-        endpoint='/debug',
-        n_docs=100,
-        request_size=5,
-    )
-
-    core_client.delete_namespace(namespace)
-    visited = set()
-    for r in resp:
-        for doc in r.docs:
-            visited.add(doc.tags['hostname'])
-
-    if k8s_connection_pool:
-        assert len(visited) == 2
-    else:
-        assert len(visited) == 1
 
 
 @pytest.mark.asyncio
@@ -701,7 +624,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
         name='external_executor',
         external=True,
         host='external-deployment-head.external-deployment-ns.svc',
-        port=K8sGrpcConnectionPool.K8S_PORT,
+        port=GrpcConnectionPool.K8S_PORT,
     )
 
     dump_path = os.path.join(str(tmpdir), namespace)

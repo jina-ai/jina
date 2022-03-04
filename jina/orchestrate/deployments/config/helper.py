@@ -91,8 +91,6 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
     )
     _args = ArgNamespace.kwargs2list(non_defaults)
     container_args = ['executor'] + _args
-    if not cargs.k8s_connection_pool and pod_type == PodRoleType.HEAD:
-        container_args.append('--k8s-disable-connection-pool')
     if uses_metas is not None:
         container_args.extend(['--uses-metas', json.dumps(uses_metas)])
     if uses_with is not None:

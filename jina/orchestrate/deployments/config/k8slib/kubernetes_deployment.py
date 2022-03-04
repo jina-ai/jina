@@ -2,7 +2,7 @@ import json
 from argparse import Namespace
 from typing import Dict, Optional, Tuple, Union, List
 
-from jina.serve.networking import K8sGrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 
 
@@ -53,7 +53,7 @@ def get_deployment_yamls(
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port:
-        port = K8sGrpcConnectionPool.K8S_PORT
+        port = GrpcConnectionPool.K8S_PORT
 
     deployment_params = {
         'name': name,
@@ -63,8 +63,8 @@ def get_deployment_yamls(
         'command': container_cmd,
         'args': container_args,
         'port': port,
-        'port_uses_before': K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE,
-        'port_uses_after': K8sGrpcConnectionPool.K8S_PORT_USES_AFTER,
+        'port_uses_before': GrpcConnectionPool.K8S_PORT_USES_BEFORE,
+        'port_uses_after': GrpcConnectionPool.K8S_PORT_USES_AFTER,
         'args_uses_before': container_args_uses_before,
         'args_uses_after': container_args_uses_after,
         'command_uses_before': container_cmd_uses_before,
@@ -158,8 +158,6 @@ def get_cli_params(
     cli_args = []
     for attribute, cli_attribute, value in arg_list:
         # TODO: This should not be here, its a workaround for our parser design with boolean values
-        if attribute == 'k8s_connection_pool' and not value:
-            cli_args.append(f'"--k8s-disable-connection-pool"')
         if attribute in skip_attributes:
             continue
         if type(value) == bool and value:
