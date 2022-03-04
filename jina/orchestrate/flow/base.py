@@ -1172,7 +1172,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         success_msg = colored('🎉 Flow is ready to use!', 'green')
         self.logger.info(success_msg)
         if addr_table:
-            print(addr_table)  # todo use logging
+            print(
+                addr_table
+            )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
         )
@@ -1463,7 +1465,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return self._deployment_nodes.items().__iter__()
 
     def _init_table(self):
-        table = Table(title=None, box=None)
+        table = Table(title=None, box=None, highlight=True)
         table.add_column('', justify='right')
         table.add_column('', justify='right')
         table.add_column('', justify='right')
@@ -1481,7 +1483,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         address_table.add_row(
             '🔒',
             'Private network: ',
-            f'[underline]{self.address_private}:{self.port}[/underline]',  # todo make the ip colored correctly
+            f'[underline]{self.address_private}:{self.port}[/underline]',
         )
 
         if self.address_public:
