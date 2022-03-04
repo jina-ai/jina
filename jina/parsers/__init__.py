@@ -76,6 +76,7 @@ def set_gateway_parser(parser=None):
         mixin_prefetch_parser,
         mixin_http_gateway_parser,
         mixin_compressor_parser,
+        mixin_graphql_parser,
     )
     from jina.parsers.orchestrate.pod import mixin_pod_parser
 
@@ -83,6 +84,7 @@ def set_gateway_parser(parser=None):
     mixin_worker_runtime_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
+    mixin_graphql_parser(parser)
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
