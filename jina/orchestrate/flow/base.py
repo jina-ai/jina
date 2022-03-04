@@ -444,6 +444,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
+        args.no_graphql_endpoint = (
+            self.args.no_graphql_endpoint
+        )  # also used in Flow, thus not in kwargs
         args.graph_description = json.dumps(graph_description)
         args.deployments_addresses = json.dumps(deployments_addresses)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
