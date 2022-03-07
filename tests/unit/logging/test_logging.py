@@ -25,7 +25,7 @@ def test_color_log():
     with JinaLogger('test_logger') as logger:
         logger.debug('this is test debug message')
         logger.info('this is test info message')
-        logger.info(f'this is test {colored("color", "red")} message')
+        logger.info(f'this is test {colored("color", "on red")} message')
         logger.success('this is test success message')
         logger.warning('this is test warning message')
         logger.error('this is test error message')

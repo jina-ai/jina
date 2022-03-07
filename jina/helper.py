@@ -585,7 +585,7 @@ def colored(
 
     :param text: The target text
     :param color: The color of text
-    :param on_color: The on_color of text
+    :param on_color: The on color of text: ex on yellow
     :param attrs: Attributes of color
 
     :return: Colored text.
