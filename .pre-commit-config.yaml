@@ -7,6 +7,7 @@ repos:
         args:
           - --max-complexity=10
           - --max-line-length=127
+          - --select=E9,F63,F7,F82
 - repo: https://github.com/terrencepreilly/darglint
   rev: v1.5.8
   hooks:
