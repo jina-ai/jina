@@ -4,10 +4,13 @@ import sys
 from rich import print as pprint
 from rich.table import Table
 from rich import box
+from jina.helper import get_rich_console
 
 
 def _get_run_args(print_args: bool = True):
     from jina.parsers import get_main_parser
+
+    console = get_rich_console()
 
     silent_print = {'help', 'hub'}
 
@@ -52,8 +55,8 @@ def _get_run_args(print_args: bool = True):
                 param_str.add_row(sign, param, value, style=style)
 
             print(f'\n{logo_str}\n')
-            pprint(f'▶️  {" ".join(sys.argv)}')
-            pprint(param_str)
+            console.print(f'▶️  {" ".join(sys.argv)}')
+            console.print(param_str)
         return args
     else:
         parser.print_help()

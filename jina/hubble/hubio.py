@@ -34,6 +34,7 @@ from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.parsers.hubble import set_hub_parser
+from jina.helper import get_rich_console
 
 
 class HubIO:
@@ -75,11 +76,10 @@ class HubIO:
         from rich.prompt import Prompt, Confirm
         from rich.panel import Panel
         from rich.table import Table
-        from rich.console import Console
         from rich.progress import track
         from rich.syntax import Syntax
 
-        console = Console()
+        console = get_rich_console()
 
         print(
             Panel.fit(
@@ -325,8 +325,6 @@ metas:
     def push(self) -> None:
         """Push the executor package to Jina Hub."""
 
-        from rich.console import Console
-
         work_path = Path(self.args.path)
 
         exec_tags = None
@@ -345,7 +343,7 @@ metas:
 
             dockerfile = dockerfile.relative_to(work_path)
 
-        console = Console()
+        console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
             req_header = get_request_header()
             try:
@@ -635,10 +633,9 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             'args': args_copy,
         }
 
-        from rich.progress import Console
         import requests
 
-        console = Console()
+        console = get_rich_console()
 
         host = None
         port = None
@@ -756,9 +753,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         :return: the `uses` string
         """
 
-        from rich.console import Console
-
-        console = Console()
+        console = get_rich_console()
         cached_zip_file = None
         executor_name = None
         usage_kind = None

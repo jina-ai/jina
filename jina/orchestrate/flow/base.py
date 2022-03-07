@@ -46,6 +46,7 @@ from jina.helper import (
     get_internal_ip,
     get_public_ip,
     typename,
+    get_rich_console,
 )
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -1148,7 +1149,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             threads.append(t)
             t.start()
 
-        console = Console()
+        console = get_rich_console()
         with console.status('Working...') as status:
             # kick off spinner thread
             t_m = threading.Thread(target=_polling_status, args=[status], daemon=True)

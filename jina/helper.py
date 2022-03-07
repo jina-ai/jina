@@ -31,6 +31,8 @@ from typing import (
     TypeVar,
     TYPE_CHECKING,
 )
+from rich.console import Console
+
 
 from jina import __windows__
 
@@ -57,6 +59,7 @@ __all__ = [
     'get_readable_size',
     'get_or_reuse_loop',
     'T',
+    'get_rich_console',
 ]
 
 if TYPE_CHECKING:
@@ -1368,3 +1371,13 @@ def get_request_header() -> Dict:
         **envs,
     }
     return header
+
+
+def get_rich_console():
+    """
+    Function to get jina rich default console.
+    :return: rich console
+    """
+    return Console(
+        force_terminal=True, force_interactive=True
+    )  # It forces render in any terminal, especily in PyCharm

@@ -8,7 +8,7 @@ if typing.TYPE_CHECKING:
 
 
 from jina import __windows__
-from jina.helper import get_readable_size, get_readable_time, colored
+from jina.helper import get_readable_size, get_readable_time, colored, get_rich_console
 
 from rich.progress import (
     Progress,
@@ -24,6 +24,7 @@ from rich.progress import (
 
 from rich.text import Text
 from rich.table import Column
+from rich.console import Console
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -107,6 +108,7 @@ class ProgressBar(Progress):
         message_on_done: Optional[Union[str, Callable[..., str]]] = None,
         columns: Optional[Union[str, ProgressColumn]] = None,
         disable: bool = False,
+        console: Optional[Console] = None,
         **kwargs,
     ):
         """Init a custom progress bar based on rich. This is the default progress bar of jina if you want to  customize
@@ -144,7 +146,10 @@ class ProgressBar(Progress):
             ),
         ]
 
-        super().__init__(*columns, disable=disable, **kwargs)
+        if not console:
+            console = get_rich_console()
+
+        super().__init__(*columns, console=console, disable=disable, **kwargs)
 
         self.task_id = self.add_task(
             'Working...', total=total_length if total_length else 100.0
