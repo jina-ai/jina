@@ -1,4 +1,6 @@
 import os
+import subprocess
+from pathlib import Path
 
 import docker
 import pytest
@@ -19,7 +21,27 @@ class KindClusterWrapper:
         )
         self._log = logger
         self._set_kube_config()
+        self._install_linkderd(kind_cluster)
         self._loaded_images = set()
+
+    def _install_linkderd(self, kind_cluster):
+        proc = subprocess.Popen(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'],
+            stdout=subprocess.PIPE,
+            env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+        )
+        _ = subprocess.check_output(
+            (
+                str(kind_cluster.kubectl_path),
+                'apply',
+                '-f',
+                '-',
+            ),
+            stdin=proc.stdout,
+        )
+        returncode = proc.poll()
+        if returncode is not None and returncode != 0:
+            raise Exception(f"Installing linkerd failed with {returncode}")
 
     def _set_kube_config(self):
         self._log.debug(f'Setting KUBECONFIG to {self._kube_config_path}')
