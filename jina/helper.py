@@ -77,7 +77,15 @@ def deprecated_alias(**aliases):
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_alias(input_fn=('inputs', 0), buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+
+            @deprecated_alias(
+                input_fn=('inputs', 0),
+                buffer=('input_fn', 0),
+                callback=('on_done', 1),
+                output_fn=('on_done', 1),
+            )
+            def some_function(inputs, input_fn, on_done):
+                pass
 
     :param aliases: maps aliases to new arguments
     :return: wrapper
@@ -184,8 +192,9 @@ def batch_iterator(
     For example:
     .. highlight:: python
     .. code-block:: python
+
             for req in batch_iterator(data, batch_size, split_over_axis):
-                # Do something with batch
+                pass  # Do something with batch
 
     :param data: Data source.
     :param batch_size: Size of one batch.
@@ -268,7 +277,9 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
     For example:
         .. highlight:: python
         .. code-block:: python
-            countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
+            countdown(
+                10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse'])
+            )
 
     :param t: Countdown time.
     :param reason: A string message of reason for this Countdown.
@@ -1397,7 +1408,6 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
     .. code-block:: python
 
         def extend_rest_interface(app: 'FastAPI'):
-
             @app.get('/extension1')
             async def root():
                 return {"message": "Hello World"}
@@ -1460,8 +1470,8 @@ GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
 def docarray_graphql_compatible():
     """Check if installed docarray version is compatible with GraphQL features.
 
-        :return: True if compatible, False if not
-        """
+    :return: True if compatible, False if not
+    """
     installed_version = pckg_version.parse(__docarray_version__)
     min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
     return installed_version >= min_version
