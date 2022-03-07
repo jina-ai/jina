@@ -1,9 +1,9 @@
-from argparse import Namespace
 import itertools
 import json
 import os
 import shutil
 import urllib
+from argparse import Namespace
 from pathlib import Path
 
 import docker
@@ -366,7 +366,7 @@ def test_pull_with_progress():
 
 @pytest.mark.parametrize('add_dockerfile', [True, False])
 def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
-    from rich.prompt import Prompt, Confirm
+    from rich.prompt import Confirm, Prompt
 
     prompts = iter(
         [

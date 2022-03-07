@@ -7,30 +7,30 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Optional, Union, Dict
+from typing import Dict, Optional, Union
 from urllib.parse import urlencode
 
+from jina import __resources_path__, __version__
+from jina.helper import ArgNamespace, colored, get_request_header
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
+    disk_cache_offline,
     download_with_resume,
+    get_cache_db,
+    get_download_cache_dir,
     get_hubble_url_v2,
     parse_hub_uri,
     upload_file,
-    disk_cache_offline,
-    get_cache_db,
-    get_download_cache_dir,
 )
 from jina.hubble.hubapi import (
-    install_local,
-    get_dist_path_of_executor,
-    load_secret,
     dump_secret,
+    get_dist_path_of_executor,
     get_lockfile,
+    install_local,
     install_package_dependencies,
+    load_secret,
 )
-from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.parsers.hubble import set_hub_parser
@@ -60,9 +60,9 @@ class HubIO:
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
 
         with ImportExtensions(required=True):
-            import rich
             import cryptography
             import filelock
+            import rich
 
             assert rich  #: prevent pycharm auto remove the above line
             assert cryptography
@@ -71,13 +71,13 @@ class HubIO:
     def new(self) -> None:
         """Create a new executor folder interactively."""
 
-        from rich import print, box
-        from rich.prompt import Prompt, Confirm
-        from rich.panel import Panel
-        from rich.table import Table
+        from rich import box, print
         from rich.console import Console
+        from rich.panel import Panel
         from rich.progress import track
+        from rich.prompt import Confirm, Prompt
         from rich.syntax import Syntax
+        from rich.table import Table
 
         console = Console()
 
@@ -468,8 +468,8 @@ metas:
     def _prettyprint_result(self, console, image):
         # TODO: only support single executor now
 
-        from rich.table import Table
         from rich.panel import Panel
+        from rich.table import Table
 
         uuid8 = image['id']
         secret = image['secret']
@@ -639,8 +639,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             'args': args_copy,
         }
 
-        from rich.progress import Console
         import requests
+        from rich.progress import Console
 
         console = Console()
 
@@ -696,7 +696,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         return host, port
 
     def _pull_with_progress(self, log_streams, console):
-        from rich.progress import Progress, DownloadColumn, BarColumn
+        from rich.progress import BarColumn, DownloadColumn, Progress
 
         with Progress(
             "[progress.description]{task.description}",
@@ -735,8 +735,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
     def _load_docker_client(self):
         with ImportExtensions(required=True):
-            import docker.errors
             import docker
+            import docker.errors
             from docker import APIClient
 
             from jina import __windows__
