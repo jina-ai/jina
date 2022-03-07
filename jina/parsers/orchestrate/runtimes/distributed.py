@@ -1,7 +1,7 @@
 """Argparser module for distributed runtimes"""
 import argparse
 
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
 
 
 def mixin_distributed_feature_parser(parser):
@@ -34,13 +34,4 @@ Note,
 - by default, `--uses` YAML file is always uploaded.
 - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
 ''',
-    )
-
-    gp.add_argument(
-        '--disable-remote',
-        action='store_true',
-        default=False,
-        help='If set, remote pod invocation is avoided. This is used by pods created by JinaD'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
     )
