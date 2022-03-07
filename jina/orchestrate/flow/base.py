@@ -147,6 +147,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        no_graphql_endpoint: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         prefetch: Optional[int] = 0,
@@ -208,6 +209,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
+        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -272,6 +274,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
+        no_graphql_endpoint: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -296,6 +299,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -446,6 +450,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
+        args.no_graphql_endpoint = (
+            self.args.no_graphql_endpoint
+        )  # also used in Flow, thus not in kwargs
         args.graph_description = json.dumps(graph_description)
         args.deployments_addresses = json.dumps(deployments_addresses)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
@@ -1505,6 +1512,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'Redoc: ',
                 f'[underline]http://localhost:{self.port}/redoc[/underline]',
             )
+
+            if not self.args.no_graphql_endpoint:
+                address_table.add_row(
+                    '💬',
+                    'GraphQL UI: ',
+                    f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
+                )
 
         return address_table
 

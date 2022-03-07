@@ -9,6 +9,10 @@ It enables you to send `Documents` to a running `Flow` in a number of different 
 However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
+## HTTP, gRPC, and WebSocket
+
+Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
+These can all be used in the same way by using `client.post()`.
 
 Starting the Flow:
 
@@ -52,7 +56,7 @@ client.post('/endpoint')  # Empty
 ```
 
 
-## Batching Requests
+### Batching Requests
 
 Especially during indexing, a Client can send up to thousands or millions of Documents to a `Flow`.
 Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
@@ -69,7 +73,7 @@ with Flow() as f:
     client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
 ```
 
-## Targeting a specific Executor
+### Targeting a specific Executor
 Usually a `Flow` will send each request to all Executors with matching endpoints as configured. But the `Client` also allows you to only target a specific Executor in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.
 
 ```python
@@ -101,7 +105,7 @@ with f:  # Using it as a Context Manager will start the Flow
     print(docs.texts)
 ```
 
-## Request parameters
+### Request parameters
 
 The Client can also send parameters to the Executors as shown below:
 
@@ -139,7 +143,7 @@ This might be useful to control `Executor` objects during their lifetime.
 ````
 
 (callback-functions)=
-## Processing results using callback functions
+### Processing results using callback functions
 
 After performing `client.post()`, you may want to further process the obtained results.
 
@@ -241,7 +245,7 @@ def on_error(resp, exception: Exception):
     ...
 ```
 
-## Returning results from .post()
+### Returning results from .post()
 
 If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
 
@@ -318,9 +322,33 @@ with Flow() as f:
 
 ````
 
+## GraphQL
+
+The Jina Client additionally supports fetching data via GraphQL mutations using `client.mutate()`:
+
+```python
+from jina import Client
+
+PORT = ...
+c = Client(port=PORT)
+mut = '''
+        mutation {
+            docs(data: {text: "abcd"}) { 
+                id
+                matches {
+                    embedding
+                }
+            } 
+        }
+    '''
+response = c.mutate(mutation=mut)
+```
+
+For details on the allowed mutation arguments and response fields, see {ref}`here <flow-graphql>`.
+
 ## Async Python Client
 
-There also exists an async version of the Python Client.
+There also exists an async version of the Python Client which works with `.post()` and `.mutate()`.
 
 While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
 by allowing *coroutines* as input, and returning an *asynchronous iterator*.

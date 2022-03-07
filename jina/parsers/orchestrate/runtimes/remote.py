@@ -1,8 +1,7 @@
 """Argparser module for remote runtime"""
-from jina.parsers.helper import KVAppendAction, add_arg_group
-from jina import __default_host__
-from jina import helper
+from jina import __default_host__, helper
 from jina.enums import CompressAlgo
+from jina.parsers.helper import KVAppendAction, add_arg_group
 
 
 def mixin_remote_runtime_parser(parser):
@@ -92,6 +91,21 @@ def _add_proxy(arg_group):
         help='If set, respect the http_proxy and https_proxy environment variables. '
         'otherwise, it will unset these proxy variables before start. '
         'gRPC seems to prefer no proxy',
+    )
+
+
+def mixin_graphql_parser(parser=None):
+    """Add the options to rest server
+
+    :param parser: the parser
+    """
+
+    gp = add_arg_group(parser, title='GraphQL')
+    gp.add_argument(
+        '--no-graphql-endpoint',
+        action='store_true',
+        default=False,
+        help='If set, /graphql endpoint is removed from HTTP interface. ',
     )
 
 

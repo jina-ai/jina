@@ -256,7 +256,6 @@ from jina import Flow
 f = Flow(cors=True, protocol='http')
 ```
 
-
 ## Generate deployment configuration
 
 To deploy a `Flow` you will need to deploy the Executors it is composed of.

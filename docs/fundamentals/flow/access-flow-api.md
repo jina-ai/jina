@@ -171,6 +171,70 @@ You can send data requests to a Flow via cURL, Postman, or any other HTTP client
 
 </details>
 
+(flow-graphql)=
+## GraphQL Interface
+
+````{admonition} See Also
+:class: seealso
+
+This article does not serve as the introduction to GraphQL.
+If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the official [GraphQL documentation](https://graphql.org/learn/).
+You may also want to learn about [Strawberry](https://strawberry.rocks/), the library that powers Jina's GraphQL support.
+````
+Jina Flows that use the HTTP protocol provide a GraphQL API out of the box, which is located behind the '/graphql' endpoint.
+GraphQL has the advantage of letting the user define their own response schema, which means that only the fields that are required
+will be sent over the wire.
+This is especially useful when the user does not need potentially large fields, like image tensors.
+
+You can access the Flow from any GraphQL client, like for example, `sgqlc`.
+
+```python
+from sgqlc.endpoint.http import HTTPEndpoint
+
+HOSTNAME, PORT = ...
+endpoint = HTTPEndpoint(url=f'{HOSTNAME}:{PORT}/graphql')
+mut = '''
+        mutation {
+            docs(data: {text: "abcd"}) { 
+                id
+                matches {
+                    embedding
+                }
+            } 
+        }
+    '''
+response = endpoint(mut)
+```
+
+### Mutations and arguments
+
+The Flow GraphQL API exposes the mutation `docs`, which sends its inputs to the Flow's Executors,
+just like HTTP `post` as described {ref}`above <http-interface>`.
+
+A GraphQL mutation can take the following arguments:
+
+- `execEndpoint` - required: String representing the Executor endpoint to target, e.g. `execEndpoint: "/search"`
+- `data` - optional: List of Documents to be processed by the Executors, e.g. `data: [{text: "hello"}, {text: "world"}`
+- `parameters` - optional: Dictionary of parameters to be passed to the Executors, e.g. `parameters: {"my_param": 3}`
+- `targetExecutor` - optional: String representing name of the Executor to target, e.g `"targetExecutor: "MyExec"`
+
+The GraphQL response can include all fields available on a DocumentArray.
+
+````{admonition} See Also
+:class: seealso
+
+For more details on the GraphQL format of Document and DocumentArray, see the [documentation page](https://docarray.jina.ai/advanced/graphql-support/)
+or the [developer reference](https://docarray.jina.ai/api/docarray.document.mixins.strawberry/).
+````
+
+
+### Fields
+
+The available fields in the GraphQL API are defined by the [Document Strawberry type](https://docarray.jina.ai/advanced/graphql-support/?highlight=graphql).
+
+Essentially, you can ask for any property of a Document, including `embedding`, `text`, `tensor`, `id`, `matches`, `tags`,
+and more.
+
 ## See further
 
 - {ref}`Access a Flow with the Client <client>`
