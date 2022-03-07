@@ -307,7 +307,6 @@ def test_k8s_yaml_gateway(deployments_addresses):
     assert deployment['metadata'] == {
         'name': 'gateway',
         'namespace': 'default-namespace',
-        'annotations': {'linkerd.io/inject': 'enabled'},
     }
     spec_deployment = deployment['spec']
     assert spec_deployment['replicas'] == 1  # no gateway replication for now
@@ -324,7 +323,8 @@ def test_k8s_yaml_gateway(deployments_addresses):
             'shard_id': '',
             'pod_type': 'GATEWAY',
             'ns': 'default-namespace',
-        }
+        },
+        'annotations': {'linkerd.io/inject': 'enabled'},
     }
     spec = template['spec']
     containers = spec['containers']
@@ -456,7 +456,6 @@ def test_k8s_yaml_regular_deployment(
     assert head_deployment['metadata'] == {
         'name': 'executor-head',
         'namespace': 'default-namespace',
-        'annotations': {'linkerd.io/inject': 'enabled'},
     }
     head_spec_deployment = head_deployment['spec']
     assert head_spec_deployment['replicas'] == 1  # no head replication for now
@@ -473,7 +472,8 @@ def test_k8s_yaml_regular_deployment(
             'shard_id': '',
             'pod_type': 'HEAD',
             'ns': 'default-namespace',
-        }
+        },
+        'annotations': {'linkerd.io/inject': 'enabled'},
     }
 
     head_spec = head_template['spec']
@@ -651,7 +651,6 @@ def test_k8s_yaml_regular_deployment(
         assert shard_deployment['metadata'] == {
             'name': name,
             'namespace': 'default-namespace',
-            'annotations': {'linkerd.io/inject': 'enabled'},
         }
         shard_spec_deployment = shard_deployment['spec']
         assert shard_spec_deployment['replicas'] == 3  # no head replication for now
@@ -668,7 +667,8 @@ def test_k8s_yaml_regular_deployment(
                 'shard_id': str(i),
                 'pod_type': 'WORKER',
                 'ns': 'default-namespace',
-            }
+            },
+            'annotations': {'linkerd.io/inject': 'enabled'},
         }
 
         shard_spec = shard_template['spec']

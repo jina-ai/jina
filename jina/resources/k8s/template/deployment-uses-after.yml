@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: {name}
   namespace: {namespace}
-  annotations:
-    linkerd.io/inject: enabled
 spec:
   replicas: {replicas}
   strategy:
@@ -23,6 +21,8 @@ spec:
         shard_id: {shard_id}
         pod_type: {pod_type}
         ns: {namespace}
+      annotations:
+        linkerd.io/inject: enabled
     spec:
       containers:
       - name: executor
