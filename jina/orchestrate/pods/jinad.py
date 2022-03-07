@@ -1,23 +1,23 @@
-import copy
-import asyncio
 import argparse
-import threading
+import asyncio
+import copy
 import multiprocessing
+import threading
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Union, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
-from jina.orchestrate.pods import BasePod
-from jina.orchestrate.pods.helper import _get_worker, is_ready
-from jina.helper import run_async
-from jina.jaml.helper import complete_path
-from jina.importer import ImportExtensions
 from jina.enums import replace_enum_to_str
-from jina.logging.logger import JinaLogger
 from jina.excepts import (
     DaemonConnectivityError,
     DaemonPodCreationFailed,
     DaemonWorkspaceCreationFailed,
 )
+from jina.helper import run_async
+from jina.importer import ImportExtensions
+from jina.jaml.helper import complete_path
+from jina.logging.logger import JinaLogger
+from jina.orchestrate.pods import BasePod
+from jina.orchestrate.pods.helper import _get_worker, is_ready
 
 if TYPE_CHECKING:
     import argparse
@@ -86,8 +86,9 @@ class JinaDProcessTarget:
         """Create Workspace, Pod on remote JinaD server"""
         with ImportExtensions(required=True):
             # rich & aiohttp are used in `AsyncJinaDClient`
-            import rich
             import aiohttp
+            import rich
+
             from daemon.clients import AsyncJinaDClient
 
             assert rich
@@ -164,9 +165,9 @@ class JinaDProcessTarget:
         cargs = copy.deepcopy(self.args)
 
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
-        # _args.host = __default_host__
-        # host resetting disables dynamic routing. Use `disable_remote` instead
-        cargs.disable_remote = True
+        from jina import __default_host__
+
+        cargs.host = __default_host__
         cargs.log_config = ''  # do not use local log_config
         cargs.upload_files = []  # reset upload files
         cargs.noblock_on_start = False  # wait until start success
