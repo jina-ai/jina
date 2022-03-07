@@ -38,6 +38,7 @@ class KindClusterWrapper:
                 '-',
             ),
             stdin=proc.stdout,
+            env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
         returncode = proc.poll()
         if returncode is not None and returncode != 0:
