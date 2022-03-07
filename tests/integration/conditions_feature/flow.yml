@@ -9,7 +9,8 @@ executors:
   uses_metas:
     name: exec1
   condition:
-    type: '1'
+    tags__type:
+      $eq : 1
 - name: exec2
   needs:
   - first
@@ -18,7 +19,8 @@ executors:
   uses_metas:
     name: exec2
   condition:
-    type: '2'
+    tags__type:
+      $gt: 1
 - name: joiner
   needs:
   - exec2

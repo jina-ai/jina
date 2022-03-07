@@ -18,11 +18,4 @@ class Condition:
         :param docs: DocArray where to apply the filter
         :return: the resulting DocArray
         """
-        # docs.filter(self._condition)
-        ret = DocumentArray()
-        key = list(self._condition.keys())[0]
-        value = list(self._condition.values())[0]
-        for doc in docs:
-            if doc.tags[key] == float(value):
-                ret.append(doc)
-        return ret
+        return docs.find(self._condition)

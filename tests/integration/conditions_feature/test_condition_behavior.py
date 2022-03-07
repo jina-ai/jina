@@ -39,7 +39,7 @@ def flow(request, temp_workspace):
                 workspace=os.environ['TEMP_WORKSPACE'],
                 name='exec1',
                 needs=['first'],
-                condition={'type': '1'},
+                condition={'tags__type': {'$eq': 1}},
             )
             .add(
                 uses=ContitionDumpExecutor,
@@ -47,7 +47,7 @@ def flow(request, temp_workspace):
                 uses_metas={'name': 'exec2'},
                 name='exec2',
                 needs='first',
-                condition={'type': '2'},
+                condition={'tags__type': {'$gt': 1}},
             )
             .needs_all('joiner')
         )
@@ -105,7 +105,7 @@ def test_conditions_filtering_on_joiner(tmpdir):
             name='joiner_test_exec2',
             needs='first',
         )
-        .needs_all('joiner', condition={'type': '3'})
+        .needs_all('joiner', condition={'tags__type': {'$eq': 3}})
     )
     with flow:
         ret = flow.post(
