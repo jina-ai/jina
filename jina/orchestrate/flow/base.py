@@ -59,7 +59,6 @@ from jina.parsers import (
 )
 from jina.parsers.flow import set_flow_parser
 
-from rich.console import Console
 from rich.table import Table
 from rich import print
 
@@ -1178,7 +1177,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 raise RuntimeFailToStart
 
         success_msg = colored('🎉 Flow is ready to use!', 'green')
-        self.logger.info(success_msg)
+        console.print(success_msg)
         if addr_table:
             print(
                 addr_table
