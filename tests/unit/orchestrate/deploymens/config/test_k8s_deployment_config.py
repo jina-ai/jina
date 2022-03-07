@@ -249,37 +249,6 @@ def test_deployments(name: str, shards: str, gpus):
         assert deploy.shard_id == i
 
 
-def assert_role_config(role: Dict):
-    assert role['kind'] == 'Role'
-    assert role['metadata'] == {
-        'namespace': 'default-namespace',
-        'name': 'connection-pool',
-    }
-    assert role['rules'] == [
-        {
-            'apiGroups': [''],
-            'resources': ['pods', 'services'],
-            'verbs': ['list', 'watch'],
-        }
-    ]
-
-
-def assert_role_binding_config(role_binding: Dict):
-    assert role_binding['kind'] == 'RoleBinding'
-    assert role_binding['metadata'] == {
-        'name': 'connection-pool-binding',
-        'namespace': 'default-namespace',
-    }
-    assert role_binding['subjects'] == [
-        {'kind': 'ServiceAccount', 'name': 'default', 'apiGroup': ''}
-    ]
-    assert role_binding['roleRef'] == {
-        'kind': 'Role',
-        'name': 'connection-pool',
-        'apiGroup': '',
-    }
-
-
 def assert_config_map_config(
     config_map: Dict, base_name: str, expected_config_map_data: Dict
 ):
@@ -304,16 +273,8 @@ def test_k8s_yaml_gateway(deployments_addresses):
     assert len(yaml_configs) == 1
     name, configs = yaml_configs[0]
     assert name == 'gateway'
-    assert (
-        len(configs) == 5
-    )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-    # deployment)
-    role = configs[0]
-    assert_role_config(role)
-
-    role_binding = configs[1]
-    assert_role_binding_config(role_binding)
-    config_map = configs[2]
+    assert len(configs) == 3  # 3 configs per yaml (configmap, service and deployment)
+    config_map = configs[0]
     assert_config_map_config(
         config_map,
         'gateway',
@@ -324,7 +285,7 @@ def test_k8s_yaml_gateway(deployments_addresses):
         },
     )
 
-    service = configs[3]
+    service = configs[1]
     assert service['kind'] == 'Service'
     assert service['metadata'] == {
         'name': 'gateway',
@@ -341,11 +302,12 @@ def test_k8s_yaml_gateway(deployments_addresses):
     assert port['targetPort'] == 32465
     assert spec_service['selector'] == {'app': 'gateway'}
 
-    deployment = configs[4]
+    deployment = configs[2]
     assert deployment['kind'] == 'Deployment'
     assert deployment['metadata'] == {
         'name': 'gateway',
         'namespace': 'default-namespace',
+        'annotations': {'linkerd.io/inject': 'enabled'},
     }
     spec_deployment = deployment['spec']
     assert spec_deployment['replicas'] == 1  # no gateway replication for now
@@ -463,13 +425,9 @@ def test_k8s_yaml_regular_deployment(
     head_name, head_configs = yaml_configs[0]
     assert head_name == 'executor-head'
     assert (
-        len(head_configs) == 5
-    )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-    role = head_configs[0]
-    assert_role_config(role)
-    role_binding = head_configs[1]
-    assert_role_binding_config(role_binding)
-    config_map = head_configs[2]
+        len(head_configs) == 3
+    )  # 3 configs per yaml (configmap, service and deployment)
+    config_map = head_configs[0]
     assert_config_map_config(
         config_map,
         'executor-head',
@@ -479,7 +437,7 @@ def test_k8s_yaml_regular_deployment(
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
         },
     )
-    head_service = head_configs[3]
+    head_service = head_configs[1]
     assert head_service['kind'] == 'Service'
     assert head_service['metadata'] == {
         'name': 'executor-head',
@@ -493,11 +451,12 @@ def test_k8s_yaml_regular_deployment(
     assert_port_config(head_port, 'port', 8080)
     assert head_spec_service['selector'] == {'app': 'executor-head'}
 
-    head_deployment = head_configs[4]
+    head_deployment = head_configs[2]
     assert head_deployment['kind'] == 'Deployment'
     assert head_deployment['metadata'] == {
         'name': 'executor-head',
         'namespace': 'default-namespace',
+        'annotations': {'linkerd.io/inject': 'enabled'},
     }
     head_spec_deployment = head_deployment['spec']
     assert head_spec_deployment['replicas'] == 1  # no head replication for now
@@ -660,13 +619,9 @@ def test_k8s_yaml_regular_deployment(
         name = f'executor-{i}' if shards > 1 else 'executor'
         assert shard_name == name
         assert (
-            len(shard_configs) == 5
-        )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-        role = shard_configs[0]
-        assert_role_config(role)
-        role_binding = shard_configs[1]
-        assert_role_binding_config(role_binding)
-        config_map = shard_configs[2]
+            len(shard_configs) == 3
+        )  # 3 configs per yaml (configmap, service and deployment
+        config_map = shard_configs[0]
         assert_config_map_config(
             config_map,
             name,
@@ -677,7 +632,7 @@ def test_k8s_yaml_regular_deployment(
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },
         )
-        shard_service = shard_configs[3]
+        shard_service = shard_configs[1]
         assert shard_service['kind'] == 'Service'
         assert shard_service['metadata'] == {
             'name': name,
@@ -691,11 +646,12 @@ def test_k8s_yaml_regular_deployment(
         assert_port_config(shard_port, 'port', 8080)
         assert shard_spec_service['selector'] == {'app': name}
 
-        shard_deployment = shard_configs[4]
+        shard_deployment = shard_configs[2]
         assert shard_deployment['kind'] == 'Deployment'
         assert shard_deployment['metadata'] == {
             'name': name,
             'namespace': 'default-namespace',
+            'annotations': {'linkerd.io/inject': 'enabled'},
         }
         shard_spec_deployment = shard_deployment['spec']
         assert shard_spec_deployment['replicas'] == 3  # no head replication for now

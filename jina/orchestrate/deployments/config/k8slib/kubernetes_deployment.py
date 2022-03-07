@@ -91,18 +91,6 @@ def get_deployment_yamls(
 
     yamls = [
         kubernetes_tools.get_yaml(
-            'connection-pool-role',
-            {
-                'namespace': namespace,
-            },
-        ),
-        kubernetes_tools.get_yaml(
-            'connection-pool-role-binding',
-            {
-                'namespace': namespace,
-            },
-        ),
-        kubernetes_tools.get_yaml(
             'configmap',
             {
                 'name': name,

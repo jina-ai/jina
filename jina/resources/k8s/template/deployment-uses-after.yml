@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: {name}
   namespace: {namespace}
+  annotations:
+    linkerd.io/inject: enabled
 spec:
   replicas: {replicas}
   strategy:
