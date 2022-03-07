@@ -67,6 +67,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="https://www.meetup.com/jina-community-meetup/events/284352395">Learn how to build Vehicle Search and Audio Search using Jina at our Engineering All Hands on March 8th</a>
+    ''',
+        
     # end-announce
 }
 
