@@ -15,6 +15,7 @@ from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
+from packaging import version as pckg_version
 from types import SimpleNamespace
 from typing import (
     Callable,
@@ -32,7 +33,7 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from jina import __windows__
+from jina import __windows__, __docarray_version__
 
 __all__ = [
     'batch_iterator',
@@ -57,6 +58,7 @@ __all__ = [
     'get_readable_size',
     'get_or_reuse_loop',
     'T',
+    'docarray_graphql_compatible',
 ]
 
 
@@ -1450,3 +1452,16 @@ def get_request_header() -> Dict:
         **envs,
     }
     return header
+
+
+GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
+
+
+def docarray_graphql_compatible():
+    """Check if installed docarray version is compatible with GraphQL features.
+
+        :return: True if compatible, False if not
+        """
+    installed_version = pckg_version.parse(__docarray_version__)
+    min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
+    return installed_version >= min_version
