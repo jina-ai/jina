@@ -640,7 +640,7 @@
 .. code-block:: python</p>
 <blockquote>
 <div><dl class="simple">
-<dt>for req in batch_iterator(data, batch_size, split_over_axis):</dt><dd><p># Do something with batch</p>
+<dt>for req in batch_iterator(data, batch_size, split_over_axis):</dt><dd><p>pass  # Do something with batch</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -985,8 +985,18 @@ is running in the same thread.</p>
 <span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">deprecated_alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">aliases</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#deprecated_alias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.deprecated_alias" title="Permalink to this definition">¶</a></dt>
 <dd><p>Usage, kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).</p>
 <p>With level 0 means warning, level 1 means exception.</p>
-<dl class="simple">
-<dt>For example:</dt><dd></dd>
+<dl>
+<dt>For example:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@deprecated_alias</span><span class="p">(</span>
+    <span class="n">input_fn</span><span class="o">=</span><span class="p">(</span><span class="s1">'inputs'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">buffer</span><span class="o">=</span><span class="p">(</span><span class="s1">'input_fn'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">callback</span><span class="o">=</span><span class="p">(</span><span class="s1">'on_done'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">output_fn</span><span class="o">=</span><span class="p">(</span><span class="s1">'on_done'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">input_fn</span><span class="p">,</span> <span class="n">on_done</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</dd>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1068,6 +1078,16 @@ sub context is called, even when there is an Exception in the
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A new eventloop or reuse the current opened eventloop.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.helper.docarray_graphql_compatible">
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">docarray_graphql_compatible</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#docarray_graphql_compatible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.docarray_graphql_compatible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if installed docarray version is compatible with GraphQL features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if compatible, False if not</p>
 </dd>
 </dl>
 </dd></dl>
