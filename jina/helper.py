@@ -17,24 +17,25 @@ from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
 from typing import (
-    Callable,
-    Tuple,
-    Optional,
-    Iterator,
-    Any,
-    Union,
-    List,
-    Dict,
-    Set,
-    Sequence,
-    Iterable,
-    TypeVar,
     TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
 )
+
+from packaging import version as pckg_version
 from rich.console import Console
 
-
-from jina import __windows__
+from jina import __docarray_version__, __windows__
 
 __all__ = [
     'batch_iterator',
@@ -60,6 +61,7 @@ __all__ = [
     'get_or_reuse_loop',
     'T',
     'get_rich_console',
+    'docarray_graphql_compatible',
 ]
 
 if TYPE_CHECKING:
@@ -77,7 +79,15 @@ def deprecated_alias(**aliases):
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_alias(input_fn=('inputs', 0), buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+
+            @deprecated_alias(
+                input_fn=('inputs', 0),
+                buffer=('input_fn', 0),
+                callback=('on_done', 1),
+                output_fn=('on_done', 1),
+            )
+            def some_function(inputs, input_fn, on_done):
+                pass
 
     :param aliases: maps aliases to new arguments
     :return: wrapper
@@ -184,8 +194,9 @@ def batch_iterator(
     For example:
     .. highlight:: python
     .. code-block:: python
+
             for req in batch_iterator(data, batch_size, split_over_axis):
-                # Do something with batch
+                pass  # Do something with batch
 
     :param data: Data source.
     :param batch_size: Size of one batch.
@@ -268,7 +279,9 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
     For example:
         .. highlight:: python
         .. code-block:: python
-            countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
+            countdown(
+                10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse'])
+            )
 
     :param t: Countdown time.
     :param reason: A string message of reason for this Countdown.
@@ -774,19 +787,25 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    import os, grpc, google.protobuf, yaml, platform
-    from jina import (
-        __version__,
-        __proto_version__,
-        __docarray_version__,
-        __jina_env__,
-        __uptime__,
-        __unset_msg__,
-    )
+    import os
+    import platform
+    from uuid import getnode
+
+    import google.protobuf
+    import grpc
+    import yaml
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
+
+    from jina import (
+        __docarray_version__,
+        __jina_env__,
+        __proto_version__,
+        __unset_msg__,
+        __uptime__,
+        __version__,
+    )
     from jina.logging.predefined import default_logger
-    from uuid import getnode
 
     try:
 
@@ -1233,7 +1252,9 @@ def find_request_binding(target):
     :param target: the target class to check
     :return: a dictionary with key as request type and value as method name
     """
-    import ast, inspect
+    import ast
+    import inspect
+
     from jina import __default_endpoint__
 
     res = {}
@@ -1284,8 +1305,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
     except ValueError:
         pass
 
-    from google.protobuf.struct_pb2 import ListValue
-    from google.protobuf.struct_pb2 import Struct
+    from google.protobuf.struct_pb2 import ListValue, Struct
 
     if isinstance(part1, int):
         result = _dict[part1]
@@ -1316,7 +1336,6 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
     .. code-block:: python
 
         def extend_rest_interface(app: 'FastAPI'):
-
             @app.get('/extension1')
             async def root():
                 return {"message": "Hello World"}
@@ -1381,3 +1400,16 @@ def get_rich_console():
     return Console(
         force_terminal=True, force_interactive=True
     )  # It forces render in any terminal, especily in PyCharm
+
+
+GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
+
+
+def docarray_graphql_compatible():
+    """Check if installed docarray version is compatible with GraphQL features.
+
+    :return: True if compatible, False if not
+    """
+    installed_version = pckg_version.parse(__docarray_version__)
+    min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
+    return installed_version >= min_version

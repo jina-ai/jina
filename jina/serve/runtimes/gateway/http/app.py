@@ -1,11 +1,16 @@
 import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
+import warnings
 
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
-from jina.helper import get_full_version
+from jina.helper import (
+    get_full_version,
+    docarray_graphql_compatible,
+    GRAPHQL_MIN_DOCARRAY_VERSION,
+)
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
@@ -51,6 +56,14 @@ def get_fastapi_app(
         version=__version__,
         docs_url=docs_url if args.default_swagger_ui else None,
     )
+
+    if not args.no_graphql_endpoint and not docarray_graphql_compatible():
+        args.no_graphql_endpoint = True
+        warnings.warn(
+            'DocArray version is incompatible with GraphQL features.'
+            'Setting no_graphql_endpoint=True.'
+            f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
+        )
 
     if args.cors:
         app.add_middleware(

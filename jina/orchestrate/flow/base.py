@@ -10,6 +10,7 @@ import sys
 import threading
 import time
 import uuid
+import warnings
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import (
@@ -23,6 +24,9 @@ from typing import (
     Union,
     overload,
 )
+
+from rich import print
+from rich.table import Table
 
 from jina import __default_host__, helper
 from jina.clients import Client
@@ -39,14 +43,16 @@ from jina.excepts import (
     RuntimeFailToStart,
 )
 from jina.helper import (
+    GRAPHQL_MIN_DOCARRAY_VERSION,
     ArgNamespace,
     CatchAllCleanupContextManager,
     colored,
+    docarray_graphql_compatible,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
-    typename,
     get_rich_console,
+    typename,
 )
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -58,9 +64,6 @@ from jina.parsers import (
     set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
-
-from rich.table import Table
-from rich import print
 
 __all__ = ['Flow']
 
@@ -335,6 +338,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             GATEWAY_NAME
         ]  #: default first deployment is gateway, will add when build()
         self._update_args(args, **kwargs)
+        if (
+            self.protocol == GatewayProtocolType.HTTP
+            and not self.args.no_graphql_endpoint
+            and not docarray_graphql_compatible()
+        ):
+            self.args.no_graphql_endpoint = True
+            warnings.warn(
+                'DocArray version is incompatible with GraphQL features. '
+                'Automatically setting no_graphql_endpoint=True. '
+                f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
+            )
 
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
