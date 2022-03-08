@@ -7,30 +7,30 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Optional, Union, Dict
+from typing import Dict, Optional, Union
 from urllib.parse import urlencode
 
+from jina import __resources_path__, __version__
+from jina.helper import ArgNamespace, colored, get_request_header
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
+    disk_cache_offline,
     download_with_resume,
+    get_cache_db,
+    get_download_cache_dir,
     get_hubble_url_v2,
     parse_hub_uri,
     upload_file,
-    disk_cache_offline,
-    get_cache_db,
-    get_download_cache_dir,
 )
 from jina.hubble.hubapi import (
-    install_local,
-    get_dist_path_of_executor,
-    load_secret,
     dump_secret,
+    get_dist_path_of_executor,
     get_lockfile,
+    install_local,
     install_package_dependencies,
+    load_secret,
 )
-from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, colored, get_request_header
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.parsers.hubble import set_hub_parser
@@ -60,9 +60,9 @@ class HubIO:
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
 
         with ImportExtensions(required=True):
-            import rich
             import cryptography
             import filelock
+            import rich
 
             assert rich  #: prevent pycharm auto remove the above line
             assert cryptography
@@ -71,13 +71,13 @@ class HubIO:
     def new(self) -> None:
         """Create a new executor folder interactively."""
 
-        from rich import print, box
-        from rich.prompt import Prompt, Confirm
-        from rich.panel import Panel
-        from rich.table import Table
+        from rich import box, print
         from rich.console import Console
+        from rich.panel import Panel
         from rich.progress import track
+        from rich.prompt import Confirm, Prompt
         from rich.syntax import Syntax
+        from rich.table import Table
 
         console = Console()
 
@@ -468,8 +468,8 @@ metas:
     def _prettyprint_result(self, console, image):
         # TODO: only support single executor now
 
-        from rich.table import Table
         from rich.panel import Panel
+        from rich.table import Table
 
         uuid8 = image['id']
         secret = image['secret']
@@ -559,13 +559,16 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
     def fetch_meta(
         name: str,
         tag: str,
+        *,
         secret: Optional[str] = None,
+        image_required: bool = True,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Name of the executor
         :param tag: the tag of the executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the executor
+        :param image_required: it indicates whether a Docker image is required or not
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
@@ -577,17 +580,18 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage?id={name}'
-        path_params = {}
+        pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage'
+
+        payload = {'id': name, 'include': ['code']}
+        if image_required:
+            payload['include'].append('docker')
         if secret:
-            path_params['secret'] = secret
+            payload['secret'] = secret
         if tag:
-            path_params['tag'] = tag
-        if path_params:
-            pull_url += f'&{urlencode(path_params)}'
+            payload['tag'] = tag
 
         req_header = get_request_header()
-        resp = requests.get(pull_url, headers=req_header)
+        resp = requests.post(pull_url, json=payload, headers=req_header)
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
@@ -597,7 +601,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
         images = resp['package'].get('containers', [])
         image_name = images[0] if images else None
-        if not image_name:
+        if image_required and not image_name:
             raise Exception(
                 f'No image found for executor "{name}", '
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
@@ -635,8 +639,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             'args': args_copy,
         }
 
-        from rich.progress import Console
         import requests
+        from rich.progress import Console
 
         console = Console()
 
@@ -674,9 +678,10 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                     headers=get_request_header(),
                 ).json()
 
-                host = json_response.get('data', {}).get('host', None)
-                port = json_response.get('data', {}).get('port', None)
-                livetime = json_response.get('data', {}).get('livetime', '15 mins')
+                data = json_response.get('data') or {}
+                host = data.get('host', None)
+                port = data.get('port', None)
+                livetime = data.get('livetime', '15 mins')
                 if not host or not port:
                     raise Exception(f'Failed to deploy sandbox: {json_response}')
 
@@ -691,7 +696,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         return host, port
 
     def _pull_with_progress(self, log_streams, console):
-        from rich.progress import Progress, DownloadColumn, BarColumn
+        from rich.progress import BarColumn, DownloadColumn, Progress
 
         with Progress(
             "[progress.description]{task.description}",
@@ -730,8 +735,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
     def _load_docker_client(self):
         with ImportExtensions(required=True):
-            import docker.errors
             import docker
+            import docker.errors
             from docker import APIClient
 
             from jina import __windows__
@@ -767,10 +772,15 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             need_pull = self.args.force_update
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
+                image_required = scheme == 'jinahub+docker'
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
                 executor, from_cache = HubIO.fetch_meta(
-                    name, tag, secret=secret, force=need_pull
+                    name,
+                    tag,
+                    secret=secret,
+                    image_required=image_required,
+                    force=need_pull,
                 )
 
                 presented_id = getattr(executor, 'name', executor.uuid)
@@ -832,7 +842,11 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                             # pull the latest executor meta, as the cached data would expire
                             if from_cache:
                                 executor, _ = HubIO.fetch_meta(
-                                    name, tag, secret=secret, force=True
+                                    name,
+                                    tag,
+                                    secret=secret,
+                                    image_required=False,
+                                    force=True,
                                 )
 
                             st.update(f'Downloading {name} ...')
