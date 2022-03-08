@@ -5,11 +5,11 @@ from PIL import Image
 
 from jina import Document, DocumentArray, Flow
 from jina.helloworld.multimodal.my_executors import (
-    Segmenter,
-    TextEncoder,
-    TextCrafter,
     ImageCrafter,
     ImageEncoder,
+    Segmenter,
+    TextCrafter,
+    TextEncoder,
 )
 
 
@@ -60,30 +60,26 @@ def test_segmenter(segmenter_doc_array, tmpdir):
     into datauri to show the image in front-end.
     """
 
-    def validate(resp):
-        assert len(resp.data.docs) == 2
-        for doc in resp.data.docs:
-            assert len(doc.chunks) == 2
-            assert doc.chunks[0].mime_type == 'text/plain'
-            assert doc.chunks[1].mime_type == 'image/jpeg'
-            assert doc.uri.startswith('data')
-
     create_test_img(path=str(tmpdir), file_name='1.png')
     create_test_img(path=str(tmpdir), file_name='2.png')
     with Flow().add(uses=Segmenter) as f:
-        f.index(inputs=segmenter_doc_array, on_done=validate)
+        res = f.index(inputs=segmenter_doc_array)
+    assert len(res) == 2
+    for doc in res:
+        assert len(doc.chunks) == 2
+        assert doc.chunks[0].mime_type == 'text/plain'
+        assert doc.chunks[1].mime_type == 'image/jpeg'
+        assert doc.uri.startswith('data')
 
 
 def test_text_crafter(encoder_doc_array, tmpdir):
-    def validate(resp):
-        assert len(resp.data.docs) == 1
-        doc = resp.data.docs[0]
-        assert doc.mime_type == 'text/plain'
-        assert doc.text
-
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=TextCrafter) as f:
-        f.index(inputs=encoder_doc_array, on_done=validate)
+        res = f.index(inputs=encoder_doc_array)
+    assert len(res) == 1
+    doc = res[0]
+    assert doc.mime_type == 'text/plain'
+    assert doc.text
 
 
 @pytest.mark.slow
@@ -94,16 +90,13 @@ def test_text_encoder(encoder_doc_array, tmpdir):
     So the 2 chunks should left only 1 chunk with modality of `text/plain`.
     And the embedding value of the ``Document`` is not empty once we finished encoding.
     """
-
-    def validate(resp):
-        assert len(resp.data.docs) == 1
-        doc = resp.data.docs[0]
-        assert doc.mime_type == 'text/plain'
-        assert doc.embedding is not None
-
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=TextCrafter).add(uses=TextEncoder) as f:
-        f.index(inputs=encoder_doc_array, on_done=validate)
+        res = f.index(inputs=encoder_doc_array)
+    assert len(res) == 1
+    doc = res[0]
+    assert doc.mime_type == 'text/plain'
+    assert doc.embedding is not None
 
 
 def test_image_crafter_index(encoder_doc_array, tmpdir):
@@ -114,45 +107,37 @@ def test_image_crafter_index(encoder_doc_array, tmpdir):
     And the tensor value of the ``Document`` is not empty once we finished crafting since
     we converted image uri/datauri to tensor.
     """
-
-    def validate(resp):
-        assert len(resp.data.docs) == 1
-        doc = resp.data.docs[0]
-        assert doc.mime_type == 'image/jpeg'
-        assert doc.tensor is not None
-
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=ImageCrafter) as f:
-        f.index(inputs=encoder_doc_array, on_done=validate)
+        res = f.index(inputs=encoder_doc_array)
+    assert len(res) == 1
+    doc = res[0]
+    assert doc.mime_type == 'image/jpeg'
+    assert doc.tensor is not None
 
 
 def test_image_crafter_search(encoder_doc_array_for_search, tmpdir):
-    def validate(resp):
-        assert len(resp.data.docs) == 1
-        chunk = resp.data.docs[0]
-        assert chunk.mime_type == 'image/jpeg'
-        assert chunk.tensor is not None
-        assert chunk.uri.startswith('data')
-
     with Flow().add(uses=ImageCrafter) as f:
-        f.search(inputs=encoder_doc_array_for_search, on_done=validate)
+        res = f.search(inputs=encoder_doc_array_for_search)
+    assert len(res) == 1
+    chunk = res[0]
+    assert chunk.mime_type == 'image/jpeg'
+    assert chunk.tensor is not None
+    assert chunk.uri.startswith('data')
 
 
 def test_image_encoder_index(encoder_doc_array, tmpdir):
     """In this test, we input one ``DocumentArray`` with one ``Document``,
     and the `encode` method in the ``ImageEncoder``.
     """
-
-    def validate(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
-            assert doc.mime_type == 'image/jpeg'
-            assert doc.embedding is not None
-            assert doc.embedding.shape[0] == 1280
-
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=ImageCrafter).add(uses=ImageEncoder) as f:
-        f.index(inputs=encoder_doc_array, on_done=validate)
+        res = f.index(inputs=encoder_doc_array)
+    assert len(res) == 1
+    for doc in res:
+        assert doc.mime_type == 'image/jpeg'
+        assert doc.embedding is not None
+        assert doc.embedding.shape[0] == 1280
 
 
 def test_image_encoder_search(encoder_doc_array_for_search, tmpdir):
@@ -160,12 +145,10 @@ def test_image_encoder_search(encoder_doc_array_for_search, tmpdir):
     and the `encode` method in the ``ImageEncoder``.
     """
 
-    def validate(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
-            assert doc.mime_type == 'image/jpeg'
-            assert doc.embedding is not None
-            assert doc.embedding.shape[0] == 1280
-
     with Flow().add(uses=ImageCrafter).add(uses=ImageEncoder) as f:
-        f.search(inputs=encoder_doc_array_for_search, on_done=validate)
+        res = f.search(inputs=encoder_doc_array_for_search)
+    assert len(res) == 1
+    for doc in res:
+        assert doc.mime_type == 'image/jpeg'
+        assert doc.embedding is not None
+        assert doc.embedding.shape[0] == 1280
