@@ -170,41 +170,6 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
 
 @pytest.fixture(scope='module')
-def head_runtime_docker_image_built():
-    import docker
-
-    client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, 'head-runtime/'), tag='head-runtime')
-    client.close()
-    yield
-    time.sleep(2)
-    client = docker.from_env()
-    client.containers.prune()
-
-
-def test_container_pod_head_runtime(head_runtime_docker_image_built):
-    import docker
-
-    with ContainerPod(
-        set_pod_parser().parse_args(
-            [
-                '--uses',
-                'docker://head-runtime',
-            ]
-        )
-    ) as pod:
-        container = pod._container
-        status = pod._container.status
-
-    assert status == 'running'
-    client = docker.from_env()
-    containers = client.containers.list()
-    assert container.id not in containers
-    with pytest.raises(docker.errors.NotFound):
-        pod._container
-
-
-@pytest.fixture(scope='module')
 def gateway_runtime_docker_image_built():
     import docker
 
