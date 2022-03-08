@@ -3,13 +3,12 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Type
 
 from jina import __default_host__
-from jina.orchestrate.pods import Pod
-from jina.orchestrate.pods.jinad import JinaDPod
-from jina.orchestrate.pods.container import ContainerPod
 from jina.enums import PodRoleType
-
 from jina.hubble.helper import is_valid_huburi
 from jina.hubble.hubio import HubIO
+from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.container import ContainerPod
+from jina.orchestrate.pods.jinad import JinaDPod
 
 if TYPE_CHECKING:
     from jina.orchestrate.pods import BasePod
@@ -30,7 +29,7 @@ class PodFactory:
         """
         # copy to update but forward original
         cargs = deepcopy(args)
-        if cargs.host != __default_host__ and not cargs.disable_remote:
+        if cargs.host != __default_host__:
             cargs.timeout_ready = -1
             return JinaDPod(cargs)
 
