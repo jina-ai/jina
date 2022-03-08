@@ -1,10 +1,11 @@
 import os
 import time
+
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.orchestrate.pods.container import ContainerPod
+from jina.parsers import set_gateway_parser, set_pod_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,8 +45,6 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
-    with pytest.raises(docker.errors.NotFound):
-        pod._container
 
 
 @pytest.fixture(scope='module')
