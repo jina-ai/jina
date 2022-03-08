@@ -129,9 +129,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         *,
-        compress: Optional[str] = 'NONE',
-        compress_min_bytes: Optional[int] = 1024,
-        compress_min_ratio: Optional[float] = 1.1,
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
@@ -141,7 +138,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         disable_reduce: Optional[bool] = False,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
-        expose_public: Optional[bool] = False,
         graph_description: Optional[str] = '{}',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -178,12 +174,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
-        :param compress: The compress algorithm used over the entire Flow.
-
-              Note that this is not necessarily effective,
-              it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
-        :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
-        :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
@@ -193,7 +183,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -599,7 +588,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        expose_public: Optional[bool] = False,
         external: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
@@ -647,7 +635,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.

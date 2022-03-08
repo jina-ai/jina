@@ -1,9 +1,9 @@
-from argparse import Namespace
 import itertools
 import json
 import os
 import shutil
 import urllib
+from argparse import Namespace
 from pathlib import Path
 
 import docker
@@ -59,7 +59,7 @@ class PostMockResponse:
         return itertools.chain(logs)
 
 
-class GetMockResponse:
+class FetchMetaMockResponse:
     def __init__(self, response_code: int = 200, no_image=False):
         self.response_code = response_code
         self.no_image = no_image
@@ -166,11 +166,11 @@ def test_push_wrong_dockerfile(
 def test_fetch(mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_get(url, headers=None):
-        mock(url=url)
-        return GetMockResponse(response_code=200)
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return FetchMetaMockResponse(response_code=200)
 
-    monkeypatch.setattr(requests, 'get', _mock_get)
+    monkeypatch.setattr(requests, 'post', _mock_post)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', None, force=True)
@@ -191,17 +191,23 @@ def test_fetch(mocker, monkeypatch):
 def test_fetch_with_no_image(mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_get(url, headers=None):
-        mock(url=url)
-        return GetMockResponse(response_code=200, no_image=True)
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return FetchMetaMockResponse(response_code=200, no_image=True)
 
-    monkeypatch.setattr(requests, 'get', _mock_get)
+    monkeypatch.setattr(requests, 'post', _mock_post)
 
     with pytest.raises(Exception) as exc_info:
         HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
     assert exc_info.match('No image found for executor "dummy_mwu_encoder"')
-    assert mock.call_count == 1
+
+    executor, _ = HubIO.fetch_meta(
+        'dummy_mwu_encoder', tag=None, image_required=False, force=True
+    )
+
+    assert executor.image_name is None
+    assert mock.call_count == 2
 
 
 class DownloadMockResponse:
@@ -221,7 +227,7 @@ class DownloadMockResponse:
 def test_pull(test_envs, mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, force=False):
+    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
         mock(name=name)
         return (
             HubExecutor(
@@ -278,7 +284,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     version = 'v0'
 
     @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(name, tag=None, secret=None, force=False):
+    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
         mock(name=name)
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')
@@ -360,7 +366,7 @@ def test_pull_with_progress():
 
 @pytest.mark.parametrize('add_dockerfile', [True, False])
 def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
-    from rich.prompt import Prompt, Confirm
+    from rich.prompt import Confirm, Prompt
 
     prompts = iter(
         [
