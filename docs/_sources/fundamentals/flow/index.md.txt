@@ -14,7 +14,7 @@ The most important methods of the `Flow` object are the following:
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | `.add()`                           | Add an Executor to the Flow                                                                                                                |
 | `.start()`                         | Starts the Flow. This will start all its Executors and check if they are ready to be used.                                                 |
-| `.stop()`                          | Stops the Flow. This will stop all its Executors.                                                                                          |
+| `.close()`                         | Stops and closes the Flow. This will stop and shutdown all its Executors.                                                                                          |
 | `with` context manager             | Use the Flow as a context manager. It will automatically start and stop your Flow.                                         |                                                                |
 | `.plot()`                          | Visualizes the Flow. Helpful for building complex pipelines.                                                                                 |
 | `.post()`                          | Sends requests to the Flow API.                                                                                                     |
