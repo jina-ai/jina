@@ -67,7 +67,6 @@ def test_segmenter(segmenter_doc_array, tmpdir):
     assert len(res) == 2
     for doc in res:
         assert len(doc.chunks) == 2
-        assert doc.chunks[0].mime_type == 'text/plain'
         assert doc.chunks[1].mime_type == 'image/jpeg'
         assert doc.chunks[1].mime_type == 'image/jpeg'
         assert doc.uri.startswith('data')
