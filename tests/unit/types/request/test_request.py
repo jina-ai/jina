@@ -3,15 +3,13 @@ import copy
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
-from docarray.proto.docarray_pb2 import DocumentProto
+from docarray import Document, DocumentArray
 from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
-from docarray import DocumentArray, Document
 from jina.proto.serializer import DataRequestProto
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest, Response
-from tests import random_docs
 
 
 @pytest.fixture(scope='function')
