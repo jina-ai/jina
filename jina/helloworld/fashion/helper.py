@@ -187,7 +187,6 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
             {'http': download_proxy, 'https': download_proxy}
         )
         opener.add_handler(proxy)
-    from rich import print
 
     urllib.request.install_opener(opener)
     with ProgressBar(total_length=len(targets), description=task_name) as t:
