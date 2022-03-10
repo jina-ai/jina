@@ -165,9 +165,9 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     ]
     assert node_deployment1.name == 'deployment1'
     if conditions == {}:
-        assert node_deployment1._condition is None
+        assert node_deployment1._filter_condition is None
     else:
-        assert node_deployment1._condition._condition == {'key': '5'}
+        assert node_deployment1._filter_condition._filter_condition == {'key': '5'}
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
     assert node_deployment1.hanging
@@ -177,9 +177,9 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     ]
     assert node_deployment2.name == 'deployment2'
     if conditions == {}:
-        assert node_deployment2._condition is None
+        assert node_deployment2._filter_condition is None
     else:
-        assert node_deployment2._condition._condition == {'key': '4'}
+        assert node_deployment2._filter_condition._filter_condition == {'key': '4'}
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
     assert not node_deployment2.hanging
