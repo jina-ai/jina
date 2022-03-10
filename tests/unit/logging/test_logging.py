@@ -1,10 +1,10 @@
-import os
 import glob
+import os
 from datetime import datetime
 
 import pytest
 
-from jina import __uptime__, Flow, Document, __windows__
+from jina import Document, Flow, __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
@@ -25,7 +25,7 @@ def test_color_log():
     with JinaLogger('test_logger') as logger:
         logger.debug('this is test debug message')
         logger.info('this is test info message')
-        logger.info(f'this is test {colored("color", "on red")} message')
+        logger.info(f'this is test {colored("color", "red")} message')
         logger.success('this is test success message')
         logger.warning('this is test warning message')
         logger.error('this is test error message')

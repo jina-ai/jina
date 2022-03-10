@@ -46,7 +46,7 @@ from jina.helper import (
     GRAPHQL_MIN_DOCARRAY_VERSION,
     ArgNamespace,
     CatchAllCleanupContextManager,
-    colored,
+    colored_rich,
     docarray_graphql_compatible,
     download_mermaid_url,
     get_internal_ip,
@@ -1126,7 +1126,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         pendings.append(_k)
                     else:
                         num_done += 1
-                pending_str = colored(' '.join(pendings)[:50], 'yellow')
+                pending_str = colored_rich(' '.join(pendings)[:50], 'yellow')
 
                 status.update(
                     f'{num_done}/{num_all} waiting {pending_str} to be ready...'
@@ -1177,7 +1177,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 self.close()
                 raise RuntimeFailToStart
 
-        success_msg = colored('🎉 Flow is ready to use!', 'green')
+        success_msg = '[green]🎉 Flow is ready to use![/green]'
         console.print(success_msg)
         if addr_table:
             print(
