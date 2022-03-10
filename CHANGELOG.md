@@ -138,6 +138,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12375,4 +12376,48 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f97c7ac1```](https://github.com/jina-ai/jina/commit/f97c7ac1fe82c4963461abfffb29a44dab8fa503)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```3297f4b5```](https://github.com/jina-ai/jina/commit/3297f4b5a793bbbd2b35f0402126ae08d12f4eb9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e304303d```](https://github.com/jina-ai/jina/commit/e304303de065f029122af8ccd8326d6a7975ab01)] __-__ __version__: the next version will be 3.1.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-2></a>
+## Release Note (`3.1.2`)
+
+> Release time: 2022-03-10 17:43:21
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  Sha Zhou,  Nan Wang,  Jina Dev Bot,  Joan Fontanals,  Delgermurun,  🙇
+
+
+### 🆕 New Features
+
+ - [[```beb0d8f5```](https://github.com/jina-ai/jina/commit/beb0d8f569530755f7797781a8cb49e1b8a2faaf)] __-__ __hubble__: fetch image only when required (#4445) (*Delgermurun*)
+
+### 🐞 Bug fixes
+
+ - [[```28c16e60```](https://github.com/jina-ai/jina/commit/28c16e6002c9f7f8a35d2b0385e84cb671dfd570)] __-__ graphql dependencies (#4461) (*Johannes Messner*)
+
+### 🧼 Code Refactoring
+
+ - [[```7483c63c```](https://github.com/jina-ai/jina/commit/7483c63c08e28c76e751acf8a62d2573a2d222af)] __-__ remove replica-id and expose public args (#4447) (*Joan Fontanals*)
+ - [[```ce2be1d4```](https://github.com/jina-ai/jina/commit/ce2be1d4057134f488c882fe83b963b087279b7a)] __-__ remove compression related args (#4446) (*Joan Fontanals*)
+ - [[```90f253a9```](https://github.com/jina-ai/jina/commit/90f253a969de79a77e783cb5130455d5754684bc)] __-__ remove disable remote (#4444) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```607ede1b```](https://github.com/jina-ai/jina/commit/607ede1bf0dd8f11ad0d0f5db6f2a005e58b21e0)] __-__ __qabot__: fix flash on ios and disappear on search&amp;404 (#4459) (*Sha Zhou*)
+ - [[```13f8496d```](https://github.com/jina-ai/jina/commit/13f8496d32b85864da0e06d4aa5817695c131793)] __-__ __clients__: update docstrings (#4460) (*Nan Wang*)
+ - [[```9b80d53d```](https://github.com/jina-ai/jina/commit/9b80d53d59052ea2699fc957014e1083c79ae1f0)] __-__ fix flow api (#4454) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```19f8ea02```](https://github.com/jina-ai/jina/commit/19f8ea02a85b08991eeb4ccedb8c0af3b06c9a33)] __-__ rename tests for new namings (#4453) (*Joan Fontanals*)
+ - [[```a37c526a```](https://github.com/jina-ai/jina/commit/a37c526a8381cd11ae226707ea301c1ac0f59851)] __-__ fix tests failures caused by docarray (#4451) (*Joan Fontanals*)
+ - [[```217a11bb```](https://github.com/jina-ai/jina/commit/217a11bb8dc613ed1136b8b541a68e6d53ca4fc1)] __-__ fix tests failing after new docarray patch (#4449) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```63ad1e4f```](https://github.com/jina-ai/jina/commit/63ad1e4f3e20f5bef4f170076bcf8e9f4ae55a51)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```3ac8baeb```](https://github.com/jina-ai/jina/commit/3ac8baeb4cb1684f3b3614667e4c05725af9ecc3)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```877849a9```](https://github.com/jina-ai/jina/commit/877849a9f81c47a3d63d59c255e95061b007a7b0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d55afac1```](https://github.com/jina-ai/jina/commit/d55afac119a49fd94e4fa243823c981af0766fcf)] __-__ __version__: the next version will be 3.1.2 (*Jina Dev Bot*)
 
