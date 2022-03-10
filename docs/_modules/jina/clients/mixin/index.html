@@ -592,18 +592,18 @@
                     </label>
                 </div>
                 <h1>Source code for jina.clients.mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span><span class="p">,</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">run_async</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">run_async</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
     <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">CallbackFnType</span><span class="p">,</span> <span class="n">InputType</span>
     <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Response</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 
 <span class="k">def</span> <span class="nf">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'Dict'</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'Dict'</span><span class="p">:</span>
@@ -696,8 +696,8 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s1">'Response'</span><span class="p">]]]:</span>
         <span class="sd">"""Post a general data request to the Flow.</span>
 
-<span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.</span>
-<span class="sd">        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``</span>
+<span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.</span>
+<span class="sd">        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.</span>
 <span class="sd">        :param on_done: the function to be called when the :class:`Request` object is resolved.</span>
 <span class="sd">        :param on_error: the function to be called when the :class:`Request` object is rejected.</span>
 <span class="sd">        :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.</span>
@@ -710,8 +710,7 @@
 <span class="sd">        :return: None or DocumentArray containing all response Documents</span>
 
 <span class="sd">        .. warning::</span>
-<span class="sd">            ``target_executor`` uses ``re.match`` for checking if the pattern is matched.</span>
-<span class="sd">             ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.</span>
+<span class="sd">            ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.</span>
 <span class="sd">        """</span>
 
         <span class="n">return_results</span> <span class="o">=</span> <span class="kc">False</span>
@@ -778,13 +777,13 @@
         <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">'Response'</span><span class="p">]:</span>
-        <span class="sd">"""Post a general data request to the Flow.</span>
+        <span class="sd">"""Async Post a general data request to the Flow.</span>
 
-<span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.</span>
-<span class="sd">        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``</span>
+<span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.</span>
+<span class="sd">        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.</span>
 <span class="sd">        :param on_done: the function to be called when the :class:`Request` object is resolved.</span>
 <span class="sd">        :param on_error: the function to be called when the :class:`Request` object is rejected.</span>
-<span class="sd">        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.</span>
+<span class="sd">        :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.</span>
 <span class="sd">        :param parameters: the kwargs that will be sent to the executor</span>
 <span class="sd">        :param target_executor: a regex string. Only matching Executors will process the request.</span>
 <span class="sd">        :param request_size: the number of Documents per request. &lt;=0 means all inputs in one request.</span>
@@ -792,6 +791,9 @@
 <span class="sd">        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.</span>
 <span class="sd">        :param kwargs: additional parameters</span>
 <span class="sd">        :yield: Response object</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.</span>
 <span class="sd">        """</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
         <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
@@ -849,7 +851,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 08, 2022.
+                    Last updated on Mar 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -866,24 +868,24 @@
 
             <div class="toc-sticky toc-scroll">
                 
-                <qa-bot
-                    theme="auto"
-                    title="Jina Bot"
-                    description="The cloud-native neural search framework"
-                >
-                    <dl>
-                        <dt>You can ask questions about our docs. Try:</dt>
-                        <dd>Does Jina support Kubernetes?</dd>
-                        <dd>What are the basic concepts in Jina?</dd>
-                        <dd>How to share my Executor?</dd>
-                    </dl>
-                </qa-bot>
             </div>
 
             
         </aside>
 
     </div>
+    <qa-bot
+        title="Jina Bot"
+        description="The cloud-native neural search framework"
+        >
+        <dl>
+            <dt>You can ask questions about our docs. Try:</dt>
+            <dd>Does Jina support Kubernetes?</dd>
+            <dd>What are the basic concepts in Jina?</dd>
+            <dd>How to share my Executor?</dd>
+        </dl>
+    </qa-bot>
+
 </div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
@@ -896,33 +898,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() { 
             document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.querySelector('qa-bot').setAttribute('theme', theme);
-            }
-        });
-        const ob = new MutationObserver(function(mutations) {
-            let shouldChange = false;
-            for (const m of mutations) {
-                if (m.type !== 'attributes') {
-                    continue;
-                }   
-                if (m.attributeName !== 'data-theme') {
-                    continue;
-                }
-                shouldChange = m.target.dataset.theme;
-            }
-
-            if (!shouldChange) {
-                return;
-            }
-
-            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
-        });
-        ob.observe(document.body, {
-            attribute:true,
-            attributeFilter: ['data-theme']
         });
         </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     </body>
 </html>

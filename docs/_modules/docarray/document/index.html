@@ -605,6 +605,16 @@
 <div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../../api/jina/#jina.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">AllMixins</span><span class="p">,</span> <span class="n">BaseDCType</span><span class="p">):</span>
     <span class="n">_data_class</span> <span class="o">=</span> <span class="n">DocumentData</span>
     <span class="n">_unresolved_fields_dest</span> <span class="o">=</span> <span class="s1">'tags'</span>
+    <span class="n">_post_init_fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">'text'</span><span class="p">,</span>
+        <span class="s1">'blob'</span><span class="p">,</span>
+        <span class="s1">'tensor'</span><span class="p">,</span>
+        <span class="s1">'content'</span><span class="p">,</span>
+        <span class="s1">'uri'</span><span class="p">,</span>
+        <span class="s1">'mime_type'</span><span class="p">,</span>
+        <span class="s1">'chunks'</span><span class="p">,</span>
+        <span class="s1">'matches'</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -683,7 +693,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 08, 2022.
+                    Last updated on Mar 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -700,24 +710,24 @@
 
             <div class="toc-sticky toc-scroll">
                 
-                <qa-bot
-                    theme="auto"
-                    title="Jina Bot"
-                    description="The cloud-native neural search framework"
-                >
-                    <dl>
-                        <dt>You can ask questions about our docs. Try:</dt>
-                        <dd>Does Jina support Kubernetes?</dd>
-                        <dd>What are the basic concepts in Jina?</dd>
-                        <dd>How to share my Executor?</dd>
-                    </dl>
-                </qa-bot>
             </div>
 
             
         </aside>
 
     </div>
+    <qa-bot
+        title="Jina Bot"
+        description="The cloud-native neural search framework"
+        >
+        <dl>
+            <dt>You can ask questions about our docs. Try:</dt>
+            <dd>Does Jina support Kubernetes?</dd>
+            <dd>What are the basic concepts in Jina?</dd>
+            <dd>How to share my Executor?</dd>
+        </dl>
+    </qa-bot>
+
 </div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -730,33 +740,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() { 
             document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.querySelector('qa-bot').setAttribute('theme', theme);
-            }
-        });
-        const ob = new MutationObserver(function(mutations) {
-            let shouldChange = false;
-            for (const m of mutations) {
-                if (m.type !== 'attributes') {
-                    continue;
-                }   
-                if (m.attributeName !== 'data-theme') {
-                    continue;
-                }
-                shouldChange = m.target.dataset.theme;
-            }
-
-            if (!shouldChange) {
-                return;
-            }
-
-            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
-        });
-        ob.observe(document.body, {
-            attribute:true,
-            attributeFilter: ['data-theme']
         });
         </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     </body>
 </html>

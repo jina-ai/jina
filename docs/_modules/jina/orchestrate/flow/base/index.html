@@ -634,15 +634,15 @@
     <span class="n">RuntimeFailToStart</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span><span class="p">,</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
     <span class="n">colored</span><span class="p">,</span>
+    <span class="n">docarray_graphql_compatible</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">get_internal_ip</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
     <span class="n">typename</span><span class="p">,</span>
-    <span class="n">docarray_graphql_compatible</span><span class="p">,</span>
-    <span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -728,6 +728,7 @@
         <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
         <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
@@ -736,7 +737,6 @@
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">no_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -773,6 +773,7 @@
 <span class="sd">        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
+<span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
@@ -791,7 +792,6 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
 <span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
 <span class="sd">              Define per Deployment:</span>
@@ -853,10 +853,10 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">no_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -868,6 +868,7 @@
         <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.</span>
 
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
+<span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
 
 <span class="sd">              If `REMOVE` is given then all inspect deployments are removed when building the flow.</span>
@@ -881,7 +882,6 @@
 <span class="sd">          - ...</span>
 
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
-<span class="sd">        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
 <span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
 <span class="sd">              Define per Deployment:</span>
@@ -919,13 +919,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span>
             <span class="ow">and</span> <span class="ow">not</span> <span class="n">docarray_graphql_compatible</span><span class="p">()</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s1">'DocArray version is incompatible with GraphQL features. '</span>
-                <span class="s1">'Automatically setting no_graphql_endpoint=True. '</span>
+                <span class="s1">'Automatically setting expose_graphql_endpoint=False. '</span>
                 <span class="sa">f</span><span class="s1">'To use GraphQL features, install docarray&gt;=</span><span class="si">{</span><span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
@@ -1043,8 +1043,8 @@
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
         <span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span>
         <span class="p">)</span>  <span class="c1"># also used in Flow, thus not in kwargs</span>
         <span class="n">args</span><span class="o">.</span><span class="n">graph_description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">graph_description</span><span class="p">)</span>
         <span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">deployments_addresses</span><span class="p">)</span>
@@ -2102,7 +2102,7 @@
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_graphql_endpoint</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">:</span>
                 <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 GraphQL UI:</span><span class="se">\t\t</span><span class="s1">'</span>
                     <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
@@ -2486,7 +2486,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 08, 2022.
+                    Last updated on Mar 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -2503,24 +2503,24 @@
 
             <div class="toc-sticky toc-scroll">
                 
-                <qa-bot
-                    theme="auto"
-                    title="Jina Bot"
-                    description="The cloud-native neural search framework"
-                >
-                    <dl>
-                        <dt>You can ask questions about our docs. Try:</dt>
-                        <dd>Does Jina support Kubernetes?</dd>
-                        <dd>What are the basic concepts in Jina?</dd>
-                        <dd>How to share my Executor?</dd>
-                    </dl>
-                </qa-bot>
             </div>
 
             
         </aside>
 
     </div>
+    <qa-bot
+        title="Jina Bot"
+        description="The cloud-native neural search framework"
+        >
+        <dl>
+            <dt>You can ask questions about our docs. Try:</dt>
+            <dd>Does Jina support Kubernetes?</dd>
+            <dd>What are the basic concepts in Jina?</dd>
+            <dd>How to share my Executor?</dd>
+        </dl>
+    </qa-bot>
+
 </div><script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
@@ -2533,33 +2533,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() { 
             document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.querySelector('qa-bot').setAttribute('theme', theme);
-            }
-        });
-        const ob = new MutationObserver(function(mutations) {
-            let shouldChange = false;
-            for (const m of mutations) {
-                if (m.type !== 'attributes') {
-                    continue;
-                }   
-                if (m.attributeName !== 'data-theme') {
-                    continue;
-                }
-                shouldChange = m.target.dataset.theme;
-            }
-
-            if (!shouldChange) {
-                return;
-            }
-
-            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
-        });
-        ob.observe(document.body, {
-            attribute:true,
-            attributeFilter: ['data-theme']
         });
         </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     </body>
 </html>

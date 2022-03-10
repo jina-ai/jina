@@ -35,7 +35,6 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="cli.lookup module" href="../api/cli.lookup/" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
@@ -686,7 +685,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “83d5beccbc4847d5abe1cb7e846d4dc6”</p>
+<p>Default: “cbdcbbfdd4654fa9b4502129c4f87415”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -757,7 +756,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “8365a561720d44daa1bea8814d7120f2”</p>
+<p>Default: “a0f54a6879834a2e851f7e66ee82789b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -790,7 +789,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “9140950b67ec43d182119bf92c7ece91”</p>
+<p>Default: “643a94ffbe444ee6bedff547f57edba3”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -926,7 +925,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 61795</p>
+<p>Default: 61681</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1038,7 +1037,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 52150</p>
+<p>Default: 60959</p>
 </dd>
 </dl>
 </section>
@@ -1078,7 +1077,7 @@ Python files, data files.</p>
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this headline">¶</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
           <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
@@ -1132,8 +1131,8 @@ JSON dict, {endpoint: PollingType}
 <section id="GraphQL arguments">
 <h4>GraphQL arguments<a class="headerlink" href="#GraphQL arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
-<dt><kbd>--no-graphql-endpoint</kbd></dt>
-<dd><p>If set, /graphql endpoint is removed from HTTP interface.</p>
+<dt><kbd>--expose-graphql-endpoint</kbd></dt>
+<dd><p>If set, /graphql endpoint is added to HTTP interface.</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1219,7 +1218,7 @@ JSON dict, {endpoint: PollingType}
              <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
@@ -1334,7 +1333,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 60968</p>
+<p>Default: 51480</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1402,8 +1401,8 @@ which should be structured as a python package. For more details, please see the
 <section id="GraphQL arguments_repeat1">
 <h4>GraphQL arguments<a class="headerlink" href="#GraphQL arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
-<dt><kbd>--no-graphql-endpoint</kbd></dt>
-<dd><p>If set, /graphql endpoint is removed from HTTP interface.</p>
+<dt><kbd>--expose-graphql-endpoint</kbd></dt>
+<dd><p>If set, /graphql endpoint is added to HTTP interface.</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1421,7 +1420,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 61728</p>
+<p>Default: 55214</p>
 </dd>
 </dl>
 </section>
@@ -1458,7 +1457,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 60270</p>
+<p>Default: 51976</p>
 </dd>
 </dl>
 </section>
@@ -1749,7 +1748,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 64202</p>
+<p>Default: 52886</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1861,7 +1860,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 64669</p>
+<p>Default: 60004</p>
 </dd>
 </dl>
 </section>
@@ -2006,7 +2005,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 63891</p>
+<p>Default: 58471</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2118,7 +2117,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 60366</p>
+<p>Default: 54042</p>
 </dd>
 </dl>
 </section>
@@ -2207,7 +2206,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 65202</p>
+<p>Default: 57153</p>
 </dd>
 <dt><kbd>--https</kbd></dt>
 <dd><p>If set, connect to gateway using https</p>
@@ -2274,7 +2273,7 @@ Python files, data files.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 08, 2022.
+                    Last updated on Mar 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -2436,24 +2435,24 @@ Python files, data files.</p>
                     </div>
                 </div>
                 
-                <qa-bot
-                    theme="auto"
-                    title="Jina Bot"
-                    description="The cloud-native neural search framework"
-                >
-                    <dl>
-                        <dt>You can ask questions about our docs. Try:</dt>
-                        <dd>Does Jina support Kubernetes?</dd>
-                        <dd>What are the basic concepts in Jina?</dd>
-                        <dd>How to share my Executor?</dd>
-                    </dl>
-                </qa-bot>
             </div>
 
             
         </aside>
 
     </div>
+    <qa-bot
+        title="Jina Bot"
+        description="The cloud-native neural search framework"
+        >
+        <dl>
+            <dt>You can ask questions about our docs. Try:</dt>
+            <dd>Does Jina support Kubernetes?</dd>
+            <dd>What are the basic concepts in Jina?</dd>
+            <dd>How to share my Executor?</dd>
+        </dl>
+    </qa-bot>
+
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -2466,33 +2465,8 @@ Python files, data files.</p>
     <script>
         document.addEventListener('DOMContentLoaded', function() { 
             document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.querySelector('qa-bot').setAttribute('theme', theme);
-            }
-        });
-        const ob = new MutationObserver(function(mutations) {
-            let shouldChange = false;
-            for (const m of mutations) {
-                if (m.type !== 'attributes') {
-                    continue;
-                }   
-                if (m.attributeName !== 'data-theme') {
-                    continue;
-                }
-                shouldChange = m.target.dataset.theme;
-            }
-
-            if (!shouldChange) {
-                return;
-            }
-
-            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
-        });
-        ob.observe(document.body, {
-            attribute:true,
-            attributeFilter: ['data-theme']
         });
         </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     </body>
 </html>
