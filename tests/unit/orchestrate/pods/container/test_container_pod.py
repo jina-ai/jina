@@ -40,6 +40,9 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
     ) as pod:
         container = pod._container
         status = container.status
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
 
     assert status == 'running'
     client = docker.from_env()
@@ -164,7 +167,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         ]
     )
     with ContainerPod(args) as pod:
-        pass
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
     pod.join()
     assert pod.worker.exitcode == 0
 
@@ -205,6 +210,9 @@ def test_container_pod_gateway_runtime(protocol, gateway_runtime_docker_image_bu
     ) as pod:
         container = pod._container
         status = pod._container.status
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
 
     assert status == 'running'
     client = docker.from_env()
