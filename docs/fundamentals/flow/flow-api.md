@@ -218,6 +218,9 @@ After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-ht
 
 GraphQL support is an optional feature that requires optional dependencies.
 To install these, run `pip install jina[graphql]` or `pip install jina[all]`.
+
+Unfortunately, these dependencies are **not available through Conda**. You will have to use `pip` to be able to use GraphQL
+feature.
 ````
 
 A Flow can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
