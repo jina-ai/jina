@@ -77,7 +77,9 @@ html_css_files = [
     'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
 ]
-html_js_files = []
+html_js_files = [
+    'https://cdn.jsdelivr.net/npm/qabot@0.4'
+]
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_favicon = '_static/favicon.ico'
@@ -183,7 +185,6 @@ ogp_custom_meta_tags = [
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-<script async defer src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
     ''',
 ]
 
@@ -194,35 +195,10 @@ def configure_qa_bot_ui(app):
     js_text = """
         document.addEventListener('DOMContentLoaded', function() { 
             document.querySelector('qa-bot').setAttribute('server', '%s');
-            const theme = localStorage.getItem('theme');
-            if (theme) {
-                document.querySelector('qa-bot').setAttribute('theme', theme);
-            }
-        });
-        const ob = new MutationObserver(function(mutations) {
-            let shouldChange = false;
-            for (const m of mutations) {
-                if (m.type !== 'attributes') {
-                    continue;
-                }   
-                if (m.attributeName !== 'data-theme') {
-                    continue;
-                }
-                shouldChange = m.target.dataset.theme;
-            }
-
-            if (!shouldChange) {
-                return;
-            }
-
-            document.querySelector('qa-bot').setAttribute('theme', shouldChange);
-        });
-        ob.observe(document.body, {
-            attribute:true,
-            attributeFilter: ['data-theme']
         });
         """ % server_address
     app.add_js_file(None, body=js_text)
+
 
 
 def setup(app):
