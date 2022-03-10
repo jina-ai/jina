@@ -27,6 +27,38 @@ def temp_workspace(tmpdir):
 
 
 @pytest.fixture
+def shuffle_flow(request, temp_workspace):
+    f = (
+        Flow()
+        .add(name='first')
+        .add(
+            uses=ContitionDumpExecutor,
+            uses_metas={'name': 'exec1'},
+            workspace=os.environ['TEMP_WORKSPACE'],
+            name='exec1',
+            needs=['first'],
+            condition={
+                '$or': {
+                    'tags__third': {'$eq': 1},
+                    'tags__first': {'$eq': 1},
+                    'tags__fourth': {'$eq': 1},
+                }
+            },
+        )
+        .add(
+            uses=ContitionDumpExecutor,
+            uses_metas={'name': 'exec2'},
+            name='exec2',
+            workspace=os.environ['TEMP_WORKSPACE'],
+            needs='first',
+            condition={'$or': {'tags__second': {'$eq': 1}, 'tags__fifth': {'$eq': 1}}},
+        )
+        .needs_all('joiner')
+    )
+    return f
+
+
+@pytest.fixture
 def flow(request, temp_workspace):
     source = request.param
     if source == 'python':
@@ -130,3 +162,60 @@ def test_conditions_filtering_on_joiner(tmpdir):
         'r',
     ) as fp:
         assert fp.read() == 'type1type2'
+
+
+def test_sorted_return(tmpdir, shuffle_flow):
+    tag_list = ['first', 'second', 'third', 'fourth', 'fifth']
+    inputs = DocumentArray.empty(6)
+    # print(inputs.find({'$or': {'tags__second': {'$eq': 1}, 'tags__fifth': {'$eq': 1}}}))
+    for i in range(5):  # no tag for last doc
+        inputs[i].tags[tag_list[i]] = 1  # one-hot encoding
+
+    with shuffle_flow as f:
+        ret = f.post(on='/index', inputs=inputs)
+
+    assert len(ret) == 5
+
+    for i, doc in enumerate(ret):
+        assert doc.tags[tag_list[i]] == 1
+
+    inputs = inputs[:5]
+    for og, returned in zip(inputs, ret):
+        assert og.id == returned.id
+
+
+def test_chained_conditions(tmpdir, temp_workspace):
+    f = (
+        Flow()
+        .add(name='first')
+        .add(
+            uses=ContitionDumpExecutor,
+            uses_metas={'name': 'exec1'},
+            workspace=os.environ['TEMP_WORKSPACE'],
+            name='exec1',
+            needs=['first'],
+            condition={'tags__type': {'$gte': 2}},
+        )
+        .add(
+            uses=ContitionDumpExecutor,
+            workspace=os.environ['TEMP_WORKSPACE'],
+            uses_metas={'name': 'exec2'},
+            name='exec2',
+            needs='exec1',
+            condition={'tags__type': {'$lte': 1}},
+        )
+        .needs_all('joiner')
+    )
+
+    with f:
+        ret = f.post(
+            on='index',
+            inputs=DocumentArray(
+                [
+                    Document(text='type1', tags={'type': 1}),
+                    Document(text='type2', tags={'type': 2}),
+                    Document(text='type2', tags={'type': 3}),
+                ]
+            ),
+        )
+        assert len(ret) == 0
