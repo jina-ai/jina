@@ -425,19 +425,21 @@ This will get you the following output:
 
 So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
 
-### Add conditions to Executors
+### Add filter conditions to Executors
 
-Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release), a Flow topology can make sure that some Executors only receive `Documents` according to the filtering Query Language from `DocumentArray` (#TODO: Link to DocumentArray documentation for this feature).
+Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release), you can filter the input to each
+Executor.
 
-This feature is used by adding `condition` parameter when adding an `Executor` to the Flow.
+To define a filter condition, you can use DocArrays rich query language (TODO link to docarray docs).
+To add a filter condition to an Executor, you pass it to the `condition` parameter of `flow.add()`:
 
-````{tab} Pythonic style
+````{tab} Python
 
 ```python
 from docarray import DocumentArray, Document
 from jina import Flow
 
-f = Flow().add().add(condition={'key': 5})  # Create the empty Flow
+f = Flow().add().add(condition={'tags__key': {'$eq': 5}})  # Create the empty Flow
 
 with f:  # Using it as a Context Manager will start the Flow
     ret = f.post(
@@ -445,10 +447,15 @@ with f:  # Using it as a Context Manager will start the Flow
         inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
     )
 
-assert (
-    len(ret) == 1
+print(
+    ret[:, 'tags']
 )  # only the Document fullfilling the condition is processed and therefore returned.
 ```
+
+```console
+[{'key': 5.0}]
+```
+
 ````
 
 ````{tab} Load from YAML
@@ -459,7 +466,8 @@ jtype: Flow
 executors:
   - name: executor
     condition:
-        - key: 5
+        tags__key:
+            $eq: 5
 ```
 
 ```python
@@ -474,13 +482,86 @@ with f:  # Using it as a Context Manager will start the Flow
         inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
     )
 
-assert (
-    len(ret) == 1
+print(
+    ret[:, 'tags']
 )  # only the Document fullfilling the condition is processed and therefore returned.
+```
+
+```console
+[{'key': 5.0}]
 ```
 ````
 
-This feature is useful to model your logic in a `switch-like` style. #TODO: Link to a How-to about this feature showing a 2 graphs Flow using this
+Notice that whenever a Document does not satisfy the `condition` of a filter, the filter removes it *for the entire branch of the Flow*.
+Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.
+
+This does not affect parallel branches of a Flow, since all Documents pass through all such branches:
+
+````{tab} Parallel Executors
+
+```python
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = (
+    Flow()
+    .add(name='first')
+    .add(condition={'tags__key': {'$eq': 5}}, needs='first')
+    .add(condition={'tags__key': {'$eq': 4}}, needs='first')
+    .needs_all()
+)  # Create Flow with parallel Executors
+
+with f:
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+print(ret[:, 'tags'])  # Each Document satisfies one parallel branch/filter
+```
+
+```console
+[{'key': 5.0}, {'key': 4.0}]
+```
+
+````
+
+````{tab} Sequential Executors
+```python
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = (
+    Flow()
+    .add(name='first')
+    .add(condition={'tags__key': {'$eq': 5}}, name='second', needs='first')
+    .add(condition={'tags__key': {'$eq': 4}}, needs='second')
+    .needs_all()
+)  # Create Flow with sequential Executors
+
+with f:
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+print(ret[:, 'tags'])  # No Document satisfies both sequential filters
+```
+
+```console
+[]
+```
+````
+
+This feature is useful to prevent some specialized Executors from processing certain Documents.
+It can also be used to build *switch-like nodes*, where some Documents pass through one parallel branch of the Flow,
+while other Documents pass through a different branch.
+
+````{admonition} See Also
+:class: seealso
+
+For a hands-on example on how to leverage these filter conditions, see this how-to TODO link to howto.
+````
 
 ### Replicate Executors
 
