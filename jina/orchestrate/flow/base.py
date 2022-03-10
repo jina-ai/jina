@@ -1482,7 +1482,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return table
 
     def _get_address_table(self, address_table):
-        address_table.add_row('🔗', 'Protocol: ', f'[bold]{self.protocol}[/bold]')
+        address_table.add_row('🔗', 'Protocol: ', f'{self.protocol}')
         address_table.add_row(
             '🏠',
             'Local access: ',
