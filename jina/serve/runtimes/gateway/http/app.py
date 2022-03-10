@@ -1,15 +1,15 @@
 import argparse
 import json
-from typing import TYPE_CHECKING, Dict, List, Optional
 import warnings
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
 from jina.helper import (
-    get_full_version,
-    docarray_graphql_compatible,
     GRAPHQL_MIN_DOCARRAY_VERSION,
+    docarray_graphql_compatible,
+    get_full_version,
 )
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
@@ -39,13 +39,14 @@ def get_fastapi_app(
         from fastapi import FastAPI
         from fastapi.middleware.cors import CORSMiddleware
         from fastapi.responses import HTMLResponse
+        from starlette.requests import Request
+
         from jina.serve.runtimes.gateway.http.models import (
             JinaEndpointRequestModel,
             JinaRequestModel,
             JinaResponseModel,
             JinaStatusModel,
         )
-        from starlette.requests import Request
 
     docs_url = '/docs'
     app = FastAPI(
@@ -57,11 +58,11 @@ def get_fastapi_app(
         docs_url=docs_url if args.default_swagger_ui else None,
     )
 
-    if not args.no_graphql_endpoint and not docarray_graphql_compatible():
-        args.no_graphql_endpoint = True
+    if args.expose_graphql_endpoint and not docarray_graphql_compatible():
+        args.expose_graphql_endpoint = False
         warnings.warn(
             'DocArray version is incompatible with GraphQL features.'
-            'Setting no_graphql_endpoint=True.'
+            'Setting expose_graphql_endpoint=False.'
             f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
         )
 
@@ -241,18 +242,18 @@ def get_fastapi_app(
 
         app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
 
-    if not args.no_graphql_endpoint:
+    if args.expose_graphql_endpoint:
         with ImportExtensions(required=True):
             from dataclasses import asdict
 
             import strawberry
             from docarray import DocumentArray
-            from strawberry.fastapi import GraphQLRouter
-            from docarray.document.strawberry_type import StrawberryDocument
             from docarray.document.strawberry_type import (
                 JSONScalar,
+                StrawberryDocument,
                 StrawberryDocumentInput,
             )
+            from strawberry.fastapi import GraphQLRouter
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

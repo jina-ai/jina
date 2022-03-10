@@ -1,13 +1,14 @@
 import asyncio
+import time
 import urllib.error
 from typing import Dict
-import time
 
 import numpy as np
 import pytest
 from docarray.array.document import DocumentArray
 from docarray.document import Document
-from jina import Executor, Flow, requests, Client
+
+from jina import Client, Executor, Flow, requests
 
 PORT_EXPOSE = 53171
 PORT_EXPOSE_NO_GRAPHQL = 53172
@@ -60,7 +61,7 @@ class GraphQLTestEncoder(Executor):
 @pytest.fixture(scope="module", autouse=True)
 def flow():
     f = (
-        Flow(protocol='http', port_expose=PORT_EXPOSE)
+        Flow(protocol='http', port_expose=PORT_EXPOSE, expose_graphql_endpoint=True)
         .add(uses=GraphQLTestEncoder, name='Encoder')
         .add(uses=GraphQLTestIndexer, name='Indexer')
         .add(uses=SlowExec)
@@ -76,7 +77,7 @@ def no_graphql_flow():
         Flow(
             protocol='http',
             port_expose=PORT_EXPOSE_NO_GRAPHQL,
-            no_graphql_endpoint=True,
+            expose_graphql_endpoint=False,
             cors=True,
             no_crud_endpoints=True,
         )

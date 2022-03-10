@@ -181,7 +181,7 @@ This article does not serve as the introduction to GraphQL.
 If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the official [GraphQL documentation](https://graphql.org/learn/).
 You may also want to learn about [Strawberry](https://strawberry.rocks/), the library that powers Jina's GraphQL support.
 ````
-Jina Flows that use the HTTP protocol provide a GraphQL API out of the box, which is located behind the '/graphql' endpoint.
+Jina Flows that use the HTTP protocol can also provide a GraphQL API, which is located behind the '/graphql' endpoint.
 GraphQL has the advantage of letting the user define their own response schema, which means that only the fields that are required
 will be sent over the wire.
 This is especially useful when the user does not need potentially large fields, like image tensors.
