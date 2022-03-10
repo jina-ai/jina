@@ -3,6 +3,7 @@ import asyncio
 
 from typing import List, TYPE_CHECKING, Callable
 
+from docarray import DocumentArray
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.networking import GrpcConnectionPool
 
@@ -25,6 +26,9 @@ def handle_request(
 
         request_graph = copy.deepcopy(graph)
         # important that the gateway needs to have an instance of the graph per request
+        request_doc_ids = request.data.docs[
+            :, 'id'
+        ]  # used to maintain order of docs that are filtered by executors
         tasks_to_respond = []
         tasks_to_ignore = []
         endpoint = request.header.exec_endpoint
@@ -65,6 +69,11 @@ def handle_request(
             response = filtered_partial_responses[0]
             request_graph.add_routes(response)
 
+            # sort response docs according to their order in the initial request
+            sorted_docs = sorted(
+                response.data.docs, key=lambda d: request_doc_ids.index(d.id)
+            )
+            response.data.docs = DocumentArray(sorted_docs)
             return response
 
         # In case of empty topologies
