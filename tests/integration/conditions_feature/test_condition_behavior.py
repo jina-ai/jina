@@ -10,7 +10,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 class ContitionDumpExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
-        print(f' HEY JOAN {self.metas.name}')
         with open(
             os.path.join(str(self.workspace), f'{self.metas.name}.txt'), 'w'
         ) as fp:
@@ -164,10 +163,9 @@ def test_conditions_filtering_on_joiner(tmpdir):
         assert fp.read() == 'type1type2'
 
 
-def test_sorted_return(tmpdir, shuffle_flow):
+def test_sorted_response(tmpdir, shuffle_flow):
     tag_list = ['first', 'second', 'third', 'fourth', 'fifth']
     inputs = DocumentArray.empty(6)
-    # print(inputs.find({'$or': {'tags__second': {'$eq': 1}, 'tags__fifth': {'$eq': 1}}}))
     for i in range(5):  # no tag for last doc
         inputs[i].tags[tag_list[i]] = 1  # one-hot encoding
 
