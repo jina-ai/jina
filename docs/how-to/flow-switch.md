@@ -56,7 +56,10 @@ One way to achieve this differentiation is to use different Executor endpoints:
 
 ````{tab} Main app
 
-```python
+```{code-block} python
+---
+emphasize-lines: 18, 22
+---
 from docarray import DocumentArray, Document
 from jina import Flow
 import numpy as np
@@ -87,7 +90,10 @@ with f:
 
 ````{tab} Define Executors
 
-```python
+```{code-block} python
+---
+emphasize-lines: 6, 14
+---
 from docarray import DocumentArray, Document
 from jina import Executor, requests
 import numpy as np
@@ -217,7 +223,10 @@ switch logic.
 
 ````{tab} Flow
 
-```python
+```{code-block} python
+---
+emphasize-lines: 9, 15
+---
 from jina import Flow
 
 f = (
@@ -242,7 +251,10 @@ f = (
 
 ````{tab} Executors
 
-```python
+```{code-block} python
+---
+emphasize-lines: 6, 14
+---
 from docarray import DocumentArray, Document
 from jina import Executor, requests
 import numpy as np
