@@ -535,7 +535,7 @@ print(
 
 Note that whenever a Document does not satisfy the `condition` of a filter, the filter removes it *for the entire branch of the Flow*.
 This means that every Executor that is located behind a filter is affected by this, not just the specific Executor that defines the condition.
-Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter:
+Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.
 
 This does not affect parallel branches of a Flow, since all Documents pass through all such branches:
 
@@ -588,10 +588,11 @@ from jina import Flow
 f = (
     Flow()
     .add(name='first')
-    .add(condition={'tags__key': {'$eq': 5}}, name='second', needs='first')
-    .add(condition={'tags__key': {'$eq': 4}}, needs='second')
-    .needs_all()
+    .add(condition={'tags__key': {'$eq': 5}}, name='exec1', needs='first')
+    .add(condition={'tags__key': {'$eq': 4}}, needs='exec1', name='exec2)
 )  # Create Flow with sequential Executors
+
+# Flow topology: Gateway --> first --> exec1 --> exec2 --> Gateway
 
 with f:
     ret = f.post(
