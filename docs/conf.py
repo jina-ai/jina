@@ -74,7 +74,6 @@ html_static_path = ['_static']
 html_extra_path = ['html_extra']
 html_css_files = [
     'main.css',
-    'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
 ]
 html_js_files = []
@@ -188,17 +187,6 @@ ogp_custom_meta_tags = [
 ]
 
 
-def set_qa_server_address(app):
-    # This sets the server address to <qa-bot>
-    server_address = app.config['server_address']
-    js_text = """
-        document.addEventListener("DOMContentLoaded", function() { 
-            document.querySelector("qa-bot").setAttribute("server", "%s");
-        });
-        """ % server_address
-    app.add_js_file(None, body=js_text)
-
-
 def setup(app):
     from sphinx.domains.python import PyField
     from sphinx.util.docfields import Field
@@ -225,9 +213,3 @@ def setup(app):
             ),
         ],
     )
-    app.add_config_value(
-        name='server_address',
-        default=os.getenv('JINA_DOCSBOT_SERVER', 'https://docsbot.jina.ai'),
-        rebuild='',
-    )
-    app.connect('builder-inited', set_qa_server_address)
