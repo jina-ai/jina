@@ -14,14 +14,6 @@ def mixin_pod_parser(parser):
     gp = add_arg_group(parser, title='Pod')
 
     gp.add_argument(
-        '--daemon',
-        action='store_true',
-        default=False,
-        help='The Pod attempts to terminate all of its Runtime child processes/threads on existing. '
-        'setting it to true basically tell the Pod do not wait on the Runtime when closing',
-    )
-
-    gp.add_argument(
         '--runtime-backend',
         '--runtime',
         type=RuntimeBackendType.from_string,
