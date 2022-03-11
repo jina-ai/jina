@@ -40,7 +40,7 @@ f = (
 f.plot()
 ```
 
-```{figure} simple-paraller-flow.svg
+```{figure} simple-parallel-flow.svg
 :width: 70%
 :align: center
 Flow with two parallel branches.
