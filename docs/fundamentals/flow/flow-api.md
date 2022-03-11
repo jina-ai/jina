@@ -211,6 +211,33 @@ f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 
 After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-http>` will not be exposed.
 
+### Add GraphQL endpoint
+
+````{admonition} Attention
+:class: attention
+
+GraphQL support is an optional feature that requires optional dependencies.
+To install these, run `pip install jina[graphql]` or `pip install jina[all]`.
+
+Unfortunately, these dependencies are **not available through Conda**. You will have to use `pip` to be able to use GraphQL
+feature.
+````
+
+A Flow can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
+To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True` on your HTTP Flow:
+
+```python
+from jina import Flow
+
+f = Flow(protocol='http', expose_graphql_endpont=True)
+```
+
+````{admonition} See Also
+:class: seealso
+
+For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
+````
+
 ## Limit outstanding requests
 
 By default, Jina's Client sens requests to the Flow as fast as possible, without any throttling.

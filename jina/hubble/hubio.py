@@ -11,7 +11,7 @@ from typing import Dict, Optional, Union
 from urllib.parse import urlencode
 
 from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, colored, get_request_header
+from jina.helper import ArgNamespace, colored, get_request_header, get_rich_console
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
@@ -34,7 +34,6 @@ from jina.hubble.hubapi import (
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.parsers.hubble import set_hub_parser
-from jina.helper import get_rich_console
 
 
 class HubIO:
@@ -72,7 +71,7 @@ class HubIO:
     def new(self) -> None:
         """Create a new executor folder interactively."""
 
-        from rich import print, box
+        from rich import box, print
         from rich.panel import Panel
         from rich.progress import track
         from rich.prompt import Confirm, Prompt
@@ -609,7 +608,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
-            sn=resp.get('sn', None),
+            commit_id=resp['commit'].get('id'),
             tag=tag or resp['commit'].get('tags', [None])[0],
             visibility=resp['visibility'],
             image_name=image_name,
@@ -667,7 +666,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             return host, port
 
         with console.status(
-            f"[bold green]Deploying sandbox for ({name}) since no existing one..."
+            f"[bold green]Deploying sandbox for [bold white]{name}[/bold white] since none exists..."
         ):
             try:
                 json_response = requests.post(
@@ -685,7 +684,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
                 console.log(f"Deployment completed: {host}:{port}")
                 console.log(
-                    f"[bold green]This sandbox will be removed when no traffic during {livetime}"
+                    f"[bold green]This sandbox will be removed when no traffic during [bold white]{livetime}[/bold white]"
                 )
             except:
                 console.log("Deployment failed")
@@ -815,10 +814,12 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                             pkg_path, pkg_dist_path = get_dist_path_of_executor(
                                 executor
                             )
-                            # check serial number to upgrade
-                            sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
-                            if (not sn_file_path.exists()) and any(
-                                pkg_dist_path.glob('PKG-SN-*')
+                            # check commit id to upgrade
+                            commit_file_path = (
+                                pkg_dist_path / f'PKG-COMMIT-{executor.commit_id or 0}'
+                            )
+                            if (not commit_file_path.exists()) and any(
+                                pkg_dist_path.glob('PKG-COMMIT-*')
                             ):
                                 raise FileNotFoundError(
                                     f'{pkg_path} need to be upgraded'

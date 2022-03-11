@@ -102,10 +102,10 @@ def mixin_graphql_parser(parser=None):
 
     gp = add_arg_group(parser, title='GraphQL')
     gp.add_argument(
-        '--no-graphql-endpoint',
+        '--expose-graphql-endpoint',
         action='store_true',
         default=False,
-        help='If set, /graphql endpoint is removed from HTTP interface. ',
+        help='If set, /graphql endpoint is added to HTTP interface. ',
     )
 
 

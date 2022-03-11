@@ -1,15 +1,15 @@
-from functools import partialmethod, wraps
-from typing import Optional, Dict, List, AsyncGenerator, TYPE_CHECKING, Union
 import warnings
+from functools import partialmethod, wraps
 from inspect import signature
+from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 
-from jina.helper import run_async, get_or_reuse_loop
+from jina.helper import get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
+    from jina import DocumentArray
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Response
-    from jina import DocumentArray
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -102,8 +102,8 @@ class PostMixin:
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
-        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
@@ -116,8 +116,7 @@ class PostMixin:
         :return: None or DocumentArray containing all response Documents
 
         .. warning::
-            ``target_executor`` uses ``re.match`` for checking if the pattern is matched.
-             ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
+            ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
 
         return_results = False
@@ -184,13 +183,13 @@ class AsyncPostMixin:
         continue_on_error: bool = False,
         **kwargs,
     ) -> AsyncGenerator[None, 'Response']:
-        """Post a general data request to the Flow.
+        """Async Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
-        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
+        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param on_always: the function to be called when the :class:`Request` object is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
@@ -198,6 +197,9 @@ class AsyncPostMixin:
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
         :param kwargs: additional parameters
         :yield: Response object
+
+        .. warning::
+            ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
         c = self.client
         c.show_progress = show_progress

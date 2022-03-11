@@ -131,13 +131,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
-        daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         description: Optional[str] = None,
         disable_reduce: Optional[bool] = False,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
         graph_description: Optional[str] = '{}',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -146,7 +146,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        no_graphql_endpoint: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         prefetch: Optional[int] = 0,
@@ -176,13 +175,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -201,7 +200,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
-        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -263,10 +261,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         env: Optional[dict] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
-        no_graphql_endpoint: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -278,6 +276,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
@@ -291,7 +290,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param no_graphql_endpoint: If set, /graphql endpoint is removed from HTTP interface.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -329,13 +327,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._update_args(args, **kwargs)
         if (
             self.protocol == GatewayProtocolType.HTTP
-            and not self.args.no_graphql_endpoint
+            and self.args.expose_graphql_endpoint
             and not docarray_graphql_compatible()
         ):
-            self.args.no_graphql_endpoint = True
+            self.args.expose_graphql_endpoint = False
             warnings.warn(
                 'DocArray version is incompatible with GraphQL features. '
-                'Automatically setting no_graphql_endpoint=True. '
+                'Automatically setting expose_graphql_endpoint=False. '
                 f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
             )
 
@@ -453,8 +451,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
-        args.no_graphql_endpoint = (
-            self.args.no_graphql_endpoint
+        args.expose_graphql_endpoint = (
+            self.args.expose_graphql_endpoint
         )  # also used in Flow, thus not in kwargs
         args.graph_description = json.dumps(graph_description)
         args.deployments_addresses = json.dumps(deployments_addresses)
@@ -583,7 +581,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         connection_list: Optional[str] = None,
-        daemon: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -627,7 +624,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Add an Executor to the current Flow object.
 
         :param connection_list: dictionary JSON with a list of connections to configure
-        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1513,7 +1509,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'Redoc: ',
                 f'[underline]http://localhost:{self.port}/redoc[/underline]',
             )
-
             if not self.args.no_graphql_endpoint:
                 address_table.add_row(
                     '💬',

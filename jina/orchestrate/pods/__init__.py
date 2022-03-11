@@ -4,16 +4,16 @@ import os
 import threading
 import time
 from abc import ABC, abstractmethod
-from typing import Type, Union, Dict, Optional
+from typing import Dict, Optional, Type, Union
 
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.jaml import JAML
-from jina.orchestrate.pods.helper import _get_event, _get_worker, ConditionalEvent
-from jina import __stop_msg__, __ready_msg__, __windows__
+from jina import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType, RuntimeBackendType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename
+from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
+from jina.orchestrate.pods.helper import ConditionalEvent, _get_event, _get_worker
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
 __all__ = ['BasePod', 'Pod']
 
@@ -149,7 +149,6 @@ class BasePod(ABC):
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
             events_list=[self.is_ready, self.is_shutdown],
         )
-        self.daemon = self.args.daemon
         self.runtime_ctrl_address = self._get_control_address()
         self._timeout_ctrl = self.args.timeout_ctrl
 
