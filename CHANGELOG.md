@@ -139,6 +139,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12421,4 +12422,34 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```3ac8baeb```](https://github.com/jina-ai/jina/commit/3ac8baeb4cb1684f3b3614667e4c05725af9ecc3)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```877849a9```](https://github.com/jina-ai/jina/commit/877849a9f81c47a3d63d59c255e95061b007a7b0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d55afac1```](https://github.com/jina-ai/jina/commit/d55afac119a49fd94e4fa243823c981af0766fcf)] __-__ __version__: the next version will be 3.1.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-3></a>
+## Release Note (`3.1.3`)
+
+> Release time: 2022-03-11 16:22:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Zhaofeng Miao,  Delgermurun,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```53980292```](https://github.com/jina-ai/jina/commit/5398029280fe3f4aedd8a8b7058f97fbec353d03)] __-__ use rich to manage ui (#4427) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```9da67557```](https://github.com/jina-ai/jina/commit/9da67557bb50b063b8040170304e078fc568c73c)] __-__ __hubble__: use commit id instead of serial number (#4464) (*Delgermurun*)
+
+### 🧼 Code Refactoring
+
+ - [[```89bd5614```](https://github.com/jina-ai/jina/commit/89bd56142d4781ebadb115404f72ed6e1c96532f)] __-__ delete daemon args from pods (#4465) (*samsja*)
+ - [[```88db7696```](https://github.com/jina-ai/jina/commit/88db769626e4f5b770499cc0ad6ce44e772c8215)] __-__ __hubble__: optimize words (#4466) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```1d618f8f```](https://github.com/jina-ai/jina/commit/1d618f8f3d08fd09a07dd86abf4ad8df7ce940f5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b2f69d5b```](https://github.com/jina-ai/jina/commit/b2f69d5b6522080827e81b9bb7498b1f5af41de4)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```e1d43309```](https://github.com/jina-ai/jina/commit/e1d433099a6a910d7595e867a42062b44198615c)] __-__ __version__: the next version will be 3.1.3 (*Jina Dev Bot*)
 
