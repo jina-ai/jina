@@ -25,6 +25,11 @@ Jina will generate a `docker-compose.yml` configuration file that you can use di
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
 ```
 
+```{caution}
+If you are using Executor which rely on docker image built with a jina version prior to 3.1.3, please remove the 
+health check from the dump yaml file as they are only compatible with 3.1.3+ otherwise your docker compose services will 
+always be `unhealthy
+```
 ## Example: Indexing and searching images using CLIP image encoder and PQLiteIndexer
 
 

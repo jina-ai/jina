@@ -8,6 +8,10 @@ from jina import Client, Document, Executor, requests
 from jina.enums import PodRoleType, PollingType
 from jina.orchestrate.pods import Pod
 from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.resources.health_check.gateway import (
+    check_health_http,
+    check_health_websocket,
+)
 from jina.resources.health_check.pod import check_health_pod
 from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.control import ControlRequest
@@ -55,8 +59,16 @@ async def test_pods_trivial_topology(port_generator):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'protocol, health_check',
+    [
+        ('grpc', check_health_pod),
+        ('http', check_health_http),
+        ('websocket', check_health_websocket),
+    ],
+)
 # test pods health check
-async def test_pods_health_check(port_generator):
+async def test_pods_health_check(port_generator, protocol, health_check):
     worker_port = port_generator()
     head_port = port_generator()
     port = port_generator()
@@ -70,7 +82,7 @@ async def test_pods_health_check(port_generator):
     head_pod = _create_head_pod(head_port)
 
     # create a single gateway pod
-    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
+    gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port, protocol)
 
     with gateway_pod, head_pod, worker_pod:
         # this would be done by the Pod, its adding the worker to the head
@@ -85,8 +97,10 @@ async def test_pods_health_check(port_generator):
         # send requests to the gateway
         gateway_pod.wait_start_success()
 
-        for _port in (port, head_port, worker_port):
+        for _port in (head_port, worker_port):
             check_health_pod(f'0.0.0.0:{_port}')
+
+        health_check(f'0.0.0.0:{port}')
 
 
 @pytest.fixture
@@ -532,7 +546,7 @@ def _create_head_pod(port, name='', polling='ANY', uses_before=None, uses_after=
     return Pod(args)
 
 
-def _create_gateway_pod(graph_description, pod_addresses, port):
+def _create_gateway_pod(graph_description, pod_addresses, port, protocol):
     return Pod(
         set_gateway_parser().parse_args(
             [
@@ -543,6 +557,8 @@ def _create_gateway_pod(graph_description, pod_addresses, port):
                 '--port',
                 str(port),
                 '--noblock-on-start',
+                '--protocol',
+                protocol,
             ]
         )
     )

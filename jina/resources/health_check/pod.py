@@ -1,7 +1,3 @@
-import grpc
-
-from jina.serve.networking import GrpcConnectionPool
-from jina.types.request.control import ControlRequest
 
 
 def check_health_pod(addr: str):
@@ -9,6 +5,10 @@ def check_health_pod(addr: str):
 
     :param addr: the address on which the pod is serving ex : localhost:1234
     """
+    import grpc
+
+    from jina.serve.networking import GrpcConnectionPool
+    from jina.types.request.control import ControlRequest
 
     try:
         GrpcConnectionPool.send_request_sync(

@@ -79,6 +79,9 @@ class DockerComposeConfig:
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
+
+            protocol = str(non_defaults['protocol']).lower()
+
             return {
                 'image': image_name,
                 'entrypoint': ['jina'],
@@ -90,7 +93,7 @@ class DockerComposeConfig:
                     f'{cargs.port}:{cargs.port}',
                 ],
                 'healthcheck': {
-                    'test': f'python -m jina.resources.health_check.pod localhost:{cargs.port}',
+                    'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
                 },
             }
