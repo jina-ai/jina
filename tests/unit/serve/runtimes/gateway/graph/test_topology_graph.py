@@ -667,8 +667,6 @@ async def test_message_ordering_bifurcation_graph(
 
         sorted_clients_resps = list(sorted(client_resps, key=sorting_key))
 
-        assert node_skipped not in runtime.connection_pool.deployments_called
-
         if node_skipped != 'deployment2':
             assert (
                 f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3'
