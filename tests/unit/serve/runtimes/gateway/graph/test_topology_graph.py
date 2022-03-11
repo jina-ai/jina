@@ -1,14 +1,13 @@
+import asyncio
 import copy
+from collections import defaultdict
 from typing import List
 
 import pytest
-import asyncio
 
-from collections import defaultdict
-
+from jina import Document, DocumentArray
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.types.request import Request
-from jina import DocumentArray, Document
 from jina.types.request.data import DataRequest
 
 
@@ -135,7 +134,14 @@ def test_topology_graph_build_linear(linear_graph_dict):
 
 
 @pytest.mark.parametrize(
-    'conditions', [{}, {'deployment1': {'key': '5'}, 'deployment2': {'key': '4'}}]
+    'conditions',
+    [
+        {},
+        {
+            'deployment1': {'tags__key': {'$eq': 5}},
+            'deployment2': {'tags__key': {'$eq': 4}},
+        },
+    ],
 )
 def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     graph = TopologyGraph(bifurcation_graph_dict, conditions)
@@ -167,7 +173,7 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     if conditions == {}:
         assert node_deployment1._filter_condition is None
     else:
-        assert node_deployment1._filter_condition._filter_condition == {'key': '5'}
+        assert node_deployment1._filter_condition == {'tags__key': {'$eq': 5}}
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
     assert node_deployment1.hanging
@@ -179,7 +185,7 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     if conditions == {}:
         assert node_deployment2._filter_condition is None
     else:
-        assert node_deployment2._filter_condition._filter_condition == {'key': '4'}
+        assert node_deployment2._filter_condition == {'tags__key': {'$eq': 4}}
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
     assert not node_deployment2.hanging
@@ -616,8 +622,20 @@ async def test_message_ordering_linear_graph(linear_graph_dict):
     'conditions, node_skipped',
     [
         ({}, ''),
-        ({'deployment1': {'key': '5'}, 'deployment2': {'key': '4'}}, 'deployment1'),
-        ({'deployment1': {'key': '4'}, 'deployment2': {'key': '5'}}, 'deployment2'),
+        (
+            {
+                'deployment1': {'tags__key': {'$eq': 5}},
+                'deployment2': {'tags__key': {'$eq': 4}},
+            },
+            'deployment1',
+        ),
+        (
+            {
+                'deployment1': {'tags__key': {'$eq': 4}},
+                'deployment2': {'tags__key': {'$eq': 5}},
+            },
+            'deployment2',
+        ),
     ],
 )
 async def test_message_ordering_bifurcation_graph(
