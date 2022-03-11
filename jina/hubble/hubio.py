@@ -611,7 +611,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
-            sn=resp.get('sn', None),
+            commit_id=resp['commit'].get('id'),
             tag=tag or resp['commit'].get('tags', [None])[0],
             visibility=resp['visibility'],
             image_name=image_name,
@@ -819,10 +819,12 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                             pkg_path, pkg_dist_path = get_dist_path_of_executor(
                                 executor
                             )
-                            # check serial number to upgrade
-                            sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
-                            if (not sn_file_path.exists()) and any(
-                                pkg_dist_path.glob('PKG-SN-*')
+                            # check commit id to upgrade
+                            commit_file_path = (
+                                pkg_dist_path / f'PKG-COMMIT-{executor.commit_id or 0}'
+                            )
+                            if (not commit_file_path.exists()) and any(
+                                pkg_dist_path.glob('PKG-COMMIT-*')
                             ):
                                 raise FileNotFoundError(
                                     f'{pkg_path} need to be upgraded'

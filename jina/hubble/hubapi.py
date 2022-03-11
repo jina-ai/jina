@@ -6,14 +6,14 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
+from jina.helper import random_identity
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
-    unpack_package,
+    get_hub_packages_dir,
     install_requirements,
     is_requirements_installed,
-    get_hub_packages_dir,
+    unpack_package,
 )
-from jina.helper import random_identity
 
 
 def get_dist_path(uuid: str, tag: str) -> Tuple[Path, Path]:
@@ -155,10 +155,10 @@ def install_local(
     if manifest_path.exists():
         shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
 
-    # store the serial number in local
-    if executor.sn is not None:
-        sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
-        sn_file.touch()
+    # store the commit id in local
+    if executor.commit_id is not None:
+        commit_file = pkg_dist_path / f'PKG-COMMIT-{executor.commit_id}'
+        commit_file.touch()
 
 
 def install_package_dependencies(

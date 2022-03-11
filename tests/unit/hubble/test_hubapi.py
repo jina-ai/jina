@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from jina.hubble import hubapi, HubExecutor
+from jina.hubble import HubExecutor, hubapi
 from jina.hubble.hubapi import list_local
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,7 +16,7 @@ def executor_zip_file():
 
 @pytest.fixture
 def test_executor():
-    return HubExecutor(uuid='hello', name=None, sn=0, tag='v0')
+    return HubExecutor(uuid='hello', name=None, commit_id='test_commit', tag='v0')
 
 
 @pytest.mark.parametrize('install_deps', [True, False])

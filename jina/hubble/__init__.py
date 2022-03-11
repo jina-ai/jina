@@ -8,7 +8,7 @@ class HubExecutor:
 
     uuid: str = None
     name: Optional[str] = None
-    sn: Optional[int] = None
+    commit_id: Optional[str] = None
     tag: Optional[str] = None
     visibility: Optional[bool] = None
     image_name: Optional[str] = None
