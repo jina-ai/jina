@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.clients.base.http - Jina 3.1.2 documentation</title>
+        <title>jina.clients.base.http - Jina 3.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.1.2 documentation</div>
+                <div class="brand">Jina 3.1.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -637,10 +637,8 @@
 
         <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">cm1</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">ProgressBar</span><span class="p">(</span><span class="n">total_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span>
-                    <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
+                <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(</span>
+                    <span class="n">total_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">p_bar</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">cm1</span><span class="p">)</span>
 
@@ -698,6 +696,7 @@
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
                         <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
                     <span class="k">yield</span> <span class="n">resp</span>
+
             <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Error while fetching response from HTTP server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
@@ -728,7 +727,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 10, 2022.
+                    Last updated on Mar 11, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

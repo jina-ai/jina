@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.helper - Jina 3.1.2 documentation</title>
+        <title>jina.helper - Jina 3.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.1.2 documentation</div>
+                <div class="brand">Jina 3.1.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -609,25 +609,27 @@
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
-<span class="kn">from</span> <span class="nn">packaging</span> <span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">pckg_version</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Iterator</span><span class="p">,</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">Set</span><span class="p">,</span>
-    <span class="n">Sequence</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__windows__</span><span class="p">,</span> <span class="n">__docarray_version__</span>
+<span class="kn">from</span> <span class="nn">packaging</span> <span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">pckg_version</span>
+<span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docarray_version__</span><span class="p">,</span> <span class="n">__windows__</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">'batch_iterator'</span><span class="p">,</span>
@@ -652,9 +654,9 @@
     <span class="s1">'get_readable_size'</span><span class="p">,</span>
     <span class="s1">'get_or_reuse_loop'</span><span class="p">,</span>
     <span class="s1">'T'</span><span class="p">,</span>
+    <span class="s1">'get_rich_console'</span><span class="p">,</span>
     <span class="s1">'docarray_graphql_compatible'</span><span class="p">,</span>
 <span class="p">]</span>
-
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -1279,23 +1281,40 @@
     <span class="k">return</span> <span class="n">text</span></div>
 
 
-<span class="k">class</span> <span class="nc">ColorContext</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="o">=</span> <span class="n">color</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bold</span> <span class="o">=</span> <span class="n">bold</span>
+<span class="k">def</span> <span class="nf">colored_rich</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">on_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Give the text with color. You should only use it when printing with rich print. Othersiwe please see the colored</span>
+<span class="sd">    function</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bold</span><span class="p">:</span>
-            <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[1;</span><span class="si">%d</span><span class="s1">m'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[0;</span><span class="si">%d</span><span class="s1">m'</span>
+<span class="sd">    :param text: The target text</span>
+<span class="sd">    :param color: The color of text</span>
+<span class="sd">    :param on_color: The on color of text: ex on yellow</span>
+<span class="sd">    :param attrs: Attributes of color</span>
 
-        <span class="n">c</span> <span class="o">=</span> <span class="n">fmt_str</span> <span class="o">%</span> <span class="p">(</span><span class="n">_COLORS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span><span class="p">])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+<span class="sd">    :return: Colored text.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="s1">'JINA_LOG_NO_COLOR'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">_wrap_text_in_rich_bracket</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_color</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">_wrap_text_in_rich_bracket</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">on_color</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">_RESET</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attrs</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">_wrap_text_in_rich_bracket</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+
+<span class="k">def</span> <span class="nf">_wrap_text_in_rich_bracket</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">wrapper</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">[/</span><span class="si">{</span><span class="n">wrapper</span><span class="si">}</span><span class="s1">]'</span>
 
 
 <span class="k">def</span> <span class="nf">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
@@ -1460,19 +1479,25 @@
 
 <span class="sd">    :return: Version information and environment variables</span>
 <span class="sd">    """</span>
-    <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">grpc</span><span class="o">,</span> <span class="nn">google.protobuf</span><span class="o">,</span> <span class="nn">yaml</span><span class="o">,</span> <span class="nn">platform</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">__version__</span><span class="p">,</span>
-        <span class="n">__proto_version__</span><span class="p">,</span>
-        <span class="n">__docarray_version__</span><span class="p">,</span>
-        <span class="n">__jina_env__</span><span class="p">,</span>
-        <span class="n">__uptime__</span><span class="p">,</span>
-        <span class="n">__unset_msg__</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">platform</span>
+    <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">getnode</span>
+
+    <span class="kn">import</span> <span class="nn">google.protobuf</span>
+    <span class="kn">import</span> <span class="nn">grpc</span>
+    <span class="kn">import</span> <span class="nn">yaml</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.internal</span> <span class="kn">import</span> <span class="n">api_implementation</span>
     <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">_grpcio_metadata</span>
+
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">__docarray_version__</span><span class="p">,</span>
+        <span class="n">__jina_env__</span><span class="p">,</span>
+        <span class="n">__proto_version__</span><span class="p">,</span>
+        <span class="n">__unset_msg__</span><span class="p">,</span>
+        <span class="n">__uptime__</span><span class="p">,</span>
+        <span class="n">__version__</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-    <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">getnode</span>
 
     <span class="k">try</span><span class="p">:</span>
 
@@ -1919,7 +1944,9 @@
 <span class="sd">    :param target: the target class to check</span>
 <span class="sd">    :return: a dictionary with key as request type and value as method name</span>
 <span class="sd">    """</span>
-    <span class="kn">import</span> <span class="nn">ast</span><span class="o">,</span> <span class="nn">inspect</span>
+    <span class="kn">import</span> <span class="nn">ast</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1970,8 +1997,7 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="kn">import</span> <span class="n">ListValue</span>
-    <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="kn">import</span> <span class="n">Struct</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="kn">import</span> <span class="n">ListValue</span><span class="p">,</span> <span class="n">Struct</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">_dict</span><span class="p">[</span><span class="n">part1</span><span class="p">]</span>
@@ -2058,6 +2084,16 @@
     <span class="k">return</span> <span class="n">header</span>
 
 
+<div class="viewcode-block" id="get_rich_console"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_rich_console">[docs]</a><span class="k">def</span> <span class="nf">get_rich_console</span><span class="p">():</span>
+    <span class="sd">"""</span>
+<span class="sd">    Function to get jina rich default console.</span>
+<span class="sd">    :return: rich console</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Console</span><span class="p">(</span>
+        <span class="n">force_terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_interactive</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>  <span class="c1"># It forces render in any terminal, especily in PyCharm</span></div>
+
+
 <span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span> <span class="o">=</span> <span class="s1">'0.8.8'</span>  <span class="c1"># graphql requires this or higher</span>
 
 
@@ -2080,7 +2116,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 10, 2022.
+                    Last updated on Mar 11, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

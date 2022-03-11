@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.logging.profile - Jina 3.1.2 documentation</title>
+        <title>jina.logging.profile - Jina 3.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.1.2 documentation</div>
+                <div class="brand">Jina 3.1.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -592,20 +592,33 @@
                     </label>
                 </div>
                 <h1>Source code for jina.logging.profile</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">ProgressBarStatus</span>
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__windows__</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_readable_time</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_readable_time</span><span class="p">,</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_rich_console</span>
+
+<span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Progress</span><span class="p">,</span>
+    <span class="n">Task</span><span class="p">,</span>
+    <span class="n">BarColumn</span><span class="p">,</span>
+    <span class="n">TimeRemainingColumn</span><span class="p">,</span>
+    <span class="n">SpinnerColumn</span><span class="p">,</span>
+    <span class="n">TimeElapsedColumn</span><span class="p">,</span>
+    <span class="n">TextColumn</span><span class="p">,</span>
+    <span class="n">ProgressColumn</span><span class="p">,</span>
+    <span class="n">TaskID</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">rich.text</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Column</span>
+<span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
 
 
 <div class="viewcode-block" id="used_memory"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.used_memory">[docs]</a><span class="k">def</span> <span class="nf">used_memory</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -668,58 +681,145 @@
     <span class="k">return</span> <span class="n">arg_wrapper</span></div>
 
 
-<div class="viewcode-block" id="TimeDict"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.TimeDict">[docs]</a><span class="k">class</span> <span class="nc">TimeDict</span><span class="p">:</span>
-    <span class="sd">"""Records of time information."""</span>
+<div class="viewcode-block" id="ProgressBar"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar">[docs]</a><span class="k">class</span> <span class="nc">ProgressBar</span><span class="p">(</span><span class="n">Progress</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    A progress bar made with rich.</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">accum_time</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">first_start_time</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_stack</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_reset</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="sd">    Example:</span>
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="c1"># store only the first enter time</span>
-        <span class="k">if</span> <span class="n">_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_start_time</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">first_start_time</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span>
+<span class="sd">            with ProgressBar(100, 'loop') as p_bar:</span>
+<span class="sd">                for i in range(100):</span>
+<span class="sd">                    do_busy()</span>
+<span class="sd">                    p_bar.update()</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
-        <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">accum_time</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_reset</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Working...'</span><span class="p">,</span>
+        <span class="n">total_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">message_on_done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ProgressColumn</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">console</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Console</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Init a custom progress bar based on rich. This is the default progress bar of jina if you want to  customize</span>
+<span class="sd">        it you should probably just use a rich `Progress` and add your custom column and task</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Add time counter.</span>
+<span class="sd">        :param description: description of your task ex : 'Working...'</span>
+<span class="sd">        :param total_length: the number of steps</span>
+<span class="sd">        :param message_on_done: The message that you want to print at the end of your task. It can either be a string to</span>
+<span class="sd">        be formatted with task (ex '{task.completed}') task or a function which take task as input (ex : lambda task : f'{task.completed}'</span>
+<span class="sd">        :param columns: If you want to customize the column of the progress bar. Note that you should probably directly use</span>
+<span class="sd">        rich Progress object than overwriting these columns parameters.</span>
+<span class="sd">        :param total_length: disable the progress bar</span>
 
-<span class="sd">        :param key: key name of the counter</span>
-<span class="sd">        :param args: extra arguments</span>
-<span class="sd">        :param kwargs: keyword arguments</span>
-<span class="sd">        :return: self object</span>
+
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="TimeDict.reset"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.TimeDict.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Clear the time information."""</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_stack</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_reset</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">def</span> <span class="nf">_default_message_on_done</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">completed</span><span class="si">}</span><span class="s1"> steps done in </span><span class="si">{</span><span class="n">get_readable_time</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">finished_time</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+
+        <span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span> <span class="ow">or</span> <span class="p">[</span>
+            <span class="n">SpinnerColumn</span><span class="p">(),</span>
+            <span class="n">_OnDoneColumn</span><span class="p">(</span><span class="sa">f</span><span class="s1">'DONE'</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="s1">'progress.description'</span><span class="p">),</span>
+            <span class="n">BarColumn</span><span class="p">(</span><span class="n">complete_style</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">finished_style</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">),</span>
+            <span class="n">TimeElapsedColumn</span><span class="p">(),</span>
+            <span class="s1">'[progress.percentage]</span><span class="si">{task.percentage:&gt;3.0f}</span><span class="s1">%'</span><span class="p">,</span>
+            <span class="n">TextColumn</span><span class="p">(</span><span class="s1">'ETA:'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'progress.remaining'</span><span class="p">),</span>
+            <span class="n">TimeRemainingColumn</span><span class="p">(),</span>
+            <span class="n">_OnDoneColumn</span><span class="p">(</span>
+                <span class="n">message_on_done</span> <span class="k">if</span> <span class="n">message_on_done</span> <span class="k">else</span> <span class="n">_default_message_on_done</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">console</span><span class="p">:</span>
+            <span class="n">console</span> <span class="o">=</span> <span class="n">get_rich_console</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">columns</span><span class="p">,</span> <span class="n">console</span><span class="o">=</span><span class="n">console</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="n">disable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
+            <span class="s1">'Working...'</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total_length</span> <span class="k">if</span> <span class="n">total_length</span> <span class="k">else</span> <span class="mf">100.0</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="ProgressBar.update"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TaskID</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">advance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Update the progress bar</span>
+
+<span class="sd">        :param task_id: the task to update</span>
+<span class="sd">        :param advance: Add a value to main task.completed</span>
+
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task_id</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_id</span><span class="p">,</span> <span class="n">advance</span><span class="o">=</span><span class="n">advance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">accum_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">first_start_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_key_stack</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_reset</span> <span class="o">=</span> <span class="kc">False</span></div>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">advance</span><span class="o">=</span><span class="n">advance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s1">3.1f</span><span class="si">}</span><span class="s1">s'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accum_time</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
+
+<span class="k">class</span> <span class="nc">_OnDoneColumn</span><span class="p">(</span><span class="n">ProgressColumn</span><span class="p">):</span>
+    <span class="sd">"""Renders custom on done for jina progress bar."""</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text_on_done_format</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span>
+        <span class="n">text_init_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">table_column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Create a ProgressBar column with a final message</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def on_done(task):</span>
+<span class="sd">                return f'{task.completed} steps done in {task.finished_time:.0f} seconds'</span>
+
+
+<span class="sd">            column = _OnDoneColumn(text_on_done_format=on_done)  # functional</span>
+
+<span class="sd">            column = _OnDoneColumn(</span>
+<span class="sd">                text_on_done_format='{task.completed} steps done in {task.finished_time:.0f} seconds'</span>
+<span class="sd">            )  # formatting</span>
+
+
+<span class="sd">        :param text_on_done_format: message_on_done</span>
+<span class="sd">        :param text_init_format: string to be formatted with task or a function which take task as input</span>
+<span class="sd">        :param style: rich style for the Text</span>
+<span class="sd">        :param table_column: rich table column</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">table_column</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_on_done_format</span> <span class="o">=</span> <span class="n">text_on_done_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_init_format</span> <span class="o">=</span> <span class="n">text_init_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">style</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">finished_time</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_on_done_format</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_on_done_format</span><span class="p">(</span><span class="n">task</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Text</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text_on_done_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_init_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">),</span> <span class="n">style</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TimeContext"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.TimeContext">[docs]</a><span class="k">class</span> <span class="nc">TimeContext</span><span class="p">:</span>
@@ -784,191 +884,6 @@
                 <span class="p">),</span>
                 <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ProgressBar"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar">[docs]</a><span class="k">class</span> <span class="nc">ProgressBar</span><span class="p">(</span><span class="n">TimeContext</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    A simple progress bar.</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">        .. highlight:: python</span>
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            with ProgressBar('loop'):</span>
-<span class="sd">                do_busy()</span>
-<span class="sd">    """</span>
-
-    <span class="n">col_width</span> <span class="o">=</span> <span class="mi">100</span>
-    <span class="n">clear_line</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\r</span><span class="si">{}</span><span class="se">\r</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">' '</span> <span class="o">*</span> <span class="n">col_width</span><span class="p">)</span>
-    <span class="n">spinner</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">([</span><span class="s1">'⠋'</span><span class="p">,</span> <span class="s1">'⠙'</span><span class="p">,</span> <span class="s1">'⠹'</span><span class="p">,</span> <span class="s1">'⠸'</span><span class="p">,</span> <span class="s1">'⠼'</span><span class="p">,</span> <span class="s1">'⠴'</span><span class="p">,</span> <span class="s1">'⠦'</span><span class="p">,</span> <span class="s1">'⠧'</span><span class="p">,</span> <span class="s1">'⠇'</span><span class="p">,</span> <span class="s1">'⠏'</span><span class="p">])</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Working...'</span><span class="p">,</span>
-        <span class="n">message_on_done</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">final_line_feed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">total_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Create the ProgressBar.</span>
-
-<span class="sd">        :param description: The name of the task, will be displayed in front of the bar.</span>
-<span class="sd">        :param message_on_done: The final message to print when the progress is complete</span>
-<span class="sd">        :param final_line_feed: if False, the line will not get a Line Feed and thus is easily overwritable.</span>
-<span class="sd">        :param total_length: if set, then every :py:meth:`.update` increases the bar by `1/total_length * _bars_on_row`</span>
-<span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span> <span class="o">=</span> <span class="mi">40</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span> <span class="o">=</span> <span class="n">message_on_done</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_final_line_feed</span> <span class="o">=</span> <span class="n">final_line_feed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span> <span class="o">=</span> <span class="n">total_length</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-
-<div class="viewcode-block" id="ProgressBar.update"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">progress</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">status</span><span class="p">:</span> <span class="n">ProgressBarStatus</span> <span class="o">=</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">WORKING</span><span class="p">,</span>
-        <span class="n">first_enter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Increment the progress bar by one unit.</span>
-
-<span class="sd">        :param progress: The number of unit to increment.</span>
-<span class="sd">        :param description: Change the description text before the progress bar on update.</span>
-<span class="sd">        :param message: Change the message text followed after the progress bar on update.</span>
-<span class="sd">        :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"</span>
-<span class="sd">        :param first_enter: if this method is called by `__enter__`</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span><span class="p">:</span>
-            <span class="n">progress</span> <span class="o">=</span> <span class="n">progress</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span> <span class="o">+=</span> <span class="n">progress</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span>
-        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-        <span class="n">num_bars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span>
-        <span class="n">num_bars</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">num_bars</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span>
-            <span class="k">else</span> <span class="nb">max</span><span class="p">(</span><span class="n">num_bars</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">num_fullbars</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">num_bars</span><span class="p">)</span>
-        <span class="n">num_halfbars</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="p">(</span><span class="n">num_bars</span> <span class="o">-</span> <span class="n">num_fullbars</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
-
-        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">{</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">DONE</span><span class="p">,</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">}:</span>
-            <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'yellow'</span><span class="p">,</span> <span class="s1">'yellow'</span>
-        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
-            <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'red'</span><span class="p">,</span> <span class="s1">'red'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">bar_color</span><span class="p">,</span> <span class="n">unfinished_bar_color</span> <span class="o">=</span> <span class="s1">'green'</span><span class="p">,</span> <span class="s1">'green'</span>
-
-        <span class="k">if</span> <span class="n">first_enter</span><span class="p">:</span>
-            <span class="n">speed_str</span> <span class="o">=</span> <span class="s1">'estimating...'</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span><span class="p">:</span>
-            <span class="n">_prog</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_length</span>
-            <span class="n">speed_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="p">(</span><span class="n">_prog</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">% ETA: </span><span class="si">{</span><span class="n">get_readable_time</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">_prog</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_prog</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span><span class="si">}</span><span class="s1">'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">speed_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">/</span> <span class="n">elapsed</span><span class="si">:</span><span class="s1">4.1f</span><span class="si">}</span><span class="s1"> step/s'</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_update_called</span> <span class="o">+=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">first_enter</span> <span class="k">else</span> <span class="mi">1</span>
-
-        <span class="n">description_str</span> <span class="o">=</span> <span class="n">description</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span> <span class="ow">or</span> <span class="s1">''</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">WORKING</span><span class="p">:</span>
-            <span class="n">description_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-        <span class="n">msg_str</span> <span class="o">=</span> <span class="n">message</span> <span class="ow">or</span> <span class="s1">''</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">bar_color</span><span class="o">=</span><span class="n">bar_color</span><span class="p">,</span>
-            <span class="n">description_str</span><span class="o">=</span><span class="n">description_str</span><span class="p">,</span>
-            <span class="n">msg_str</span><span class="o">=</span><span class="n">msg_str</span><span class="p">,</span>
-            <span class="n">num_fullbars</span><span class="o">=</span><span class="n">num_fullbars</span><span class="p">,</span>
-            <span class="n">num_halfbars</span><span class="o">=</span><span class="n">num_halfbars</span><span class="p">,</span>
-            <span class="n">speed_str</span><span class="o">=</span><span class="n">speed_str</span><span class="p">,</span>
-            <span class="n">unfinished_bar_color</span><span class="o">=</span><span class="n">unfinished_bar_color</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bar_info</span><span class="p">):</span>
-        <span class="n">time_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-            <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_line</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="s1">'</span><span class="si">{}</span><span class="s1"> </span><span class="si">{:&gt;10}</span><span class="s1"> </span><span class="si">{:&lt;}{:&lt;}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">colored</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spinner</span><span class="p">),</span> <span class="s1">'green'</span><span class="p">),</span>
-                <span class="n">bar_info</span><span class="p">[</span><span class="s1">'description_str'</span><span class="p">],</span>
-                <span class="n">colored</span><span class="p">(</span><span class="s1">'━'</span> <span class="o">*</span> <span class="n">bar_info</span><span class="p">[</span><span class="s1">'num_fullbars'</span><span class="p">],</span> <span class="n">bar_info</span><span class="p">[</span><span class="s1">'bar_color'</span><span class="p">])</span>
-                <span class="o">+</span> <span class="p">(</span>
-                    <span class="n">colored</span><span class="p">(</span>
-                        <span class="s1">'╸'</span><span class="p">,</span>
-                        <span class="n">bar_info</span><span class="p">[</span><span class="s1">'bar_color'</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">bar_info</span><span class="p">[</span><span class="s1">'num_halfbars'</span><span class="p">]</span>
-                        <span class="k">else</span> <span class="n">bar_info</span><span class="p">[</span><span class="s1">'unfinished_bar_color'</span><span class="p">],</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">colored</span><span class="p">(</span>
-                    <span class="s1">'━'</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bars_on_row</span> <span class="o">-</span> <span class="n">bar_info</span><span class="p">[</span><span class="s1">'num_fullbars'</span><span class="p">]),</span>
-                    <span class="n">bar_info</span><span class="p">[</span><span class="s1">'unfinished_bar_color'</span><span class="p">],</span>
-                    <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'dark'</span><span class="p">],</span>
-                <span class="p">),</span>
-                <span class="n">colored</span><span class="p">(</span><span class="n">time_str</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                <span class="n">bar_info</span><span class="p">[</span><span class="s1">'speed_str'</span><span class="p">],</span>
-                <span class="n">bar_info</span><span class="p">[</span><span class="s1">'msg_str'</span><span class="p">],</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_update_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_enter_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">first_enter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_thread</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">readable_duration</span> <span class="o">=</span> <span class="n">get_readable_time</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">in</span> <span class="p">{</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">}:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">CANCELED</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">exc_type</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># normal ending, i.e. task is complete</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_progress_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">ProgressBarStatus</span><span class="o">.</span><span class="n">DONE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_print_bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar_info</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_print_final_msg</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_print_final_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rendered_progress</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">final_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\033</span><span class="s1">[K</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_completed_progress</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> steps done in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">readable_duration</span><span class="si">}</span><span class="s1">'</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">final_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span>
-                <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">):</span>
-                    <span class="n">final_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_done</span><span class="p">()</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">final_msg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_line_feed</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># no actual render happens</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_line</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 </pre></div>
             </article>
             <footer>
@@ -980,7 +895,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 10, 2022.
+                    Last updated on Mar 11, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
