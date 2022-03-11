@@ -289,7 +289,6 @@ class ContainerPod(BasePod):
             self.args.docker_kwargs.pop('extra_hosts')
         self._net_mode = None
         self.worker = None
-        self.daemon = True  #: required here to set process/thread daemon
         self.container_name = slugify(f'{self.name}/{random_name()}')
         self.net_mode, self.runtime_ctrl_address = self._get_control_address()
 
