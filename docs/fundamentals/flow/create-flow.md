@@ -595,7 +595,7 @@ This means that you can not only use this feature to build complex logic, but al
 ````{admonition} See Also
 :class: seealso
 
-For a hands-on example on how to leverage these filter conditions, see {ref}`this how-to <low-switch-howto>`.
+For a hands-on example on how to leverage these filter conditions, see {ref}`this how-to <flow-switch>`.
 ````
 
 ### Replicate Executors

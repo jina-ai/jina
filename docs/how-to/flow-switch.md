@@ -1,4 +1,4 @@
-(flow-switch-howto)=
+(flow-switch)=
 # How to build switches in a Flow
 
 ````{admonition} Requirements

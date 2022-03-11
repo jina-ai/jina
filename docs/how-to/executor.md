@@ -7,6 +7,6 @@ async-executors
 scale-out
 gpu-executor
 external-executor
-flow-switch-howto
+flow-switch
 debug-executor
 ```
