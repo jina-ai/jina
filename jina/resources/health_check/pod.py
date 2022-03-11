@@ -13,7 +13,7 @@ def check_health_pod(addr: str, timeout: int = 600):
 
     channel = grpc.insecure_channel(addr)
     stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
-    request = ControlRequest(command='STATUS')
+    request = ControlRequest(command="STATUS")
     try:
         stub.process_control(request, timeout=timeout)
     except grpc.RpcError as e:
