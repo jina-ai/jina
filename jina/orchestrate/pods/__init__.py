@@ -149,6 +149,7 @@ class BasePod(ABC):
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
             events_list=[self.is_ready, self.is_shutdown],
         )
+        self.daemon = True
         self.runtime_ctrl_address = self._get_control_address()
         self._timeout_ctrl = self.args.timeout_ctrl
 
@@ -339,7 +340,6 @@ class Pod(BasePod):
                 else None,
                 'runtime_cls': self.runtime_cls,
                 'jaml_classes': JAML.registered_classes(),
-                'daemon': True,
             },
             name=self.name,
         )
