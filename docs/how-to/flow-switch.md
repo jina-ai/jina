@@ -192,6 +192,8 @@ tensor_condition = {'tags__has_tensor': {'$eq': 1}}
 
 These conditions specify that only Documents that have been tagged for a specific data modality can pass the filter.
 
+### Try the filters outside the Flow
+
 You can try the conditions directly on your data, outside the Flow:
 
 ```python
