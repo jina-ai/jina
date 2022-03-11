@@ -263,12 +263,12 @@ with f:
 
 </details>
 
-## Other usages
+## Running Executor outside the Flow
 
-Beside running Executor inside the Flow, we list two other usages that may help you debug.  
+`Executor` objects can be used directly, just like any regular Python object.
+There are two ways of instantiating an Executor object: From a local Python class, and from the Jina Hub.
 
-### Use Executor out of Flow
-
+````{tab} From local Python
 `Executor` objects can be used directly, just like a regular Python object. For example:
 
 ```python
@@ -292,6 +292,29 @@ print(f'Text: {da[0].text}')
 ```text
 Text: hello world
 ```
+````
+
+
+
+````{tab} From Jina Hub
+You can pull an `Executor` from the Jina Hub and use it directly as a Python object. The [hub](https://hub.jina.ai/) is our marketplace for `Executor`s.
+
+```python
+from jina import Executor
+from docarray import Document, DocumentArray
+
+executor = Executor.from_hub(uri='jinahub://CLIPTextEncoder', install_requirements=True)
+
+docs = DocumentArray(Document(text='hello'))
+executor.encode(docs, {})
+
+print(docs.embeddings.shape)
+```
+```text
+(1, 512)
+```
+````
+
 
 
 ### Use async Executors

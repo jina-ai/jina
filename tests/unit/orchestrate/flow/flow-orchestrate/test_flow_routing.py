@@ -24,18 +24,24 @@ class MergeExecutor(Executor):
             docs[0].text = 'merged'
 
 
-def test_expected_messages_routing():
+@pytest.mark.parametrize('disable_reduce', [True, False])
+def test_expected_messages_routing(disable_reduce):
     f = (
         Flow()
         .add(name='foo', uses=SimplExecutor)
-        .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
+        .add(
+            name='bar',
+            uses=MergeExecutor,
+            needs=['foo', 'gateway'],
+            disable_reduce=disable_reduce,
+        )
     )
 
     with f:
         docs = f.post(on='/index', inputs=[Document(text='1')])
         # there merge executor actually does not merge despite its name
-        assert len(docs) == 2
-        assert docs[0].text == 'merged'
+        assert len(docs) == 2 if disable_reduce else 1
+        assert docs[0].text == 'merged' if disable_reduce else '1'
 
 
 class SimpleAddExecutor(Executor):
@@ -58,7 +64,8 @@ class MergeDocsExecutor(Executor):
         return docs
 
 
-def test_complex_flow():
+@pytest.mark.parametrize('disable_reduce', [True, False])
+def test_complex_flow(disable_reduce):
     f = (
         Flow()
         .add(name='first', uses=SimpleAddExecutor, needs=['gateway'])
@@ -75,12 +82,17 @@ def test_complex_flow():
             shards=3,
             needs=['second_shards_needs'],
         )
-        .add(name='merger', uses=MergeDocsExecutor, needs=['forth', 'third'])
+        .add(
+            name='merger',
+            uses=MergeDocsExecutor,
+            needs=['forth', 'third'],
+            disable_reduce=disable_reduce,
+        )
     )
 
     with f:
         docs = f.post(on='/index', inputs=[Document(text='1')])
-    assert len(docs) == 6
+    assert len(docs) == 6 if disable_reduce else 5
 
 
 class DynamicPollingExecutorDefaultNames(Executor):

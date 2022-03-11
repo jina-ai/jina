@@ -175,14 +175,14 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port_expose, flow.port_expose, config_path
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         # send requests and validate
         time.sleep(0.1)
         client_kwargs = dict(
             return_responses=True,
             host='localhost',
-            port=flow.port_expose,
+            port=flow.port,
         )
         client_kwargs.update(flow._common_kwargs)
 
@@ -283,13 +283,13 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port_expose, flow.port_expose, config_path
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         # send requests and validate
         time.sleep(0.1)
         client_kwargs = dict(
             host='localhost',
-            port=flow.port_expose,
+            port=flow.port,
         )
         client_kwargs.update(flow._common_kwargs)
 
@@ -392,12 +392,12 @@ async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port_expose, flow.port_expose, config_path
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         time.sleep(0.1)
         client_kwargs = dict(
             host='localhost',
-            port=flow.port_expose,
+            port=flow.port,
         )
         client_kwargs.update(flow._common_kwargs)
 

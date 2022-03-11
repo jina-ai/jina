@@ -6,8 +6,8 @@ import torch
 import torchvision.models as models
 from transformers import AutoModel, AutoTokenizer
 
-from jina import Executor, requests
 from docarray import Document, DocumentArray
+from jina import Executor, requests
 
 
 class Segmenter(Executor):
@@ -16,8 +16,8 @@ class Segmenter(Executor):
         for doc in docs:
             text = doc.tags['caption']
             uri = f'{os.environ["HW_WORKDIR"]}/people-img/{doc.tags["image"]}'
-            chunk_text = Document(text=text, mime_type='text/plain')
-            chunk_uri = Document(uri=uri, mime_type='image/jpeg')
+            chunk_text = Document(text=text)
+            chunk_uri = Document(uri=uri)
             doc.chunks = DocumentArray([chunk_text, chunk_uri])
             doc.uri = uri
             doc.convert_uri_to_datauri()
@@ -88,18 +88,14 @@ class TextCrafter(Executor):
 
     @requests()
     def filter(self, docs: DocumentArray, **kwargs):
-        filtered_docs = DocumentArray(
-            d for d in docs.traverse_flat('c') if d.mime_type == 'text/plain'
-        )
+        filtered_docs = DocumentArray(d for d in docs['@c'] if d.text != '')
         return filtered_docs
 
 
 class ImageCrafter(Executor):
     @requests(on=['/index', '/search'])
     def craft(self, docs: DocumentArray, **kwargs):
-        filtered_docs = DocumentArray(
-            d for d in docs.traverse_flat('c') if d.mime_type == 'image/jpeg'
-        )
+        filtered_docs = DocumentArray(d for d in docs['@c'] if d.text == '')
         target_size = 224
         for doc in filtered_docs:
             doc.load_uri_to_image_tensor()

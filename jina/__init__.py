@@ -60,7 +60,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.0.3'
+__version__ = '3.1.3'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -137,13 +137,6 @@ _names_with_underscore = [
     '__unset_msg__',
     '__windows__',
 ]
-
-# ADD GLOBAL NAMESPACE VARIABLES
-JINA_GLOBAL = _types.SimpleNamespace()
-JINA_GLOBAL.scipy_installed = None
-JINA_GLOBAL.tensorflow_installed = None
-JINA_GLOBAL.torch_installed = None
-JINA_GLOBAL.dgl_installed = None
 
 try:
     _signal.signal(_signal.SIGINT, _signal.default_int_handler)

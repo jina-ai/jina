@@ -2,7 +2,7 @@ jtype: Flow
 version: '1'
 with:
   protocol: http
-  port_expose: 9000
+  port: 9000
   cors: true
 executors:
   - name: indexer_dbms

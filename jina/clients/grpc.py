@@ -18,7 +18,7 @@ class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin):
 
     :class:`AsyncGRPCClient` can be very useful in
     the integration settings, where Jina/Flow/Client is NOT the main logic, but rather served as a part of other program.
-    In this case, users often do not want to let Jina control the ``asyncio.eventloop``. On contrary, :class:`Client`
+    In this case, users often do **NOT** want to let Jina control the ``asyncio.eventloop``. On contrary, :class:`Client`
     is controlling and wrapping the event loop internally, making the Client looks synchronous from outside.
 
     """

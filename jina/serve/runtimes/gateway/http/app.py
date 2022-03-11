@@ -1,17 +1,23 @@
 import argparse
 import json
-from typing import Dict, TYPE_CHECKING
+import warnings
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from jina import __version__
 from jina.clients.request import request_generator
-from jina.helper import get_full_version
+from jina.enums import DataInputType
+from jina.helper import (
+    GRAPHQL_MIN_DOCARRAY_VERSION,
+    docarray_graphql_compatible,
+    get_full_version,
+)
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
-    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
     from jina.serve.networking import GrpcConnectionPool
+    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 
 def get_fastapi_app(
@@ -31,14 +37,15 @@ def get_fastapi_app(
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI
-        from starlette.requests import Request
-        from fastapi.responses import HTMLResponse
         from fastapi.middleware.cors import CORSMiddleware
+        from fastapi.responses import HTMLResponse
+        from starlette.requests import Request
+
         from jina.serve.runtimes.gateway.http.models import (
-            JinaStatusModel,
-            JinaRequestModel,
             JinaEndpointRequestModel,
+            JinaRequestModel,
             JinaResponseModel,
+            JinaStatusModel,
         )
 
     docs_url = '/docs'
@@ -50,6 +57,14 @@ def get_fastapi_app(
         version=__version__,
         docs_url=docs_url if args.default_swagger_ui else None,
     )
+
+    if args.expose_graphql_endpoint and not docarray_graphql_compatible():
+        args.expose_graphql_endpoint = False
+        warnings.warn(
+            'DocArray version is incompatible with GraphQL features.'
+            'Setting expose_graphql_endpoint=False.'
+            f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
+        )
 
     if args.cors:
         app.add_middleware(
@@ -63,11 +78,11 @@ def get_fastapi_app(
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    from jina.serve.stream import RequestStreamer
     from jina.serve.runtimes.gateway.request_handling import (
         handle_request,
         handle_result,
     )
+    from jina.serve.stream import RequestStreamer
 
     streamer = RequestStreamer(
         args=args,
@@ -226,6 +241,72 @@ def get_fastapi_app(
                 return HTMLResponse(f.read().decode())
 
         app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
+
+    if args.expose_graphql_endpoint:
+        with ImportExtensions(required=True):
+            from dataclasses import asdict
+
+            import strawberry
+            from docarray import DocumentArray
+            from docarray.document.strawberry_type import (
+                JSONScalar,
+                StrawberryDocument,
+                StrawberryDocumentInput,
+            )
+            from strawberry.fastapi import GraphQLRouter
+
+            async def get_docs_from_endpoint(
+                data, target_executor, parameters, exec_endpoint
+            ):
+                req_generator_input = {
+                    'data': [asdict(d) for d in data],
+                    'target_executor': target_executor,
+                    'parameters': parameters,
+                    'exec_endpoint': exec_endpoint,
+                    'data_type': DataInputType.DICT,
+                }
+
+                if (
+                    req_generator_input['data'] is not None
+                    and 'docs' in req_generator_input['data']
+                ):
+                    req_generator_input['data'] = req_generator_input['data']['docs']
+
+                response = await _get_singleton_result(
+                    request_generator(**req_generator_input)
+                )
+                return DocumentArray.from_dict(response['data']).to_strawberry_type()
+
+            @strawberry.type
+            class Mutation:
+                @strawberry.mutation
+                async def docs(
+                    self,
+                    data: Optional[List[StrawberryDocumentInput]] = None,
+                    target_executor: Optional[str] = None,
+                    parameters: Optional[JSONScalar] = None,
+                    exec_endpoint: str = '/search',
+                ) -> List[StrawberryDocument]:
+                    return await get_docs_from_endpoint(
+                        data, target_executor, parameters, exec_endpoint
+                    )
+
+            @strawberry.type
+            class Query:
+                @strawberry.field
+                async def docs(
+                    self,
+                    data: Optional[List[StrawberryDocumentInput]] = None,
+                    target_executor: Optional[str] = None,
+                    parameters: Optional[JSONScalar] = None,
+                    exec_endpoint: str = '/search',
+                ) -> List[StrawberryDocument]:
+                    return await get_docs_from_endpoint(
+                        data, target_executor, parameters, exec_endpoint
+                    )
+
+            schema = strawberry.Schema(query=Query, mutation=Mutation)
+            app.include_router(GraphQLRouter(schema), prefix='/graphql')
 
     async def _get_singleton_result(request_iterator) -> Dict:
         """

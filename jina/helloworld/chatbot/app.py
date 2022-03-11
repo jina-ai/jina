@@ -3,23 +3,24 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
+from docarray import DocumentArray
+
 from jina import Flow
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_chatbot_parser
-from jina import DocumentArray
 
 if __name__ == '__main__':
-    from my_executors import MyTransformer, MyIndexer
+    from my_executors import MyIndexer, MyTransformer
 else:
-    from .my_executors import MyTransformer, MyIndexer
+    from .my_executors import MyIndexer, MyTransformer
 
 
 def _get_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
     return (
-        Flow(cors=True, protocol='http', port_expose=args.port_expose)
+        Flow(cors=True, protocol='http', port=args.port)
         .add(uses=MyTransformer, replicas=args.replicas)
         .add(uses=MyIndexer, workspace=args.workdir)
     )
@@ -38,7 +39,8 @@ def hello_world(args):
         help_text='this demo requires Pytorch and Transformers to be installed, '
         'if you haven\'t, please do `pip install jina[torch,transformers]`',
     ):
-        import transformers, torch
+        import torch
+        import transformers
 
         assert [torch, transformers]  #: prevent pycharm auto remove the above line
 

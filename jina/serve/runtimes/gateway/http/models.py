@@ -1,16 +1,16 @@
 from collections import defaultdict
+from dataclasses import asdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Optional, List, Union
-
-from google.protobuf.descriptor import Descriptor, FieldDescriptor
-from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
-from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
-
-from jina.proto.jina_pb2 import RouteProto, StatusProto, DataRequestProto
+from typing import Callable, Dict, List, Optional, Union
 
 from docarray.document.pydantic_model import PydanticDocumentArray
+from google.protobuf.descriptor import Descriptor, FieldDescriptor
+from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
+from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
+from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
+
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -32,6 +32,16 @@ PROTOBUF_TO_PYTHON_TYPE = {
     FieldDescriptor.TYPE_ENUM: Enum,
     FieldDescriptor.TYPE_MESSAGE: None,
 }
+
+DESCRIPTION_DATA = 'Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects'
+DESCRIPTION_TARGET_EXEC = (
+    'A regex string representing the specific pods/deployments targeted by the request.'
+)
+DESCRIPTION_PARAMETERS = 'A dictionary of parameters to be sent to the executor.'
+DESCRIPTION_EXEC_ENDPOINT = (
+    'The endpoint string, by convention starts with `/`. '
+    'All executors bind with `@requests(on=exec_endpoint)` will receive this request.'
+)
 
 
 class CustomConfig(BaseConfig):
@@ -216,7 +226,7 @@ class JinaStatusModel(BaseModel):
 
 
 def _get_example_data():
-    from jina import DocumentArray, Document
+    from docarray import Document, DocumentArray
 
     docs = DocumentArray()
     docs.append(Document(text='hello, world!'))
@@ -238,17 +248,17 @@ class JinaRequestModel(BaseModel):
     ] = Field(
         None,
         example=_get_example_data(),
-        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
+        description=DESCRIPTION_DATA,
     )
     target_executor: Optional[str] = Field(
         None,
         example='',
-        description='A regex string represent the certain pods/deployments request targeted.',
+        description=DESCRIPTION_TARGET_EXEC,
     )
     parameters: Optional[Dict] = Field(
         None,
         example={},
-        description='A dictionary of parameters to be sent to the executor.',
+        description=DESCRIPTION_PARAMETERS,
     )
 
     class Config:

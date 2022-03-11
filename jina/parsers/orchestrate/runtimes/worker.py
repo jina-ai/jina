@@ -1,7 +1,6 @@
 """Argparser module for WorkerRuntime"""
-from jina.parsers.helper import add_arg_group, KVAppendAction
-from jina import __default_host__
-from jina import helper
+from jina import __default_host__, helper
+from jina.parsers.helper import KVAppendAction, add_arg_group
 
 
 def mixin_worker_runtime_parser(parser):
@@ -75,6 +74,7 @@ which should be structured as a python package. For more details, please see the
         '--port-in',
         type=int,
         default=helper.random_port(),
+        dest='port',
         help='The port for input data to bind to, default a random port between [49152, 65535]',
     )
     gp.add_argument(

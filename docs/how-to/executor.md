@@ -8,4 +8,5 @@ scale-out
 gpu-executor
 external-executor
 flow-switch-howto
+debug-executor
 ```

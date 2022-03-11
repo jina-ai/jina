@@ -325,7 +325,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor)
 
 
-def print_why(resp):
+def print_why(resp, exception):
     print(resp.status.description)
 
 

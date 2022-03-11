@@ -1,8 +1,7 @@
 """Argparser module for remote runtime"""
-from jina.parsers.helper import KVAppendAction, add_arg_group
-from jina import __default_host__
-from jina import helper
+from jina import __default_host__, helper
 from jina.enums import CompressAlgo
+from jina.parsers.helper import KVAppendAction, add_arg_group
 
 
 def mixin_remote_runtime_parser(parser):
@@ -54,6 +53,7 @@ def mixin_gateway_parser(parser):
     gp.add_argument(
         '--port-expose',
         type=int,
+        dest='port',
         default=helper.random_port(),
         help='The port that the gateway exposes for clients for GRPC connections.',
     )
@@ -98,6 +98,21 @@ def _add_proxy(arg_group):
         help='If set, respect the http_proxy and https_proxy environment variables. '
         'otherwise, it will unset these proxy variables before start. '
         'gRPC seems to prefer no proxy',
+    )
+
+
+def mixin_graphql_parser(parser=None):
+    """Add the options to rest server
+
+    :param parser: the parser
+    """
+
+    gp = add_arg_group(parser, title='GraphQL')
+    gp.add_argument(
+        '--expose-graphql-endpoint',
+        action='store_true',
+        default=False,
+        help='If set, /graphql endpoint is added to HTTP interface. ',
     )
 
 
@@ -190,39 +205,4 @@ def mixin_prefetch_parser(parser=None):
     Number of requests fetched from the client before feeding into the first Executor. 
     
     Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)''',
-    )
-
-
-def mixin_compressor_parser(parser=None):
-    """Add the options for compressors
-    :param parser: the parser
-    """
-    gp = add_arg_group(parser, title='Compression')
-
-    gp.add_argument(
-        '--compress',
-        type=CompressAlgo.from_string,
-        choices=list(CompressAlgo),
-        default=CompressAlgo.NONE,
-        help='''
-    The compress algorithm used over the entire Flow.
-
-    Note that this is not necessarily effective,
-    it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`''',
-    )
-
-    gp.add_argument(
-        '--compress-min-bytes',
-        type=int,
-        default=1024,
-        help='The original message size must be larger than this number to trigger the compress algorithm, '
-        '-1 means disable compression.',
-    )
-
-    gp.add_argument(
-        '--compress-min-ratio',
-        type=float,
-        default=1.1,
-        help='The compression ratio (uncompressed_size/compressed_size) must be higher than this number '
-        'to trigger the compress algorithm.',
     )

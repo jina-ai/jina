@@ -164,7 +164,7 @@ def set_hw_chatbot_parser(parser=None):
         help='The url of index csv data',
     )
     parser.add_argument(
-        '--port-expose',
+        '--port',
         type=int,
         default=8080,
         help='The port of the host exposed to the public',
@@ -227,7 +227,7 @@ def set_hw_multimodal_parser(parser=None):
         help='The url of index csv data',
     )
     parser.add_argument(
-        '--port-expose',
+        '--port',
         type=int,
         default=8080,
         help='The port of the host exposed to the public',

@@ -1,7 +1,7 @@
 jtype: Flow
 with:
   name: my-flow
-  port_expose: 12345
+  port: 12345
   protocol: http
   env:
     key1: ${{ context_var1 }}  # this should be replaced
@@ -9,5 +9,5 @@ with:
     key3: ${ context_var3 }  # this should not be replaced
 executors:
   - name: local_replicas
-    port_in: 45678
+    port: 45678
     replicas: 2

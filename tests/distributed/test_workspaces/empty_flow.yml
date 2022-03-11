@@ -2,6 +2,6 @@ jtype: Flow
 version: '1.0'
 with:
   protocol: http
-  port_expose: 23456
+  port: 23456
 executors:
   - name: executor_ex

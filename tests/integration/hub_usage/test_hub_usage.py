@@ -1,12 +1,13 @@
 import os
 from pathlib import Path
+
 import pytest
 
 from jina import Flow
 from jina.excepts import RuntimeFailToStart
-from jina.serve.executors import BaseExecutor
-from jina.parsers import set_deployment_parser
 from jina.orchestrate.deployments import Deployment
+from jina.parsers import set_deployment_parser
+from jina.serve.executors import BaseExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,7 +50,7 @@ def test_use_from_local_dir_flow_level():
 
 @pytest.fixture
 def local_hub_executor(tmpdir, test_envs):
-    from jina.hubble import hubapi, helper, HubExecutor
+    from jina.hubble import HubExecutor, helper, hubapi
 
     hubapi._hub_root = Path(os.environ.get('JINA_HUB_ROOT'))
 
@@ -66,11 +67,11 @@ def local_hub_executor(tmpdir, test_envs):
 def test_use_from_local_hub_deployment_level(
     test_envs, mocker, monkeypatch, local_hub_executor
 ):
-    from jina.hubble.hubio import HubIO, HubExecutor
+    from jina.hubble.hubio import HubExecutor, HubIO
 
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, force=False):
+    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
         mock(name=name)
         return (
             HubExecutor(
@@ -94,11 +95,11 @@ def test_use_from_local_hub_deployment_level(
 def test_use_from_local_hub_flow_level(
     test_envs, mocker, monkeypatch, local_hub_executor
 ):
-    from jina.hubble.hubio import HubIO, HubExecutor
+    from jina.hubble.hubio import HubExecutor, HubIO
 
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, force=False):
+    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
         mock(name=name)
         return (
             HubExecutor(

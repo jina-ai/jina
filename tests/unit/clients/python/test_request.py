@@ -3,7 +3,6 @@ import sys
 
 import numpy as np
 import pytest
-from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from docarray import Document
 from jina import Flow
@@ -73,7 +72,6 @@ def test_request_generate_lines():
 
     request = next(req)
     assert len(request.docs) == 100
-    assert request.docs[0].mime_type == 'text/plain'
     assert request.docs[0].text == 'i\'m dummy doc 1'
 
 
@@ -86,7 +84,6 @@ def test_request_generate_lines_from_list():
     request = next(req)
     assert len(request.docs) == 100
     for index, doc in enumerate(request.docs, 1):
-        assert doc.mime_type == 'text/plain'
         assert doc.text == f'i\'m dummy doc {index}'
 
 
@@ -101,7 +98,6 @@ def test_request_generate_bytes():
     assert len(request.docs) == 100
     for index, doc in enumerate(request.docs, 1):
         assert doc.text == f'i\'m dummy doc {index}'
-        assert doc.mime_type == 'text/plain'
 
 
 def test_request_generate_docs():
@@ -111,7 +107,6 @@ def test_request_generate_docs():
             doc.text = f'i\'m dummy doc {j}'
             doc.offset = 1000
             doc.tags['id'] = 1000  # this will be ignored
-            doc.mime_type = 'mime_type'
             yield doc
 
     req = request_generator('', data=random_docs(100), request_size=100)
@@ -119,7 +114,6 @@ def test_request_generate_docs():
     request = next(req)
     assert len(request.docs) == 100
     for index, doc in enumerate(request.docs, 1):
-        assert doc.mime_type == 'mime_type'
         assert doc.text == f'i\'m dummy doc {index}'
         assert doc.offset == 1000
 

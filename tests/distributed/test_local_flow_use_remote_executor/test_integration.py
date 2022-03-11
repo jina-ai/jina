@@ -14,7 +14,7 @@ exposed_port = 12345
 
 @pytest.fixture
 def external_deployment_args():
-    args = ['--port-in', str(45678)]
+    args = ['--port', str(45678)]
     args = vars(set_deployment_parser().parse_args(args))
     del args['external']
     del args['deployment_role']
@@ -24,7 +24,7 @@ def external_deployment_args():
 
 @pytest.fixture
 def local_flow(external_deployment_args):
-    return Flow(port_expose=exposed_port).add(
+    return Flow(port=exposed_port).add(
         **external_deployment_args, host='10.1.0.100', external=True
     )
 

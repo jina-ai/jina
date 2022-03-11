@@ -10,6 +10,7 @@ import sys
 import threading
 import time
 import uuid
+import warnings
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import (
@@ -39,9 +40,11 @@ from jina.excepts import (
     RuntimeFailToStart,
 )
 from jina.helper import (
+    GRAPHQL_MIN_DOCARRAY_VERSION,
     ArgNamespace,
     CatchAllCleanupContextManager,
     colored,
+    docarray_graphql_compatible,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
@@ -122,19 +125,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         *,
-        compress: Optional[str] = 'NONE',
-        compress_min_bytes: Optional[int] = 1024,
-        compress_min_ratio: Optional[float] = 1.1,
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         description: Optional[str] = None,
+        disable_reduce: Optional[bool] = False,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
+        expose_graphql_endpoint: Optional[bool] = False,
         graph_description: Optional[str] = '{}',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -144,8 +146,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
-        port_expose: Optional[int] = None,
-        port_in: Optional[int] = None,
+        port: Optional[int] = None,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -171,22 +172,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
-        :param compress: The compress algorithm used over the entire Flow.
-
-              Note that this is not necessarily effective,
-              it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
-        :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
-        :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -213,8 +210,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port_expose: The port that the gateway exposes for clients for GRPC connections.
-        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -267,6 +263,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         env: Optional[dict] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -281,6 +278,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
@@ -329,6 +327,17 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             GATEWAY_NAME
         ]  #: default first deployment is gateway, will add when build()
         self._update_args(args, **kwargs)
+        if (
+            self.protocol == GatewayProtocolType.HTTP
+            and self.args.expose_graphql_endpoint
+            and not docarray_graphql_compatible()
+        ):
+            self.args.expose_graphql_endpoint = False
+            warnings.warn(
+                'DocArray version is incompatible with GraphQL features. '
+                'Automatically setting expose_graphql_endpoint=False. '
+                f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
+            )
 
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
@@ -436,7 +445,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 host=self.host,
                 protocol=self.protocol,
-                port_expose=self.port_expose,
+                port=self.port,
                 deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
             )
@@ -445,6 +454,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
         args.noblock_on_start = True
+        args.expose_graphql_endpoint = (
+            self.args.expose_graphql_endpoint
+        )  # also used in Flow, thus not in kwargs
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
@@ -455,7 +467,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
-            graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port_in}']
+            graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port}']
 
         return graph_dict
 
@@ -480,21 +492,21 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             # we only need hard coded addresses if the k8s connection pool is disabled or if this deployment is external
             if not k8s_connection_pool or v.external:
                 graph_dict[node] = [
-                    f'{deployment_k8s_address}:{v.head_port_in if v.external else K8sGrpcConnectionPool.K8S_PORT_IN}'
+                    f'{deployment_k8s_address}:{v.head_port if v.external else K8sGrpcConnectionPool.K8S_PORT}'
                 ]
 
         return graph_dict if graph_dict else None
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.orchestrate.deployments.config.docker_compose import PORT_IN
+        from jina.orchestrate.deployments.config.docker_compose import port
         from jina.orchestrate.deployments.config.helper import to_compatible_name
 
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
             deployment_docker_compose_address = (
-                f'{to_compatible_name(v.head_args.name)}:{PORT_IN}'
+                f'{to_compatible_name(v.head_args.name)}:{port}'
             )
             graph_dict[node] = [deployment_docker_compose_address]
 
@@ -583,10 +595,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         condition: Optional[dict] = None,
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
+        disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        expose_public: Optional[bool] = False,
         external: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
@@ -597,7 +609,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         name: Optional[str] = None,
         native: Optional[bool] = False,
         polling: Optional[str] = 'ANY',
-        port_in: Optional[int] = None,
+        port: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
@@ -628,13 +640,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param condition: The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray
         :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pod will receive input connections from remote Pods
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
@@ -667,7 +679,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port_in: The port for input data to bind to, default a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
         :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
@@ -775,7 +787,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
-            if key not in kwargs:
+            # do not inherit the port argument from the flow
+            if key not in kwargs and key != 'port':
                 kwargs[key] = value
 
         # check if host is set to remote:port
@@ -814,10 +827,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.noblock_on_start = True
         args.extra_search_paths = self.args.extra_search_paths
 
-        port_in = kwargs.get('port_in', None)
-        if not port_in:
-            port_in = helper.random_port()
-            args.port_in = port_in
+        port = kwargs.get('port', None)
+        if not port:
+            port = helper.random_port()
+            args.port = port
 
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
@@ -932,7 +945,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             f'{prefix}-{GATEWAY_NAME}',
             {
                 'host': gateway_deployment.head_host,
-                'port': gateway_deployment.head_port_in,
+                'port': gateway_deployment.head_port,
                 'expected_parts': 0,
             },
         )
@@ -1234,7 +1247,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         kwargs = dict(
             host=self.host,
-            port=self.port_expose,
+            port=self.port,
             protocol=self.protocol,
         )
         kwargs.update(self._common_kwargs)
@@ -1398,26 +1411,26 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
 
     @property
-    def port_expose(self) -> int:
+    def port(self) -> int:
         """Return the exposed port of the gateway
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
-            return self._deployment_nodes[GATEWAY_NAME].args.port_expose
+            return self._deployment_nodes[GATEWAY_NAME].port
         else:
-            return self._common_kwargs.get('port_expose', None)
+            return self._common_kwargs.get('port', None)
 
-    @port_expose.setter
-    def port_expose(self, value: int):
+    @port.setter
+    def port(self, value: int):
         """Set the new exposed port of the Flow (affects Gateway and Client)
 
         :param value: the new port to expose
         """
-        self._common_kwargs['port_expose'] = value
+        self._common_kwargs['port'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.port_expose = self._common_kwargs['port_expose']
+            self[GATEWAY_NAME].args.port = self._common_kwargs['port']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
@@ -1477,10 +1490,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             [
                 f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
                 f'\t🏠 Local access:\t'
-                + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
+                + colored(f'{self.host}:{self.port}', 'cyan', attrs='underline'),
                 f'\t🔒 Private network:\t'
                 + colored(
-                    f'{self.address_private}:{self.port_expose}',
+                    f'{self.address_private}:{self.port}',
                     'cyan',
                     attrs='underline',
                 ),
@@ -1490,7 +1503,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             address_table.append(
                 f'\t🌐 Public address:\t'
                 + colored(
-                    f'{self.address_public}:{self.port_expose}',
+                    f'{self.address_public}:{self.port}',
                     'cyan',
                     attrs='underline',
                 )
@@ -1499,7 +1512,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             address_table.append(
                 f'\t💬 Swagger UI:\t\t'
                 + colored(
-                    f'http://localhost:{self.port_expose}/docs',
+                    f'http://localhost:{self.port}/docs',
                     'cyan',
                     attrs='underline',
                 )
@@ -1507,11 +1520,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             address_table.append(
                 f'\t📚 Redoc:\t\t'
                 + colored(
-                    f'http://localhost:{self.port_expose}/redoc',
+                    f'http://localhost:{self.port}/redoc',
                     'cyan',
                     attrs='underline',
                 )
             )
+            if self.args.expose_graphql_endpoint:
+                address_table.append(
+                    f'\t💬 GraphQL UI:\t\t'
+                    + colored(
+                        f'http://localhost:{self.port}/graphql',
+                        'cyan',
+                        attrs='underline',
+                    )
+                )
         return address_table
 
     def block(
@@ -1856,9 +1878,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # noqa: DAR201
         """
-        if 'port_expose' in self._common_kwargs:
+        if 'port' in self._common_kwargs:
             kwargs = copy.deepcopy(self._common_kwargs)
-            kwargs['port'] = self._common_kwargs['port_expose']
+            kwargs['port'] = self._common_kwargs['port']
 
         return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
 

@@ -100,7 +100,7 @@ def test_gateway_args(protocol, expected):
         [
             '--host',
             'jina-custom-gateway',
-            '--port-expose',
+            '--port',
             '23456',
             '--protocol',
             protocol,
@@ -201,7 +201,7 @@ def test_failing_head():
             'HeadRuntime',
         ]
     )
-    args.port_in = None
+    args.port = None
 
     with pytest.raises(RuntimeFailToStart):
         with Pod(args):

@@ -21,7 +21,7 @@ def rest_post(f, endpoint, documents):
     else:
         method = 'post'
     response = getattr(requests, method)(
-        f'http://localhost:{f.port_expose}/{endpoint}',
+        f'http://localhost:{f.port}/{endpoint}',
         json={'data': data, 'parameters': PARAMS},
     )
     if response.status_code != 200:
@@ -36,7 +36,7 @@ def test_crud(tmpdir, rest):
     os.environ['WORKSPACE'] = str(tmpdir)
 
     with Flow.load_config('flow.yml') as f:
-        c = Client(port=f.port_expose, return_responses=True)
+        c = Client(port=f.port, return_responses=True)
         original_docs = list(random_docs(10, chunks_per_doc=0))
         if rest:
             rest_post(f, 'index', original_docs)
@@ -47,7 +47,7 @@ def test_crud(tmpdir, rest):
             )
 
     with Flow.load_config('flow.yml') as f:
-        c = Client(port=f.port_expose, return_responses=True)
+        c = Client(port=f.port, return_responses=True)
         inputs = list(random_docs(1))
         if rest:
             results = rest_post(f, 'search', inputs)
@@ -63,7 +63,7 @@ def test_crud(tmpdir, rest):
         assert len(matches) == 10
 
     with Flow.load_config('flow.yml') as f:
-        c = Client(port=f.port_expose, return_responses=True)
+        c = Client(port=f.port, return_responses=True)
         inputs = list(random_docs(5, chunks_per_doc=0))
 
         if rest:
@@ -73,7 +73,7 @@ def test_crud(tmpdir, rest):
             c.post(on='/delete', inputs=inputs)
 
     with Flow.load_config('flow.yml') as f:
-        c = Client(port=f.port_expose, return_responses=True)
+        c = Client(port=f.port, return_responses=True)
         inputs = list(random_docs(1))
 
         if rest:
@@ -91,14 +91,14 @@ def test_crud(tmpdir, rest):
     )
 
     with Flow.load_config('flow.yml') as f:
-        c = Client(port=f.port_expose, return_responses=True)
+        c = Client(port=f.port, return_responses=True)
         if rest:
             rest_post(f, 'update', updated_docs)
         else:
             c.post(on='/update', inputs=updated_docs)
 
     with Flow.load_config('flow.yml') as f:
-        c = Client(port=f.port_expose, return_responses=True)
+        c = Client(port=f.port, return_responses=True)
         inputs = list(random_docs(1))
         if rest:
             results = rest_post(f, 'search', inputs)

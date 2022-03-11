@@ -24,7 +24,7 @@ def test_compression(compress_algo):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'http'])
 def test_gateway_concurrency(protocol, reraise):
-    PORT_EXPOSE = 12345
+    port = 12345
     CONCURRENCY = 2
 
     def _validate(req, start, status_codes, durations, index):
@@ -42,9 +42,7 @@ def test_gateway_concurrency(protocol, reraise):
                 durations=durations,
                 index=index,
             )
-            results = Client(
-                port=PORT_EXPOSE, protocol=protocol, return_responses=True
-            ).index(
+            results = Client(port=port, protocol=protocol, return_responses=True).index(
                 inputs=(Document() for _ in range(256)),
                 _size=16,
             )
@@ -52,7 +50,7 @@ def test_gateway_concurrency(protocol, reraise):
             for result in results:
                 on_done(result)
 
-    f = Flow(protocol=protocol, port_expose=PORT_EXPOSE).add(parallel=2)
+    f = Flow(protocol=protocol, port=port).add(parallel=2)
     with f:
         threads = []
         status_codes = [None] * CONCURRENCY

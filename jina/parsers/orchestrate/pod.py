@@ -1,6 +1,7 @@
 """Argparser module for Pod runtimes"""
 import argparse
 
+from jina import helper
 from jina.enums import PodRoleType, RuntimeBackendType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
@@ -52,15 +53,6 @@ def mixin_pod_parser(parser):
         help='The map of environment variables that are available inside runtime',
     )
 
-    gp.add_argument(
-        '--expose-public',
-        action='store_true',
-        default=False,
-        help='If set, expose the public IP address to remote when necessary, by default it exposes'
-        'private IP address, which only allows accessing under the same network/subnet. Important to '
-        'set this to true when the Pod will receive input connections from remote Pods',
-    )
-
     # hidden CLI used for internal only
 
     gp.add_argument(
@@ -68,15 +60,6 @@ def mixin_pod_parser(parser):
         type=int,
         default=0,
         help='defines the shard identifier for the executor. It is used as suffix for the workspace path of the executor`'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    gp.add_argument(
-        '--replica-id',
-        type=int,
-        default=0,
-        help='the id of the replica of an executor'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -114,4 +97,11 @@ def mixin_pod_parser(parser):
         type=int,
         default=1,
         help='The number of replicas in the deployment',
+    )
+
+    gp.add_argument(
+        '--port',
+        type=int,
+        default=helper.random_port(),
+        help='The port for input data to bind to, default is a random port between [49152, 65535]',
     )

@@ -44,13 +44,11 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
 
     with f:
         pqueue = multiprocessing.Queue()
-        port_expose = f.port_expose
+        port = f.port
         process_pool = []
         for peer_id in range(concurrent):
             p = multiprocessing.Process(
-                target=partial(
-                    peer_client, port_expose, protocol, str(peer_id), pqueue
-                ),
+                target=partial(peer_client, port, protocol, str(peer_id), pqueue),
                 daemon=True,
             )
             p.start()

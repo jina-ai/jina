@@ -89,7 +89,7 @@ src5: Multiple python files in multiple directories with custom dependencies
     ],
 )
 def test_remote_executor_via_config_yaml(upload_files, config_yml):
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         host=CLOUD_HOST, uses=config_yml, upload_files=upload_files
     )
     with f:
@@ -118,7 +118,7 @@ def test_remote_executor_via_config_yaml(upload_files, config_yml):
     ],
 )
 def test_remote_executor_via_pymodules(upload_files, uses, py_modules):
-    f = Flow(port_expose=exposed_port).add(
+    f = Flow(port=exposed_port).add(
         host=CLOUD_HOST,
         uses=uses,
         py_modules=py_modules,

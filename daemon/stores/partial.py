@@ -181,7 +181,7 @@ class PartialFlowStore(PartialStore):
 
             self.item = PartialFlowItem(
                 arguments={
-                    'port_expose': self.object.port_expose,
+                    'port': self.object.port,
                     'protocol': self.object.protocol.name,
                     **vars(self.object.args),
                 },

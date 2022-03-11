@@ -50,7 +50,7 @@ def test_no_matches_rest(query_dict):
     port = helper.random_port()
     with Flow(
         protocol='http',
-        port_expose=port,
+        port=port,
         including_default_value_fields=True,
     ).add(uses=MockExecutor):
         # temporarily adding sleep

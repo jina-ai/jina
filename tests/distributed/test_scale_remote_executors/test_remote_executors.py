@@ -41,7 +41,7 @@ def docker_image_built():
 @pytest.fixture
 def remote_flow_with_container_runtime(deployment_params, docker_image_built):
     num_replicas, scale_to, shards = deployment_params
-    return Flow(port_expose=exposed_port).add(
+    return Flow(port=exposed_port).add(
         name='executor',
         uses=f'docker://{IMG_NAME}',
         replicas=num_replicas,
@@ -126,13 +126,13 @@ def test_scale_with_concurrent_client(
     remote_flow_with_runtime.protocol = protocol
     with remote_flow_with_runtime as f:
 
-        port_expose = f.port_expose
+        port = f.port
 
         thread_pool = []
         for peer_id in range(NUM_CONCURRENT_CLIENTS):
             # test
             t = multiprocessing.Process(
-                target=partial(peer_client, port_expose, protocol, str(peer_id), queue)
+                target=partial(peer_client, port, protocol, str(peer_id), queue)
             )
             t.start()
             thread_pool.append(t)
@@ -142,7 +142,7 @@ def test_scale_with_concurrent_client(
         for t in thread_pool:
             t.join()
 
-        c = Client(protocol=protocol, port=port_expose, return_responses=True)
+        c = Client(protocol=protocol, port=port, return_responses=True)
         rv = c.index([Document() for _ in range(5)], request_size=1)
 
     all_docs = []

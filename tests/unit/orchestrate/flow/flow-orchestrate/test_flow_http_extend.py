@@ -31,13 +31,13 @@ def test_flow_expose_endpoints():
     import requests
 
     with f1:
-        r = requests.get(f'http://localhost:{f1.port_expose}/foo')
+        r = requests.get(f'http://localhost:{f1.port}/foo')
     assert r.status_code == 404
 
     f1.expose_endpoint('/foo')
     with f1:
         r = requests.post(
-            f'http://localhost:{f1.port_expose}/foo',
+            f'http://localhost:{f1.port}/foo',
             json={'data': [{'text': 'hello'}, {'text': 'world'}]},
         )
     assert r.status_code == 200

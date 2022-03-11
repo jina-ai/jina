@@ -6,7 +6,8 @@ from typing import Optional, TYPE_CHECKING, Dict
 
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.base import BaseClient
-from jina.clients.helper import callback_exec
+from jina.clients.helper import callback_exec, callback_exec_on_error
+from jina.excepts import BadClient
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
 from jina.serve.stream import RequestStreamer
@@ -134,3 +135,18 @@ class WebSocketBaseClient(BaseClient):
                 self.logger.error(
                     f'Error while streaming response from websocket server {e!r}'
                 )
+
+                if on_error or on_always:
+                    if on_error:
+                        callback_exec_on_error(on_error, e, self.logger)
+                    if on_always:
+                        callback_exec(
+                            response=None,
+                            on_error=None,
+                            on_done=None,
+                            on_always=on_always,
+                            continue_on_error=self.continue_on_error,
+                            logger=self.logger,
+                        )
+                else:
+                    raise e

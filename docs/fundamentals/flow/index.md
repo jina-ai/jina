@@ -4,6 +4,9 @@
 A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
 Documents "flow" through the created pipeline and are processed by Executors.
 
+You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
+while the heavy lifting is done by the {ref}`services <executor-cookbook>` themselves.
+
 
 The most important methods of the `Flow` object are the following:
 
@@ -11,7 +14,7 @@ The most important methods of the `Flow` object are the following:
 |------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | `.add()`                           | Add an Executor to the Flow                                                                                                                |
 | `.start()`                         | Starts the Flow. This will start all its Executors and check if they are ready to be used.                                                 |
-| `.stop()`                          | Stops the Flow. This will stop all its Executors.                                                                                          |
+| `.close()`                         | Stops and closes the Flow. This will stop and shutdown all its Executors.                                                                                          |
 | `with` context manager             | Use the Flow as a context manager. It will automatically start and stop your Flow.                                         |                                                                |
 | `.plot()`                          | Visualizes the Flow. Helpful for building complex pipelines.                                                                                 |
 | `.post()`                          | Sends requests to the Flow API.                                                                                                     |
@@ -69,7 +72,7 @@ class MyExecutor(Executor):
         print(docs)
 
 
-f = Flow(port_expose=12345).add(name='myexec1', uses=MyExecutor)
+f = Flow(port=12345).add(name='myexec1', uses=MyExecutor)
 
 with f:
     f.block()
@@ -139,6 +142,7 @@ Executor and Flow are the two fundamental concepts in Jina.
 
 create-flow
 flow-api
+access-flow-api
 client
 remarks
 ```

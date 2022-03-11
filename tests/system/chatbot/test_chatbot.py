@@ -12,7 +12,7 @@ def helloworld_args(tmpdir):
         [
             '--workdir',
             str(tmpdir),
-            '--port-expose',
+            '--port',
             '8080',
             '--unblock-query-flow',
             '--replicas',

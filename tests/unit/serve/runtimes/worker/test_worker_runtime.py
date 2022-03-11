@@ -41,11 +41,11 @@ def test_worker_runtime():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port_in}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port_in}'
+    target = f'{args.host}:{args.port}'
     with grpc.insecure_channel(
         target,
         options=GrpcConnectionPool.get_default_grpc_options(),
@@ -58,7 +58,7 @@ def test_worker_runtime():
 
     assert response
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 class AsyncSlowNewDocsExecutor(Executor):
@@ -111,11 +111,11 @@ async def test_worker_runtime_slow_async_exec(uses):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port_in}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port_in}'
+    target = f'{args.host}:{args.port}'
     results = []
     async with grpc.aio.insecure_channel(
         target,
@@ -141,7 +141,7 @@ async def test_worker_runtime_slow_async_exec(uses):
     else:
         assert results == ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 @pytest.mark.slow
@@ -169,11 +169,11 @@ def test_error_in_worker_runtime(monkeypatch):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port_in}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port_in}'
+    target = f'{args.host}:{args.port}'
     with grpc.insecure_channel(
         target,
         options=GrpcConnectionPool.get_default_grpc_options(),
@@ -188,7 +188,7 @@ def test_error_in_worker_runtime(monkeypatch):
 
     assert response
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 @pytest.mark.slow
@@ -226,7 +226,7 @@ async def test_worker_runtime_graceful_shutdown():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port_in}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
@@ -250,7 +250,7 @@ async def test_worker_runtime_graceful_shutdown():
     for i in range(pending_requests):
         tasks.append(
             asyncio.create_task(
-                task_wrapper(f'{args.host}:{args.port_in}', messages_received)
+                task_wrapper(f'{args.host}:{args.port}', messages_received)
             )
         )
         sent_requests += 1
@@ -272,7 +272,7 @@ async def test_worker_runtime_graceful_shutdown():
         time.time() - request_start_time >= slow_executor_block_time * pending_requests
     )
     assert handler_closed_event.is_set()
-    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port_in}')
+    assert not WorkerRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 def _create_test_data_message(counter=0):

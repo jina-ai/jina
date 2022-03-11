@@ -9,15 +9,19 @@ It enables you to send `Documents` to a running `Flow` in a number of different 
 However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
+## HTTP, gRPC, and WebSocket
+
+Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
+These can all be used in the same way by using `client.post()`.
 
 Starting the Flow:
 
 ```python
 from jina import Flow
 
-PORT_EXPOSE = 12345
+port = 12345
 
-with Flow(port_expose=PORT_EXPOSE) as f:
+with Flow(port=port) as f:
     f.block()
 ```
 
@@ -52,7 +56,7 @@ client.post('/endpoint')  # Empty
 ```
 
 
-## Batching Requests
+### Batching Requests
 
 Especially during indexing, a Client can send up to thousands or millions of Documents to a `Flow`.
 Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
@@ -65,11 +69,11 @@ from docarray import Document, DocumentArray
 from jina import Flow, Client
 
 with Flow() as f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
 ```
 
-## Targeting a specific Executor
+### Targeting a specific Executor
 Usually a `Flow` will send each request to all Executors with matching endpoints as configured. But the `Client` also allows you to only target a specific Executor in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.
 
 ```python
@@ -96,12 +100,12 @@ f = (
 )
 
 with f:  # Using it as a Context Manager will start the Flow
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     docs = client.post(on='/', target_executor='barExecutor')
     print(docs.texts)
 ```
 
-## Request parameters
+### Request parameters
 
 The Client can also send parameters to the Executors as shown below:
 
@@ -121,7 +125,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor)
 
 with f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post('/', Document(), parameters={'hello': 'world'})
 ```
 
@@ -131,7 +135,7 @@ You can send a parameters-only data request via:
 
 ```python
 with f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post('/', parameters={'hello': 'world'})
 ```
 
@@ -139,7 +143,7 @@ This might be useful to control `Executor` objects during their lifetime.
 ````
 
 (callback-functions)=
-## Processing results using callback functions
+### Processing results using callback functions
 
 After performing `client.post()`, you may want to further process the obtained results.
 
@@ -148,6 +152,15 @@ For this purpose, Jina implements a promise-like interface, letting you specify 
 - `on_done` is executed after successful completion of `client.post()`
 - `on_error` is executed whenever an error occurs in `client.post()`
 - `on_always` is always performed, no matter the success or failure of `client.post()`
+
+```{admonition} Tip
+:class: tip
+Both `on_done`and `on_always` callback won't be trigger if the failure is due to an error happening outside of 
+networking or internal jina issues. For example, if a `SIGKILL` is triggered by the OS during the handling of the request
+none of the callback will be executed.   
+```
+
+
 
 Callback functions in Jina expect a `Response` of the type `jina.types.request.data.DataRequest`, which contains resulting Documents,
 parameters, and other information.
@@ -213,7 +226,7 @@ def beep(*args):
 
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     client.post(
         '/',
         Document(),
@@ -222,8 +235,17 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
         on_always=lambda x: x.docs.save(fp),
     )
 ```
+## On failure callback
 
-## Returning results from .post()
+Additionally, the `on_error` callback can be triggered by a raise of an exception. The callback must take an optional 
+`exception` parameters as an argument.
+
+```python
+def on_error(resp, exception: Exception):
+    ...
+```
+
+### Returning results from .post()
 
 If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
 
@@ -249,7 +271,7 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     docs = client.post(on='', inputs=Document(text='Hi there!'))
     print(docs)
     print(docs.texts)
@@ -267,7 +289,7 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port_expose, return_responses=True)
+    client = Client(port=f.port, return_responses=True)
     resp = client.post(on='', inputs=Document(text='Hi there!'))
     print(resp)
     print(resp[0].docs.texts)
@@ -285,7 +307,7 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port_expose)
+    client = Client(port=f.port)
     resp = client.post(
         on='',
         inputs=Document(text='Hi there!'),
@@ -300,9 +322,33 @@ with Flow() as f:
 
 ````
 
+## GraphQL
+
+The Jina Client additionally supports fetching data via GraphQL mutations using `client.mutate()`:
+
+```python
+from jina import Client
+
+PORT = ...
+c = Client(port=PORT)
+mut = '''
+        mutation {
+            docs(data: {text: "abcd"}) { 
+                id
+                matches {
+                    embedding
+                }
+            } 
+        }
+    '''
+response = c.mutate(mutation=mut)
+```
+
+For details on the allowed mutation arguments and response fields, see {ref}`here <flow-graphql>`.
+
 ## Async Python Client
 
-There also exists an async version of the Python Client.
+There also exists an async version of the Python Client which works with `.post()` and `.mutate()`.
 
 While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
 by allowing *coroutines* as input, and returning an *asynchronous iterator*.
@@ -328,6 +374,6 @@ async def run_client(port):
 
 
 with Flow() as f:  # Using it as a Context Manager will start the Flow
-    asyncio.run(run_client(f.port_expose))
+    asyncio.run(run_client(f.port))
 ```
 
