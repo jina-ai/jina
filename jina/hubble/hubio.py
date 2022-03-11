@@ -11,7 +11,7 @@ from typing import Dict, Optional, Union
 from urllib.parse import urlencode
 
 from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, colored, get_request_header
+from jina.helper import ArgNamespace, colored, get_request_header, get_rich_console
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
@@ -72,14 +72,13 @@ class HubIO:
         """Create a new executor folder interactively."""
 
         from rich import box, print
-        from rich.console import Console
         from rich.panel import Panel
         from rich.progress import track
         from rich.prompt import Confirm, Prompt
         from rich.syntax import Syntax
         from rich.table import Table
 
-        console = Console()
+        console = get_rich_console()
 
         print(
             Panel.fit(
@@ -325,8 +324,6 @@ metas:
     def push(self) -> None:
         """Push the executor package to Jina Hub."""
 
-        from rich.console import Console
-
         work_path = Path(self.args.path)
 
         exec_tags = None
@@ -345,7 +342,7 @@ metas:
 
             dockerfile = dockerfile.relative_to(work_path)
 
-        console = Console()
+        console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
             req_header = get_request_header()
             try:
@@ -642,7 +639,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         import requests
         from rich.progress import Console
 
-        console = Console()
+        console = get_rich_console()
 
         host = None
         port = None
@@ -761,9 +758,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         :return: the `uses` string
         """
 
-        from rich.console import Console
-
-        console = Console()
+        console = get_rich_console()
         cached_zip_file = None
         executor_name = None
         usage_kind = None

@@ -15,3 +15,9 @@ configs:
     host: # when not given then record it locally, /dev/log on linux /var/run/syslog on mac
     port: # when not given then record it locally,  /dev/log on linux /var/run/syslog on mac
     formatter: PlainFormatter
+  RichHandler:
+    format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    show_time: false
+    show_level: false
+    show_path: false
+    markup: true

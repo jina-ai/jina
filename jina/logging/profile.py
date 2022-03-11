@@ -1,17 +1,30 @@
-import datetime
-import itertools
-import math
-import sys
-import threading
 import time
-from collections import defaultdict
+import typing
 from functools import wraps
 from typing import Optional, Union, Callable
 
-from jina.enums import ProgressBarStatus
-from jina.logging.logger import JinaLogger
+if typing.TYPE_CHECKING:
+    from jina.logging.logger import JinaLogger
+
+
 from jina import __windows__
-from jina.helper import colored, get_readable_size, get_readable_time
+from jina.helper import get_readable_size, get_readable_time, colored, get_rich_console
+
+from rich.progress import (
+    Progress,
+    Task,
+    BarColumn,
+    TimeRemainingColumn,
+    SpinnerColumn,
+    TimeElapsedColumn,
+    TextColumn,
+    ProgressColumn,
+    TaskID,
+)
+
+from rich.text import Text
+from rich.table import Column
+from rich.console import Console
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -74,58 +87,145 @@ def profiling(func):
     return arg_wrapper
 
 
-class TimeDict:
-    """Records of time information."""
+class ProgressBar(Progress):
+    """
+    A progress bar made with rich.
 
-    def __init__(self):
-        self.accum_time = defaultdict(float)
-        self.first_start_time = defaultdict(float)
-        self.start_time = defaultdict(float)
-        self.end_time = defaultdict(float)
-        self._key_stack = []
-        self._pending_reset = False
+    Example:
+        .. highlight:: python
+        .. code-block:: python
 
-    def __enter__(self):
-        _key = self._key_stack[-1]
-        # store only the first enter time
-        if _key not in self.first_start_time:
-            self.first_start_time[_key] = time.perf_counter()
-        self.start_time[_key] = time.perf_counter()
-        return self
+            with ProgressBar(100, 'loop') as p_bar:
+                for i in range(100):
+                    do_busy()
+                    p_bar.update()
+    """
 
-    def __exit__(self, typ, value, traceback):
-        _key = self._key_stack.pop()
-        self.end_time[_key] = time.perf_counter()
-        self.accum_time[_key] += self.end_time[_key] - self.start_time[_key]
-        if self._pending_reset:
-            self.reset()
+    def __init__(
+        self,
+        description: str = 'Working...',
+        total_length: Optional[float] = None,
+        message_on_done: Optional[Union[str, Callable[..., str]]] = None,
+        columns: Optional[Union[str, ProgressColumn]] = None,
+        disable: bool = False,
+        console: Optional[Console] = None,
+        **kwargs,
+    ):
+        """Init a custom progress bar based on rich. This is the default progress bar of jina if you want to  customize
+        it you should probably just use a rich `Progress` and add your custom column and task
 
-    def __call__(self, key: str, *args, **kwargs):
+        :param description: description of your task ex : 'Working...'
+        :param total_length: the number of steps
+        :param message_on_done: The message that you want to print at the end of your task. It can either be a string to
+        be formatted with task (ex '{task.completed}') task or a function which take task as input (ex : lambda task : f'{task.completed}'
+        :param columns: If you want to customize the column of the progress bar. Note that you should probably directly use
+        rich Progress object than overwriting these columns parameters.
+        :param total_length: disable the progress bar
+
+
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+
         """
-        Add time counter.
 
-        :param key: key name of the counter
-        :param args: extra arguments
-        :param kwargs: keyword arguments
-        :return: self object
+        def _default_message_on_done(task):
+            return f'{task.completed} steps done in {get_readable_time(seconds=task.finished_time)}'
+
+        columns = columns or [
+            SpinnerColumn(),
+            _OnDoneColumn(f'DONE', description, 'progress.description'),
+            BarColumn(complete_style='green', finished_style='yellow'),
+            TimeElapsedColumn(),
+            '[progress.percentage]{task.percentage:>3.0f}%',
+            TextColumn('ETA:', style='progress.remaining'),
+            TimeRemainingColumn(),
+            _OnDoneColumn(
+                message_on_done if message_on_done else _default_message_on_done
+            ),
+        ]
+
+        if not console:
+            console = get_rich_console()
+
+        super().__init__(*columns, console=console, disable=disable, **kwargs)
+
+        self.task_id = self.add_task(
+            'Working...', total=total_length if total_length else 100.0
+        )
+
+    def update(
+        self,
+        task_id: Optional[TaskID] = None,
+        advance: float = 1,
+        *args,
+        **kwargs,
+    ):
+        """Update the progress bar
+
+        :param task_id: the task to update
+        :param advance: Add a value to main task.completed
+
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
         """
-        self._key_stack.append(key)
-        return self
-
-    def reset(self):
-        """Clear the time information."""
-        if self._key_stack:
-            self._pending_reset = True
+        if not task_id:
+            super().update(self.task_id, advance=advance, *args, **kwargs)
         else:
-            self.accum_time.clear()
-            self.start_time.clear()
-            self.first_start_time.clear()
-            self.end_time.clear()
-            self._key_stack.clear()
-            self._pending_reset = False
+            super().update(task_id, advance=advance, *args, **kwargs)
 
-    def __str__(self):
-        return ' '.join(f'{k}: {v:3.1f}s' for k, v in self.accum_time.items())
+
+class _OnDoneColumn(ProgressColumn):
+    """Renders custom on done for jina progress bar."""
+
+    def __init__(
+        self,
+        text_on_done_format: Union[str, Callable],
+        text_init_format: str = '',
+        style: Optional[str] = None,
+        table_column: Optional[Column] = None,
+    ):
+        """
+        Create a ProgressBar column with a final message
+
+        Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            def on_done(task):
+                return f'{task.completed} steps done in {task.finished_time:.0f} seconds'
+
+
+            column = _OnDoneColumn(text_on_done_format=on_done)  # functional
+
+            column = _OnDoneColumn(
+                text_on_done_format='{task.completed} steps done in {task.finished_time:.0f} seconds'
+            )  # formatting
+
+
+        :param text_on_done_format: message_on_done
+        :param text_init_format: string to be formatted with task or a function which take task as input
+        :param style: rich style for the Text
+        :param table_column: rich table column
+        """
+        super().__init__(table_column)
+        self.text_on_done_format = text_on_done_format
+        self.text_init_format = text_init_format
+        self.style = style
+
+    def render(self, task: 'Task') -> Text:
+        if task.finished_time:
+            if callable(self.text_on_done_format):
+                return Text(self.text_on_done_format(task), style=self.style)
+            else:
+                return Text(
+                    self.text_on_done_format.format(task=task), style=self.style
+                )
+        else:
+            return Text(self.text_init_format.format(task=task), style=self.style)
 
 
 class TimeContext:
@@ -190,188 +290,3 @@ class TimeContext:
                 ),
                 flush=True,
             )
-
-
-class ProgressBar(TimeContext):
-    """
-    A simple progress bar.
-
-    Example:
-        .. highlight:: python
-        .. code-block:: python
-
-            with ProgressBar('loop'):
-                do_busy()
-    """
-
-    col_width = 100
-    clear_line = '\r{}\r'.format(' ' * col_width)
-    spinner = itertools.cycle(['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'])
-
-    def __init__(
-        self,
-        description: str = 'Working...',
-        message_on_done: Union[str, Callable[..., str], None] = None,
-        final_line_feed: bool = True,
-        total_length: Optional[int] = None,
-    ):
-        """
-        Create the ProgressBar.
-
-        :param description: The name of the task, will be displayed in front of the bar.
-        :param message_on_done: The final message to print when the progress is complete
-        :param final_line_feed: if False, the line will not get a Line Feed and thus is easily overwritable.
-        :param total_length: if set, then every :py:meth:`.update` increases the bar by `1/total_length * _bars_on_row`
-        """
-        super().__init__(description, None)
-        self._bars_on_row = 40
-        self._completed_progress = 0
-        self._last_rendered_progress = 0
-        self._num_update_called = 0
-        self._on_done = message_on_done
-        self._final_line_feed = final_line_feed
-        self._total_length = total_length
-        self._stop_event = threading.Event()
-
-    def update(
-        self,
-        progress: float = 1.0,
-        description: Optional[str] = None,
-        message: Optional[str] = None,
-        status: ProgressBarStatus = ProgressBarStatus.WORKING,
-        first_enter: bool = False,
-    ) -> None:
-        """
-        Increment the progress bar by one unit.
-
-        :param progress: The number of unit to increment.
-        :param description: Change the description text before the progress bar on update.
-        :param message: Change the message text followed after the progress bar on update.
-        :param status: If set to a value, it will mark the task as complete, can be either "Done" or "Canceled"
-        :param first_enter: if this method is called by `__enter__`
-        """
-        if self._total_length:
-            progress = progress / self._total_length * self._bars_on_row
-        self._completed_progress += progress
-        self._last_rendered_progress = self._completed_progress
-        elapsed = time.perf_counter() - self.start
-        num_bars = self._completed_progress % self._bars_on_row
-        num_bars = (
-            self._bars_on_row
-            if not num_bars and self._completed_progress
-            else max(num_bars, 1)
-        )
-        num_fullbars = math.floor(num_bars)
-        num_halfbars = 1 if (num_bars - num_fullbars <= 0.5) else 0
-
-        if status in {ProgressBarStatus.DONE, ProgressBarStatus.CANCELED}:
-            bar_color, unfinished_bar_color = 'yellow', 'yellow'
-        elif status == ProgressBarStatus.ERROR:
-            bar_color, unfinished_bar_color = 'red', 'red'
-        else:
-            bar_color, unfinished_bar_color = 'green', 'green'
-
-        if first_enter:
-            speed_str = 'estimating...'
-        elif self._total_length:
-            _prog = max(self._num_update_called, 1) / self._total_length
-            speed_str = f'{(_prog * 100):.0f}% ETA: {get_readable_time(seconds=self.now() / (_prog + 1e-6) * (1 - _prog + 1e-6))}'
-        else:
-            speed_str = f'{self._num_update_called / elapsed:4.1f} step/s'
-
-        self._num_update_called += 0 if first_enter else 1
-
-        description_str = description or self.task_name or ''
-        if status != ProgressBarStatus.WORKING:
-            description_str = str(status)
-        msg_str = message or ''
-        self._bar_info = dict(
-            bar_color=bar_color,
-            description_str=description_str,
-            msg_str=msg_str,
-            num_fullbars=num_fullbars,
-            num_halfbars=num_halfbars,
-            speed_str=speed_str,
-            unfinished_bar_color=unfinished_bar_color,
-        )
-
-    def _print_bar(self, bar_info):
-        time_str = str(
-            datetime.timedelta(seconds=time.perf_counter() - self.start)
-        ).split('.')[0]
-        sys.stdout.write(self.clear_line)
-        sys.stdout.write(
-            '{} {:>10} {:<}{:<} {} {} {}'.format(
-                colored(next(self.spinner), 'green'),
-                bar_info['description_str'],
-                colored('━' * bar_info['num_fullbars'], bar_info['bar_color'])
-                + (
-                    colored(
-                        '╸',
-                        bar_info['bar_color']
-                        if bar_info['num_halfbars']
-                        else bar_info['unfinished_bar_color'],
-                    )
-                ),
-                colored(
-                    '━' * (self._bars_on_row - bar_info['num_fullbars']),
-                    bar_info['unfinished_bar_color'],
-                    attrs=['dark'],
-                ),
-                colored(time_str, 'cyan'),
-                bar_info['speed_str'],
-                bar_info['msg_str'],
-            )
-        )
-        sys.stdout.flush()
-
-    def _update_thread(self):
-        sys.stdout.flush()
-        while not self._stop_event.is_set():
-            self._print_bar(self._bar_info)
-            time.sleep(0.1)
-
-    def _enter_msg(self):
-        self.update(first_enter=True)
-
-        self._progress_thread = threading.Thread(
-            target=self._update_thread, daemon=True
-        )
-        self._progress_thread.start()
-
-    def __exit__(self, exc_type, value, traceback):
-        self.duration = self.now()
-
-        self.readable_duration = get_readable_time(seconds=self.duration)
-
-        if exc_type in {KeyboardInterrupt, SystemExit}:
-            self._stop_event.set()
-            self.update(0, status=ProgressBarStatus.CANCELED)
-            self._print_bar(self._bar_info)
-        elif exc_type and issubclass(exc_type, Exception):
-            self._stop_event.set()
-            self.update(0, status=ProgressBarStatus.ERROR)
-            self._print_bar(self._bar_info)
-        else:
-            # normal ending, i.e. task is complete
-            self._stop_event.set()
-            self._progress_thread.join()
-            self.update(0, status=ProgressBarStatus.DONE)
-            self._print_bar(self._bar_info)
-            self._print_final_msg()
-
-    def _print_final_msg(self):
-        if self._last_rendered_progress > 1:
-            final_msg = f'\033[K{self._completed_progress:.0f} steps done in {self.readable_duration}'
-            if self._on_done:
-                if isinstance(self._on_done, str):
-                    final_msg = self._on_done
-                elif callable(self._on_done):
-                    final_msg = self._on_done()
-            sys.stdout.write(final_msg)
-            if self._final_line_feed:
-                sys.stdout.write('\n')
-        else:
-            # no actual render happens
-            sys.stdout.write(self.clear_line)
-        sys.stdout.flush()

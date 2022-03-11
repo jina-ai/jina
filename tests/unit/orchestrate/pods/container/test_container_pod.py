@@ -1,10 +1,11 @@
 import os
 import time
+
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.orchestrate.pods.container import ContainerPod
+from jina.parsers import set_gateway_parser, set_pod_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,13 +40,14 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
     ) as pod:
         container = pod._container
         status = container.status
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
 
     assert status == 'running'
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
-    with pytest.raises(docker.errors.NotFound):
-        pod._container
 
 
 @pytest.fixture(scope='module')
@@ -165,44 +167,11 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         ]
     )
     with ContainerPod(args) as pod:
-        pass
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
     pod.join()
     assert pod.worker.exitcode == 0
-
-
-@pytest.fixture(scope='module')
-def head_runtime_docker_image_built():
-    import docker
-
-    client = docker.from_env()
-    client.images.build(path=os.path.join(cur_dir, 'head-runtime/'), tag='head-runtime')
-    client.close()
-    yield
-    time.sleep(2)
-    client = docker.from_env()
-    client.containers.prune()
-
-
-def test_container_pod_head_runtime(head_runtime_docker_image_built):
-    import docker
-
-    with ContainerPod(
-        set_pod_parser().parse_args(
-            [
-                '--uses',
-                'docker://head-runtime',
-            ]
-        )
-    ) as pod:
-        container = pod._container
-        status = pod._container.status
-
-    assert status == 'running'
-    client = docker.from_env()
-    containers = client.containers.list()
-    assert container.id not in containers
-    with pytest.raises(docker.errors.NotFound):
-        pod._container
 
 
 @pytest.fixture(scope='module')
@@ -241,6 +210,9 @@ def test_container_pod_gateway_runtime(protocol, gateway_runtime_docker_image_bu
     ) as pod:
         container = pod._container
         status = pod._container.status
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
 
     assert status == 'running'
     client = docker.from_env()

@@ -77,7 +77,7 @@ def _prettyprint_help(d, also_in=None):
             table['Default'] = d['default']
         if d['default_random']:
             table['Remark'] = colored(
-                'This argument has a random default value!', 'yellow'
+                'This argument has a random default value!', 'on yellow'
             )
 
         table_str = '\n    '.join(

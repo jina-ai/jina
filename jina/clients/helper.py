@@ -9,6 +9,7 @@ from jina.excepts import BadClientCallback
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
 from jina.types.request.data import Response
+from jina.helper import get_rich_console
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
@@ -39,9 +40,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
             ''.join(route.status.exception.stacks[-stack_limit:]),
         )
 
-    from rich.console import Console
-
-    console = Console()
+    console = get_rich_console()
     console.print(table)
 
 

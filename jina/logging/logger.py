@@ -1,9 +1,12 @@
+import copy
 import logging
 import logging.handlers
 import os
 import platform
 import sys
 from typing import Optional
+
+from rich.logging import RichHandler
 
 from jina.logging import formatter
 from jina import __uptime__, __resources_path__, __windows__
@@ -40,7 +43,7 @@ class JinaLogger:
     :return:: an executor object.
     """
 
-    supported = {'FileHandler', 'StreamHandler', 'SysLogHandler'}
+    supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'RichHandler'}
 
     def __init__(
         self,
@@ -133,6 +136,13 @@ class JinaLogger:
             if h == 'StreamHandler':
                 handler = logging.StreamHandler(sys.stdout)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
+            if h == 'RichHandler':
+                kwargs_handler = copy.deepcopy(cfg)
+                kwargs_handler.pop('format')
+
+                handler = RichHandler(**kwargs_handler)
+                handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
+
             elif h == 'SysLogHandler' and not __windows__:
                 if cfg['host'] and cfg['port']:
                     handler = SysLogHandlerWrapper(address=(cfg['host'], cfg['port']))
