@@ -367,7 +367,7 @@ Flow().add(host='123.45.67.89', port_in=12345, external=True)
 ```
 This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
 
-
+(flow-complex-topologies)=
 ## Complex Flow topologies
 Flows are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
 A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
@@ -425,6 +425,7 @@ This will get you the following output:
 
 So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
 
+(flow-filter)=
 ### Add filter conditions to Executors
 
 Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release), you can filter the input to each
@@ -556,6 +557,9 @@ print(ret[:, 'tags'])  # No Document satisfies both sequential filters
 This feature is useful to prevent some specialized Executors from processing certain Documents.
 It can also be used to build *switch-like nodes*, where some Documents pass through one parallel branch of the Flow,
 while other Documents pass through a different branch.
+
+Also note that whenever a Document does not satisfy the condition of an Executor, it will not even be sent to that Executor.
+This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.
 
 ````{admonition} See Also
 :class: seealso
