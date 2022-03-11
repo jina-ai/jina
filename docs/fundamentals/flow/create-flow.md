@@ -463,15 +463,21 @@ Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release),
 Executor.
 
 To define a filter condition, you can use DocArrays rich query language (TODO link to docarray docs).
+You can set a filter for each individual Executor, and every Document that does not satisfy the filter condition will be
+removed before reaching that Executor.
+
 To add a filter condition to an Executor, you pass it to the `condition` parameter of `flow.add()`:
 
 ````{tab} Python
 
-```python
+```{code-block} python
+---
+emphasize-lines: 4, 9
+---
 from docarray import DocumentArray, Document
 from jina import Flow
 
-f = Flow().add().add(condition={'tags__key': {'$eq': 5}})  # Create the empty Flow
+f = Flow().add().add(condition={'tags__key': {'$eq': 5}})  # Create the empty Flow, add condition
 
 with f:  # Using it as a Context Manager will start the Flow
     ret = f.post(
@@ -502,7 +508,10 @@ executors:
             $eq: 5
 ```
 
-```python
+```{code-block} python
+---
+emphasize-lines: 9
+---
 from docarray import DocumentArray, Document
 from jina import Flow
 
@@ -524,24 +533,34 @@ print(
 ```
 ````
 
-Notice that whenever a Document does not satisfy the `condition` of a filter, the filter removes it *for the entire branch of the Flow*.
-Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.
+Note that whenever a Document does not satisfy the `condition` of a filter, the filter removes it *for the entire branch of the Flow*.
+This means that every Executor that is located behind a filter is affected by this, not just the specific Executor that defines the condition.
+Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter:
 
 This does not affect parallel branches of a Flow, since all Documents pass through all such branches:
 
 ````{tab} Parallel Executors
 
-```python
+```{code-block} python
+---
+emphasize-lines: 7, 8, 21
+---
 from docarray import DocumentArray, Document
 from jina import Flow
 
 f = (
     Flow()
     .add(name='first')
-    .add(condition={'tags__key': {'$eq': 5}}, needs='first')
-    .add(condition={'tags__key': {'$eq': 4}}, needs='first')
-    .needs_all()
+    .add(condition={'tags__key': {'$eq': 5}}, needs='first', name='exec1')
+    .add(condition={'tags__key': {'$eq': 4}}, needs='first', name='exec2')
+    .needs_all(name='join')
 )  # Create Flow with parallel Executors
+
+#                                   exec1
+#                                 /      \
+# Flow topology: Gateway --> first        join --> Gateway
+#                                 \      /
+#                                  exec2
 
 with f:
     ret = f.post(
@@ -559,7 +578,10 @@ print(ret[:, 'tags'])  # Each Document satisfies one parallel branch/filter
 ````
 
 ````{tab} Sequential Executors
-```python
+```{code-block} python
+---
+emphasize-lines: 7, 8, 21
+---
 from docarray import DocumentArray, Document
 from jina import Flow
 
