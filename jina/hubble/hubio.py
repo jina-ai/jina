@@ -669,7 +669,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             return host, port
 
         with console.status(
-            f"[bold green]Deploying sandbox for ({name}) since no existing one..."
+            f"[bold green]Deploying sandbox for [bold white]{name}[/bold white] since none exists..."
         ):
             try:
                 json_response = requests.post(
@@ -687,7 +687,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
                 console.log(f"Deployment completed: {host}:{port}")
                 console.log(
-                    f"[bold green]This sandbox will be removed when no traffic during {livetime}"
+                    f"[bold green]This sandbox will be removed when no traffic during [bold white]{livetime}[/bold white]"
                 )
             except:
                 console.log("Deployment failed")
