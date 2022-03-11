@@ -1,11 +1,11 @@
-import copy
 import asyncio
-
-from typing import List, TYPE_CHECKING, Callable
+import copy
+from typing import TYPE_CHECKING, Callable, List
 
 from docarray import DocumentArray
-from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 if TYPE_CHECKING:
     from jina.types.request import Request
@@ -70,9 +70,13 @@ def handle_request(
             request_graph.add_routes(response)
 
             # sort response docs according to their order in the initial request
-            sorted_docs = sorted(
-                response.data.docs, key=lambda d: request_doc_ids.index(d.id)
-            )
+            def sort_by_request_order(doc):
+                if doc.id in request_doc_ids:
+                    return request_doc_ids.index(doc.id)
+                else:
+                    return len(request_doc_ids)  # put new/unknown docs at the end
+
+            sorted_docs = sorted(response.data.docs, key=sort_by_request_order)
             response.data.docs = DocumentArray(sorted_docs)
             return response
 
