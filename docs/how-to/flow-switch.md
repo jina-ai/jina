@@ -58,7 +58,7 @@ One way to achieve this differentiation is to use different Executor endpoints:
 
 ```{code-block} python
 ---
-emphasize-lines: 18, 22
+emphasize-lines: 19, 23
 ---
 from docarray import DocumentArray, Document
 from jina import Flow
@@ -92,7 +92,7 @@ with f:
 
 ```{code-block} python
 ---
-emphasize-lines: 6, 14
+emphasize-lines: 7, 15
 ---
 from docarray import DocumentArray, Document
 from jina import Executor, requests
@@ -225,7 +225,7 @@ switch logic.
 
 ```{code-block} python
 ---
-emphasize-lines: 9, 15
+emphasize-lines: 10, 16
 ---
 from jina import Flow
 
@@ -253,7 +253,7 @@ f = (
 
 ```{code-block} python
 ---
-emphasize-lines: 6, 14
+emphasize-lines: 7, 15
 ---
 from docarray import DocumentArray, Document
 from jina import Executor, requests
