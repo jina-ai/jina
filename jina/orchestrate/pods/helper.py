@@ -2,14 +2,13 @@ import multiprocessing
 import threading
 from copy import deepcopy
 from functools import partial
-from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
-
-from jina.enums import GatewayProtocolType, RuntimeBackendType, PodRoleType
-from jina.hubble.helper import is_valid_huburi
-from jina.hubble.hubio import HubIO
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
 
 from grpc import RpcError
 
+from jina.enums import GatewayProtocolType, PodRoleType, RuntimeBackendType
+from jina.hubble.helper import is_valid_huburi
+from jina.hubble.hubio import HubIO
 from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.control import ControlRequest
 
@@ -24,7 +23,7 @@ def _get_worker(
         RuntimeBackendType.THREAD: threading.Thread,
         RuntimeBackendType.PROCESS: multiprocessing.Process,
     }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
-        target=target, name=name, kwargs=kwargs
+        target=target, name=name, kwargs=kwargs, daemon=True
     )
 
 
