@@ -23,7 +23,7 @@ Here you will learn where and how to use this feature, and how you can build *sw
 ## Why do you need a switch?
 
 {ref}`As you know <flow-complex-topologies>`, Jina Flows can define complex topologies that include multiple Executors,
-bot in sequence and on parallel branches.
+both in sequence and on parallel branches.
 
 A simple Flow with parallel branches could be defined like so:
 
@@ -46,13 +46,13 @@ f.plot()
 Flow with two parallel branches.
 ```
 
-A topology like this means that the Documents that get passed to `exec1` do not get processed by `exec2` first, and vice versa.
+A topology like this means that the Documents do not get processed by `exec1` before they go to `exec2`, and vice vers.
 However, all Documents still go through all branches and all Executors.
 
 In some scenarios, you might not want all Documents to be processed by all Executors, for example when you index Documents
 representing different kinds of data, like text and images.
 
-In some cases, you could just use different Executor endpoints to achieve this:
+One way to achieve this differentiation is to use different Executor endpoints:
 
 ````{tab} Main app
 
@@ -123,7 +123,7 @@ class ImageIndexer(Executor):
 As you can see, the image data was only processed by the `ImageIndexer`, and the text data was only processed by the `TextIndexer`.
 
 However, there are two problems with this approach:
-- All Documents are sent to all Executor microservices, where they are ignored if the endpoint does not match. This creates unnecessary networking overhead.
+- All Documents are sent to *all* Executor microservices, where they are ignored if the endpoint does not match. This creates unnecessary networking overhead.
 - Sometimes you can't easily control the endpoints of all Executors, for example when you are using the {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
 
 To solve these problems, you can leverage filter condition to easily build a switch into your Flow.
@@ -141,14 +141,16 @@ from jina import Flow
 f = Flow().add(condition={'tags__key': {'$eq': 5}})
 ```
 
+The, Documents that do not satisfy the `condition` will not reach the associated Executor.
+
 In the use case where you are trying to separate Documents according to the data modality they hold, you need to choose
 a condition accordingly.
-To achieve this, you first need to add a fitting `tag` to eah of you Documents.
+To enable this, you first need to add a fitting `tag` to each of you Documents.
 
 ````{admonition} Note
 :class: note
 For the particular use case of identifying whether a field in a Document is set or not, you need this pre-processing step
-where you tag each Document.
+of tagging each Document.
 For many other use cases this is not necessary, as they can be directly handled by the query language itself. TODO link to ql docs in docaray
 ````
 
@@ -182,10 +184,36 @@ text_condition = {'tags__has_text': {'$eq': 1}}
 tensor_condition = {'tags__has_tensor': {'$eq': 1}}
 ```
 
+These conditions specify that only Documents that have been tagged for a specific data modality can pass the filter.
+
+You can try the conditions directly on your data, outside the Flow:
+
+```python
+filtered_text_data = data.find(text_condition)
+filtered_image_data = data.find(tensor_condition)
+
+print(filtered_text_data.texts)  # print text
+print('---')
+print(filtered_image_data.tensors[:, :2, :2])  # print four pixels of each image
+```
+```console
+['hey there!', 'hey there!']
+---
+[[[0.50535537 0.50538128]
+  [0.40446746 0.34972967]]
+
+ [[0.04222604 0.70102327]
+  [0.12079661 0.65313938]]]
+```
+
+As you can see, each filter selects the Documents that contain the desired data fields.
+That's exactly what you want for your filter!
+
 ## Build the Flow
 
 Finally, you can assemble your Flow using these conditions and the Indexers from above.
-This time there is no need to choose different Executor endpoints for the Indexers, since the filter takes care of that logic.
+This time there is no need to choose different Executor endpoints for the Indexers, since the filters take care of the
+switch logic.
 
 ````{tab} Flow
 
@@ -237,6 +265,9 @@ class ImageIndexer(Executor):
 ```
 ````
 
+Here you simply tell each Executor to filter its inputs according to the conditions that you specified above:
+Text and image data should be treated separately.
+
 ## Index the data
 
 If you now send your data to the Flow, you expect that only your image data will be sent to `ImageIndexer`, and only your
@@ -258,13 +289,15 @@ print(embedded_docs[:, 'tags'])
 ```
 
 And indeed, that's exactly what happens!
-And remember, with this solution the Documents don't even get *sent* to the incorrect Executor and aren't merely ignored by it.
+
+The Documents that have a text were processed by `TextIndexer`, and the Documents that contain an image were processed by `ImageIndexer`.
+And remember, with this solution the Documents don't even get *sent* to the incorrect Executor.
 
 ## What's next
 
-Now that you know how to use filter conditions to build switches, you can build all kinds of business logic with this feature.
+Now that you know how to use filter conditions to build switches, you can leverage this feature to build all kinds of business logic.
 
-You could differentiate between more than just two different data modalities, direct requests based on the Client they come from,
+You could differentiate between more than just two different data modalities, you could direct requests based on the Client they come from,
 ignore Documents that don't meet certain quality criteria, or route data to specialized Executors based on what the data
 itself looks like. Your imagination is the limit!
 
