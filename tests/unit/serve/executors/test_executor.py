@@ -2,11 +2,41 @@ import os
 from copy import deepcopy
 
 import pytest
-
 from docarray import Document, DocumentArray
-from jina import Executor, requests
+
+from jina import Client, Executor, requests
 from jina.serve.executors import ReducerExecutor
 from jina.serve.executors.metas import get_default_metas
+
+PORT = 12350
+
+
+@pytest.fixture(autouse=False)
+def served_exec():
+    import threading
+    import time
+
+    def serve_exec(**kwargs):
+        MyExec().serve(**kwargs)
+
+    e = threading.Event()
+    t = threading.Thread(
+        name='serve-exec',
+        target=serve_exec,
+        kwargs={'port_expose': PORT, 'stop_event': e},
+    )
+    t.start()
+    time.sleep(1)  # allow Flow to start
+
+    yield
+
+    e.set()  # set event and stop (unblock) the Flow
+
+
+class MyExec(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        docs.texts = ['foo' for _ in docs]
 
 
 def test_executor_load_from_hub():
@@ -294,3 +324,9 @@ async def test_async_apply():
     exec = AsyncExecutor()
     da1 = await exec.foo(da)
     assert da1.texts == ['hello'] * N
+
+
+def test_serve(served_exec):
+    docs = Client(port=PORT).post(on='/foo', inputs=DocumentArray.empty(5))
+
+    assert docs.texts == ['foo' for _ in docs]
