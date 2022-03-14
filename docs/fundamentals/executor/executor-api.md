@@ -315,7 +315,7 @@ print(docs.embeddings.shape)
 ```
 ````
 
-## Serve Executor without Flow
+## Serve Executor stand-alone
 
 Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
 This is especially useful when debugging an Executor in a remote setting.
