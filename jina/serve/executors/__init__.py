@@ -333,7 +333,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
             to main thread.
-        :param kwargs: other kwargs accepted by the Flow, full list can be found in INSERT_DOC_URL  # TODO(johannes)
+        :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """
         from jina import Flow
