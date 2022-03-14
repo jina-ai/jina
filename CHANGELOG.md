@@ -140,6 +140,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12453,4 +12454,26 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```1d618f8f```](https://github.com/jina-ai/jina/commit/1d618f8f3d08fd09a07dd86abf4ad8df7ce940f5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```b2f69d5b```](https://github.com/jina-ai/jina/commit/b2f69d5b6522080827e81b9bb7498b1f5af41de4)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```e1d43309```](https://github.com/jina-ai/jina/commit/e1d433099a6a910d7595e867a42062b44198615c)] __-__ __version__: the next version will be 3.1.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-4></a>
+## Release Note (`3.1.4`)
+
+> Release time: 2022-03-14 09:45:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```9bdefb0a```](https://github.com/jina-ai/jina/commit/9bdefb0a693c4556e0902ef913f4426e3ef5ff65)] __-__ properly disable graphql endpoint by default (#4471) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```ac47f7ad```](https://github.com/jina-ai/jina/commit/ac47f7ade0c2d4b2677a6058f63cad183bbaa05f)] __-__ update requirement of pillow for latency tracking (#4469) (*Joan Fontanals*)
+ - [[```a1f9c3a3```](https://github.com/jina-ai/jina/commit/a1f9c3a3a0500a8d6ceb295ca0e84525c2b4d6e7)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```20b67226```](https://github.com/jina-ai/jina/commit/20b672269e1b658e4fb8d255778e25280c89d79f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7dceff65```](https://github.com/jina-ai/jina/commit/7dceff65f2d93bc81989251387eea8f3528a2fde)] __-__ __version__: the next version will be 3.1.4 (*Jina Dev Bot*)
 
