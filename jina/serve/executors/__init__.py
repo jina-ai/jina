@@ -317,8 +317,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_requests=uses_requests,
         )
 
+    @classmethod
     def serve(
-        self,
+        cls,
         uses_with: Optional[Dict] = None,
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
@@ -332,13 +333,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
             to main thread.
-        :param kwargs: other kwargs accepted by the Flow, full list can be found in INSERT_DOC_URL
+        :param kwargs: other kwargs accepted by the Flow, full list can be found in INSERT_DOC_URL  # TODO(johannes)
 
         """
         from jina import Flow
 
         f = Flow(**kwargs).add(
-            uses=type(self),
+            uses=cls,
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
