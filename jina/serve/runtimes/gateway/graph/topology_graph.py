@@ -1,9 +1,8 @@
 import asyncio
 import copy
-
 from collections import defaultdict
 from datetime import datetime
-from typing import List, Optional, Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.data import DataRequest
@@ -210,6 +209,7 @@ class TopologyGraph:
                         nodes[node_name].outgoing_nodes.append(nodes[out_node_name])
 
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
+        self.has_filter_conditions = bool(graph_conditions)
 
     def add_routes(self, request: 'DataRequest'):
         """
