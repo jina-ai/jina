@@ -613,6 +613,7 @@ It can also be used to build *switch-like nodes*, where some Documents pass thro
 while other Documents pass through a different branch.
 
 Also note that whenever a Document does not satisfy the condition of an Executor, it will not even be sent to that Executor.
+Instead, only a lightweight Request without any payload will be transferred.
 This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.
 
 ````{admonition} See Also
