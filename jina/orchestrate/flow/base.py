@@ -1509,7 +1509,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'Redoc: ',
                 f'[underline]http://localhost:{self.port}/redoc[/underline]',
             )
-            if not self.args.no_graphql_endpoint:
+            if self.args.expose_graphql_endpoint:
                 address_table.add_row(
                     '💬',
                     'GraphQL UI: ',
