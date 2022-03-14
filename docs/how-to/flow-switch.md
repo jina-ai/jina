@@ -75,7 +75,7 @@ f = (
 
 text_data = DocumentArray([Document(text='hey there!') for _ in range(2)])
 image_data = DocumentArray(
-    [Document(tensor=np.random.rand(16, 16)) for _ in range(2)]
+    [Document(tensor=np.random.rand(2, 2)) for _ in range(2)]
 )  # dummy images
 with f:
     embedded_texts = f.post(inputs=text_data, on='/index-text')
@@ -147,50 +147,25 @@ from jina import Flow
 f = Flow().add(condition={'tags__key': {'$eq': 5}})
 ```
 
-The, Documents that do not satisfy the `condition` will not reach the associated Executor.
+Then, Documents that do not satisfy the `condition` will not reach the associated Executor.
 
 In the use case where you are trying to separate Documents according to the data modality they hold, you need to choose
 a condition accordingly.
-To enable this, you first need to add a fitting `tag` to each of you Documents.
 
-````{admonition} Note
-:class: note
-For the particular use case of identifying whether a field in a Document is set or not, you need this pre-processing step
-of tagging each Document.
-For many other use cases this is not necessary, as they can be directly handled by the query language itself. TODO link to ql docs in docaray
+````{admonition} See Also
+:class: seealso
+
+In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, $gte`, `$lte`, `$size`,
+`$and`, `$or` and many more. For details, consult this DocArray documentation page (TODO INSERT LINK).
 ````
 
 ```python
-from docarray import DocumentArray, Document
-import numpy as np
-
-# dummy data
-text_data = [Document(text='hey there!') for _ in range(2)]
-image_data = [Document(tensor=np.random.rand(16, 16)) for _ in range(2)]
-data = DocumentArray(text_data + image_data)
-
-# tag the data
-for doc in data:
-    if doc.text:
-        doc.tags['has_text'] = 1
-    if doc.tensor is not None:
-        doc.tags['has_tensor'] = 1
-print(data[:, 'tags'])
-```
-
-```console
-[{'has_text': 1}, {'has_text': 1}, {'has_tensor': 1}, {'has_tensor': 1}]
-```
-
-Now you can define your conditions:
-
-```python
 # define filter conditions
-text_condition = {'tags__has_text': {'$eq': 1}}
-tensor_condition = {'tags__has_tensor': {'$eq': 1}}
+text_condition = {'text': {'$exists': True}}
+tensor_condition = {'tensor': {'$exists': True}}
 ```
 
-These conditions specify that only Documents that have been tagged for a specific data modality can pass the filter.
+These conditions specify that only Documents that hold data of a specific modality can pass the filter.
 
 ### Try the filters outside the Flow
 
@@ -202,7 +177,7 @@ filtered_image_data = data.find(tensor_condition)
 
 print(filtered_text_data.texts)  # print text
 print('---')
-print(filtered_image_data.tensors[:, :2, :2])  # print four pixels of each image
+print(filtered_image_data.tensors)
 ```
 ```console
 ['hey there!', 'hey there!']
@@ -292,14 +267,19 @@ Let's take a look:
 ```python
 with f:
     embedded_docs = f.post(on='/index', inputs=data)
-print(embedded_docs[:, 'tags'])
+
+embedded_by = embedded_docs[:, 'tags__embedded_by']
+texts = embedded_docs.texts
+tensors = embedded_docs.tensors
+for embedded_by, text, image in list(zip(embedded_by, texts, tensors)):
+    print(f'Embedded by: {embedded_by}; Text: {text}, Image: {image}')
 ```
 
 ```console
-[{'has_text': 1.0, 'embedded_by': 'textIndexer'},
-{'has_text': 1.0, 'embedded_by': 'textIndexer'},
-{'has_tensor': 1.0, 'embedded_by': 'imageIndexer'},
-{'has_tensor': 1.0, 'embedded_by': 'imageIndexer'}]
+Embedded by: textIndexer; Text: hey there!, Image: None
+Embedded by: textIndexer; Text: hey there!, Image: None
+Embedded by: imageIndexer; Text: , Image: [[0.60863086 0.39863197], [0.78668579 0.66100752]]
+Embedded by: imageIndexer; Text: , Image: [[0.78359225 0.75458748], [0.56896536 0.66725426]]
 ```
 
 And indeed, that's exactly what happens!
