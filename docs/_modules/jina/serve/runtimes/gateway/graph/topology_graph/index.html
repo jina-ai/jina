@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.1.6 documentation</title>
+        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.1.6 documentation</div>
+                <div class="brand">Jina 3.2.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -247,6 +247,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/flow-switch/">How to build switches in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/debug-executor/">How to Debug Executor</a></li>
 </ul>
 </li>
@@ -593,10 +594,10 @@
                 </div>
                 <h1>Source code for jina.serve.runtimes.gateway.graph.topology_graph</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -610,10 +611,18 @@
 <span class="sd">    :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
 <span class="sd">        determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes</span>
 <span class="sd">        will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.</span>
+
+<span class="sd">    :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.</span>
 <span class="sd">    """</span>
 
     <span class="k">class</span> <span class="nc">_ReqReplyNode</span><span class="p">:</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">number_of_parts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hanging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">number_of_parts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">hanging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">filter_condition</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">number_of_parts</span> <span class="o">=</span> <span class="n">number_of_parts</span>
@@ -622,10 +631,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span> <span class="o">=</span> <span class="n">filter_condition</span>
 
         <span class="nd">@property</span>
         <span class="k">def</span> <span class="nf">leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">_update_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)):</span>
+                <span class="n">copy_req</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">filtered_docs</span> <span class="o">=</span> <span class="n">copy_req</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span><span class="p">)</span>
+                <span class="n">copy_req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">filtered_docs</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy_req</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_previous_and_send</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -634,6 +651,7 @@
             <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="p">):</span>
+            <span class="c1"># Check my condition and send request with the condition</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="n">previous_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">previous_task</span>
@@ -645,6 +663,9 @@
                 <span class="c1"># this is a specific needs</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_parts</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_update_requests</span><span class="p">()</span>
+
                     <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
                         <span class="n">requests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">,</span>
                         <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -655,6 +676,7 @@
                     <span class="k">if</span> <span class="s1">'is-error'</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">status</span>
                     <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span>
+
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{}</span>
 
         <span class="k">def</span> <span class="nf">get_leaf_tasks</span><span class="p">(</span>
@@ -743,7 +765,9 @@
                 <span class="n">request</span> <span class="o">=</span> <span class="n">outgoing_node</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">request</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
         <span class="n">num_parts_per_node</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">'start-gateway'</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="p">:</span>
             <span class="n">origin_node_names</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">'start-gateway'</span><span class="p">]</span>
@@ -763,12 +787,14 @@
 
         <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">node_set</span><span class="p">:</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="n">graph_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ReqReplyNode</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">node_name</span><span class="p">,</span>
                 <span class="n">number_of_parts</span><span class="o">=</span><span class="n">num_parts_per_node</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">num_parts_per_node</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="n">hanging</span><span class="o">=</span><span class="n">node_name</span> <span class="ow">in</span> <span class="n">hanging_deployment_names</span><span class="p">,</span>
+                <span class="n">filter_condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">outgoing_node_names</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -778,6 +804,7 @@
                         <span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">out_node_name</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_origin_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">origin_node_names</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_filter_conditions</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">graph_conditions</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TopologyGraph.add_routes"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes">[docs]</a>    <span class="k">def</span> <span class="nf">add_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'DataRequest'</span><span class="p">):</span>
         <span class="sd">"""</span>

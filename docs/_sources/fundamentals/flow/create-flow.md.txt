@@ -386,6 +386,32 @@ bar
 foo
 ```
 
+### Convert array types between Executors
+
+Different Executors in a Flow may depend on slightly different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
+for example because they were written using different machine learning frameworks.
+As the builder of a Flow you don't always have control over this, for example when using Executors from the Jina Hub.
+
+In order to facilitate the integration between different Executors, the Flow allows you to convert `tensor` and `embedding`
+by using the `f.add(..., output_array_type=..)`:
+
+```python
+from jina import Flow
+
+f = Flow().add(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyExecutor)
+```
+
+This converts the `.tensor` and `.embedding` fields of all output Documents of `MyExecutor` to `numpy.ndarray`, making the data
+usable by `NeedsNumpyExecutor`. This works regardless of whether MyExecutor populates these fields with arrays/tensors from
+PyTorch, TensorFlow, or any other popular ML framework.
+
+````{admonition} Output types
+:class: note
+
+`output_array_type=` supports more types than `'numpy'`. For a full specification, and further details, take a look at the
+documentation about [protobuf serialization](https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf).
+````
+
 ### External executors
 Usually a `Flow` will manage all of its Executors. 
 In some cases it is desirable though to use externally managed Executors. These are named `external Executors`. This is especially useful to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
@@ -397,7 +423,7 @@ Flow().add(host='123.45.67.89', port=12345, external=True)
 ```
 This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
 
-
+(flow-complex-topologies)=
 ## Complex Flow topologies
 Flows are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
 A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
@@ -453,9 +479,175 @@ This will get you the following output:
 ['foo was here and got 0 document', 'bar was here and got 1 document', 'baz was here and got 1 document']
 ```
 
-So both `BarExecutor` and `BazExecutor` received only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
+So both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` as they are run in parallel. The last Executor `executor3` will receive both DocumentArrays and merges them automatically.
+The automated merging can be disabled by setting `disable_reduce=True`. This can be useful when you need to provide your custom merge logic in a separate Executor. In this case the last `.add()` call would like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, disable_reduce=True)`. This feature requires Jina >= 3.0.2.
 
-The automated merging can be disabled by setting `disable_reduce=True`. This can be useful when you need to provide your custom merge logic in a separate Executor. In this case the last `.add()` call would like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, disable_reduce=True)`. This feature requires Jina >= 3.0.2
+(flow-filter)=
+### Add filter conditions to Executors
+
+Starting from `Jina 3.2`, you can filter the input to each
+Executor.
+
+To define a filter condition, you can use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
+You can set a filter for each individual Executor, and every Document that does not satisfy the filter condition will be
+removed before reaching that Executor.
+
+To add a filter condition to an Executor, you pass it to the `input_condition` parameter of `flow.add()`:
+
+````{tab} Python
+
+```{code-block} python
+---
+emphasize-lines: 4, 9
+---
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = Flow().add().add(input_condition={'tags__key': {'$eq': 5}})  # Create the empty Flow, add condition
+
+with f:  # Using it as a Context Manager will start the Flow
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+print(
+    ret[:, 'tags']
+)  # only the Document fullfilling the condition is processed and therefore returned.
+```
+
+```console
+[{'key': 5.0}]
+```
+
+````
+
+````{tab} Load from YAML
+`flow.yml`:
+
+```yaml
+jtype: Flow
+executors:
+  - name: executor
+    input_condition:
+        tags__key:
+            $eq: 5
+```
+
+```{code-block} python
+---
+emphasize-lines: 9
+---
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
+
+with f:  # Using it as a Context Manager will start the Flow
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+print(
+    ret[:, 'tags']
+)  # only the Document fullfilling the condition is processed and therefore returned.
+```
+
+```console
+[{'key': 5.0}]
+```
+````
+
+Note that whenever a Document does not satisfy the `input_condition` of a filter, the filter removes it *for the entire branch of the Flow*.
+This means that every Executor that is located behind a filter is affected by this, not just the specific Executor that defines the condition.
+Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.
+
+Naturally, parallel branches in a Flow do not affect each other. So if a Document gets filtered out in only one branch, it can
+still be used in the other branch, and also after the branches are re-joined together:
+
+````{tab} Parallel Executors
+
+```{code-block} python
+---
+emphasize-lines: 7, 8, 21
+---
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = (
+    Flow()
+    .add(name='first')
+    .add(input_condition={'tags__key': {'$eq': 5}}, needs='first', name='exec1')
+    .add(input_condition={'tags__key': {'$eq': 4}}, needs='first', name='exec2')
+    .needs_all(name='join')
+)  # Create Flow with parallel Executors
+
+#                                   exec1
+#                                 /      \
+# Flow topology: Gateway --> first        join --> Gateway
+#                                 \      /
+#                                  exec2
+
+with f:
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+print(ret[:, 'tags'])  # Each Document satisfies one parallel branch/filter
+```
+
+```console
+[{'key': 5.0}, {'key': 4.0}]
+```
+
+````
+
+````{tab} Sequential Executors
+```{code-block} python
+---
+emphasize-lines: 7, 8, 21
+---
+from docarray import DocumentArray, Document
+from jina import Flow
+
+f = (
+    Flow()
+    .add(name='first')
+    .add(input_condition={'tags__key': {'$eq': 5}}, name='exec1', needs='first')
+    .add(input_condition={'tags__key': {'$eq': 4}}, needs='exec1', name='exec2)
+)  # Create Flow with sequential Executors
+
+# Flow topology: Gateway --> first --> exec1 --> exec2 --> Gateway
+
+with f:
+    ret = f.post(
+        on='/search',
+        inputs=DocumentArray([Document(tags={'key': 5}), Document(tags={'key': 4})]),
+    )
+
+print(ret[:, 'tags'])  # No Document satisfies both sequential filters
+```
+
+```console
+[]
+```
+````
+
+This feature is useful to prevent some specialized Executors from processing certain Documents.
+It can also be used to build *switch-like nodes*, where some Documents pass through one parallel branch of the Flow,
+while other Documents pass through a different branch.
+
+Also note that whenever a Document does not satisfy the condition of an Executor, it will not even be sent to that Executor.
+Instead, only a lightweight Request without any payload will be transferred.
+This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.
+
+````{admonition} See Also
+:class: seealso
+
+For a hands-on example on how to leverage these filter conditions, see {ref}`this how-to <flow-switch>`.
+````
 
 ### Replicate Executors
 
