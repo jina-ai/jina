@@ -1,13 +1,14 @@
 import os
-import pytest
 
-from docarray import DocumentArray, Document
+import pytest
+from docarray import Document, DocumentArray
+
 from jina import Executor, Flow, requests
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-class ContitionDumpExecutor(Executor):
+class ConditionDumpExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
         with open(
@@ -31,7 +32,7 @@ def shuffle_flow(request, temp_workspace):
         Flow()
         .add(name='first')
         .add(
-            uses=ContitionDumpExecutor,
+            uses=ConditionDumpExecutor,
             uses_metas={'name': 'exec1'},
             workspace=os.environ['TEMP_WORKSPACE'],
             name='exec1',
@@ -45,7 +46,7 @@ def shuffle_flow(request, temp_workspace):
             },
         )
         .add(
-            uses=ContitionDumpExecutor,
+            uses=ConditionDumpExecutor,
             uses_metas={'name': 'exec2'},
             name='exec2',
             workspace=os.environ['TEMP_WORKSPACE'],
@@ -65,7 +66,7 @@ def flow(request, temp_workspace):
             Flow()
             .add(name='first')
             .add(
-                uses=ContitionDumpExecutor,
+                uses=ConditionDumpExecutor,
                 uses_metas={'name': 'exec1'},
                 workspace=os.environ['TEMP_WORKSPACE'],
                 name='exec1',
@@ -73,7 +74,7 @@ def flow(request, temp_workspace):
                 condition={'tags__type': {'$eq': 1}},
             )
             .add(
-                uses=ContitionDumpExecutor,
+                uses=ConditionDumpExecutor,
                 workspace=os.environ['TEMP_WORKSPACE'],
                 uses_metas={'name': 'exec2'},
                 name='exec2',
@@ -123,14 +124,14 @@ def test_conditions_filtering_on_joiner(tmpdir):
         Flow()
         .add(name='first')
         .add(
-            uses=ContitionDumpExecutor,
+            uses=ConditionDumpExecutor,
             uses_metas={'name': 'joiner_test_exec1'},
             workspace=str(tmpdir),
             name='joiner_test_exec1',
             needs=['first'],
         )
         .add(
-            uses=ContitionDumpExecutor,
+            uses=ConditionDumpExecutor,
             workspace=str(tmpdir),
             uses_metas={'name': 'joiner_test_exec2'},
             name='joiner_test_exec2',
@@ -187,7 +188,7 @@ def test_chained_conditions(tmpdir, temp_workspace):
         Flow()
         .add(name='first')
         .add(
-            uses=ContitionDumpExecutor,
+            uses=ConditionDumpExecutor,
             uses_metas={'name': 'exec1'},
             workspace=os.environ['TEMP_WORKSPACE'],
             name='exec1',
@@ -195,7 +196,7 @@ def test_chained_conditions(tmpdir, temp_workspace):
             condition={'tags__type': {'$gte': 2}},
         )
         .add(
-            uses=ContitionDumpExecutor,
+            uses=ConditionDumpExecutor,
             workspace=os.environ['TEMP_WORKSPACE'],
             uses_metas={'name': 'exec2'},
             name='exec2',
