@@ -74,6 +74,12 @@ class DockerComposeFlow:
         )
 
 
+@pytest.fixture(autouse=True)
+def slow_down_tests():  # slow down between two tests, otherwise some concurent docker delete/create happened and the tests are failing
+    yield
+    time.sleep(1)
+
+
 async def run_test(flow, endpoint, num_docs=10, request_size=10):
     # start port forwarding
     from jina.clients import Client
@@ -161,7 +167,7 @@ def flow_with_needs(docker_images):
     indirect=True,
 )
 async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-with-need.yml')
     flow_with_needs.to_docker_compose_yaml(dump_path, 'default')
     with DockerComposeFlow(dump_path):
         resp = await run_test(
@@ -189,7 +195,7 @@ async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-sharding.yml')
     flow_with_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeFlow(dump_path):
@@ -238,7 +244,7 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
 async def test_flow_with_configmap(flow_configmap, docker_images, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-configmap.yml')
     flow_configmap.to_docker_compose_yaml(dump_path)
 
     with DockerComposeFlow(dump_path):
@@ -269,7 +275,7 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
         workspace='/shared',
     )
 
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-workspace.yml')
     flow.to_docker_compose_yaml(dump_path)
 
     with DockerComposeFlow(dump_path):
