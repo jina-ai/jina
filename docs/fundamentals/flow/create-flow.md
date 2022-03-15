@@ -388,7 +388,7 @@ foo
 
 ### Convert array types between Executors
 
-Different Executors in a Flow may depend on slightly different types for array-like data like `doc.tensor` and `doc.embedding`,
+Different Executors in a Flow may depend on slightly different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
 for example because they were written using different machine learning frameworks.
 As the builder of a Flow you don't always have control over this, for example when using Executors from the Jina Hub.
 
@@ -398,11 +398,11 @@ by using the `f.add(..., output_array_type=..)`:
 ```python
 from jina import Flow
 
-f = Flow().add(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyEcecutor)
+f = Flow().add(uses=MyExecutor, output_array_type='numpy').add(uses=NeedsNumpyExecutor)
 ```
 
 This converts the `.tensor` and `.embedding` fields of all output Documents of `MyExecutor` to `numpy.ndarray`, making the data
-usable by `NeedsNumpyEcecutor`. This works regardless of whether MyExecutor populates these fields with arrays/tensors from
+usable by `NeedsNumpyExecutor`. This works regardless of whether MyExecutor populates these fields with arrays/tensors from
 PyTorch, TensorFlow, or any other popular ML framework.
 
 ````{admonition} Output types
