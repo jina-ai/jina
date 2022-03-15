@@ -80,7 +80,7 @@ class DockerComposeConfig:
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
 
-            protocol = str(non_defaults['protocol']).lower()
+            protocol = str(non_defaults.get('protocol', 'grpc')).lower()
 
             return {
                 'image': image_name,
