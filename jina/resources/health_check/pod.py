@@ -1,5 +1,3 @@
-
-
 def check_health_pod(addr: str):
     """check if a pods is healthy
 

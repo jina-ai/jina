@@ -5,25 +5,27 @@ def check_health_http(addr):
     import requests
 
     try:
-        resp = requests.get(f'http://{addr}/status')
+        resp = requests.get(f'http://{addr}/')
         if not resp.status_code == 200:
-            raise RuntimeError(f'The http gateway is unhealthy http status : {resp.status_code}')
+            raise RuntimeError(
+                f'The http gateway is unhealthy http status : {resp.status_code}'
+            )
     except requests.exceptions.RequestException as e:
         print('The http gateway is unhealthy')
         raise e
 
     print('The http gateway is healthy')
 
+
 async def check_health_websocket(addr):
     import websockets
 
-    try :
+    try:
         async with websockets.connect(f'ws://{addr}') as websocket:
             pass
     except websockets.exceptions.WebSocketException as e:
         print('The websocket gateway is unhealthy')
         raise e
-
 
     print('The websocket gateway is healthy')
 
@@ -38,7 +40,9 @@ if __name__ == '__main__':
     import sys
 
     if len(sys.argv) < 3:
-        raise ValueError('You need to specify a address to check health and at protocol')
+        raise ValueError(
+            'You need to specify a address to check health and at protocol'
+        )
 
     addr = sys.argv[1]
     protocol = sys.argv[2]
@@ -49,6 +53,7 @@ if __name__ == '__main__':
         check_health_http(addr)
     elif protocol == 'websocket':
         import asyncio
+
         asyncio.run(check_health_websocket(addr))
     else:
         raise ValueError(f'{protocol} should be in ["grpc","http","websocket"]')
