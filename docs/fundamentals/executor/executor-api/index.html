@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-api/" />
   
-<meta property="og:site_name" content="Jina 3.1.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.1.5 Documentation" />
   
 <meta property="og:description" content="Executor is a self-contained component and performs a group of tasks on a DocumentArray. It encapsulates functions that process DocumentArray s. Inside the Executor, these functions are decorated with@requests. To create an Executor, you only need to follow three principles: An Executor should su..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.1.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.1.5 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executors inside a Flow" href="../executor-in-flow/" /><link rel="prev" title="Executor" href="../" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Executor API - Jina 3.1.4 documentation</title>
+        <title>Executor API - Jina 3.1.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.1.4 documentation</div>
+                <div class="brand">Jina 3.1.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -902,6 +902,48 @@ There are two ways of instantiating an Executor object: From a local Python clas
 </div>
 </div>
 </div>
+</section>
+<section id="serve-executor-stand-alone">
+<h2>Serve Executor stand-alone<a class="headerlink" href="#serve-executor-stand-alone" title="Permalink to this headline">¶</a></h2>
+<p>Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
+This is especially useful when debugging an Executor in a remote setting.</p>
+<p>An Executor can be served using the <code class="docutils literal notranslate"><span class="pre">.serve()</span></code> class method:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Serve Executor</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'executed MyExec'</span>  <span class="c1"># custom logic goes here</span>
+
+
+<span class="n">MyExec</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Access served Executor</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s1">'/foo'</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>[‘executed MyExec’]</p>
+</div>
+</div>
+<p>Internally, the <code class="docutils literal notranslate"><span class="pre">.serve()</span></code> method creates a Flow and starts it. Therefore, it can take all associated parameters:
+<code class="docutils literal notranslate"><span class="pre">uses_with</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> are passed to the internal <code class="docutils literal notranslate"><span class="pre">flow.add()</span></code> call, <code class="docutils literal notranslate"><span class="pre">stop_event</span></code> is an Event that stops
+the Executor, and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is passed to the internal <code class="docutils literal notranslate"><span class="pre">Flow()</span></code> initialisation call.</p>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>For more details on these arguments and the workings of <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, see the <a class="reference internal" href="../../flow/#flow-cookbook"><span class="std std-ref">Flow section</span></a>.</p>
+</div>
 <section id="use-async-executors">
 <h3>Use async Executors<a class="headerlink" href="#use-async-executors" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
@@ -970,7 +1012,7 @@ There are two ways of instantiating an Executor object: From a local Python clas
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 14, 2022.
+                    Last updated on Mar 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1012,7 +1054,8 @@ There are two ways of instantiating an Executor object: From a local Python clas
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#running-executor-outside-the-flow">Running Executor outside the Flow</a><ul>
+<li><a class="reference internal" href="#running-executor-outside-the-flow">Running Executor outside the Flow</a></li>
+<li><a class="reference internal" href="#serve-executor-stand-alone">Serve Executor stand-alone</a><ul>
 <li><a class="reference internal" href="#use-async-executors">Use async Executors</a></li>
 </ul>
 </li>
