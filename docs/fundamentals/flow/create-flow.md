@@ -537,7 +537,8 @@ Note that whenever a Document does not satisfy the `condition` of a filter, the 
 This means that every Executor that is located behind a filter is affected by this, not just the specific Executor that defines the condition.
 Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.
 
-This does not affect parallel branches of a Flow, since all Documents pass through all such branches:
+Naturally, parallel branches in a Flow do not affect each other. So if a Document gets filtered out in only one branch, it can
+still be used in the other branch, and also after the branches are re-joined together:
 
 ````{tab} Parallel Executors
 
