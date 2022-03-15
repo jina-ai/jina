@@ -128,11 +128,10 @@ class ImageIndexer(Executor):
 
 As you can see, the image data was only processed by the `ImageIndexer`, and the text data was only processed by the `TextIndexer`.
 
-However, there are two problems with this approach:
-- All Documents are sent to *all* Executor microservices, where they are ignored if the endpoint does not match. This creates unnecessary networking overhead.
-- Sometimes you can't easily control the endpoints of all Executors, for example when you are using the {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
+However, there is a problem with this approach:
+Sometimes you can't easily control the endpoints of all Executors, for example when you are using the {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
 
-To solve these problems, you can leverage filter condition to easily build a switch into your Flow.
+To solve that problem, you can leverage filter condition to easily build a switch into your Flow.
 
 ## Define the filter conditions
 
