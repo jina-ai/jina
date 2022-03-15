@@ -142,6 +142,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12499,4 +12500,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```18c2b242```](https://github.com/jina-ai/jina/commit/18c2b2424b1fafdbace392c4a86ab6a6600a734c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```4e6d278a```](https://github.com/jina-ai/jina/commit/4e6d278af3c6272780ccf3aecbc955cbf9701a51)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```19e470ae```](https://github.com/jina-ai/jina/commit/19e470ae3660270d401461bd3159f0f58cf6341d)] __-__ __version__: the next version will be 3.1.5 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-6></a>
+## Release Note (`3.1.6`)
+
+> Release time: 2022-03-15 15:00:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Shubham Saboo,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```59e7bb51```](https://github.com/jina-ai/jina/commit/59e7bb51d7a49a32da53dfa06847b58ace75b818)] __-__ health check docker (#4467) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```622c362d```](https://github.com/jina-ai/jina/commit/622c362d094986ab451d72f3dbb72d1951117b37)] __-__ add learning bootcamp call to action (#4485) (*Shubham Saboo*)
+ - [[```084ab6c5```](https://github.com/jina-ai/jina/commit/084ab6c532f2252d27c6c420b73541db9cfd1218)] __-__ __version__: the next version will be 3.1.6 (*Jina Dev Bot*)
 
