@@ -355,6 +355,7 @@ Now we have the service up running in Kubernetes!
 
 ## Support
 
+- Check out the [Learning Bootcamp](https://learn.jina.ai) to get started with Jina.
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
   support queries.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to
