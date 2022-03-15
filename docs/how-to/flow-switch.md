@@ -213,13 +213,13 @@ f = (
         name='ImageIndexer',
         uses=ImageIndexer,
         needs='start_exec',
-        condition=tensor_condition,
+        condition={'tensor': {'$exists': True}},
     )
     .add(
         name='TextIndexer',
         uses=TextIndexer,
         needs='start_exec',
-        condition=text_condition,
+        condition={'text': {'$exists': True}},
     )
     .needs_all()
 )
