@@ -546,7 +546,7 @@ def _create_head_pod(port, name='', polling='ANY', uses_before=None, uses_after=
     return Pod(args)
 
 
-def _create_gateway_pod(graph_description, pod_addresses, port, protocol):
+def _create_gateway_pod(graph_description, pod_addresses, port, protocol='grpc'):
     return Pod(
         set_gateway_parser().parse_args(
             [
