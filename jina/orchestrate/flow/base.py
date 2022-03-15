@@ -25,6 +25,9 @@ from typing import (
     overload,
 )
 
+from rich import print
+from rich.table import Table
+
 from jina import __default_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
@@ -43,11 +46,12 @@ from jina.helper import (
     GRAPHQL_MIN_DOCARRAY_VERSION,
     ArgNamespace,
     CatchAllCleanupContextManager,
-    colored,
+    colored_rich,
     docarray_graphql_compatible,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
+    get_rich_console,
     typename,
 )
 from jina.jaml import JAMLCompatible
@@ -127,7 +131,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
-        daemon: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         description: Optional[str] = None,
@@ -173,7 +176,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -591,7 +593,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         connection_list: Optional[str] = None,
-        daemon: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -636,7 +637,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Add an Executor to the current Flow object.
 
         :param connection_list: dictionary JSON with a list of connections to configure
-        :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1125,10 +1125,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
-        def _polling_status():
-            spinner = itertools.cycle(
-                ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-            )
+        def _polling_status(status):
 
             while True:
                 num_all = len(results)
@@ -1140,15 +1137,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         pendings.append(_k)
                     else:
                         num_done += 1
-                sys.stdout.write('\r{}\r'.format(' ' * 100))
-                pending_str = colored(' '.join(pendings)[:50], 'yellow')
-                sys.stdout.write(
-                    f'{colored(next(spinner), "green")} {num_done}/{num_all} waiting {pending_str} to be ready...'
+                pending_str = colored_rich(' '.join(pendings)[:50], 'yellow')
+
+                status.update(
+                    f'{num_done}/{num_all} waiting {pending_str} to be ready...'
                 )
-                sys.stdout.flush()
 
                 if not pendings:
-                    sys.stdout.write('\r{}\r'.format(' ' * 100))
                     break
                 time.sleep(0.1)
 
@@ -1165,38 +1160,43 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             threads.append(t)
             t.start()
 
-        # kick off spinner thread
-        t_m = threading.Thread(target=_polling_status, daemon=True)
-        t_m.start()
+        console = get_rich_console()
+        with console.status('Working...') as status:
+            # kick off spinner thread
+            t_m = threading.Thread(target=_polling_status, args=[status], daemon=True)
+            t_m.start()
 
-        # kick off ip getter thread
-        addr_table = []
-        t_ip = threading.Thread(
-            target=self._get_address_table, args=(addr_table,), daemon=True
+            # kick off ip getter thread
+            addr_table = self._init_table()
+
+            t_ip = threading.Thread(
+                target=self._get_address_table, args=(addr_table,), daemon=True
+            )
+            t_ip.start()
+
+            for t in threads:
+                t.join()
+            if t_ip is not None:
+                t_ip.join()
+            t_m.join()
+
+            error_deployments = [k for k, v in results.items() if v != 'done']
+            if error_deployments:
+                self.logger.error(
+                    f'Flow is aborted due to {error_deployments} can not be started.'
+                )
+                self.close()
+                raise RuntimeFailToStart
+
+        success_msg = '[green]🎉 Flow is ready to use![/green]'
+        console.print(success_msg)
+        if addr_table:
+            print(
+                addr_table
+            )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
+        self.logger.debug(
+            f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
         )
-        t_ip.start()
-
-        for t in threads:
-            t.join()
-        if t_ip is not None:
-            t_ip.join()
-        t_m.join()
-
-        error_deployments = [k for k, v in results.items() if v != 'done']
-        if error_deployments:
-            self.logger.error(
-                f'Flow is aborted due to {error_deployments} can not be started.'
-            )
-            self.close()
-            raise RuntimeFailToStart
-        else:
-            success_msg = colored('🎉 Flow is ready to use!', 'green')
-
-            if addr_table:
-                self.logger.info(success_msg + '\n' + '\n'.join(addr_table))
-            self.logger.debug(
-                f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
-            )
 
     @property
     def num_deployments(self) -> int:
@@ -1483,55 +1483,54 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __iter__(self):
         return self._deployment_nodes.items().__iter__()
 
+    def _init_table(self):
+        table = Table(title=None, box=None, highlight=True)
+        table.add_column('', justify='right')
+        table.add_column('', justify='right')
+        table.add_column('', justify='right')
+        table.add_column('', justify='right')
+
+        return table
+
     def _get_address_table(self, address_table):
-        address_table.extend(
-            [
-                f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
-                f'\t🏠 Local access:\t'
-                + colored(f'{self.host}:{self.port}', 'cyan', attrs='underline'),
-                f'\t🔒 Private network:\t'
-                + colored(
-                    f'{self.address_private}:{self.port}',
-                    'cyan',
-                    attrs='underline',
-                ),
-            ]
+        address_table.add_row('🔗', 'Protocol: ', f'{self.protocol}')
+        address_table.add_row(
+            '🏠',
+            'Local access: ',
+            f'[underline]{self.host}:{self.port}[/underline]',
         )
+        address_table.add_row(
+            '🔒',
+            'Private network: ',
+            f'[underline]{self.address_private}:{self.port}[/underline]',
+        )
+
         if self.address_public:
-            address_table.append(
-                f'\t🌐 Public address:\t'
-                + colored(
-                    f'{self.address_public}:{self.port}',
-                    'cyan',
-                    attrs='underline',
-                )
+            address_table.add_row(
+                '🌐',
+                'Public address: ',
+                f'[underline]{self.address_public}:{self.port}[/underline]',
             )
+
         if self.protocol == GatewayProtocolType.HTTP:
-            address_table.append(
-                f'\t💬 Swagger UI:\t\t'
-                + colored(
-                    f'http://localhost:{self.port}/docs',
-                    'cyan',
-                    attrs='underline',
-                )
+            address_table.add_row(
+                '💬',
+                'Swagger UI: ',
+                f'[underline]http://localhost:{self.port}/docs[/underline]',
             )
-            address_table.append(
-                f'\t📚 Redoc:\t\t'
-                + colored(
-                    f'http://localhost:{self.port}/redoc',
-                    'cyan',
-                    attrs='underline',
-                )
+
+            address_table.add_row(
+                '📚',
+                'Redoc: ',
+                f'[underline]http://localhost:{self.port}/redoc[/underline]',
             )
             if self.args.expose_graphql_endpoint:
-                address_table.append(
-                    f'\t💬 GraphQL UI:\t\t'
-                    + colored(
-                        f'http://localhost:{self.port}/graphql',
-                        'cyan',
-                        attrs='underline',
-                    )
+                address_table.add_row(
+                    '💬',
+                    'GraphQL UI: ',
+                    f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
                 )
+
         return address_table
 
     def block(

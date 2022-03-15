@@ -1,9 +1,16 @@
 import os
 import sys
 
+from rich import print as pprint
+from rich.table import Table
+from rich import box
+from jina.helper import get_rich_console
+
 
 def _get_run_args(print_args: bool = True):
     from jina.parsers import get_main_parser
+
+    console = get_rich_console()
 
     silent_print = {'help', 'hub'}
 
@@ -20,7 +27,6 @@ def _get_run_args(print_args: bool = True):
             warn_unknown_args(unknown)
 
         if args.cli not in silent_print and print_args:
-            from jina.helper import colored
             from jina import __resources_path__
 
             p = parser._actions[-1].choices[sys.argv[1]]
@@ -32,15 +38,25 @@ def _get_run_args(print_args: bool = True):
 
             with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
                 logo_str = fp.read()
-            param_str = []
+
+            param_str = Table(title=None, box=box.ROUNDED, highlight=True)
+            param_str.add_column('')
+            param_str.add_column('Parameters', justify='right')
+            param_str.add_column('Value', justify='left')
+
             for k, v in sorted(vars(args).items()):
-                j = f'{k.replace("_", "-"): >30.30} = {str(v):30.30}'
-                if default_args.get(k, None) == v:
-                    param_str.append('   ' + j)
-                else:
-                    param_str.append('🔧️ ' + colored(j, 'blue', 'on_yellow'))
-            param_str = '\n'.join(param_str)
-            print(f'\n{logo_str}\n▶️  {" ".join(sys.argv)}\n{param_str}\n')
+
+                sign = ' ' if default_args.get(k, None) == v else '🔧️'
+                param = f'{k.replace("_", "-"): >30.30}'
+                value = f'=  {str(v):30.30}'
+
+                style = None if default_args.get(k, None) == v else 'blue on yellow'
+
+                param_str.add_row(sign, param, value, style=style)
+
+            print(f'\n{logo_str}\n')
+            console.print(f'▶️  {" ".join(sys.argv)}')
+            console.print(param_str)
         return args
     else:
         parser.print_help()

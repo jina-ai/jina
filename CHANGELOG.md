@@ -139,6 +139,10 @@
 
 
 
+
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -406,6 +410,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.1.0`)](#release-note-310)
 - [Release Note (`3.1.1`)](#release-note-311)
 - [Release Note (`3.1.2`)](#release-note-312)
+- [Release Note (`3.1.3`)](#release-note-313)
+- [Release Note (`3.1.4`)](#release-note-314)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -12421,4 +12427,97 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```3ac8baeb```](https://github.com/jina-ai/jina/commit/3ac8baeb4cb1684f3b3614667e4c05725af9ecc3)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```877849a9```](https://github.com/jina-ai/jina/commit/877849a9f81c47a3d63d59c255e95061b007a7b0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d55afac1```](https://github.com/jina-ai/jina/commit/d55afac119a49fd94e4fa243823c981af0766fcf)] __-__ __version__: the next version will be 3.1.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-3></a>
+## Release Note (`3.1.3`)
+
+> Release time: 2022-03-11 16:22:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Zhaofeng Miao,  Delgermurun,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```53980292```](https://github.com/jina-ai/jina/commit/5398029280fe3f4aedd8a8b7058f97fbec353d03)] __-__ use rich to manage ui (#4427) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```9da67557```](https://github.com/jina-ai/jina/commit/9da67557bb50b063b8040170304e078fc568c73c)] __-__ __hubble__: use commit id instead of serial number (#4464) (*Delgermurun*)
+
+### 🧼 Code Refactoring
+
+ - [[```89bd5614```](https://github.com/jina-ai/jina/commit/89bd56142d4781ebadb115404f72ed6e1c96532f)] __-__ delete daemon args from pods (#4465) (*samsja*)
+ - [[```88db7696```](https://github.com/jina-ai/jina/commit/88db769626e4f5b770499cc0ad6ce44e772c8215)] __-__ __hubble__: optimize words (#4466) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```1d618f8f```](https://github.com/jina-ai/jina/commit/1d618f8f3d08fd09a07dd86abf4ad8df7ce940f5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b2f69d5b```](https://github.com/jina-ai/jina/commit/b2f69d5b6522080827e81b9bb7498b1f5af41de4)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```e1d43309```](https://github.com/jina-ai/jina/commit/e1d433099a6a910d7595e867a42062b44198615c)] __-__ __version__: the next version will be 3.1.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-4></a>
+## Release Note (`3.1.4`)
+
+> Release time: 2022-03-14 09:45:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```9bdefb0a```](https://github.com/jina-ai/jina/commit/9bdefb0a693c4556e0902ef913f4426e3ef5ff65)] __-__ properly disable graphql endpoint by default (#4471) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```ac47f7ad```](https://github.com/jina-ai/jina/commit/ac47f7ade0c2d4b2677a6058f63cad183bbaa05f)] __-__ update requirement of pillow for latency tracking (#4469) (*Joan Fontanals*)
+ - [[```a1f9c3a3```](https://github.com/jina-ai/jina/commit/a1f9c3a3a0500a8d6ceb295ca0e84525c2b4d6e7)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```20b67226```](https://github.com/jina-ai/jina/commit/20b672269e1b658e4fb8d255778e25280c89d79f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7dceff65```](https://github.com/jina-ai/jina/commit/7dceff65f2d93bc81989251387eea8f3528a2fde)] __-__ __version__: the next version will be 3.1.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-5></a>
+## Release Note (`3.1.5`)
+
+> Release time: 2022-03-15 12:21:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9e054615```](https://github.com/jina-ai/jina/commit/9e0546155eabe47650443f8c159f636d0429e150)] __-__ __executor__: add serve function (#4475) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```18c2b242```](https://github.com/jina-ai/jina/commit/18c2b2424b1fafdbace392c4a86ab6a6600a734c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```4e6d278a```](https://github.com/jina-ai/jina/commit/4e6d278af3c6272780ccf3aecbc955cbf9701a51)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```19e470ae```](https://github.com/jina-ai/jina/commit/19e470ae3660270d401461bd3159f0f58cf6341d)] __-__ __version__: the next version will be 3.1.5 (*Jina Dev Bot*)
+
+<a name=release-note-3-1-6></a>
+## Release Note (`3.1.6`)
+
+> Release time: 2022-03-15 15:00:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Shubham Saboo,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```59e7bb51```](https://github.com/jina-ai/jina/commit/59e7bb51d7a49a32da53dfa06847b58ace75b818)] __-__ health check docker (#4467) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```622c362d```](https://github.com/jina-ai/jina/commit/622c362d094986ab451d72f3dbb72d1951117b37)] __-__ add learning bootcamp call to action (#4485) (*Shubham Saboo*)
+ - [[```084ab6c5```](https://github.com/jina-ai/jina/commit/084ab6c532f2252d27c6c420b73541db9cfd1218)] __-__ __version__: the next version will be 3.1.6 (*Jina Dev Bot*)
 

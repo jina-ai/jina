@@ -1,25 +1,21 @@
-import os
 import argparse
-import time
-import signal
-
-import multiprocessing
-import threading
-
-from typing import Union, Dict, Optional, TYPE_CHECKING
 import asyncio
+import multiprocessing
+import os
+import signal
+import threading
+import time
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
-from jina import __windows__
+from jina import __docker_host__, __windows__
+from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
-from jina.orchestrate.pods import BasePod
-from jina.orchestrate.pods import _get_worker
-from jina.orchestrate.pods.container_helper import (
-    get_gpu_device_requests,
-    get_docker_network,
-)
-from jina import __docker_host__
 from jina.logging.logger import JinaLogger
-from jina.helper import slugify, random_name
+from jina.orchestrate.pods import BasePod, _get_worker
+from jina.orchestrate.pods.container_helper import (
+    get_docker_network,
+    get_gpu_device_requests,
+)
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
 if TYPE_CHECKING:
@@ -36,8 +32,10 @@ def _docker_run(
 ):
     # important to notice, that client is not assigned as instance member to avoid potential
     # heavy copy into new process memory space
-    import docker
     import warnings
+
+    import docker
+
     from jina.excepts import BadImageNameError, DockerVersionError
 
     docker_version = client.version().get('Version')
@@ -65,9 +63,10 @@ def _docker_run(
     # the image arg should be ignored otherwise it keeps using ContainerPod in the container
     # basically all args in Pod-docker arg group should be ignored.
     # this prevent setting containerPod twice
-    from jina.parsers import set_pod_parser
-    from jina.helper import ArgNamespace
     from pathlib import Path
+
+    from jina.helper import ArgNamespace
+    from jina.parsers import set_pod_parser
 
     args.native = True
 
@@ -290,7 +289,6 @@ class ContainerPod(BasePod):
             self.args.docker_kwargs.pop('extra_hosts')
         self._net_mode = None
         self.worker = None
-        self.daemon = self.args.daemon  #: required here to set process/thread daemon
         self.container_name = slugify(f'{self.name}/{random_name()}')
         self.net_mode, self.runtime_ctrl_address = self._get_control_address()
 
@@ -334,7 +332,6 @@ class ContainerPod(BasePod):
 
         # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
         # it will need to communicate using the `bridge` network.
-
         # In WSL, we need to set ports explicitly
         net_mode, runtime_ctrl_address = None, ctrl_address
         if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:

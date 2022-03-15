@@ -315,7 +315,54 @@ print(docs.embeddings.shape)
 ```
 ````
 
+## Serve Executor stand-alone
 
+Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
+This is especially useful when debugging an Executor in a remote setting.
+
+An Executor can be served using the `.serve()` class method:
+
+````{tab} Serve Executor
+
+```python
+from jina import Executor, requests
+from docarray import DocumentArray, Document
+
+
+class MyExec(Executor):
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        docs[0] = 'executed MyExec'  # custom logic goes here
+
+
+MyExec.serve(port=12345)
+```
+
+````
+
+````{tab} Access served Executor
+
+```python
+from jina import Client
+from docarray import DocumentArray, Document
+
+print(Client(port=12345).post(inputs=DocumentArray.empty(1), on='/foo').texts)
+```
+```console
+
+```
+['executed MyExec']
+````
+
+Internally, the `.serve()` method creates a Flow and starts it. Therefore, it can take all associated parameters:
+`uses_with`, `uses_metas`, `uses_requests` are passed to the internal `flow.add()` call, `stop_event` is an Event that stops
+the Executor, and `**kwargs` is passed to the internal `Flow()` initialisation call.
+
+````{admonition} See Also
+:class: seealso
+
+For more details on these arguments and the workings of `Flow`, see the {ref}`Flow section <flow-cookbook>`.
+````
 
 ### Use async Executors
 

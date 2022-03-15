@@ -1,21 +1,21 @@
-from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING, Any
 import inspect
+import multiprocessing
 import os
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
-from typing import Dict, Optional, Type, List
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
-from jina.serve.executors.decorators import store_init_kwargs, wrap_func, requests
-from jina import __default_endpoint__, __args_executor_init__
+from jina import __args_executor_init__, __default_endpoint__
 from jina.helper import (
-    typename,
     ArgNamespace,
     T,
     iscoroutinefunction,
     run_in_threadpool,
+    typename,
 )
-from jina.jaml import JAMLCompatible, JAML, env_var_regex, internal_var_regex
-
+from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
+from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
     from jina import DocumentArray
@@ -316,6 +316,36 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_metas=uses_metas,
             uses_requests=uses_requests,
         )
+
+    @classmethod
+    def serve(
+        cls,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
+        **kwargs,
+    ):
+        """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
+
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
+            to main thread.
+        :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
+
+        """
+        from jina import Flow
+
+        f = Flow(**kwargs).add(
+            uses=cls,
+            uses_with=uses_with,
+            uses_metas=uses_metas,
+            uses_requests=uses_requests,
+        )
+        with f:
+            f.block(stop_event)
 
 
 class ReducerExecutor(BaseExecutor):

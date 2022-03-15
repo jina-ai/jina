@@ -15,25 +15,27 @@ from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
-from packaging import version as pckg_version
 from types import SimpleNamespace
 from typing import (
-    Callable,
-    Tuple,
-    Optional,
-    Iterator,
-    Any,
-    Union,
-    List,
-    Dict,
-    Set,
-    Sequence,
-    Iterable,
-    TypeVar,
     TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
 )
 
-from jina import __windows__, __docarray_version__
+from packaging import version as pckg_version
+from rich.console import Console
+
+from jina import __docarray_version__, __windows__
 
 __all__ = [
     'batch_iterator',
@@ -58,9 +60,9 @@ __all__ = [
     'get_readable_size',
     'get_or_reuse_loop',
     'T',
+    'get_rich_console',
     'docarray_graphql_compatible',
 ]
-
 
 if TYPE_CHECKING:
     from docarray import DocumentArray
@@ -685,23 +687,40 @@ def colored(
     return text
 
 
-class ColorContext:
-    def __init__(self, color: str, bold: Optional[bool] = False):
-        self._color = color
-        self._bold = bold
+def colored_rich(
+    text: str,
+    color: Optional[str] = None,
+    on_color: Optional[str] = None,
+    attrs: Optional[Union[str, list]] = None,
+) -> str:
+    """
+    Give the text with color. You should only use it when printing with rich print. Othersiwe please see the colored
+    function
 
-    def __enter__(self):
-        if self._bold:
-            fmt_str = '\033[1;%dm'
-        else:
-            fmt_str = '\033[0;%dm'
+    :param text: The target text
+    :param color: The color of text
+    :param on_color: The on color of text: ex on yellow
+    :param attrs: Attributes of color
 
-        c = fmt_str % (_COLORS[self._color])
-        print(c, flush=True, end='')
-        return self
+    :return: Colored text.
+    """
+    if 'JINA_LOG_NO_COLOR' not in os.environ:
+        if color:
+            text = _wrap_text_in_rich_bracket(text, color)
+        if on_color:
+            text = _wrap_text_in_rich_bracket(text, on_color)
 
-    def __exit__(self, typ, value, traceback):
-        print(_RESET, flush=True, end='')
+        if attrs:
+            if isinstance(attrs, str):
+                attrs = [attrs]
+            if isinstance(attrs, list):
+                for attr in attrs:
+                    text = _wrap_text_in_rich_bracket(text, attr)
+    return text
+
+
+def _wrap_text_in_rich_bracket(text: str, wrapper: str):
+    return f'[{wrapper}]{text}[/{wrapper}]'
 
 
 def warn_unknown_args(unknown_args: List[str]):
@@ -866,19 +885,25 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    import os, grpc, google.protobuf, yaml, platform
-    from jina import (
-        __version__,
-        __proto_version__,
-        __docarray_version__,
-        __jina_env__,
-        __uptime__,
-        __unset_msg__,
-    )
+    import os
+    import platform
+    from uuid import getnode
+
+    import google.protobuf
+    import grpc
+    import yaml
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
+
+    from jina import (
+        __docarray_version__,
+        __jina_env__,
+        __proto_version__,
+        __unset_msg__,
+        __uptime__,
+        __version__,
+    )
     from jina.logging.predefined import default_logger
-    from uuid import getnode
 
     try:
 
@@ -1325,7 +1350,9 @@ def find_request_binding(target):
     :param target: the target class to check
     :return: a dictionary with key as request type and value as method name
     """
-    import ast, inspect
+    import ast
+    import inspect
+
     from jina import __default_endpoint__
 
     res = {}
@@ -1376,8 +1403,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
     except ValueError:
         pass
 
-    from google.protobuf.struct_pb2 import ListValue
-    from google.protobuf.struct_pb2 import Struct
+    from google.protobuf.struct_pb2 import ListValue, Struct
 
     if isinstance(part1, int):
         result = _dict[part1]
@@ -1462,6 +1488,16 @@ def get_request_header() -> Dict:
         **envs,
     }
     return header
+
+
+def get_rich_console():
+    """
+    Function to get jina rich default console.
+    :return: rich console
+    """
+    return Console(
+        force_terminal=True, force_interactive=True
+    )  # It forces render in any terminal, especily in PyCharm
 
 
 GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
