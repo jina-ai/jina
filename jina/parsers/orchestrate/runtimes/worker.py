@@ -1,9 +1,8 @@
 """Argparser module for WorkerRuntime"""
 import argparse
 
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
-from jina import __default_host__
-from jina import helper
+from jina import __default_host__, helper
+from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
 def mixin_worker_runtime_parser(parser):
@@ -92,4 +91,17 @@ which should be structured as a python package. For more details, please see the
         action='store_true',
         default=False,
         help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
+    )
+
+    gp.add_argument(
+        '--output-array-type',
+        type=str,
+        default=None,
+        help='''
+The type of array `tensor` and `embedding` will be serialized to.
+
+Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found 
+`here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
+Defaults to retaining whatever type is returned by the Executor.
+''',
     )

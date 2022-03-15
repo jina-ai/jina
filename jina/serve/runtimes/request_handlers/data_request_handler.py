@@ -1,14 +1,15 @@
-from typing import Dict, List, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
 
 from jina import __default_endpoint__
-from jina.excepts import ExecutorFailToLoad, BadConfigSource
+from jina.excepts import BadConfigSource, ExecutorFailToLoad
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import argparse
+
     from jina.logging.logger import JinaLogger
 
 
@@ -120,18 +121,21 @@ class DataRequestHandler:
                     f'but getting {return_data!r}'
                 )
 
-        DataRequestHandler.replace_docs(requests[0], docs)
+        DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
         return requests[0]
 
     @staticmethod
-    def replace_docs(request: List['DataRequest'], docs: 'DocumentArray') -> None:
+    def replace_docs(
+        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+    ) -> None:
         """Replaces the docs in a message with new Documents.
 
         :param request: The request object
         :param docs: the new docs to be used
+        :param ndarrray_type: type tensor and embedding will be converted to
         """
-        request.data.docs = docs
+        request.data.set_docs_convert_arrays(docs, ndarray_type=ndarrray_type)
 
     @staticmethod
     def replace_parameters(request: List['DataRequest'], parameters: Dict) -> None:

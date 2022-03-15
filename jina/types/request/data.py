@@ -1,14 +1,13 @@
 import copy
-from typing import Optional, Dict, TypeVar
-
-from google.protobuf import json_format
+from typing import Dict, Optional, TypeVar
 
 from docarray import DocumentArray
+from google.protobuf import json_format
 
-from jina.types.request import Request
 from jina.excepts import BadRequestType
-from jina.helper import typename, random_identity, cached_property
+from jina.helper import cached_property, random_identity, typename
 from jina.proto import jina_pb2
+from jina.types.request import Request
 
 RequestSourceType = TypeVar(
     'RequestSourceType', jina_pb2.DataRequestProto, str, Dict, bytes
@@ -42,13 +41,25 @@ class DataRequest(Request):
 
         @docs.setter
         def docs(self, value: DocumentArray):
-            """Overide the DocumentArray with the provided one
+            """Override the DocumentArray with the provided one
 
             :param value: a DocumentArray
             """
+            self.set_docs_convert_arrays(value, None)
+
+        def set_docs_convert_arrays(
+            self, value: DocumentArray, ndarray_type: str = None
+        ):
+            """ " Convert embedding and tensor to given type, then set DocumentArray
+
+            :param value: a DocumentArray
+            :param ndarray_type: type embedding and tensor will be converted to
+            """
             if value is not None:
                 self._loaded_doc_array = None
-                self._content.docs.CopyFrom(value.to_protobuf())
+                self._content.docs.CopyFrom(
+                    value.to_protobuf(ndarray_type=ndarray_type)
+                )
 
         @property
         def docs_bytes(self) -> bytes:
@@ -59,7 +70,7 @@ class DataRequest(Request):
 
         @docs_bytes.setter
         def docs_bytes(self, value: bytes):
-            """Overide the DocumentArray with the provided one
+            """Override the DocumentArray with the provided one
 
             :param value: a DocumentArray
             """
