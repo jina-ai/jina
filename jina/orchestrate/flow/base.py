@@ -590,7 +590,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
-        input_condition: Optional[dict] = None,
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
@@ -602,6 +601,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
+        input_condition: Optional[dict] = None,
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -635,7 +635,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
-        :param input_condition: The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray
         :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
@@ -657,6 +656,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param input_condition: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
