@@ -513,8 +513,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _get_graph_conditions(self) -> Dict[str, Dict]:
         graph_condition = {}
         for node, v in self._deployment_nodes.items():
-            if v.args.condition is not None:
-                graph_condition[node] = v.args.condition
+            if v.args.input_condition is not None:
+                graph_condition[node] = v.args.input_condition
 
         return graph_condition
 
@@ -590,7 +590,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
-        condition: Optional[dict] = None,
+        input_condition: Optional[dict] = None,
         connection_list: Optional[str] = None,
         daemon: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
@@ -635,7 +635,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
-        :param condition: The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray
+        :param input_condition: The condition that the documents need to fullfill before reaching the Executor. TODO: Reference the QL from DocArray
         :param connection_list: dictionary JSON with a list of connections to configure
         :param daemon: The Pod attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pod do not wait on the Runtime when closing
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head

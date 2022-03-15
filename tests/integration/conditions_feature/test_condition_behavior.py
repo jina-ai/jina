@@ -37,7 +37,7 @@ def shuffle_flow(request, temp_workspace):
             workspace=os.environ['TEMP_WORKSPACE'],
             name='exec1',
             needs=['first'],
-            condition={
+            input_condition={
                 '$or': {
                     'tags__third': {'$eq': 1},
                     'tags__first': {'$eq': 1},
@@ -51,7 +51,9 @@ def shuffle_flow(request, temp_workspace):
             name='exec2',
             workspace=os.environ['TEMP_WORKSPACE'],
             needs='first',
-            condition={'$or': {'tags__second': {'$eq': 1}, 'tags__fifth': {'$eq': 1}}},
+            input_condition={
+                '$or': {'tags__second': {'$eq': 1}, 'tags__fifth': {'$eq': 1}}
+            },
         )
         .needs_all('joiner')
     )
@@ -71,7 +73,7 @@ def flow(request, temp_workspace):
                 workspace=os.environ['TEMP_WORKSPACE'],
                 name='exec1',
                 needs=['first'],
-                condition={'tags__type': {'$eq': 1}},
+                input_condition={'tags__type': {'$eq': 1}},
             )
             .add(
                 uses=ConditionDumpExecutor,
@@ -79,7 +81,7 @@ def flow(request, temp_workspace):
                 uses_metas={'name': 'exec2'},
                 name='exec2',
                 needs='first',
-                condition={'tags__type': {'$gt': 1}},
+                input_condition={'tags__type': {'$gt': 1}},
             )
             .needs_all('joiner')
         )
@@ -137,7 +139,7 @@ def test_conditions_filtering_on_joiner(tmpdir):
             name='joiner_test_exec2',
             needs='first',
         )
-        .needs_all('joiner', condition={'tags__type': {'$eq': 3}})
+        .needs_all('joiner', input_condition={'tags__type': {'$eq': 3}})
     )
     with flow:
         ret = flow.post(
@@ -193,7 +195,7 @@ def test_chained_conditions(tmpdir, temp_workspace):
             workspace=os.environ['TEMP_WORKSPACE'],
             name='exec1',
             needs=['first'],
-            condition={'tags__type': {'$gte': 2}},
+            input_condition={'tags__type': {'$gte': 2}},
         )
         .add(
             uses=ConditionDumpExecutor,
@@ -201,7 +203,7 @@ def test_chained_conditions(tmpdir, temp_workspace):
             uses_metas={'name': 'exec2'},
             name='exec2',
             needs='exec1',
-            condition={'tags__type': {'$lte': 1}},
+            input_condition={'tags__type': {'$lte': 1}},
         )
         .needs_all('joiner')
     )

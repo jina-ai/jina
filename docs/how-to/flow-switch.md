@@ -139,15 +139,15 @@ To solve these problems, you can leverage filter condition to easily build a swi
 In a Jina Flow, you can use the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) to specify a filter condition for every
 Executor.
 
-To do this, you pass a condition to the `condition` parameter in `flow.add()`:
+To do this, you pass a condition to the `input_condition` parameter in `flow.add()`:
 
 ```python
 from jina import Flow
 
-f = Flow().add(condition={'tags__key': {'$eq': 5}})
+f = Flow().add(input_condition={'tags__key': {'$eq': 5}})
 ```
 
-Then, Documents that do not satisfy the `condition` will not reach the associated Executor.
+Then, Documents that do not satisfy the `input_condition` will not reach the associated Executor.
 
 In the use case where you are trying to separate Documents according to the data modality they hold, you need to choose
 a condition accordingly.
@@ -213,13 +213,13 @@ f = (
         name='ImageIndexer',
         uses=ImageIndexer,
         needs='start_exec',
-        condition={'tensor': {'$exists': True}},
+        input_condition={'tensor': {'$exists': True}},
     )
     .add(
         name='TextIndexer',
         uses=TextIndexer,
         needs='start_exec',
-        condition={'text': {'$exists': True}},
+        input_condition={'text': {'$exists': True}},
     )
     .needs_all()
 )
