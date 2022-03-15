@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import DeploymentRoleType
-from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
+from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
 def mixin_base_deployment_parser(parser):
@@ -23,6 +23,15 @@ def mixin_base_deployment_parser(parser):
         type=str,
         help='The executor attached after the Pods described by --uses, typically used for receiving from '
         'all shards, accepted type follows `--uses`',
+    )
+
+    gp.add_argument(
+        '--input-condition',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='The condition that the documents need to fulfill before reaching the Executor.'
+        'The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`',
     )
 
     gp.add_argument(

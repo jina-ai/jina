@@ -1,14 +1,13 @@
+import asyncio
 import copy
+from collections import defaultdict
 from typing import List
 
 import pytest
-import asyncio
 
-from collections import defaultdict
-
+from jina import Document, DocumentArray
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.types.request import Request
-from jina import DocumentArray, Document
 from jina.types.request.data import DataRequest
 
 
@@ -134,8 +133,18 @@ def test_topology_graph_build_linear(linear_graph_dict):
     assert not node_deployment3.hanging
 
 
-def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
-    graph = TopologyGraph(bifurcation_graph_dict)
+@pytest.mark.parametrize(
+    'conditions',
+    [
+        {},
+        {
+            'deployment1': {'tags__key': {'$eq': 5}},
+            'deployment2': {'tags__key': {'$eq': 4}},
+        },
+    ],
+)
+def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
+    graph = TopologyGraph(bifurcation_graph_dict, conditions)
     node_names_list = [node.name for node in graph.origin_nodes]
     assert set(node_names_list) == {'deployment0', 'deployment4', 'deployment6'}
     assert (
@@ -161,6 +170,10 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
         outgoing_deployment0_list.index('deployment1')
     ]
     assert node_deployment1.name == 'deployment1'
+    if conditions == {}:
+        assert node_deployment1._filter_condition is None
+    else:
+        assert node_deployment1._filter_condition == {'tags__key': {'$eq': 5}}
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
     assert node_deployment1.hanging
@@ -169,6 +182,10 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict):
         outgoing_deployment0_list.index('deployment2')
     ]
     assert node_deployment2.name == 'deployment2'
+    if conditions == {}:
+        assert node_deployment2._filter_condition is None
+    else:
+        assert node_deployment2._filter_condition == {'tags__key': {'$eq': 4}}
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
     assert not node_deployment2.hanging
@@ -517,17 +534,21 @@ class DummyMockConnectionPool:
     def __init__(self):
         self.sent_msg = defaultdict(dict)
         self.responded_messages = defaultdict(dict)
+        self.deployments_called = []
 
     def send_requests_once(
         self, requests: List[Request], deployment: str, head: bool, endpoint: str = None
     ) -> asyncio.Task:
         assert head
+        self.deployments_called.append(deployment)
         response_msg = copy.deepcopy(requests[0])
         new_docs = DocumentArray()
         for doc in requests[0].docs:
             clientid = doc.text[0:7]
             self.sent_msg[clientid][deployment] = doc.text
-            new_doc = Document(text=doc.text + f'-{clientid}-{deployment}')
+            new_doc = Document(
+                text=doc.text + f'-{clientid}-{deployment}', tags=doc.tags
+            )
             new_docs.append(new_doc)
             self.responded_messages[clientid][deployment] = new_doc.text
 
@@ -543,12 +564,12 @@ class DummyMockConnectionPool:
 
 
 class DummyMockGatewayRuntime:
-    def __init__(self, graph_representation, *args, **kwargs):
+    def __init__(self, graph_representation, conditions={}, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.connection_pool = DummyMockConnectionPool(*args, **kwargs)
-        self.graph = TopologyGraph(graph_representation)
+        self.graph = TopologyGraph(graph_representation, conditions)
 
-    async def receive_from_client(self, client_id, msg: 'Message'):
+    async def receive_from_client(self, client_id, msg: 'DataRequest'):
         graph = copy.deepcopy(self.graph)
         # important that the gateway needs to have an instance of the graph per request
         tasks_to_respond = []
@@ -567,7 +588,7 @@ class DummyMockGatewayRuntime:
 def create_req_from_text(text: str):
     req = DataRequest()
     da = DocumentArray()
-    da.append(Document(text=text))
+    da.append(Document(text=text, tags={'key': 4}))
     req.data.docs = da
     return req
 
@@ -597,8 +618,30 @@ async def test_message_ordering_linear_graph(linear_graph_dict):
 
 
 @pytest.mark.asyncio
-async def test_message_ordering_bifurcation_graph(bifurcation_graph_dict):
-    runtime = DummyMockGatewayRuntime(bifurcation_graph_dict)
+@pytest.mark.parametrize(
+    'conditions, node_skipped',
+    [
+        ({}, ''),
+        (
+            {
+                'deployment1': {'tags__key': {'$eq': 5}},
+                'deployment2': {'tags__key': {'$eq': 4}},
+            },
+            'deployment1',
+        ),
+        (
+            {
+                'deployment1': {'tags__key': {'$eq': 4}},
+                'deployment2': {'tags__key': {'$eq': 5}},
+            },
+            'deployment2',
+        ),
+    ],
+)
+async def test_message_ordering_bifurcation_graph(
+    bifurcation_graph_dict, conditions, node_skipped
+):
+    runtime = DummyMockGatewayRuntime(bifurcation_graph_dict, conditions)
     resps = await asyncio.gather(
         runtime.receive_from_client(0, create_req_from_text('client0-Request')),
         runtime.receive_from_client(1, create_req_from_text('client1-Request')),
@@ -615,30 +658,45 @@ async def test_message_ordering_bifurcation_graph(bifurcation_graph_dict):
     await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 2
-        sorted_clients_resps = list(
-            sorted(client_resps, key=lambda msg: msg.docs[0].text)
-        )
 
-        assert (
-            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3'
-            == sorted_clients_resps[0].docs[0].text
-        )
+        def sorting_key(msg):
+            if len(msg.docs) > 0:
+                return msg.docs[0].text
+            else:
+                return '-1'
+
+        sorted_clients_resps = list(sorted(client_resps, key=sorting_key))
+
+        if node_skipped != 'deployment2':
+            assert (
+                f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment2-client{client_id}-deployment3'
+                == sorted_clients_resps[0].docs[0].text
+            )
+        else:
+            assert len(sorted_clients_resps[0].docs) == 0
+
         assert (
             f'client{client_id}-Request-client{client_id}-deployment4-client{client_id}-deployment5'
             == sorted_clients_resps[1].docs[0].text
         )
 
         # assert the hanging deployment was sent message
-        assert (
-            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
-            == runtime.connection_pool.responded_messages[f'client{client_id}'][
+        if node_skipped != 'deployment1':
+            assert (
+                f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
+                == runtime.connection_pool.responded_messages[f'client{client_id}'][
+                    'deployment1'
+                ]
+            )
+            assert (
+                f'client{client_id}-Request-client{client_id}-deployment0'
+                == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment1']
+            )
+        else:
+            assert (
                 'deployment1'
-            ]
-        )
-        assert (
-            f'client{client_id}-Request-client{client_id}-deployment0'
-            == runtime.connection_pool.sent_msg[f'client{client_id}']['deployment1']
-        )
+                not in runtime.connection_pool.sent_msg[f'client{client_id}']
+            )
 
         assert (
             f'client{client_id}-Request-client{client_id}-deployment6'

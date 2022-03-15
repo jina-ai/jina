@@ -1,0 +1,27 @@
+!Flow
+version: '1'
+with: {}
+executors:
+- name: first
+- name: exec1
+  uses: ConditionDumpExecutor
+  workspace: ${{ ENV.TEMP_WORKSPACE }}
+  uses_metas:
+    name: exec1
+  input_condition:
+    tags__type:
+      $eq : 1
+- name: exec2
+  needs:
+  - first
+  uses: ConditionDumpExecutor
+  workspace: ${{ ENV.TEMP_WORKSPACE }}
+  uses_metas:
+    name: exec2
+  input_condition:
+    tags__type:
+      $gt: 1
+- name: joiner
+  needs:
+  - exec2
+  - exec1

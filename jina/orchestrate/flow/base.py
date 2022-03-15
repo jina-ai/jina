@@ -138,6 +138,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
+        graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -183,6 +184,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -440,6 +442,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         needs: str,
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
+        graph_conditions: Dict[str, Dict],
         **kwargs,
     ):
         kwargs.update(
@@ -461,6 +464,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self.args.expose_graphql_endpoint
         )  # also used in Flow, thus not in kwargs
         args.graph_description = json.dumps(graph_description)
+        args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
@@ -513,6 +517,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             graph_dict[node] = [deployment_docker_compose_address]
 
         return graph_dict
+
+    def _get_graph_conditions(self) -> Dict[str, Dict]:
+        graph_condition = {}
+        for node, v in self._deployment_nodes.items():
+            if v.args.input_condition is not None:
+                graph_condition[node] = v.args.input_condition
+
+        return graph_condition
 
     def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
@@ -596,6 +608,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
+        input_condition: Optional[dict] = None,
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -650,6 +663,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param input_condition: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
@@ -986,6 +1000,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 needs={op_flow.last_deployment},
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
+                graph_conditions=op_flow._get_graph_conditions(),
             )
 
         removed_deployments = []

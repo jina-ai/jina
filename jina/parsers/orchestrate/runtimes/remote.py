@@ -66,6 +66,13 @@ def mixin_gateway_parser(parser):
     )
 
     parser.add_argument(
+        '--graph-conditions',
+        type=str,
+        help='Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.',
+        default='{}',
+    )
+
+    parser.add_argument(
         '--deployments-addresses',
         type=str,
         help='dictionary JSON with the input addresses of each Deployment',

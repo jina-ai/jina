@@ -221,7 +221,7 @@ class DataRequest(Request):
         """
         return cls(request=request)
 
-    def __copy__(self, _):
+    def __copy__(self):
         return DataRequest(request=self.proto)
 
     def __deepcopy__(self, _):

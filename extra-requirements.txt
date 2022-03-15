@@ -46,7 +46,7 @@ numpy:                      core
 protobuf>=3.19.1:           core
 grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
-docarray>=0.7.0:            core
+docarray>=0.9.10:           core
 packaging>=20.0:            core
 pytest:                     test
 pytest-timeout:             test
@@ -74,4 +74,3 @@ kubernetes>=18.20.0:        perf, standard, devel
 pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 sgqlc:                      cicd, graphql
-docarray>=0.8.8:            cicd, graphql

@@ -16,7 +16,8 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
         import json
 
         graph_description = json.loads(self.args.graph_description)
-        self._topology_graph = TopologyGraph(graph_description)
+        graph_conditions = json.loads(self.args.graph_conditions)
+        self._topology_graph = TopologyGraph(graph_description, graph_conditions)
 
     def _set_connection_pool(self):
         import json

@@ -1,8 +1,8 @@
 import asyncio
-
+import copy
 from collections import defaultdict
 from datetime import datetime
-from typing import List, Optional, Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from jina.serve.networking import GrpcConnectionPool
 from jina.types.request.data import DataRequest
@@ -16,10 +16,18 @@ class TopologyGraph:
     :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
         determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
         will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.
+
+    :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.
     """
 
     class _ReqReplyNode:
-        def __init__(self, name: str, number_of_parts: int = 1, hanging: bool = False):
+        def __init__(
+            self,
+            name: str,
+            number_of_parts: int = 1,
+            hanging: bool = False,
+            filter_condition: dict = None,
+        ):
             self.name = name
             self.outgoing_nodes = []
             self.number_of_parts = number_of_parts
@@ -28,10 +36,18 @@ class TopologyGraph:
             self.start_time = None
             self.end_time = None
             self.status = None
+            self._filter_condition = filter_condition
 
         @property
         def leaf(self):
             return len(self.outgoing_nodes) == 0
+
+        def _update_requests(self):
+            for i in range(len(self.parts_to_send)):
+                copy_req = copy.deepcopy(self.parts_to_send[i])
+                filtered_docs = copy_req.docs.find(self._filter_condition)
+                copy_req.data.docs = filtered_docs
+                self.parts_to_send[i] = copy_req
 
         async def _wait_previous_and_send(
             self,
@@ -40,6 +56,7 @@ class TopologyGraph:
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
         ):
+            # Check my condition and send request with the condition
             metadata = {}
             if previous_task is not None:
                 result = await previous_task
@@ -51,6 +68,9 @@ class TopologyGraph:
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
+                    if self._filter_condition is not None:
+                        self._update_requests()
+
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
                         deployment=self.name,
@@ -61,6 +81,7 @@ class TopologyGraph:
                     if 'is-error' in metadata:
                         self.status = resp.header.status
                     return resp, metadata
+
             return None, {}
 
         def get_leaf_tasks(
@@ -149,7 +170,9 @@ class TopologyGraph:
                 request = outgoing_node.add_route(request=request)
             return request
 
-    def __init__(self, graph_representation: Dict, *args, **kwargs):
+    def __init__(
+        self, graph_representation: Dict, graph_conditions: Dict = {}, *args, **kwargs
+    ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
             origin_node_names = graph_representation['start-gateway']
@@ -169,12 +192,14 @@ class TopologyGraph:
 
         nodes = {}
         for node_name in node_set:
+            condition = graph_conditions.get(node_name, None)
             nodes[node_name] = self._ReqReplyNode(
                 name=node_name,
                 number_of_parts=num_parts_per_node[node_name]
                 if num_parts_per_node[node_name] > 0
                 else 1,
                 hanging=node_name in hanging_deployment_names,
+                filter_condition=condition,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():
@@ -184,6 +209,7 @@ class TopologyGraph:
                         nodes[node_name].outgoing_nodes.append(nodes[out_node_name])
 
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
+        self.has_filter_conditions = bool(graph_conditions)
 
     def add_routes(self, request: 'DataRequest'):
         """
