@@ -1,24 +1,76 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
-import pytest
 import os
+import subprocess
 import time
+from typing import Dict, List
 
-from jina import Flow, Document
+import docker
+import pytest
+
+from jina import Document, Flow
 
 
 class DockerComposeFlow:
-    def __init__(self, dump_path):
+
+    healthy_status = 'healthy'
+    unhealthy_status = 'unhealthy'
+
+    def __init__(self, dump_path, timeout_second=10):
         self.dump_path = dump_path
+        self.timeout_second = timeout_second
 
     def __enter__(self):
-        os.system(
-            f"docker-compose -f {self.dump_path} --project-directory . up  --build -d --remove-orphans"
+        subprocess.run(
+            f'docker-compose -f {self.dump_path} up --build -d --remove-orphans'.split(
+                ' '
+            )
         )
-        time.sleep(10)
+
+        container_ids = (
+            subprocess.run(
+                f'docker-compose -f {self.dump_path} ps -q'.split(' '),
+                capture_output=True,
+            )
+            .stdout.decode("utf-8")
+            .split('\n')
+        )
+        container_ids.remove('')  # remove empty  return line
+
+        if not container_ids:
+            raise RuntimeError('docker-compose ps did not detect any launch container')
+
+        client = docker.from_env()
+
+        init_time = time.time()
+        healthy = False
+
+        while time.time() - init_time < self.timeout_second:
+            if self.__class__._are_all_container_healthy(container_ids, client):
+                healthy = True
+                break
+            time.sleep(0.1)
+
+        if not healthy:
+            raise RuntimeError('Docker container are not healthy')
+
+    @staticmethod
+    def _are_all_container_healthy(
+        container_ids: List[str], client: docker.client.DockerClient
+    ) -> bool:
+
+        for id_ in container_ids:
+            try:
+                status = client.containers.get(id_)['State']['Health']['Status']
+            except TypeError:
+                status = DockerComposeFlow.healthy_status
+
+            if status != DockerComposeFlow.healthy_status:
+                return False
+        return True
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        os.system(
-            f"docker-compose -f {self.dump_path} --project-directory . down --remove-orphans"
+        subprocess.run(
+            f'docker-compose -f {self.dump_path} down --remove-orphans'.split(' ')
         )
 
 
