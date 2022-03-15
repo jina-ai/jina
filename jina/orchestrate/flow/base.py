@@ -147,6 +147,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         prefetch: Optional[int] = 0,
@@ -202,6 +203,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
+        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
+
+          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
+          `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
+          Defaults to retaining whatever type is returned by the Executor.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -607,6 +613,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         name: Optional[str] = None,
         native: Optional[bool] = False,
+        output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         port_jinad: Optional[int] = 8000,
@@ -669,6 +676,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
+        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
+
+          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
+          `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
+          Defaults to retaining whatever type is returned by the Executor.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
