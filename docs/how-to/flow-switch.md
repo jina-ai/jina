@@ -155,7 +155,7 @@ a condition accordingly.
 ````{admonition} See Also
 :class: seealso
 
-In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, $gte`, `$lte`, `$size`,
+In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, `$gte`, `$lte`, `$size`,
 `$and`, `$or` and many more. For details, consult this DocArray documentation page (TODO INSERT LINK).
 ````
 
