@@ -1,18 +1,18 @@
 import copy
 from argparse import Namespace
-from typing import Dict, Union, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 from jina import __default_executor__
-from jina.excepts import NoContainerizedError
 from jina.enums import PodRoleType
+from jina.excepts import NoContainerizedError
+from jina.orchestrate.deployments import BaseDeployment
 from jina.orchestrate.deployments.config.helper import (
+    construct_runtime_container_args,
+    get_base_executor_version,
     get_image_name,
     to_compatible_name,
-    get_base_executor_version,
-    construct_runtime_container_args,
     validate_uses,
 )
-from jina.orchestrate.deployments import BaseDeployment
 
 port = 8081
 
@@ -79,6 +79,9 @@ class DockerComposeConfig:
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
+
+            protocol = str(non_defaults.get('protocol', 'grpc')).lower()
+
             return {
                 'image': image_name,
                 'entrypoint': ['jina'],
@@ -89,6 +92,10 @@ class DockerComposeConfig:
                 'ports': [
                     f'{cargs.port}:{cargs.port}',
                 ],
+                'healthcheck': {
+                    'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
+                    'interval': '2s',
+                },
             }
 
         def _get_image_name(self, uses: Optional[str]):
@@ -135,6 +142,10 @@ class DockerComposeConfig:
                     'image': image_name,
                     'entrypoint': ['jina'],
                     'command': container_args,
+                    'healthcheck': {
+                        'test': f'python -m jina.resources.health_check.pod localhost:{cargs.port}',
+                        'interval': '2s',
+                    },
                 }
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]

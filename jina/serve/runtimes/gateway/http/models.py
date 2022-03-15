@@ -8,9 +8,9 @@ from typing import Callable, Dict, List, Optional, Union
 from docarray.document.pydantic_model import PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
-from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
+from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -211,6 +211,12 @@ def _to_camel_case(snake_str: str) -> str:
     # We capitalize the first letter of each component except the first one
     # with the 'title' method and join them together.
     return components[0] + ''.join(x.title() for x in components[1:])
+
+
+class JinaHealthModel(BaseModel):
+    """Pydantic BaseModel for Jina health check, used as the response model in REST app."""
+
+    ...
 
 
 class JinaStatusModel(BaseModel):

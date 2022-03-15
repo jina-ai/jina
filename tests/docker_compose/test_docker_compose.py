@@ -1,24 +1,73 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
-import pytest
 import os
+import subprocess
 import time
+from typing import Dict, List
 
-from jina import Flow, Document
+import docker
+import pytest
+
+from jina import Document, Flow
 
 
 class DockerComposeFlow:
-    def __init__(self, dump_path):
+
+    healthy_status = 'healthy'
+    unhealthy_status = 'unhealthy'
+
+    def __init__(self, dump_path, timeout_second=30):
         self.dump_path = dump_path
+        self.timeout_second = timeout_second
 
     def __enter__(self):
-        os.system(
-            f"docker-compose -f {self.dump_path} --project-directory . up  --build -d --remove-orphans"
+        subprocess.run(
+            f'docker-compose -f {self.dump_path} up --build -d --remove-orphans'.split(
+                ' '
+            )
         )
-        time.sleep(10)
+
+        container_ids = (
+            subprocess.run(
+                f'docker-compose -f {self.dump_path} ps -q'.split(' '),
+                capture_output=True,
+            )
+            .stdout.decode("utf-8")
+            .split('\n')
+        )
+        container_ids.remove('')  # remove empty  return line
+
+        if not container_ids:
+            raise RuntimeError('docker-compose ps did not detect any launch container')
+
+        client = docker.from_env()
+
+        init_time = time.time()
+        healthy = False
+
+        while time.time() - init_time < self.timeout_second:
+            if self._are_all_container_healthy(container_ids, client):
+                healthy = True
+                break
+            time.sleep(0.1)
+
+        if not healthy:
+            raise RuntimeError('Docker containers are not healthy')
+
+    @staticmethod
+    def _are_all_container_healthy(
+        container_ids: List[str], client: docker.client.DockerClient
+    ) -> bool:
+
+        for id_ in container_ids:
+            status = client.containers.get(id_).attrs['State']['Health']['Status']
+
+            if status != DockerComposeFlow.healthy_status:
+                return False
+        return True
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        os.system(
-            f"docker-compose -f {self.dump_path} --project-directory . down --remove-orphans"
+        subprocess.run(
+            f'docker-compose -f {self.dump_path} down --remove-orphans'.split(' ')
         )
 
 
@@ -50,7 +99,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
 @pytest.fixture()
 def flow_with_sharding(docker_images, polling):
     flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
-        name='test_executor',
+        name='test_executor_sharding',
         shards=2,
         replicas=2,
         uses=f'docker://{docker_images[0]}',
@@ -62,8 +111,8 @@ def flow_with_sharding(docker_images, polling):
 
 @pytest.fixture
 def flow_configmap(docker_images):
-    flow = Flow(name='k8s-flow-configmap', port=9090, protocol='http').add(
-        name='test_executor',
+    flow = Flow(name='k8s-flow-configmap', port=9091, protocol='http').add(
+        name='test_executor_configmap',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
     )
@@ -75,7 +124,7 @@ def flow_with_needs(docker_images):
     flow = (
         Flow(
             name='test-flow-with-needs',
-            port=9090,
+            port=9092,
             protocol='http',
         )
         .add(
@@ -109,7 +158,7 @@ def flow_with_needs(docker_images):
     indirect=True,
 )
 async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-with-need.yml')
     flow_with_needs.to_docker_compose_yaml(dump_path, 'default')
     with DockerComposeFlow(dump_path):
         resp = await run_test(
@@ -137,7 +186,7 @@ async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
 )
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-sharding.yml')
     flow_with_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeFlow(dump_path):
@@ -152,10 +201,10 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
     assert len(docs) == 10
 
     runtimes_to_visit = {
-        'test_executor-0/rep-0',
-        'test_executor-1/rep-0',
-        'test_executor-0/rep-1',
-        'test_executor-1/rep-1',
+        'test_executor_sharding-0/rep-0',
+        'test_executor_sharding-1/rep-0',
+        'test_executor_sharding-0/rep-1',
+        'test_executor_sharding-1/rep-1',
     }
 
     for doc in docs:
@@ -186,7 +235,7 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
 async def test_flow_with_configmap(flow_configmap, docker_images, tmpdir):
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-configmap.yml')
     flow_configmap.to_docker_compose_yaml(dump_path)
 
     with DockerComposeFlow(dump_path):
@@ -217,7 +266,7 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
         workspace='/shared',
     )
 
-    dump_path = os.path.join(str(tmpdir), 'docker-compose.yml')
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-workspace.yml')
     flow.to_docker_compose_yaml(dump_path)
 
     with DockerComposeFlow(dump_path):

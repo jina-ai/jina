@@ -14,6 +14,7 @@ from jina.helper import (
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
+from jina.serve.runtimes.gateway.http.models import JinaHealthModel
 
 if TYPE_CHECKING:
     from jina.serve.networking import GrpcConnectionPool
@@ -106,6 +107,19 @@ def get_fastapi_app(
                 '`--no-debug-endpoints` in `Flow`/`Gateway`.',
             }
         )
+
+        @app.get(
+            path='/',
+            summary='Get the health of Jina service',
+            response_model=JinaHealthModel,
+        )
+        async def _health():
+            """
+            Get the health of this Jina service.
+            .. # noqa: DAR201
+
+            """
+            return {}
 
         @app.get(
             path='/status',
