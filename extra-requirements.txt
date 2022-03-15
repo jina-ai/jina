@@ -40,7 +40,6 @@ transformers<=4.2.2:        demo
 tensorflow>=2.0:            cicd
 torchvision>=0.3.0:         demo
 Pillow:                     test
-lz4<3.1.2:                  perf, standard, daemon, devel
 uvloop:                     perf, standard, daemon, devel
 numpy:                      core
 protobuf>=3.19.1:           core
@@ -61,8 +60,6 @@ mock:                       test
 requests-mock:              test
 websockets:                 standard, daemon, devel
 pydantic:                   standard, daemon, devel, demo
-python-multipart:           standard, daemon, devel
-aiofiles:                   standard, daemon, devel
 aiohttp:                    standard, daemon, devel
 pytest-custom_exit_code:    test
 bs4:                        cicd

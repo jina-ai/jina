@@ -58,7 +58,7 @@ docker run jinaai/jina:latest
 
 ### Minimum but more performant
 
-Same as minimum install, but also install `uvloop` and `lz4`.
+Same as minimum install, but also install `uvloop`.
 
 
 ````{tab} via PyPI
