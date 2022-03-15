@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.http.models - Jina 3.1.5 documentation</title>
+        <title>jina.serve.runtimes.gateway.http.models - Jina 3.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.1.5 documentation</div>
+                <div class="brand">Jina 3.1.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -602,9 +602,9 @@
 <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocumentArray</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
-<span class="kn">from</span> <span class="nn">jina.proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
+<span class="kn">from</span> <span class="nn">jina.proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span>
 
 <span class="n">PROTO_TO_PYDANTIC_MODELS</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
 <span class="n">PROTOBUF_TO_PYTHON_TYPE</span> <span class="o">=</span> <span class="p">{</span>
@@ -805,6 +805,12 @@
     <span class="c1"># We capitalize the first letter of each component except the first one</span>
     <span class="c1"># with the 'title' method and join them together.</span>
     <span class="k">return</span> <span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">title</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+
+<div class="viewcode-block" id="JinaHealthModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel">[docs]</a><span class="k">class</span> <span class="nc">JinaHealthModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">"""Pydantic BaseModel for Jina health check, used as the response model in REST app."""</span>
+
+    <span class="o">...</span></div>
 
 
 <div class="viewcode-block" id="JinaStatusModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel">[docs]</a><span class="k">class</span> <span class="nc">JinaStatusModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
