@@ -14,7 +14,7 @@ fulfill a specified `condition`.
 ````{admonition} See Also
 :class: seealso
 
-If you are not yet familiar with the basics of the DocArray query language (TODO link there) and how it is used to create
+If you are not yet familiar with the basics of the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) and how it is used to create
 {ref}`filters <flow-filter>`, we recommend that you read the linked documentation pages first.
 ````
 
@@ -136,7 +136,7 @@ To solve these problems, you can leverage filter condition to easily build a swi
 
 ## Define the filter conditions
 
-In a Jina Flow, you can use the DocArray query language (TODO link to docarray docs) to specify a filter condition for every
+In a Jina Flow, you can use the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) to specify a filter condition for every
 Executor.
 
 To do this, you pass a condition to the `condition` parameter in `flow.add()`:
@@ -156,7 +156,7 @@ a condition accordingly.
 :class: seealso
 
 In addition to `$exists` you can use a number of other operators to define your filter: `$eq`, `$gte`, `$lte`, `$size`,
-`$and`, `$or` and many more. For details, consult this DocArray documentation page (TODO INSERT LINK).
+`$and`, `$or` and many more. For details, consult this [DocArray documentation page](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
 ````
 
 ```python

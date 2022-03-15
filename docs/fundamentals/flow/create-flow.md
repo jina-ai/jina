@@ -462,7 +462,7 @@ The automated merging can be disabled by setting `disable_reduce=True`. This can
 Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release), you can filter the input to each
 Executor.
 
-To define a filter condition, you can use DocArrays rich query language (TODO link to docarray docs).
+To define a filter condition, you can use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
 You can set a filter for each individual Executor, and every Document that does not satisfy the filter condition will be
 removed before reaching that Executor.
 
