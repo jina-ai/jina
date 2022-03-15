@@ -5,7 +5,7 @@ executors:
 - name: first
 - name: exec1
   uses: ContitionDumpExecutor
-  workspace: ${{ENV.TEMP_WORKSPACE}}
+  workspace: ${{ ENV.TEMP_WORKSPACE }}
   uses_metas:
     name: exec1
   condition:
@@ -15,7 +15,7 @@ executors:
   needs:
   - first
   uses: ContitionDumpExecutor
-  workspace: ${{ENV.TEMP_WORKSPACE}}
+  workspace: ${{ ENV.TEMP_WORKSPACE }}
   uses_metas:
     name: exec2
   condition:
