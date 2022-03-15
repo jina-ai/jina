@@ -459,7 +459,7 @@ The automated merging can be disabled by setting `disable_reduce=True`. This can
 (flow-filter)=
 ### Add filter conditions to Executors
 
-Starting from `Jina 3.2` (#TODO: adapt to the minor version we want to release), you can filter the input to each
+Starting from `Jina 3.2`, you can filter the input to each
 Executor.
 
 To define a filter condition, you can use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
