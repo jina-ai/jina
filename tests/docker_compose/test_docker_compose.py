@@ -15,7 +15,7 @@ class DockerComposeFlow:
     healthy_status = 'healthy'
     unhealthy_status = 'unhealthy'
 
-    def __init__(self, dump_path, timeout_second=10):
+    def __init__(self, dump_path, timeout_second=30):
         self.dump_path = dump_path
         self.timeout_second = timeout_second
 
@@ -51,7 +51,7 @@ class DockerComposeFlow:
             time.sleep(0.1)
 
         if not healthy:
-            raise RuntimeError('Docker container are not healthy')
+            raise RuntimeError('Docker containers are not healthy')
 
     @staticmethod
     def _are_all_container_healthy(
@@ -59,10 +59,7 @@ class DockerComposeFlow:
     ) -> bool:
 
         for id_ in container_ids:
-            try:
-                status = client.containers.get(id_)['State']['Health']['Status']
-            except TypeError:
-                status = DockerComposeFlow.healthy_status
+            status = client.containers.get(id_).attrs['State']['Health']['Status']
 
             if status != DockerComposeFlow.healthy_status:
                 return False
@@ -72,12 +69,6 @@ class DockerComposeFlow:
         subprocess.run(
             f'docker-compose -f {self.dump_path} down --remove-orphans'.split(' ')
         )
-
-
-@pytest.fixture(autouse=True)
-def slow_down_tests():  # slow down between two tests, otherwise some concurent docker delete/create happened and the tests are failing
-    yield
-    time.sleep(1)
 
 
 async def run_test(flow, endpoint, num_docs=10, request_size=10):
@@ -108,7 +99,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
 @pytest.fixture()
 def flow_with_sharding(docker_images, polling):
     flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
-        name='test_executor',
+        name='test_executor_sharding',
         shards=2,
         replicas=2,
         uses=f'docker://{docker_images[0]}',
@@ -120,8 +111,8 @@ def flow_with_sharding(docker_images, polling):
 
 @pytest.fixture
 def flow_configmap(docker_images):
-    flow = Flow(name='k8s-flow-configmap', port=9090, protocol='http').add(
-        name='test_executor',
+    flow = Flow(name='k8s-flow-configmap', port=9091, protocol='http').add(
+        name='test_executor_configmap',
         uses=f'docker://{docker_images[0]}',
         env={'k1': 'v1', 'k2': 'v2'},
     )
@@ -133,7 +124,7 @@ def flow_with_needs(docker_images):
     flow = (
         Flow(
             name='test-flow-with-needs',
-            port=9090,
+            port=9092,
             protocol='http',
         )
         .add(
@@ -210,10 +201,10 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
     assert len(docs) == 10
 
     runtimes_to_visit = {
-        'test_executor-0/rep-0',
-        'test_executor-1/rep-0',
-        'test_executor-0/rep-1',
-        'test_executor-1/rep-1',
+        'test_executor_sharding-0/rep-0',
+        'test_executor_sharding-1/rep-0',
+        'test_executor_sharding-0/rep-1',
+        'test_executor_sharding-1/rep-1',
     }
 
     for doc in docs:
