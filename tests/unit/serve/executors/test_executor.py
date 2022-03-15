@@ -26,7 +26,7 @@ def served_exec():
         kwargs={'port_expose': PORT, 'stop_event': e},
     )
     t.start()
-    time.sleep(1)  # allow Flow to start
+    time.sleep(3)  # allow Flow to start
 
     yield
 
