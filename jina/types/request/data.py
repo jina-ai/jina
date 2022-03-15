@@ -48,7 +48,7 @@ class DataRequest(Request):
             self.set_docs_convert_arrays(value, None)
 
         def set_docs_convert_arrays(
-            self, value: DocumentArray, ndarray_type: str = None
+            self, value: DocumentArray, ndarray_type: Optional[str] = None
         ):
             """ " Convert embedding and tensor to given type, then set DocumentArray
 
