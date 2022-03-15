@@ -45,7 +45,7 @@ class DockerComposeFlow:
         healthy = False
 
         while time.time() - init_time < self.timeout_second:
-            if self.__class__._are_all_container_healthy(container_ids, client):
+            if self._are_all_container_healthy(container_ids, client):
                 healthy = True
                 break
             time.sleep(0.1)
