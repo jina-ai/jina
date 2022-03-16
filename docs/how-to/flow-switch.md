@@ -3,7 +3,7 @@
 
 ````{admonition} Requirements
 :class: note
-To follow along with this How-To, you need Jina 3.2.1 or higher.
+To follow along with this How-To, you need Jina 3.2.2 or higher.
 ````
 
 In this tutorial you will gain a deeper insight into the Flow's {ref}`filter condition feature<flow-filter>`.
