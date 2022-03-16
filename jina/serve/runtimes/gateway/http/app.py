@@ -14,7 +14,6 @@ from jina.helper import (
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
-from jina.serve.runtimes.gateway.http.models import JinaHealthModel
 
 if TYPE_CHECKING:
     from jina.serve.networking import GrpcConnectionPool
@@ -107,6 +106,8 @@ def get_fastapi_app(
                 '`--no-debug-endpoints` in `Flow`/`Gateway`.',
             }
         )
+
+        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
 
         @app.get(
             path='/',
@@ -261,13 +262,14 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
+
+            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint
