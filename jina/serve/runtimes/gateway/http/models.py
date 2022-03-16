@@ -1,5 +1,4 @@
 from collections import defaultdict
-from dataclasses import asdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
