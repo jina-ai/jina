@@ -49,6 +49,14 @@ class KindClusterWrapper:
         if returncode is not None and returncode != 0:
             raise Exception(f"Installing linkerd failed with {returncode}")
 
+        self._log.info('check linkerd status')
+        out = subprocess.check_output(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
+            env=os.environ,
+        )
+
+        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+
     def _set_kube_config(self):
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
@@ -124,15 +132,6 @@ def load_cluster_config(k8s_cluster):
 
 @pytest.fixture
 def docker_images(request, image_name_tag_map, k8s_cluster):
-    logger = JinaLogger('kubernetes-testing-images')
-    logger.debug('check linkerd status')
-    out = subprocess.check_output(
-        [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
-        env=os.environ,
-    )
-
-    print(f'linkerd check yields {out.decode() if out else "nothing"}')
-
     image_names = request.param
     k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     images = [
