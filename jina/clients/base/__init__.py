@@ -6,8 +6,10 @@ import os
 from abc import ABC
 from typing import (
     TYPE_CHECKING,
+    Any,
     AsyncIterator,
     Callable,
+    Dict,
     Iterator,
     Optional,
     Tuple,
@@ -44,15 +46,7 @@ class BaseClient(ABC):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
-
-            if 'host' in kwargs.keys():
-                (
-                    kwargs['host'],
-                    kwargs['port'],
-                    kwargs['protocol'],
-                    kwargs['https'],
-                ) = self._parse_host_scheme(kwargs['host'])
-
+            self._parse_kwargs(kwargs)
             self.args = ArgNamespace.kwargs2namespace(
                 kwargs, set_client_cli_parser(), warn_unknown=True
             )
@@ -67,6 +61,26 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+
+    def _parse_kwargs(self, kwargs: Dict[str, Any]):
+        if 'host' in kwargs.keys():
+
+            return_scheme = dict()
+            (
+                kwargs['host'],
+                return_scheme['port'],
+                return_scheme['protocol'],
+                return_scheme['https'],
+            ) = self._parse_host_scheme(kwargs['host'])
+
+            for key, value in return_scheme.items():
+                if value:
+                    if key in kwargs:
+                        raise ValueError(
+                            f"You can't have two definitions of {key}: you have one in the host scheme and one in the keyword argument"
+                        )
+                    else:
+                        kwargs[key] = value
 
     def _parse_host_scheme(self, host: str) -> Tuple[str, str, str, bool]:
         r = urlparse(host)

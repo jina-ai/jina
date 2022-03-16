@@ -38,3 +38,9 @@ def test_host_unpacking_port():
 
     assert c.args.protocol == GatewayProtocolType.HTTP
     assert c.args.host == hostname
+
+
+def test_host_unpacking_duplicate():
+
+    with pytest.raises(ValueError):
+        Client(host=f'http://localhost:1234', port=1234)
