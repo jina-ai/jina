@@ -36,7 +36,7 @@ def input_da_gen():
 
 def json_requestify(da: DocumentArray, exec_endpoint='/foo'):
     return {
-        'exec_endpoint': exec_endpoint,
+        'execEndpoint': exec_endpoint,
         'data': {'docs': da.to_dict()},
     }
 

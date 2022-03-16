@@ -64,12 +64,18 @@ methods described below.
 Outside of using the Jina Client, various forms of sending HTTP requests are the most common way of interacting with a Flow.
 
 You can always use `post` to interact with a Flow, using the `/post` HTTP endpoint.
+
+#### Arguments
+
 Your HTTP request can include the following parameters:
 
-- `execEndpoint` - required: Executor endpoint string to target, e.g. `"execEndpoint": "/index"`
-- `data` - optional: List specifying the input Documents, e.g. `"data": [{"text": "hello"}, {"text": "world"}]`.
-- `paramters` - optional: Dictionary of parameters to be sent to the Executors, e.g. `"parameters": {"param1": "hello world"}`
-- `targetExecutor` - optional: String indicating an Executor to target. Default targets all Executors, e.g. `"targetExecutor": "MyExec"`
+| Name | Type | Description | Example |
+| --- | --- | --- | --- | 
+| `execEndpoint` | required | Executor endpoint string to target | `"execEndpoint": "/index"` |
+| `data` | optional | List specifying the input Documents | `"data": [{"text": "hello"}, {"text": "world"}]`. |
+| `parameters` | optional | Dictionary of parameters to be sent to the Executors | `"parameters": {"param1": "hello world"}` |
+| `targetExecutor` | optional | String indicating an Executor to target. Default targets all Executors | `"targetExecutor": "MyExec"`  |
+
 
 Instead of using the generic `/post` endpoint, you can directly use endpoints like `/index` or `/search`.
 In this case your data request will be sent to the corresponding Executor endpoint, so the parameter `execEndpoint` does not need to be specified.
@@ -78,7 +84,10 @@ In any case, the response you receive will include `data` (and array of Document
 
 ```{admonition} See also: Flow REST API
 :class: seealso
-For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, see [here](https://api.jina.ai/rest/).
+For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check
+
+1. [OpenAPI Schema](https://api.jina.ai/rest/latest.json)
+2. [Redoc UI](https://api.jina.ai/rest/)
 
 For a specific deployed Flow, you can get the same overview by accessing the `/redoc` endpoint.
 ```
@@ -110,14 +119,15 @@ You should see the raw response, together with a visual representation of the re
 
 ### Use HTTP client to send request
 
-You can send data requests to a Flow via cURL, Postman, or any other HTTP client.
+With the help of OpenAPI schema, one can send data requests to a Flow via cURL, Postman, or any other HTTP client. Here's an example that uses cURL.
+
+
+```bash
+curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
+```
 
 <details>
-  <summary>cURL example</summary>
-
-    ```console
-    $ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
-    
+  <summary>sample response</summary>    
     {
       "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
       "data": {
@@ -167,7 +177,6 @@ You can send data requests to a Flow via cURL, Postman, or any other HTTP client
         "exception": null
       }
     }
-    ```
 
 </details>
 
@@ -194,15 +203,15 @@ from sgqlc.endpoint.http import HTTPEndpoint
 HOSTNAME, PORT = ...
 endpoint = HTTPEndpoint(url=f'{HOSTNAME}:{PORT}/graphql')
 mut = '''
-        mutation {
-            docs(data: {text: "abcd"}) { 
-                id
-                matches {
-                    embedding
-                }
-            } 
-        }
-    '''
+    mutation {
+        docs(data: {text: "abcd"}) { 
+            id
+            matches {
+                embedding
+            }
+        } 
+    }
+'''
 response = endpoint(mut)
 ```
 
@@ -211,14 +220,9 @@ response = endpoint(mut)
 The Flow GraphQL API exposes the mutation `docs`, which sends its inputs to the Flow's Executors,
 just like HTTP `post` as described {ref}`above <http-interface>`.
 
-A GraphQL mutation can take the following arguments:
+A GraphQL mutation takes same set of arguments used in [HTTP](#arguments). 
 
-- `execEndpoint` - required: String representing the Executor endpoint to target, e.g. `execEndpoint: "/search"`
-- `data` - optional: List of Documents to be processed by the Executors, e.g. `data: [{text: "hello"}, {text: "world"}`
-- `parameters` - optional: Dictionary of parameters to be passed to the Executors, e.g. `parameters: {"my_param": 3}`
-- `targetExecutor` - optional: String representing name of the Executor to target, e.g `"targetExecutor: "MyExec"`
-
-The GraphQL response can include all fields available on a DocumentArray.
+The response from GraphQL can include all fields available on a DocumentArray.
 
 ````{admonition} See Also
 :class: seealso
@@ -234,6 +238,25 @@ The available fields in the GraphQL API are defined by the [Document Strawberry 
 
 Essentially, you can ask for any property of a Document, including `embedding`, `text`, `tensor`, `id`, `matches`, `tags`,
 and more.
+
+
+## Websocket
+
+Websocket uses persistent connections between the Client & Gateway, hence allowing streaming usecases. While you can always use the Python Client to stream requests like any other protocol, websocket allows streaming jsons from anywhere (CLI / Postman / Any other programming language). The same set of arguments as [HTTP](#arguments) can be used in the json. 
+
+We use [subprotocols](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols) to separate streaming json vs bytes. Gateway defaults to `json` when a subprotocol is not passed during connection establishment (Our python Client uses `bytes` streaming by using [jina.proto](../../proto/docs.md) definition)
+
+
+````{admonition} Note
+
+- Prefer using Websocket over HTTP, if you want to stream requests. 
+- Prefer using Websocket over gRPC, if
+  - You want to stream using json, not bytes.
+  - Your client language doesn't support gRPC .
+  - You're too lazy to compile [jina.proto](../../proto/docs.md) & generate a Client.
+
+````
+
 
 ## See further
 

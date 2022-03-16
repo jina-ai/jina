@@ -5,6 +5,7 @@ from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
+from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
@@ -54,7 +55,10 @@ def get_fastapi_app(
                     logger.debug(
                         f'No protocol headers passed. Choosing default subprotocol {WebsocketSubProtocols.JSON}'
                     )
-            except Exception:
+            except Exception as e:
+                logger.debug(
+                    f'Got an exception while setting user\'s subprotocol, defaulting to JSON {e}'
+                )
                 subprotocol = WebsocketSubProtocols.JSON
             return subprotocol
 
@@ -126,7 +130,8 @@ def get_fastapi_app(
                     if request == {}:
                         break
                     else:
-                        req_generator_input = request
+                        # NOTE: Helps in converting camelCase to snake_case
+                        req_generator_input = JinaEndpointRequestModel(**request).dict()
                         req_generator_input['data_type'] = DataInputType.DICT
                         if request['data'] is not None and 'docs' in request['data']:
                             req_generator_input['data'] = req_generator_input['data'][
@@ -135,7 +140,6 @@ def get_fastapi_app(
 
                         # you can't do `yield from` inside an async function
                         for data_request in request_generator(**req_generator_input):
-                            print(f'data_request: {data_request}')
                             yield data_request
                 elif isinstance(request, bytes):
                     if request == bytes(True):
