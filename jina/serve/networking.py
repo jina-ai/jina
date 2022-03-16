@@ -1,17 +1,17 @@
-import os
 import asyncio
 import ipaddress
+import os
 from threading import Thread
-from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
 
-from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2_grpc
 from jina.enums import PollingType
 from jina.helper import get_or_reuse_loop
+from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2_grpc
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
@@ -641,7 +641,10 @@ class GrpcConnectionPool:
                         metadata = (('endpoint', endpoint),) if endpoint else None
                         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                         response, call = stub.process_single_data.with_call(
-                            request, timeout=timeout, metadata=metadata
+                            request,
+                            timeout=timeout,
+                            metadata=metadata,
+                            compression=grpc.Compression.Gzip,
                         )
                     elif type(request) == ControlRequest:
                         stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
@@ -683,7 +686,10 @@ class GrpcConnectionPool:
                     metadata = (('endpoint', endpoint),) if endpoint else None
                     stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
                     response, call = stub.process_data.with_call(
-                        requests, timeout=timeout, metadata=metadata
+                        requests,
+                        timeout=timeout,
+                        metadata=metadata,
+                        compression=grpc.Compression.Gzip,
                     )
                     return response
             except grpc.RpcError as e:

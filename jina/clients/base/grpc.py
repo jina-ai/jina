@@ -12,7 +12,7 @@ from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
-    from jina.clients.base import InputType, CallbackFnType
+    from jina.clients.base import CallbackFnType, InputType
 
 
 class GRPCBaseClient(BaseClient):
@@ -44,7 +44,9 @@ class GRPCBaseClient(BaseClient):
                     total_length=self._inputs_length, disable=not (self.show_progress)
                 ) as p_bar:
 
-                    async for resp in stub.Call(req_iter):
+                    async for resp in stub.Call(
+                        req_iter, compression=grpc.Compression.Gzip
+                    ):
                         callback_exec(
                             response=resp,
                             on_error=on_error,
