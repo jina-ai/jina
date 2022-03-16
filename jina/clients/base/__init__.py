@@ -4,10 +4,19 @@ import argparse
 import inspect
 import os
 from abc import ABC
-from typing import Callable, Union, Optional, Iterator, AsyncIterator, TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING,
+    AsyncIterator,
+    Callable,
+    Iterator,
+    Optional,
+    Tuple,
+    Union,
+)
+from urllib.parse import urlparse
 
 from jina.excepts import BadClientInput
-from jina.helper import typename, ArgNamespace, T
+from jina.helper import ArgNamespace, T, typename
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 from jina.parsers import set_client_cli_parser
@@ -35,9 +44,19 @@ class BaseClient(ABC):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
+
+            if 'host' in kwargs.keys():
+                (
+                    kwargs['host'],
+                    kwargs['port'],
+                    kwargs['protocol'],
+                    kwargs['https'],
+                ) = self._parse_host_scheme(kwargs['host'])
+
             self.args = ArgNamespace.kwargs2namespace(
                 kwargs, set_client_cli_parser(), warn_unknown=True
             )
+
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
         if not self.args.proxy and os.name != 'nt':
@@ -48,6 +67,29 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+
+    def _parse_host_scheme(self, host: str) -> Tuple[str, str, str, bool]:
+        r = urlparse(host)
+        _on = r.path or '/'
+        _port = r.port or None
+
+        _scheme = r.scheme
+        _tls = False
+
+        if _scheme in ('grpcs', 'https', 'wss'):
+            _scheme = _scheme[:-1]
+            _tls = True
+
+        if _scheme == 'ws':
+            _scheme = 'websocket'
+
+        if _scheme in ('grpc', 'http', 'ws', 'websocket'):
+            if _port is None:
+                raise ValueError(f'can not determine port from {host}')
+
+            return r.hostname, _port, _scheme, _tls
+        else:
+            raise ValueError(f'unsupported scheme: {r.scheme}')
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
