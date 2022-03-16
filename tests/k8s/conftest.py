@@ -30,7 +30,7 @@ class KindClusterWrapper:
             stdout=subprocess.PIPE,
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
-        _ = subprocess.check_output(
+        kube_out = subprocess.check_output(
             (
                 str(kind_cluster.kubectl_path),
                 'apply',
@@ -41,6 +41,9 @@ class KindClusterWrapper:
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
         returncode = proc.poll()
+        self._log.debug(
+            f'Installing Linkerd to Cluster returned code {returncode}, kubectl output was {kube_out}'
+        )
         if returncode is not None and returncode != 0:
             raise Exception(f"Installing linkerd failed with {returncode}")
 
@@ -118,10 +121,21 @@ def load_cluster_config(k8s_cluster):
 
 
 @pytest.fixture
-def docker_images(request, image_name_tag_map, k8s_cluster):
+def docker_images(request, image_name_tag_map, k8s_cluster, check_linkerd):
     image_names = request.param
     k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
     return images
+
+
+@pytest.fixture
+def check_linkerd(logger, kind_cluster):
+    out = subprocess.check_output(
+        [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
+        env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+    )
+
+    logger.debug(f'linkerd check yields {out}')
+    return out
