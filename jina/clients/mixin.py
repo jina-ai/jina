@@ -126,9 +126,9 @@ class PostMixin:
 
         if c.args.return_responses is True and return_responses is False:
             warnings.warn(
-                'return_responses was set in the Client constructor. Therefore we are overriding the input '
-                'paraameter `return_responses`. This argument will be deprecated from the `constructor` '
-                'soon. We recommend passing `return_responses` to the `post` method'
+                'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
+                'parameter `return_responses`. This argument will be deprecated from the `constructor` '
+                'soon. We recommend passing `return_responses` to the `post` method.'
             )
             return_responses = True
 
@@ -221,9 +221,9 @@ class AsyncPostMixin:
 
         if c.args.return_responses is True and return_responses is False:
             warnings.warn(
-                'return_responses was set in the Client constructor. Therefore we are overriding the input '
-                'paraameter `return_responses`. This argument will be deprecated from the `constructor` '
-                'soon. We recommend passing `return_responses` to the `post` method'
+                'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
+                'parameter `return_responses`. This argument will be deprecated from the `constructor` '
+                'soon. We recommend passing `return_responses` to the `post` method.'
             )
             return_responses = True
 
