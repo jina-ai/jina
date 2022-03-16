@@ -84,9 +84,6 @@ class BaseClient(ABC):
             _scheme = 'websocket'
 
         if _scheme in ('grpc', 'http', 'ws', 'websocket'):
-            if _port is None:
-                raise ValueError(f'can not determine port from {host}')
-
             return r.hostname, _port, _scheme, _tls
         else:
             raise ValueError(f'unsupported scheme: {r.scheme}')
