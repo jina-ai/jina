@@ -219,6 +219,18 @@ Once the Flow is deployed on Kubernetes, you can use all the native Kubernetes t
 
 You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment), to run [rolling update](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment) operations, etc ...
 
+## Integration with Linkerd
+Jina's Kubernetes support comes with a built-in integration for [Linkerd](https://linkerd.io/) as the service mesh for connecting all the Jina services in Kubernetes. All Jina deployment resources are annotated with the necessary [Linkerd annotations](https://linkerd.io/2.11/tasks/adding-your-service/#meshing-a-service-with-annotations). So we recommend every Jina user to [install Linkerd](https://linkerd.io/2.11/getting-started/#step-3-install-the-control-plane-onto-your-cluster) into the Kubernetes cluster they are using Jina in.
+
+Linkerd will automatically load balance traffic between all replicas of an Executor and offers also [additional features](https://linkerd.io/2.11/features/).
+
+It is also generally possible to use other service mesh providers (like [Istio](https://istio.io/)) with Jina. You need to manually change Jina's deployment configurations in the generated YAML files for this.
+
+````{admonition} Attention
+:class: attention
+
+If you don't install a third party service mesh (like Linkerd), you will not be able to scale the number of replicas per Executor to more than one. A single replica will always handle all the traffic. No matter how many replicas will be running.
+````
 
 ## Extra Kubernetes options
 
