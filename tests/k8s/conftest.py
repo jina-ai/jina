@@ -25,6 +25,7 @@ class KindClusterWrapper:
         self._loaded_images = set()
 
     def _install_linkderd(self, kind_cluster):
+        self._log.debug('Installing Linkerd to Cluster...')
         proc = subprocess.Popen(
             [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'],
             stdout=subprocess.PIPE,
@@ -40,6 +41,7 @@ class KindClusterWrapper:
             stdin=proc.stdout,
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
+        self._log.debug('Poll status of linkerd install')
         returncode = proc.poll()
         self._log.debug(
             f'Installing Linkerd to Cluster returned code {returncode}, kubectl output was {kube_out}'
@@ -121,7 +123,9 @@ def load_cluster_config(k8s_cluster):
 
 
 @pytest.fixture
-def docker_images(request, image_name_tag_map, k8s_cluster: KindClusterWrapper, logger):
+def docker_images(request, image_name_tag_map, k8s_cluster):
+    logger = JinaLogger('kubernetes-testing-images')
+    logger.debug('check linkerd status')
     out = subprocess.check_output(
         [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
         env={"KUBECONFIG": str(k8s_cluster._cluster.kubeconfig_path)},
