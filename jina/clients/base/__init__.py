@@ -15,7 +15,6 @@ from typing import (
     Tuple,
     Union,
 )
-from urllib.parse import urlparse
 
 from jina.excepts import BadClientInput
 from jina.helper import ArgNamespace, T, typename
@@ -63,8 +62,8 @@ class BaseClient(ABC):
         self._inputs = None
 
     def _parse_kwargs(self, kwargs: Dict[str, Any]):
-        if 'host' in kwargs.keys():
 
+        if 'host' in kwargs.keys():
             return_scheme = dict()
             (
                 kwargs['host'],
@@ -79,28 +78,21 @@ class BaseClient(ABC):
                         raise ValueError(
                             f"You can't have two definitions of {key}: you have one in the host scheme and one in the keyword argument"
                         )
-                    else:
+                    elif value:
                         kwargs[key] = value
 
     def _parse_host_scheme(self, host: str) -> Tuple[str, str, str, bool]:
-        r = urlparse(host)
-        _on = r.path or '/'
-        _port = r.port or None
+        scheme, _hostname, port = _parse_url(host)
 
-        _scheme = r.scheme
-        _tls = False
+        tls = None
+        if scheme in ('grpcs', 'https', 'wss'):
+            scheme = scheme[:-1]
+            tls = True
 
-        if _scheme in ('grpcs', 'https', 'wss'):
-            _scheme = _scheme[:-1]
-            _tls = True
+        if scheme == 'ws':
+            scheme = 'websocket'
 
-        if _scheme == 'ws':
-            _scheme = 'websocket'
-
-        if _scheme in ('grpc', 'http', 'ws', 'websocket'):
-            return r.hostname, _port, _scheme, _tls
-        else:
-            raise ValueError(f'unsupported scheme: {r.scheme}')
+        return _hostname, port, scheme, tls
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
@@ -207,3 +199,17 @@ class BaseClient(ABC):
         :return: the Client object
         """
         return self
+
+
+def _parse_url(host):
+    if '://' in host:
+        scheme, host = host.split('://')
+    else:
+        scheme = None
+
+    if ':' in host:
+        host, port = host.split(':')
+    else:
+        port = None
+
+    return scheme, host, port

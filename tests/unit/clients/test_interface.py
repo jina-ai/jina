@@ -10,6 +10,7 @@ from jina.enums import GatewayProtocolType
         ('http', GatewayProtocolType.HTTP),
         ('grpc', GatewayProtocolType.GRPC),
         ('ws', GatewayProtocolType.WEBSOCKET),
+        (None, None),
     ],
 )
 @pytest.mark.parametrize('tls', [True, False])
@@ -18,11 +19,17 @@ def test_host_unpacking(protocol, gateway_type, tls, hostname):
 
     port = 1234
 
-    _s = 's' if tls else ''
-    host = f'{protocol}{_s}://{hostname}:{port}'
-    c = Client(host=host)
+    protocol = f'{protocol}s' if tls and protocol else protocol
 
-    assert c.args.protocol == gateway_type
+    scheme = f'{protocol}://' if protocol else ''
+
+    host = f'{scheme}{hostname}:{port}'
+
+    c = Client(host=host) if scheme else Client(host=host, https=tls)
+
+    if gateway_type:
+        assert c.args.protocol == gateway_type
+
     assert c.args.host == hostname
     assert c.args.port == port
     assert c.args.https == tls
