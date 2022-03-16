@@ -182,7 +182,7 @@ class AsyncPostMixin:
         show_progress: bool = False,
         continue_on_error: bool = False,
         **kwargs,
-    ) -> AsyncGenerator[None, 'Response']:
+    ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
@@ -208,7 +208,7 @@ class AsyncPostMixin:
         parameters = _include_results_field_in_param(parameters)
         on_error = _wrap_on_error(on_error) if on_error is not None else on_error
 
-        async for r in c._get_results(
+        async for result in c._get_results(
             inputs=inputs,
             on_done=on_done,
             on_error=on_error,
@@ -219,7 +219,10 @@ class AsyncPostMixin:
             request_size=request_size,
             **kwargs,
         ):
-            yield r
+            if not c.args.return_responses:
+                yield result.data.docs
+            else:
+                yield result
 
     # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')

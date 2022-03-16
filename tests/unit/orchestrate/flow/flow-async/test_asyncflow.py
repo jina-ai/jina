@@ -3,12 +3,13 @@ import time
 
 import numpy as np
 import pytest
-
-from jina import Document, Flow, Executor, requests
-from jina.orchestrate.flow.asyncio import AsyncFlow
-from jina.logging.profile import TimeContext
 from docarray.document.generators import from_ndarray
-from jina.types.request.data import Response
+
+from docarray import Document, DocumentArray
+from jina import Executor, Flow, requests
+from jina.logging.profile import TimeContext
+from jina.orchestrate.flow.asyncio import AsyncFlow
+from jina.types.request.data import Request
 from tests import validate_callback
 
 num_docs = 5
@@ -36,13 +37,20 @@ def documents(start_index, end_index):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 @pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
-async def test_run_async_flow(protocol, mocker, flow_cls):
+@pytest.mark.parametrize(
+    'return_responses, return_class', [(True, Request), (False, DocumentArray)]
+)
+async def test_run_async_flow(
+    protocol, mocker, flow_cls, return_responses, return_class
+):
     r_val = mocker.Mock()
-    with flow_cls(protocol=protocol, asyncio=True).add() as f:
+    with flow_cls(
+        protocol=protocol, asyncio=True, return_responses=return_responses
+    ).add() as f:
         async for r in f.index(
             from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
         ):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, return_class)
     validate_callback(r_val, validate)
 
 
@@ -73,7 +81,7 @@ async def test_run_async_flow_async_input(inputs, mocker):
     r_val = mocker.Mock()
     with AsyncFlow(asyncio=True).add() as f:
         async for r in f.index(inputs, on_done=r_val):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, DocumentArray)
     validate_callback(r_val, validate)
 
 
@@ -91,7 +99,7 @@ async def run_async_flow_5s(protocol):
             from_ndarray(np.random.random([num_docs, 4])),
             on_done=validate,
         ):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, DocumentArray)
 
 
 async def sleep_print():
@@ -140,7 +148,7 @@ async def test_run_async_flow_other_task_concurrent(protocol):
 async def test_return_results_async_flow(protocol, flow_cls):
     with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in f.index(from_ndarray(np.random.random([10, 2]))):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, DocumentArray)
 
 
 @pytest.mark.slow
@@ -151,7 +159,7 @@ async def test_return_results_async_flow(protocol, flow_cls):
 async def test_return_results_async_flow_crud(protocol, flow_api, flow_cls):
     with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, DocumentArray)
 
 
 class MyExec(Executor):
@@ -165,4 +173,4 @@ class MyExec(Executor):
 async def test_async_flow_empty_data(flow_cls):
     with flow_cls(asyncio=True).add(uses=MyExec) as f:
         async for r in f.post('/hello', parameters={'hello': 'world'}):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, DocumentArray)
