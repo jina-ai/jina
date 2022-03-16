@@ -121,21 +121,17 @@ def load_cluster_config(k8s_cluster):
 
 
 @pytest.fixture
-def docker_images(request, image_name_tag_map, k8s_cluster, check_linkerd):
+def docker_images(request, image_name_tag_map, k8s_cluster: KindClusterWrapper, logger):
+    out = subprocess.check_output(
+        [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
+        env={"KUBECONFIG": str(k8s_cluster._cluster.kubeconfig_path)},
+    )
+
+    logger.debug(f'linkerd check yields {out.decode()}')
+
     image_names = request.param
     k8s_cluster.load_docker_images(image_names, image_name_tag_map)
     images = [
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
     return images
-
-
-@pytest.fixture
-def check_linkerd(logger, kind_cluster):
-    out = subprocess.check_output(
-        [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
-        env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
-    )
-
-    logger.debug(f'linkerd check yields {out}')
-    return out
