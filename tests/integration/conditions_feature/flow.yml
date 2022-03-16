@@ -8,7 +8,7 @@ executors:
   workspace: ${{ ENV.TEMP_WORKSPACE }}
   uses_metas:
     name: exec1
-  input_condition:
+  when:
     tags__type:
       $eq : 1
 - name: exec2
@@ -18,7 +18,7 @@ executors:
   workspace: ${{ ENV.TEMP_WORKSPACE }}
   uses_metas:
     name: exec2
-  input_condition:
+  when:
     tags__type:
       $gt: 1
 - name: joiner
