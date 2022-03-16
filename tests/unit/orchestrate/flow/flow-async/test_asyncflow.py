@@ -148,7 +148,7 @@ async def test_run_async_flow_other_task_concurrent(protocol):
 async def test_return_results_async_flow(protocol, flow_cls):
     with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in f.index(from_ndarray(np.random.random([10, 2]))):
-            assert isinstance(r.response, Response)
+            assert isinstance(r, DocumentArray)
 
 
 @pytest.mark.slow

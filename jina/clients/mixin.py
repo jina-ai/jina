@@ -220,11 +220,7 @@ class AsyncPostMixin:
             **kwargs,
         ):
             if not c.args.return_responses:
-                docs = [r.data.docs for r in result]
-                if len(docs) < 1:
-                    yield docs
-                else:
-                    yield docs[0].reduce_all(docs[1:])
+                yield result.data.docs
             else:
                 yield result
 
