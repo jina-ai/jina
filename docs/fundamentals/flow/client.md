@@ -386,6 +386,7 @@ with Flow() as f:
 
 ````
 
+
 ### Custom gRPC compression for GRPC Client
 
 If the communication to the `Flow` needs to be done via gRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
@@ -396,6 +397,16 @@ from jina import Client
 
 client = Client()
 client.post(..., compression='Gzip')
+```
+
+### HTTPS support
+
+To connect to a Flow that has been {ref}`configured to use HTTPS <flow-https>` in combination with http or websocket,
+set the Client's `https` parameter to `True`:
+
+```python
+c_http = Client(protocol='http', https=True)
+c_ws = Client(protocol='websocket', https=True)
 ```
 
 ## GraphQL
