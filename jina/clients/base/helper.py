@@ -1,13 +1,13 @@
 import asyncio
-from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from jina.types.request import Request
+from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
+from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from jina.types.request import Response
     from jina.logging.logger import JinaLogger
 
 
@@ -118,8 +118,8 @@ class WebsocketClientlet(AioHttpClientlet):
             # which raises a `ConnectionResetError`, this can be ignored.
             pass
 
-    async def recv_message(self) -> 'Response':
-        """Receive messages in bytes from server and convert to `Response`
+    async def recv_message(self) -> 'DataRequest':
+        """Receive messages in bytes from server and convert to `DataRequest`
 
         ..note::
             aiohttp allows only one task which can `receive` concurrently.
@@ -128,11 +128,12 @@ class WebsocketClientlet(AioHttpClientlet):
         :yield: response objects received from server
         """
         async for response in self.websocket:
-            response_bytes = response.data
-            resp = DataRequest(response_bytes)
-            yield resp
+            yield DataRequest(response.data)
 
     async def __aenter__(self):
         await super().__aenter__()
-        self.websocket = await self.session.ws_connect(url=self.url).__aenter__()
+        self.websocket = await self.session.ws_connect(
+            url=self.url,
+            protocols=(WebsocketSubProtocols.BYTES.value,),
+        ).__aenter__()
         return self
