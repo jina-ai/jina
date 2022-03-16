@@ -304,7 +304,7 @@ ac_table = {
             '--disable-reduce',
             '--uses-before',
             '--uses-after',
-            '--input-condition',
+            '--when',
             '--external',
             '--deployment-role',
         ],

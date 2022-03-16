@@ -485,14 +485,15 @@ The automated merging can be disabled by setting `disable_reduce=True`. This can
 (flow-filter)=
 ### Add filter conditions to Executors
 
-Starting from `Jina 3.2`, you can filter the input to each
+Starting from `Jina 3.2.2`, you can filter the input to each
 Executor.
 
 To define a filter condition, you can use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
 You can set a filter for each individual Executor, and every Document that does not satisfy the filter condition will be
 removed before reaching that Executor.
 
-To add a filter condition to an Executor, you pass it to the `input_condition` parameter of `flow.add()`:
+To add a filter condition to an Executor, you pass it to the `when` parameter of `flow.add()`.
+This then defines *when* a document will be processed by the Executor:
 
 ````{tab} Python
 
@@ -503,7 +504,7 @@ emphasize-lines: 4, 9
 from docarray import DocumentArray, Document
 from jina import Flow
 
-f = Flow().add().add(input_condition={'tags__key': {'$eq': 5}})  # Create the empty Flow, add condition
+f = Flow().add().add(when={'tags__key': {'$eq': 5}})  # Create the empty Flow, add condition
 
 with f:  # Using it as a Context Manager will start the Flow
     ret = f.post(
@@ -529,7 +530,7 @@ print(
 jtype: Flow
 executors:
   - name: executor
-    input_condition:
+    when:
         tags__key:
             $eq: 5
 ```
@@ -559,7 +560,7 @@ print(
 ```
 ````
 
-Note that whenever a Document does not satisfy the `input_condition` of a filter, the filter removes it *for the entire branch of the Flow*.
+Note that whenever a Document does not satisfy the `when` condition of a filter, the filter removes it *for the entire branch of the Flow*.
 This means that every Executor that is located behind a filter is affected by this, not just the specific Executor that defines the condition.
 Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.
 
@@ -578,8 +579,8 @@ from jina import Flow
 f = (
     Flow()
     .add(name='first')
-    .add(input_condition={'tags__key': {'$eq': 5}}, needs='first', name='exec1')
-    .add(input_condition={'tags__key': {'$eq': 4}}, needs='first', name='exec2')
+    .add(when={'tags__key': {'$eq': 5}}, needs='first', name='exec1')
+    .add(when={'tags__key': {'$eq': 4}}, needs='first', name='exec2')
     .needs_all(name='join')
 )  # Create Flow with parallel Executors
 
@@ -615,8 +616,8 @@ from jina import Flow
 f = (
     Flow()
     .add(name='first')
-    .add(input_condition={'tags__key': {'$eq': 5}}, name='exec1', needs='first')
-    .add(input_condition={'tags__key': {'$eq': 4}}, needs='exec1', name='exec2)
+    .add(when={'tags__key': {'$eq': 5}}, name='exec1', needs='first')
+    .add(when={'tags__key': {'$eq': 4}}, needs='exec1', name='exec2)
 )  # Create Flow with sequential Executors
 
 # Flow topology: Gateway --> first --> exec1 --> exec2 --> Gateway
