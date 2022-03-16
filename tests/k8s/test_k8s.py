@@ -1,13 +1,13 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
-import pytest
-import os
 import asyncio
+import os
 
+import pytest
 import yaml
+from docarray import DocumentArray
 from pytest_kind import cluster
 
-from docarray import DocumentArray
-from jina import Executor, Flow, Document, requests
+from jina import Document, Executor, Flow, requests
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
@@ -427,73 +427,6 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['resources']['limits'] == {'nvidia.com/gpu:': 1}
-    core_client.delete_namespace(namespace)
-
-
-@pytest.mark.timeout(3600)
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    'docker_images', [['reload-executor', 'jinaai/jina']], indirect=True
-)
-async def test_rolling_update_simple(
-    k8s_flow_with_reload_executor, docker_images, tmpdir, logger
-):
-    dump_path = os.path.join(str(tmpdir), 'test-flow-with-reload')
-    namespace = f'test-flow-with-reload-executor'
-    k8s_flow_with_reload_executor.to_k8s_yaml(dump_path, k8s_namespace=namespace)
-
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-    await create_all_flow_deployments_and_wait_ready(
-        dump_path,
-        namespace=namespace,
-        api_client=api_client,
-        app_client=app_client,
-        core_client=core_client,
-        deployment_replicas_expected={
-            'gateway': 1,
-            'test-executor-head': 1,
-            'test-executor': 2,
-        },
-        logger=logger,
-    )
-    resp = await run_test(
-        flow=k8s_flow_with_reload_executor,
-        namespace=namespace,
-        core_client=core_client,
-        endpoint='/exec',
-    )
-    docs = resp[0].docs
-    assert len(docs) == 10
-    for doc in docs:
-        assert doc.tags['argument'] == 'value1'
-
-    import yaml
-
-    with open(os.path.join(dump_path, 'test_executor', 'test-executor.yml')) as f:
-        yml_document_all = list(yaml.safe_load_all(f))
-
-    yml_deployment = yml_document_all[-1]
-    container_args = yml_deployment['spec']['template']['spec']['containers'][0]['args']
-    container_args[container_args.index('--uses-with') + 1] = '{"argument": "value2"}'
-    yml_deployment['spec']['template']['spec']['containers'][0]['args'] = container_args
-    app_client.patch_namespaced_deployment(
-        name='test-executor', namespace=namespace, body=yml_deployment
-    )
-    await asyncio.sleep(10.0)
-    resp = await run_test(
-        flow=k8s_flow_with_reload_executor,
-        namespace=namespace,
-        core_client=core_client,
-        endpoint='/index',
-    )
-    docs = resp[0].docs
-    assert len(docs) == 10
-    for doc in docs:
-        assert doc.tags['argument'] == 'value2'
     core_client.delete_namespace(namespace)
 
 
