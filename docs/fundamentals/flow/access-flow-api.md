@@ -127,7 +127,8 @@ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: applic
 ```
 
 <details>
-  <summary>sample response</summary>    
+  <summary>Sample response</summary>    
+    
     {
       "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
       "data": {
