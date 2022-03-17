@@ -47,6 +47,11 @@ flow.to_k8s_yaml('flow_k8s_configuration')
 
 This will create a folder 'flow_k8s_configuration' with a set of Kubernetes YAML configurations for all the deployments composing the Flow
 
+````{admonition} Hint
+:class: hint
+You can use a custom Docker image for the Gateway deployment. Just set the envrironment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
+````
+
 ## Example
 
 ### Indexing and searching images using CLIP image encoder and PQLiteIndexer
