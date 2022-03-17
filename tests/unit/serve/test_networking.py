@@ -1,18 +1,18 @@
-import os
 import asyncio
 import multiprocessing
+import os
 import time
 from multiprocessing import Process
 
 import grpc
 import pytest
 
-from jina import DocumentArray, Document
+from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.helper import random_port
-from jina.serve.networking import ReplicaList, GrpcConnectionPool
 from jina.proto import jina_pb2_grpc
+from jina.serve.networking import GrpcConnectionPool, ReplicaList
 from jina.types.request.control import ControlRequest
 
 
@@ -371,13 +371,13 @@ async def test_secure_send_request(private_key_cert_chain):
     sent_msg = ControlRequest(command='STATUS')
 
     result = GrpcConnectionPool.send_request_sync(
-        sent_msg, f'localhost:{port}', https=True, root_certificates=certificate_chain
+        sent_msg, f'localhost:{port}', tls=True, root_certificates=certificate_chain
     )
 
     assert result.command == 'DEACTIVATE'
 
     result = await GrpcConnectionPool.send_request_async(
-        sent_msg, f'localhost:{port}', https=True, root_certificates=certificate_chain
+        sent_msg, f'localhost:{port}', tls=True, root_certificates=certificate_chain
     )
 
     assert result.command == 'DEACTIVATE'

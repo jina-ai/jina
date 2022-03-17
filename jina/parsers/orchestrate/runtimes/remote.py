@@ -35,10 +35,18 @@ def mixin_client_gateway_parser(parser):
     )
 
     gp.add_argument(
+        '--tls',
+        action='store_true',
+        default=False,
+        help='If set, connect to gateway using tls encryption',
+    )
+
+    gp.add_argument(  # todo mark deprecated
         '--https',
         action='store_true',
         default=False,
         help='If set, connect to gateway using https',
+        dest='tls',
     )
 
 

@@ -25,14 +25,14 @@ def test_host_unpacking(protocol, gateway_type, tls, hostname):
 
     host = f'{scheme}{hostname}:{port}'
 
-    c = Client(host=host) if scheme else Client(host=host, https=tls)
+    c = Client(host=host) if scheme else Client(host=host, tls=tls)
 
     if gateway_type:
         assert c.args.protocol == gateway_type
 
     assert c.args.host == hostname
     assert c.args.port == port
-    assert c.args.https == tls
+    assert c.args.tls == tls
 
 
 def test_host_unpacking_port():

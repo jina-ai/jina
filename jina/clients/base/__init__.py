@@ -69,7 +69,7 @@ class BaseClient(ABC):
                 kwargs['host'],
                 return_scheme['port'],
                 return_scheme['protocol'],
-                return_scheme['https'],
+                return_scheme['tls'],
             ) = self._parse_host_scheme(kwargs['host'])
 
             for key, value in return_scheme.items():

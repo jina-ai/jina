@@ -12,7 +12,7 @@ from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
-    from jina.clients.base import InputType, CallbackFnType
+    from jina.clients.base import CallbackFnType, InputType
 
 
 class GRPCBaseClient(BaseClient):
@@ -35,7 +35,7 @@ class GRPCBaseClient(BaseClient):
             async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
                 asyncio=True,
-                https=self.args.https,
+                tls=self.args.tls,
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
