@@ -67,6 +67,8 @@ You can precise these parameters by passing a valid scheme to the `host` argumen
 from jina import Client
 
 Client(host='https://my.awesome.flow:1234')
+Client(host='wss://my.awesome.flow:1234')
+Client(host='grpcs://my.awesome.flow:1234')
 ```
 
 You can as well pass each relevant parameters as a keyword argument:
@@ -74,6 +76,8 @@ You can as well pass each relevant parameters as a keyword argument:
 the following example is equivalent to the one above
 ```python
 Client(host='my.awesome.flow', port=1234, protocol='http', tls=True)
+Client(host='my.awesome.flow', port=1234, protocol='websocket', tls=True)
+Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=True)
 ```
 
 You can use a mixe of both as well:
