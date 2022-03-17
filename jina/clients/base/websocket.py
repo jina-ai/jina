@@ -1,21 +1,20 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
+from contextlib import AsyncExitStack, nullcontext
+from typing import TYPE_CHECKING, Dict, Optional
 
-from contextlib import nullcontext, AsyncExitStack
-from typing import Optional, TYPE_CHECKING, Dict
-
-from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.base import BaseClient
+from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
 from jina.excepts import BadClient
+from jina.helper import get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
 from jina.serve.stream import RequestStreamer
-from jina.helper import get_or_reuse_loop
 
 if TYPE_CHECKING:
-    from jina.types.request import Request
     from jina.clients.base import CallbackFnType, InputType
+    from jina.types.request import Request
 
 
 class WebSocketBaseClient(BaseClient):
@@ -50,7 +49,7 @@ class WebSocketBaseClient(BaseClient):
                 )
                 p_bar = stack.enter_context(cm1)
 
-                proto = 'wss' if self.args.https else 'ws'
+                proto = 'wss' if self.args.tls else 'ws'
                 url = f'{proto}://{self.args.host}:{self.args.port}/'
                 iolet = await stack.enter_async_context(
                     WebsocketClientlet(url=url, logger=self.logger)
