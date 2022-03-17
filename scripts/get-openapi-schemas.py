@@ -4,7 +4,7 @@ from daemon import _get_app
 from daemon.parser import get_main_parser
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
-from jina.serve.networking import create_connection_pool
+from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.gateway.http.app import get_fastapi_app
 
@@ -19,7 +19,7 @@ logger = JinaLogger('')
 gateway_app = get_fastapi_app(
     args,
     topology_graph=TopologyGraph({}),
-    connection_pool=create_connection_pool(),
+    connection_pool=GrpcConnectionPool(logger=logger),
     logger=logger,
 )
 gateway_schema = gateway_app.openapi()

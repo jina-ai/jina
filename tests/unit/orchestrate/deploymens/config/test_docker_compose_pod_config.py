@@ -78,7 +78,6 @@ def test_parse_args(
             'pod_role',
             'port',
             'k8s_namespace',
-            'k8s_connection_pool',
             'name',
             'uses',
             'connection_list',
@@ -190,7 +189,6 @@ def test_parse_args(
         )
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg.k8s_connection_pool is False
         assert namespace_equal(
             depl_arg,
             cargs,
@@ -199,7 +197,6 @@ def test_parse_args(
                 'pod_role',
                 'port',
                 'k8s_namespace',
-                'k8s_connection_pool',
                 'uses_before',  # the uses_before and after is head business
                 'uses_after',
                 'name',
@@ -287,7 +284,6 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
         )
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg.k8s_connection_pool is False
         assert namespace_equal(
             depl_arg,
             cargs,
@@ -296,7 +292,6 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
                 'uses_after',
                 'port',
                 'k8s_namespace',
-                'k8s_connection_pool',
                 'name',
             ),
         )

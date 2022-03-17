@@ -319,7 +319,6 @@ class DockerComposeConfig:
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
-            cargs.k8s_connection_pool = False
             cargs.uses_before_address = None
             cargs.uses_after_address = None
             if shards > 1:

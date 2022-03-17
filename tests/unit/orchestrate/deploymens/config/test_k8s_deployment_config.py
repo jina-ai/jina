@@ -6,8 +6,8 @@ from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.parsers import set_deployment_parser, set_gateway_parser
-from jina.serve.networking import K8sGrpcConnectionPool
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
+from jina.serve.networking import GrpcConnectionPool
 
 
 @pytest.fixture(autouse=True)
@@ -37,12 +37,10 @@ def namespace_equal(
 @pytest.mark.parametrize('shards', [1, 5])
 @pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
 @pytest.mark.parametrize('uses_after', [None, 'docker://docker_after_image:latest'])
-@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 def test_parse_args(
     shards: int,
-    k8s_connection_pool_call: bool,
     uses_with,
     uses_metas,
     uses_before,
@@ -61,9 +59,7 @@ def test_parse_args(
     if uses_metas is not None:
         args_list.extend(['--uses-metas', uses_metas])
     args = set_deployment_parser().parse_args(args_list)
-    deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', k8s_connection_pool_call
-    )
+    deployment_config = K8sDeploymentConfig(args, 'default-namespace')
 
     assert namespace_equal(
         deployment_config.deployment_args['head_deployment'],
@@ -73,7 +69,6 @@ def test_parse_args(
             'pod_role',
             'port',
             'k8s_namespace',
-            'k8s_connection_pool',
             'name',
             'uses',
             'connection_list',
@@ -99,10 +94,6 @@ def test_parse_args(
     assert deployment_config.deployment_args['head_deployment'].uses_after == uses_after
     assert deployment_config.deployment_args['head_deployment'].uses_metas is None
     assert deployment_config.deployment_args['head_deployment'].uses_with is None
-    assert (
-        deployment_config.deployment_args['head_deployment'].k8s_connection_pool
-        is k8s_connection_pool_call
-    )
     if uses_before is None:
         assert (
             deployment_config.deployment_args['head_deployment'].uses_before_address
@@ -123,21 +114,16 @@ def test_parse_args(
             deployment_config.deployment_args['head_deployment'].uses_after_address
             == '127.0.0.1:8082'
         )
-    if k8s_connection_pool_call:
-        assert (
-            deployment_config.deployment_args['head_deployment'].connection_list is None
-        )
+
+    if shards > 1:
+        candidate_connection_list = {
+            str(i): f'executor-{i}.default-namespace.svc:8080' for i in range(shards)
+        }
     else:
-        if shards > 1:
-            candidate_connection_list = {
-                str(i): f'executor-{i}.default-namespace.svc:8080'
-                for i in range(shards)
-            }
-        else:
-            candidate_connection_list = {'0': f'executor.default-namespace.svc:8080'}
-        assert deployment_config.deployment_args[
-            'head_deployment'
-        ].connection_list == json.dumps(candidate_connection_list)
+        candidate_connection_list = {'0': f'executor.default-namespace.svc:8080'}
+    assert deployment_config.deployment_args[
+        'head_deployment'
+    ].connection_list == json.dumps(candidate_connection_list)
     for i, depl_arg in enumerate(deployment_config.deployment_args['deployments']):
         import copy
 
@@ -148,7 +134,6 @@ def test_parse_args(
         )
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg.k8s_connection_pool is False
         assert namespace_equal(
             depl_arg,
             cargs,
@@ -157,7 +142,6 @@ def test_parse_args(
                 'pod_role',
                 'port',
                 'k8s_namespace',
-                'k8s_connection_pool',
                 'uses_before',  # the uses_before and after is head business
                 'uses_after',
                 'name',
@@ -166,8 +150,7 @@ def test_parse_args(
 
 
 @pytest.mark.parametrize('shards', [1, 5])
-@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
-def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool):
+def test_parse_args_custom_executor(shards: int):
     uses_before = 'custom-executor-before'
     uses_after = 'custom-executor-after'
     args = set_deployment_parser().parse_args(
@@ -182,9 +165,7 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
             'executor',
         ]
     )
-    deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', k8s_connection_pool_call
-    )
+    deployment_config = K8sDeploymentConfig(args, 'default-namespace')
 
     assert (
         deployment_config.deployment_args['head_deployment'].runtime_cls
@@ -196,16 +177,12 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
     assert deployment_config.deployment_args['head_deployment'].uses is None
     assert deployment_config.deployment_args['head_deployment'].uses_after == uses_after
     assert (
-        deployment_config.deployment_args['head_deployment'].k8s_connection_pool
-        is k8s_connection_pool_call
-    )
-    assert (
         deployment_config.deployment_args['head_deployment'].uses_before_address
-        == f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE}'
+        == f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_BEFORE}'
     )
     assert (
         deployment_config.deployment_args['head_deployment'].uses_after_address
-        == f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_AFTER}'
+        == f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_AFTER}'
     )
 
     for i, depl_arg in enumerate(deployment_config.deployment_args['deployments']):
@@ -218,7 +195,6 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
         )
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
-        assert depl_arg.k8s_connection_pool is False
         assert namespace_equal(
             depl_arg,
             cargs,
@@ -227,7 +203,6 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
                 'uses_after',
                 'port',
                 'k8s_namespace',
-                'k8s_connection_pool',
                 'name',
             ),
         )
@@ -250,13 +225,12 @@ def test_parse_args_custom_executor(shards: int, k8s_connection_pool_call: bool)
         ),
     ],
 )
-@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 @pytest.mark.parametrize('gpus', ['0', '1'])
-def test_deployments(name: str, shards: str, k8s_connection_pool_call, gpus):
+def test_deployments(name: str, shards: str, gpus):
     args = set_deployment_parser().parse_args(
         ['--name', name, '--shards', shards, '--gpus', gpus]
     )
-    deployment_config = K8sDeploymentConfig(args, 'ns', k8s_connection_pool_call)
+    deployment_config = K8sDeploymentConfig(args, 'ns')
 
     if name != 'gateway':
         head_deployment = deployment_config.head_deployment
@@ -273,38 +247,6 @@ def test_deployments(name: str, shards: str, k8s_connection_pool_call, gpus):
             assert deploy.name == name
         assert deploy.jina_deployment_name == name
         assert deploy.shard_id == i
-        assert deploy.k8s_connection_pool is k8s_connection_pool_call
-
-
-def assert_role_config(role: Dict):
-    assert role['kind'] == 'Role'
-    assert role['metadata'] == {
-        'namespace': 'default-namespace',
-        'name': 'connection-pool',
-    }
-    assert role['rules'] == [
-        {
-            'apiGroups': [''],
-            'resources': ['pods', 'services'],
-            'verbs': ['list', 'watch'],
-        }
-    ]
-
-
-def assert_role_binding_config(role_binding: Dict):
-    assert role_binding['kind'] == 'RoleBinding'
-    assert role_binding['metadata'] == {
-        'name': 'connection-pool-binding',
-        'namespace': 'default-namespace',
-    }
-    assert role_binding['subjects'] == [
-        {'kind': 'ServiceAccount', 'name': 'default', 'apiGroup': ''}
-    ]
-    assert role_binding['roleRef'] == {
-        'kind': 'Role',
-        'name': 'connection-pool',
-        'apiGroup': '',
-    }
 
 
 def assert_config_map_config(
@@ -319,29 +261,20 @@ def assert_config_map_config(
 
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'address.svc'}])
-@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
-def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
+def test_k8s_yaml_gateway(deployments_addresses):
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
     # ignored for gateway
     deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', k8s_connection_pool_call, deployments_addresses
+        args, 'default-namespace', deployments_addresses
     )
     yaml_configs = deployment_config.to_k8s_yaml()
     assert len(yaml_configs) == 1
     name, configs = yaml_configs[0]
     assert name == 'gateway'
-    assert (
-        len(configs) == 5
-    )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-    # deployment)
-    role = configs[0]
-    assert_role_config(role)
-
-    role_binding = configs[1]
-    assert_role_binding_config(role_binding)
-    config_map = configs[2]
+    assert len(configs) == 3  # 3 configs per yaml (configmap, service and deployment)
+    config_map = configs[0]
     assert_config_map_config(
         config_map,
         'gateway',
@@ -352,7 +285,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
         },
     )
 
-    service = configs[3]
+    service = configs[1]
     assert service['kind'] == 'Service'
     assert service['metadata'] == {
         'name': 'gateway',
@@ -369,7 +302,7 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     assert port['targetPort'] == 32465
     assert spec_service['selector'] == {'app': 'gateway'}
 
-    deployment = configs[4]
+    deployment = configs[2]
     assert deployment['kind'] == 'Deployment'
     assert deployment['metadata'] == {
         'name': 'gateway',
@@ -390,7 +323,8 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
             'shard_id': '',
             'pod_type': 'GATEWAY',
             'ns': 'default-namespace',
-        }
+        },
+        'annotations': {'linkerd.io/inject': 'enabled'},
     }
     spec = template['spec']
     containers = spec['containers']
@@ -409,8 +343,6 @@ def test_k8s_yaml_gateway(k8s_connection_pool_call, deployments_addresses):
     assert '--env' not in args
     assert '--pod-role' in args
     assert args[args.index('--pod-role') + 1] == 'GATEWAY'
-    if not k8s_connection_pool_call:
-        assert args[-1] == '--k8s-disable-connection-pool'
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args
         assert args[args.index('--deployments-addresses') + 1] == json.dumps(
@@ -431,7 +363,6 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
 )
 @pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
 @pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
-@pytest.mark.parametrize('k8s_connection_pool_call', [False, True])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
@@ -440,7 +371,6 @@ def test_k8s_yaml_regular_deployment(
     uses_after,
     uses,
     shards,
-    k8s_connection_pool_call,
     uses_with,
     uses_metas,
     polling,
@@ -489,21 +419,15 @@ def test_k8s_yaml_regular_deployment(
 
     args = set_deployment_parser().parse_args(args_list)
     # ignored for gateway
-    deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', k8s_connection_pool_call
-    )
+    deployment_config = K8sDeploymentConfig(args, 'default-namespace')
     yaml_configs = deployment_config.to_k8s_yaml()
     assert len(yaml_configs) == 1 + shards
     head_name, head_configs = yaml_configs[0]
     assert head_name == 'executor-head'
     assert (
-        len(head_configs) == 5
-    )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-    role = head_configs[0]
-    assert_role_config(role)
-    role_binding = head_configs[1]
-    assert_role_binding_config(role_binding)
-    config_map = head_configs[2]
+        len(head_configs) == 3
+    )  # 3 configs per yaml (configmap, service and deployment)
+    config_map = head_configs[0]
     assert_config_map_config(
         config_map,
         'executor-head',
@@ -513,7 +437,7 @@ def test_k8s_yaml_regular_deployment(
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
         },
     )
-    head_service = head_configs[3]
+    head_service = head_configs[1]
     assert head_service['kind'] == 'Service'
     assert head_service['metadata'] == {
         'name': 'executor-head',
@@ -527,7 +451,7 @@ def test_k8s_yaml_regular_deployment(
     assert_port_config(head_port, 'port', 8080)
     assert head_spec_service['selector'] == {'app': 'executor-head'}
 
-    head_deployment = head_configs[4]
+    head_deployment = head_configs[2]
     assert head_deployment['kind'] == 'Deployment'
     assert head_deployment['metadata'] == {
         'name': 'executor-head',
@@ -548,7 +472,8 @@ def test_k8s_yaml_regular_deployment(
             'shard_id': '',
             'pod_type': 'HEAD',
             'ns': 'default-namespace',
-        }
+        },
+        'annotations': {'linkerd.io/inject': 'enabled'},
     }
 
     head_spec = head_template['spec']
@@ -595,26 +520,21 @@ def test_k8s_yaml_regular_deployment(
         head_runtime_container_args[head_runtime_container_args.index('--pod-role') + 1]
         == 'HEAD'
     )
-    if not k8s_connection_pool_call:
-        assert '--k8s-disable-connection-pool' in head_runtime_container_args
-        assert '--connection-list' in head_runtime_container_args
-        connection_list_string = head_runtime_container_args[
-            head_runtime_container_args.index('--connection-list') + 1
-        ]
-        if shards > 1:
-            assert connection_list_string == json.dumps(
-                {
-                    str(shard_id): f'executor-{shard_id}.default-namespace.svc:8080'
-                    for shard_id in range(shards)
-                }
-            )
-        else:
-            assert connection_list_string == json.dumps(
-                {'0': 'executor.default-namespace.svc:8080'}
-            )
+    assert '--connection-list' in head_runtime_container_args
+    connection_list_string = head_runtime_container_args[
+        head_runtime_container_args.index('--connection-list') + 1
+    ]
+    if shards > 1:
+        assert connection_list_string == json.dumps(
+            {
+                str(shard_id): f'executor-{shard_id}.default-namespace.svc:8080'
+                for shard_id in range(shards)
+            }
+        )
     else:
-        assert '--k8s-disable-connection-pool' not in head_runtime_container_args
-        assert '--connection-list' not in head_runtime_container_args
+        assert connection_list_string == json.dumps(
+            {'0': 'executor.default-namespace.svc:8080'}
+        )
 
     if polling == 'ANY':
         assert '--polling' not in head_runtime_container_args
@@ -660,7 +580,6 @@ def test_k8s_yaml_regular_deployment(
         )
         assert '--env' not in uses_before_runtime_container_args
         assert '--connection-list' not in uses_before_runtime_container_args
-        assert '--k8s-disable-connection-pool' not in uses_before_runtime_container_args
 
     if uses_after is not None:
         uses_after_container = head_containers[-1]
@@ -695,19 +614,14 @@ def test_k8s_yaml_regular_deployment(
         )
         assert '--env' not in uses_after_runtime_container_args
         assert '--connection-list' not in uses_after_runtime_container_args
-        assert '--k8s-disable-connection-pool' not in uses_after_runtime_container_args
 
     for i, (shard_name, shard_configs) in enumerate(yaml_configs[1:]):
         name = f'executor-{i}' if shards > 1 else 'executor'
         assert shard_name == name
         assert (
-            len(shard_configs) == 5
-        )  # 5 configs per yaml (connection-pool, conneciton-pool-role, configmap, service and
-        role = shard_configs[0]
-        assert_role_config(role)
-        role_binding = shard_configs[1]
-        assert_role_binding_config(role_binding)
-        config_map = shard_configs[2]
+            len(shard_configs) == 3
+        )  # 3 configs per yaml (configmap, service and deployment
+        config_map = shard_configs[0]
         assert_config_map_config(
             config_map,
             name,
@@ -718,7 +632,7 @@ def test_k8s_yaml_regular_deployment(
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },
         )
-        shard_service = shard_configs[3]
+        shard_service = shard_configs[1]
         assert shard_service['kind'] == 'Service'
         assert shard_service['metadata'] == {
             'name': name,
@@ -732,7 +646,7 @@ def test_k8s_yaml_regular_deployment(
         assert_port_config(shard_port, 'port', 8080)
         assert shard_spec_service['selector'] == {'app': name}
 
-        shard_deployment = shard_configs[4]
+        shard_deployment = shard_configs[2]
         assert shard_deployment['kind'] == 'Deployment'
         assert shard_deployment['metadata'] == {
             'name': name,
@@ -753,7 +667,8 @@ def test_k8s_yaml_regular_deployment(
                 'shard_id': str(i),
                 'pod_type': 'WORKER',
                 'ns': 'default-namespace',
-            }
+            },
+            'annotations': {'linkerd.io/inject': 'enabled'},
         }
 
         shard_spec = shard_template['spec']
@@ -799,10 +714,6 @@ def test_k8s_yaml_regular_deployment(
             == '{"ENV_VAR": "ENV_VALUE"}'
         )
         assert '--connection-list' not in shard_container_runtime_container_args
-        assert (
-            '--k8s-disable-connection-pool'
-            not in shard_container_runtime_container_args
-        )
 
         if uses_with is not None:
             assert '--uses-with' in shard_container_runtime_container_args

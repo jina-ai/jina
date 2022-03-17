@@ -12,7 +12,7 @@ import grpc
 
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc
-from jina.serve.networking import K8sGrpcConnectionPool, create_connection_pool
+from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.control import ControlRequest
@@ -45,13 +45,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             args.name = ''
         self.name = args.name
         self._deployment_name = os.getenv('JINA_DEPLOYMENT_NAME', 'worker')
-        self.connection_pool = create_connection_pool(
-            logger=self.logger,
-            k8s_connection_pool=args.k8s_connection_pool,
-            k8s_namespace=args.k8s_namespace,
-            compression=args.compression,
+        self.connection_pool = GrpcConnectionPool(
+            logger=self.logger, compression=args.compression
         )
-
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
             # try loading the polling args as json
@@ -77,16 +73,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 else PollingType.from_string(polling)
             )
             self._polling = self._default_polling_dict(default_polling)
-
-        # In K8s the ConnectionPool needs the information about the Jina Deployment its running in
-        # This is stored in the environment variable JINA_DEPLOYMENT_NAME in all Jina K8s default templates
-        if (
-            type(self.connection_pool) == K8sGrpcConnectionPool
-            and 'JINA_DEPLOYMENT_NAME' not in os.environ
-        ):
-            raise ValueError(
-                'K8s deployments need to specify the environment variable "JINA_DEPLOYMENT_NAME"'
-            )
 
         if hasattr(args, 'connection_list') and args.connection_list:
             connection_list = json.loads(args.connection_list)

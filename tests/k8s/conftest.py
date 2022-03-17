@@ -1,4 +1,6 @@
 import os
+import subprocess
+from pathlib import Path
 
 import docker
 import pytest
@@ -19,10 +21,44 @@ class KindClusterWrapper:
         )
         self._log = logger
         self._set_kube_config()
+        self._install_linkderd(kind_cluster)
         self._loaded_images = set()
 
+    def _install_linkderd(self, kind_cluster):
+        self._log.info('Installing Linkerd to Cluster...')
+        proc = subprocess.Popen(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'],
+            stdout=subprocess.PIPE,
+            env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+        )
+        kube_out = subprocess.check_output(
+            (
+                str(kind_cluster.kubectl_path),
+                'apply',
+                '-f',
+                '-',
+            ),
+            stdin=proc.stdout,
+            env=os.environ,
+        )
+        self._log.info('Poll status of linkerd install')
+        returncode = proc.poll()
+        self._log.info(
+            f'Installing Linkerd to Cluster returned code {returncode}, kubectl output was {kube_out}'
+        )
+        if returncode is not None and returncode != 0:
+            raise Exception(f"Installing linkerd failed with {returncode}")
+
+        self._log.info('check linkerd status')
+        out = subprocess.check_output(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
+            env=os.environ,
+        )
+
+        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+
     def _set_kube_config(self):
-        self._log.debug(f'Setting KUBECONFIG to {self._kube_config_path}')
+        self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
 
     def load_docker_images(self, images, image_tag_map):

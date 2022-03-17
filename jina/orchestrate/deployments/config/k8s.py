@@ -13,7 +13,7 @@ from jina.orchestrate.deployments.config.helper import (
     construct_runtime_container_args,
     validate_uses,
 )
-from jina.serve.networking import K8sGrpcConnectionPool
+from jina.serve.networking import GrpcConnectionPool
 from jina.orchestrate.deployments import BaseDeployment
 
 
@@ -33,7 +33,6 @@ class K8sDeploymentConfig:
             common_args: Union['Namespace', Dict],
             deployment_args: Union['Namespace', Dict],
             k8s_namespace: str,
-            k8s_connection_pool: bool = True,
             k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
         ):
             self.name = name
@@ -46,7 +45,6 @@ class K8sDeploymentConfig:
             self.deployment_args = deployment_args
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.k8s_namespace = k8s_namespace
-            self.k8s_connection_pool = k8s_connection_pool
             self.k8s_deployments_addresses = k8s_deployments_addresses
 
         def get_gateway_yamls(
@@ -83,8 +81,6 @@ class K8sDeploymentConfig:
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
             container_args = ['gateway'] + _args
-            if not cargs.k8s_connection_pool:
-                container_args.append('--k8s-disable-connection-pool')
             return kubernetes_deployment.get_deployment_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
@@ -145,7 +141,7 @@ class K8sDeploymentConfig:
                 uses_before_cargs = copy.copy(cargs)
                 uses_before_cargs.uses = cargs.uses_before
                 uses_before_cargs.name = f'{self.common_args.name}/uses-before'
-                uses_before_cargs.port = K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE
+                uses_before_cargs.port = GrpcConnectionPool.K8S_PORT_USES_BEFORE
                 uses_before_cargs.uses_before_address = None
                 uses_before_cargs.uses_after_address = None
                 uses_before_cargs.uses_before = None
@@ -166,7 +162,7 @@ class K8sDeploymentConfig:
                 uses_after_cargs = copy.copy(cargs)
                 uses_after_cargs.uses = cargs.uses_after
                 uses_after_cargs.name = f'{self.common_args.name}/uses-after'
-                uses_after_cargs.port = K8sGrpcConnectionPool.K8S_PORT_USES_AFTER
+                uses_after_cargs.port = GrpcConnectionPool.K8S_PORT_USES_AFTER
                 uses_after_cargs.uses_before_address = None
                 uses_after_cargs.uses_after_address = None
                 uses_after_cargs.uses_before = None
@@ -207,7 +203,6 @@ class K8sDeploymentConfig:
         self,
         args: Union['Namespace', Dict],
         k8s_namespace: Optional[str] = None,
-        k8s_connection_pool: bool = True,
         k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
     ):
         # External Deployments should be ignored in a K8s based Flow
@@ -218,14 +213,12 @@ class K8sDeploymentConfig:
                 'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'
             )
         self.k8s_namespace = k8s_namespace
-        self.k8s_connection_pool = k8s_connection_pool
         self.k8s_deployments_addresses = k8s_deployments_addresses
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
             # otherwise it will remain with the one from the original Deployment
             self.args.k8s_namespace = k8s_namespace
-        self.args.k8s_connection_pool = k8s_connection_pool
         self.name = self.args.name
 
         self.deployment_args = self._get_deployment_args(self.args)
@@ -240,7 +233,6 @@ class K8sDeploymentConfig:
                 deployment_args=self.deployment_args['head_deployment'],
                 pod_type=PodRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
-                k8s_connection_pool=self.k8s_connection_pool,
                 k8s_deployments_addresses=self.k8s_deployments_addresses,
             )
 
@@ -260,7 +252,6 @@ class K8sDeploymentConfig:
                     else PodRoleType.GATEWAY,
                     jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
-                    k8s_connection_pool=self.k8s_connection_pool,
                     k8s_deployments_addresses=self.k8s_deployments_addresses
                     if name == 'gateway'
                     else None,
@@ -281,43 +272,37 @@ class K8sDeploymentConfig:
                 self.args
             )
             parsed_args['head_deployment'].gpus = None
-            parsed_args['head_deployment'].port = K8sGrpcConnectionPool.K8S_PORT
+            parsed_args['head_deployment'].port = GrpcConnectionPool.K8S_PORT
             parsed_args['head_deployment'].uses = None
             parsed_args['head_deployment'].uses_metas = None
             parsed_args['head_deployment'].uses_with = None
             parsed_args['head_deployment'].env = None
 
-            # if the k8s connection pool is disabled, the connection pool is managed manually
-            if not self.k8s_connection_pool:
-                import json
+            import json
 
-                connection_list = {}
-                for i in range(shards):
-                    name = (
-                        f'{to_compatible_name(self.name)}-{i}'
-                        if shards > 1
-                        else f'{to_compatible_name(self.name)}'
-                    )
-                    connection_list[
-                        str(i)
-                    ] = f'{name}.{self.k8s_namespace}.svc:{K8sGrpcConnectionPool.K8S_PORT}'
-
-                parsed_args['head_deployment'].connection_list = json.dumps(
-                    connection_list
+            connection_list = {}
+            for i in range(shards):
+                name = (
+                    f'{to_compatible_name(self.name)}-{i}'
+                    if shards > 1
+                    else f'{to_compatible_name(self.name)}'
                 )
+                connection_list[
+                    str(i)
+                ] = f'{name}.{self.k8s_namespace}.svc:{GrpcConnectionPool.K8S_PORT}'
+
+            parsed_args['head_deployment'].connection_list = json.dumps(connection_list)
 
         if uses_before:
             parsed_args[
                 'head_deployment'
             ].uses_before_address = (
-                f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_BEFORE}'
+                f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_BEFORE}'
             )
         if uses_after:
             parsed_args[
                 'head_deployment'
-            ].uses_after_address = (
-                f'127.0.0.1:{K8sGrpcConnectionPool.K8S_PORT_USES_AFTER}'
-            )
+            ].uses_after_address = f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_AFTER}'
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
@@ -325,16 +310,13 @@ class K8sDeploymentConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             if args.name != 'gateway':
-                cargs.port = K8sGrpcConnectionPool.K8S_PORT
+                cargs.port = GrpcConnectionPool.K8S_PORT
             cargs.uses_before_address = None
             cargs.uses_after_address = None
             if shards > 1:
                 cargs.name = f'{cargs.name}-{i}'
             if args.name == 'gateway':
                 cargs.pod_role = PodRoleType.GATEWAY
-            # the worker runtimes do not care
-            else:
-                cargs.k8s_connection_pool = False
             parsed_args['deployments'].append(cargs)
 
         return parsed_args

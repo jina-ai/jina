@@ -1,23 +1,18 @@
 import asyncio
 import ipaddress
 import os
-from threading import Thread
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
 
-from jina.enums import PollingType
-from jina.helper import get_or_reuse_loop
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
+from jina.enums import PollingType
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
-
-if TYPE_CHECKING:
-    import kubernetes
 
 
 class ReplicaList:
@@ -137,6 +132,10 @@ class GrpcConnectionPool:
     :param logger: the logger to use
     :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC
     """
+
+    K8S_PORT_USES_AFTER = 8082
+    K8S_PORT_USES_BEFORE = 8081
+    K8S_PORT = 8080
 
     class _ConnectionPoolMap:
         def __init__(self, logger: Optional[JinaLogger]):
@@ -799,202 +798,6 @@ class GrpcConnectionPool:
             jina_pb2_grpc.JinaControlRequestRPCStub(channel),
             channel,
         )
-
-
-class K8sGrpcConnectionPool(GrpcConnectionPool):
-    """
-    Manages grpc connections to replicas in a K8s deployment.
-
-    :param namespace: K8s namespace to operate in
-    :param client: K8s client
-    :param logger: the logger to use
-    """
-
-    K8S_PORT = 8080
-    K8S_PORT_USES_BEFORE = 8081
-    K8S_PORT_USES_AFTER = 8082
-
-    def __init__(
-        self,
-        namespace: str,
-        client: 'kubernetes.client.CoreV1Api',
-        logger: JinaLogger = None,
-    ):
-        super().__init__(logger=logger)
-
-        self._namespace = namespace
-        self._process_events_task = None
-        self._k8s_client = client
-        self._k8s_event_queue = asyncio.Queue()
-        self.enabled = False
-
-        from kubernetes import watch
-
-        self._api_watch = watch.Watch()
-
-        self.update_thread = Thread(target=self.run, daemon=True)
-
-    async def _fetch_initial_state(self):
-        namespaced_pods = self._k8s_client.list_namespaced_pod(self._namespace)
-        for item in namespaced_pods.items:
-            await self._process_item(item)
-
-    def start(self):
-        """
-        Subscribe to the K8s API and watch for changes in Pods
-        """
-        self._loop = get_or_reuse_loop()
-        self._process_events_task = asyncio.create_task(self._process_events())
-        self.update_thread.start()
-
-    async def _process_events(self):
-        await self._fetch_initial_state()
-        while self.enabled:
-            event = await self._k8s_event_queue.get()
-            await self._process_item(event)
-
-    def run(self):
-        """
-        Subscribes on MODIFIED events from list_namespaced_pod AK8s PI
-        """
-
-        self.enabled = True
-        while self.enabled:
-            for event in self._api_watch.stream(
-                self._k8s_client.list_namespaced_pod, self._namespace
-            ):
-                if event['type'] == 'MODIFIED':
-                    asyncio.run_coroutine_threadsafe(
-                        self._k8s_event_queue.put(event['object']), self._loop
-                    )
-                if not self.enabled:
-                    break
-
-    async def close(self):
-        """
-        Closes the connection pool
-        """
-        self.enabled = False
-        if self._process_events_task:
-            self._process_events_task.cancel()
-        self._api_watch.stop()
-        await super().close()
-
-    @staticmethod
-    def _pod_is_up(item):
-        return item.status.pod_ip is not None and item.status.phase == 'Running'
-
-    @staticmethod
-    def _pod_is_ready(item):
-        return item.status.container_statuses is not None and all(
-            cs.ready for cs in item.status.container_statuses
-        )
-
-    async def _process_item(self, item):
-        try:
-            jina_deployment_name = item.metadata.labels['jina_deployment_name']
-
-            is_head = item.metadata.labels['pod_type'].lower() == 'head'
-            shard_id = (
-                int(item.metadata.labels['shard_id'])
-                if item.metadata.labels['shard_id'] and not is_head
-                else None
-            )
-
-            is_deleted = item.metadata.deletion_timestamp is not None
-            ip = item.status.pod_ip
-            port = self.K8S_PORT
-
-            if (
-                ip
-                and port
-                and not is_deleted
-                and self._pod_is_up(item)
-                and self._pod_is_ready(item)
-            ):
-                self.add_connection(
-                    deployment=jina_deployment_name,
-                    head=is_head,
-                    address=f'{ip}:{port}',
-                    shard_id=shard_id,
-                )
-            elif ip and port and is_deleted and self._pod_is_up(item):
-                await self.remove_connection(
-                    deployment=jina_deployment_name,
-                    head=is_head,
-                    address=f'{ip}:{port}',
-                    shard_id=shard_id,
-                )
-        except KeyError:
-            self._logger.debug(
-                f'Ignoring changes to non Jina resource {item.metadata.name}'
-            )
-            pass
-
-    @staticmethod
-    def _extract_port(item):
-        for container in item.spec.containers:
-            if container.name == 'executor':
-                return container.ports[0].container_port
-        return None
-
-
-def is_remote_local_connection(first: str, second: str):
-    """
-    Decides, whether ``first`` is remote host and ``second`` is localhost
-
-    :param first: the ip or host name of the first runtime
-    :param second: the ip or host name of the second runtime
-    :return: True, if first is remote and second is local
-    """
-
-    try:
-        first_ip = ipaddress.ip_address(first)
-        first_global = first_ip.is_global
-    except ValueError:
-        if first == 'localhost':
-            first_global = False
-        else:
-            first_global = True
-    try:
-        second_ip = ipaddress.ip_address(second)
-        second_local = second_ip.is_private or second_ip.is_loopback
-    except ValueError:
-        if second == 'localhost':
-            second_local = True
-        else:
-            second_local = False
-
-    return first_global and second_local
-
-
-def create_connection_pool(
-    k8s_connection_pool: bool = False,
-    k8s_namespace: Optional[str] = None,
-    logger: Optional[JinaLogger] = None,
-    compression: str = 'NoCompression',
-) -> GrpcConnectionPool:
-    """
-    Creates the appropriate connection pool based on parameters
-    :param k8s_namespace: k8s namespace the pool will live in, None if outside K8s
-    :param k8s_connection_pool: flag to indicate if K8sGrpcConnectionPool should be used, defaults to true in K8s
-    :param logger: the logger to use
-    :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC
-    :return: A connection pool object
-    """
-    if k8s_connection_pool and k8s_namespace:
-        import kubernetes
-        from kubernetes import client
-
-        kubernetes.config.load_incluster_config()
-
-        k8s_client = client.ApiClient()
-        core_client = client.CoreV1Api(api_client=k8s_client)
-        return K8sGrpcConnectionPool(
-            namespace=k8s_namespace, client=core_client, logger=logger
-        )
-    else:
-        return GrpcConnectionPool(logger=logger, compression=compression)
 
 
 def host_is_local(hostname):

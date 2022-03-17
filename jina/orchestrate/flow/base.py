@@ -480,11 +480,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return graph_dict
 
     def _get_k8s_deployments_addresses(
-        self, k8s_namespace: str, k8s_connection_pool: bool
+        self, k8s_namespace: str
     ) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.orchestrate.deployments.config.helper import to_compatible_name
-        from jina.serve.networking import K8sGrpcConnectionPool
+        from jina.serve.networking import GrpcConnectionPool
 
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
@@ -497,11 +497,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
                 )
 
-            # we only need hard coded addresses if the k8s connection pool is disabled or if this deployment is external
-            if not k8s_connection_pool or v.external:
-                graph_dict[node] = [
-                    f'{deployment_k8s_address}:{v.head_port if v.external else K8sGrpcConnectionPool.K8S_PORT}'
-                ]
+            graph_dict[node] = [
+                f'{deployment_k8s_address}:{v.head_port if v.external else GrpcConnectionPool.K8S_PORT}'
+            ]
 
         return graph_dict if graph_dict else None
 
@@ -1763,17 +1761,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             any_event_loop=True,
         )
 
-    def to_k8s_yaml(
-        self,
-        output_base_path: str,
-        k8s_namespace: Optional[str] = None,
-        k8s_connection_pool: bool = True,
-    ):
+    def to_k8s_yaml(self, output_base_path: str, k8s_namespace: Optional[str] = None):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes
         :param output_base_path: The base path where to dump all the yaml files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
-        :param k8s_connection_pool: Boolean indicating wether the kubernetes connection pool should be used inside the Executor Runtimes.
         """
         import yaml
 
@@ -1791,9 +1783,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             k8s_deployment = K8sDeploymentConfig(
                 args=v.args,
                 k8s_namespace=k8s_namespace,
-                k8s_connection_pool=k8s_connection_pool,
                 k8s_deployments_addresses=self._get_k8s_deployments_addresses(
-                    k8s_namespace, k8s_connection_pool
+                    k8s_namespace
                 )
                 if node == 'gateway'
                 else None,
