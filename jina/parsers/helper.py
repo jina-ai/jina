@@ -2,7 +2,7 @@
 import argparse
 import os
 import warnings
-from typing import Tuple
+from typing import Tuple, Type
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
@@ -279,7 +279,7 @@ class DeprecateAction(argparse.Action):
 
 
 def get_deprecation_renamed_action(
-    replacement: str, action: type[argparse.Action] = argparse.Action
+    replacement: str, action: Type[argparse.Action] = argparse.Action
 ):
     """
     To deprecate an argument when it has been renamed for argparse
