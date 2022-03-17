@@ -148,6 +148,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12636,4 +12637,27 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```81106d80```](https://github.com/jina-ai/jina/commit/81106d80bbff1434f41013745ad52cab27aa2f55)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9266cd54```](https://github.com/jina-ai/jina/commit/9266cd542a83acc46b63db45db4e92cd06d5cb39)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```e19b7af0```](https://github.com/jina-ai/jina/commit/e19b7af0fa6f7d9eedef44b864132a74bcc5fb9e)] __-__ __version__: the next version will be 3.2.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-2-5></a>
+## Release Note (`3.2.5`)
+
+> Release time: 2022-03-17 10:19:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a470ce6c```](https://github.com/jina-ai/jina/commit/a470ce6c59373e2a6c5518bcaa8a13b560abacd5)] __-__ __grpc__: add compression to grpc network interface (#4499) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```e6e38903```](https://github.com/jina-ai/jina/commit/e6e389039c322bc7cd6984f0bc00f905069fa009)] __-__ move import in websocket app (#4504) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```f844904c```](https://github.com/jina-ai/jina/commit/f844904ca88980969256fc6f7a767be6f7f3be94)] __-__ __version__: the next version will be 3.2.5 (*Jina Dev Bot*)
 
