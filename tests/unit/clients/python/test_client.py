@@ -4,14 +4,13 @@ import time
 import pytest
 import requests
 
-from jina import Executor, requests as req
-from jina import Flow, __windows__
-from jina import helper
+from docarray import Document, DocumentArray
+from jina import Executor, Flow, __windows__, helper
+from jina import requests as req
 from jina.clients import Client
 from jina.excepts import BadClientInput
-from jina.parsers import set_gateway_parser
 from jina.orchestrate.pods.factory import PodFactory
-from docarray import Document, DocumentArray
+from jina.parsers import set_gateway_parser
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,13 +45,13 @@ def test_img_2():
     'inputs', [iter([b'1234', b'45467']), iter([Document(), Document()])]
 )
 def test_check_input_success(inputs):
-    client = Client(return_responses=True, host='localhost', port_jinad=12345)
+    client = Client(host='localhost', port_jinad=12345)
     client.check_input(inputs)
 
 
 @pytest.mark.parametrize('inputs', [iter([list(), list(), {12, 2, 3}])])
 def test_check_input_fail(inputs):
-    client = Client(return_responses=True, host='localhost', port_jinad=12345)
+    client = Client(host='localhost', port_jinad=12345)
     with pytest.raises(BadClientInput):
         client.check_input(inputs)
 
@@ -101,7 +100,6 @@ def test_client_websocket(mocker, flow_with_websocket):
     with flow_with_websocket:
         time.sleep(0.5)
         client = Client(
-            return_responses=True,
             host='localhost',
             port=str(flow_with_websocket.port),
             protocol='websocket',
@@ -117,6 +115,7 @@ def test_client_websocket(mocker, flow_with_websocket):
             on_always=on_always_mock,
             on_error=on_error_mock,
             on_done=on_done_mock,
+            return_responses=True,
         )
         on_always_mock.assert_called_once()
         on_done_mock.assert_called_once()
@@ -125,14 +124,13 @@ def test_client_websocket(mocker, flow_with_websocket):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_from_kwargs(protocol):
-    Client(return_responses=True, port=12345, host='0.0.0.1', protocol=protocol)
+    Client(port=12345, host='0.0.0.1', protocol=protocol)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_independent_client(protocol):
     with Flow(protocol=protocol) as f:
         c = Client(
-            return_responses=True,
             host='localhost',
             port=f.port,
             protocol=protocol,
@@ -158,7 +156,6 @@ def test_all_sync_clients(protocol, mocker):
     m4 = mocker.Mock()
     with f:
         c = Client(
-            return_responses=True,
             host='localhost',
             port=f.port,
             protocol=protocol,

@@ -98,6 +98,7 @@ class PostMixin:
         request_size: int = 100,
         show_progress: bool = False,
         continue_on_error: bool = False,
+        return_responses: bool = False,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -111,7 +112,9 @@ class PostMixin:
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
-        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
+        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.7
+        :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
+
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -119,11 +122,22 @@ class PostMixin:
             ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
 
-        return_results = False
+        c = self.client
+
+        if c.args.return_responses is True and return_responses is False:
+            warnings.warn(
+                'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
+                'parameter `return_responses`. This argument will be deprecated from the `constructor` '
+                'soon. We recommend passing `return_responses` to the `post` method.'
+            )
+            return_responses = True
+
+        return_results = True
+        if (on_always is not None) or (on_done is not None):
+            return_results = False
 
         async def _get_results(*args, **kwargs):
             result = []
-            c = self.client
             c.show_progress = show_progress
             c.continue_on_error = continue_on_error
             async for resp in c._get_results(*args, **kwargs):
@@ -131,7 +145,7 @@ class PostMixin:
                     result.append(resp)
 
             if return_results:
-                if not c.args.return_responses:
+                if not return_responses:
                     docs = [r.data.docs for r in result]
                     if len(docs) < 1:
                         return docs
@@ -181,8 +195,9 @@ class AsyncPostMixin:
         request_size: int = 100,
         show_progress: bool = False,
         continue_on_error: bool = False,
+        return_responses: bool = False,
         **kwargs,
-    ) -> AsyncGenerator[None, 'Response']:
+    ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.
@@ -195,6 +210,7 @@ class AsyncPostMixin:
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
+        :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
         :param kwargs: additional parameters
         :yield: Response object
 
@@ -202,13 +218,22 @@ class AsyncPostMixin:
             ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
         c = self.client
+
+        if c.args.return_responses is True and return_responses is False:
+            warnings.warn(
+                'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
+                'parameter `return_responses`. This argument will be deprecated from the `constructor` '
+                'soon. We recommend passing `return_responses` to the `post` method.'
+            )
+            return_responses = True
+
         c.show_progress = show_progress
         c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
         on_error = _wrap_on_error(on_error) if on_error is not None else on_error
 
-        async for r in c._get_results(
+        async for result in c._get_results(
             inputs=inputs,
             on_done=on_done,
             on_error=on_error,
@@ -219,7 +244,10 @@ class AsyncPostMixin:
             request_size=request_size,
             **kwargs,
         ):
-            yield r
+            if not return_responses:
+                yield result.data.docs
+            else:
+                yield result
 
     # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')

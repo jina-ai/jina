@@ -291,7 +291,7 @@ def on_error(resp, exception: Exception):
 
 If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
 
-By setting `return_responses=True` when creating a Client, this behavior can be modified to return a list of Responses
+By setting `return_responses=True` as an argument to `client.post(return_responses=True), this behavior can be modified to return a list of Responses
 (`DataRequest`s) instead.
 
 If a callback is provided, no results will be returned.
@@ -331,8 +331,8 @@ from jina import Flow, Client
 from docarray import Document
 
 with Flow() as f:
-    client = Client(port=f.port, return_responses=True)
-    resp = client.post(on='', inputs=Document(text='Hi there!'))
+    client = Client(port=f.port)
+    resp = client.post(on='', inputs=Document(text='Hi there!'), return_responses=True)
     print(resp)
     print(resp[0].docs.texts)
 ```
@@ -417,5 +417,17 @@ async def run_client(port):
 
 with Flow() as f:  # Using it as a Context Manager will start the Flow
     asyncio.run(run_client(f.port))
+```
+
+### Custom gRPC compression for GRPC Client
+
+If the communication to the `Flow` needs to be done via GRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
+The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+
+```python
+from jina import Client
+
+client = Client()
+client.post(..., compression='Gzip')
 ```
 

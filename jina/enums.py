@@ -16,7 +16,7 @@ To use these enums in YAML config, following the example below:
         parallel_type: any
 """
 
-from enum import Enum, IntEnum, EnumMeta
+from enum import Enum, EnumMeta, IntEnum
 
 
 class EnumType(EnumMeta):
@@ -274,6 +274,13 @@ class RemoteWorkspaceState(str, Enum):
     ACTIVE = 'ACTIVE'
     FAILED = 'FAILED'
     DELETING = 'DELETING'
+
+
+class WebsocketSubProtocols(str, Enum):
+    """Subprotocol supported with Websocket Gateway"""
+
+    JSON = 'json'
+    BYTES = 'bytes'
 
 
 def replace_enum_to_str(obj):

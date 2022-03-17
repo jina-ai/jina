@@ -128,6 +128,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         *,
+        compression: Optional[str] = 'NoCompression',
         connection_list: Optional[str] = None,
         cors: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
@@ -174,6 +175,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
+        :param compression: The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
@@ -520,8 +522,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _get_graph_conditions(self) -> Dict[str, Dict]:
         graph_condition = {}
         for node, v in self._deployment_nodes.items():
-            if v.args.input_condition is not None:
-                graph_condition[node] = v.args.input_condition
+            if v.args.when is not None:  # condition on input docs
+                graph_condition[node] = v.args.when
 
         return graph_condition
 
@@ -597,6 +599,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
+        compression: Optional[str] = 'NoCompression',
         connection_list: Optional[str] = None,
         disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
@@ -607,7 +610,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
-        input_condition: Optional[dict] = None,
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         name: Optional[str] = None,
@@ -637,11 +639,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
+        when: Optional[dict] = None,
         workspace: Optional[str] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -662,7 +666,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param input_condition: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
@@ -738,6 +741,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
           - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
+        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :return: a (new) Flow object with modification
 

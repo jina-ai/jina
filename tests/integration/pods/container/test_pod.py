@@ -1,17 +1,17 @@
-import os
 import asyncio
 import multiprocessing
+import os
 import time
 
 import pytest
 
-from jina import Document, Client
-from jina.enums import PollingType, PodRoleType
+from jina import Client, Document
+from jina.enums import PodRoleType, PollingType
 from jina.helper import random_port
+from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
-from jina.orchestrate.pods.container import ContainerPod
-from jina.orchestrate.pods import Pod
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.types.request.control import ControlRequest
@@ -67,20 +67,24 @@ async def test_pods_trivial_topology(
     # create a single gateway pod
     gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
 
-    with gateway_pod, worker_pod, head_pod:
+    with gateway_pod, head_pod, worker_pod:
         await asyncio.sleep(1.0)
 
         assert HeadRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=head_pod.runtime_ctrl_address,
-            ready_or_shutdown_event=multiprocessing.Event(),
+            ready_or_shutdown_event=head_pod.ready_or_shutdown.event,
         )
 
         assert WorkerRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=worker_pod.runtime_ctrl_address,
-            ready_or_shutdown_event=multiprocessing.Event(),
+            ready_or_shutdown_event=worker_pod.ready_or_shutdown.event,
         )
+
+        head_pod.ready_or_shutdown.event.wait(timeout=5.0)
+        worker_pod.ready_or_shutdown.event.wait(timeout=5.0)
+        gateway_pod.ready_or_shutdown.event.wait(timeout=5.0)
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
@@ -91,8 +95,10 @@ async def test_pods_trivial_topology(
         )
 
         # send requests to the gateway
-        c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
-        responses = c.post('/', inputs=async_inputs, request_size=1)
+        c = Client(host='localhost', port=port, asyncio=True)
+        responses = c.post(
+            '/', inputs=async_inputs, request_size=1, return_responses=True
+        )
         response_list = []
         async for response in responses:
             response_list.append(response)

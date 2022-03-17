@@ -26,7 +26,7 @@ def mixin_base_deployment_parser(parser):
     )
 
     gp.add_argument(
-        '--input-condition',
+        '--when',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
