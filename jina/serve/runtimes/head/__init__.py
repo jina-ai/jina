@@ -10,11 +10,11 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import grpc
 
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.serve.networking import GrpcConnectionPool
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
@@ -45,9 +45,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             args.name = ''
         self.name = args.name
         self._deployment_name = os.getenv('JINA_DEPLOYMENT_NAME', 'worker')
-        self.connection_pool = GrpcConnectionPool(logger=self.logger,
-                                                  compression=args.compression)
-
+        self.connection_pool = GrpcConnectionPool(
+            logger=self.logger, compression=args.compression
+        )
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
             # try loading the polling args as json
