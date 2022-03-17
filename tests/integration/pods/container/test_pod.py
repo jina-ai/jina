@@ -67,20 +67,24 @@ async def test_pods_trivial_topology(
     # create a single gateway pod
     gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
 
-    with gateway_pod, worker_pod, head_pod:
+    with gateway_pod, head_pod, worker_pod:
         await asyncio.sleep(1.0)
 
         assert HeadRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=head_pod.runtime_ctrl_address,
-            ready_or_shutdown_event=multiprocessing.Event(),
+            ready_or_shutdown_event=head_pod.ready_or_shutdown.event,
         )
 
         assert WorkerRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=worker_pod.runtime_ctrl_address,
-            ready_or_shutdown_event=multiprocessing.Event(),
+            ready_or_shutdown_event=worker_pod.ready_or_shutdown.event,
         )
+
+        head_pod.ready_or_shutdown.event.wait(timeout=5.0)
+        worker_pod.ready_or_shutdown.event.wait(timeout=5.0)
+        gateway_pod.ready_or_shutdown.event.wait(timeout=5.0)
 
         # this would be done by the Pod, its adding the worker to the head
         activate_msg = ControlRequest(command='ACTIVATE')
