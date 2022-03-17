@@ -147,6 +147,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12610,4 +12611,29 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```c7c2c35b```](https://github.com/jina-ai/jina/commit/c7c2c35b8ed22bc4638f1cd485129e63d2c9b3d8)] __-__ __version__: the next version will be 3.2.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-2-4></a>
+## Release Note (`3.2.4`)
+
+> Release time: 2022-03-17 07:16:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Deepankar Mahapatro,  Jina Dev Bot,  Joan Fontanals,  🙇
+
+
+### 🆕 New Features
+
+ - [[```97d77a35```](https://github.com/jina-ai/jina/commit/97d77a35902f6533ba656b9863b50bbf063bba56)] __-__ __websocket__: json/bytes support (#4501) (*Deepankar Mahapatro*)
+
+### 🧼 Code Refactoring
+
+ - [[```05541407```](https://github.com/jina-ai/jina/commit/05541407013d19395c09a6287146924dd5093db4)] __-__ return_responses to post (#4496) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```81106d80```](https://github.com/jina-ai/jina/commit/81106d80bbff1434f41013745ad52cab27aa2f55)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9266cd54```](https://github.com/jina-ai/jina/commit/9266cd542a83acc46b63db45db4e92cd06d5cb39)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```e19b7af0```](https://github.com/jina-ai/jina/commit/e19b7af0fa6f7d9eedef44b864132a74bcc5fb9e)] __-__ __version__: the next version will be 3.2.4 (*Jina Dev Bot*)
 
