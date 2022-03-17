@@ -1,17 +1,17 @@
-import os
 import asyncio
 import multiprocessing
+import os
 import time
 
 import pytest
 
-from jina import Document, Client
-from jina.enums import PollingType, PodRoleType
+from jina import Client, Document
+from jina.enums import PodRoleType, PollingType
 from jina.helper import random_port
+from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
-from jina.orchestrate.pods.container import ContainerPod
-from jina.orchestrate.pods import Pod
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.types.request.control import ControlRequest
@@ -91,8 +91,10 @@ async def test_pods_trivial_topology(
         )
 
         # send requests to the gateway
-        c = Client(return_responses=True, host='localhost', port=port, asyncio=True)
-        responses = c.post('/', inputs=async_inputs, request_size=1)
+        c = Client(host='localhost', port=port, asyncio=True)
+        responses = c.post(
+            '/', inputs=async_inputs, request_size=1, return_responses=True
+        )
         response_list = []
         async for response in responses:
             response_list.append(response)

@@ -1,9 +1,9 @@
-import time
 import os
+import time
 
 import pytest
 
-from jina import Flow, Document, DocumentArray, Client
+from jina import Client, Document, DocumentArray, Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,9 +35,10 @@ def test_containerruntime_args(docker_image_built, shards, replicas):
         polling='ANY',
     )
     with f:
-        ret1 = Client(return_responses=True, port=exposed_port).index(
+        ret1 = Client(port=exposed_port).index(
             inputs=DocumentArray([Document() for _ in range(2000)]),
             request_size=10,
+            return_responses=True,
         )
 
     assert len(ret1) == 200
