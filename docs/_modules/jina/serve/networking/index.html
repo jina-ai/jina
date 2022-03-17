@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.serve.networking - Jina 3.2.4 documentation</title>
+        <title>jina.serve.networking - Jina 3.2.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.2.4 documentation</div>
+                <div class="brand">Jina 3.2.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -593,20 +593,20 @@
                     </label>
                 </div>
                 <h1>Source code for jina.serve.networking</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">ipaddress</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 <span class="kn">from</span> <span class="nn">grpc.aio</span> <span class="kn">import</span> <span class="n">AioRpcError</span>
 
-<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -730,6 +730,7 @@
 <span class="sd">    Manages a list of grpc connections.</span>
 
 <span class="sd">    :param logger: the logger to use</span>
+<span class="sd">    :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC</span>
 <span class="sd">    """</span>
 
     <span class="k">class</span> <span class="nc">_ConnectionPoolMap</span><span class="p">:</span>
@@ -867,9 +868,29 @@
                 <span class="k">return</span> <span class="n">connection</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'NoCompression'</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ConnectionPoolMap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+        <span class="n">GRPC_COMPRESSION_MAP</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'NoCompression'</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">NoCompression</span><span class="p">,</span>
+            <span class="s1">'Gzip'</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">Gzip</span><span class="p">,</span>
+            <span class="s1">'Deflate'</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">Deflate</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">compression</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GRPC_COMPRESSION_MAP</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">'Your compression "</span><span class="si">{</span><span class="n">compression</span><span class="si">}</span><span class="s1">" is not supported. Supported '</span>
+                <span class="sa">f</span><span class="s1">'algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as '</span>
+                <span class="sa">f</span><span class="s1">'default'</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compression</span> <span class="o">=</span> <span class="n">GRPC_COMPRESSION_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">compression</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">NoCompression</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_request"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request">[docs]</a>    <span class="k">def</span> <span class="nf">send_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1051,7 +1072,9 @@
                     <span class="k">if</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">DataRequest</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
 
                         <span class="n">call_result</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">process_single_data</span><span class="p">(</span>
-                            <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+                            <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                            <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
@@ -1059,7 +1082,11 @@
                         <span class="p">)</span>
                         <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span>
                     <span class="k">if</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">DataRequest</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">call_result</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+                        <span class="n">call_result</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span>
+                            <span class="n">requests</span><span class="p">,</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                            <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
+                        <span class="p">)</span>
                         <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
@@ -1236,7 +1263,9 @@
                         <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">'endpoint'</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
                         <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
                         <span class="n">response</span><span class="p">,</span> <span class="n">call</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_single_data</span><span class="o">.</span><span class="n">with_call</span><span class="p">(</span>
-                            <span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+                            <span class="n">request</span><span class="p">,</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">==</span> <span class="n">ControlRequest</span><span class="p">:</span>
                         <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaControlRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
@@ -1278,7 +1307,9 @@
                     <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">'endpoint'</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
                     <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
                     <span class="n">response</span><span class="p">,</span> <span class="n">call</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_data</span><span class="o">.</span><span class="n">with_call</span><span class="p">(</span>
-                        <span class="n">requests</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+                        <span class="n">requests</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="k">return</span> <span class="n">response</span>
             <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">RpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -1536,12 +1567,14 @@
     <span class="n">k8s_connection_pool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">compression</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'NoCompression'</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GrpcConnectionPool</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Creates the appropriate connection pool based on parameters</span>
 <span class="sd">    :param k8s_namespace: k8s namespace the pool will live in, None if outside K8s</span>
 <span class="sd">    :param k8s_connection_pool: flag to indicate if K8sGrpcConnectionPool should be used, defaults to true in K8s</span>
 <span class="sd">    :param logger: the logger to use</span>
+<span class="sd">    :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC</span>
 <span class="sd">    :return: A connection pool object</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">k8s_connection_pool</span> <span class="ow">and</span> <span class="n">k8s_namespace</span><span class="p">:</span>
@@ -1556,7 +1589,7 @@
             <span class="n">namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">core_client</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">GrpcConnectionPool</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">GrpcConnectionPool</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="host_is_local"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.host_is_local">[docs]</a><span class="k">def</span> <span class="nf">host_is_local</span><span class="p">(</span><span class="n">hostname</span><span class="p">):</span>

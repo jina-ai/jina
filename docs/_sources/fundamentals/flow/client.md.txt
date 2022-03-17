@@ -377,3 +377,15 @@ with Flow() as f:  # Using it as a Context Manager will start the Flow
     asyncio.run(run_client(f.port))
 ```
 
+### Custom gRPC compression for GRPC Client
+
+If the communication to the `Flow` needs to be done via GRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
+The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+
+```python
+from jina import Client
+
+client = Client()
+client.post(..., compression='Gzip')
+```
+
