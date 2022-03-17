@@ -20,16 +20,16 @@ Starting the Flow:
 ```python
 from jina import Flow
 
-HOST = '0.0.0.0'
 PORT = 12345
 PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'
 
-with Flow(host=HOST, port=PORT, protocol=PROTOCOL) as f:
+with Flow(port=PORT, protocol=PROTOCOL) as f:
     f.block()
 ```
 
-To connect a Client to the Flow's gateway, you need to specify its IP host address and port, using the `host=` and `port=`
-constructor keywords. If there is no host address provided, the Client defaults to `'0.0.0.0'`.
+To connect a Client to the Flow's gateway, you need to specify an IP host address and port on which the Flow can be reached.
+This is done using the `host=` and `port=` constructor keywords.
+If the Client and the Flow gateway are running on the same machine, the `host=` parameter can be omitted, as it defaults to `'0.0.0.0'`.
 
 Additionally, the connection protocol can be toggled between `'grpc'`, `'http'`, and `'websocket'` using the `protocol=`
 keyword, where `'grpc'` is the default.
@@ -37,9 +37,9 @@ keyword, where `'grpc'` is the default.
 ```python
 from jina import Client
 
-HOST = '0.0.0.0'
-PORT = 12345
-PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'
+HOST = '0.0.0.0'  # host address where the Flow can be reached
+PORT = 12345  # port where the Flow can be reached
+PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'. Needs to be same as specified by the Flow
 
 client = Client(host=HOST, port=PORT, protocol=PROTOCOL)
 ```
