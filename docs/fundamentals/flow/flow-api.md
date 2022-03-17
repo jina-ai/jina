@@ -243,13 +243,22 @@ For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
 
 You can enable HTTPS connectivity to your Flow by configuring the underlying [uvicorn](https://www.uvicorn.org/) server.
 To do this, you need an `ssl_certificate`, an `ssl_keyfile`, and an `ssl_keyfile_password`, which you pass to `uvicorn_kwargs`
-when creating your Flow:
+when creating your Flow.
+These will then be directly passed to the Uvicorn server.
+
+````{admonition} See Also
+:class: seealso
+
+HTTPS support in Jina is directly powered by Uvicorn.
+For more details about the arguments that are used here, and about other available settings for the Uvicorn server,
+see their [website](https://www.uvicorn.org/settings/).
+````
 
 ```python
 cert, key, pwd = ..., ..., ...
 
 f = Flow(
-    protocol='http',
+    protocol='http',  # or 'websocket'
     uvicorn_kwargs=[
         f'ssl_certfile: {cert}',
         f'ssl_keyfile: {key}',
@@ -259,12 +268,6 @@ f = Flow(
 ```
 
 HTTPS connection is supported in combination with the `http` and `websocket` protocols.
-
-````{admonition} See Also
-:class: seealso
-
-For more details and additional Uvicorn configuration options, see Uvicorn's [website](https://www.uvicorn.org/settings/).
-````
 
 ## Limit outstanding requests
 
