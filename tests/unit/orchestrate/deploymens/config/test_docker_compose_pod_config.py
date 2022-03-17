@@ -1,12 +1,14 @@
-from typing import Union, Dict, Tuple
 import json
+import os
+from typing import Dict, Tuple, Union
+
 import pytest
 
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
-from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.orchestrate.deployments.config.docker_compose import DockerComposeConfig
+from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
 @pytest.fixture(autouse=True)
@@ -15,7 +17,10 @@ def set_test_pip_version():
 
     os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
     yield
-    del os.environ['JINA_K8S_USE_TEST_PIP']
+    try:
+        del os.environ['JINA_K8S_USE_TEST_PIP']
+    except KeyError:
+        pass
 
 
 def namespace_equal(
@@ -331,7 +336,11 @@ def test_worker_services(name: str, shards: str):
 
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
-def test_docker_compose_gateway(deployments_addresses):
+@pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
+def test_docker_compose_gateway(deployments_addresses, custom_gateway):
+    if custom_gateway:
+        del os.environ['JINA_K8S_USE_TEST_PIP']
+        os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
@@ -341,7 +350,11 @@ def test_docker_compose_gateway(deployments_addresses):
     )
     name, gateway_config = deployment_config.to_docker_compose_config()[0]
     assert name == 'gateway'
-    assert gateway_config['image'] == 'jinaai/jina:test-pip'
+    assert (
+        gateway_config['image'] == custom_gateway
+        if custom_gateway
+        else 'jinaai/jina:test-pip'
+    )
     assert gateway_config['entrypoint'] == ['jina']
     assert gateway_config['ports'] == [f'{args.port}:{args.port}']
     assert gateway_config['expose'] == [f'{args.port}']

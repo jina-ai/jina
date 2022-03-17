@@ -51,11 +51,12 @@ class DockerComposeConfig:
             import os
 
             test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-            image_name = (
+            default_image = (
                 'jinaai/jina:test-pip'
                 if test_pip
                 else f'jinaai/jina:{self.version}-py38-standard'
             )
+            image_name = os.getenv('JINA_GATEWAY_IMAGE', default_image)
             cargs = copy.copy(self.service_args)
             cargs.deployments_addresses = self.deployments_addresses
             cargs.env = None
