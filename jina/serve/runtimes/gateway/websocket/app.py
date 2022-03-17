@@ -5,7 +5,6 @@ from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
-from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
@@ -28,6 +27,7 @@ def get_fastapi_app(
     :param logger: Jina logger.
     :return: fastapi app
     """
+    from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 
     with ImportExtensions(required=True):
         from fastapi import FastAPI, WebSocket, WebSocketDisconnect
