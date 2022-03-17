@@ -708,6 +708,20 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 - `/custom` has polling `ALL`
 - all other endpoints will have polling `ANY` due to the usage of `*` as a wildcard to catch all other cases
 
+
+### Custom gRPC compression
+
+Communication between `Executors` inside a `Flow` is done via `grpc`. To optimize the performance and the bandwith of this connections,
+Jina allows the users to specify their (`compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `compression` argument to the Flow.
+
+The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+
+```python
+from jina import Flow
+
+f = Flow(compression='Gzip').add()
+```
+
 ## Visualize a `Flow`
 
 `Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:

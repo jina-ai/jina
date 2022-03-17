@@ -79,6 +79,14 @@ def mixin_gateway_parser(parser):
         default='{}',
     )
 
+    gp.add_argument(
+        '--compression',
+        type=str,
+        default='NoCompression',
+        help='The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, '
+        'Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.',
+    )
+
 
 def _add_host(arg_group):
     arg_group.add_argument(

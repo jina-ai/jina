@@ -6,18 +6,17 @@ import os
 import threading
 from abc import ABC
 from collections import defaultdict
-from typing import Optional, Union, List, Tuple, Dict
+from typing import Dict, List, Optional, Tuple, Union
 
 import grpc
 
-from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.serve.networking import create_connection_pool, K8sGrpcConnectionPool
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc
+from jina.serve.networking import K8sGrpcConnectionPool, create_connection_pool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
-from jina import __default_executor__
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -50,6 +49,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             k8s_connection_pool=args.k8s_connection_pool,
             k8s_namespace=args.k8s_namespace,
+            compression=args.compression,
         )
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)

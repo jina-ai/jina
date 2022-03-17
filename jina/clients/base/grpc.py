@@ -1,5 +1,4 @@
 import asyncio
-from contextlib import nullcontext
 from typing import TYPE_CHECKING, Optional
 
 import grpc
@@ -12,7 +11,13 @@ from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
-    from jina.clients.base import InputType, CallbackFnType
+    from jina.clients.base import CallbackFnType, InputType
+
+GRPC_COMPRESSION_MAP = {
+    'NoCompression'.lower(): grpc.Compression.NoCompression,
+    'Gzip'.lower(): grpc.Compression.Gzip,
+    'Deflate'.lower(): grpc.Compression.Deflate,
+}
 
 
 class GRPCBaseClient(BaseClient):
@@ -27,9 +32,19 @@ class GRPCBaseClient(BaseClient):
         on_done: 'CallbackFnType',
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
+        compression: str = 'NoCompression',
         **kwargs,
     ):
         try:
+            if compression.lower() not in GRPC_COMPRESSION_MAP:
+                import warnings
+
+                warnings.warn(
+                    message=f'Your compression "{compression}" is not supported. Supported '
+                    f'algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as '
+                    f'default'
+                )
+                compression = 'NoCompression'
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
             async with GrpcConnectionPool.get_grpc_channel(
@@ -44,7 +59,12 @@ class GRPCBaseClient(BaseClient):
                     total_length=self._inputs_length, disable=not (self.show_progress)
                 ) as p_bar:
 
-                    async for resp in stub.Call(req_iter):
+                    async for resp in stub.Call(
+                        req_iter,
+                        compression=GRPC_COMPRESSION_MAP.get(
+                            compression.lower(), grpc.Compression.NoCompression
+                        ),
+                    ):
                         callback_exec(
                             response=resp,
                             on_error=on_error,

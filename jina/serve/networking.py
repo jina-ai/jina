@@ -1,17 +1,17 @@
-import os
 import asyncio
 import ipaddress
+import os
 from threading import Thread
-from typing import Optional, List, Dict, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
 
-from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2_grpc
 from jina.enums import PollingType
 from jina.helper import get_or_reuse_loop
+from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2_grpc
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
@@ -135,6 +135,7 @@ class GrpcConnectionPool:
     Manages a list of grpc connections.
 
     :param logger: the logger to use
+    :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC
     """
 
     class _ConnectionPoolMap:
@@ -272,9 +273,29 @@ class GrpcConnectionPool:
                 return connection
             return None
 
-    def __init__(self, logger: Optional[JinaLogger] = None):
+    def __init__(
+        self,
+        logger: Optional[JinaLogger] = None,
+        compression: str = 'NoCompression',
+    ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self._connections = self._ConnectionPoolMap(self._logger)
+        GRPC_COMPRESSION_MAP = {
+            'NoCompression'.lower(): grpc.Compression.NoCompression,
+            'Gzip'.lower(): grpc.Compression.Gzip,
+            'Deflate'.lower(): grpc.Compression.Deflate,
+        }
+        if compression.lower() not in GRPC_COMPRESSION_MAP:
+            import warnings
+
+            warnings.warn(
+                message=f'Your compression "{compression}" is not supported. Supported '
+                f'algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as '
+                f'default'
+            )
+        self.compression = GRPC_COMPRESSION_MAP.get(
+            compression.lower(), grpc.Compression.NoCompression
+        )
 
     def send_request(
         self,
@@ -456,7 +477,9 @@ class GrpcConnectionPool:
                     if request_type == DataRequest and len(requests) == 1:
 
                         call_result = stubs[0].process_single_data(
-                            requests[0], metadata=metadata
+                            requests[0],
+                            metadata=metadata,
+                            compression=self.compression,
                         )
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -464,7 +487,11 @@ class GrpcConnectionPool:
                         )
                         return response, metadata
                     if request_type == DataRequest and len(requests) > 1:
-                        call_result = stubs[1].process_data(requests, metadata=metadata)
+                        call_result = stubs[1].process_data(
+                            requests,
+                            metadata=metadata,
+                            compression=self.compression,
+                        )
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -641,7 +668,9 @@ class GrpcConnectionPool:
                         metadata = (('endpoint', endpoint),) if endpoint else None
                         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                         response, call = stub.process_single_data.with_call(
-                            request, timeout=timeout, metadata=metadata
+                            request,
+                            timeout=timeout,
+                            metadata=metadata,
                         )
                     elif type(request) == ControlRequest:
                         stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
@@ -683,7 +712,9 @@ class GrpcConnectionPool:
                     metadata = (('endpoint', endpoint),) if endpoint else None
                     stub = jina_pb2_grpc.JinaDataRequestRPCStub(channel)
                     response, call = stub.process_data.with_call(
-                        requests, timeout=timeout, metadata=metadata
+                        requests,
+                        timeout=timeout,
+                        metadata=metadata,
                     )
                     return response
             except grpc.RpcError as e:
@@ -941,12 +972,14 @@ def create_connection_pool(
     k8s_connection_pool: bool = False,
     k8s_namespace: Optional[str] = None,
     logger: Optional[JinaLogger] = None,
+    compression: str = 'NoCompression',
 ) -> GrpcConnectionPool:
     """
     Creates the appropriate connection pool based on parameters
     :param k8s_namespace: k8s namespace the pool will live in, None if outside K8s
     :param k8s_connection_pool: flag to indicate if K8sGrpcConnectionPool should be used, defaults to true in K8s
     :param logger: the logger to use
+    :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC
     :return: A connection pool object
     """
     if k8s_connection_pool and k8s_namespace:
@@ -961,7 +994,7 @@ def create_connection_pool(
             namespace=k8s_namespace, client=core_client, logger=logger
         )
     else:
-        return GrpcConnectionPool(logger=logger)
+        return GrpcConnectionPool(logger=logger, compression=compression)
 
 
 def host_is_local(hostname):
