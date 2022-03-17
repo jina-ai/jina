@@ -9,7 +9,6 @@ from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser, set_gateway_parser
-from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.serve.networking import GrpcConnectionPool
 
 
@@ -256,9 +255,7 @@ def assert_config_map_config(
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'address.svc'}])
 @pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
-def test_k8s_yaml_gateway(
-    deployments_addresses, custom_gateway
-):
+def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     if custom_gateway:
         os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
     elif 'JINA_GATEWAY_IMAGE' in os.environ:
