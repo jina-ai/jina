@@ -11,18 +11,6 @@ from jina.orchestrate.deployments.config.docker_compose import DockerComposeConf
 from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
-@pytest.fixture(autouse=True)
-def set_test_pip_version():
-    import os
-
-    os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
-    yield
-    try:
-        del os.environ['JINA_K8S_USE_TEST_PIP']
-    except KeyError:
-        pass
-
-
 def namespace_equal(
     n1: Union[Namespace, Dict], n2: Union[Namespace, Dict], skip_attr: Tuple = ()
 ) -> bool:
@@ -339,8 +327,9 @@ def test_worker_services(name: str, shards: str):
 @pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
 def test_docker_compose_gateway(deployments_addresses, custom_gateway):
     if custom_gateway:
-        del os.environ['JINA_K8S_USE_TEST_PIP']
         os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
+    elif 'JINA_GATEWAY_IMAGE' in os.environ:
+        del os.environ['JINA_GATEWAY_IMAGE']
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
@@ -353,7 +342,7 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
     assert (
         gateway_config['image'] == custom_gateway
         if custom_gateway
-        else 'jinaai/jina:test-pip'
+        else f'jinaai/jina:{deployment_config.worker_services[0].version}-py38-standard'
     )
     assert gateway_config['entrypoint'] == ['jina']
     assert gateway_config['ports'] == [f'{args.port}:{args.port}']

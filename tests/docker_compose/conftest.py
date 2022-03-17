@@ -44,9 +44,9 @@ def build_docker_image(image_name, image_name_tag_map):
 
 @pytest.fixture(autouse=True)
 def set_test_pip_version():
-    os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
+    os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
-    del os.environ['JINA_K8S_USE_TEST_PIP']
+    del os.environ['JINA_GATEWAY_IMAGE']
 
 
 @pytest.fixture(autouse=True)
