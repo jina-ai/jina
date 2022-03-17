@@ -1,13 +1,16 @@
 import argparse
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List
 
+from jina.clients.request import request_generator
+from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
+from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
     from jina.serve.networking import GrpcConnectionPool
+    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 
 def get_fastapi_app(
@@ -32,26 +35,77 @@ def get_fastapi_app(
     class ConnectionManager:
         def __init__(self):
             self.active_connections: List[WebSocket] = []
+            self.protocol_dict: Dict[str, WebsocketSubProtocols] = {}
+
+        def get_client(self, websocket: WebSocket) -> str:
+            return f'{websocket.client.host}:{websocket.client.port}'
+
+        def get_subprotocol(self, headers: Dict):
+            try:
+                if 'sec-websocket-protocol' in headers:
+                    subprotocol = WebsocketSubProtocols(
+                        headers['sec-websocket-protocol']
+                    )
+                elif b'sec-websocket-protocol' in headers:
+                    subprotocol = WebsocketSubProtocols(
+                        headers[b'sec-websocket-protocol'].decode()
+                    )
+                else:
+                    subprotocol = WebsocketSubProtocols.JSON
+                    logger.debug(
+                        f'No protocol headers passed. Choosing default subprotocol {WebsocketSubProtocols.JSON}'
+                    )
+            except Exception as e:
+                logger.debug(
+                    f'Got an exception while setting user\'s subprotocol, defaulting to JSON {e}'
+                )
+                subprotocol = WebsocketSubProtocols.JSON
+            return subprotocol
 
         async def connect(self, websocket: WebSocket):
             await websocket.accept()
-            logger.debug(
-                f'client {websocket.client.host}:{websocket.client.port} connected'
+            subprotocol = self.get_subprotocol(dict(websocket.scope['headers']))
+            logger.info(
+                f'client {websocket.client.host}:{websocket.client.port} connected '
+                f'with subprotocol {subprotocol}'
             )
             self.active_connections.append(websocket)
+            self.protocol_dict[self.get_client(websocket)] = subprotocol
 
         def disconnect(self, websocket: WebSocket):
+            self.protocol_dict.pop(self.get_client(websocket))
             self.active_connections.remove(websocket)
+
+        async def receive(self, websocket: WebSocket) -> Any:
+            subprotocol = self.protocol_dict[self.get_client(websocket)]
+            if subprotocol == WebsocketSubProtocols.JSON:
+                return await websocket.receive_json(mode='text')
+            elif subprotocol == WebsocketSubProtocols.BYTES:
+                return await websocket.receive_bytes()
+
+        async def iter(self, websocket: WebSocket) -> AsyncIterator[Any]:
+            try:
+                while True:
+                    yield await self.receive(websocket)
+            except WebSocketDisconnect:
+                pass
+
+        async def send(self, websocket: WebSocket, data: DataRequest) -> None:
+            subprotocol = self.protocol_dict[self.get_client(websocket)]
+            if subprotocol == WebsocketSubProtocols.JSON:
+                return await websocket.send_json(data.to_dict(), mode='text')
+            elif subprotocol == WebsocketSubProtocols.BYTES:
+                return await websocket.send_bytes(data.to_bytes())
 
     manager = ConnectionManager()
 
     app = FastAPI()
 
-    from jina.serve.stream import RequestStreamer
     from jina.serve.runtimes.gateway.request_handling import (
         handle_request,
         handle_result,
     )
+    from jina.serve.stream import RequestStreamer
 
     streamer = RequestStreamer(
         args=args,
@@ -68,20 +122,36 @@ def get_fastapi_app(
 
     @app.websocket('/')
     async def websocket_endpoint(websocket: WebSocket):
-
         await manager.connect(websocket)
 
         async def req_iter():
-            async for request_bytes in websocket.iter_bytes():
-                if request_bytes == bytes(True):
-                    break
-                yield DataRequest(request_bytes)
+            async for request in manager.iter(websocket):
+                if isinstance(request, dict):
+                    if request == {}:
+                        break
+                    else:
+                        # NOTE: Helps in converting camelCase to snake_case
+                        req_generator_input = JinaEndpointRequestModel(**request).dict()
+                        req_generator_input['data_type'] = DataInputType.DICT
+                        if request['data'] is not None and 'docs' in request['data']:
+                            req_generator_input['data'] = req_generator_input['data'][
+                                'docs'
+                            ]
+
+                        # you can't do `yield from` inside an async function
+                        for data_request in request_generator(**req_generator_input):
+                            yield data_request
+                elif isinstance(request, bytes):
+                    if request == bytes(True):
+                        break
+                    else:
+                        yield DataRequest(request)
 
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):
-                await websocket.send_bytes(bytes(msg))
+                await manager.send(websocket, msg)
         except WebSocketDisconnect:
-            logger.debug('Client successfully disconnected from server')
+            logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
 
     return app
