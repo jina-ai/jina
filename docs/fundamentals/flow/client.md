@@ -9,6 +9,7 @@ It enables you to send `Documents` to a running `Flow` in a number of different 
 However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
+
 ## HTTP, gRPC, and WebSocket
 
 Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
@@ -19,19 +20,37 @@ Starting the Flow:
 ```python
 from jina import Flow
 
-port = 12345
+PORT = 12345
+PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'
 
-with Flow(port=port) as f:
+with Flow(port=PORT, protocol=PROTOCOL) as f:
     f.block()
 ```
 
-Using the Client:
+To connect a Client to the Flow's gateway, you need to specify an IP host address and port on which the Flow can be reached.
+This is done using the `host=` and `port=` constructor keywords.
+If the Client and the Flow gateway are running on the same machine, the `host=` parameter can be omitted, as it defaults to `'0.0.0.0'`.
+
+Additionally, the connection protocol can be toggled between `'grpc'`, `'http'`, and `'websocket'` using the `protocol=`
+keyword, where `'grpc'` is the default.
+
+```python
+from jina import Client
+
+HOST = '0.0.0.0'  # host address where the Flow can be reached
+PORT = 12345  # port where the Flow can be reached
+PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'. Needs to be same as specified by the Flow
+
+client = Client(host=HOST, port=PORT, protocol=PROTOCOL)
+```
+
+Then, the Client can send requests to the Flow using its `.post()` method.
+This expects as inputs the {ref}`Executor endpoint <exec-endpoint>` that you want to target, as well as a Document or Iterable of Documents:
+
 
 ```python
 from docarray import Document, DocumentArray
-from jina import Client
 
-PORT = 12345
 
 d1 = Document(content='hello')
 d2 = Document(content='world')
@@ -42,7 +61,7 @@ def doc_gen():
         yield Document(content=f'hello {j}')
 
 
-client = Client(port=PORT)
+client = Client(host=HOST, port=PORT)
 
 client.post('/endpoint', d1)  # Single Document
 
@@ -235,7 +254,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
         on_always=lambda x: x.docs.save(fp),
     )
 ```
-## On failure callback
+### On failure callback
 
 Additionally, the `on_error` callback can be triggered by a raise of an exception. The callback must take an optional 
 `exception` parameters as an argument.
@@ -322,6 +341,18 @@ with Flow() as f:
 
 ````
 
+### Custom gRPC compression for GRPC Client
+
+If the communication to the `Flow` needs to be done via gRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
+The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+
+```python
+from jina import Client
+
+client = Client()
+client.post(..., compression='Gzip')
+```
+
 ## GraphQL
 
 The Jina Client additionally supports fetching data via GraphQL mutations using `client.mutate()`:
@@ -376,16 +407,3 @@ async def run_client(port):
 with Flow() as f:  # Using it as a Context Manager will start the Flow
     asyncio.run(run_client(f.port))
 ```
-
-### Custom gRPC compression for GRPC Client
-
-If the communication to the `Flow` needs to be done via GRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
-The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
-
-```python
-from jina import Client
-
-client = Client()
-client.post(..., compression='Gzip')
-```
-

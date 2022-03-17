@@ -45,6 +45,7 @@ You can access the values of these arguments in the `__init__` body via `self.me
 or modify their values before passing them to `super().__init__()`.
 ````
 
+(exec-endpoint)=
 ## Methods
 
 Methods of `Executor` can be named and written freely. 
