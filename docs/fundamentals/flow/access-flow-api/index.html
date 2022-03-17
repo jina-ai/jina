@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/access-flow-api/" />
   
-<meta property="og:site_name" content="Jina 3.2.3 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.4 Documentation" />
   
 <meta property="og:description" content="Once you have configured your Flow API you can access it over the network. There are multiple ways of doing this. Jina Client: Jina offers a built-in client that supports gRPC, HTTP, and Websocket connections to a Flow. Sending a request to a Flow is as simple as calling the.post() method: gRPC H..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/swagger-ui.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.3 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.4 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Client API" href="../client/" /><link rel="prev" title="Configure Flow API" href="../flow-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Access Flow API - Jina 3.2.3 documentation</title>
+        <title>Access Flow API - Jina 3.2.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.3 documentation</div>
+                <div class="brand">Jina 3.2.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -680,22 +680,59 @@ passing additional parameters, and <a class="reference internal" href="../client
 methods described below.</p>
 </div>
 <p>Outside of using the Jina Client, various forms of sending HTTP requests are the most common way of interacting with a Flow.</p>
-<p>You can always use <code class="docutils literal notranslate"><span class="pre">post</span></code> to interact with a Flow, using the <code class="docutils literal notranslate"><span class="pre">/post</span></code> HTTP endpoint.
-Your HTTP request can include the following parameters:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> - required: Executor endpoint string to target, e.g. <code class="docutils literal notranslate"><span class="pre">"execEndpoint":</span> <span class="pre">"/index"</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> - optional: List specifying the input Documents, e.g. <code class="docutils literal notranslate"><span class="pre">"data":</span> <span class="pre">[{"text":</span> <span class="pre">"hello"},</span> <span class="pre">{"text":</span> <span class="pre">"world"}]</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">paramters</span></code> - optional: Dictionary of parameters to be sent to the Executors, e.g. <code class="docutils literal notranslate"><span class="pre">"parameters":</span> <span class="pre">{"param1":</span> <span class="pre">"hello</span> <span class="pre">world"}</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">targetExecutor</span></code> - optional: String indicating an Executor to target. Default targets all Executors, e.g. <code class="docutils literal notranslate"><span class="pre">"targetExecutor":</span> <span class="pre">"MyExec"</span></code></p></li>
-</ul>
+<p>You can always use <code class="docutils literal notranslate"><span class="pre">post</span></code> to interact with a Flow, using the <code class="docutils literal notranslate"><span class="pre">/post</span></code> HTTP endpoint.</p>
+<section id="arguments">
+<h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
+<p>Your HTTP request can include the following parameters:</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>execEndpoint</code></td>
+<td>required</td>
+<td>Executor endpoint string to target</td>
+<td><code>"execEndpoint": "/index"</code></td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>optional</td>
+<td>List specifying the input Documents</td>
+<td><code>"data": [{"text": "hello"}, {"text": "world"}]</code>.</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td>optional</td>
+<td>Dictionary of parameters to be sent to the Executors</td>
+<td><code>"parameters": {"param1": "hello world"}</code></td>
+</tr>
+<tr>
+<td><code>targetExecutor</code></td>
+<td>optional</td>
+<td>String indicating an Executor to target. Default targets all Executors</td>
+<td><code>"targetExecutor": "MyExec"</code></td>
+</tr>
+</tbody>
+</table></div>
 <p>Instead of using the generic <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoint, you can directly use endpoints like <code class="docutils literal notranslate"><span class="pre">/index</span></code> or <code class="docutils literal notranslate"><span class="pre">/search</span></code>.
 In this case your data request will be sent to the corresponding Executor endpoint, so the parameter <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> does not need to be specified.</p>
 <p>In any case, the response you receive will include <code class="docutils literal notranslate"><span class="pre">data</span></code> (and array of Documents), as well as the fields <code class="docutils literal notranslate"><span class="pre">routes</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, and <code class="docutils literal notranslate"><span class="pre">header</span></code>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See also: Flow REST API</p>
-<p>For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, see <a class="reference external" href="https://api.jina.ai/rest/">here</a>.</p>
+<p>For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check</p>
+<ol class="simple">
+<li><p><a class="reference external" href="https://api.jina.ai/rest/latest.json">OpenAPI Schema</a></p></li>
+<li><p><a class="reference external" href="https://api.jina.ai/rest/">Redoc UI</a></p></li>
+</ol>
 <p>For a specific deployed Flow, you can get the same overview by accessing the <code class="docutils literal notranslate"><span class="pre">/redoc</span></code> endpoint.</p>
 </div>
+</section>
 <section id="use-swagger-ui-to-send-http-request">
 <span id="swagger-ui"></span><h3>Use Swagger UI to send HTTP request<a class="headerlink" href="#use-swagger-ui-to-send-http-request" title="Permalink to this headline">¶</a></h3>
 <p>Flows provide a customized <a class="reference external" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> which can be used to interact with the Flow
@@ -716,13 +753,13 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 </section>
 <section id="use-http-client-to-send-request">
 <h3>Use HTTP client to send request<a class="headerlink" href="#use-http-client-to-send-request" title="Permalink to this headline">¶</a></h3>
-<p>You can send data requests to a Flow via cURL, Postman, or any other HTTP client.</p>
+<p>With the help of OpenAPI schema, one can send data requests to a Flow via cURL, Postman, or any other HTTP client. Here’s an example that uses cURL.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">'http://localhost:12345/post'</span> --header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'</span>
+</pre></div>
+</div>
 <details>
-<summary>cURL example</summary>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>```console
-$ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
-
-{
+<summary>Sample response</summary>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
   "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
   "data": {
     "docs": [
@@ -771,7 +808,6 @@ $ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: appl
     "exception": null
   }
 }
-```
 </pre></div>
 </div>
 </details>
@@ -795,15 +831,15 @@ This is especially useful when the user does not need potentially large fields, 
 <span class="n">HOSTNAME</span><span class="p">,</span> <span class="n">PORT</span> <span class="o">=</span> <span class="o">...</span>
 <span class="n">endpoint</span> <span class="o">=</span> <span class="n">HTTPEndpoint</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">HOSTNAME</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">PORT</span><span class="si">}</span><span class="s1">/graphql'</span><span class="p">)</span>
 <span class="n">mut</span> <span class="o">=</span> <span class="s1">'''</span>
-<span class="s1">        mutation {</span>
-<span class="s1">            docs(data: {text: "abcd"}) { </span>
-<span class="s1">                id</span>
-<span class="s1">                matches {</span>
-<span class="s1">                    embedding</span>
-<span class="s1">                }</span>
-<span class="s1">            } </span>
-<span class="s1">        }</span>
-<span class="s1">    '''</span>
+<span class="s1">    mutation {</span>
+<span class="s1">        docs(data: {text: "abcd"}) { </span>
+<span class="s1">            id</span>
+<span class="s1">            matches {</span>
+<span class="s1">                embedding</span>
+<span class="s1">            }</span>
+<span class="s1">        } </span>
+<span class="s1">    }</span>
+<span class="s1">'''</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">mut</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -811,14 +847,8 @@ This is especially useful when the user does not need potentially large fields, 
 <h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this headline">¶</a></h3>
 <p>The Flow GraphQL API exposes the mutation <code class="docutils literal notranslate"><span class="pre">docs</span></code>, which sends its inputs to the Flow’s Executors,
 just like HTTP <code class="docutils literal notranslate"><span class="pre">post</span></code> as described <span class="xref std std-ref">above</span>.</p>
-<p>A GraphQL mutation can take the following arguments:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> - required: String representing the Executor endpoint to target, e.g. <code class="docutils literal notranslate"><span class="pre">execEndpoint:</span> <span class="pre">"/search"</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> - optional: List of Documents to be processed by the Executors, e.g. <code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">[{text:</span> <span class="pre">"hello"},</span> <span class="pre">{text:</span> <span class="pre">"world"}</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code> - optional: Dictionary of parameters to be passed to the Executors, e.g. <code class="docutils literal notranslate"><span class="pre">parameters:</span> <span class="pre">{"my_param":</span> <span class="pre">3}</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">targetExecutor</span></code> - optional: String representing name of the Executor to target, e.g <code class="docutils literal notranslate"><span class="pre">"targetExecutor:</span> <span class="pre">"MyExec"</span></code></p></li>
-</ul>
-<p>The GraphQL response can include all fields available on a DocumentArray.</p>
+<p>A GraphQL mutation takes same set of arguments used in <a class="reference external" href="#arguments">HTTP</a>.</p>
+<p>The response from GraphQL can include all fields available on a DocumentArray.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>For more details on the GraphQL format of Document and DocumentArray, see the <a class="reference external" href="https://docarray.jina.ai/advanced/graphql-support/">documentation page</a>
@@ -831,6 +861,24 @@ or the <a class="reference external" href="https://docarray.jina.ai/api/docarray
 <p>Essentially, you can ask for any property of a Document, including <code class="docutils literal notranslate"><span class="pre">embedding</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">matches</span></code>, <code class="docutils literal notranslate"><span class="pre">tags</span></code>,
 and more.</p>
 </section>
+</section>
+<section id="websocket">
+<h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this headline">¶</a></h2>
+<p>Websocket uses persistent connections between the Client &amp; Gateway, hence allowing streaming usecases. While you can always use the Python Client to stream requests like any other protocol, websocket allows streaming jsons from anywhere (CLI / Postman / Any other programming language). The same set of arguments as <a class="reference external" href="#arguments">HTTP</a> can be used in the json.</p>
+<p>We use <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols">subprotocols</a> to separate streaming json vs bytes. Gateway defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> when a subprotocol is not passed during connection establishment (Our python Client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> definition)</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Prefer using Websocket over HTTP, if you want to stream requests.</p></li>
+<li><p>Prefer using Websocket over gRPC, if</p>
+<ul>
+<li><p>You want to stream using json, not bytes.</p></li>
+<li><p>Your client language doesn’t support gRPC .</p></li>
+<li><p>You’re too lazy to compile <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> &amp; generate a Client.</p></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 <section id="see-further">
 <h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">¶</a></h2>
@@ -874,7 +922,7 @@ and more.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 16, 2022.
+                    Last updated on Mar 17, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -902,6 +950,7 @@ and more.</p>
 <li><a class="reference internal" href="#">Access Flow API</a><ul>
 <li><a class="reference internal" href="#jina-client">Jina Client</a></li>
 <li><a class="reference internal" href="#http-access">HTTP access</a><ul>
+<li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#use-swagger-ui-to-send-http-request">Use Swagger UI to send HTTP request</a></li>
 <li><a class="reference internal" href="#use-http-client-to-send-request">Use HTTP client to send request</a></li>
 </ul>
@@ -911,6 +960,7 @@ and more.</p>
 <li><a class="reference internal" href="#fields">Fields</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#websocket">Websocket</a></li>
 <li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>
 </li>

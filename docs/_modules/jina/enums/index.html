@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.enums - Jina 3.2.3 documentation</title>
+        <title>jina.enums - Jina 3.2.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.3 documentation</div>
+                <div class="brand">Jina 3.2.4 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -611,7 +611,7 @@
 <span class="sd">        parallel_type: any</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">EnumMeta</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">EnumMeta</span><span class="p">,</span> <span class="n">IntEnum</span>
 
 
 <div class="viewcode-block" id="EnumType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EnumType">[docs]</a><span class="k">class</span> <span class="nc">EnumType</span><span class="p">(</span><span class="n">EnumMeta</span><span class="p">):</span>
@@ -871,6 +871,13 @@
     <span class="n">DELETING</span> <span class="o">=</span> <span class="s1">'DELETING'</span></div>
 
 
+<div class="viewcode-block" id="WebsocketSubProtocols"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.WebsocketSubProtocols">[docs]</a><span class="k">class</span> <span class="nc">WebsocketSubProtocols</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">"""Subprotocol supported with Websocket Gateway"""</span>
+
+    <span class="n">JSON</span> <span class="o">=</span> <span class="s1">'json'</span>
+    <span class="n">BYTES</span> <span class="o">=</span> <span class="s1">'bytes'</span></div>
+
+
 <div class="viewcode-block" id="replace_enum_to_str"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.replace_enum_to_str">[docs]</a><span class="k">def</span> <span class="nf">replace_enum_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Transform BetterEnum type into string.</span>
@@ -895,7 +902,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 16, 2022.
+                    Last updated on Mar 17, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
