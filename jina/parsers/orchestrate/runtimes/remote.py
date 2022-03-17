@@ -80,7 +80,7 @@ def mixin_gateway_parser(parser):
     )
 
     gp.add_argument(
-        '--grpc-compression',
+        '--compression',
         type=str,
         default='NoCompression',
         help='The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, '

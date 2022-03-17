@@ -32,19 +32,19 @@ class GRPCBaseClient(BaseClient):
         on_done: 'CallbackFnType',
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
-        grpc_compression: str = 'NoCompression',
+        compression: str = 'NoCompression',
         **kwargs,
     ):
         try:
-            if grpc_compression.lower() not in GRPC_COMPRESSION_MAP:
+            if compression.lower() not in GRPC_COMPRESSION_MAP:
                 import warnings
 
                 warnings.warn(
-                    message=f'Your grpc_compression "{grpc_compression}" is not supported. Supported '
+                    message=f'Your compression "{compression}" is not supported. Supported '
                     f'algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as '
                     f'default'
                 )
-                grpc_compression = 'NoCompression'
+                compression = 'NoCompression'
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
             async with GrpcConnectionPool.get_grpc_channel(
@@ -62,7 +62,7 @@ class GRPCBaseClient(BaseClient):
                     async for resp in stub.Call(
                         req_iter,
                         compression=GRPC_COMPRESSION_MAP.get(
-                            grpc_compression.lower(), grpc.Compression.NoCompression
+                            compression.lower(), grpc.Compression.NoCompression
                         ),
                     ):
                         callback_exec(

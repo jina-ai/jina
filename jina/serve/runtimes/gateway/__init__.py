@@ -27,7 +27,7 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             k8s_connection_pool=self.args.k8s_connection_pool,
             k8s_namespace=self.args.k8s_namespace,
-            grpc_compression=self.args.grpc_compression,
+            compression=self.args.compression,
         )
         for deployment_name, addresses in deployments_addresses.items():
             for address in addresses:

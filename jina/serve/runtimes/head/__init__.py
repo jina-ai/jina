@@ -49,7 +49,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             k8s_connection_pool=args.k8s_connection_pool,
             k8s_namespace=args.k8s_namespace,
-            grpc_compression=args.grpc_compression,
+            compression=args.compression,
         )
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)

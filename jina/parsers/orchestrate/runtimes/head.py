@@ -12,7 +12,7 @@ def mixin_head_parser(parser):
 
     try:
         gp.add_argument(
-            '--grpc-compression',
+            '--compression',
             type=str,
             default='NoCompression',
             help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities '

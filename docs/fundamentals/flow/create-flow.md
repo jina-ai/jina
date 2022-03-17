@@ -712,14 +712,14 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 ### Custom gRPC compression
 
 Communication between `Executors` inside a `Flow` is done via `grpc`. To optimize the performance and the bandwith of this connections,
-Jina allows the users to specify their (`grpc_compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `grpc_compression` argument to the Flow.
+Jina allows the users to specify their (`compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `compression` argument to the Flow.
 
 The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
 
 ```python
 from jina import Flow
 
-f = Flow(grpc_compression='Gzip').add()
+f = Flow(compression='Gzip').add()
 ```
 
 ## Visualize a `Flow`
