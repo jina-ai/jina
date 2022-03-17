@@ -27,6 +27,7 @@ def get_fastapi_app(
     :param logger: Jina logger.
     :return: fastapi app
     """
+
     from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 
     with ImportExtensions(required=True):
