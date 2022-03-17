@@ -6,6 +6,7 @@ Documents "flow" through the created pipeline and are processed by Executors.
 
 You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
 while the heavy lifting is done by the {ref}`services <executor-cookbook>` themselves.
+In particular, each Flow also launches a *Gateway* service, which can expose all other services through an API that you define.
 
 
 The most important methods of the `Flow` object are the following:
@@ -24,14 +25,14 @@ The most important methods of the `Flow` object are the following:
 
 ## Why should you use a Flow?
 
-Once you have learned DocumentArray and Executor, you have been able to split your neural search application into different independent modules and services.
-But you need to chain them together in order to bring real value and to build and serve an application out of it. That's exactly what Flows enable you to do.
+Once you have learned DocumentArray and Executor, you are able to split your neural search application into different independent modules and services.
+But you need to chain them together in order to bring real value and to build and serve an application. That's exactly what Flows enable you to do.
 
-- Flow connects the microservices (Executors) to build an service with proper client/server style interface in HTTP/gRPC/Websockets
+- Flows connect microservices (Executors) to build a service with proper client/server style interface over HTTP, gRPC, or Websocket
 
-- Flow lets you scale these Executors independently to adjust to your requirements.
+- Flows let you scale these Executors independently to adjust to your requirements
 
-- Flow allows you to easily use other cloud-native orchestrators, e.g. K8s to manage the service.
+- Flows allow you to easily use other cloud-native orchestrators, such as Kubernetes, to manage your service
 
 ## Minimum working example
 

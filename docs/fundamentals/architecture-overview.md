@@ -3,7 +3,7 @@
 
 {ref}`Executor <executor>` and {ref}`Flow <flow>` are the two fundamental concepts in Jina. 
 
-The figure below shows details on how the Flow and Executor abstractions translate into concrete entities, providing all the 
+The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the 
 serving and scaling features of Jina.
 
 
@@ -11,14 +11,14 @@ serving and scaling features of Jina.
 :align: center
 ```
 
-It illustrates how Jina deploys and serves its Flows and Executors.
+You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina.
+But it is useful in order to understand how Jina works, regardless of whether your microservice app runs locally,
+is orchestrated only by the Flow object itself, or is deployed using a cloud-native infrastructure such as Kubernetes.
+In fact, you might notice how some naming and concepts are inspired by the Kubernetes architecture.
 
-You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But it is useful in order to understand how Jina works, regardless of whether it runs locally, orchestrated only by the Flow, or in 
-a cloud-native infrastructure such as Kubernetes. In fact, you can notice how some naming and concepts are inspired by the Kubernetes architecture.
+The following concepts may appear in the docs, but you don't need to master them as they are mainly designed for advanced or internal use:
 
-The following concepts may appear in the docs, but you don't need to master them as they are designed to be used only internally:
-
-  - **Gateway**: The Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `WebSocker` or `gRPC` endpoints to the client. Additionally, it keeps knowledge of the topology of the Flow to guarantee that the `Documents` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`
+  - **Gateway**: The Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `WebSocker` or `gRPC` endpoints to the client. It is the service that the clients of your app will actually talk to. Additionally, it keeps knowledge of the topology of the Flow to guarantee that the `Documents` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`
 
   - **Deployment**: Deployment is an abstraction around Executor that lets the `Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 
