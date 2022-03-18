@@ -1,5 +1,6 @@
 import os
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from docarray import Document, DocumentArray
@@ -339,20 +340,33 @@ def test_serve(served_exec):
     assert docs.texts == ['foo' for _ in docs]
 
 
-def test_set_workspace():
-    _workspace = 'worki'
-    complete_workspace = os.path.abspath(os.path.join(_workspace, 'WorkspaceExec', '0'))
-    with Flow().add(uses=WorkspaceExec, workspace=_workspace) as f:
+def test_set_workspace(tmpdir):
+    complete_workspace = os.path.abspath(os.path.join(tmpdir, 'WorkspaceExec', '0'))
+    with Flow().add(uses=WorkspaceExec, workspace=str(tmpdir)) as f:
         resp = f.post(on='/foo', inputs=Document())
-        assert resp[0].text == complete_workspace
-    with Flow().add(uses=WorkspaceExec, uses_metas={'workspace': _workspace}) as f:
+    assert resp[0].text == complete_workspace
+    with Flow().add(uses=WorkspaceExec, uses_metas={'workspace': str(tmpdir)}) as f:
         resp = f.post(on='/foo', inputs=Document())
-        assert resp[0].text == complete_workspace
+    assert resp[0].text == complete_workspace
 
 
 def test_default_workspace():
     with Flow().add(uses=WorkspaceExec) as f:
         resp = f.post(on='/foo', inputs=Document())
-        assert resp[0].text
-        assert resp[0].text.startswith(os.path.abspath('exec-'))
-        assert resp[0].text.endswith(os.path.join('WorkspaceExec', '0'))
+    assert resp[0].text
+
+    result_workspace = resp[0].text
+    remove_test_dirs(result_workspace)  # delete created directories
+
+    assert result_workspace.startswith(os.path.abspath('exec-'))
+    assert result_workspace.endswith(os.path.join('WorkspaceExec', '0'))
+
+
+def remove_test_dirs(workspace):
+    shard_dir = Path(workspace)
+    name_dir = shard_dir.parent.absolute()
+    custom_dir = name_dir.parent.absolute()
+
+    os.rmdir(shard_dir)
+    os.rmdir(name_dir)
+    os.rmdir(custom_dir)
