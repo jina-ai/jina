@@ -485,7 +485,10 @@ def test_k8s_yaml_regular_deployment(
     )
     head_runtime_container = head_containers[0]
     assert head_runtime_container['name'] == 'executor'
-    assert head_runtime_container['image'] == 'jinaai/jina:test-pip'
+    assert (
+        head_runtime_container['image']
+        == f'jinaai/jina:{deployment_config.head_deployment.version}-py38-standard'
+    )
     assert head_runtime_container['imagePullPolicy'] == 'IfNotPresent'
     assert head_runtime_container['command'] == ['jina']
     head_runtime_container_args = head_runtime_container['args']

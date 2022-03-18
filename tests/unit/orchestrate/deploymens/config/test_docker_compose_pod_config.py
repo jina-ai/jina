@@ -432,7 +432,10 @@ def test_docker_compose_yaml_regular_deployment(
     )
     head_name, head_config = yaml_configs[0]
     assert head_name == 'executor-head'
-    assert head_config['image'] == 'jinaai/jina:test-pip'
+    assert (
+        head_config['image']
+        == f'jinaai/jina:{deployment_config.head_service.version}-py38-standard'
+    )
     assert head_config['entrypoint'] == ['jina']
     head_args = head_config['command']
     assert head_args[0] == 'executor'
