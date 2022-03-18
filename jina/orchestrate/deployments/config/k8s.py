@@ -1,18 +1,18 @@
 import copy
 from argparse import Namespace
-from typing import Dict, Union, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 from jina import __default_executor__
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
-from jina.orchestrate.deployments.config.k8slib import kubernetes_deployment
 from jina.orchestrate.deployments.config.helper import (
+    construct_runtime_container_args,
+    get_base_executor_version,
     get_image_name,
     to_compatible_name,
-    get_base_executor_version,
-    construct_runtime_container_args,
     validate_uses,
 )
+from jina.orchestrate.deployments.config.k8slib import kubernetes_deployment
 from jina.serve.networking import GrpcConnectionPool
 from jina.orchestrate.deployments import BaseDeployment
 
@@ -52,12 +52,10 @@ class K8sDeploymentConfig:
         ) -> List[Dict]:
             import os
 
-            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-            image_name = (
-                'jinaai/jina:test-pip'
-                if test_pip
-                else f'jinaai/jina:{self.version}-py38-standard'
+            image_name = os.getenv(
+                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
             )
+
             cargs = copy.copy(self.deployment_args)
             cargs.env = None
             cargs.deployments_addresses = self.k8s_deployments_addresses
@@ -98,11 +96,8 @@ class K8sDeploymentConfig:
         def _get_image_name(self, uses: Optional[str]):
             import os
 
-            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-            image_name = (
-                'jinaai/jina:test-pip'
-                if test_pip
-                else f'jinaai/jina:{self.version}-py38-perf'
+            image_name = os.getenv(
+                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
             )
 
             if uses is not None and uses != __default_executor__:

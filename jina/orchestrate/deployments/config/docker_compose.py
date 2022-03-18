@@ -50,11 +50,8 @@ class DockerComposeConfig:
         ) -> Dict:
             import os
 
-            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-            image_name = (
-                'jinaai/jina:test-pip'
-                if test_pip
-                else f'jinaai/jina:{self.version}-py38-standard'
+            image_name = os.getenv(
+                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
             )
             cargs = copy.copy(self.service_args)
             cargs.deployments_addresses = self.deployments_addresses
@@ -101,11 +98,8 @@ class DockerComposeConfig:
         def _get_image_name(self, uses: Optional[str]):
             import os
 
-            test_pip = os.getenv('JINA_K8S_USE_TEST_PIP') is not None
-            image_name = (
-                'jinaai/jina:test-pip'
-                if test_pip
-                else f'jinaai/jina:{self.version}-py38-perf'
+            image_name = os.getenv(
+                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
             )
 
             if uses is not None and uses != __default_executor__:

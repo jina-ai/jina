@@ -1,22 +1,15 @@
-from typing import Union, Dict, Tuple
 import json
+import os
+from typing import Dict, Tuple, Union
+
 import pytest
 
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
-from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
+from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
-
-
-@pytest.fixture(autouse=True)
-def set_test_pip_version():
-    import os
-
-    os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
-    yield
-    del os.environ['JINA_K8S_USE_TEST_PIP']
 
 
 def namespace_equal(
@@ -261,7 +254,12 @@ def assert_config_map_config(
 
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'address.svc'}])
-def test_k8s_yaml_gateway(deployments_addresses):
+@pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
+def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
+    if custom_gateway:
+        os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
+    elif 'JINA_GATEWAY_IMAGE' in os.environ:
+        del os.environ['JINA_GATEWAY_IMAGE']
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
@@ -331,7 +329,11 @@ def test_k8s_yaml_gateway(deployments_addresses):
     assert len(containers) == 1
     container = containers[0]
     assert container['name'] == 'executor'
-    assert container['image'] == 'jinaai/jina:test-pip'
+    assert (
+        container['image'] == custom_gateway
+        if custom_gateway
+        else f'jinaai/jina:{deployment_config.worker_deployments[0].version}-py38-standard'
+    )
     assert container['imagePullPolicy'] == 'IfNotPresent'
     assert container['command'] == ['jina']
     args = container['args']
@@ -483,7 +485,10 @@ def test_k8s_yaml_regular_deployment(
     )
     head_runtime_container = head_containers[0]
     assert head_runtime_container['name'] == 'executor'
-    assert head_runtime_container['image'] == 'jinaai/jina:test-pip'
+    assert (
+        head_runtime_container['image']
+        == f'jinaai/jina:{deployment_config.head_deployment.version}-py38-standard'
+    )
     assert head_runtime_container['imagePullPolicy'] == 'IfNotPresent'
     assert head_runtime_container['command'] == ['jina']
     head_runtime_container_args = head_runtime_container['args']

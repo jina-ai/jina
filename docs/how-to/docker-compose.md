@@ -76,6 +76,11 @@ Now, we can generate Docker Compose YAML configuration from the Flow:
 f.to_docker_compose_yaml('docker-compose.yml')
 ```
 
+````{admonition} Hint
+:class: hint
+You can use a custom Docker image for the Gateway service. Just set the envrironment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
+````
+
 let's take a look at the generated compose file:
 ```yaml
 version: '3.3'

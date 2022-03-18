@@ -1,21 +1,14 @@
-from typing import Union, Dict, Tuple
 import json
+import os
+from typing import Dict, Tuple, Union
+
 import pytest
 
 from jina.helper import Namespace
 from jina.hubble import HubExecutor
 from jina.hubble.hubio import HubIO
-from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.orchestrate.deployments.config.docker_compose import DockerComposeConfig
-
-
-@pytest.fixture(autouse=True)
-def set_test_pip_version():
-    import os
-
-    os.environ['JINA_K8S_USE_TEST_PIP'] = 'True'
-    yield
-    del os.environ['JINA_K8S_USE_TEST_PIP']
+from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
 def namespace_equal(
@@ -331,7 +324,12 @@ def test_worker_services(name: str, shards: str):
 
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
-def test_docker_compose_gateway(deployments_addresses):
+@pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
+def test_docker_compose_gateway(deployments_addresses, custom_gateway):
+    if custom_gateway:
+        os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
+    elif 'JINA_GATEWAY_IMAGE' in os.environ:
+        del os.environ['JINA_GATEWAY_IMAGE']
     args = set_gateway_parser().parse_args(
         ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
     )  # envs are
@@ -341,7 +339,11 @@ def test_docker_compose_gateway(deployments_addresses):
     )
     name, gateway_config = deployment_config.to_docker_compose_config()[0]
     assert name == 'gateway'
-    assert gateway_config['image'] == 'jinaai/jina:test-pip'
+    assert (
+        gateway_config['image'] == custom_gateway
+        if custom_gateway
+        else f'jinaai/jina:{deployment_config.worker_services[0].version}-py38-standard'
+    )
     assert gateway_config['entrypoint'] == ['jina']
     assert gateway_config['ports'] == [f'{args.port}:{args.port}']
     assert gateway_config['expose'] == [f'{args.port}']
@@ -430,7 +432,10 @@ def test_docker_compose_yaml_regular_deployment(
     )
     head_name, head_config = yaml_configs[0]
     assert head_name == 'executor-head'
-    assert head_config['image'] == 'jinaai/jina:test-pip'
+    assert (
+        head_config['image']
+        == f'jinaai/jina:{deployment_config.head_service.version}-py38-standard'
+    )
     assert head_config['entrypoint'] == ['jina']
     head_args = head_config['command']
     assert head_args[0] == 'executor'
