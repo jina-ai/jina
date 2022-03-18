@@ -37,7 +37,6 @@ The modifications in the following table should, in most cases, be safe to perfo
 | `doc.SerializeToString()`                               | `doc.to_bytes()`                                      |
 | `Document(bytes)`                                       | `Document.from_bytes()`                               |
 | `from jina import Document, DocumentArray`              | `from docarray import Document, DocumentArray`        |
-| `from jina.types.document.generators import from_files` | `from docarray.document.generators import from_files` |
 
 
 There are, however, some more nuanced changes in Jina 3 as well.
@@ -84,7 +83,7 @@ to have a better understanding of accessing attributes and elements with `DocArr
 ````{tab} Jina 2
 
 ```python
-from docarray import Document, DocumentArray
+from jina import Document, DocumentArray
 
 docs = nested_docs()
 
@@ -124,6 +123,31 @@ print(docs[...].texts)
 ```
 
 ````
+
+**Loading data from files**: DocumentArray introduces a `.from_files()` class method which can be used directly instead of
+importing a `from_files()` function.
+
+````{tab} Jina 2
+
+```python
+from jina import Document, DocumentArray
+from jina.types.document.generators import from_files
+
+docs = DocumentArray(from_files('path/to/files'))
+```
+
+````
+
+````{tab} Jina 3 
+
+```python
+from docarray import Document, DocumentArray
+
+docs = DocumentArray.from_files('path/to/files')
+```
+
+````
+
 \
 **Batching**: Batching operations are delegated to the docarray package and Python builtins:
 
@@ -154,7 +178,7 @@ important when migrating code that checks for the presence of a certain attribut
 ````{tab} Jina 2
 
 ```python
-from docarray import Document, DocumentArray
+from jina import Document, DocumentArray
 
 d = Document()
 print(d.text)
