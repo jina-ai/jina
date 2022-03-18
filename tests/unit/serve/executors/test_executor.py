@@ -2,13 +2,19 @@ import os
 from copy import deepcopy
 
 import pytest
-
 from docarray import Document, DocumentArray
-from jina import Client, Executor, requests
+
+from jina import Client, Executor, Flow, requests
 from jina.serve.executors import ReducerExecutor
 from jina.serve.executors.metas import get_default_metas
 
 PORT = 12350
+
+
+class WorkspaceExec(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        docs.texts = [self.workspace for _ in docs]
 
 
 class MyServeExec(Executor):
@@ -331,3 +337,22 @@ def test_serve(served_exec):
     docs = Client(port=PORT).post(on='/foo', inputs=DocumentArray.empty(5))
 
     assert docs.texts == ['foo' for _ in docs]
+
+
+def test_set_workspace():
+    _workspace = 'worki'
+    complete_workspace = os.path.abspath(os.path.join(_workspace, 'WorkspaceExec', '0'))
+    with Flow().add(uses=WorkspaceExec, workspace=_workspace) as f:
+        resp = f.post(on='/foo', inputs=Document())
+        assert resp[0].text == complete_workspace
+    with Flow().add(uses=WorkspaceExec, uses_metas={'workspace': _workspace}) as f:
+        resp = f.post(on='/foo', inputs=Document())
+        assert resp[0].text == complete_workspace
+
+
+def test_default_workspace():
+    with Flow().add(uses=WorkspaceExec) as f:
+        resp = f.post(on='/foo', inputs=Document())
+        assert resp[0].text
+        assert resp[0].text.startswith(os.path.abspath('exec-'))
+        assert resp[0].text.endswith(os.path.join('WorkspaceExec', '0'))
