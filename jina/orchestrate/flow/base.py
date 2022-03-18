@@ -335,8 +335,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             GATEWAY_NAME
         ]  #: default first deployment is gateway, will add when build()
         self._update_args(args, **kwargs)
-        if self.workspace is None:
-            self.workspace = 'flow-' + str(uuid.uuid4())
         if (
             self.protocol == GatewayProtocolType.HTTP
             and self.args.expose_graphql_endpoint
