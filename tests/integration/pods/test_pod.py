@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import json
 import time
 
@@ -102,7 +103,10 @@ async def test_pods_health_check(port_generator, protocol, health_check):
         for _port in (head_port, worker_port):
             check_health_pod(f'0.0.0.0:{_port}')
 
-        health_check(f'0.0.0.0:{port}')
+        if inspect.iscoroutinefunction(health_check):
+            await health_check(f'0.0.0.0:{port}')
+        else:
+            health_check(f'0.0.0.0:{port}')
 
 
 @pytest.fixture
