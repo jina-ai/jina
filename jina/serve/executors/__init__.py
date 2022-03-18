@@ -2,6 +2,7 @@ import inspect
 import multiprocessing
 import os
 import threading
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
@@ -153,6 +154,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         target = SimpleNamespace()
         # set self values filtered by those non-exist, and non-expandable
         for k, v in tmp.items():
+            if k == 'workspace' and not (v is None or v == ''):
+                warnings.warn(
+                    'Setting `workspace` via `metas.workspace` is deprecated. '
+                    'Instead, use `f.add(..., workspace=...)` when defining a a Flow in Python; '
+                    'the `workspace` parameter when defining a Flow using YAML; '
+                    'or `--workspace` when starting an Executor using the CLI.',
+                    category=DeprecationWarning,
+                )
             if not hasattr(target, k):
                 if isinstance(v, str):
                     if not env_var_regex.findall(v):
