@@ -4,11 +4,6 @@ from multiprocessing import Process
 
 import pytest
 
-from jina.clients.request import request_generator
-from jina.enums import PollingType
-from jina.parsers import set_gateway_parser
-from jina.parsers import set_deployment_parser
-from jina.orchestrate.deployments import Deployment
 from jina import (
     Document,
     DocumentArray,
@@ -17,6 +12,10 @@ from jina import (
     __default_host__,
     requests,
 )
+from jina.clients.request import request_generator
+from jina.enums import PollingType
+from jina.orchestrate.deployments import Deployment
+from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from tests.unit.test_helper import MyDummyExecutor
 
@@ -189,35 +188,6 @@ class AppendParamExecutor(Executor):
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text=str(self.param)))
         return docs
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize('shards', [1, 2])
-def test_pod_rolling_update(shards):
-    args_list = ['--replicas', '7']
-    args_list.extend(['--shards', str(shards)])
-    args = set_deployment_parser().parse_args(args_list)
-    args.uses = 'AppendParamExecutor'
-    args.uses_with = {'param': 10}
-    with Deployment(args) as pod:
-
-        async def run_async_test():
-            response_texts = await _send_requests(pod)
-            assert 2 == len(response_texts)
-            assert all(text in response_texts for text in ['10', 'client'])
-
-            await pod.rolling_update(uses_with={'param': 20})
-            response_texts = await _send_requests(pod)
-            assert 2 == len(response_texts)
-            assert all(text in response_texts for text in ['20', 'client'])
-            assert '10' not in response_texts
-
-        p = Process(target=run_async_test)
-        p.start()
-        p.join()
-        assert p.exitcode == 0
-
-    Deployment(args).start().close()
 
 
 async def _send_requests(pod):

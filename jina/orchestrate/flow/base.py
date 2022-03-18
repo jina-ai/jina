@@ -1732,25 +1732,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def rolling_update(
-        self,
-        deployment_name: str,
-        uses_with: Optional[Dict] = None,
-    ):
-        """
-        Reload all replicas of a deployment sequentially
-
-        :param deployment_name: deployment to update
-        :param uses_with: a Dictionary of arguments to restart the executor with
-        """
-        from jina.helper import run_async
-
-        run_async(
-            self._deployment_nodes[deployment_name].rolling_update,
-            uses_with=uses_with,
-            any_event_loop=True,
-        )
-
     def to_k8s_yaml(self, output_base_path: str, k8s_namespace: Optional[str] = None):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes
@@ -1842,28 +1823,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self.logger.info(
             f'Docker compose file has been created under {output_path}. You can use it by running `{command}`'
-        )
-
-    def scale(
-        self,
-        deployment_name: str,
-        replicas: int,
-    ):
-        """
-        Scale the amount of replicas of a given Executor.
-
-        :param deployment_name: deployment to update
-        :param replicas: The number of replicas to scale to
-        """
-
-        # TODO when replicas-host is ready, needs to be passed here
-
-        from jina.helper import run_async
-
-        run_async(
-            self._deployment_nodes[deployment_name].scale,
-            replicas=replicas,
-            any_event_loop=True,
         )
 
     @property

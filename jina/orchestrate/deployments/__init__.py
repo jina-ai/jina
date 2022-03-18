@@ -7,11 +7,9 @@ from typing import Dict, List, Optional, Set, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
-from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from jina.helper import CatchAllCleanupContextManager
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
-from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
 from jina.serve.networking import GrpcConnectionPool, host_is_local
@@ -30,26 +28,6 @@ class BaseDeployment(ExitStack):
         .. note::
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
-        """
-        ...
-
-    @abstractmethod
-    async def rolling_update(self, *args, **kwargs):
-        """
-        Roll update the Executors managed by the Deployment
-
-            .. # noqa: DAR201
-            .. # noqa: DAR101
-        """
-        ...
-
-    @abstractmethod
-    async def scale(self, *args, **kwargs):
-        """
-        Scale the amount of replicas of a given Executor.
-
-            .. # noqa: DAR201
-            .. # noqa: DAR101
         """
         ...
 
@@ -224,129 +202,6 @@ class Deployment(BaseDeployment):
         def wait_start_success(self):
             for pod in self._pods:
                 pod.wait_start_success()
-
-        async def rolling_update(self, uses_with: Optional[Dict] = None):
-            # TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?
-            for i in range(len(self._pods)):
-                _args = self.args[i]
-                old_pod = self._pods[i]
-                await GrpcConnectionPool.deactivate_worker(
-                    worker_host=Deployment.get_worker_host(
-                        _args, old_pod, self.head_pod
-                    ),
-                    worker_port=_args.port,
-                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
-                    shard_id=self.shard_id,
-                )
-                old_pod.close()
-                _args.noblock_on_start = True
-                _args.uses_with = uses_with
-                new_pod = PodFactory.build_pod(_args)
-                new_pod.__enter__()
-                await new_pod.async_wait_start_success()
-                await GrpcConnectionPool.activate_worker(
-                    worker_host=Deployment.get_worker_host(
-                        _args, new_pod, self.head_pod
-                    ),
-                    worker_port=_args.port,
-                    target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
-                    shard_id=self.shard_id,
-                )
-                self.args[i] = _args
-                self._pods[i] = new_pod
-
-        async def _scale_up(self, replicas: int):
-            new_pods = []
-            new_args_list = []
-            for i in range(len(self._pods), replicas):
-                new_args = copy.copy(self.args[0])
-                new_args.noblock_on_start = True
-                new_args.name = new_args.name[:-1] + f'{i}'
-                new_args.port = helper.random_port()
-                # no exception should happen at create and enter time
-                new_pods.append(PodFactory.build_pod(new_args).start())
-                new_args_list.append(new_args)
-            exception = None
-            for new_pod, new_args in zip(new_pods, new_args_list):
-                try:
-                    await new_pod.async_wait_start_success()
-                    await GrpcConnectionPool.activate_worker(
-                        worker_host=Deployment.get_worker_host(
-                            new_args, new_pod, self.head_pod
-                        ),
-                        worker_port=new_args.port,
-                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
-                        shard_id=self.shard_id,
-                    )
-                except (
-                    RuntimeFailToStart,
-                    TimeoutError,
-                    RuntimeRunForeverEarlyError,
-                ) as ex:
-                    exception = ex
-                    break
-
-            if exception is not None:
-                if self.deployment_args.shards > 1:
-                    msg = f' Scaling fails for shard {self.deployment_args.shard_id}'
-                else:
-                    msg = ' Scaling fails'
-
-                msg += f'due to executor failing to start with exception: {exception!r}'
-                raise ScalingFails(msg)
-            else:
-                for new_pod, new_args in zip(new_pods, new_args_list):
-                    self.args.append(new_args)
-                    self._pods.append(new_pod)
-
-        async def _scale_down(self, replicas: int):
-            for i in reversed(range(replicas, len(self._pods))):
-                # Close returns exception, but in theory `termination` should handle close properly
-                try:
-                    await GrpcConnectionPool.deactivate_worker(
-                        worker_host=Deployment.get_worker_host(
-                            self.args[i], self._pods[i], self.head_pod
-                        ),
-                        worker_port=self.args[i].port,
-                        target_head=f'{self.head_pod.args.host}:{self.head_pod.args.port}',
-                        shard_id=self.shard_id,
-                    )
-                    self._pods[i].close()
-                finally:
-                    # If there is an exception at close time. Most likely the pod's terminated abruptly and therefore these
-                    # pods are useless
-                    del self._pods[i]
-                    del self.args[i]
-
-        async def scale(self, replicas: int):
-            """
-            Scale the amount of replicas of a given Executor.
-
-            :param replicas: The number of replicas to scale to
-
-                .. note: Scale is either successful or not. If one replica fails to start, the ReplicaSet remains in the same state
-            """
-            # TODO make scale robust, in what state this ReplicaSet ends when this fails?
-            assert replicas > 0
-            if replicas > len(self._pods):
-                await self._scale_up(replicas)
-            elif replicas < len(self._pods):
-                await self._scale_down(
-                    replicas
-                )  # scale down has some challenges with the exit fifo
-            self.deployment_args.replicas = replicas
-
-        @property
-        def has_forked_processes(self):
-            """
-            Checks if any pod in this replica set is a forked process
-
-            :returns: True if any Pod is a forked Process, False otherwise (Containers)
-            """
-            for pod in self._pods:
-                if type(pod) == Pod and pod.is_forked:
-                    return True
-            return False
 
         def __enter__(self):
             for _args in self.args:
@@ -729,68 +584,6 @@ class Deployment(BaseDeployment):
         if is_ready and self.uses_after_pod is not None:
             is_ready = self.uses_after_pod.is_ready.is_set()
         return is_ready
-
-    @property
-    def _has_forked_processes(self):
-        return any(
-            [self.shards[shard_id].has_forked_processes for shard_id in self.shards]
-        )
-
-    async def rolling_update(self, uses_with: Optional[Dict] = None):
-        """Reload all Pods of this Deployment.
-
-        :param uses_with: a Dictionary of arguments to restart the executor with
-        """
-        tasks = []
-        try:
-            import asyncio
-
-            for shard_id in self.shards:
-                task = asyncio.create_task(
-                    self.shards[shard_id].rolling_update(uses_with=uses_with)
-                )
-                # it is dangerous to fork new processes (pods) while grpc operations are ongoing
-                # while we use fork, we need to guarantee that forking/grpc status checking is done sequentially
-                # this is true at least when the flow process and the forked processes are running in the same OS
-                # thus this does not apply to K8s
-                # to ContainerPod it still applies due to the managing process being forked
-                # source: https://grpc.github.io/grpc/cpp/impl_2codegen_2fork_8h.html#a450c01a1187f69112a22058bf690e2a0
-                await task
-                tasks.append(task)
-
-            await asyncio.gather(*tasks)
-        except:
-            for task in tasks:
-                if not task.done():
-                    task.cancel()
-
-    async def scale(self, replicas: int):
-        """
-        Scale the amount of replicas of a given Executor.
-
-        :param replicas: The number of replicas to scale to
-        """
-        self.args.replicas = replicas
-
-        tasks = []
-        try:
-            import asyncio
-
-            for shard_id in self.shards:
-                task = asyncio.create_task(
-                    self.shards[shard_id].scale(replicas=replicas)
-                )
-                # see rolling_update for explanation of sequential excution
-                await task
-                tasks.append(task)
-
-            await asyncio.gather(*tasks)
-        except:
-            # TODO: Handle the failure of one of the shards. Unscale back all of them to the original state? Cancelling would potentially be dangerous.
-            for task in tasks:
-                if not task.done():
-                    task.cancel()
-            raise
 
     @staticmethod
     def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
