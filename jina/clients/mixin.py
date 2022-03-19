@@ -124,7 +124,7 @@ class PostMixin:
 
         c = self.client
 
-        if c.args.return_responses is True and return_responses is False:
+        if c.args.return_responses and not return_responses:
             warnings.warn(
                 'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
                 'parameter `return_responses`. This argument will be deprecated from the `constructor` '
@@ -132,33 +132,26 @@ class PostMixin:
             )
             return_responses = True
 
-        return_results = True
-        if (on_always is not None) or (on_done is not None):
-            return_results = False
-
-        async def _get_results(*args, **kwargs):
-            result = []
-            c.show_progress = show_progress
-            c.continue_on_error = continue_on_error
-            async for resp in c._get_results(*args, **kwargs):
-                if return_results:
-                    result.append(resp)
-
-            if return_results:
-                if not return_responses:
-                    docs = [r.data.docs for r in result]
-                    if len(docs) < 1:
-                        return docs
-                    else:
-                        return docs[0].reduce_all(docs[1:])
-                else:
-                    return result
-
-        if (on_always is None) and (on_done is None):
-            return_results = True
+        c.show_progress = show_progress
+        c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
         on_error = _wrap_on_error(on_error) if on_error is not None else on_error
+
+        from jina import DocumentArray
+
+        return_results = (on_always is None) and (on_done is None)
+
+        async def _get_results(*args, **kwargs):
+            result = [] if return_responses else DocumentArray()
+            async for resp in c._get_results(*args, **kwargs):
+                if return_results:
+                    if return_responses:
+                        result.append(resp)
+                    else:
+                        result.extend(resp.data.docs)
+            if return_results:
+                return result
 
         return run_async(
             _get_results,
@@ -219,7 +212,7 @@ class AsyncPostMixin:
         """
         c = self.client
 
-        if c.args.return_responses is True and return_responses is False:
+        if c.args.return_responses and not return_responses:
             warnings.warn(
                 'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
                 'parameter `return_responses`. This argument will be deprecated from the `constructor` '
@@ -257,7 +250,6 @@ class AsyncPostMixin:
 
 
 def _wrap_on_error(on_error):
-
     num_args = len(signature(on_error).parameters)
     if num_args == 1:
         warnings.warn(

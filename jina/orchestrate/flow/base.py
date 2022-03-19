@@ -1202,8 +1202,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 self.close()
                 raise RuntimeFailToStart
 
-        success_msg = '[green]🎉 Flow is ready to use![/green]'
-        console.print(success_msg)
         if addr_table:
             print(
                 addr_table
