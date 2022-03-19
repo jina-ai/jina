@@ -150,7 +150,8 @@ class PostMixin:
                         result.append(resp)
                     else:
                         result.extend(resp.data.docs)
-            return result or None
+            if return_results:
+                return result
 
         return run_async(
             _get_results,
