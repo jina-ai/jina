@@ -1,13 +1,15 @@
 # Configure a Flow from YAML
 
-Using a YAML file is the recommended way to configure Flows because it is 
+Instead of constructing a Flow in Python source codes, using a YAML file is the recommended way to configure Flows 
+because it is 
+
 - independent of the Python source codes,
 - easy to edit, maintain and extend,
 - human-readable.
 
 ## Load and Save a Flow configuration
 `load_config()` is used to load the Flow configuration from a YAML file. Correspondingly, one uses `save_config()`  to 
-save the Flow configuration. In the following example, `jtype: Flow` in `flow.yml` tells the YAML parser to construct a 
+save the Flow configuration. In the following example, `jtype: Flow` in the YAML file tells the parser to construct a 
 `Flow` using this YAML file. 
 
 `flow.yml`:
@@ -25,8 +27,8 @@ f.save_config('flow_exported.yml')
 ```
 
 ## Configure Executors
-`executors` field is for adding Executors to the Flow from the YAML file. It accepts a list of dictionaries, each of 
-which specify a configuration of one executor. The dictionary accepts all the arguments from the `add()` method of the 
+`executors` field in the YAML file is for adding Executors to the Flow. It accepts a list of dictionaries, each of 
+which specifies a configuration of one executor. The dictionary accepts all the arguments from the `add()` method of the 
 Flow. 
 `uses` field is used to define the type of the Executor. As for using a local executor with source codes, the grammar 
 for setting `uses` is the same as that for configuring Executors in a YAML file. As for the other sources, one can 
@@ -42,14 +44,14 @@ executors:
       jtype: LocalExecutor
       metas:
         py_modules:
-          - executor.py
+          - executors.py
       with:
         foo: 'Foo'
   - name: sandbox_executor
     uses: 'jinahub+sandbox://Hello'
 ```
 
-`executor.py`:
+`executors.py`:
 
 ```python
 from jina import Executor, requests
@@ -78,9 +80,9 @@ with:
 ```
 
 ## Configure Flow Meta Information
-In the case that you want to set the same value for the `metas` attributes in all the executors, `metas` field can help.
-This is very helpful when you use the executors with local source codes and have all of them in one Python file or 
-module. In the example below, the two executors are defined in the same module.
+In the case that you want to set the same value for the `metas` attributes in **all** the executors, `metas` field can 
+help. This is very helpful when you use the executors with local source codes and have all of them in one Python module.
+In the following example, the two executors are defined in the same module.
 
 ````{tab} Use Flow `metas`
 ```yaml
