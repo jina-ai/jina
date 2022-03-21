@@ -61,7 +61,7 @@ To connect to the `Flow` the client has to specify the followings parameters:
 * the `host` and the `port`on which the Flow is exposed
 * if he needs to use `tls` encryption
 
-You can precise these parameters by passing a valid scheme to the `host` argument:
+You can define these parameters by passing a valid URI scheme as part of the `host` argument:
 
 ```python
 from jina import Client
