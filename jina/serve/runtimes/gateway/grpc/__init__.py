@@ -3,11 +3,10 @@ import os
 import grpc
 
 from jina import __default_host__
-
 from jina.proto import jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.stream import RequestStreamer
 from jina.serve.runtimes.gateway.request_handling import handle_request, handle_result
+from jina.serve.stream import RequestStreamer
 
 __all__ = ['GRPCGatewayRuntime']
 
@@ -33,6 +32,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 ('grpc.max_receive_message_length', -1),
             ]
         )
+
         self._set_topology_graph()
         self._set_connection_pool()
 
@@ -49,7 +49,27 @@ class GRPCGatewayRuntime(GatewayRuntime):
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
         bind_addr = f'{__default_host__}:{self.args.port}'
-        self.server.add_insecure_port(bind_addr)
+
+        if self.args.grpc_server_kwargs and all(
+            key in self.args.grpc_server_kwargs.keys()
+            for key in ['ssl_keyfile', 'ssl_certfile']
+        ):
+            with open(self.args.grpc_server_kwargs['ssl_keyfile'], 'rb') as f:
+                private_key = f.read()
+            with open(self.args.grpc_server_kwargs['ssl_certfile'], 'rb') as f:
+                certificate_chain = f.read()
+
+            server_credentials = grpc.ssl_server_credentials(
+                (
+                    (
+                        private_key,
+                        certificate_chain,
+                    ),
+                )
+            )
+            self.server.add_secure_port(bind_addr, server_credentials)
+        else:
+            self.server.add_insecure_port(bind_addr)
         self.logger.debug(f' Start server bound to {bind_addr}')
         await self.server.start()
 

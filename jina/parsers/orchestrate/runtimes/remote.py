@@ -212,6 +212,16 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
 ''',
     )
 
+    gp.add_argument(
+        '--grpc-server-kwargs',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+    Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update
+    ''',
+    )
+
 
 def mixin_prefetch_parser(parser=None):
     """Add the options for prefetching

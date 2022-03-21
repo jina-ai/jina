@@ -146,6 +146,7 @@ ac_table = {
             '--no-crud-endpoints',
             '--expose-endpoints',
             '--uvicorn-kwargs',
+            '--grpc-server-kwargs',
             '--expose-graphql-endpoint',
             '--protocol',
             '--host',

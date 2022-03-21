@@ -140,6 +140,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         expose_graphql_endpoint: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
+        grpc_server_kwargs: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -187,6 +188,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
