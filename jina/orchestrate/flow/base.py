@@ -1495,7 +1495,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return self._deployment_nodes.items().__iter__()
 
     def _init_table(self):
-        table = Table(title=None, box=None, highlight=True)
+        table = Table(title=None, box=None, highlight=True, show_header=False)
         table.add_column('', justify='right')
         table.add_column('', justify='right')
         table.add_column('', justify='right')
@@ -1504,41 +1504,41 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return table
 
     def _get_address_table(self, address_table):
-        address_table.add_row('🔗', 'Protocol: ', f'{self.protocol}')
+        address_table.add_row('🔗', 'Protocol', f'{self.protocol}')
         address_table.add_row(
             '🏠',
-            'Local access: ',
+            'Local access',
             f'[underline]{self.host}:{self.port}[/underline]',
         )
         address_table.add_row(
             '🔒',
-            'Private network: ',
+            'Private network',
             f'[underline]{self.address_private}:{self.port}[/underline]',
         )
 
         if self.address_public:
             address_table.add_row(
                 '🌐',
-                'Public address: ',
+                'Public address',
                 f'[underline]{self.address_public}:{self.port}[/underline]',
             )
 
         if self.protocol == GatewayProtocolType.HTTP:
             address_table.add_row(
                 '💬',
-                'Swagger UI: ',
+                'Swagger UI',
                 f'[underline]http://localhost:{self.port}/docs[/underline]',
             )
 
             address_table.add_row(
                 '📚',
-                'Redoc: ',
+                'Redoc',
                 f'[underline]http://localhost:{self.port}/redoc[/underline]',
             )
             if self.args.expose_graphql_endpoint:
                 address_table.add_row(
                     '💬',
-                    'GraphQL UI: ',
+                    'GraphQL UI',
                     f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
                 )
 
