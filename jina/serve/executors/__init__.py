@@ -112,7 +112,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
-        self._default_workspace = 'exec-' + str(uuid.uuid4())
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         if _runtime_args:
@@ -251,7 +250,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         workspace = (
             getattr(self.metas, 'workspace')
             or getattr(self.runtime_args, 'workspace', None)
-            or self._default_workspace
+            or os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
         )
         if workspace:
             complete_workspace = os.path.join(workspace, self.metas.name)

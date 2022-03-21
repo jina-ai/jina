@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 from pathlib import Path
+from unittest import mock
 
 import pytest
 from docarray import Document, DocumentArray
@@ -350,7 +351,11 @@ def test_set_workspace(tmpdir):
     assert resp[0].text == complete_workspace
 
 
-def test_default_workspace():
+@mock.patch.dict(
+    os.environ,
+    {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(Path.home(), 'mock-workspace'))},
+)
+def test_default_workspace(test_envs):
     with Flow().add(uses=WorkspaceExec) as f:
         resp = f.post(on='/foo', inputs=Document())
     assert resp[0].text
@@ -358,8 +363,9 @@ def test_default_workspace():
     result_workspace = resp[0].text
     remove_test_dirs(result_workspace)  # delete created directories
 
-    assert result_workspace.startswith(os.path.abspath('exec-'))
-    assert result_workspace.endswith(os.path.join('WorkspaceExec', '0'))
+    assert result_workspace == os.path.join(
+        os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
+    )
 
 
 def remove_test_dirs(workspace):
