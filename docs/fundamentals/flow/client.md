@@ -56,7 +56,7 @@ client.post('/endpoint')  # Empty
 ```
 ### Specifying Host scheme
 
-To connect to the right `Flow` the client must now 
+To connect to the right `Flow` the client must now the followings parameters:
 * the `protocol` it needs to use to communicate with the `Flow
 * the `host` and the `port`on which the Flow is exposed
 * if he needs to use `tls` encryption
