@@ -312,6 +312,7 @@ ac_table = {
             '--host',
             '--proxy',
             '--port',
+            '--tls',
             '--https',
             '--asyncio',
             '--return-responses',

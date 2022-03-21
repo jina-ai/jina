@@ -50,7 +50,7 @@ class GRPCBaseClient(BaseClient):
             async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
                 asyncio=True,
-                https=self.args.https,
+                tls=self.args.tls,
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')

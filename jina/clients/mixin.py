@@ -51,7 +51,7 @@ class MutateMixin:
         with ImportExtensions(required=True):
             from sgqlc.endpoint.http import HTTPEndpoint as SgqlcHTTPEndpoint
 
-            proto = 'https' if self.args.https else 'http'
+            proto = 'https' if self.args.tls else 'http'
             graphql_url = f'{proto}://{self.args.host}:{self.args.port}/graphql'
             endpoint = SgqlcHTTPEndpoint(graphql_url)
             res = endpoint(

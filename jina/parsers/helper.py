@@ -1,7 +1,8 @@
 """Module for helper functions in the parser"""
 import argparse
 import os
-from typing import Tuple
+import warnings
+from typing import Tuple, Type
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
@@ -41,6 +42,7 @@ class KVAppendAction(argparse.Action):
         """
         import json
         import re
+
         from jina.helper import parse_arg
 
         d = getattr(args, self.dest) or {}
@@ -211,8 +213,8 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         :return: list of paragraphs
         """
 
-        import textwrap
         import re
+        import textwrap
 
         text = textwrap.dedent(text).strip()
         text = re.sub('\n\n[\n]+', '\n\n', text)
@@ -264,3 +266,33 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 _chf = _ColoredHelpFormatter
+
+
+class DeprecateAction(argparse.Action):
+    """
+    Action to deprecated an argument in argparse
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):  # noqa
+        warnings.warn('Argument {self.option_strings} is deprecated and is *ignored*')
+        delattr(namespace, self.dest)
+
+
+def get_deprecation_renamed_action(
+    replacement: str, action: Type[argparse.Action] = argparse.Action
+):
+    """
+    To deprecate an argument when it has been renamed for argparse
+
+    :param replacement: the new argument name
+    :param action: class of the action that you want to overload with the deprecation to keep the old behavior
+    :return: a action class that can
+    """
+
+    class _DeprecateRenamedAction(action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            warnings.warn(
+                f'Argument {self.option_strings} is deprecated, please use {replacement} instead'
+            )
+
+    return _DeprecateRenamedAction

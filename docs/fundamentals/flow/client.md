@@ -73,6 +73,51 @@ client.post('/endpoint', DocumentArray([d1, d2]))  # DocumentArray
 
 client.post('/endpoint')  # Empty
 ```
+### Specifying Host scheme
+
+To connect to the `Flow` the client has to specify the followings parameters:
+* the `protocol` it needs to use to communicate with the `Flow
+* the `host` and the `port`on which the Flow is exposed
+* if he needs to use `tls` encryption
+
+You can define these parameters by passing a valid URI scheme as part of the `host` argument:
+
+```python
+from jina import Client
+
+Client(host='https://my.awesome.flow:1234')
+Client(host='wss://my.awesome.flow:1234')
+Client(host='grpcs://my.awesome.flow:1234')
+```
+
+You can as well pass each relevant parameter as a keyword argument:
+
+the following example is equivalent to the one above
+```python
+Client(host='my.awesome.flow', port=1234, protocol='http', tls=True)
+Client(host='my.awesome.flow', port=1234, protocol='websocket', tls=True)
+Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=True)
+```
+
+You can use a mixe of both as well:
+
+```python
+Client(host='https://my.awesome.flow', port=1234)
+Client(host='my.awesome.flow:1234', protocol='http', tls=True)
+```
+
+````{admonition} Caution
+:class: caution
+You can't define these parameters by keyword arugment and by host scheme (You can't have two sources of truth)
+Example : the following code will raise an exception
+```python
+Client(host='https://my.awesome.flow:1234', port=4321)
+```
+````
+
+
+
+
 
 
 ### Batching Requests

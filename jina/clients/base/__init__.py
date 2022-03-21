@@ -4,10 +4,20 @@ import argparse
 import inspect
 import os
 from abc import ABC
-from typing import Callable, Union, Optional, Iterator, AsyncIterator, TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterator,
+    Callable,
+    Dict,
+    Iterator,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from jina.excepts import BadClientInput
-from jina.helper import typename, ArgNamespace, T
+from jina.helper import ArgNamespace, T, typename
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 from jina.parsers import set_client_cli_parser
@@ -35,9 +45,11 @@ class BaseClient(ABC):
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
+            self._parse_kwargs(kwargs)
             self.args = ArgNamespace.kwargs2namespace(
                 kwargs, set_client_cli_parser(), warn_unknown=True
             )
+
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
         if not self.args.proxy and os.name != 'nt':
@@ -48,6 +60,39 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+
+    def _parse_kwargs(self, kwargs: Dict[str, Any]):
+
+        if 'host' in kwargs.keys():
+            return_scheme = dict()
+            (
+                kwargs['host'],
+                return_scheme['port'],
+                return_scheme['protocol'],
+                return_scheme['tls'],
+            ) = self._parse_host_scheme(kwargs['host'])
+
+            for key, value in return_scheme.items():
+                if value:
+                    if key in kwargs:
+                        raise ValueError(
+                            f"You can't have two definitions of {key}: you have one in the host scheme and one in the keyword argument"
+                        )
+                    elif value:
+                        kwargs[key] = value
+
+    def _parse_host_scheme(self, host: str) -> Tuple[str, str, str, bool]:
+        scheme, _hostname, port = _parse_url(host)
+
+        tls = None
+        if scheme in ('grpcs', 'https', 'wss'):
+            scheme = scheme[:-1]
+            tls = True
+
+        if scheme == 'ws':
+            scheme = 'websocket'
+
+        return _hostname, port, scheme, tls
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
@@ -154,3 +199,17 @@ class BaseClient(ABC):
         :return: the Client object
         """
         return self
+
+
+def _parse_url(host):
+    if '://' in host:
+        scheme, host = host.split('://')
+    else:
+        scheme = None
+
+    if ':' in host:
+        host, port = host.split(':')
+    else:
+        port = None
+
+    return scheme, host, port

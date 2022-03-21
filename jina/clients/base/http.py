@@ -1,19 +1,19 @@
 import asyncio
-from contextlib import nullcontext, AsyncExitStack
-from typing import Optional, TYPE_CHECKING
+from contextlib import AsyncExitStack, nullcontext
+from typing import TYPE_CHECKING, Optional
 
-from jina.clients.base.helper import HTTPClientlet
 from jina.clients.base import BaseClient
+from jina.clients.base.helper import HTTPClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
 from jina.excepts import BadClient
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
-from jina.types.request import Request
 from jina.serve.stream import RequestStreamer
+from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
-    from jina.clients.base import InputType, CallbackFnType
+    from jina.clients.base import CallbackFnType, InputType
 
 
 class HTTPBaseClient(BaseClient):
@@ -48,7 +48,7 @@ class HTTPBaseClient(BaseClient):
                 )
                 p_bar = stack.enter_context(cm1)
 
-                proto = 'https' if self.args.https else 'http'
+                proto = 'https' if self.args.tls else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
                 iolet = await stack.enter_async_context(
                     HTTPClientlet(url=url, logger=self.logger)

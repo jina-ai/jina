@@ -5,17 +5,17 @@ from tempfile import NamedTemporaryFile
 import aiohttp
 import pytest
 import requests as req
+from docarray import Document, DocumentArray
 from fastapi.testclient import TestClient
 
-from docarray import DocumentArray, Document
+from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
-from jina import Executor, requests, Flow, Client
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway import TopologyGraph
-from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
+from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
 
 @pytest.mark.parametrize('p', [['--default-swagger-ui'], []])
@@ -207,7 +207,7 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
         with pytest.raises(aiohttp.ClientConnectorCertificateError):
-            Client(protocol=protocol, port=f.port, https=True).index([Document()])
+            Client(protocol=protocol, port=f.port, tls=True).index([Document()])
 
 
 da = DocumentArray([Document(text='text_input')])
