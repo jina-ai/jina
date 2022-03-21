@@ -150,6 +150,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12680,4 +12681,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```ed19b735```](https://github.com/jina-ai/jina/commit/ed19b73516847e7460fc8036eb338c4b31ec97dc)] __-__ small refactor (#4505) (*Joan Fontanals*)
  - [[```075b3a91```](https://github.com/jina-ai/jina/commit/075b3a91bc26221839bc6f636905e71a3c1c782c)] __-__ __version__: the next version will be 3.2.6 (*Jina Dev Bot*)
+
+<a name=release-note-3-2-7></a>
+## Release Note (`3.2.7`)
+
+> Release time: 2022-03-21 12:16:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  Jina Dev Bot,  Joan Fontanals,  Johannes Messner,  Tobias Jacobowitz,  🙇
+
+
+### 🆕 New Features
+
+ - [[```b0f839b2```](https://github.com/jina-ai/jina/commit/b0f839b2030b1371518082be7bf79778d6e9f88d)] __-__ improve client interface (#4510) (*samsja*)
+ - [[```57a6490b```](https://github.com/jina-ai/jina/commit/57a6490b825deae864f89cf6f9fc975fcb7341f8)] __-__ custom gateway image (#4508) (*Tobias Jacobowitz*)
+ - [[```a97ed52c```](https://github.com/jina-ai/jina/commit/a97ed52c3f4305423ed6819d359e3b4956d126b0)] __-__ Linkerd as default service mesh (#4433) (*Tobias Jacobowitz*)
+
+### 🧼 Code Refactoring
+
+ - [[```35026dcc```](https://github.com/jina-ai/jina/commit/35026dcc63bc9814c923ccf156085c682832c491)] __-__ __client__: simplify logics in client post (#4518) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```5dff893b```](https://github.com/jina-ai/jina/commit/5dff893b4904e0ea348e2ce6892ec9f96dae2c07)] __-__ add file imports to migration guide (#4513) (*Johannes Messner*)
+ - [[```60795df1```](https://github.com/jina-ai/jina/commit/60795df18fa34b59409de6c4b16edeb962bba58e)] __-__ expose and explain gateway service (#4509) (*Johannes Messner*)
+ - [[```2bacdb33```](https://github.com/jina-ai/jina/commit/2bacdb33d39bb0c9fa189e386e53ff9efe0a8cc7)] __-__ explain host parameter for client and tweak client docs page (#4506) (*Johannes Messner*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```833771b9```](https://github.com/jina-ai/jina/commit/833771b97563dcf4887aaf70a5dfa69e85f38585)] __-__ make sure to await coroutine in test (#4516) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```21415ea8```](https://github.com/jina-ai/jina/commit/21415ea827ab5e4f88ca8fe99dd07c9d89225e82)] __-__ __style__: fix table ui (*Han Xiao*)
+ - [[```63d7813a```](https://github.com/jina-ai/jina/commit/63d7813af51e26ece417214c07e41697c785312e)] __-__ Fix better enum formatting (#4520) (*samsja*)
+ - [[```3fad429d```](https://github.com/jina-ai/jina/commit/3fad429dca534ad2c2013f0b8f507708540dd627)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b2db7b82```](https://github.com/jina-ai/jina/commit/b2db7b82d9c600f7212016450b2d4de8ccf6acc2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```734f86fd```](https://github.com/jina-ai/jina/commit/734f86fd5b8a142161c23bb7bf5d1982dcc36d2a)] __-__ __version__: the next version will be 3.2.7 (*Jina Dev Bot*)
 
