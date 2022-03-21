@@ -351,28 +351,17 @@ def test_set_workspace(tmpdir):
     assert resp[0].text == complete_workspace
 
 
-@mock.patch.dict(
-    os.environ,
-    {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(Path.home(), 'mock-workspace'))},
-)
-def test_default_workspace(test_envs):
-    with Flow().add(uses=WorkspaceExec) as f:
-        resp = f.post(on='/foo', inputs=Document())
-    assert resp[0].text
+def test_default_workspace(tmpdir):
+    with mock.patch.dict(
+        os.environ,
+        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, 'mock-workspace'))},
+    ):
+        with Flow().add(uses=WorkspaceExec) as f:
+            resp = f.post(on='/foo', inputs=Document())
+        assert resp[0].text
 
-    result_workspace = resp[0].text
-    remove_test_dirs(result_workspace)  # delete created directories
+        result_workspace = resp[0].text
 
-    assert result_workspace == os.path.join(
-        os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
-    )
-
-
-def remove_test_dirs(workspace):
-    shard_dir = Path(workspace)
-    name_dir = shard_dir.parent.absolute()
-    custom_dir = name_dir.parent.absolute()
-
-    os.rmdir(shard_dir)
-    os.rmdir(name_dir)
-    os.rmdir(custom_dir)
+        assert result_workspace == os.path.join(
+            os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
+        )
