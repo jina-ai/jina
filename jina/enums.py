@@ -16,7 +16,7 @@ To use these enums in YAML config, following the example below:
         parallel_type: any
 """
 
-from enum import Enum, EnumMeta, IntEnum
+from enum import Enum, EnumMeta, Flag, IntEnum
 
 
 class EnumType(EnumMeta):
@@ -55,6 +55,24 @@ class BetterEnum(IntEnum, metaclass=EnumType):
 
     def __str__(self):
         return self.name
+
+    def __format__(self, format_spec):  # noqa
+        """
+        override format method for python 3.7
+        :parameter format_spec: format_spec
+        :return: format using actual value type unless __str__ has been overridden.
+        """
+        # credit python 3.9 : https://github.com/python/cpython/blob/612019e60e3a5340542122dabbc7ce5a27a8c635/Lib/enum.py#L755
+        # fix to enum BetterEnum not correctly formated
+        str_overridden = type(self).__str__ not in (Enum.__str__, Flag.__str__)
+        if self._member_type_ is object or str_overridden:
+            cls = str
+            val = str(self)
+        # mix-in branch
+        else:
+            cls = self._member_type_
+            val = self._value_
+        return cls.__format__(val, format_spec)
 
     @classmethod
     def from_string(cls, s: str):
