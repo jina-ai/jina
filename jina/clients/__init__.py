@@ -18,11 +18,11 @@ def Client(
     *,
     asyncio: Optional[bool] = False,
     host: Optional[str] = '0.0.0.0',
-    tls: Optional[bool] = False,
     port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
     return_responses: Optional[bool] = False,
+    tls: Optional[bool] = False,
     **kwargs
 ) -> Union[
     'AsyncWebSocketClient',
@@ -36,11 +36,11 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host address of the runtime, by default it is 0.0.0.0.
-    :param tls: If set, connect to gateway using tls encryption
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
+    :param tls: If set, connect to gateway using https
     :return: the new Client object
 
     .. # noqa: DAR202
