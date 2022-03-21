@@ -92,7 +92,7 @@ class BaseDeployment(ExitStack):
         """Get the port of the HeadPod of this deployment
         .. # noqa: DAR201
         """
-        return self.head_args.port
+        return self.head_args.port if self.head_args else None
 
     def __enter__(self) -> 'BaseDeployment':
         with CatchAllCleanupContextManager(self):
@@ -259,8 +259,9 @@ class Deployment(BaseDeployment):
             host, port = HubIO.deploy_public_sandbox(self.args)
             self.first_pod_args.host = host
             self.first_pod_args.port = port
-            self.pod_args['head'].host = host
-            self.pod_args['head'].port = port
+            if self.head_args:
+                self.pod_args['head'].host = host
+                self.pod_args['head'].port = port
 
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
@@ -657,7 +658,8 @@ class Deployment(BaseDeployment):
         }
 
         # a gateway has no heads and uses
-        if self.role != DeploymentRoleType.GATEWAY:
+        # also there a no heads created, if there are no shards
+        if self.role != DeploymentRoleType.GATEWAY and getattr(args, 'shards', 1) > 1:
             if (
                 getattr(args, 'uses_before', None)
                 and args.uses_before != __default_executor__

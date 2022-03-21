@@ -480,7 +480,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
-            graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port}']
+            if v.head_args:
+                # add head information
+                graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port}']
+            else:
+                # there is no head, add the worker connection information instead
+                worker_addresses = []
+                graph_dict[node] = worker_addresses
+                # iterate over all replica args of the first shard
+                # we can assume safely here that there is only a single shard, because it's the reason there is no head
+                for replica in v.pod_args['pods'][0]:
+                    worker_addresses.append(
+                        f'{v.protocol}://{replica.host}:{replica.port}'
+                    )
 
         return graph_dict
 
@@ -497,13 +509,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
             if v.external:
                 deployment_k8s_address = f'{v.host}'
-            else:
+            elif v.head_args:
                 deployment_k8s_address = (
                     f'{to_compatible_name(v.head_args.name)}.{k8s_namespace}.svc'
                 )
+            else:
+                deployment_k8s_address = (
+                    f'{to_compatible_name(v.name)}.{k8s_namespace}.svc'
+                )
 
+            external_port = v.head_port if v.head_port else v.port
             graph_dict[node] = [
-                f'{deployment_k8s_address}:{v.head_port if v.external else GrpcConnectionPool.K8S_PORT}'
+                f'{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
             ]
 
         return graph_dict if graph_dict else None
