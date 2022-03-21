@@ -16,9 +16,9 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
 
         graph_description = json.loads(self.args.graph_description)
         graph_conditions = json.loads(self.args.graph_conditions)
-        deployments_disabled_reduce = json.loads(self.args.deployments_disabled_reduce)
+        deployments_disable_reduce = json.loads(self.args.deployments_disable_reduce)
         self._topology_graph = TopologyGraph(
-            graph_description, graph_conditions, deployments_disabled_reduce
+            graph_description, graph_conditions, deployments_disable_reduce
         )
 
     def _set_connection_pool(self):

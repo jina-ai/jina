@@ -63,7 +63,7 @@ def test_name(pod_args):
 def test_host(pod_args):
     with Deployment(pod_args) as pod:
         assert pod.host == __default_host__
-        assert pod.head_host == __default_host__
+        assert pod.head_host is None
 
 
 def test_is_ready(pod_args):
@@ -93,21 +93,27 @@ class ChildDummyExecutor2(MyDummyExecutor):
     pass
 
 
-def test_uses_before_after(pod_args):
+@pytest.mark.parametrize('shards', [2, 1])
+def test_uses_before_after(pod_args, shards):
     pod_args.replicas = 1
+    pod_args.shards = shards
     pod_args.uses_before = 'MyDummyExecutor'
     pod_args.uses_after = 'ChildDummyExecutor2'
     pod_args.uses = 'ChildDummyExecutor'
     with Deployment(pod_args) as pod:
-        assert (
-            pod.head_args.uses_before_address
-            == f'{pod.uses_before_args.host}:{pod.uses_before_args.port}'
-        )
-        assert (
-            pod.head_args.uses_after_address
-            == f'{pod.uses_after_args.host}:{pod.uses_after_args.port}'
-        )
-        assert pod.num_pods == 4
+        if shards == 2:
+            assert (
+                pod.head_args.uses_before_address
+                == f'{pod.uses_before_args.host}:{pod.uses_before_args.port}'
+            )
+            assert (
+                pod.head_args.uses_after_address
+                == f'{pod.uses_after_args.host}:{pod.uses_after_args.port}'
+            )
+        else:
+            assert pod.head_args is None
+
+        assert pod.num_pods == 5 if shards == 2 else 1
 
 
 def test_mermaid_str_no_error(pod_args):
@@ -125,12 +131,7 @@ def test_pod_context_replicas(replicas):
     args_list = ['--replicas', str(replicas)]
     args = set_deployment_parser().parse_args(args_list)
     with Deployment(args) as bp:
-
-        if replicas == 1:
-            assert bp.num_pods == 2
-        else:
-            # count head
-            assert bp.num_pods == replicas + 1
+        assert bp.num_pods == replicas
 
     Deployment(args).start().close()
 
@@ -142,7 +143,7 @@ def test_pod_context_shards_replicas(shards):
     args_list.extend(['--shards', str(shards)])
     args = set_deployment_parser().parse_args(args_list)
     with Deployment(args) as bp:
-        assert bp.num_pods == shards * 3 + 1
+        assert bp.num_pods == shards * 3 + 1 if shards > 1 else 3
 
     Deployment(args).start().close()
 
@@ -160,14 +161,14 @@ class AppendNameExecutor(Executor):
 
 @pytest.mark.slow
 def test_pod_activates_replicas():
-    args_list = ['--replicas', '3']
+    args_list = ['--replicas', '3', '--shards', '2', '--disable-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
     with Deployment(args) as pod:
-        assert pod.num_pods == 4
+        assert pod.num_pods == 7
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
-        for _ in range(3):
+        for _ in range(6):
             response = GrpcConnectionPool.send_request_sync(
                 _create_test_data_message(),
                 f'{pod.head_args.host}:{pod.head_args.port}',
@@ -291,7 +292,7 @@ def test_gateway_pod(protocol, runtime_cls, graph_description):
 def test_pod_naming_with_replica():
     args = set_deployment_parser().parse_args(['--name', 'pod', '--replicas', '2'])
     with Deployment(args) as bp:
-        assert bp.head_pod.name == 'pod/head'
+        assert bp.head_pod is None
         assert bp.shards[0]._pods[0].name == 'pod/rep-0'
         assert bp.shards[0]._pods[1].name == 'pod/rep-1'
 
@@ -299,13 +300,13 @@ def test_pod_naming_with_replica():
 def test_pod_args_remove_uses_ba():
     args = set_deployment_parser().parse_args([])
     with Deployment(args) as p:
-        assert p.num_pods == 2
+        assert p.num_pods == 1
 
     args = set_deployment_parser().parse_args(
         ['--uses-before', __default_executor__, '--uses-after', __default_executor__]
     )
     with Deployment(args) as p:
-        assert p.num_pods == 2
+        assert p.num_pods == 1
 
     args = set_deployment_parser().parse_args(
         [
@@ -318,7 +319,7 @@ def test_pod_args_remove_uses_ba():
         ]
     )
     with Deployment(args) as p:
-        assert p.num_pods == 3
+        assert p.num_pods == 2
 
 
 @pytest.mark.parametrize('replicas', [1])
@@ -575,7 +576,7 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
     )
     assert args.host == __default_host__
     with Deployment(args) as pod:
-        assert pod.num_pods == num_shards * num_replicas + 1
+        assert pod.num_pods == num_shards * num_replicas + (1 if num_shards > 1 else 0)
         pod_args = dict(pod.pod_args['pods'])
         for k, replica_args in pod_args.items():
             assert len(replica_args) == num_replicas

@@ -474,7 +474,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
-        args.deployments_disabled_reduce = json.dumps(deployments_disabled_reduce)
+        args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:

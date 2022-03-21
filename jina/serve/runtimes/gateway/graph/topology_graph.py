@@ -182,7 +182,7 @@ class TopologyGraph:
         self,
         graph_representation: Dict,
         graph_conditions: Dict = {},
-        deployments_disabled_reduce: List[str] = [],
+        deployments_disable_reduce: List[str] = [],
         *args,
         **kwargs
     ):
@@ -213,7 +213,7 @@ class TopologyGraph:
                 else 1,
                 hanging=node_name in hanging_deployment_names,
                 filter_condition=condition,
-                reduce=node_name not in deployments_disabled_reduce,
+                reduce=node_name not in deployments_disable_reduce,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

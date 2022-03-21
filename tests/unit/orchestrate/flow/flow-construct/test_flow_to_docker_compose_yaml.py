@@ -1,7 +1,7 @@
 import os
-import yaml
 
 import pytest
+import yaml
 
 from jina import Flow
 
@@ -15,6 +15,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         .add(
             replicas=2,
             name='executor2',
+            shards=2,
             uses_before='docker://image',
             uses_after='docker://image',
             uses_with={'param': 0},
@@ -35,20 +36,18 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert configuration['version'] == '3.3'
     assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
     services = configuration['services']
-    assert (
-        len(services) == 11
-    )  # gateway, executor0-head, executor0, executor1-head, executor1-0, executor1-1,
-    # executor2-head, executor2-rep-0, executor2-rep-1, executor2-uses-before, executor2-uses-after
+    assert len(services) == 12
     assert set(services.keys()) == {
         'gateway',
-        'executor0-head',
         'executor0',
         'executor1-head',
         'executor1-0',
         'executor1-1',
         'executor2-head',
-        'executor2-rep-0',
-        'executor2-rep-1',
+        'executor2-0-rep-0',
+        'executor2-0-rep-1',
+        'executor2-1-rep-0',
+        'executor2-1-rep-1',
         'executor2-uses-before',
         'executor2-uses-after',
     }
@@ -69,7 +68,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert '--deployments-addresses' in gateway_args
     assert (
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
-        == '{"executor0": ["executor0-head:8081"], "executor1": ["executor1-head:8081"], "executor2": ["executor2-head:8081"]}'
+        == '{"executor0": ["executor0:8081"], "executor1": ["executor1-head:8081"], "executor2": ["executor2-head:8081"]}'
     )
     assert '--pod-role' in gateway_args
     assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
@@ -80,35 +79,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         assert '--protocol' not in gateway_args
     assert '--uses-with' not in gateway_args
     assert '--env' not in gateway_args
-
-    executor0_head_service = services['executor0-head']
-    assert executor0_head_service['entrypoint'] == ['jina']
-    assert 'expose' not in executor0_head_service
-    executor0_head_args = executor0_head_service['command']
-    assert executor0_head_args[0] == 'executor'
-    assert '--name' in executor0_head_args
-    assert (
-        executor0_head_args[executor0_head_args.index('--name') + 1] == 'executor0/head'
-    )
-    assert '--runtime-cls' in executor0_head_args
-    assert (
-        executor0_head_args[executor0_head_args.index('--runtime-cls') + 1]
-        == 'HeadRuntime'
-    )
-    assert '--pod-role' in executor0_head_args
-    assert executor0_head_args[executor0_head_args.index('--pod-role') + 1] == 'HEAD'
-    assert '--native' in executor0_head_args
-    assert '--connection-list' in executor0_head_args
-    assert (
-        executor0_head_args[executor0_head_args.index('--connection-list') + 1]
-        == '{"0": ["executor0:8081"]}'
-    )
-    assert '--uses-with' not in executor0_head_args
-    assert '--uses-before' not in executor0_head_args
-    assert '--uses-after' not in executor0_head_args
-    assert '--envs' not in executor0_head_args
-    assert '--uses-before-address' not in executor0_head_args
-    assert '--uses-after-address' not in executor0_head_args
 
     executor0_service = services['executor0']
     assert executor0_service['entrypoint'] == ['jina']
@@ -219,9 +189,10 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
     assert executor2_head_args[executor2_head_args.index('--pod-role') + 1] == 'HEAD'
     assert '--native' in executor2_head_args
     assert '--connection-list' in executor2_head_args
-    assert (
-        executor2_head_args[executor2_head_args.index('--connection-list') + 1]
-        == '{"0": ["executor2-rep-0:8081", "executor2-rep-1:8081"]}'
+    assert executor2_head_args[executor2_head_args.index('--connection-list') + 1] == (
+        '{"0": ["executor2-0-rep-0:8081", "executor2-0-rep-1:8081"],'
+        ' "1": '
+        '["executor2-1-rep-0:8081", "executor2-1-rep-1:8081"]}'
     )
     assert '--uses-with' not in executor2_head_args
     assert '--uses-before' not in executor2_head_args
@@ -238,49 +209,49 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         == 'executor2-uses-after:8081'
     )
 
-    executor2_rep_0_service = services['executor2-rep-0']
-    assert executor2_rep_0_service['entrypoint'] == ['jina']
-    assert 'expose' not in executor2_rep_0_service
-    executor2_rep_0_args = executor2_rep_0_service['command']
-    assert executor2_rep_0_args[0] == 'executor'
-    assert '--name' in executor2_rep_0_args
+    executor2_0_rep_0_service = services['executor2-0-rep-0']
+    assert executor2_0_rep_0_service['entrypoint'] == ['jina']
+    assert 'expose' not in executor2_0_rep_0_service
+    executor2_0_rep_0_args = executor2_0_rep_0_service['command']
+    assert executor2_0_rep_0_args[0] == 'executor'
+    assert '--name' in executor2_0_rep_0_args
     assert (
-        executor2_rep_0_args[executor2_rep_0_args.index('--name') + 1]
-        == 'executor2/rep-0'
+        executor2_0_rep_0_args[executor2_0_rep_0_args.index('--name') + 1]
+        == 'executor2-0/rep-0'
     )
-    assert '--uses-with' in executor2_rep_0_args
+    assert '--uses-with' in executor2_0_rep_0_args
     assert (
-        executor2_rep_0_args[executor2_rep_0_args.index('--uses-with') + 1]
+        executor2_0_rep_0_args[executor2_0_rep_0_args.index('--uses-with') + 1]
         == '{"param": 0}'
     )
-    assert '--native' in executor2_rep_0_args
-    assert '--pod-role' not in executor2_rep_0_args
-    assert '--runtime-cls' not in executor2_rep_0_args
-    assert '--connection-list' not in executor2_rep_0_args
-    assert '--uses-before' not in executor2_rep_0_args
-    assert '--uses-after' not in executor2_rep_0_args
+    assert '--native' in executor2_0_rep_0_args
+    assert '--pod-role' not in executor2_0_rep_0_args
+    assert '--runtime-cls' not in executor2_0_rep_0_args
+    assert '--connection-list' not in executor2_0_rep_0_args
+    assert '--uses-before' not in executor2_0_rep_0_args
+    assert '--uses-after' not in executor2_0_rep_0_args
 
-    executor2_rep_1_service = services['executor2-rep-1']
-    assert executor2_rep_1_service['entrypoint'] == ['jina']
-    assert 'expose' not in executor2_rep_1_service
-    executor2_rep_1_args = executor2_rep_1_service['command']
-    assert executor2_rep_1_args[0] == 'executor'
-    assert '--name' in executor2_rep_1_args
+    executor2_0_rep_1_service = services['executor2-0-rep-1']
+    assert executor2_0_rep_1_service['entrypoint'] == ['jina']
+    assert 'expose' not in executor2_0_rep_1_service
+    executor2_0_rep_1_args = executor2_0_rep_1_service['command']
+    assert executor2_0_rep_1_args[0] == 'executor'
+    assert '--name' in executor2_0_rep_1_args
     assert (
-        executor2_rep_1_args[executor2_rep_1_args.index('--name') + 1]
-        == 'executor2/rep-1'
+        executor2_0_rep_1_args[executor2_0_rep_1_args.index('--name') + 1]
+        == 'executor2-0/rep-1'
     )
-    assert '--uses-with' in executor2_rep_1_args
+    assert '--uses-with' in executor2_0_rep_1_args
     assert (
-        executor2_rep_1_args[executor2_rep_1_args.index('--uses-with') + 1]
+        executor2_0_rep_1_args[executor2_0_rep_1_args.index('--uses-with') + 1]
         == '{"param": 0}'
     )
-    assert '--native' in executor2_rep_1_args
-    assert '--pod-role' not in executor2_rep_1_args
-    assert '--runtime-cls' not in executor2_rep_1_args
-    assert '--connection-list' not in executor2_rep_1_args
-    assert '--uses-before' not in executor2_rep_1_args
-    assert '--uses-after' not in executor2_rep_1_args
+    assert '--native' in executor2_0_rep_1_args
+    assert '--pod-role' not in executor2_0_rep_1_args
+    assert '--runtime-cls' not in executor2_0_rep_1_args
+    assert '--connection-list' not in executor2_0_rep_1_args
+    assert '--uses-before' not in executor2_0_rep_1_args
+    assert '--uses-after' not in executor2_0_rep_1_args
 
     executor2_uses_before_service = services['executor2-uses-before']
     assert executor2_uses_before_service['entrypoint'] == ['jina']
