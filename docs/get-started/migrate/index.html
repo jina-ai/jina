@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/get-started/migrate/" />
   
-<meta property="og:site_name" content="Jina 3.2.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.7 Documentation" />
   
 <meta property="og:description" content="Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some tweaks to your existing Jina 2 code. One of the major changes in Jina 3 is DocArray being an external dependency: The previously included Document and DocumentArray data structures now form their own..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Python API" href="../../api/" /><link rel="prev" title="How to Debug Executor" href="../../how-to/debug-executor/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Migration to Jina 3 - Jina 3.2.6 documentation</title>
+        <title>Migration to Jina 3 - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -686,6 +686,10 @@ The modifications in the following table should, in most cases, be safe to perfo
 <td><code>Document(bytes)</code></td>
 <td><code>Document.from_bytes()</code></td>
 </tr>
+<tr>
+<td><code>from jina import Document, DocumentArray</code></td>
+<td><code>from docarray import Document, DocumentArray</code></td>
+</tr>
 </tbody>
 </table></div>
 <p>There are, however, some more nuanced changes in Jina 3 as well.
@@ -733,7 +737,7 @@ Additionally, you can access a specific key in <code class="docutils literal not
 </ul>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Jina 2</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">docs</span> <span class="o">=</span> <span class="n">nested_docs</span><span class="p">()</span>
 
@@ -771,6 +775,25 @@ Additionally, you can access a specific key in <code class="docutils literal not
 </div>
 </div>
 </div>
+<p><strong>Loading data from files</strong>: DocumentArray introduces a <code class="docutils literal notranslate"><span class="pre">.from_files()</span></code> class method which can be used directly instead of
+importing a <code class="docutils literal notranslate"><span class="pre">from_files()</span></code> function.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Jina 2</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_files</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'path/to/files'</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Jina 3 </label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'path/to/files'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
 <p><br/>
 <strong>Batching</strong>: Batching operations are delegated to the docarray package and Python builtins:</p>
 <ul class="simple">
@@ -779,12 +802,12 @@ The example below shows how to achieve complex behavior that previously relied o
 and Jina 3 compatible way:</p></li>
 </ul>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Jina 2</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Jina 2</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">traversal_paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span> <span class="n">require_attr</span><span class="o">=</span><span class="s1">'attr'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Jina 3 </label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">Jina 3 </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DocumentArray</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">attr</span><span class="p">),</span> <span class="n">docs</span><span class="p">[</span><span class="s1">'@paths'</span><span class="p">]))</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -795,8 +818,8 @@ and Jina 3 compatible way:</p></li>
 inside the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> do not have a value for that attribute. In Jina 3, this returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. This change becomes
 important when migrating code that checks for the presence of a certain attribute.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Jina 2</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">Jina 2</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -813,7 +836,7 @@ important when migrating code that checks for the presence of a certain attribut
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">Jina 3 </label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">Jina 3 </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
@@ -847,7 +870,7 @@ modern databases.</p>
 <p>For example, you can use <a class="reference external" href="https://docarray.jina.ai/advanced/document-store/sqlite/">SQLite backend</a> as a replacement
 for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, which lets you persist Documents to disk and load them in another session:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">Storing to disk</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">Storing to disk</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
@@ -858,7 +881,7 @@ for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMe
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">Loading from disk</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">Loading from disk</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
@@ -978,7 +1001,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

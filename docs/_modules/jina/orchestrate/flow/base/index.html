@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.flow.base - Jina 3.2.6 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -596,7 +596,6 @@
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -695,22 +694,22 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
-        <span class="n">https</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">return_responses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
-<span class="sd">        :param https: If set, connect to gateway using https</span>
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.</span>
+<span class="sd">        :param tls: If set, connect to gateway using https</span>
 
 <span class="sd">        .. # noqa: DAR202</span>
 <span class="sd">        .. # noqa: DAR101</span>
@@ -1075,11 +1074,11 @@
         <span class="k">return</span> <span class="n">graph_dict</span>
 
     <span class="k">def</span> <span class="nf">_get_k8s_deployments_addresses</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k8s_connection_pool</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="n">graph_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.helper</span> <span class="kn">import</span> <span class="n">to_compatible_name</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">K8sGrpcConnectionPool</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
@@ -1092,11 +1091,9 @@
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc'</span>
                 <span class="p">)</span>
 
-            <span class="c1"># we only need hard coded addresses if the k8s connection pool is disabled or if this deployment is external</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">k8s_connection_pool</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
-                <span class="p">]</span>
+            <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span> <span class="k">if</span> <span class="n">graph_dict</span> <span class="k">else</span> <span class="kc">None</span>
 
@@ -1799,8 +1796,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
 
-        <span class="n">success_msg</span> <span class="o">=</span> <span class="s1">'[green]🎉 Flow is ready to use![/green]'</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">success_msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">addr_table</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="n">addr_table</span>
@@ -2095,7 +2090,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_init_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">'right'</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">'right'</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">'right'</span><span class="p">)</span>
@@ -2104,41 +2099,41 @@
         <span class="k">return</span> <span class="n">table</span>
 
     <span class="k">def</span> <span class="nf">_get_address_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address_table</span><span class="p">):</span>
-        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'🔗'</span><span class="p">,</span> <span class="s1">'Protocol: '</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'🔗'</span><span class="p">,</span> <span class="s1">'Protocol'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">'🏠'</span><span class="p">,</span>
-            <span class="s1">'Local access: '</span><span class="p">,</span>
+            <span class="s1">'Local access'</span><span class="p">,</span>
             <span class="sa">f</span><span class="s1">'[underline]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/underline]'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">'🔒'</span><span class="p">,</span>
-            <span class="s1">'Private network: '</span><span class="p">,</span>
+            <span class="s1">'Private network'</span><span class="p">,</span>
             <span class="sa">f</span><span class="s1">'[underline]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/underline]'</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">'🌐'</span><span class="p">,</span>
-                <span class="s1">'Public address: '</span><span class="p">,</span>
+                <span class="s1">'Public address'</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">'[underline]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/underline]'</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">'💬'</span><span class="p">,</span>
-                <span class="s1">'Swagger UI: '</span><span class="p">,</span>
+                <span class="s1">'Swagger UI'</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">'[underline]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs[/underline]'</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">'📚'</span><span class="p">,</span>
-                <span class="s1">'Redoc: '</span><span class="p">,</span>
+                <span class="s1">'Redoc'</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">'[underline]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc[/underline]'</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">:</span>
                 <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                     <span class="s1">'💬'</span><span class="p">,</span>
-                    <span class="s1">'GraphQL UI: '</span><span class="p">,</span>
+                    <span class="s1">'GraphQL UI'</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s1">'[underline][cyan]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql[/underline][/cyan]'</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -2358,17 +2353,11 @@
             <span class="n">any_event_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Flow.to_k8s_yaml"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.to_k8s_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_k8s_yaml</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">output_base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">k8s_connection_pool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="Flow.to_k8s_yaml"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.to_k8s_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_k8s_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Converts the Flow into a set of yaml deployments to deploy in Kubernetes</span>
 <span class="sd">        :param output_base_path: The base path where to dump all the yaml files</span>
 <span class="sd">        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</span>
-<span class="sd">        :param k8s_connection_pool: Boolean indicating wether the kubernetes connection pool should be used inside the Executor Runtimes.</span>
 <span class="sd">        """</span>
         <span class="kn">import</span> <span class="nn">yaml</span>
 
@@ -2386,9 +2375,8 @@
             <span class="n">k8s_deployment</span> <span class="o">=</span> <span class="n">K8sDeploymentConfig</span><span class="p">(</span>
                 <span class="n">args</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
                 <span class="n">k8s_namespace</span><span class="o">=</span><span class="n">k8s_namespace</span><span class="p">,</span>
-                <span class="n">k8s_connection_pool</span><span class="o">=</span><span class="n">k8s_connection_pool</span><span class="p">,</span>
                 <span class="n">k8s_deployments_addresses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_k8s_deployments_addresses</span><span class="p">(</span>
-                    <span class="n">k8s_namespace</span><span class="p">,</span> <span class="n">k8s_connection_pool</span>
+                    <span class="n">k8s_namespace</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span>
                 <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -2517,7 +2505,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

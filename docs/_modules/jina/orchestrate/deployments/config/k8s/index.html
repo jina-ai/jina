@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments.config.k8s - Jina 3.2.6 documentation</title>
+        <title>jina.orchestrate.deployments.config.k8s - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -595,20 +595,20 @@
                 <h1>Source code for jina.orchestrate.deployments.config.k8s</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">NoContainerizedError</span>
-<span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">construct_runtime_container_args</span><span class="p">,</span>
+    <span class="n">get_base_executor_version</span><span class="p">,</span>
     <span class="n">get_image_name</span><span class="p">,</span>
     <span class="n">to_compatible_name</span><span class="p">,</span>
-    <span class="n">get_base_executor_version</span><span class="p">,</span>
-    <span class="n">construct_runtime_container_args</span><span class="p">,</span>
     <span class="n">validate_uses</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">K8sGrpcConnectionPool</span>
+<span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_deployment</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments</span> <span class="kn">import</span> <span class="n">BaseDeployment</span>
 
 
@@ -628,7 +628,6 @@
             <span class="n">common_args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
             <span class="n">deployment_args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
             <span class="n">k8s_namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">k8s_connection_pool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">k8s_deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -641,7 +640,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span> <span class="o">=</span> <span class="n">deployment_args</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_replicas</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="s1">'replicas'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">k8s_connection_pool</span> <span class="o">=</span> <span class="n">k8s_connection_pool</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_addresses</span> <span class="o">=</span> <span class="n">k8s_deployments_addresses</span>
 
         <span class="k">def</span> <span class="nf">get_gateway_yamls</span><span class="p">(</span>
@@ -649,12 +647,10 @@
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
             <span class="kn">import</span> <span class="nn">os</span>
 
-            <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s1">'jinaai/jina:test-pip'</span>
-                <span class="k">if</span> <span class="n">test_pip</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
+            <span class="n">image_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
+                <span class="s1">'JINA_GATEWAY_IMAGE'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
             <span class="p">)</span>
+
             <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">)</span>
             <span class="n">cargs</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">cargs</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_addresses</span>
@@ -678,8 +674,6 @@
             <span class="p">)</span>
             <span class="n">_args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">non_defaults</span><span class="p">)</span>
             <span class="n">container_args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span> <span class="o">+</span> <span class="n">_args</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">cargs</span><span class="o">.</span><span class="n">k8s_connection_pool</span><span class="p">:</span>
-                <span class="n">container_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--k8s-disable-connection-pool'</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">kubernetes_deployment</span><span class="o">.</span><span class="n">get_deployment_yamls</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dns_name</span><span class="p">,</span>
                 <span class="n">namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
@@ -697,11 +691,8 @@
         <span class="k">def</span> <span class="nf">_get_image_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
             <span class="kn">import</span> <span class="nn">os</span>
 
-            <span class="n">test_pip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_K8S_USE_TEST_PIP'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="n">image_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s1">'jinaai/jina:test-pip'</span>
-                <span class="k">if</span> <span class="n">test_pip</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-perf'</span>
+            <span class="n">image_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
+                <span class="s1">'JINA_GATEWAY_IMAGE'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'jinaai/jina:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">-py38-standard'</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">uses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">uses</span> <span class="o">!=</span> <span class="n">__default_executor__</span><span class="p">:</span>
@@ -740,7 +731,7 @@
                 <span class="n">uses_before_cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span>
                 <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">cargs</span><span class="o">.</span><span class="n">uses_before</span>
                 <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/uses-before'</span>
-                <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span>
+                <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span>
                 <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">uses_before_cargs</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">=</span> <span class="kc">None</span>
@@ -761,7 +752,7 @@
                 <span class="n">uses_after_cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span>
                 <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">cargs</span><span class="o">.</span><span class="n">uses_after</span>
                 <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/uses-after'</span>
-                <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span>
+                <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span>
                 <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">uses_after_cargs</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">=</span> <span class="kc">None</span>
@@ -802,7 +793,6 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
         <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">k8s_connection_pool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">k8s_deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># External Deployments should be ignored in a K8s based Flow</span>
@@ -813,14 +803,12 @@
                 <span class="s1">'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">k8s_connection_pool</span> <span class="o">=</span> <span class="n">k8s_connection_pool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_addresses</span> <span class="o">=</span> <span class="n">k8s_deployments_addresses</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_deployment</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">k8s_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># otherwise it will remain with the one from the original Deployment</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_namespace</span> <span class="o">=</span> <span class="n">k8s_namespace</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">k8s_connection_pool</span> <span class="o">=</span> <span class="n">k8s_connection_pool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_deployment_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
@@ -835,7 +823,6 @@
                 <span class="n">deployment_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">],</span>
                 <span class="n">pod_type</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span><span class="p">,</span>
                 <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
-                <span class="n">k8s_connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_connection_pool</span><span class="p">,</span>
                 <span class="n">k8s_deployments_addresses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_addresses</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -855,7 +842,6 @@
                     <span class="k">else</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
                     <span class="n">jina_deployment_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">k8s_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="p">,</span>
-                    <span class="n">k8s_connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_connection_pool</span><span class="p">,</span>
                     <span class="n">k8s_deployments_addresses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_addresses</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span>
                     <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -876,43 +862,37 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
             <span class="p">)</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">gpus</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">uses_metas</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="c1"># if the k8s connection pool is disabled, the connection pool is managed manually</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_connection_pool</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">json</span>
+            <span class="kn">import</span> <span class="nn">json</span>
 
-                <span class="n">connection_list</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
-                    <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
-                        <span class="k">if</span> <span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span>
-                        <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="p">)</span>
-                    <span class="n">connection_list</span><span class="p">[</span>
-                        <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc:</span><span class="si">{</span><span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
-
-                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">connection_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="n">connection_list</span>
+            <span class="n">connection_list</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="k">if</span> <span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
+                <span class="n">connection_list</span><span class="p">[</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc:</span><span class="si">{</span><span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
+
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head_deployment'</span><span class="p">]</span><span class="o">.</span><span class="n">connection_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">connection_list</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">uses_before</span><span class="p">:</span>
             <span class="n">parsed_args</span><span class="p">[</span>
                 <span class="s1">'head_deployment'</span>
             <span class="p">]</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'127.0.0.1:</span><span class="si">{</span><span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'127.0.0.1:</span><span class="si">{</span><span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">uses_after</span><span class="p">:</span>
             <span class="n">parsed_args</span><span class="p">[</span>
                 <span class="s1">'head_deployment'</span>
-            <span class="p">]</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'127.0.0.1:</span><span class="si">{</span><span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'127.0.0.1:</span><span class="si">{</span><span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span><span class="si">}</span><span class="s1">'</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shards</span><span class="p">):</span>
             <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -920,16 +900,13 @@
             <span class="n">cargs</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">cargs</span><span class="o">.</span><span class="n">uses_after</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'gateway'</span><span class="p">:</span>
-                <span class="n">cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+                <span class="n">cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
             <span class="n">cargs</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">cargs</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">cargs</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                 <span class="n">cargs</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span>
-            <span class="c1"># the worker runtimes do not care</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">cargs</span><span class="o">.</span><span class="n">k8s_connection_pool</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'deployments'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">parsed_args</span>
@@ -970,7 +947,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

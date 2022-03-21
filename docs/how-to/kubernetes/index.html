@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/kubernetes/" />
   
-<meta property="og:site_name" content="Jina 3.2.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.7 Documentation" />
   
 <meta property="og:description" content="Jina natively supports deploying your Flow and Executors on Kubernetes. A Flow is composed of Executors which run Python code defined to operate on a DocumentArray. These Executors live in different runtimes depending on how you want to deploy your Flow. When deployed in Kubernetes, these Executo..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor" href="../executor/" /><link rel="prev" title="How to run Jina with Docker Compose" href="../docker-compose/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>How to deploy Jina on Kubernetes - Jina 3.2.6 documentation</title>
+        <title>How to deploy Jina on Kubernetes - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -665,6 +665,10 @@ Then, you can use the <code class="docutils literal notranslate"><span class="pr
 </pre></div>
 </div>
 <p>This will create a folder ‘flow_k8s_configuration’ with a set of Kubernetes YAML configurations for all the deployments composing the Flow</p>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>You can use a custom Docker image for the Gateway deployment. Just set the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
+</div>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
@@ -818,6 +822,16 @@ Finally, it prints the uri of the closest matches.</p>
 <p>Once the Flow is deployed on Kubernetes, you can use all the native Kubernetes tools like <code class="docutils literal notranslate"><span class="pre">kubeclt</span></code> to perform operations on the Pods and Deployments.</p>
 <p>You can use this to <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment">add or remove replicas</a>, to run <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment">rolling update</a> operations, etc …</p>
 </section>
+<section id="integration-with-linkerd">
+<h2>Integration with Linkerd<a class="headerlink" href="#integration-with-linkerd" title="Permalink to this headline">¶</a></h2>
+<p>Jina’s Kubernetes support comes with a built-in integration for <a class="reference external" href="https://linkerd.io/">Linkerd</a> as the service mesh for connecting all the Jina services in Kubernetes. All Jina deployment resources are annotated with the necessary <a class="reference external" href="https://linkerd.io/2.11/tasks/adding-your-service/#meshing-a-service-with-annotations">Linkerd annotations</a>. So we recommend every Jina user to <a class="reference external" href="https://linkerd.io/2.11/getting-started/#step-3-install-the-control-plane-onto-your-cluster">install Linkerd</a> into the Kubernetes cluster they are using Jina in.</p>
+<p>Linkerd will automatically load balance traffic between all replicas of an Executor. It also has <a class="reference external" href="https://linkerd.io/2.11/features/">additional features</a>.</p>
+<p>It is also generally possible to use other service mesh providers (like <a class="reference external" href="https://istio.io/">Istio</a>) with Jina. You need to manually change Jina’s deployment configurations in the generated YAML files for this.</p>
+<div class="attention admonition">
+<p class="admonition-title">Attention</p>
+<p>If you don’t install a third party service mesh (like Linkerd), you will not be able to scale the number of replicas per Executor to more than one. A single replica will always handle all the traffic. No matter how many replicas will be running.</p>
+</div>
+</section>
 <section id="extra-kubernetes-options">
 <h2>Extra Kubernetes options<a class="headerlink" href="#extra-kubernetes-options" title="Permalink to this headline">¶</a></h2>
 <p>This example shows how to deploy a Jina Flow in Kubernetes based on the basic deployment configuration generated by Jina
@@ -864,7 +878,7 @@ when running <code class="docutils literal notranslate"><span class="pre">.to_k8
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -901,6 +915,7 @@ when running <code class="docutils literal notranslate"><span class="pre">.to_k8
 </ul>
 </li>
 <li><a class="reference internal" href="#scaling-executors-on-kubernetes">Scaling Executors on Kubernetes</a></li>
+<li><a class="reference internal" href="#integration-with-linkerd">Integration with Linkerd</a></li>
 <li><a class="reference internal" href="#extra-kubernetes-options">Extra Kubernetes options</a></li>
 </ul>
 </li>

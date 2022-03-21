@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.clients.mixin - Jina 3.2.6 documentation</title>
+        <title>jina.clients.mixin - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -646,7 +646,7 @@
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">from</span> <span class="nn">sgqlc.endpoint.http</span> <span class="kn">import</span> <span class="n">HTTPEndpoint</span> <span class="k">as</span> <span class="n">SgqlcHTTPEndpoint</span>
 
-            <span class="n">proto</span> <span class="o">=</span> <span class="s1">'https'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">https</span> <span class="k">else</span> <span class="s1">'http'</span>
+            <span class="n">proto</span> <span class="o">=</span> <span class="s1">'https'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">'http'</span>
             <span class="n">graphql_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql'</span>
             <span class="n">endpoint</span> <span class="o">=</span> <span class="n">SgqlcHTTPEndpoint</span><span class="p">(</span><span class="n">graphql_url</span><span class="p">)</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">endpoint</span><span class="p">(</span>
@@ -719,7 +719,7 @@
 
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
 
-        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_responses</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">return_responses</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_responses</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s1">'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '</span>
                 <span class="s1">'parameter `return_responses`. This argument will be deprecated from the `constructor` '</span>
@@ -727,33 +727,26 @@
             <span class="p">)</span>
             <span class="n">return_responses</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">return_results</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">on_always</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">on_done</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">return_results</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
-                    <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">docs</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reduce_all</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">result</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">on_always</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">on_done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">return_results</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
         <span class="n">on_error</span> <span class="o">=</span> <span class="n">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span> <span class="k">if</span> <span class="n">on_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">on_error</span>
+
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+        <span class="n">return_results</span> <span class="o">=</span> <span class="p">(</span><span class="n">on_always</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">on_done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">return_responses</span> <span class="k">else</span> <span class="n">DocumentArray</span><span class="p">()</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">return_responses</span><span class="p">:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
 
         <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span>
             <span class="n">_get_results</span><span class="p">,</span>
@@ -814,7 +807,7 @@
 <span class="sd">        """</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
 
-        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_responses</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">return_responses</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_responses</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s1">'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '</span>
                 <span class="s1">'parameter `return_responses`. This argument will be deprecated from the `constructor` '</span>
@@ -852,7 +845,6 @@
 
 
 <span class="k">def</span> <span class="nf">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">):</span>
-
     <span class="n">num_args</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_args</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -880,7 +872,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

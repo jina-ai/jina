@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/client/" />
   
-<meta property="og:site_name" content="Jina 3.2.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.7 Documentation" />
   
 <meta property="og:description" content="The most convenient way to work with the Flow API is the Python Client. It enables you to send Documents to a running Flow in a number of different ways, as shown below. HTTP, gRPC, and WebSocket: Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket. Thes..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Remarks" href="../remarks/" /><link rel="prev" title="Access Flow API" href="../access-flow-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Client API - Jina 3.2.6 documentation</title>
+        <title>Client API - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -642,17 +642,31 @@ These can all be used in the same way by using <code class="docutils literal not
 <p>Starting the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">port</span> <span class="o">=</span> <span class="mi">12345</span>
+<span class="n">PORT</span> <span class="o">=</span> <span class="mi">12345</span>
+<span class="n">PROTOCOL</span> <span class="o">=</span> <span class="s1">'grpc'</span>  <span class="c1"># one of 'grpc', 'http', 'websocket'</span>
 
-<span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">PROTOCOL</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Using the Client:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+<p>To connect a Client to the Flow’s gateway, you need to specify an IP host address and port on which the Flow can be reached.
+This is done using the <code class="docutils literal notranslate"><span class="pre">host=</span></code> and <code class="docutils literal notranslate"><span class="pre">port=</span></code> constructor keywords.
+If the Client and the Flow gateway are running on the same machine, the <code class="docutils literal notranslate"><span class="pre">host=</span></code> parameter can be omitted, as it defaults to <code class="docutils literal notranslate"><span class="pre">'0.0.0.0'</span></code>.</p>
+<p>Additionally, the connection protocol can be toggled between <code class="docutils literal notranslate"><span class="pre">'grpc'</span></code>, <code class="docutils literal notranslate"><span class="pre">'http'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'websocket'</span></code> using the <code class="docutils literal notranslate"><span class="pre">protocol=</span></code>
+keyword, where <code class="docutils literal notranslate"><span class="pre">'grpc'</span></code> is the default.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">PORT</span> <span class="o">=</span> <span class="mi">12345</span>
+<span class="n">HOST</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span>  <span class="c1"># host address where the Flow can be reached</span>
+<span class="n">PORT</span> <span class="o">=</span> <span class="mi">12345</span>  <span class="c1"># port where the Flow can be reached</span>
+<span class="n">PROTOCOL</span> <span class="o">=</span> <span class="s1">'grpc'</span>  <span class="c1"># one of 'grpc', 'http', 'websocket'. Needs to be same as specified by the Flow</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">PROTOCOL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, the Client can send requests to the Flow using its <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method.
+This expects as inputs the <a class="reference internal" href="../../executor/executor-api/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or Iterable of Documents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
 
 <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'hello'</span><span class="p">)</span>
 <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s1">'world'</span><span class="p">)</span>
@@ -663,7 +677,7 @@ These can all be used in the same way by using <code class="docutils literal not
         <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s1">'hello </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">)</span>
 
 <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>  <span class="c1"># Single Document</span>
 
@@ -676,6 +690,43 @@ These can all be used in the same way by using <code class="docutils literal not
 <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/endpoint'</span><span class="p">)</span>  <span class="c1"># Empty</span>
 </pre></div>
 </div>
+<section id="specifying-host-scheme">
+<h3>Specifying Host scheme<a class="headerlink" href="#specifying-host-scheme" title="Permalink to this headline">¶</a></h3>
+<p>To connect to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> the client has to specify the followings parameters:</p>
+<ul class="simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">protocol</span></code> it needs to use to communicate with the `Flow</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">host</span></code> and the <code class="docutils literal notranslate"><span class="pre">port</span></code>on which the Flow is exposed</p></li>
+<li><p>if he needs to use <code class="docutils literal notranslate"><span class="pre">tls</span></code> encryption</p></li>
+</ul>
+<p>You can define these parameters by passing a valid URI scheme as part of the <code class="docutils literal notranslate"><span class="pre">host</span></code> argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'wss://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'grpcs://my.awesome.flow:1234'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can as well pass each relevant parameter as a keyword argument:</p>
+<p>the following example is equivalent to the one above</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use a mixe of both as well:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow:1234'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>You can’t define these parameters by keyword arugment and by host scheme (You can’t have two sources of truth)
+Example : the following code will raise an exception</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4321</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
 <section id="batching-requests">
 <h3>Batching Requests<a class="headerlink" href="#batching-requests" title="Permalink to this headline">¶</a></h3>
 <p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
@@ -836,15 +887,15 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
 </pre></div>
 </div>
 </section>
-</section>
 <section id="on-failure-callback">
-<h2>On failure callback<a class="headerlink" href="#on-failure-callback" title="Permalink to this headline">¶</a></h2>
+<h3>On failure callback<a class="headerlink" href="#on-failure-callback" title="Permalink to this headline">¶</a></h3>
 <p>Additionally, the <code class="docutils literal notranslate"><span class="pre">on_error</span></code> callback can be triggered by a raise of an exception. The callback must take an optional
 <code class="docutils literal notranslate"><span class="pre">exception</span></code> parameters as an argument.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
 </div>
+</section>
 <section id="returning-results-from-post">
 <h3>Returning results from .post()<a class="headerlink" href="#returning-results-from-post" title="Permalink to this headline">¶</a></h3>
 <p>If no callback is provided, <code class="docutils literal notranslate"><span class="pre">client.post()</span></code> returns a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents of all Requests.</p>
@@ -912,6 +963,17 @@ This may not only be slower, but also require more memory.</p>
 </div>
 </div>
 </section>
+<section id="custom-grpc-compression-for-grpc-client">
+<h3>Custom gRPC compression for GRPC Client<a class="headerlink" href="#custom-grpc-compression-for-grpc-client" title="Permalink to this headline">¶</a></h3>
+<p>If the communication to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> needs to be done via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">client.post</span></code> to benefit from (<code class="docutils literal notranslate"><span class="pre">grpc</span> <span class="pre">compression</span></code>)[https://grpc.github.io/grpc/python/grpc.html#compression] methods.
+The supported methods are: <code class="docutils literal notranslate"><span class="pre">NoCompression</span></code>, <code class="docutils literal notranslate"><span class="pre">Gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">Deflate</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">'Gzip'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="graphql">
 <h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this headline">¶</a></h2>
@@ -963,17 +1025,6 @@ This means you can iterate over Responses one by one, as they come in.</p>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_client</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
 </pre></div>
 </div>
-<section id="custom-grpc-compression-for-grpc-client">
-<h3>Custom gRPC compression for GRPC Client<a class="headerlink" href="#custom-grpc-compression-for-grpc-client" title="Permalink to this headline">¶</a></h3>
-<p>If the communication to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> needs to be done via GRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">client.post</span></code> to benefit from (<code class="docutils literal notranslate"><span class="pre">grpc</span> <span class="pre">compression</span></code>)[https://grpc.github.io/grpc/python/grpc.html#compression] methods.
-The supported methods are: <code class="docutils literal notranslate"><span class="pre">NoCompression</span></code>, <code class="docutils literal notranslate"><span class="pre">Gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">Deflate</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">'Gzip'</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 </section>
 </section>
 
@@ -1009,7 +1060,7 @@ The supported methods are: <code class="docutils literal notranslate"><span clas
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1036,21 +1087,18 @@ The supported methods are: <code class="docutils literal notranslate"><span clas
                         <ul>
 <li><a class="reference internal" href="#">Client API</a><ul>
 <li><a class="reference internal" href="#http-grpc-and-websocket">HTTP, gRPC, and WebSocket</a><ul>
+<li><a class="reference internal" href="#specifying-host-scheme">Specifying Host scheme</a></li>
 <li><a class="reference internal" href="#batching-requests">Batching Requests</a></li>
 <li><a class="reference internal" href="#targeting-a-specific-executor">Targeting a specific Executor</a></li>
 <li><a class="reference internal" href="#request-parameters">Request parameters</a></li>
 <li><a class="reference internal" href="#processing-results-using-callback-functions">Processing results using callback functions</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#on-failure-callback">On failure callback</a><ul>
+<li><a class="reference internal" href="#on-failure-callback">On failure callback</a></li>
 <li><a class="reference internal" href="#returning-results-from-post">Returning results from .post()</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#graphql">GraphQL</a></li>
-<li><a class="reference internal" href="#async-python-client">Async Python Client</a><ul>
 <li><a class="reference internal" href="#custom-grpc-compression-for-grpc-client">Custom gRPC compression for GRPC Client</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#graphql">GraphQL</a></li>
+<li><a class="reference internal" href="#async-python-client">Async Python Client</a></li>
 </ul>
 </li>
 </ul>

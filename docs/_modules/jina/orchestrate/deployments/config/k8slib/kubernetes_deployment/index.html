@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment - Jina 3.2.6 documentation</title>
+        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -597,7 +597,7 @@
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">K8sGrpcConnectionPool</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_tools</span>
 
 
@@ -648,7 +648,7 @@
     <span class="c1"># we can always assume the ports are the same for all executors since they run on different k8s pods</span>
     <span class="c1"># port expose can be defined by the user</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
 
     <span class="n">deployment_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
@@ -658,8 +658,8 @@
         <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_cmd</span><span class="p">,</span>
         <span class="s1">'args'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
         <span class="s1">'port'</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
-        <span class="s1">'port_uses_before'</span><span class="p">:</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span><span class="p">,</span>
-        <span class="s1">'port_uses_after'</span><span class="p">:</span> <span class="n">K8sGrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span><span class="p">,</span>
+        <span class="s1">'port_uses_before'</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_BEFORE</span><span class="p">,</span>
+        <span class="s1">'port_uses_after'</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_USES_AFTER</span><span class="p">,</span>
         <span class="s1">'args_uses_before'</span><span class="p">:</span> <span class="n">container_args_uses_before</span><span class="p">,</span>
         <span class="s1">'args_uses_after'</span><span class="p">:</span> <span class="n">container_args_uses_after</span><span class="p">,</span>
         <span class="s1">'command_uses_before'</span><span class="p">:</span> <span class="n">container_cmd_uses_before</span><span class="p">,</span>
@@ -685,18 +685,6 @@
         <span class="n">template_name</span> <span class="o">=</span> <span class="s1">'deployment-uses-after'</span>
 
     <span class="n">yamls</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
-            <span class="s1">'connection-pool-role'</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">),</span>
-        <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
-            <span class="s1">'connection-pool-role-binding'</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">),</span>
         <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
             <span class="s1">'configmap'</span><span class="p">,</span>
             <span class="p">{</span>
@@ -753,8 +741,6 @@
     <span class="n">cli_args</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">cli_attribute</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">arg_list</span><span class="p">:</span>
         <span class="c1"># TODO: This should not be here, its a workaround for our parser design with boolean values</span>
-        <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">'k8s_connection_pool'</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-            <span class="n">cli_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'"--k8s-disable-connection-pool"'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">skip_attributes</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bool</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
@@ -787,7 +773,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

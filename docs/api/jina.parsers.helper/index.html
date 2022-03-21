@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.parsers.helper/" />
   
-<meta property="og:site_name" content="Jina 3.2.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.7 Documentation" />
   
 <meta property="og:description" content="Module for helper functions in the parser" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.parsers.ping module" href="../jina.parsers.ping/" /><link rel="prev" title="jina.parsers.helloworld module" href="../jina.parsers.helloworld/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.parsers.helper module - Jina 3.2.6 documentation</title>
+        <title>jina.parsers.helper module - Jina 3.2.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.2.6 documentation</div>
+                <div class="brand">Jina 3.2.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -652,6 +652,28 @@
 on the first = and append to a dictionary.
 This is used for setting up –env</p>
 </dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.parsers.helper.DeprecateAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></span><span class="sig-name descname"><span class="pre">DeprecateAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#DeprecateAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.DeprecateAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.Action</span></code></p>
+<p>Action to deprecated an argument in argparse</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.parsers.helper.get_deprecation_renamed_action">
+<span class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></span><span class="sig-name descname"><span class="pre">get_deprecation_renamed_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action=&lt;class</span> <span class="pre">'argparse.Action'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#get_deprecation_renamed_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.get_deprecation_renamed_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>To deprecate an argument when it has been renamed for argparse</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>replacement</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the new argument name</p></li>
+<li><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Action</span></code>]) – class of the action that you want to overload with the deprecation to keep the old behavior</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a action class that can</p>
+</dd>
+</dl>
+</dd></dl>
 </section>
 
             </article>
@@ -686,7 +708,7 @@ This is used for setting up –env</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 17, 2022.
+                    Last updated on Mar 21, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
