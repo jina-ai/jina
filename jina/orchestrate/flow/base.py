@@ -533,9 +533,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
-            deployment_docker_compose_address = (
-                f'{to_compatible_name(v.head_args.name)}:{port}'
-            )
+            elif v.head_args:
+                deployment_docker_compose_address = (
+                    f'{to_compatible_name(v.head_args.name)}:{port}'
+                )
+            else:
+                deployment_docker_compose_address = (
+                    f'{to_compatible_name(v.name)}:{port}'
+                )
             graph_dict[node] = [deployment_docker_compose_address]
 
         return graph_dict
