@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
 
 
@@ -18,6 +19,7 @@ class TopologyGraph:
         will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.
 
     :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.
+    :param reduce: Reduce requests arriving from multiple needed predecessors, True by default
     """
 
     class _ReqReplyNode:
@@ -27,6 +29,7 @@ class TopologyGraph:
             number_of_parts: int = 1,
             hanging: bool = False,
             filter_condition: dict = None,
+            reduce: bool = True,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -37,6 +40,7 @@ class TopologyGraph:
             self.end_time = None
             self.status = None
             self._filter_condition = filter_condition
+            self._reduce = reduce
 
         @property
         def leaf(self):
@@ -70,6 +74,10 @@ class TopologyGraph:
                     self.start_time = datetime.utcnow()
                     if self._filter_condition is not None:
                         self._update_requests()
+                    if self._reduce and len(self.parts_to_send) > 1:
+                        self.parts_to_send = [
+                            DataRequestHandler.reduce_requests(self.parts_to_send)
+                        ]
 
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
@@ -171,7 +179,12 @@ class TopologyGraph:
             return request
 
     def __init__(
-        self, graph_representation: Dict, graph_conditions: Dict = {}, *args, **kwargs
+        self,
+        graph_representation: Dict,
+        graph_conditions: Dict = {},
+        deployments_disabled_reduce: List[str] = [],
+        *args,
+        **kwargs
     ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
@@ -200,6 +213,7 @@ class TopologyGraph:
                 else 1,
                 hanging=node_name in hanging_deployment_names,
                 filter_condition=condition,
+                reduce=node_name not in deployments_disabled_reduce,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

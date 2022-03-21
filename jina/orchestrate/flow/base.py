@@ -450,6 +450,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
         graph_conditions: Dict[str, Dict],
+        deployments_disabled_reduce: List[str],
         **kwargs,
     ):
         kwargs.update(
@@ -473,6 +474,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
+        args.deployments_disabled_reduce = json.dumps(deployments_disabled_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
@@ -552,6 +554,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 graph_condition[node] = v.args.when
 
         return graph_condition
+
+    def _get_disabled_reduce_deployments(self) -> List[str]:
+        disabled_deployments = []
+        for node, v in self._deployment_nodes.items():
+            if v.args.disable_reduce:
+                disabled_deployments.append(node)
+
+        return disabled_deployments
 
     def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
@@ -1017,6 +1027,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 graph_conditions=op_flow._get_graph_conditions(),
+                deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
             )
 
         removed_deployments = []

@@ -238,8 +238,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 requests, deployment='uses_before'
             )
             requests = [response]
-        elif len(requests) > 1 and self._reduce:
-            requests = [DataRequestHandler.reduce_requests(requests)]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests,
