@@ -281,12 +281,12 @@ from jina import Executor, requests, Flow
 class MyExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
-        print(self.metas.workspace)
+        print(self.metas.name)
 
 
 flow = Flow().add(
     uses=MyExecutor,
-    uses_metas={'workspace': 'different_workspace'},
+    uses_metas={'name': 'different_name'},
 )
 with flow as f:
     f.post('/')
@@ -299,7 +299,7 @@ with flow as f:
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:58827
 	🔒 Private network:	192.168.1.101:58827
-different_workspace
+different_name
 ```
 
 

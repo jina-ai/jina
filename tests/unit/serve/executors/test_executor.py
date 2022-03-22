@@ -1,14 +1,22 @@
 import os
 from copy import deepcopy
+from pathlib import Path
+from unittest import mock
 
 import pytest
-
 from docarray import Document, DocumentArray
-from jina import Client, Executor, requests
+
+from jina import Client, Executor, Flow, requests
 from jina.serve.executors import ReducerExecutor
 from jina.serve.executors.metas import get_default_metas
 
 PORT = 12350
+
+
+class WorkspaceExec(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        docs.texts = [self.workspace for _ in docs]
 
 
 class MyServeExec(Executor):
@@ -331,3 +339,29 @@ def test_serve(served_exec):
     docs = Client(port=PORT).post(on='/foo', inputs=DocumentArray.empty(5))
 
     assert docs.texts == ['foo' for _ in docs]
+
+
+def test_set_workspace(tmpdir):
+    complete_workspace = os.path.abspath(os.path.join(tmpdir, 'WorkspaceExec', '0'))
+    with Flow().add(uses=WorkspaceExec, workspace=str(tmpdir)) as f:
+        resp = f.post(on='/foo', inputs=Document())
+    assert resp[0].text == complete_workspace
+    with Flow().add(uses=WorkspaceExec, uses_metas={'workspace': str(tmpdir)}) as f:
+        resp = f.post(on='/foo', inputs=Document())
+    assert resp[0].text == complete_workspace
+
+
+def test_default_workspace(tmpdir):
+    with mock.patch.dict(
+        os.environ,
+        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, 'mock-workspace'))},
+    ):
+        with Flow().add(uses=WorkspaceExec) as f:
+            resp = f.post(on='/foo', inputs=Document())
+        assert resp[0].text
+
+        result_workspace = resp[0].text
+
+        assert result_workspace == os.path.join(
+            os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
+        )
