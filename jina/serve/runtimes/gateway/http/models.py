@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from typing import Callable, Dict, List, Optional, Union
 
 from docarray import DocumentArray
-from docarray.document.pydantic_model import PydanticDocumentArray
+from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
@@ -276,8 +276,15 @@ class JinaRequestModel(BaseModel):
         :return: self as Python dict
         """
         d = super().dict(*args, **kwargs)
-        if self.data is not None:
+        if isinstance(self.data, list) and isinstance(
+            self.data[0], PydanticDocument
+        ):  # list of PydanticDocuments == PydanticDocumentArray
             docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
+            d['data'] = docs_dicts
+        elif (
+            isinstance(self.data, dict) and 'docs' in self.data
+        ):  # expected dict schema
+            docs_dicts = DocumentArray.from_pydantic_model(self.data['docs']).to_dict()
             d['data'] = docs_dicts
         return d
 
@@ -309,8 +316,15 @@ class JinaResponseModel(BaseModel):
         :return: self as Python dict
         """
         d = super().dict(*args, **kwargs)
-        if self.data is not None:
+        if isinstance(self.data, list) and isinstance(
+            self.data[0], PydanticDocument
+        ):  # list of PydanticDocuments == PydanticDocumentArray
             docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
+            d['data'] = docs_dicts
+        elif (
+            isinstance(self.data, dict) and 'docs' in self.data
+        ):  # expected dict schema
+            docs_dicts = DocumentArray.from_pydantic_model(self.data['docs']).to_dict()
             d['data'] = docs_dicts
         return d
 
