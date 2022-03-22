@@ -97,3 +97,18 @@ def mixin_pod_parser(parser):
         default=helper.random_port(),
         help='The port for input data to bind to, default is a random port between [49152, 65535]',
     )
+
+    gp.add_argument(
+        '--monitoring',
+        action='store_true',
+        default=False,
+        help='If set, spawn an http server with a prometheus endpoint to expose metrics',
+    )
+
+    gp.add_argument(
+        '--port-monitoring',
+        type=int,
+        default=helper.random_port(),
+        dest='port_monitoring',
+        help='The port on which the prometheus server is exposed, default a random port between [49152, 65535]',
+    )
