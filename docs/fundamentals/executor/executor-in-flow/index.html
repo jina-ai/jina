@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-in-flow/" />
   
-<meta property="og:site_name" content="Jina 3.2.7 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.8 Documentation" />
   
 <meta property="og:description" content="Executors are a good way to group your DocumentArray functions and logics into a class that can share configuration and state in a modular way. However, the main advantage of using Executor is to be used in a Flow so that it can be served, scaled and deployed. Special Executor attributes: When im..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.7 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.8 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executor File Structure" href="../repository-structure/" /><link rel="prev" title="Executor API" href="../executor-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>Executors inside a Flow - Jina 3.2.7 documentation</title>
+        <title>Executors inside a Flow - Jina 3.2.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.7 documentation</div>
+                <div class="brand">Jina 3.2.8 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -260,6 +260,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/create-flow/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Configure Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/client/">Client API</a></li>
@@ -654,7 +655,6 @@ that can be described statically in the description of the <code class="docutils
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: Optional description of the Executor</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: List of python modules needed to import the Executor</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Optional path to be used by the <code class="docutils literal notranslate"><span class="pre">Executor</span></code></p></li>
 </ul>
 </section>
 <section id="runtime-args">
@@ -667,7 +667,7 @@ As the name suggest, <code class="docutils literal notranslate"><span class="pre
 <li><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code>: Number of replicas of the same <code class="docutils literal notranslate"><span class="pre">Executor</span></code> deployed with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shards</span></code>: Number of shards of the same <code class="docutils literal notranslate"><span class="pre">Executor</span></code> deployed with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shard_id</span></code>: Identifier of the <code class="docutils literal notranslate"><span class="pre">shard</span></code> corresponding to the given <code class="docutils literal notranslate"><span class="pre">Executor</span></code> instance.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Path to be used by the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. This is another way to pass a <code class="docutils literal notranslate"><span class="pre">workspace</span></code> to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> from the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> ensuring that each <code class="docutils literal notranslate"><span class="pre">shard</span></code> gets a different one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Path to be used by the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. Note that the actual workspace directory used by the Executor is obtained by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code> to this value.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: Path to the modules needed to import the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. This is another way to pass <code class="docutils literal notranslate"><span class="pre">py-modules</span></code> to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> from the <code class="docutils literal notranslate"><span class="pre">Flow</span></code></p></li>
 </ul>
 <div class="note admonition">
@@ -681,8 +681,22 @@ As the name suggest, <code class="docutils literal notranslate"><span class="pre
 </section>
 <section id="workspace">
 <h3>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h3>
-<p>Each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has a special <code class="docutils literal notranslate"><span class="pre">workspace</span></code> that is reserved for that specific <code class="docutils literal notranslate"><span class="pre">Executor</span></code> instance. The <code class="docutils literal notranslate"><span class="pre">workspace</span></code> property that can be used to extract the <code class="docutils literal notranslate"><span class="pre">path</span></code> to this workspace.</p>
-<p>This <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is generated using the workspace specified in <code class="docutils literal notranslate"><span class="pre">metas</span></code> or <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> workspace, plus adding special suffixes in case of sharded <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has a special <em>workspace</em> that is reserved for that specific Executor instance.
+The <code class="docutils literal notranslate"><span class="pre">.workspace</span></code> property contains the path to this workspace.</p>
+<p>This <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is generated using the workspace passed when adding the Executor: <code class="docutils literal notranslate"><span class="pre">flow.add(...,</span> <span class="pre">workspace='path/to/workspace/')</span></code>.
+The value that is passed there is added to the <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>, and the final <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is generated by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code>,
+as described above.</p>
+<p>If the user hasn’t provided a workspace, the Executor uses a default workspace, which is defined in the <code class="docutils literal notranslate"><span class="pre">JINA_DEFAULT_WORKSPACE_BASE</span></code>
+environment variable.</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>After you install jina, the <code class="docutils literal notranslate"><span class="pre">JINA_DEFAULT_WORKSPACE_BASE</span></code> environment variable will be set in your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>, <code class="docutils literal notranslate"><span class="pre">.zshrc</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">.fish</span></code> file.</p>
+<p>To change the default Executor workspace on your system, you can change the value of this environment variable.
+However, if you directly edit the corresponding command in your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> (or <code class="docutils literal notranslate"><span class="pre">.zshrc</span></code>/<code class="docutils literal notranslate"><span class="pre">.fish</span></code>) file, your changes will be reverted the next time
+you install jina on your system.</p>
+<p>Instead, you can add <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">JINA_DEFAULT_WORKSPACE_BASE=$YOUR_WOKSPACE</span></code> after the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">JINA_CLI_END</span></code> comment.</p>
+</div>
 </section>
 </section>
 <section id="yaml-interface">
@@ -696,7 +710,6 @@ As the name suggest, <code class="docutils literal notranslate"><span class="pre
 <span class="nt">metas</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"MyExecutor</span><span class="nv"> </span><span class="s">does</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">thing</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">stuff</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">Documents"</span><span class="w"></span>
-<span class="w">  </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workspace</span><span class="w"></span>
 <span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
 <span class="nt">requests</span><span class="p">:</span><span class="w"></span>
@@ -712,7 +725,6 @@ As the name suggest, <code class="docutils literal notranslate"><span class="pre
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is a string. Defines the name of the executor;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> is a string. Defines the description of this executor. It will be used in automatic docs UI;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string. Defines the workspace of the executor;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code> is a list of strings. Defines the Python dependencies of the executor;</p></li>
 </ul>
 </li>
@@ -819,7 +831,6 @@ my-flow.py<div class="sd-summary-down docutils">
 <span class="s2">metas:</span>
 <span class="s2">  name: MyExecutor</span>
 <span class="s2">  description: "MyExecutor does a thing to the stuff in your Documents"</span>
-<span class="s2">  workspace: workspace</span>
 <span class="s2">requests:</span>
 <span class="s2">  /index: default_fn</span>
 <span class="s2">  /search: default_fn</span>
@@ -837,7 +848,8 @@ my-flow.py<div class="sd-summary-down docutils">
         <span class="s1">'parameter_1'</span><span class="p">:</span> <span class="s1">'overriden_parameter_1'</span><span class="p">,</span>
         <span class="s1">'parameter_2'</span><span class="p">:</span> <span class="s1">'overriden_parameter_2'</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Dynamic Name'</span><span class="p">,</span> <span class="s1">'workspace'</span><span class="p">:</span> <span class="s1">'overriden_worskpace'</span><span class="p">},</span>
+    <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Dynamic Name'</span><span class="p">},</span>
+    <span class="n">workspace</span><span class="o">=</span><span class="s1">'workspace'</span><span class="p">,</span>
     <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span><span class="s1">'/index'</span><span class="p">:</span> <span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'/search'</span><span class="p">:</span> <span class="s1">'bar'</span><span class="p">},</span>
 <span class="p">)</span>
 
@@ -1113,7 +1125,7 @@ in the <code class="docutils literal notranslate"><span class="pre">Flow</span><
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 21, 2022.
+                    Last updated on Mar 22, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

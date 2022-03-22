@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/scale-out/" />
   
-<meta property="og:site_name" content="Jina 3.2.7 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.8 Documentation" />
   
 <meta property="og:description" content="Overview: A Jina Flow orchestrates multiple Executors. By default, a Jina Executor runs with a single replica and shard. Some Executor in the Flow might be less performant than others, this could turn into a performance bottleneck in your Jina application. To solve this, Jina Flow allows you to c..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.7 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.8 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to run Executors on GPU" href="../gpu-executor/" /><link rel="prev" title="How to use async coroutines in Executors" href="../async-executors/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>How to Scale Out Your Executor - Jina 3.2.7 documentation</title>
+        <title>How to Scale Out Your Executor - Jina 3.2.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.2.7 documentation</div>
+                <div class="brand">Jina 3.2.8 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -260,6 +260,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Client API</a></li>
@@ -756,7 +757,7 @@ We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/exe
             <span class="s1">'dim'</span><span class="p">:</span> <span class="mi">130107</span><span class="p">,</span>  <span class="c1"># the dimension is fitted on the corpus in news dataset</span>
             <span class="s1">'metric'</span><span class="p">:</span> <span class="s1">'cosine'</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">'workspace'</span><span class="p">:</span> <span class="s1">'CHANGE-TO-YOUR-PATH/workspace'</span><span class="p">},</span>
+        <span class="n">workspace</span><span class="o">=</span><span class="s1">'CHANGE-TO-YOUR-PATH/workspace'</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -782,7 +783,7 @@ All the data will be saved to <code class="docutils literal notranslate"><span c
         <span class="n">name</span><span class="o">=</span><span class="s1">'pqlite_executor'</span><span class="p">,</span>
         <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub://PQLiteIndexer'</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'dim'</span><span class="p">:</span> <span class="mi">130107</span><span class="p">,</span> <span class="s1">'metric'</span><span class="p">:</span> <span class="s1">'cosine'</span><span class="p">},</span>
-        <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">'workspace'</span><span class="p">:</span> <span class="s1">'CHANGE-TO-YOUR-PATH/workspace'</span><span class="p">},</span>
+        <span class="n">workspace</span><span class="o">=</span><span class="s1">'CHANGE-TO-YOUR-PATH/workspace'</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
@@ -818,7 +819,7 @@ The new <code class="docutils literal notranslate"><span class="pre">Flow</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">'pqlite_executor'</span><span class="p">,</span>
         <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub://PQLiteIndexer/v0.2.3-rc'</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'dim'</span><span class="p">:</span> <span class="mi">130107</span><span class="p">,</span> <span class="s1">'metric'</span><span class="p">:</span> <span class="s1">'cosine'</span><span class="p">},</span>
-        <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">'workspace'</span><span class="p">:</span> <span class="s1">'CHANGE-TO-YOUR-PATH/workspace'</span><span class="p">},</span>
+        <span class="n">workspace</span><span class="o">=</span><span class="s1">'CHANGE-TO-YOUR-PATH/workspace'</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">polling</span><span class="o">=</span><span class="n">polling_config</span><span class="p">,</span>
@@ -872,7 +873,7 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 21, 2022.
+                    Last updated on Mar 22, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

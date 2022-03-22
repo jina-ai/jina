@@ -1,12 +1,5 @@
 # Python API
 
-To generate docs, please use:
-
-```bash
-cd docs
-bash makedocs.sh local-only
-```
-
 There are four packages shipped with Jina:
 
 - `jina`: the framework;

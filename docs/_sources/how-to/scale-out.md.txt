@@ -145,7 +145,7 @@ f = (
             'dim': 130107,  # the dimension is fitted on the corpus in news dataset
             'metric': 'cosine',
         },
-        uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+        workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
     )
 )
@@ -174,7 +174,7 @@ f = (
         name='pqlite_executor',
         uses='jinahub://PQLiteIndexer',
         uses_with={'dim': 130107, 'metric': 'cosine'},
-        uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+        workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
         shards=2,
     )
@@ -213,7 +213,7 @@ f = (
         name='pqlite_executor',
         uses='jinahub://PQLiteIndexer/v0.2.3-rc',
         uses_with={'dim': 130107, 'metric': 'cosine'},
-        uses_metas={'workspace': 'CHANGE-TO-YOUR-PATH/workspace'},
+        workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
         shards=2,
         polling=polling_config,
