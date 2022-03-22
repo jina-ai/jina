@@ -145,9 +145,16 @@ class BaseClient(ABC):
         _kwargs.update(kwargs)
 
         if hasattr(self._inputs, '__len__'):
-            self._inputs_length = max(1, len(self._inputs) / _kwargs['request_size'])
+            total_docs = len(self._inputs)
+        elif 'total_docs' in _kwargs:
+            total_docs = _kwargs['total_docs']
         else:
-            self._inputs_length = None
+            total_docs = None
+
+        self._inputs_length = None
+
+        if total_docs:
+            self._inputs_length = max(1, total_docs / _kwargs['request_size'])
 
         if inspect.isasyncgen(self.inputs):
             from jina.clients.request.asyncio import request_generator
