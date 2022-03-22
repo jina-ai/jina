@@ -1,13 +1,12 @@
 import os
 import sys
 
-from rich import print as pprint
-from rich.table import Table
 from rich import box
-from jina.helper import get_rich_console
+from rich.table import Table
 
 
 def _get_run_args(print_args: bool = True):
+    from jina.helper import get_rich_console
     from jina.parsers import get_main_parser
 
     console = get_rich_console()
@@ -45,18 +44,16 @@ def _get_run_args(print_args: bool = True):
             param_str.add_column('Value', justify='left')
 
             for k, v in sorted(vars(args).items()):
-
                 sign = ' ' if default_args.get(k, None) == v else '🔧️'
-                param = f'{k.replace("_", "-"): >30.30}'
-                value = f'=  {str(v):30.30}'
+                param = k.replace('_', '-')
+                value = str(v)
 
                 style = None if default_args.get(k, None) == v else 'blue on yellow'
 
                 param_str.add_row(sign, param, value, style=style)
 
             print(f'\n{logo_str}\n')
-            console.print(f'▶️  {" ".join(sys.argv)}')
-            console.print(param_str)
+            console.print(f'▶️  {" ".join(sys.argv)}', param_str)
         return args
     else:
         parser.print_help()
@@ -86,10 +83,11 @@ def _quick_ac_lookup():
 
 def _is_latest_version(suppress_on_error=True):
     try:
-        from urllib.request import Request, urlopen
         import json
-        from jina import __version__
         import warnings
+        from urllib.request import Request, urlopen
+
+        from jina import __version__
 
         req = Request(
             'https://api.jina.ai/latest', headers={'User-Agent': 'Mozilla/5.0'}
