@@ -239,7 +239,36 @@ def _get_example_data():
     return docs.to_list()
 
 
-class JinaRequestModel(BaseModel):
+class PydanticToDictModel(BaseModel):
+    """
+    Base class for models that contain PydanticDocument or PydanticDocarray and need to be converted to dict.
+    """
+
+    def dict(self, *args, **kwargs):
+        """
+        Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.
+
+        :parameter *args: args to be passed to super().dict
+        :parameter *kwargs: kwargs to be passed to super().dict
+        :return: self in dict form
+        """
+        d = super().dict(*args, **kwargs)
+        if (
+            self.data
+            and isinstance(self.data, list)
+            and isinstance(self.data[0], PydanticDocument)
+        ):  # list of PydanticDocuments == PydanticDocumentArray
+            docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
+            d['data'] = docs_dicts
+        elif (
+            isinstance(self.data, dict) and 'docs' in self.data
+        ):  # expected dict schema
+            docs_dicts = DocumentArray.from_pydantic_model(self.data['docs']).to_dict()
+            d['data'] = docs_dicts
+        return d
+
+
+class JinaRequestModel(PydanticToDictModel):
     """
     Jina HTTP request model.
     """
@@ -267,35 +296,12 @@ class JinaRequestModel(BaseModel):
         description=DESCRIPTION_PARAMETERS,
     )
 
-    def dict(self, *args, **kwargs):
-        """
-        Convert to dict.
-
-        :param *args: args passed to BaseModel.dic()
-        :param *kwargs: kwargs passed to BaseModel.dic()
-        :return: self as Python dict
-        """
-        d = super().dict(*args, **kwargs)
-        if (
-            self.data
-            and isinstance(self.data, list)
-            and isinstance(self.data[0], PydanticDocument)
-        ):  # list of PydanticDocuments == PydanticDocumentArray
-            docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
-            d['data'] = docs_dicts
-        elif (
-            isinstance(self.data, dict) and 'docs' in self.data
-        ):  # expected dict schema
-            docs_dicts = DocumentArray.from_pydantic_model(self.data['docs']).to_dict()
-            d['data'] = docs_dicts
-        return d
-
     class Config:
         alias_generator = _to_camel_case
         allow_population_by_field_name = True
 
 
-class JinaResponseModel(BaseModel):
+class JinaResponseModel(PydanticToDictModel):
     """
     Jina HTTP Response model. Only `request_id` and `data` are preserved.
     """
@@ -308,29 +314,6 @@ class JinaResponseModel(BaseModel):
     class Config:
         alias_generator = _to_camel_case
         allow_population_by_field_name = True
-
-    def dict(self, *args, **kwargs):
-        """
-        Convert to dict.
-
-        :param *args: args passed to BaseModel.dic()
-        :param *kwargs: kwargs passed to BaseModel.dic()
-        :return: self as Python dict
-        """
-        d = super().dict(*args, **kwargs)
-        if (
-            self.data
-            and isinstance(self.data, list)
-            and isinstance(self.data[0], PydanticDocument)
-        ):  # list of PydanticDocuments == PydanticDocumentArray
-            docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
-            d['data'] = docs_dicts
-        elif (
-            isinstance(self.data, dict) and 'docs' in self.data
-        ):  # expected dict schema
-            docs_dicts = DocumentArray.from_pydantic_model(self.data['docs']).to_dict()
-            d['data'] = docs_dicts
-        return d
 
 
 class JinaEndpointRequestModel(JinaRequestModel):
