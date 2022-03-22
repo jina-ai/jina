@@ -276,8 +276,10 @@ class JinaRequestModel(BaseModel):
         :return: self as Python dict
         """
         d = super().dict(*args, **kwargs)
-        if isinstance(self.data, list) and isinstance(
-            self.data[0], PydanticDocument
+        if (
+            self.data
+            and isinstance(self.data, list)
+            and isinstance(self.data[0], PydanticDocument)
         ):  # list of PydanticDocuments == PydanticDocumentArray
             docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
             d['data'] = docs_dicts
@@ -316,8 +318,10 @@ class JinaResponseModel(BaseModel):
         :return: self as Python dict
         """
         d = super().dict(*args, **kwargs)
-        if isinstance(self.data, list) and isinstance(
-            self.data[0], PydanticDocument
+        if (
+            self.data
+            and isinstance(self.data, list)
+            and isinstance(self.data[0], PydanticDocument)
         ):  # list of PydanticDocuments == PydanticDocumentArray
             docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
             d['data'] = docs_dicts
