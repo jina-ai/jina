@@ -5,9 +5,7 @@ import pytest
 from docarray import Document
 
 from jina import Client, Flow
-from jina.parsers import set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.types.request.control import ControlRequest
 
 
@@ -25,26 +23,11 @@ def key_pem():
     return f'{cur_dir}/cert/server.key'
 
 
-def test_grpc_ssl(cert_pem, key_pem):
-    args = set_gateway_parser().parse_args(
-        [
-            '--grpc-server-kwargs',
-            f'ssl_certfile: {cert_pem}',
-            f'ssl_keyfile: {key_pem}',
-        ]
-    )
-    with GRPCGatewayRuntime(args):
-        pass
-
-
 def test_grpc_ssl_with_flow(cert_pem, key_pem):
     with Flow(
         protocol='grpc',
-        grpc_server_kwargs=[
-            f'ssl_certfile: {cert_pem}',
-            f'ssl_keyfile: {key_pem}',
-        ],
-        tls=True,
+        ssl_certfile=cert_pem,
+        ssl_keyfile=key_pem,
     ) as f:
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
@@ -56,12 +39,9 @@ def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem):
     port = 1234
     with Flow(
         protocol='grpc',
-        grpc_server_kwargs=[
-            f'ssl_certfile: {cert_pem}',
-            f'ssl_keyfile: {key_pem}',
-        ],
+        ssl_certfile=cert_pem,
+        ssl_keyfile=key_pem,
         port=port,
-        tls=True,
     ):
         os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 

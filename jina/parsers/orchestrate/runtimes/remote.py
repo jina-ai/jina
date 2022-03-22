@@ -222,6 +222,24 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
     ''',
     )
 
+    gp.add_argument(
+        '--ssl-certfile',
+        type=str,
+        help='''
+        the path to the certificate file
+        ''',
+        dest='ssl_certfile',
+    )
+
+    gp.add_argument(
+        '--ssl-keyfile',
+        type=str,
+        help='''
+        the path to the key file
+        ''',
+        dest='ssl_keyfile',
+    )
+
 
 def mixin_prefetch_parser(parser=None):
     """Add the options for prefetching

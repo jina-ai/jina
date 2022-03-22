@@ -1,8 +1,7 @@
-import os
 import asyncio
+import os
 
 from jina import __default_host__
-
 from jina.importer import ImportExtensions
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.gateway.http.app import get_fastapi_app
@@ -51,6 +50,12 @@ class HTTPGatewayRuntime(GatewayRuntime):
         from jina.helper import extend_rest_interface
 
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
+
+        for ssl_file in ['ssl_keyfile', 'ssl_certfile']:
+            if getattr(self.args, ssl_file):
+                if ssl_file not in uvicorn_kwargs.keys():
+                    uvicorn_kwargs[ssl_file] = getattr(self.args, ssl_file)
+
         self._set_topology_graph()
         self._set_connection_pool()
         self._server = UviServer(

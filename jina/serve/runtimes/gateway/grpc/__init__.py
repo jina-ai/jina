@@ -50,13 +50,10 @@ class GRPCGatewayRuntime(GatewayRuntime):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
         bind_addr = f'{__default_host__}:{self.args.port}'
 
-        if self.args.grpc_server_kwargs and all(
-            key in self.args.grpc_server_kwargs.keys()
-            for key in ['ssl_keyfile', 'ssl_certfile']
-        ):
-            with open(self.args.grpc_server_kwargs['ssl_keyfile'], 'rb') as f:
+        if self.args.ssl_keyfile and self.args.ssl_certfile:
+            with open(self.args.ssl_keyfile, 'rb') as f:
                 private_key = f.read()
-            with open(self.args.grpc_server_kwargs['ssl_certfile'], 'rb') as f:
+            with open(self.args.ssl_certfile, 'rb') as f:
                 certificate_chain = f.read()
 
             server_credentials = grpc.ssl_server_credentials(
@@ -68,6 +65,12 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 )
             )
             self.server.add_secure_port(bind_addr, server_credentials)
+        elif (
+            self.args.ssl_keyfile != self.args.ssl_certfile
+        ):  # if we have only ssl_keyfile and not ssl_certfile or vice versa
+            raise ValueError(
+                f"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"
+            )
         else:
             self.server.add_insecure_port(bind_addr)
         self.logger.debug(f' Start server bound to {bind_addr}')
