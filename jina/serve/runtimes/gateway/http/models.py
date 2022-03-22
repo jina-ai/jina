@@ -4,6 +4,7 @@ from enum import Enum
 from types import SimpleNamespace
 from typing import Callable, Dict, List, Optional, Union
 
+from docarray import DocumentArray
 from docarray.document.pydantic_model import PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
@@ -266,6 +267,20 @@ class JinaRequestModel(BaseModel):
         description=DESCRIPTION_PARAMETERS,
     )
 
+    def dict(self, *args, **kwargs):
+        """
+        Convert to dict.
+
+        :param *args: args passed to BaseModel.dic()
+        :param *kwargs: kwargs passed to BaseModel.dic()
+        :return: self as Python dict
+        """
+        d = super().dict(*args, **kwargs)
+        if self.data is not None:
+            docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
+            d['data'] = docs_dicts
+        return d
+
     class Config:
         alias_generator = _to_camel_case
         allow_population_by_field_name = True
@@ -284,6 +299,20 @@ class JinaResponseModel(BaseModel):
     class Config:
         alias_generator = _to_camel_case
         allow_population_by_field_name = True
+
+    def dict(self, *args, **kwargs):
+        """
+        Convert to dict.
+
+        :param *args: args passed to BaseModel.dic()
+        :param *kwargs: kwargs passed to BaseModel.dic()
+        :return: self as Python dict
+        """
+        d = super().dict(*args, **kwargs)
+        if self.data is not None:
+            docs_dicts = DocumentArray.from_pydantic_model(self.data).to_dict()
+            d['data'] = docs_dicts
+        return d
 
 
 class JinaEndpointRequestModel(JinaRequestModel):
