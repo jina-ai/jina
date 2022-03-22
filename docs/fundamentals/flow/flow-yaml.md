@@ -85,11 +85,12 @@ help. This is very helpful when you use the executors with local source codes an
 In the following example, the two executors are defined in the same module.
 
 ````{tab} Use Flow `metas`
+
 ```yaml
 jtype: Flow
 metas:
   py_modules:
-    - executor.py
+    - executors.py
 executors:
   - uses: FooExecutor
   - uses: BarExecutor
@@ -97,6 +98,7 @@ executors:
 ````
 
 ````{tab} Use Executor `metas`
+
 ```yaml
 jtype: Flow
 executors:
@@ -104,12 +106,12 @@ executors:
       jtype: FooExecutor
       metas:
         py_modules:
-          - executor.py
+          - executors.py
   - uses:
       jtype: BarExecutor
       metas:
         py_modules:
-          - executor.py
+          - executors.py
 ```
 ````
 
