@@ -68,7 +68,7 @@ class LocalExecutor(Executor):
 ```
 
 ## Configure Flow APIs
-Use `with` field to configure the Flow APIs. It accepts all the arguments in `Flow.init()`. In the example below, we 
+Use `with` field to configure the Flow APIs. It accepts all the arguments in Flow constructor. In the example below, we 
 set the Flow to serve `http` at the port `45678` with CORS being enabled.
 
 ```yaml
