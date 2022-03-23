@@ -84,7 +84,7 @@ In the case that you want to set the same value for the `metas` attributes in **
 help. This is very helpful when you use the executors with local source codes and have all of them in one Python module.
 In the following example, the two executors are defined in the same module.
 
-````{tab} Use Flow `metas`
+````{tab} Use Flow metas
 
 ```yaml
 jtype: Flow
@@ -95,9 +95,10 @@ executors:
   - uses: FooExecutor
   - uses: BarExecutor
 ```
+
 ````
 
-````{tab} Use Executor `metas`
+````{tab} Use Executor metas
 
 ```yaml
 jtype: Flow
@@ -113,5 +114,6 @@ executors:
         py_modules:
           - executors.py
 ```
+
 ````
 
