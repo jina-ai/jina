@@ -147,6 +147,8 @@ ac_table = {
             '--expose-endpoints',
             '--uvicorn-kwargs',
             '--grpc-server-kwargs',
+            '--ssl-certfile',
+            '--ssl-keyfile',
             '--expose-graphql-endpoint',
             '--protocol',
             '--host',
