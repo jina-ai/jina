@@ -134,10 +134,6 @@ def get_fastapi_app(
                         # NOTE: Helps in converting camelCase to snake_case
                         req_generator_input = JinaEndpointRequestModel(**request).dict()
                         req_generator_input['data_type'] = DataInputType.DICT
-                        if request['data'] is not None and 'docs' in request['data']:
-                            req_generator_input['data'] = req_generator_input['data'][
-                                'docs'
-                            ]
 
                         # you can't do `yield from` inside an async function
                         for data_request in request_generator(**req_generator_input):
