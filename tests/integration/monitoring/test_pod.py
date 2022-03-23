@@ -1,10 +1,8 @@
-import time
-
 import pytest
 import requests as req
-from prometheus_client import Summary
 
 from jina import Executor, Flow, requests
+from jina.helper import random_port
 
 
 class DummyExecutor(Executor):
@@ -14,8 +12,8 @@ class DummyExecutor(Executor):
 
 
 def test_enable_monitoring_deployment():
-    port1 = 8089
-    port2 = 8090
+    port1 = random_port()
+    port2 = random_port()
 
     with Flow().add(uses=DummyExecutor, monitoring=True, port_monitoring=port1).add(
         uses=DummyExecutor, monitoring=True, port_monitoring=port2
@@ -27,9 +25,9 @@ def test_enable_monitoring_deployment():
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_enable_monitoring_gateway(protocol):
-    port0 = 8088
-    port1 = 8089
-    port2 = 8090
+    port0 = random_port()
+    port1 = random_port()
+    port2 = random_port()
 
     with Flow(protocol=protocol, monitoring=True, port_monitoring=port0).add(
         uses=DummyExecutor, monitoring=True, port_monitoring=port1

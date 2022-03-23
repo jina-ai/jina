@@ -42,7 +42,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self._set_connection_pool()
 
         await self._async_setup_server()
-        self._setup_monitoring_server()
+        self._setup_monitoring()
 
     async def _async_setup_server(self):
         self.streamer = RequestStreamer(
