@@ -140,6 +140,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         expose_graphql_endpoint: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
+        grpc_server_kwargs: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
@@ -160,6 +161,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         runtime_backend: Optional[str] = 'PROCESS',
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
@@ -187,6 +190,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
+        :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
@@ -235,6 +239,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param runtime_backend: The parallel backend of the runtime inside the Pod
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.

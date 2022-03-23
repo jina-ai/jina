@@ -39,6 +39,14 @@ class TestExecutor(Executor):
         print(f"# docs {docs}")
 
 
+@pytest.fixture
+def error_log_level():
+    old_env = os.environ.get('JINA_LOG_LEVEL')
+    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = old_env
+
+
 def test_tag_update():
     port = random_port()
 
@@ -166,13 +174,29 @@ xZ36Vrgc4hfaUiifsIiDwA==
 
 
 @pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
+def test_uvicorn_ssl_deprecated(cert_pem, key_pem, runtime_cls):
+    args = set_gateway_parser().parse_args(
+        [
+            '--uvicorn-kwargs',
+            f'ssl_certfile: {cert_pem}',  # deprecated
+            f'ssl_keyfile: {key_pem}',  # deprecated
+            'ssl_keyfile_password: abcd',
+        ]
+    )
+    with runtime_cls(args):
+        pass
+
+
+@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
 def test_uvicorn_ssl(cert_pem, key_pem, runtime_cls):
     args = set_gateway_parser().parse_args(
         [
             '--uvicorn-kwargs',
-            f'ssl_certfile: {cert_pem}',
-            f'ssl_keyfile: {key_pem}',
             'ssl_keyfile_password: abcd',
+            '--ssl-certfile',
+            f'{cert_pem}',
+            '--ssl-keyfile',
+            f'{key_pem}',
         ]
     )
     with runtime_cls(args):
@@ -184,9 +208,28 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
     args = set_gateway_parser().parse_args(
         [
             '--uvicorn-kwargs',
-            f'ssl_certfile: {cert_pem}',
-            f'ssl_keyfile: {key_pem}',
             'ssl_keyfile_password: abcde',
+            '--ssl-certfile ',
+            f'{cert_pem}',
+            '--ssl-keyfile ',
+            f'{key_pem}',
+        ]
+    )
+    with pytest.raises(ssl.SSLError):
+        with runtime_cls(args):
+            pass
+
+
+@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
+def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
+    args = set_gateway_parser().parse_args(
+        [
+            '--uvicorn-kwargs',
+            'ssl_keyfile_password: abcde',
+            '--ssl-certfile',
+            f'{cert_pem}',
+            '--ssl-keyfile',
+            f'{key_pem}',
         ]
     )
     with pytest.raises(ssl.SSLError):
@@ -195,16 +238,15 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
 
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket'])
-def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
+def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys, error_log_level):
     with Flow(
         protocol=protocol,
         uvicorn_kwargs=[
-            f'ssl_certfile: {cert_pem}',
-            f'ssl_keyfile: {key_pem}',
             'ssl_keyfile_password: abcd',
         ],
+        ssl_certfile=cert_pem,
+        ssl_keyfile=key_pem,
     ) as f:
-        os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
         with pytest.raises(aiohttp.ClientConnectorCertificateError):
             Client(protocol=protocol, port=f.port, tls=True).index([Document()])
