@@ -10,6 +10,14 @@ from jina.types.request.control import ControlRequest
 
 
 @pytest.fixture
+def error_log_level():
+    old_env = os.environ.get('JINA_LOG_LEVEL')
+    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = old_env
+
+
+@pytest.fixture
 def cert_pem():
     """This is the cert entry of a self-signed local cert"""
     cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,19 +31,18 @@ def key_pem():
     return f'{cur_dir}/cert/server.key'
 
 
-def test_grpc_ssl_with_flow(cert_pem, key_pem):
+def test_grpc_ssl_with_flow(cert_pem, key_pem, error_log_level):
     with Flow(
         protocol='grpc',
         ssl_certfile=cert_pem,
         ssl_keyfile=key_pem,
     ) as f:
-        os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
         with pytest.raises(grpc.aio._call.AioRpcError):
             Client(protocol='grpc', port=f.port, tls=True).index([Document()])
 
 
-def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem):
+def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem, error_log_level):
     port = 1234
     with Flow(
         protocol='grpc',
@@ -43,8 +50,6 @@ def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem):
         ssl_keyfile=key_pem,
         port=port,
     ):
-        os.environ['JINA_LOG_LEVEL'] = 'ERROR'
-
         with open(cert_pem, 'rb') as f:
             creds = f.read()
 

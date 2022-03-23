@@ -39,6 +39,14 @@ class TestExecutor(Executor):
         print(f"# docs {docs}")
 
 
+@pytest.fixture
+def error_log_level():
+    old_env = os.environ.get('JINA_LOG_LEVEL')
+    os.environ['JINA_LOG_LEVEL'] = 'ERROR'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = old_env
+
+
 def test_tag_update():
     port = random_port()
 
@@ -230,7 +238,7 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
 
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket'])
-def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
+def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys, error_log_level):
     with Flow(
         protocol=protocol,
         uvicorn_kwargs=[
@@ -239,7 +247,6 @@ def test_uvicorn_ssl_with_flow(cert_pem, key_pem, protocol, capsys):
         ssl_certfile=cert_pem,
         ssl_keyfile=key_pem,
     ) as f:
-        os.environ['JINA_LOG_LEVEL'] = 'ERROR'
 
         with pytest.raises(aiohttp.ClientConnectorCertificateError):
             Client(protocol=protocol, port=f.port, tls=True).index([Document()])
