@@ -1,12 +1,7 @@
 """Argparser module for remote runtime"""
-from argparse import _StoreTrueAction
 
 from jina import __default_host__, helper
-from jina.parsers.helper import (
-    KVAppendAction,
-    add_arg_group,
-    get_deprecation_renamed_action,
-)
+from jina.parsers.helper import KVAppendAction, add_arg_group
 
 
 def mixin_remote_runtime_parser(parser):
@@ -44,15 +39,6 @@ def mixin_client_gateway_parser(parser):
         action='store_true',
         default=False,
         help='If set, connect to gateway using tls encryption',
-    )
-
-    gp.add_argument(
-        '--https',
-        action=get_deprecation_renamed_action('--tls', _StoreTrueAction),
-        # action='store_true',
-        default=False,
-        help='If set, connect to gateway using https',
-        dest='tls',
     )
 
 
