@@ -83,32 +83,37 @@ def test_parse_args(
             'replicas',
         ),
     )
-    assert deployment_config.services_args['head_service'].name == 'executor/head'
-    assert deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
-    assert deployment_config.services_args['head_service'].uses is None
-    assert deployment_config.services_args['head_service'].uses_before is None
-    assert deployment_config.services_args['head_service'].uses_after is None
-    assert deployment_config.services_args['head_service'].uses_metas is None
-    assert deployment_config.services_args['head_service'].uses_with is None
-    if uses_before is None:
-        assert (
-            deployment_config.services_args['head_service'].uses_before_address is None
-        )
-    else:
-        assert (
-            deployment_config.services_args['head_service'].uses_before_address
-            == 'executor-uses-before:8081'
-        )
-    if uses_after is None:
-        assert (
-            deployment_config.services_args['head_service'].uses_after_address is None
-        )
-    else:
-        assert (
-            deployment_config.services_args['head_service'].uses_after_address
-            == 'executor-uses-after:8081'
-        )
+
     if shards > 1:
+        assert deployment_config.services_args['head_service'].name == 'executor/head'
+        assert (
+            deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
+        )
+        assert deployment_config.services_args['head_service'].uses is None
+        assert deployment_config.services_args['head_service'].uses_before is None
+        assert deployment_config.services_args['head_service'].uses_after is None
+        assert deployment_config.services_args['head_service'].uses_metas is None
+        assert deployment_config.services_args['head_service'].uses_with is None
+        if uses_before is None:
+            assert (
+                deployment_config.services_args['head_service'].uses_before_address
+                is None
+            )
+        else:
+            assert (
+                deployment_config.services_args['head_service'].uses_before_address
+                == 'executor-uses-before:8081'
+            )
+        if uses_after is None:
+            assert (
+                deployment_config.services_args['head_service'].uses_after_address
+                is None
+            )
+        else:
+            assert (
+                deployment_config.services_args['head_service'].uses_after_address
+                == 'executor-uses-after:8081'
+            )
         if replicas == 1:
             candidate_connection_list = {
                 str(i): [f'executor-{i}:8081'] for i in range(shards)
@@ -130,47 +135,69 @@ def test_parse_args(
             for replica in range(replicas):  # TODO
                 candidate_connection_list['0'].append(f'executor-rep-{replica}:8081')
 
-    assert deployment_config.services_args[
-        'head_service'
-    ].connection_list == json.dumps(candidate_connection_list)
+    if shards > 1:
+        assert deployment_config.services_args[
+            'head_service'
+        ].connection_list == json.dumps(candidate_connection_list)
 
-    if uses_before is not None:
-        assert (
-            deployment_config.services_args['uses_before_service'].name
-            == 'executor/uses-before'
-        )
-        assert (
-            deployment_config.services_args['uses_before_service'].runtime_cls
-            == 'WorkerRuntime'
-        )
-        assert (
-            deployment_config.services_args['uses_before_service'].uses == uses_before
-        )
-        assert (
-            deployment_config.services_args['uses_before_service'].uses_before is None
-        )
-        assert deployment_config.services_args['uses_before_service'].uses_after is None
-        assert deployment_config.services_args['uses_before_service'].uses_metas is None
-        assert deployment_config.services_args['uses_before_service'].uses_with is None
-        assert deployment_config.services_args['uses_before_service'].shard_id == 0
-        assert deployment_config.services_args['uses_before_service'].replicas == 1
+        if uses_before is not None:
+            assert (
+                deployment_config.services_args['uses_before_service'].name
+                == 'executor/uses-before'
+            )
+            assert (
+                deployment_config.services_args['uses_before_service'].runtime_cls
+                == 'WorkerRuntime'
+            )
+            assert (
+                deployment_config.services_args['uses_before_service'].uses
+                == uses_before
+            )
+            assert (
+                deployment_config.services_args['uses_before_service'].uses_before
+                is None
+            )
+            assert (
+                deployment_config.services_args['uses_before_service'].uses_after
+                is None
+            )
+            assert (
+                deployment_config.services_args['uses_before_service'].uses_metas
+                is None
+            )
+            assert (
+                deployment_config.services_args['uses_before_service'].uses_with is None
+            )
+            assert deployment_config.services_args['uses_before_service'].shard_id == 0
+            assert deployment_config.services_args['uses_before_service'].replicas == 1
 
-    if uses_after is not None:
-        assert (
-            deployment_config.services_args['uses_after_service'].name
-            == 'executor/uses-after'
-        )
-        assert (
-            deployment_config.services_args['uses_after_service'].runtime_cls
-            == 'WorkerRuntime'
-        )
-        assert deployment_config.services_args['uses_after_service'].uses == uses_after
-        assert deployment_config.services_args['uses_after_service'].uses_before is None
-        assert deployment_config.services_args['uses_after_service'].uses_after is None
-        assert deployment_config.services_args['uses_after_service'].uses_metas is None
-        assert deployment_config.services_args['uses_after_service'].uses_with is None
-        assert deployment_config.services_args['uses_after_service'].shard_id == 0
-        assert deployment_config.services_args['uses_after_service'].replicas == 1
+        if uses_after is not None:
+            assert (
+                deployment_config.services_args['uses_after_service'].name
+                == 'executor/uses-after'
+            )
+            assert (
+                deployment_config.services_args['uses_after_service'].runtime_cls
+                == 'WorkerRuntime'
+            )
+            assert (
+                deployment_config.services_args['uses_after_service'].uses == uses_after
+            )
+            assert (
+                deployment_config.services_args['uses_after_service'].uses_before
+                is None
+            )
+            assert (
+                deployment_config.services_args['uses_after_service'].uses_after is None
+            )
+            assert (
+                deployment_config.services_args['uses_after_service'].uses_metas is None
+            )
+            assert (
+                deployment_config.services_args['uses_after_service'].uses_with is None
+            )
+            assert deployment_config.services_args['uses_after_service'].shard_id == 0
+            assert deployment_config.services_args['uses_after_service'].replicas == 1
 
     for i, depl_arg in enumerate(deployment_config.services_args['services']):
         import copy
@@ -218,54 +245,61 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
     )
     deployment_config = DockerComposeConfig(args)
 
-    assert deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
-    assert deployment_config.services_args['head_service'].uses_before is None
-    assert (
-        deployment_config.services_args['head_service'].uses_before_address
-        == 'executor-uses-before:8081'
-    )
-    assert deployment_config.services_args['head_service'].uses is None
-    assert deployment_config.services_args['head_service'].uses_after is None
-    assert (
-        deployment_config.services_args['head_service'].uses_after_address
-        == f'executor-uses-after:8081'
-    )
+    if shards > 1:
+        assert (
+            deployment_config.services_args['head_service'].runtime_cls == 'HeadRuntime'
+        )
+        assert deployment_config.services_args['head_service'].uses_before is None
+        assert (
+            deployment_config.services_args['head_service'].uses_before_address
+            == 'executor-uses-before:8081'
+        )
+        assert deployment_config.services_args['head_service'].uses is None
+        assert deployment_config.services_args['head_service'].uses_after is None
+        assert (
+            deployment_config.services_args['head_service'].uses_after_address
+            == f'executor-uses-after:8081'
+        )
 
-    assert deployment_config.services_args['head_service'].uses_before is None
+        assert deployment_config.services_args['head_service'].uses_before is None
 
-    assert deployment_config.services_args['head_service'].uses_after is None
+        assert deployment_config.services_args['head_service'].uses_after is None
 
-    assert (
-        deployment_config.services_args['uses_before_service'].name
-        == 'executor/uses-before'
-    )
-    assert (
-        deployment_config.services_args['uses_before_service'].runtime_cls
-        == 'WorkerRuntime'
-    )
-    assert deployment_config.services_args['uses_before_service'].uses == uses_before
-    assert deployment_config.services_args['uses_before_service'].uses_before is None
-    assert deployment_config.services_args['uses_before_service'].uses_after is None
-    assert deployment_config.services_args['uses_before_service'].uses_metas is None
-    assert deployment_config.services_args['uses_before_service'].uses_with is None
-    assert deployment_config.services_args['uses_before_service'].shard_id == 0
-    assert deployment_config.services_args['uses_before_service'].replicas == 1
+        assert (
+            deployment_config.services_args['uses_before_service'].name
+            == 'executor/uses-before'
+        )
+        assert (
+            deployment_config.services_args['uses_before_service'].runtime_cls
+            == 'WorkerRuntime'
+        )
+        assert (
+            deployment_config.services_args['uses_before_service'].uses == uses_before
+        )
+        assert (
+            deployment_config.services_args['uses_before_service'].uses_before is None
+        )
+        assert deployment_config.services_args['uses_before_service'].uses_after is None
+        assert deployment_config.services_args['uses_before_service'].uses_metas is None
+        assert deployment_config.services_args['uses_before_service'].uses_with is None
+        assert deployment_config.services_args['uses_before_service'].shard_id == 0
+        assert deployment_config.services_args['uses_before_service'].replicas == 1
 
-    assert (
-        deployment_config.services_args['uses_after_service'].name
-        == 'executor/uses-after'
-    )
-    assert (
-        deployment_config.services_args['uses_after_service'].runtime_cls
-        == 'WorkerRuntime'
-    )
-    assert deployment_config.services_args['uses_after_service'].uses == uses_after
-    assert deployment_config.services_args['uses_after_service'].uses_before is None
-    assert deployment_config.services_args['uses_after_service'].uses_after is None
-    assert deployment_config.services_args['uses_after_service'].uses_metas is None
-    assert deployment_config.services_args['uses_after_service'].uses_with is None
-    assert deployment_config.services_args['uses_after_service'].shard_id == 0
-    assert deployment_config.services_args['uses_after_service'].replicas == 1
+        assert (
+            deployment_config.services_args['uses_after_service'].name
+            == 'executor/uses-after'
+        )
+        assert (
+            deployment_config.services_args['uses_after_service'].runtime_cls
+            == 'WorkerRuntime'
+        )
+        assert deployment_config.services_args['uses_after_service'].uses == uses_after
+        assert deployment_config.services_args['uses_after_service'].uses_before is None
+        assert deployment_config.services_args['uses_after_service'].uses_after is None
+        assert deployment_config.services_args['uses_after_service'].uses_metas is None
+        assert deployment_config.services_args['uses_after_service'].uses_with is None
+        assert deployment_config.services_args['uses_after_service'].shard_id == 0
+        assert deployment_config.services_args['uses_after_service'].replicas == 1
 
     for i, depl_arg in enumerate(deployment_config.services_args['services']):
         import copy
@@ -427,103 +461,105 @@ def test_docker_compose_yaml_regular_deployment(
     # ignored for gateway
     deployment_config = DockerComposeConfig(args)
     yaml_configs = deployment_config.to_docker_compose_config()
-    assert len(yaml_configs) == 1 + shards * replicas + (1 if uses_before else 0) + (
-        1 if uses_after else 0
+    assert len(yaml_configs) == shards * replicas + (
+        (1 + (1 if uses_before else 0) + (1 if uses_after else 0)) if shards > 1 else 0
     )
-    head_name, head_config = yaml_configs[0]
-    assert head_name == 'executor-head'
-    assert (
-        head_config['image']
-        == f'jinaai/jina:{deployment_config.head_service.version}-py38-standard'
-    )
-    assert head_config['entrypoint'] == ['jina']
-    head_args = head_config['command']
-    assert head_args[0] == 'executor'
-    assert '--native' in head_args
-    assert '--runtime-cls' in head_args
-    assert head_args[head_args.index('--runtime-cls') + 1] == 'HeadRuntime'
-    assert '--name' in head_args
-    assert head_args[head_args.index('--name') + 1] == 'executor/head'
-    assert '--port' in head_args
-    assert head_args[head_args.index('--port') + 1] == '8081'
-    assert '--env' not in head_args
-    assert '--pod-role' in head_args
-    assert head_args[head_args.index('--pod-role') + 1] == 'HEAD'
-    assert '--connection-list' in head_args
-    connection_list_string = head_args[head_args.index('--connection-list') + 1]
-    candidate_connection_list = {}
+
     if shards > 1:
-        if replicas == 1:
-            candidate_connection_list = {
-                str(shard_id): [f'executor-{shard_id}:8081']
-                for shard_id in range(shards)
-            }
-        else:
-            candidate_connection_list = {}
-            for shard_id in range(shards):
-                candidate_connection_list[str(shard_id)] = []
-                for replica in range(replicas):
-                    candidate_connection_list[str(shard_id)].append(
-                        f'executor-{shard_id}-rep-{replica}:8081'
-                    )
-    else:
-        if shards == 1:
+        head_name, head_config = yaml_configs[0]
+        assert head_name == 'executor-head'
+        assert (
+            head_config['image']
+            == f'jinaai/jina:{deployment_config.head_service.version}-py38-standard'
+        )
+        assert head_config['entrypoint'] == ['jina']
+        head_args = head_config['command']
+        assert head_args[0] == 'executor'
+        assert '--native' in head_args
+        assert '--runtime-cls' in head_args
+        assert head_args[head_args.index('--runtime-cls') + 1] == 'HeadRuntime'
+        assert '--name' in head_args
+        assert head_args[head_args.index('--name') + 1] == 'executor/head'
+        assert '--port' in head_args
+        assert head_args[head_args.index('--port') + 1] == '8081'
+        assert '--env' not in head_args
+        assert '--pod-role' in head_args
+        assert head_args[head_args.index('--pod-role') + 1] == 'HEAD'
+        assert '--connection-list' in head_args
+        connection_list_string = head_args[head_args.index('--connection-list') + 1]
+        candidate_connection_list = {}
+        if shards > 1:
             if replicas == 1:
-                candidate_connection_list = {'0': [f'executor:8081']}
+                candidate_connection_list = {
+                    str(shard_id): [f'executor-{shard_id}:8081']
+                    for shard_id in range(shards)
+                }
             else:
-                candidate_connection_list = {'0': []}
-                for replica in range(replicas):
-                    candidate_connection_list['0'].append(
-                        f'executor-rep-{replica}:8081'
-                    )
+                candidate_connection_list = {}
+                for shard_id in range(shards):
+                    candidate_connection_list[str(shard_id)] = []
+                    for replica in range(replicas):
+                        candidate_connection_list[str(shard_id)].append(
+                            f'executor-{shard_id}-rep-{replica}:8081'
+                        )
+        else:
+            if shards == 1:
+                if replicas == 1:
+                    candidate_connection_list = {'0': [f'executor:8081']}
+                else:
+                    candidate_connection_list = {'0': []}
+                    for replica in range(replicas):
+                        candidate_connection_list['0'].append(
+                            f'executor-rep-{replica}:8081'
+                        )
 
-    assert connection_list_string == json.dumps(candidate_connection_list)
+        assert connection_list_string == json.dumps(candidate_connection_list)
 
-    if polling == 'ANY':
-        assert '--polling' not in head_args
-    else:
-        assert '--polling' in head_args
-        assert head_args[head_args.index('--polling') + 1] == 'ALL'
+        if polling == 'ANY':
+            assert '--polling' not in head_args
+        else:
+            assert '--polling' in head_args
+            assert head_args[head_args.index('--polling') + 1] == 'ALL'
 
-    if uses_before is not None:
-        uses_before_name, uses_before_config = yaml_configs[1]
-        assert uses_before_name == 'executor-uses-before'
-        assert uses_before_config['image'] == 'jinahub/HubBeforeExecutor'
-        assert uses_before_config['entrypoint'] == ['jina']
-        uses_before_args = uses_before_config['command']
-        assert uses_before_args[0] == 'executor'
-        assert '--native' in uses_before_args
-        assert '--name' in uses_before_args
-        assert '--env' not in uses_before_args
-        assert (
-            uses_before_args[uses_before_args.index('--name') + 1]
-            == 'executor/uses-before'
-        )
-        assert '--port' in uses_before_args
-        assert uses_before_args[uses_before_args.index('--port') + 1] == '8081'
-        assert '--connection-list' not in uses_before_args
-        assert '--polling' not in uses_before_args
+        if uses_before is not None:
+            uses_before_name, uses_before_config = yaml_configs[1]
+            assert uses_before_name == 'executor-uses-before'
+            assert uses_before_config['image'] == 'jinahub/HubBeforeExecutor'
+            assert uses_before_config['entrypoint'] == ['jina']
+            uses_before_args = uses_before_config['command']
+            assert uses_before_args[0] == 'executor'
+            assert '--native' in uses_before_args
+            assert '--name' in uses_before_args
+            assert '--env' not in uses_before_args
+            assert (
+                uses_before_args[uses_before_args.index('--name') + 1]
+                == 'executor/uses-before'
+            )
+            assert '--port' in uses_before_args
+            assert uses_before_args[uses_before_args.index('--port') + 1] == '8081'
+            assert '--connection-list' not in uses_before_args
+            assert '--polling' not in uses_before_args
 
-    if uses_after is not None:
-        uses_after_name, uses_after_config = (
-            yaml_configs[1] if uses_before is None else yaml_configs[2]
-        )
-        assert uses_after_name == 'executor-uses-after'
-        assert uses_after_config['image'] == 'jinahub/HubAfterExecutor'
-        assert uses_after_config['entrypoint'] == ['jina']
-        uses_after_args = uses_after_config['command']
-        assert uses_after_args[0] == 'executor'
-        assert '--native' in uses_after_args
-        assert '--name' in uses_after_args
-        assert '--env' not in uses_after_args
-        assert (
-            uses_after_args[uses_after_args.index('--name') + 1]
-            == 'executor/uses-after'
-        )
-        assert '--port' in uses_after_args
-        assert uses_after_args[uses_after_args.index('--port') + 1] == '8081'
-        assert '--connection-list' not in uses_after_args
-        assert '--polling' not in uses_after_args
+        if uses_after is not None:
+            uses_after_name, uses_after_config = (
+                yaml_configs[1] if uses_before is None else yaml_configs[2]
+            )
+            assert uses_after_name == 'executor-uses-after'
+            assert uses_after_config['image'] == 'jinahub/HubAfterExecutor'
+            assert uses_after_config['entrypoint'] == ['jina']
+            uses_after_args = uses_after_config['command']
+            assert uses_after_args[0] == 'executor'
+            assert '--native' in uses_after_args
+            assert '--name' in uses_after_args
+            assert '--env' not in uses_after_args
+            assert (
+                uses_after_args[uses_after_args.index('--name') + 1]
+                == 'executor/uses-after'
+            )
+            assert '--port' in uses_after_args
+            assert uses_after_args[uses_after_args.index('--port') + 1] == '8081'
+            assert '--connection-list' not in uses_after_args
+            assert '--polling' not in uses_after_args
 
     num_shards_replicas_configs = shards * replicas
     shards_replicas_configs = yaml_configs[-num_shards_replicas_configs:]

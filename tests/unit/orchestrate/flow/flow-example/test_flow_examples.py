@@ -12,7 +12,6 @@ def _validate_flow(f):
     addresses = f._get_deployments_addresses()
     for name, pod in f:
         if name != 'gateway':
-            assert addresses[name][0] == f'{pod.protocol}://{pod.host}:{pod.head_port}'
             for n in pod.needs:
                 assert name in graph_dict[n if n != 'gateway' else 'start-gateway']
         else:
