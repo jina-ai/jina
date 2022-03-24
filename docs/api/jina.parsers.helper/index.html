@@ -156,7 +156,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement" id="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -656,28 +662,6 @@
 <p>argparse action to split an argument into KEY=VALUE form
 on the first = and append to a dictionary.
 This is used for setting up –env</p>
-</dd></dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="jina.parsers.helper.DeprecateAction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></span><span class="sig-name descname"><span class="pre">DeprecateAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#DeprecateAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.DeprecateAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.Action</span></code></p>
-<p>Action to deprecated an argument in argparse</p>
-</dd></dl>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.parsers.helper.get_deprecation_renamed_action">
-<span class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></span><span class="sig-name descname"><span class="pre">get_deprecation_renamed_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action=&lt;class</span> <span class="pre">'argparse.Action'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#get_deprecation_renamed_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.get_deprecation_renamed_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>To deprecate an argument when it has been renamed for argparse</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>replacement</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the new argument name</p></li>
-<li><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Action</span></code>]) – class of the action that you want to overload with the deprecation to keep the old behavior</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a action class that can</p>
-</dd>
-</dl>
 </dd></dl>
 </section>
 

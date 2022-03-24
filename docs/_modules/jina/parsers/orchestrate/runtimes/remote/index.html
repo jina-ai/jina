@@ -123,7 +123,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement" id="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -599,14 +605,9 @@
                 </div>
                 <h1>Source code for jina.parsers.orchestrate.runtimes.remote</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for remote runtime"""</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">_StoreTrueAction</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">helper</span>
-<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">KVAppendAction</span><span class="p">,</span>
-    <span class="n">add_arg_group</span><span class="p">,</span>
-    <span class="n">get_deprecation_renamed_action</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
 <div class="viewcode-block" id="mixin_remote_runtime_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_remote_runtime_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -644,15 +645,6 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'If set, connect to gateway using tls encryption'</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--https'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="n">get_deprecation_renamed_action</span><span class="p">(</span><span class="s1">'--tls'</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">),</span>
-        <span class="c1"># action='store_true',</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, connect to gateway using https'</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'tls'</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

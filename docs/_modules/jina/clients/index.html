@@ -123,7 +123,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement" id="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -640,7 +646,7 @@
 <span class="sd">    :param protocol: Communication protocol between server and client.</span>
 <span class="sd">    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">    :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.</span>
-<span class="sd">    :param tls: If set, connect to gateway using https</span>
+<span class="sd">    :param tls: If set, connect to gateway using tls encryption</span>
 <span class="sd">    :return: the new Client object</span>
 
 <span class="sd">    .. # noqa: DAR202</span>

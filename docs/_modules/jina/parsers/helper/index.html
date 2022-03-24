@@ -123,7 +123,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement" id="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -866,36 +872,6 @@
 
 
 <span class="n">_chf</span> <span class="o">=</span> <span class="n">_ColoredHelpFormatter</span>
-
-
-<div class="viewcode-block" id="DeprecateAction"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.DeprecateAction">[docs]</a><span class="k">class</span> <span class="nc">DeprecateAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Action to deprecated an argument in argparse</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># noqa</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">'Argument </span><span class="si">{self.option_strings}</span><span class="s1"> is deprecated and is *ignored*'</span><span class="p">)</span>
-        <span class="nb">delattr</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="get_deprecation_renamed_action"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.get_deprecation_renamed_action">[docs]</a><span class="k">def</span> <span class="nf">get_deprecation_renamed_action</span><span class="p">(</span>
-    <span class="n">replacement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">]</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Action</span>
-<span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    To deprecate an argument when it has been renamed for argparse</span>
-
-<span class="sd">    :param replacement: the new argument name</span>
-<span class="sd">    :param action: class of the action that you want to overload with the deprecation to keep the old behavior</span>
-<span class="sd">    :return: a action class that can</span>
-<span class="sd">    """</span>
-
-    <span class="k">class</span> <span class="nc">_DeprecateRenamedAction</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
-        <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Argument </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">option_strings</span><span class="si">}</span><span class="s1"> is deprecated, please use </span><span class="si">{</span><span class="n">replacement</span><span class="si">}</span><span class="s1"> instead'</span>
-            <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">_DeprecateRenamedAction</span></div>
 </pre></div>
             </article>
             <footer>
