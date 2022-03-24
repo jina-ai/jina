@@ -316,7 +316,6 @@ ac_table = {
             '--proxy',
             '--port',
             '--tls',
-            '--https',
             '--asyncio',
             '--return-responses',
             '--protocol',
