@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.flow.base - Jina 3.2.8 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.2.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.2.8 documentation</div>
+                <div class="brand">Jina 3.2.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -557,6 +557,10 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../_static/docarray-dark.svg">
             DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
     </ul>
 </div>
 
@@ -736,6 +740,7 @@
         <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">grpc_server_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
         <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -756,6 +761,8 @@
         <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span>
         <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPCGatewayRuntime'</span><span class="p">,</span>
         <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
         <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -783,6 +790,7 @@
 <span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
+<span class="sd">        :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
@@ -831,6 +839,8 @@
 <span class="sd">        :param runtime_backend: The parallel backend of the runtime inside the Pod</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
 <span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</span>
+<span class="sd">        :param ssl_certfile: the path to the certificate file</span>
+<span class="sd">        :param ssl_keyfile: the path to the key file</span>
 <span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
 <span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
@@ -2506,7 +2516,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 22, 2022.
+                    Last updated on Mar 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

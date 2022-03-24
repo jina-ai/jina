@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
-        <title>jina.parsers.orchestrate.runtimes.remote - Jina 3.2.8 documentation</title>
+        <title>jina.parsers.orchestrate.runtimes.remote - Jina 3.2.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.2.8 documentation</div>
+                <div class="brand">Jina 3.2.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -557,6 +557,10 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/docarray-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/docarray-dark.svg">
             DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
     </ul>
 </div>
 
@@ -806,6 +810,34 @@
 <span class="s1">More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 
 <span class="s1">'''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--grpc-server-kwargs'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">    Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</span>
+<span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--ssl-certfile'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">        the path to the certificate file</span>
+<span class="s1">        '''</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'ssl_certfile'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--ssl-keyfile'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">        the path to the key file</span>
+<span class="s1">        '''</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'ssl_keyfile'</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -835,7 +867,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 22, 2022.
+                    Last updated on Mar 24, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
