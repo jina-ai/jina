@@ -1,9 +1,6 @@
 import os
 import sys
 
-from rich import box
-from rich.table import Table
-
 
 def _get_run_args(print_args: bool = True):
     from jina.helper import get_rich_console
@@ -16,6 +13,9 @@ def _get_run_args(print_args: bool = True):
     parser = get_main_parser()
     if len(sys.argv) > 1:
         from argparse import _StoreAction, _StoreTrueAction
+
+        from rich import box
+        from rich.table import Table
 
         args, unknown = parser.parse_known_args()
 
