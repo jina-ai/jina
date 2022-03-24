@@ -3,7 +3,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from docarray import Document
 
 from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
@@ -18,6 +17,7 @@ from jina.helper import (
     is_yaml_filepath,
     random_port,
     reset_ports,
+    retry,
 )
 from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
@@ -307,3 +307,34 @@ def test_ci_vendor():
 def test_get_hubble_base_url():
     for j in range(2):
         assert _get_hubble_base_url().startswith('http')
+
+
+def test_retry():
+    class TryMe:
+        def __init__(self, fail_count: int) -> None:
+            self.tried_count = 0
+            self._fail_count = fail_count
+
+        @retry(num_retry=4)  # retry 4 times
+        def try_it(self):
+            self.tried_count += 1
+            if self.tried_count <= self._fail_count:
+                raise Exception('try again')
+
+            return 'it works'
+
+    try_me = TryMe(fail_count=4)
+    with pytest.raises(Exception) as exc_info:
+        # failing 4 times, so it should raise an error
+        try_me.try_it()
+
+    assert exc_info.match('try again')
+    assert try_me.tried_count == 4
+
+    try_me = TryMe(fail_count=2)
+
+    # failing 2 times, it must succeed on 3rd time
+    result = try_me.try_it()
+
+    assert result == 'it works'
+    assert try_me.tried_count == 3

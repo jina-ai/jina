@@ -8,10 +8,15 @@ import os
 import random
 from pathlib import Path
 from typing import Dict, Optional, Union
-from urllib.parse import urlencode
 
 from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, colored, get_request_header, get_rich_console
+from jina.helper import (
+    ArgNamespace,
+    colored,
+    get_request_header,
+    get_rich_console,
+    retry,
+)
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
@@ -577,6 +582,16 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         with ImportExtensions(required=True):
             import requests
 
+        @retry(num_retry=3)
+        def _send_request_with_retry(url, **kwargs):
+            resp = requests.post(url, **kwargs)
+            if resp.status_code != 200:
+                if resp.text:
+                    raise Exception(resp.text)
+                resp.raise_for_status()
+
+            return resp
+
         pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage'
 
         payload = {'id': name, 'include': ['code']}
@@ -588,12 +603,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             payload['tag'] = tag
 
         req_header = get_request_header()
-        resp = requests.post(pull_url, json=payload, headers=req_header)
-        if resp.status_code != 200:
-            if resp.text:
-                raise Exception(resp.text)
-            resp.raise_for_status()
 
+        resp = _send_request_with_retry(pull_url, json=payload, headers=req_header)
         resp = resp.json()['data']
 
         images = resp['package'].get('containers', [])
@@ -637,25 +648,21 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         }
 
         import requests
-        from rich.progress import Console
 
         console = get_rich_console()
 
         host = None
         port = None
-        try:
-            json_response = requests.post(
-                url=get_hubble_url_v2() + '/rpc/sandbox.get',
-                json=payload,
-                headers=get_request_header(),
-            ).json()
-            if json_response.get('code') == 200:
-                host = json_response.get('data', {}).get('host', None)
-                port = json_response.get('data', {}).get('port', None)
-                livetime = json_response.get('data', {}).get('livetime', '15 mins')
 
-        except Exception:
-            raise
+        json_response = requests.post(
+            url=get_hubble_url_v2() + '/rpc/sandbox.get',
+            json=payload,
+            headers=get_request_header(),
+        ).json()
+        if json_response.get('code') == 200:
+            host = json_response.get('data', {}).get('host', None)
+            port = json_response.get('data', {}).get('port', None)
+            livetime = json_response.get('data', {}).get('livetime', '15 mins')
 
         if host and port:
             console.log(f"A sandbox already exists, reusing it.")
