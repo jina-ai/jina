@@ -22,7 +22,7 @@ hello-jina
 
 There may be some other files like `README.md`, `manifest.yml`  `requirements.txt` to provide extra metadata about that Executor. More information {ref}`can be found here<create-executor>`.
 
-```python
+```bash
 cd hello-jina
 python app.py
 ```
@@ -54,7 +54,8 @@ from jina import Executor, DocumentArray, requests
 class MyExecutor(Executor):
     @requests(on='/get-tensor')
     def bar(self, docs: DocumentArray, **kwargs):
-        docs[0].tensor = torch.tensor(np.random.random([10, 2]))
+        for doc in docs:
+            doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
 ## A small Jina application
