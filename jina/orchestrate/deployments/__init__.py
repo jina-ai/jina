@@ -448,8 +448,6 @@ class Deployment(BaseDeployment):
         """
         :return: the protocol of this deployment
         """
-        if self.is_sandbox:
-            return 'https'
         protocol = getattr(self.args, 'protocol', 'grpc')
         return str(protocol) + ('s' if self.tls_enabled else '')
 

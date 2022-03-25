@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from docarray import Document
 
 from jina import Executor, Flow, requests
 
@@ -47,4 +48,4 @@ def test_deployment_protocol(protocol, tls, cert_pem, key_pem):
             elif node == 'executor0':
                 assert p == 'grpc'
             elif node == 'executor1':
-                assert p == 'https'
+                assert p == 'grpcs'
