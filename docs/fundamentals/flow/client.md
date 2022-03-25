@@ -61,9 +61,9 @@ Equivalently, you can pass each relevant parameter as a keyword argument:
 ````{tab} TLS disabled
 
 ```python
-Client(host='my.awesome.flow', port=1234, protocol='http', tls=False)
-Client(host='my.awesome.flow', port=1234, protocol='websocket', tls=False)
-Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=False)
+Client(host='my.awesome.flow', port=1234, protocol='http')
+Client(host='my.awesome.flow', port=1234, protocol='websocket')
+Client(host='my.awesome.flow', port=1234, protocol='grpc')
 ```
 
 ````
