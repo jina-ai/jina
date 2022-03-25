@@ -16,12 +16,10 @@ This does not affect how you have to configure your Flow API, so the examples he
 For more proper use of the Client, and more information about the Client itself, see the {ref}`Client documentation <client>`.
 ```
 
-````{tab} gRPC
+````{tab} Python
 
 ```{code-block} python
----
-emphasize-lines: 11, 13
----
+
 
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
@@ -45,25 +43,40 @@ with f:
 ```
 ````
 
-````{tab} HTTP
+````{tab} Yaml
+
+In `executor.py`
 ```{code-block} python
----
-emphasize-lines: 11, 13
----
-
 from docarray import Document, DocumentArray
-from jina import Client, Executor, Flow, requests
-
+from jina import Client, Executor, requests
 
 class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was called'))
+```
+In `flow.yaml`
+```{code-block} yaml
+jtype: Flow
+with:
+  port: 12345
+  protocol: 'grpc'
+executors:
+  - name: local_executor_with_source_codes
+    uses: 
+      jtype: FooExecutor
+      metas:
+        py_modules:
+          - executor.py
+```
+Then run to start the flow
+```{code-block} python
+from jina import Flow,Client
 
+f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 
-f = Flow(protocol='http', port=12345).add(uses=FooExecutor)
 with f:
-    client = Client(port=12345, protocol='http')
+    client = Client(port=12345)
     docs = client.post(on='/')
     print(docs.texts)
 ```
@@ -72,35 +85,6 @@ with f:
 ['foo was called']
 ```
 
-````
-
-````{tab} WebSocket
-
-```{code-block} python
----
-emphasize-lines: 11, 13
----
-
-from docarray import Document, DocumentArray
-from jina import Client, Executor, Flow, requests
-
-
-class FooExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was called'))
-
-
-f = Flow(protocol='websocket', port=12345).add(uses=FooExecutor)
-with f:
-    client = Client(port=12345, protocol='websocket')
-    docs = client.post(on='/')
-    print(docs.texts)
-```
-
-```text
-['foo was called']
-```
 ````
 
 
