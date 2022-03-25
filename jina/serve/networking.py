@@ -808,11 +808,12 @@ def in_docker():
     :return: True if the current process is running inside Docker
     """
     path = '/proc/self/cgroup'
-    return (
-        os.path.exists('/.dockerenv')
-        or os.path.isfile(path)
-        and any('docker' in line for line in open(path))
-    )
+    if os.path.exists('/.dockerenv'):
+        return True
+    if os.path.isfile(path):
+        with open(path) as file:
+            return any('docker' in line for line in file)
+    return False
 
 
 def host_is_local(hostname):
