@@ -52,6 +52,7 @@ Methods of `Executor` can be named and written freely.
 
 There are, however, special methods inside an `Executor`, which are decorated with `@requests`. When used inside a Flow, these methods are mapped to network endpoints.
 
+(executor-requests)=
 ### Method decorator
 
 Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
