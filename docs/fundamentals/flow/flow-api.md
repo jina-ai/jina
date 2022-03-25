@@ -249,8 +249,8 @@ see their [website](https://www.uvicorn.org/settings/).
 
 ## Add GraphQL endpoint
 
-````{admonition} Attention
-:class: attention
+````{admonition} Caution
+:class: caution
 
 GraphQL support is an optional feature that requires optional dependencies.
 To install these, run `pip install jina[graphql]` or `pip install jina[all]`.
