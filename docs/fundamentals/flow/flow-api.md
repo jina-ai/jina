@@ -5,6 +5,8 @@
 **Flow** ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets.
 
+There are two ways of defining a FLow, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your flow.
+
 ```{admonition} Jina Client
 :class: caution
 
@@ -16,10 +18,15 @@ This does not affect how you have to configure your Flow API, so the examples he
 For more proper use of the Client, and more information about the Client itself, see the {ref}`Client documentation <client>`.
 ```
 
-````{tab} Python
+## Serve Flow With Different Protocol
+You can use three different protocols to serve the `Flow`: `grpc`,`http` and `websocket`
+
+````{tab} gRPC
 
 ```{code-block} python
-
+---
+emphasize-lines: 11, 13
+---
 
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
@@ -43,40 +50,25 @@ with f:
 ```
 ````
 
-````{tab} Yaml
-
-In `executor.py`
+````{tab} HTTP
 ```{code-block} python
+---
+emphasize-lines: 11, 13
+---
+
 from docarray import Document, DocumentArray
-from jina import Client, Executor, requests
+from jina import Client, Executor, Flow, requests
+
 
 class FooExecutor(Executor):
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was called'))
-```
-In `flow.yaml`
-```{code-block} yaml
-jtype: Flow
-with:
-  port: 12345
-  protocol: 'grpc'
-executors:
-  - name: local_executor_with_source_codes
-    uses: 
-      jtype: FooExecutor
-      metas:
-        py_modules:
-          - executor.py
-```
-Then run to start the flow
-```{code-block} python
-from jina import Flow,Client
 
-f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 
+f = Flow(protocol='http', port=12345).add(uses=FooExecutor)
 with f:
-    client = Client(port=12345)
+    client = Client(port=12345, protocol='http')
     docs = client.post(on='/')
     print(docs.texts)
 ```
@@ -87,44 +79,69 @@ with f:
 
 ````
 
+````{tab} WebSocket
 
-## Expose API endpoints
+```{code-block} python
+---
+emphasize-lines: 11, 13
+---
 
-The `Flow` API can expose different endpoints. Endpoints are defined by the Executor methods annotated with the `@requests(on='/endpoint_path')` decorator.
-
-```python
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 
 
-class EndpointExecutor(Executor):
-    @requests(on='/foo')
+class FooExecutor(Executor):
+    @requests
     def foo(self, docs: DocumentArray, **kwargs):
         docs.append(Document(text='foo was called'))
 
-    @requests(on='/bar')
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='bar was called'))
 
-
-f = Flow(protocol='grpc', port=12345).add(uses=EndpointExecutor)
+f = Flow(protocol='websocket', port=12345).add(uses=FooExecutor)
 with f:
-    client = Client(port=12345)
-    foo_response_docs = client.post(on='/foo')
-    bar_response_docs = client.post(on='/bar')
-    print(foo_response_docs.texts)
-    print(bar_response_docs.texts)
+    client = Client(port=12345, protocol='websocket')
+    docs = client.post(on='/')
+    print(docs.texts)
 ```
-
-This will print:
 
 ```text
 ['foo was called']
-['bar was called']
+```
+````
+
+
+To configure it yaml just do
+
+
+````{tab} gRPC
+Note that grpc is the default protocol so you can just ommit it
+```{code-block} yaml
+jtype: Flow
+with:
+  protocol: 'grpc'
 ```
 
-These endpoints are automatically reachable through Jina's Python client.
-If you want custom endpoints to be exposed via HTTP, you need to configure that manually.
+````
+
+````{tab} HTTP
+```{code-block} yaml
+jtype: Flow
+with:
+  protocol: 'http'
+```
+
+
+````
+
+````{tab} WebSocket
+
+```{code-block} yaml
+jtype: Flow
+with:
+  protocol: 'websocket'
+```
+
+````
+
 
 (custom-http)=
 ## Customize HTTP interface
@@ -138,6 +155,7 @@ These custom endpoints can be added to the HTTP interface using `Flow.expose_end
 ```{figure} ../../../.github/2.0/expose-endpoints.svg
 :align: center
 ```
+````{tab} Python
 
 ```python
 from jina import Executor, requests, Flow
@@ -154,44 +172,64 @@ f.expose_endpoint('/foo', summary='my endpoint')
 with f:
     f.block()
 ```
+````
 
-Now, sending an HTTP data request to the `/foo` endpoint is equivalent to calling `f.post('/foo', ...)` using the Python Client.
-
-You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
-
-```python
-f.expose_endpoint('/bar', summary='my endpoint', tags=['fine-tuning'], methods=['PUT'])
-```
-
+````{tab} YAML
 You can enable custom endpoints in a Flow using yaml syntax as well.
-
 ```yaml
 jtype: Flow
 with:
   protocol: http
   expose_endpoints:
     /foo:
-      methods: ["GET"]
+      summary: my endpoint
+```
+````
+
+Now, sending an HTTP data request to the `/foo` endpoint is equivalent to calling `f.post('/foo', ...)` using the Python Client.
+
+You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
+````{tab} Python
+
+```python
+f.expose_endpoint('/bar', summary='my endpoint', tags=['fine-tuning'], methods=['PUT'])
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+  protocol: http
+  expose_endpoints:
     /bar:
       methods: ["PUT"]
       summary: my endpoint
       tags:
         - fine-tuning
-    /foobar: {}
-executors:
-  - name: indexer
 ```
-
+````
 ### Hide default endpoints from HTTP interface
 
 It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
 For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
-
+````{tab} Python
 ```python
 from jina import Flow
 
 f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 ```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+  protocol: 'http'
+  no_debug_endpoints: True, 
+  no_crud_endpoints: True
+```
+````
 
 After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-http>` will not be exposed.
 
@@ -210,11 +248,25 @@ feature.
 A Flow can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
 To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True` on your HTTP Flow:
 
+
+````{tab} Python
+
 ```python
 from jina import Flow
 
 f = Flow(protocol='http', expose_graphql_endpont=True)
 ```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+  protocol: 'http'
+  expose_graphql_endpont: True, 
+```
+````
+
 
 ````{admonition} See Also
 :class: seealso
@@ -266,6 +318,26 @@ from jina import Flow
 
 f = Flow(cors=True, protocol='http')
 ```
+
+````{tab} Python
+
+```python
+from jina import Flow
+
+f = Flow(protocol='http', cors=True)
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+  protocol: 'http'
+  cors: True, 
+```
+````
+
+
 
 ## Generate deployment configuration
 
