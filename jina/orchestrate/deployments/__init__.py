@@ -610,6 +610,10 @@ class Deployment(BaseDeployment):
                 # the gateway needs to respect the assigned port
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
                     _args.port = args.port
+                elif args.shards == 1 and args.replicas == 1:
+                    # if there are no shards/replicas, we dont need to distribute ports randomly
+                    # we should rather use the pre assigned one
+                    args.port = args.port
                 else:
                     _args.port = helper.random_port()
 

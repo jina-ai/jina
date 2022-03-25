@@ -4,10 +4,10 @@ import time
 
 import pytest
 
-from jina import Document, Executor, Client, requests
+from jina import Client, Document, Executor, requests
 from jina.enums import PollingType
-from jina.parsers import set_gateway_parser, set_deployment_parser
 from jina.orchestrate.deployments import Deployment
+from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
 @pytest.mark.asyncio
@@ -80,6 +80,7 @@ async def test_deployments_flow_topology(
             name=f'{deployment}',
             uses_before=uses_before,
             uses_after=uses_after,
+            shards=2,
         )
 
         started_deployments.append(regular_deployment)

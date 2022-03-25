@@ -110,7 +110,7 @@ class DummyMockConnectionPool:
         docs = request.docs
         for doc in docs:
             clientid = doc.text[0:7]
-            new_doc = Document(text=doc.text + f'-{clientid}-{deployment}')
+            new_doc = Document(id=doc.id, text=doc.text + f'-{clientid}-{deployment}')
             new_docs.append(new_doc)
 
         response_msg.data.docs = new_docs

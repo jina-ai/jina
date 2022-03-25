@@ -1,4 +1,5 @@
 import copy
+import os
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -93,6 +94,9 @@ class DockerComposeConfig:
                     'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
                 },
+                'environment': [
+                    f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
+                ],
             }
 
         def _get_image_name(self, uses: Optional[str]):
@@ -140,6 +144,9 @@ class DockerComposeConfig:
                         'test': f'python -m jina.resources.health_check.pod localhost:{cargs.port}',
                         'interval': '2s',
                     },
+                    'environment': [
+                        f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
+                    ],
                 }
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]

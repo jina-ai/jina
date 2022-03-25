@@ -1,10 +1,9 @@
 import pytest
 
+from jina import Document, DocumentArray, Executor, Flow, requests
+from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser
-
-from jina import Flow, Executor, requests, Document, DocumentArray
-from jina.helper import random_port
 
 
 def validate_response(docs, expected_docs=50):
@@ -19,17 +18,12 @@ def input_docs():
 
 
 @pytest.fixture
-def num_replicas(request):
-    return request.param
-
-
-@pytest.fixture
 def num_shards(request):
     return request.param
 
 
 @pytest.fixture(scope='function')
-def external_deployment_args(num_replicas, num_shards):
+def external_deployment_args(num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -41,8 +35,6 @@ def external_deployment_args(num_replicas, num_shards):
         '0.0.0.0',
         '--shards',
         str(num_shards),
-        '--replicas',
-        str(num_replicas),
         '--polling',
         'all',
     ]
@@ -64,16 +56,16 @@ class MyExternalExecutor(Executor):
             doc.tags['name'] = self.runtime_args.name
 
 
-@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment(
-    external_deployment, external_deployment_args, input_docs, num_replicas, num_shards
+    external_deployment, external_deployment_args, input_docs, num_shards
 ):
     with external_deployment:
         external_args = vars(external_deployment_args)
         del external_args['name']
         del external_args['external']
         del external_args['deployment_role']
+        print(external_args)
         flow = Flow().add(
             **external_args,
             name='external_fake',
@@ -86,10 +78,9 @@ def test_flow_with_external_deployment(
         validate_response(resp, 50)
 
 
-@pytest.mark.parametrize('num_replicas', [2], indirect=True)
 @pytest.mark.parametrize('num_shards', [2], indirect=True)
 def test_two_flow_with_shared_external_deployment(
-    external_deployment, external_deployment_args, input_docs, num_replicas, num_shards
+    external_deployment, external_deployment_args, input_docs, num_shards
 ):
     external_deployment.head_args.disable_reduce = True
     with external_deployment:
@@ -119,13 +110,13 @@ def test_two_flow_with_shared_external_deployment(
             # Reducing applied after shards, expect only 50 docs
             validate_response(results, 50)
 
-            # Reducing applied after sharding, but not for the needs, expect 100 docs
+            # Reducing applied after sharding and the needs
             results = flow2.index(inputs=input_docs)
-            validate_response(results, 100)
+            validate_response(results, 50)
 
 
 @pytest.fixture(scope='function')
-def external_deployment_shards_1_args(num_replicas, num_shards):
+def external_deployment_shards_1_args(num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -135,8 +126,6 @@ def external_deployment_shards_1_args(num_replicas, num_shards):
         str(random_port()),
         '--shards',
         str(num_shards),
-        '--replicas',
-        str(num_replicas),
         '--polling',
         'all',
     ]
@@ -149,7 +138,7 @@ def external_deployment_shards_1(external_deployment_shards_1_args):
 
 
 @pytest.fixture(scope='function')
-def external_deployment_shards_2_args(num_replicas, num_shards):
+def external_deployment_shards_2_args(num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -159,8 +148,6 @@ def external_deployment_shards_2_args(num_replicas, num_shards):
         str(random_port()),
         '--shards',
         str(num_shards),
-        '--replicas',
-        str(num_replicas),
         '--polling',
         'all',
     ]
@@ -172,7 +159,6 @@ def external_deployment_shards_2(external_deployment_shards_2_args):
     return Deployment(external_deployment_shards_2_args)
 
 
-@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment_shards(
     external_deployment_shards_1,
@@ -180,7 +166,6 @@ def test_flow_with_external_deployment_shards(
     external_deployment_shards_1_args,
     external_deployment_shards_2_args,
     input_docs,
-    num_replicas,
     num_shards,
 ):
     with external_deployment_shards_1, external_deployment_shards_2:
@@ -218,7 +203,7 @@ def test_flow_with_external_deployment_shards(
 
 
 @pytest.fixture(scope='function')
-def external_deployment_pre_shards_args(num_replicas, num_shards):
+def external_deployment_pre_shards_args(num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -228,8 +213,6 @@ def external_deployment_pre_shards_args(num_replicas, num_shards):
         str(random_port()),
         '--shards',
         str(num_shards),
-        '--replicas',
-        str(num_replicas),
         '--polling',
         'all',
     ]
@@ -241,13 +224,11 @@ def external_deployment_pre_shards(external_deployment_pre_shards_args):
     return Deployment(external_deployment_pre_shards_args)
 
 
-@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment_pre_shards(
     external_deployment_pre_shards,
     external_deployment_pre_shards_args,
     input_docs,
-    num_replicas,
     num_shards,
 ):
     with external_deployment_pre_shards:
@@ -280,7 +261,7 @@ def test_flow_with_external_deployment_pre_shards(
 
 
 @pytest.fixture(scope='function')
-def external_deployment_join_args(num_replicas, num_shards):
+def external_deployment_join_args(num_shards):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -292,8 +273,6 @@ def external_deployment_join_args(num_replicas, num_shards):
         'JOIN',
         '--shards',
         str(num_shards),
-        '--replicas',
-        str(num_replicas),
         '--polling',
         'all',
         '--disable-reduce',
@@ -306,13 +285,11 @@ def external_deployment_join(external_deployment_join_args):
     return Deployment(external_deployment_join_args)
 
 
-@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment_join(
     external_deployment_join,
     external_deployment_join_args,
     input_docs,
-    num_replicas,
     num_shards,
 ):
     with external_deployment_join:
