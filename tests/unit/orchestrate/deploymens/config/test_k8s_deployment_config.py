@@ -234,7 +234,7 @@ def test_deployments(name: str, shards: str, gpus):
     )
     deployment_config = K8sDeploymentConfig(args, 'ns')
 
-    if name != 'gateway' and shards > int(1):
+    if name != 'gateway' and int(shards) > int(1):
         head_deployment = deployment_config.head_deployment
         assert head_deployment.deployment_args.gpus is None
 

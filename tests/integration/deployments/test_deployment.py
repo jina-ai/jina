@@ -165,13 +165,15 @@ async def test_deployments_replicas(port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', replicas=10
     )
     deployment.start()
 
+    ports = [args.port for args in deployment.pod_args['pods'][0]]
+    connections = [f'0.0.0.0:{port}' for port in ports]
+    deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
     gateway_deployment = _create_gateway_deployment(
         graph_description, deployments_addresses, port
     )
@@ -207,7 +209,8 @@ async def test_deployments_with_executor(port_generator):
         executor='NameChangeExecutor',
         uses_before=True,
         uses_after=True,
-        polling=PollingType.ALL,
+        polling=PollingType.ANY,
+        shards=2,
     )
     regular_deployment.start()
 

@@ -12,7 +12,7 @@ from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
-from jina.serve.networking import GrpcConnectionPool, host_is_local
+from jina.serve.networking import GrpcConnectionPool, host_is_local, in_docker
 
 
 class BaseDeployment(ExitStack):
@@ -467,18 +467,10 @@ class Deployment(BaseDeployment):
 
     @staticmethod
     def _is_container_to_container(pod, head_pod):
-        def _in_docker():
-            path = '/proc/self/cgroup'
-            return (
-                os.path.exists('/.dockerenv')
-                or os.path.isfile(path)
-                and any('docker' in line for line in open(path))
-            )
-
         # Check if both shard_id/pod_idx and the head are containerized
         # if the head is not containerized, it still could mean that the deployment itself is containerized
         return type(pod) == ContainerPod and (
-            type(head_pod) == ContainerPod or _in_docker()
+            type(head_pod) == ContainerPod or in_docker()
         )
 
     def start(self) -> 'Deployment':

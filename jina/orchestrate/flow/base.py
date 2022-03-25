@@ -27,7 +27,7 @@ from typing import (
 from rich import print
 from rich.table import Table
 
-from jina import __default_host__, helper
+from jina import __default_host__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
 from jina.enums import (
@@ -65,6 +65,8 @@ from jina.parsers import (
 from jina.parsers.flow import set_flow_parser
 
 __all__ = ['Flow']
+
+from jina.serve.networking import host_is_local, in_docker
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -493,9 +495,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 # iterate over all replica args of the first shard
                 # we can assume safely here that there is only a single shard, because it's the reason there is no head
                 for replica in v.pod_args['pods'][0]:
-                    worker_addresses.append(
-                        f'{v.protocol}://{replica.host}:{replica.port}'
-                    )
+                    host = replica.host
+                    # check if both Gateway and the Deployment run in docker
+                    if (
+                        host_is_local(host)
+                        and in_docker()
+                        and (
+                            v.args.uses.startswith('docker://')
+                            or v.args.uses.startswith('jinahub+docker://')
+                        )
+                    ):
+                        host = __docker_host__
+                    worker_addresses.append(f'{v.protocol}://{host}:{replica.port}')
 
         return graph_dict
 
