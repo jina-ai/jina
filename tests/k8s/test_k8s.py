@@ -490,11 +490,12 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
 
     args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
     with Deployment(args) as external_deployment:
+        ports = [args.port for args in external_deployment.pod_args['pods'][0]]
         flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
             name='external_executor',
             external=True,
             host=f'172.17.0.1',
-            port=external_deployment.head_port,
+            port=ports[0],
         )
 
         namespace = 'test-flow-with-external-deployment'
@@ -550,7 +551,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
         name='external_executor',
         external=True,
-        host='external-deployment-head.external-deployment-ns.svc',
+        host='external-deployment.external-deployment-ns.svc',
         port=GrpcConnectionPool.K8S_PORT,
     )
 

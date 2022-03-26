@@ -828,4 +828,7 @@ def host_is_local(hostname):
     if fqn in ("localhost", "0.0.0.0") or hostname == '0.0.0.0':
         return True
 
-    return ipaddress.ip_address(hostname).is_loopback
+    try:
+        return ipaddress.ip_address(hostname).is_loopback
+    except ValueError:
+        return False
