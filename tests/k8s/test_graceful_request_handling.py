@@ -1,11 +1,11 @@
-import os
-import time
 import asyncio
 import multiprocessing
+import os
+import time
 
 import pytest
 
-from jina import Flow, Document
+from jina import Document, Flow
 
 cur_dir = os.path.dirname(__file__)
 
@@ -33,7 +33,6 @@ async def create_all_flow_deployments_and_wait_ready(
         else:
             assert file_set == {
                 'slow-process-executor.yml',
-                'slow-process-executor-head.yml',
             }
         for file in file_set:
             try:
@@ -58,12 +57,10 @@ async def create_all_flow_deployments_and_wait_ready(
     deployment_names = set([item.metadata.name for item in resp.items])
     assert deployment_names == {
         'gateway',
-        'slow-process-executor-head',
         'slow-process-executor',
     }
     expected_replicas = {
         'gateway': 1,
-        'slow-process-executor-head': 1,
         'slow-process-executor': 3,
     }
     while len(deployment_names) > 0:
