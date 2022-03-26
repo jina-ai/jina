@@ -48,7 +48,7 @@ async def create_all_flow_deployments_and_wait_ready(
     # wait for all the pods to be up
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
-        if namespaced_pods.items is not None and len(namespaced_pods.items) == 5:
+        if namespaced_pods.items is not None and len(namespaced_pods.items) == 4:
             break
         await asyncio.sleep(1.0)
 
