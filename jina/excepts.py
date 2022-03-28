@@ -19,10 +19,6 @@ class RuntimeFailToStart(SystemError, BaseJinaException):
     """When pod/deployment is failed to started."""
 
 
-class ScalingFails(SystemError, BaseJinaException):
-    """When scaling is unsuccessful for an Executor."""
-
-
 class RuntimeTerminated(KeyboardInterrupt, BaseJinaException):
     """The event loop of BasePod ends."""
 
