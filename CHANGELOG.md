@@ -152,6 +152,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12753,4 +12754,41 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```6d25c382```](https://github.com/jina-ai/jina/commit/6d25c3824b2cf5d2ddb79fec6cf657313e74500e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```550a50f1```](https://github.com/jina-ai/jina/commit/550a50f1eb86bc819316bfc95a2f395235f6a809)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```ee80d2f3```](https://github.com/jina-ai/jina/commit/ee80d2f316a94e17d943c8e487bfd25bd904fddc)] __-__ __version__: the next version will be 3.2.8 (*Jina Dev Bot*)
+
+<a name=release-note-3-2-9></a>
+## Release Note (`3.2.9`)
+
+> Release time: 2022-03-28 08:49:07
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Jina Dev Bot,  Johannes Messner,  Wang Bo,  Joan Fontanals,  Han Xiao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```a0844f72```](https://github.com/jina-ai/jina/commit/a0844f72c467bc07ec661202540f08b79aa1b9e3)] __-__ __client__: add total_docs to client post kwargs (*Han Xiao*)
+ - [[```dd5f08e9```](https://github.com/jina-ai/jina/commit/dd5f08e9d0c535de2f0e6b106db3b21c597752cd)] __-__ add grpc tls support on gateway (#4522) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```0f008bc2```](https://github.com/jina-ai/jina/commit/0f008bc281b681e779cdd2fc1daf2be9ea87271d)] __-__ client args are now parse in the client function (#4549) (*samsja*)
+ - [[```1791a9f6```](https://github.com/jina-ai/jina/commit/1791a9f66a74a46d27d760ff434f2b2ecab29981)] __-__ deployment protocol (#4541) (*Johannes Messner*)
+ - [[```e17d9558```](https://github.com/jina-ai/jina/commit/e17d9558df33e2281dd4a94ab573c608be4d6e2f)] __-__ deprecation of https (#4537) (*samsja*)
+ - [[```2d27139c```](https://github.com/jina-ai/jina/commit/2d27139c37590ba4b235ba83145094ec344c51f8)] __-__ move imports to local (#4538) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```dfc6934a```](https://github.com/jina-ai/jina/commit/dfc6934ac20d8fe38952c48154d72344a639c9eb)] __-__ fix create app example (#4543) (*Joan Fontanals*)
+ - [[```4ef87a50```](https://github.com/jina-ai/jina/commit/4ef87a504860d5910a0309ebe34fd0b14dbf4965)] __-__ fix formatting (#4531) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```84089a02```](https://github.com/jina-ai/jina/commit/84089a0287933ec07b165d32498abc92d6f95898)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```c8ce3b3e```](https://github.com/jina-ai/jina/commit/c8ce3b3e092e761083451ff7c3ebc7f71a23cde1)] __-__ Revert &#34;chore: remove legacy codebooks and figures&#34; (#4546) (*Wang Bo*)
+ - [[```437943dd```](https://github.com/jina-ai/jina/commit/437943dd2dab87e22b0662b2081f13250918ec01)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```e0367473```](https://github.com/jina-ai/jina/commit/e03674731a7032035cdf6019b0492a58badffeab)] __-__ remove legacy codebooks and figures (#4530) (*Wang Bo*)
+ - [[```dc8a99ad```](https://github.com/jina-ai/jina/commit/dc8a99addde6f16637cc8439fed4d6208bc6384e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```17172d5f```](https://github.com/jina-ai/jina/commit/17172d5f8a193480ded73babd0dc4ba5cc3a51c5)] __-__ __version__: the next version will be 3.2.9 (*Jina Dev Bot*)
 
