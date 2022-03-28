@@ -118,22 +118,29 @@ class DockerComposeConfig:
                 cargs, uses_metas, uses_with, self.pod_type
             )
 
-        def _generate_volume_config(self):
+        def _update_config_with_volumes(self, config):
             if self.service_args.volumes:  # respect custom volume definition
-                return self.service_args.volumes
-            else:  # pick default host address to and create default volume
-                default_workspace = os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
-                host_addr = (
-                    default_workspace
-                    if default_workspace
-                    else os.path.join(
-                        Path.home(),
-                        '.jina',
-                        'executor-workspace',
-                        f'{self.service_args.workspace_id}',
-                    )
+                config['volumes'] = self.service_args.volumes
+                return config
+
+            # if no volume is given, create default volume
+            default_workspace = os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
+            container_addr = '/app'
+            if default_workspace:  # use default workspace provided in env var
+                host_addr = default_workspace
+                workspace = default_workspace
+            else:  # fallback if no custom volume and no default workspace
+                workspace = os.path.join('.jina', 'executor-workspace')
+                host_addr = os.path.join(
+                    Path.home(),
+                    workspace,
+                    f'{self.service_args.workspace_id}',
                 )
-                return [os.path.abspath(host_addr) + ':/app']
+            workspace_in_container = os.path.join(container_addr, workspace)
+            config['volumes'] = [os.path.abspath(host_addr) + f':{container_addr}']
+            config['command'].append('--workspace')
+            config['command'].append(workspace_in_container)
+            return config
 
         def get_runtime_config(
             self,
@@ -164,7 +171,7 @@ class DockerComposeConfig:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
 
                 if self.service_args.pod_role == PodRoleType.WORKER:
-                    config['volumes'] = self._generate_volume_config()
+                    config = self._update_config_with_volumes(config)
 
                 replica_configs.append(config)
             return replica_configs
