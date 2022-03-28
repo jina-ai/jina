@@ -1,22 +1,25 @@
-import asyncio
 import argparse
+import asyncio
+import contextlib
 from typing import (
-    List,
-    Union,
-    Iterator,
-    AsyncIterator,
     TYPE_CHECKING,
-    Callable,
-    Optional,
+    AsyncIterator,
     Awaitable,
+    Callable,
+    Iterator,
+    List,
+    Optional,
+    Union,
 )
 
-from jina.serve.stream.helper import AsyncRequestsIterator
 from jina.logging.logger import JinaLogger
+from jina.serve.stream.helper import AsyncRequestsIterator
 
 __all__ = ['RequestStreamer']
 
 if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
+
     from jina.types.request import Request
 
 
@@ -38,6 +41,7 @@ class RequestStreamer:
         result_handler: Callable[['Request'], Optional['Request']],
         end_of_iter_handler: Optional[Callable[[], None]] = None,
         logger: Optional['JinaLogger'] = None,
+        metrics_registry: Optional['CollectorRegistry'] = None,
     ):
         """
         :param args: args from CLI
@@ -45,6 +49,8 @@ class RequestStreamer:
         :param result_handler: The callable responsible for handling the response.
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
         :param logger: Optional logger that can be used for logging
+        :param metrics_registry: The metrics registry, if set to None it means that the monitoring is disabled
+
         """
         self.args = args
         self.logger = logger or JinaLogger(self.__class__.__name__, **vars(args))
@@ -52,6 +58,18 @@ class RequestStreamer:
         self._request_handler = request_handler
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
+        self._monitoring = metrics_registry is not None
+
+        if self._monitoring:
+            from prometheus_client import Summary
+
+            _summary_time = Summary(
+                'request_processing_seconds',
+                'Time spent processing request',
+                registry=metrics_registry,
+            ).time()
+
+            self._request_handler = _summary_time(self._request_handler)
 
     async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
         """
@@ -67,11 +85,16 @@ class RequestStreamer:
             else self._stream_requests(request_iterator)
         )
 
+        import time
+
+        now = time.time()
         async for response in async_iter:
+            print(time.time() - now)
             yield response
 
     async def _stream_requests(
-        self, request_iterator: Union[Iterator, AsyncIterator]
+        self,
+        request_iterator: Union[Iterator, AsyncIterator],
     ) -> AsyncIterator:
         """Implements request and response handling without prefetching
         :param request_iterator: requests iterator from Client
