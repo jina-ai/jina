@@ -621,7 +621,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_jinad: Optional[int] = 8000,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -696,7 +695,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
-        :param port_jinad: The port of the remote machine for usage with JinaD.
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -807,17 +805,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             # do not inherit the port argument from the flow
             if key not in kwargs and key != 'port':
                 kwargs[key] = value
-
-        # check if host is set to remote:port
-        if 'host' in kwargs:
-            m = re.match(_regex_port, kwargs['host'])
-            if (
-                kwargs.get('host', __default_host__) != __default_host__
-                and m
-                and 'port_jinad' not in kwargs
-            ):
-                kwargs['port_jinad'] = m.group(2)
-                kwargs['host'] = m.group(1)
 
         # update kwargs of this Deployment
         kwargs.update(

@@ -3,8 +3,8 @@ import time
 
 import pytest
 import requests
-
 from docarray import Document, DocumentArray
+
 from jina import Executor, Flow, __windows__, helper
 from jina import requests as req
 from jina.clients import Client
@@ -39,21 +39,6 @@ def test_img_1():
 @pytest.fixture(scope='function')
 def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
-
-
-@pytest.mark.parametrize(
-    'inputs', [iter([b'1234', b'45467']), iter([Document(), Document()])]
-)
-def test_check_input_success(inputs):
-    client = Client(host='localhost', port_jinad=12345)
-    client.check_input(inputs)
-
-
-@pytest.mark.parametrize('inputs', [iter([list(), list(), {12, 2, 3}])])
-def test_check_input_fail(inputs):
-    client = Client(host='localhost', port_jinad=12345)
-    with pytest.raises(BadClientInput):
-        client.check_input(inputs)
 
 
 @pytest.mark.parametrize(

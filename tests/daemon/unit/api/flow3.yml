@@ -1,9 +1,0 @@
-jtype: Flow
-with:
-  name: abc
-  port: 12345
-  protocol: http
-executors:
-  - name: local_replicas
-    port: 45678
-    replicas: 2

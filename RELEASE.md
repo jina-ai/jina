@@ -105,12 +105,10 @@ jinaai/jina:{version}{python_version}{extra}
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-standard`: Jina is installed inside the image via `pip install jina`. It includes all recommended dependencies;  
     - `-devel`: Jina is installed inside the image via `pip install "jina[devel]"`. It includes `standard` plus some extra dependencies;
-    - `-daemon`: Jina is installed inside the image via `pip install "jina[dameon]"`; **and the entrypoint is set to `jinad`**.
 
 Examples:
 
 - `jinaai/jina:0.9.6`: the `0.9.6` release with Python 3.7 and the entrypoint of `jina`.
-- `jinaai/jina:latest-py38-daemon`: the latest release with Python 3.8 base and the entrypoint of Jina daemon.
 - `jinaai/jina:latest`: the latest release with Python 3.7 and the entrypoint of `jina`
 - `jinaai/jina:master`: the master with Python 3.7 and the entrypoint of `jina`
 
@@ -123,7 +121,7 @@ Examples:
 
 Six images are built, i.e. taking the combination of:
   - `{python_version} = ["-py37", "-py38", "-py39"]`
-  - `{extra} = ["", "-devel", "-daemon", "-standard"]`
+  - `{extra} = ["", "-devel", "-standard"]`
 
 
 ### Image size on different tags

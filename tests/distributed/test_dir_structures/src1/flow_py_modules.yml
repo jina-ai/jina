@@ -1,8 +1,0 @@
-# Used only with Remote Flow tests
-jtype: Flow
-with:
-  port: ${{ PORT }}
-executors:
-  - name: remote
-    uses: MyExecutor
-    py_modules: my_executor.py

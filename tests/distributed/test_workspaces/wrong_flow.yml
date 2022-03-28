@@ -1,6 +1,0 @@
-jtype: Flow
-with:
-  protocol: http
-  port: 23456
-executors:
-  - uses: executor_ex.yml

@@ -1,3 +1,0 @@
-jtype: ContainerExecutor
-metas:
-  py_modules: executor.py

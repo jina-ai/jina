@@ -1,8 +1,0 @@
-!Flow
-version: '1.0'
-with:
-  port: 12345
-executors:
-  - name: executor1
-    replicas: 1
-    shards: 2

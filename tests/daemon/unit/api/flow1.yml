@@ -1,7 +1,0 @@
-jtype: Flow
-version: 1
-with:
-  protocol: http
-  port: 28956
-executors:
-  - name: executor_ex

@@ -1,7 +1,0 @@
-jtype: Flow
-with:
-  protocol: http
-  port: ${{ PORT }}
-executors:
-  - name: custom
-    uses: executor.yml

@@ -1,4 +1,0 @@
-jtype: TinyDBIndexer
-metas:
-  name: tiny-kv-indexer
-  py_modules: tdb_indexer.py

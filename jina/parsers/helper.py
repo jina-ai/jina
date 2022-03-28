@@ -1,16 +1,9 @@
 """Module for helper functions in the parser"""
 import argparse
 import os
-import warnings
-from typing import Tuple, Type
+from typing import Tuple
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
-if _SHOW_ALL_ARGS:
-    from jina.logging.predefined import default_logger
-
-    default_logger.warning(
-        f'Setting {_SHOW_ALL_ARGS} will make remote Pods with sharding not work when using JinaD'
-    )
 
 
 def add_arg_group(parser, title):
