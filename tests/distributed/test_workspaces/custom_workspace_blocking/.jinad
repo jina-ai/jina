@@ -1,3 +1,0 @@
-dockerfile = devel
-python = 3.7
-run = "sleep infinity"

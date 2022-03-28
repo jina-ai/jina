@@ -3,28 +3,27 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-
 from docarray import Document
 
 from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
-from jina.serve.executors.decorators import requests
 from jina.helper import (
     cached_property,
     convert_tuple_to_list,
     deprecated_alias,
+    dunder_get,
+    find_request_binding,
+    get_ci_vendor,
     is_yaml_filepath,
     random_port,
-    find_request_binding,
-    dunder_get,
-    get_ci_vendor,
     reset_ports,
 )
 from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.proto import jina_pb2
+from jina.serve.executors.decorators import requests
 from jina.types.request.data import DataRequest
 from tests import random_docs
 
@@ -229,7 +228,6 @@ def test_yaml_filepath_validate_good(val):
         '''
     shards: $JINA_SHARDS_INDEXERS
     host: $JINA_REDIS_INDEXER_HOST
-    port_jinad: 8000
     polling: all
     timeout_ready: 100000 # larger timeout as in query time will read all the data
     uses_after: merge_and_topk.yml

@@ -1,5 +1,0 @@
-jtype: CustomExecutor
-metas:
-  py_modules: executor.py
-requests:
-  /blah: $FUNC

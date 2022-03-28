@@ -71,18 +71,6 @@ class BadYAMLVersion(Exception, BaseJinaException):
     """Exception when YAML config specifies a wrong version number."""
 
 
-class DaemonConnectivityError(Exception, BaseJinaException):
-    """Exception to raise when jina daemon is not reachable."""
-
-
-class DaemonWorkspaceCreationFailed(Exception, BaseJinaException):
-    """Exception to raise when jina daemon is not connectable."""
-
-
-class DaemonPodCreationFailed(Exception, BaseJinaException):
-    """Exception to raise when jina daemon is not connectable."""
-
-
 class NotSupportedError(Exception, BaseJinaException):
     """Exception when user accidentally using a retired argument."""
 
@@ -93,10 +81,6 @@ class RuntimeRunForeverEarlyError(Exception, BaseJinaException):
 
 class DockerVersionError(SystemError, BaseJinaException):
     """Raised when the docker version is incompatible"""
-
-
-class DaemonInvalidDockerfile(FileNotFoundError, BaseJinaException):
-    """Raised when invalid dockerfile is passed to JinaD"""
 
 
 class NoContainerizedError(Exception, BaseJinaException):

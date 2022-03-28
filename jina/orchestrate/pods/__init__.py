@@ -105,7 +105,7 @@ def run(
 class BasePod(ABC):
     """
     :class:`BasePod` is an interface from which all the classes managing the lifetime of a Runtime inside a local process,
-    container or in a remote JinaD instance (to come) must inherit.
+    container must inherit.
 
     It exposes the required APIs so that the `BasePod` can be handled by the `cli` api as a context manager or by a `Deployment`.
 

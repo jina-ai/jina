@@ -1,4 +1,0 @@
-jtype: EnvExecutor
-metas:
-  py_modules:
-    - exec.py

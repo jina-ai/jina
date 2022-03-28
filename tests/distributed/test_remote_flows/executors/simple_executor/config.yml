@@ -1,5 +1,0 @@
-jtype: RemoteFlowTestExecutor
-metas:
-  name: counter
-  py_modules:
-   - executors.py

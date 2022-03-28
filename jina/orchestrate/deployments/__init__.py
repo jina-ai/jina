@@ -14,7 +14,6 @@ from jina.jaml.helper import complete_path
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
-from jina.orchestrate.pods.jinad import JinaDPod
 from jina.serve.networking import GrpcConnectionPool, host_is_local
 
 
@@ -342,7 +341,7 @@ class Deployment(BaseDeployment):
             """
             Checks if any pod in this replica set is a forked process
 
-            :returns: True if any Pod is a forked Process, False otherwise (Containers/JinaD)
+            :returns: True if any Pod is a forked Process, False otherwise (Containers)
             """
             for pod in self._pods:
                 if type(pod) == Pod and pod.is_forked:
@@ -622,8 +621,8 @@ class Deployment(BaseDeployment):
 
         # Check if both shard_id/pod_idx and the head are containerized
         # if the head is not containerized, it still could mean that the deployment itself is containerized
-        return (type(pod) == ContainerPod or type(pod) == JinaDPod) and (
-            type(head_pod) == ContainerPod or type(head_pod) == JinaDPod or _in_docker()
+        return type(pod) == ContainerPod and (
+            type(head_pod) == ContainerPod or _in_docker()
         )
 
     def start(self) -> 'Deployment':

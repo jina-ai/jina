@@ -74,7 +74,7 @@ class RecipeDumper(yaml.SafeDumper):
 extra_deps = get_extra_requires('extra-requirements.txt')
 reqs = {}
 
-# core < perf < standard < daemon
+# core < perf < standard
 # standard < demo
 reqs['core'] = extra_deps['core']
 reqs['perf'] = reqs['core'].union(extra_deps['perf'])
@@ -112,7 +112,7 @@ test_object = {
 }
 build_object_core = {
     'noarch': 'python',
-    'entry_points': ['jina = cli:main', 'jinad = daemon:main'],
+    'entry_points': ['jina = cli:main'],
     'script': 'python -m pip install . --no-deps -vv',
     'script_env': ['JINA_PIP_INSTALL_CORE=1'],
 }

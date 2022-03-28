@@ -11,13 +11,6 @@ def mixin_remote_runtime_parser(parser):
     gp = add_arg_group(parser, title='RemoteRuntime')
     _add_host(gp)
 
-    gp.add_argument(
-        '--port-jinad',
-        type=int,
-        default=8000,
-        help='The port of the remote machine for usage with JinaD.',
-    )
-
 
 def mixin_client_gateway_parser(parser):
     """Add the options for the client connecting to the Gateway

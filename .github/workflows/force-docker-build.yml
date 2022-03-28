@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pip_tag: [ "", "perf", "standard", "devel", "daemon" ]  # default: "" = core
+        pip_tag: [ "", "perf", "standard", "devel"]  # default: "" = core
         py_version: [ "3.7", "3.8", "3.9" ]  # default "" = 3.7
     steps:
       - uses: actions/checkout@v2
@@ -37,11 +37,7 @@ jobs:
           echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
           echo "Will build $VCS_REF"
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          if [[ "${{ matrix.pip_tag }}" == "daemon" ]]; then
-            echo "BUILD_TARGET=jina_daemon" >> $GITHUB_ENV
-          else
-            echo "BUILD_TARGET=jina" >> $GITHUB_ENV
-          fi
+          echo "BUILD_TARGET=jina" >> $GITHUB_ENV
 
           if [[ "${{ matrix.pip_tag }}" == "perf" ]]; then
             echo "JINA_PIP_INSTALL_PERF=1" >> $GITHUB_ENV

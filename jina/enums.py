@@ -283,17 +283,6 @@ class RuntimeBackendType(BetterEnum):
     PROCESS = 1
 
 
-class RemoteWorkspaceState(str, Enum):
-    """Enum representing state of remote workspace created by JinaD"""
-
-    PENDING = 'PENDING'
-    CREATING = 'CREATING'
-    UPDATING = 'UPDATING'
-    ACTIVE = 'ACTIVE'
-    FAILED = 'FAILED'
-    DELETING = 'DELETING'
-
-
 class WebsocketSubProtocols(str, Enum):
     """Subprotocol supported with Websocket Gateway"""
 

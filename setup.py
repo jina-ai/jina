@@ -1,9 +1,8 @@
-import sys
 import os
+import sys
 from os import path
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
@@ -16,8 +15,8 @@ if (3, 7, 0) <= sys.version_info < (3, 8, 0):
         import fastentrypoints
     except ImportError:
         try:
-            from setuptools.command import easy_install
             import pkg_resources
+            from setuptools.command import easy_install
 
             easy_install.main(['fastentrypoints'])
             pkg_resources.require('fastentrypoints')
@@ -44,9 +43,9 @@ except FileNotFoundError:
 
 
 def register_ac():
-    from pathlib import Path
     import os
     import re
+    from pathlib import Path
 
     home = str(Path.home())
     resource_path = 'jina/resources/completions/jina.%s'
@@ -161,7 +160,6 @@ setup(
     entry_points={
         'console_scripts': [
             'jina=cli:main',
-            'jinad=daemon:main',
         ],
     },
     cmdclass={
