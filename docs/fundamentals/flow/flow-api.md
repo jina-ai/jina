@@ -217,7 +217,7 @@ After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-ht
 To make a Flow accessible from a website with a different domain, you need to enable [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 Among other things, CORS is necessary to provide a {ref}`Swagger UI interface <swagger-ui>` for your Flow.
 
-Not that CORS is disabled by default, for security reasons.
+Note that CORS is disabled by default, for security reasons.
 To enable CORS, configure your Flow in the following way:
 ```python
 from jina import Flow

@@ -26,7 +26,7 @@ with Flow(port=PORT, protocol=PROTOCOL) as f:
 To connect to the `Flow`, the Client has to specify the followings parameters.
 All af these have to match the Flow and how it was set up:
 * the `protocol` it needs to use to communicate with the Flow
-* the `host` and the `port`on which the Flow is exposed
+* the `host` and the `port` as exposed by the Flow
 * if it needs to use `TLS` encryption
 
 You can define these parameters by passing a valid URI scheme as part of the `host` argument:
@@ -100,7 +100,7 @@ Client(host='https://my.awesome.flow:1234', port=4321)
 The arguments above have usefule defaults: `protocol='grpc'` and `host='0.0.0.0'`.
 This is particularly useful when debugging or accessing a Flow on your local machine.
 
-To connect to a Flow `f` it is therefore often enought to do the following:
+To connect to a Flow `f` it is therefore often enough to do the following:
 
 ```{code-block} python
 c = Client(port=f.port)
@@ -143,7 +143,7 @@ client.post('/endpoint')  # Empty
 ```{admonition} Caution
 :class: caution
 `Flow` also provides a `.post()` method that follows the same interface as `client.post()`.
-However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
+However, once your solution is deployed remotely, the Flow interface is not present anymore.
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
