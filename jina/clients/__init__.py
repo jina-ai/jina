@@ -2,6 +2,8 @@
 import argparse
 from typing import TYPE_CHECKING, Optional, Union, overload
 
+from jina.helper import parse_client
+
 __all__ = ['Client']
 
 from jina.enums import GatewayProtocolType
@@ -66,6 +68,10 @@ def Client(
     :param kwargs: Additional arguments.
     :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
     """
+    if not (
+        args and isinstance(args, argparse.Namespace)
+    ):  # we need to parse the kwargs as soon as possible otherwise to get the gateway type
+        args = parse_client(kwargs)
 
     protocol = (
         args.protocol if args else kwargs.get('protocol', GatewayProtocolType.GRPC)
