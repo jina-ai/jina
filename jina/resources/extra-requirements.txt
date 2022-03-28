@@ -21,27 +21,27 @@
 # 4. Tag `all` is reserved for representing all packages
 
 # AVAILABLE TAGS:
-# core < perf < standard < daemon < devel: these tags correspond to Docker image tag
+# core < perf < standard < devel: these tags correspond to Docker image tag
 # test: required for **setting up test ENVIRONMENT**
 # demo: required for the hello world demos
 
 scipy>=1.6.1:               devel
-fastapi:                    standard, daemon, devel, demo
-uvicorn[standard]:          standard, daemon, devel, demo
+fastapi:                    standard,devel, demo
+uvicorn[standard]:          standard,devel, demo
 strawberry-graphql>=0.96.0: cicd, graphql
-docker:                     standard, daemon, devel
-pathspec:                   standard, daemon, devel
-rich:                       standard, daemon, devel
-cryptography:               standard, daemon, devel
-filelock:                   standard, daemon, devel
-requests:                   standard, daemon, devel
+docker:                     standard,devel
+pathspec:                   standard,devel
+rich:                       standard,devel
+cryptography:               standard,devel
+filelock:                   standard,devel
+requests:                   standard,devel
 torch>=1.1.0:               demo
 transformers<=4.2.2:        demo
 tensorflow>=2.0:            cicd
 torchvision>=0.3.0:         demo
 Pillow:                     test
-lz4<3.1.2:                  perf, standard, daemon, devel
-uvloop:                     perf, standard, daemon, devel
+lz4<3.1.2:                  perf, standard,devel
+uvloop:                     perf, standard,devel
 numpy:                      core
 protobuf>=3.19.1:           core
 grpcio>=1.33.1:             core
@@ -59,14 +59,14 @@ pytest-reraise:             test
 flaky:                      test
 mock:                       test
 requests-mock:              test
-websockets:                 standard, daemon, devel
-pydantic:                   standard, daemon, devel, demo
-python-multipart:           standard, daemon, devel
-aiofiles:                   standard, daemon, devel
-aiohttp:                    standard, daemon, devel
+websockets:                 standard,devel
+pydantic:                   standard,devel, demo
+python-multipart:           standard,devel
+aiofiles:                   standard,devel
+aiohttp:                    standard,devel
 pytest-custom_exit_code:    test
 bs4:                        cicd
-aiostream:                  standard, daemon, devel
+aiostream:                  standard,devel
 jsonschema:                 cicd
 black==20.8b1:              test
 portforward>=0.2.4:         cicd
