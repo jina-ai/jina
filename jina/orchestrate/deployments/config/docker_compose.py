@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Tuple, Union
 from jina import __default_executor__
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
-from jina.helper import volumes_to_dict
 from jina.orchestrate.deployments import BaseDeployment
 from jina.orchestrate.deployments.config.helper import (
     construct_runtime_container_args,
@@ -127,9 +126,14 @@ class DockerComposeConfig:
                 host_addr = (
                     default_workspace
                     if default_workspace
-                    else os.path.join(Path.home(), '.jina', 'executor-workspace')
+                    else os.path.join(
+                        Path.home(),
+                        '.jina',
+                        'executor-workspace',
+                        f'{self.service_args.workspace_id}',
+                    )
                 )
-                return [os.path.abspath(host_addr) + ':/executor-workspace']
+                return [os.path.abspath(host_addr) + ':/app']
 
         def get_runtime_config(
             self,
