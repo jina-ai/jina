@@ -1,10 +1,13 @@
 import copy
+import os
 from argparse import Namespace
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina import __default_executor__
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
+from jina.helper import volumes_to_dict
 from jina.orchestrate.deployments import BaseDeployment
 from jina.orchestrate.deployments.config.helper import (
     construct_runtime_container_args,
@@ -116,6 +119,18 @@ class DockerComposeConfig:
                 cargs, uses_metas, uses_with, self.pod_type
             )
 
+        def _generate_volume_config(self):
+            if self.service_args.volumes:  # respect custom volume definition
+                return self.service_args.volumes
+            else:  # pick default host address to and create default volume
+                default_workspace = os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
+                host_addr = (
+                    default_workspace
+                    if default_workspace
+                    else os.path.join(Path.home(), '.jina', 'executor-workspace')
+                )
+                return [os.path.abspath(host_addr) + ':/executor-workspace']
+
         def get_runtime_config(
             self,
         ) -> List[Dict]:
@@ -143,6 +158,10 @@ class DockerComposeConfig:
                 }
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
+
+                if self.service_args.pod_role == PodRoleType.WORKER:
+                    config['volumes'] = self._generate_volume_config()
+
                 replica_configs.append(config)
             return replica_configs
 
