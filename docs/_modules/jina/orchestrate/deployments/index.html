@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
         <title>jina.orchestrate.deployments - Jina 3.2.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -611,18 +611,17 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">host_is_local</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span> <span class="n">ScalingFails</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">CatchAllCleanupContextManager</span>
+<span class="kn">from</span> <span class="nn">jina.hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
+<span class="kn">from</span> <span class="nn">jina.jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods</span> <span class="kn">import</span> <span class="n">Pod</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.container</span> <span class="kn">import</span> <span class="n">ContainerPod</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.jinad</span> <span class="kn">import</span> <span class="n">JinaDPod</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">helper</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span> <span class="n">ScalingFails</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">CatchAllCleanupContextManager</span>
-<span class="kn">from</span> <span class="nn">jina.jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
-<span class="kn">from</span> <span class="nn">jina.hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">host_is_local</span>
 
 
 <div class="viewcode-block" id="BaseDeployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment">[docs]</a><span class="k">class</span> <span class="nc">BaseDeployment</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
@@ -1031,6 +1030,17 @@
         <span class="k">return</span> <span class="n">is_sandbox</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tls_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Checks whether secure connection via tls is enabled for this Deployment.</span>
+
+<span class="sd">        :return: True if tls is enabled, False otherwise</span>
+<span class="sd">        """</span>
+        <span class="n">has_cert</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'ssl_certfile'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">has_key</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'ssl_keyfile'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span> <span class="ow">or</span> <span class="p">(</span><span class="n">has_cert</span> <span class="ow">and</span> <span class="n">has_key</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">external</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Check if this deployment is external.</span>
@@ -1042,10 +1052,10 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        :return: the protocol of this deployment, https or http</span>
+<span class="sd">        :return: the protocol of this deployment</span>
 <span class="sd">        """</span>
-        <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'protocol'</span><span class="p">,</span> <span class="s1">'http'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s1">'https'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span> <span class="k">else</span> <span class="n">protocol</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'protocol'</span><span class="p">,</span> <span class="s1">'grpc'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">'s'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tls_enabled</span> <span class="k">else</span> <span class="s1">''</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">first_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
@@ -1578,7 +1588,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 25, 2022.
+                    Last updated on Mar 28, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

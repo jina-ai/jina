@@ -37,7 +37,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.orchestrate.deployments.config package" href="../jina.orchestrate.deployments.config/" /><link rel="prev" title="jina.orchestrate package" href="../jina.orchestrate/" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
         <title>jina.orchestrate.deployments package - Jina 3.2.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -806,6 +806,16 @@ Internally, the pods can run with the process/thread backend. They can be also r
 </dl>
 </dd></dl>
 <dl class="py property">
+<dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.tls_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tls_enabled</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.tls_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether secure connection via tls is enabled for this Deployment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if tls is enabled, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.external">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">external</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.external" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if this deployment is external.</p>
@@ -823,7 +833,7 @@ Internally, the pods can run with the process/thread backend. They can be also r
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protocol</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.protocol" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the protocol of this deployment, https or http</p>
+<dd class="field-odd"><p>the protocol of this deployment</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1033,7 +1043,7 @@ are properly closed.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 25, 2022.
+                    Last updated on Mar 28, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

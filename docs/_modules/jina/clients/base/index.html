@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2021.10.09"/>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
         <title>jina.clients.base - Jina 3.2.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
@@ -610,23 +610,12 @@
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">AsyncIterator</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">Iterator</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClientInput</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">T</span><span class="p">,</span> <span class="n">parse_client</span><span class="p">,</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
@@ -651,10 +640,7 @@
         <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
-                <span class="n">kwargs</span><span class="p">,</span> <span class="n">set_client_cli_parser</span><span class="p">(),</span> <span class="n">warn_unknown</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">parse_client</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
 
@@ -666,39 +652,6 @@
             <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">'http_proxy'</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">'https_proxy'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">_parse_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
-
-        <span class="k">if</span> <span class="s1">'host'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">return_scheme</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-            <span class="p">(</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s1">'host'</span><span class="p">],</span>
-                <span class="n">return_scheme</span><span class="p">[</span><span class="s1">'port'</span><span class="p">],</span>
-                <span class="n">return_scheme</span><span class="p">[</span><span class="s1">'protocol'</span><span class="p">],</span>
-                <span class="n">return_scheme</span><span class="p">[</span><span class="s1">'tls'</span><span class="p">],</span>
-            <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_host_scheme</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">'host'</span><span class="p">])</span>
-
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">return_scheme</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">"You can't have two definitions of </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: you have one in the host scheme and one in the keyword argument"</span>
-                        <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">value</span><span class="p">:</span>
-                        <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="k">def</span> <span class="nf">_parse_host_scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
-        <span class="n">scheme</span><span class="p">,</span> <span class="n">_hostname</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">_parse_url</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
-
-        <span class="n">tls</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'grpcs'</span><span class="p">,</span> <span class="s1">'https'</span><span class="p">,</span> <span class="s1">'wss'</span><span class="p">):</span>
-            <span class="n">scheme</span> <span class="o">=</span> <span class="n">scheme</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">tls</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'ws'</span><span class="p">:</span>
-            <span class="n">scheme</span> <span class="o">=</span> <span class="s1">'websocket'</span>
-
-        <span class="k">return</span> <span class="n">_hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">tls</span>
 
 <div class="viewcode-block" id="BaseClient.check_input"><a class="viewcode-back" href="../../../../api/jina.clients.base/#jina.clients.base.BaseClient.check_input">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">check_input</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'InputType'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -812,20 +765,6 @@
 <span class="sd">        :return: the Client object</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<span class="k">def</span> <span class="nf">_parse_url</span><span class="p">(</span><span class="n">host</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s1">'://'</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
-        <span class="n">scheme</span><span class="p">,</span> <span class="n">host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'://'</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">scheme</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">if</span> <span class="s1">':'</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
-        <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">return</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span>
 </pre></div>
             </article>
             <footer>
@@ -837,7 +776,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 25, 2022.
+                    Last updated on Mar 28, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
