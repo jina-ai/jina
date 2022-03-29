@@ -11,7 +11,6 @@ Submodules
    jina.orchestrate.pods.container_helper
    jina.orchestrate.pods.factory
    jina.orchestrate.pods.helper
-   jina.orchestrate.pods.jinad
 
 Module contents
 ---------------

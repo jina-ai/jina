@@ -211,10 +211,46 @@ f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
 
 After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-http>` will not be exposed.
 
-### Add GraphQL endpoint
+(cors)=
+### Enable Cross-Origin Resource Sharing (CORS)
 
-````{admonition} Attention
-:class: attention
+To make a Flow accessible from a website with a different domain, you need to enable [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+Among other things, CORS is necessary to provide a {ref}`Swagger UI interface <swagger-ui>` for your Flow.
+
+Note that CORS is disabled by default, for security reasons.
+To enable CORS, configure your Flow in the following way:
+```python
+from jina import Flow
+
+f = Flow(cors=True, protocol='http')
+```
+
+### Advanced configuration options
+
+HTTP support in Jina is powered by [Uvicorn](https://www.uvicorn.org/).
+You can configure the Flow's internal Uvicorn sever to your heart's content by passing `uvicorn_kwargs` to the Flow:
+
+```python
+from jina import Flow
+
+f = Flow(protocol='http', uvicorn_kwargs={'loop': 'asyncio', 'http': 'httptools'})
+```
+
+These arguments will be directly passed to the Uvicorn server.
+
+````{admonition} See Also
+:class: seealso
+
+For more details about the arguments that are used here, and about other available settings for the Uvicorn server,
+see their [website](https://www.uvicorn.org/settings/).
+
+````
+
+
+## Add GraphQL endpoint
+
+````{admonition} Caution
+:class: caution
 
 GraphQL support is an optional feature that requires optional dependencies.
 To install these, run `pip install jina[graphql]` or `pip install jina[all]`.
@@ -237,6 +273,35 @@ f = Flow(protocol='http', expose_graphql_endpont=True)
 
 For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
 ````
+
+
+
+(flow-tls)=
+## Enable TLS
+
+You can enable TLS encryption between your Flow's Gateway and a Client, for any of the protocols supported by Jina (HTTP, gRPC, and Websocket).
+
+````{admonition} Caution
+:class: caution
+Enabling TLS will encrypt the data that is transferred between the Flow and the Client.
+Data that is passed between the microservices configured by the Flow, such as Executors, will **not** be encrypted.
+````
+
+To enable TLS encryption, you need to pass a valid *keyfile* and *certfile* to the Flow, using the `ssl_keyfile` `ssl_certfile`
+parameters:
+
+```python
+PORT = ...
+
+f = Flow(
+    port=PORT,
+    ssl_certfile='path/to/certfile.crt',
+    ssl_keyfile='path/to/keyfile.crt',
+)
+```
+
+If both of these are provided, the Flow will automatically configure itself to use TLS encryption for its communication with any Client.
+
 
 ## Limit outstanding requests
 
@@ -269,19 +334,6 @@ with Flow(prefetch=2).add(uses=MyExecutor) as f:
 When working with very slow executors and a big amount of data, you must set `prefetch` to some small number to prevent out of memory problems. If you are unsure, always set `prefetch=1`.
 ```
 
-(cors)=
-### Enable Cross-Origin Resource Sharing (CORS)
-
-To make a Flow accessible from a website with a different domain, you need to enable [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
-Among other things, CORS is necessary to provide a {ref}`Swagger UI interface <swagger-ui>` for your Flow.
-
-Not that CORS is disabled by default, for security reasons.
-To enable CORS, configure your Flow in the following way:
-```python
-from jina import Flow
-
-f = Flow(cors=True, protocol='http')
-```
 
 ## Generate deployment configuration
 

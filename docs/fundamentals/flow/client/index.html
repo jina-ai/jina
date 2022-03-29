@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/client/" />
   
-<meta property="og:site_name" content="Jina 3.2.9 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.10 Documentation" />
   
-<meta property="og:description" content="The most convenient way to work with the Flow API is the Python Client. It enables you to send Documents to a running Flow in a number of different ways, as shown below. HTTP, gRPC, and WebSocket: Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket. Thes..." />
+<meta property="og:description" content="The most convenient way to work with the Flow API is the Python Client. It enables you to send Documents to a running Flow in a number of different ways, as shown below. HTTP, gRPC, and WebSocket: Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket. For ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.9 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.10 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Remarks" href="../remarks/" /><link rel="prev" title="Access Flow API" href="../access-flow-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Client API - Jina 3.2.9 documentation</title>
+        <title>Client API - Jina 3.2.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.9 documentation</div>
+                <div class="brand">Jina 3.2.10 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -396,7 +396,6 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.jinad/">jina.orchestrate.pods.jinad module</a></li>
 </ul>
 </li>
 </ul>
@@ -505,65 +504,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/daemon/">daemon package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.api/">daemon.api package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints/">daemon.api.endpoints package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.deployment/">daemon.api.endpoints.partial.deployment module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.flow/">daemon.api.endpoints.partial.flow module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.pod/">daemon.api.endpoints.partial.pod module</a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.deployments/">daemon.api.endpoints.deployments module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.flows/">daemon.api.endpoints.flows module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.pods/">daemon.api.endpoints.pods module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.workspaces/">daemon.api.endpoints.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.api.dependencies/">daemon.api.dependencies module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.clients/">daemon.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.base/">daemon.clients.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.deployments/">daemon.clients.deployments module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.flows/">daemon.clients.flows module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.mixin/">daemon.clients.mixin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.pods/">daemon.clients.pods module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.workspaces/">daemon.clients.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.models/">daemon.models package</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.base/">daemon.models.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.containers/">daemon.models.containers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.custom/">daemon.models.custom module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.enums/">daemon.models.enums module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.id/">daemon.models.id module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.partial/">daemon.models.partial module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.ports/">daemon.models.ports module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.workspaces/">daemon.models.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.stores/">daemon.stores package</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.base/">daemon.stores.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.containers/">daemon.stores.containers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.deployments/">daemon.stores.deployments module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.flows/">daemon.stores.flows module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.mixin/">daemon.stores.mixin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.partial/">daemon.stores.partial module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.pods/">daemon.stores.pods module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.workspaces/">daemon.stores.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.dockerize/">daemon.dockerize module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.excepts/">daemon.excepts module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.files/">daemon.files module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.helper/">daemon.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.parser/">daemon.parser module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.tasks/">daemon.tasks module</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.export/">cli.export module</a></li>
@@ -640,41 +581,93 @@
 <span id="client"></span><h1>Client API<a class="headerlink" href="#client-api" title="Permalink to this headline">¶</a></h1>
 <p>The most convenient way to work with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> API is the Python Client.
 It enables you to send <code class="docutils literal notranslate"><span class="pre">Documents</span></code> to a running <code class="docutils literal notranslate"><span class="pre">Flow</span></code> in a number of different ways, as shown below.</p>
-<div class="caution admonition">
-<p class="admonition-title">Caution</p>
-<p><code class="docutils literal notranslate"><span class="pre">Flow</span></code> provides a <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method that follows the same interface as <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>.
-However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
-Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> is not recommended outside of testing or debugging use cases.</p>
-</div>
 <section id="http-grpc-and-websocket">
 <h2>HTTP, gRPC, and WebSocket<a class="headerlink" href="#http-grpc-and-websocket" title="Permalink to this headline">¶</a></h2>
 <p>Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
-These can all be used in the same way by using <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>.</p>
-<p>Starting the Flow:</p>
+For each of them, you first connect your Client to the Flow, before you can send requests to it.</p>
+<section id="connect-client-to-a-flow">
+<h3>Connect Client to a Flow<a class="headerlink" href="#connect-client-to-a-flow" title="Permalink to this headline">¶</a></h3>
+<p>If there is not already a Flow running in the background or on the network, you can start one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">PORT</span> <span class="o">=</span> <span class="mi">12345</span>
+<span class="n">PORT</span> <span class="o">=</span> <span class="mi">1234</span>
 <span class="n">PROTOCOL</span> <span class="o">=</span> <span class="s1">'grpc'</span>  <span class="c1"># one of 'grpc', 'http', 'websocket'</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">PROTOCOL</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>To connect a Client to the Flow’s gateway, you need to specify an IP host address and port on which the Flow can be reached.
-This is done using the <code class="docutils literal notranslate"><span class="pre">host=</span></code> and <code class="docutils literal notranslate"><span class="pre">port=</span></code> constructor keywords.
-If the Client and the Flow gateway are running on the same machine, the <code class="docutils literal notranslate"><span class="pre">host=</span></code> parameter can be omitted, as it defaults to <code class="docutils literal notranslate"><span class="pre">'0.0.0.0'</span></code>.</p>
-<p>Additionally, the connection protocol can be toggled between <code class="docutils literal notranslate"><span class="pre">'grpc'</span></code>, <code class="docutils literal notranslate"><span class="pre">'http'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'websocket'</span></code> using the <code class="docutils literal notranslate"><span class="pre">protocol=</span></code>
-keyword, where <code class="docutils literal notranslate"><span class="pre">'grpc'</span></code> is the default.</p>
+<p>To connect to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, the Client has to specify the followings parameters.
+All af these have to match the Flow and how it was set up:</p>
+<ul class="simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">protocol</span></code> it needs to use to communicate with the Flow</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">host</span></code> and the <code class="docutils literal notranslate"><span class="pre">port</span></code> as exposed by the Flow</p></li>
+<li><p>if it needs to use <code class="docutils literal notranslate"><span class="pre">TLS</span></code> encryption</p></li>
+</ul>
+<p>You can define these parameters by passing a valid URI scheme as part of the <code class="docutils literal notranslate"><span class="pre">host</span></code> argument:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">TLS disabled</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">HOST</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span>  <span class="c1"># host address where the Flow can be reached</span>
-<span class="n">PORT</span> <span class="o">=</span> <span class="mi">12345</span>  <span class="c1"># port where the Flow can be reached</span>
-<span class="n">PROTOCOL</span> <span class="o">=</span> <span class="s1">'grpc'</span>  <span class="c1"># one of 'grpc', 'http', 'websocket'. Needs to be same as specified by the Flow</span>
-
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">PROTOCOL</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'http://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'ws://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'grpc://my.awesome.flow:1234'</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then, the Client can send requests to the Flow using its <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method.
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">TLS enabled</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'wss://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'grpcs://my.awesome.flow:1234'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Equivalently, you can pass each relevant parameter as a keyword argument:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">TLS disabled</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">TLS enabled</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also use a mixe of both:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow:1234'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>You can’t define these parameters both by keyword argument and by host scheme - you can’t have two sources of truth.
+Example: the following code will raise an exception:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4321</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>The arguments above have usefule defaults: <code class="docutils literal notranslate"><span class="pre">protocol='grpc'</span></code> and <code class="docutils literal notranslate"><span class="pre">host='0.0.0.0'</span></code>.
+This is particularly useful when debugging or accessing a Flow on your local machine.</p>
+<p>To connect to a Flow <code class="docutils literal notranslate"><span class="pre">f</span></code> it is therefore often enough to do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="send-requests-to-the-flow">
+<h3>Send requests to the Flow<a class="headerlink" href="#send-requests-to-the-flow" title="Permalink to this headline">¶</a></h3>
+<p>After a Client has connected to a Flow, it can send requests to the Flow using its <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method.
 This expects as inputs the <a class="reference internal" href="../../executor/executor-api/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or Iterable of Documents:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -688,7 +681,7 @@ This expects as inputs the <a class="reference internal" href="../../executor/ex
         <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s1">'hello </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">)</span>
 
 <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/endpoint'</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>  <span class="c1"># Single Document</span>
 
@@ -701,41 +694,11 @@ This expects as inputs the <a class="reference internal" href="../../executor/ex
 <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'/endpoint'</span><span class="p">)</span>  <span class="c1"># Empty</span>
 </pre></div>
 </div>
-<section id="specifying-host-scheme">
-<h3>Specifying Host scheme<a class="headerlink" href="#specifying-host-scheme" title="Permalink to this headline">¶</a></h3>
-<p>To connect to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> the client has to specify the followings parameters:</p>
-<ul class="simple">
-<li><p>the <code class="docutils literal notranslate"><span class="pre">protocol</span></code> it needs to use to communicate with the `Flow</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">host</span></code> and the <code class="docutils literal notranslate"><span class="pre">port</span></code>on which the Flow is exposed</p></li>
-<li><p>if he needs to use <code class="docutils literal notranslate"><span class="pre">tls</span></code> encryption</p></li>
-</ul>
-<p>You can define these parameters by passing a valid URI scheme as part of the <code class="docutils literal notranslate"><span class="pre">host</span></code> argument:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-
-<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">)</span>
-<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'wss://my.awesome.flow:1234'</span><span class="p">)</span>
-<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'grpcs://my.awesome.flow:1234'</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>You can as well pass each relevant parameter as a keyword argument:</p>
-<p>the following example is equivalent to the one above</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>You can use a mixe of both as well:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
-<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'my.awesome.flow:1234'</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
-<p>You can’t define these parameters by keyword arugment and by host scheme (You can’t have two sources of truth)
-Example : the following code will raise an exception</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4321</span><span class="p">)</span>
-</pre></div>
-</div>
+<p><code class="docutils literal notranslate"><span class="pre">Flow</span></code> also provides a <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method that follows the same interface as <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>.
+However, once your solution is deployed remotely, the Flow interface is not present anymore.
+Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> is not recommended outside of testing or debugging use cases.</p>
 </div>
 </section>
 <section id="batching-requests">
@@ -853,7 +816,7 @@ same object as <code class="docutils literal notranslate"><span class="pre">dr.d
 </div>
 <p>Accordingly, a callback function can be defined in the following way:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">General callback function</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">General callback function</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
 
@@ -862,7 +825,7 @@ same object as <code class="docutils literal notranslate"><span class="pre">dr.d
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Processing documents</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">Processing documents</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
 
@@ -921,7 +884,7 @@ This means that you will not receive results until all Requests have been proces
 This may not only be slower, but also require more memory.</p>
 </div>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Returning DocumentArray</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">Returning DocumentArray</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -937,7 +900,7 @@ This may not only be slower, but also require more memory.</p>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Returning Responses</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">Returning Responses</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -953,7 +916,7 @@ This may not only be slower, but also require more memory.</p>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--3">Using callback function</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--3-input--3" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--3">Using callback function</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -982,6 +945,22 @@ The supported methods are: <code class="docutils literal notranslate"><span clas
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">'Gzip'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="tls-support">
+<h3>TLS support<a class="headerlink" href="#tls-support" title="Permalink to this headline">¶</a></h3>
+<p>To connect to a Flow that has been <a class="reference internal" href="../flow-api/#flow-tls"><span class="std std-ref">configured to use TLS</span></a> in combination with gRPC, http, or websocket,
+set the Client’s <code class="docutils literal notranslate"><span class="pre">tls</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c_http</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=...</span><span class="p">,</span> <span class="n">port</span><span class="o">=...</span><span class="p">)</span>
+<span class="n">c_ws</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=...</span><span class="p">,</span> <span class="n">port</span><span class="o">=...</span><span class="p">)</span>
+<span class="n">c_grpc</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'grpc'</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=...</span><span class="p">,</span> <span class="n">port</span><span class="o">=...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same can be achieved by passing a valid URI to the <code class="docutils literal notranslate"><span class="pre">host</span></code> parameter, and appending ‘s’ to the protocol definition:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'https://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'wss://my.awesome.flow:1234'</span><span class="p">)</span>
+<span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'grpcs://my.awesome.flow:1234'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1071,7 +1050,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 28, 2022.
+                    Last updated on Mar 29, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1098,7 +1077,8 @@ This means you can iterate over Responses one by one, as they come in.</p>
                         <ul>
 <li><a class="reference internal" href="#">Client API</a><ul>
 <li><a class="reference internal" href="#http-grpc-and-websocket">HTTP, gRPC, and WebSocket</a><ul>
-<li><a class="reference internal" href="#specifying-host-scheme">Specifying Host scheme</a></li>
+<li><a class="reference internal" href="#connect-client-to-a-flow">Connect Client to a Flow</a></li>
+<li><a class="reference internal" href="#send-requests-to-the-flow">Send requests to the Flow</a></li>
 <li><a class="reference internal" href="#batching-requests">Batching Requests</a></li>
 <li><a class="reference internal" href="#targeting-a-specific-executor">Targeting a specific Executor</a></li>
 <li><a class="reference internal" href="#request-parameters">Request parameters</a></li>
@@ -1106,6 +1086,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 <li><a class="reference internal" href="#on-failure-callback">On failure callback</a></li>
 <li><a class="reference internal" href="#returning-results-from-post">Returning results from .post()</a></li>
 <li><a class="reference internal" href="#custom-grpc-compression-for-grpc-client">Custom gRPC compression for GRPC Client</a></li>
+<li><a class="reference internal" href="#tls-support">TLS support</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#graphql">GraphQL</a></li>
@@ -1135,7 +1116,8 @@ This means you can iterate over Responses one by one, as they come in.</p>
         </dl>
     </qa-bot>
 
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>

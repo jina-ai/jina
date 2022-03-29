@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/flow-api/" />
   
-<meta property="og:site_name" content="Jina 3.2.9 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.10 Documentation" />
   
 <meta property="og:description" content="Flow ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud. Every Flow provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets. gRPC HTTP WebSocket Expose API endpoints: The Flow API can ex..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.9 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.10 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Access Flow API" href="../access-flow-api/" /><link rel="prev" title="Configure a Flow from YAML" href="../flow-yaml/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Configure Flow API - Jina 3.2.9 documentation</title>
+        <title>Configure Flow API - Jina 3.2.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.9 documentation</div>
+                <div class="brand">Jina 3.2.10 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -396,7 +396,6 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.jinad/">jina.orchestrate.pods.jinad module</a></li>
 </ul>
 </li>
 </ul>
@@ -505,65 +504,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/daemon/">daemon package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.api/">daemon.api package</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints/">daemon.api.endpoints package</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial/">daemon.api.endpoints.partial package</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.deployment/">daemon.api.endpoints.partial.deployment module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.flow/">daemon.api.endpoints.partial.flow module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/daemon.api.endpoints.partial.pod/">daemon.api.endpoints.partial.pod module</a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.deployments/">daemon.api.endpoints.deployments module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.flows/">daemon.api.endpoints.flows module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.logs/">daemon.api.endpoints.logs module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.pods/">daemon.api.endpoints.pods module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../api/daemon.api.endpoints.workspaces/">daemon.api.endpoints.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.api.dependencies/">daemon.api.dependencies module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.clients/">daemon.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.base/">daemon.clients.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.deployments/">daemon.clients.deployments module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.flows/">daemon.clients.flows module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.mixin/">daemon.clients.mixin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.pods/">daemon.clients.pods module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.clients.workspaces/">daemon.clients.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.models/">daemon.models package</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.base/">daemon.models.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.containers/">daemon.models.containers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.custom/">daemon.models.custom module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.enums/">daemon.models.enums module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.id/">daemon.models.id module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.partial/">daemon.models.partial module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.ports/">daemon.models.ports module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.models.workspaces/">daemon.models.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/daemon.stores/">daemon.stores package</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.base/">daemon.stores.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.containers/">daemon.stores.containers module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.deployments/">daemon.stores.deployments module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.flows/">daemon.stores.flows module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.mixin/">daemon.stores.mixin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.partial/">daemon.stores.partial module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.pods/">daemon.stores.pods module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/daemon.stores.workspaces/">daemon.stores.workspaces module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.dockerize/">daemon.dockerize module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.excepts/">daemon.excepts module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.files/">daemon.files module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.helper/">daemon.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.parser/">daemon.parser module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/daemon.tasks/">daemon.tasks module</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.export/">cli.export module</a></li>
@@ -805,10 +746,39 @@ For example, in the code snippet below, we didn’t implement any CRUD endpoints
 </div>
 <p>After setting up a Flow in this way, the <a class="reference internal" href="#custom-http"><span class="std std-ref">default HTTP endpoints</span></a> will not be exposed.</p>
 </section>
+<section id="enable-cross-origin-resource-sharing-cors">
+<span id="cors"></span><h3>Enable Cross-Origin Resource Sharing (CORS)<a class="headerlink" href="#enable-cross-origin-resource-sharing-cors" title="Permalink to this headline">¶</a></h3>
+<p>To make a Flow accessible from a website with a different domain, you need to enable <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>.
+Among other things, CORS is necessary to provide a <a class="reference internal" href="../access-flow-api/#swagger-ui"><span class="std std-ref">Swagger UI interface</span></a> for your Flow.</p>
+<p>Note that CORS is disabled by default, for security reasons.
+To enable CORS, configure your Flow in the following way:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-configuration-options">
+<h3>Advanced configuration options<a class="headerlink" href="#advanced-configuration-options" title="Permalink to this headline">¶</a></h3>
+<p>HTTP support in Jina is powered by <a class="reference external" href="https://www.uvicorn.org/">Uvicorn</a>.
+You can configure the Flow’s internal Uvicorn sever to your heart’s content by passing <code class="docutils literal notranslate"><span class="pre">uvicorn_kwargs</span></code> to the Flow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">,</span> <span class="n">uvicorn_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">'loop'</span><span class="p">:</span> <span class="s1">'asyncio'</span><span class="p">,</span> <span class="s1">'http'</span><span class="p">:</span> <span class="s1">'httptools'</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>These arguments will be directly passed to the Uvicorn server.</p>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>For more details about the arguments that are used here, and about other available settings for the Uvicorn server,
+see their <a class="reference external" href="https://www.uvicorn.org/settings/">website</a>.</p>
+</div>
+</section>
+</section>
 <section id="add-graphql-endpoint">
-<h3>Add GraphQL endpoint<a class="headerlink" href="#add-graphql-endpoint" title="Permalink to this headline">¶</a></h3>
-<div class="attention admonition">
-<p class="admonition-title">Attention</p>
+<h2>Add GraphQL endpoint<a class="headerlink" href="#add-graphql-endpoint" title="Permalink to this headline">¶</a></h2>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
 <p>GraphQL support is an optional feature that requires optional dependencies.
 To install these, run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina[graphql]</span></code> or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina[all]</span></code>.</p>
 <p>Unfortunately, these dependencies are <strong>not available through Conda</strong>. You will have to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to be able to use GraphQL
@@ -826,6 +796,26 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
 <p>For more details about the Jina GraphQL enpoint, see <a class="reference internal" href="../access-flow-api/#flow-graphql"><span class="std std-ref">here</span></a>.</p>
 </div>
 </section>
+<section id="enable-tls">
+<span id="flow-tls"></span><h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this headline">¶</a></h2>
+<p>You can enable TLS encryption between your Flow’s Gateway and a Client, for any of the protocols supported by Jina (HTTP, gRPC, and Websocket).</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>Enabling TLS will encrypt the data that is transferred between the Flow and the Client.
+Data that is passed between the microservices configured by the Flow, such as Executors, will <strong>not</strong> be encrypted.</p>
+</div>
+<p>To enable TLS encryption, you need to pass a valid <em>keyfile</em> and <em>certfile</em> to the Flow, using the <code class="docutils literal notranslate"><span class="pre">ssl_keyfile</span></code> <code class="docutils literal notranslate"><span class="pre">ssl_certfile</span></code>
+parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PORT</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span>
+    <span class="n">ssl_certfile</span><span class="o">=</span><span class="s1">'path/to/certfile.crt'</span><span class="p">,</span>
+    <span class="n">ssl_keyfile</span><span class="o">=</span><span class="s1">'path/to/keyfile.crt'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>If both of these are provided, the Flow will automatically configure itself to use TLS encryption for its communication with any Client.</p>
 </section>
 <section id="limit-outstanding-requests">
 <h2>Limit outstanding requests<a class="headerlink" href="#limit-outstanding-requests" title="Permalink to this headline">¶</a></h2>
@@ -851,18 +841,6 @@ Typically, this is most likely to happen for expensive index Flows.</p>
 <p class="admonition-title">Danger</p>
 <p>When working with very slow executors and a big amount of data, you must set <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> to some small number to prevent out of memory problems. If you are unsure, always set <code class="docutils literal notranslate"><span class="pre">prefetch=1</span></code>.</p>
 </div>
-<section id="enable-cross-origin-resource-sharing-cors">
-<span id="cors"></span><h3>Enable Cross-Origin Resource Sharing (CORS)<a class="headerlink" href="#enable-cross-origin-resource-sharing-cors" title="Permalink to this headline">¶</a></h3>
-<p>To make a Flow accessible from a website with a different domain, you need to enable <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>.
-Among other things, CORS is necessary to provide a <a class="reference internal" href="../access-flow-api/#swagger-ui"><span class="std std-ref">Swagger UI interface</span></a> for your Flow.</p>
-<p>Not that CORS is disabled by default, for security reasons.
-To enable CORS, configure your Flow in the following way:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">cors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="generate-deployment-configuration">
 <h2>Generate deployment configuration<a class="headerlink" href="#generate-deployment-configuration" title="Permalink to this headline">¶</a></h2>
@@ -937,7 +915,7 @@ The generated folder can be used directly with <code class="docutils literal not
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 28, 2022.
+                    Last updated on Mar 29, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -966,13 +944,13 @@ The generated folder can be used directly with <code class="docutils literal not
 <li><a class="reference internal" href="#expose-api-endpoints">Expose API endpoints</a></li>
 <li><a class="reference internal" href="#customize-http-interface">Customize HTTP interface</a><ul>
 <li><a class="reference internal" href="#hide-default-endpoints-from-http-interface">Hide default endpoints from HTTP interface</a></li>
-<li><a class="reference internal" href="#add-graphql-endpoint">Add GraphQL endpoint</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#limit-outstanding-requests">Limit outstanding requests</a><ul>
 <li><a class="reference internal" href="#enable-cross-origin-resource-sharing-cors">Enable Cross-Origin Resource Sharing (CORS)</a></li>
+<li><a class="reference internal" href="#advanced-configuration-options">Advanced configuration options</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#add-graphql-endpoint">Add GraphQL endpoint</a></li>
+<li><a class="reference internal" href="#enable-tls">Enable TLS</a></li>
+<li><a class="reference internal" href="#limit-outstanding-requests">Limit outstanding requests</a></li>
 <li><a class="reference internal" href="#generate-deployment-configuration">Generate deployment configuration</a></li>
 <li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>
@@ -1000,7 +978,8 @@ The generated folder can be used directly with <code class="docutils literal not
         </dl>
     </qa-bot>
 
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
