@@ -3,9 +3,9 @@
 # Configure Flow API
 
 **Flow** ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
-Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and websockets.
+Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket.
 
-There are two ways of defining a FLow, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your flow.
+There are two ways of defining a Flow, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your flow.
 
 ```{admonition} Jina Client
 :class: caution
@@ -18,7 +18,7 @@ This does not affect how you have to configure your Flow API, so the examples he
 For more proper use of the Client, and more information about the Client itself, see the {ref}`Client documentation <client>`.
 ```
 
-## Serve Flow With Different Protocol
+## Serve Flow with different protocols
 You can use three different protocols to serve the `Flow`: `grpc`,`http` and `websocket`
 
 ````{tab} gRPC
@@ -109,11 +109,11 @@ with f:
 ````
 
 
-To configure it yaml just do
+To configure the protocol using a YAML file, just do
 
 
 ````{tab} gRPC
-Note that grpc is the default protocol so you can just ommit it
+Note that gRPC is the default protocol, so you can just omit it.
 ```{code-block} yaml
 jtype: Flow
 with:
@@ -152,7 +152,7 @@ By default, any Flow exposes the following CRUD and debug HTTP endpoints: `/stat
 Executors that provide additional endpoints (e.g. `/foo`) will be exposed only after manual configuration.
 These custom endpoints can be added to the HTTP interface using `Flow.expose_endpoint`.
 
-```{figure} ../../../.github/2.0/expose-endpoints.svg
+```{figure} expose-endpoints.svg
 :align: center
 ```
 ````{tab} Python
@@ -188,7 +188,7 @@ with:
 
 Now, sending an HTTP data request to the `/foo` endpoint is equivalent to calling `f.post('/foo', ...)` using the Python Client.
 
-You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
+You can add more `kwargs` to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 ````{tab} Python
 
 ```python
