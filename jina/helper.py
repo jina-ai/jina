@@ -1545,6 +1545,7 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
                     kwargs[key] = value
 
     kwargs = _add_default_port_tls(kwargs)
+    kwargs = _delete_host_slash(kwargs)
 
     return kwargs
 
@@ -1552,6 +1553,13 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
 def _add_default_port_tls(kwargs: Dict[str, Any]) -> Dict[str, Any]:
     if ('tls' in kwargs) and ('port' not in kwargs):
         kwargs['port'] = 443
+    return kwargs
+
+
+def _delete_host_slash(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if 'host' in kwargs:
+        if kwargs['host'][-1] == '/':
+            kwargs['host'] = kwargs['host'][:-1]
     return kwargs
 
 
