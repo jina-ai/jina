@@ -1,9 +1,0 @@
-jtype: Flow
-version: '1'
-with:
-  port: 9000
-  protocol: http
-executors:
-  - name: indexer_dbms
-    uses: docker://dbms-executor
-    volumes: ${{ JINAD_WORKSPACE }}:/jinad_workspace

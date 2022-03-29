@@ -1,9 +1,0 @@
-jtype: Flow
-with:
-  port: ${{ PORT }}
-executors:
-  - name: remote_io_executor
-    uses: config_data.yml
-  - name: remote_data_executor
-    uses: config_io.yml
-  

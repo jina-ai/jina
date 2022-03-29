@@ -71,13 +71,4 @@ RUN cd /jina && \
 
 ENTRYPOINT ["jina"]
 
-FROM jina AS jina_daemon
-
-ARG APT_PACKAGES="gcc libc-dev make"
-
-RUN apt-get update && apt-get install --no-install-recommends -y git ruby-dev ${APT_PACKAGES} && \
-    apt-get remove -y --auto-remove ${APT_PACKAGES} && \
-    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-ENTRYPOINT ["jinad"]
 

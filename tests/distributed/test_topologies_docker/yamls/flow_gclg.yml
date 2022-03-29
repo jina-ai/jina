@@ -1,9 +1,0 @@
-jtype: Flow
-version: 1
-with:
-  port: 9000
-  protocol: http
-executors:
-  - name: container
-    uses: docker://test-mwu-encoder
-  - name: local

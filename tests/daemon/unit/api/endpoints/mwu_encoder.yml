@@ -1,4 +1,0 @@
-!MWUEncoder
-metas:
-  name: my-mwu-encoder
-  py_modules: mwu_encoder.py

@@ -1,9 +1,0 @@
-jtype: Flow
-version: '1'
-with:
-  protocol: http
-  port: 9000
-  cors: true
-executors:
-  - name: indexer_dbms
-    uses: executors/indexer_dbms.yml

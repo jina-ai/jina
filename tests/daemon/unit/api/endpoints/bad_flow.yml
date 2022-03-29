@@ -1,4 +1,0 @@
-!Flow
-version: '1.0'
-executors:
-  - uses: BADFLow

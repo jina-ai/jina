@@ -5,18 +5,16 @@ from argparse import Namespace
 from contextlib import ExitStack
 from typing import Dict, List, Optional, Set, Union
 
-from jina.serve.networking import GrpcConnectionPool, host_is_local
-from jina.orchestrate.pods import Pod
-from jina.orchestrate.pods.container import ContainerPod
-from jina.orchestrate.pods.factory import PodFactory
-from jina.orchestrate.pods.jinad import JinaDPod
-from jina import __default_executor__, __default_host__, __docker_host__
-from jina import helper
+from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError, ScalingFails
 from jina.helper import CatchAllCleanupContextManager
-from jina.jaml.helper import complete_path
 from jina.hubble.hubio import HubIO
+from jina.jaml.helper import complete_path
+from jina.orchestrate.pods import Pod
+from jina.orchestrate.pods.container import ContainerPod
+from jina.orchestrate.pods.factory import PodFactory
+from jina.serve.networking import GrpcConnectionPool, host_is_local
 
 
 class BaseDeployment(ExitStack):
@@ -343,7 +341,7 @@ class Deployment(BaseDeployment):
             """
             Checks if any pod in this replica set is a forked process
 
-            :returns: True if any Pod is a forked Process, False otherwise (Containers/JinaD)
+            :returns: True if any Pod is a forked Process, False otherwise (Containers)
             """
             for pod in self._pods:
                 if type(pod) == Pod and pod.is_forked:
@@ -425,6 +423,17 @@ class Deployment(BaseDeployment):
         return is_sandbox
 
     @property
+    def tls_enabled(self):
+        """
+        Checks whether secure connection via tls is enabled for this Deployment.
+
+        :return: True if tls is enabled, False otherwise
+        """
+        has_cert = getattr(self.args, 'ssl_certfile', None) is not None
+        has_key = getattr(self.args, 'ssl_keyfile', None) is not None
+        return self.is_sandbox or (has_cert and has_key)
+
+    @property
     def external(self) -> bool:
         """
         Check if this deployment is external.
@@ -436,10 +445,10 @@ class Deployment(BaseDeployment):
     @property
     def protocol(self):
         """
-        :return: the protocol of this deployment, https or http
+        :return: the protocol of this deployment
         """
-        protocol = getattr(self.args, 'protocol', 'http')
-        return 'https' if self.is_sandbox else protocol
+        protocol = getattr(self.args, 'protocol', 'grpc')
+        return str(protocol) + ('s' if self.tls_enabled else '')
 
     @property
     def first_pod_args(self) -> Namespace:
@@ -612,8 +621,8 @@ class Deployment(BaseDeployment):
 
         # Check if both shard_id/pod_idx and the head are containerized
         # if the head is not containerized, it still could mean that the deployment itself is containerized
-        return (type(pod) == ContainerPod or type(pod) == JinaDPod) and (
-            type(head_pod) == ContainerPod or type(head_pod) == JinaDPod or _in_docker()
+        return type(pod) == ContainerPod and (
+            type(head_pod) == ContainerPod or _in_docker()
         )
 
     def start(self) -> 'Deployment':

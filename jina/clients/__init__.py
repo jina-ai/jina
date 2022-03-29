@@ -2,6 +2,8 @@
 import argparse
 from typing import TYPE_CHECKING, Optional, Union, overload
 
+from jina.helper import parse_client
+
 __all__ = ['Client']
 
 from jina.enums import GatewayProtocolType
@@ -40,7 +42,7 @@ def Client(
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
-    :param tls: If set, connect to gateway using https
+    :param tls: If set, connect to gateway using tls encryption
     :return: the new Client object
 
     .. # noqa: DAR202
@@ -66,6 +68,10 @@ def Client(
     :param kwargs: Additional arguments.
     :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
     """
+    if not (
+        args and isinstance(args, argparse.Namespace)
+    ):  # we need to parse the kwargs as soon as possible otherwise to get the gateway type
+        args = parse_client(kwargs)
 
     protocol = (
         args.protocol if args else kwargs.get('protocol', GatewayProtocolType.GRPC)

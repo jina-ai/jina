@@ -1511,3 +1511,65 @@ def docarray_graphql_compatible():
     installed_version = pckg_version.parse(__docarray_version__)
     min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
     return installed_version >= min_version
+
+
+from jina.helper import ArgNamespace
+from jina.parsers import set_client_cli_parser
+
+
+def parse_client(kwargs):
+    kwargs = _parse_kwargs(kwargs)
+    return ArgNamespace.kwargs2namespace(
+        kwargs, set_client_cli_parser(), warn_unknown=True
+    )
+
+
+def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+
+    if 'host' in kwargs.keys():
+        return_scheme = dict()
+        (
+            kwargs['host'],
+            return_scheme['port'],
+            return_scheme['protocol'],
+            return_scheme['tls'],
+        ) = _parse_host_scheme(kwargs['host'])
+
+        for key, value in return_scheme.items():
+            if value:
+                if key in kwargs:
+                    raise ValueError(
+                        f"You can't have two definitions of {key}: you have one in the host scheme and one in the keyword argument"
+                    )
+                elif value:
+                    kwargs[key] = value
+
+    return kwargs
+
+
+def _parse_host_scheme(host: str) -> Tuple[str, str, str, bool]:
+    scheme, _hostname, port = _parse_url(host)
+
+    tls = None
+    if scheme in ('grpcs', 'https', 'wss'):
+        scheme = scheme[:-1]
+        tls = True
+
+    if scheme == 'ws':
+        scheme = 'websocket'
+
+    return _hostname, port, scheme, tls
+
+
+def _parse_url(host):
+    if '://' in host:
+        scheme, host = host.split('://')
+    else:
+        scheme = None
+
+    if ':' in host:
+        host, port = host.split(':')
+    else:
+        port = None
+
+    return scheme, host, port

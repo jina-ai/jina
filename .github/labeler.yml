@@ -46,9 +46,6 @@ area/cli:
 area/docarray:
   - docarray/**/*
 
-area/daemon:
-  - daemon/**/*
-
 area/script:
   - script/**/*
 

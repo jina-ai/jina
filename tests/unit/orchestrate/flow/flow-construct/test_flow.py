@@ -5,14 +5,14 @@ import os
 
 import numpy as np
 import pytest
+from docarray.document.generators import from_ndarray
 
-from jina import Flow, Document, DocumentArray, Executor, requests, __windows__
+from jina import Document, DocumentArray, Executor, Flow, __windows__, requests
 from jina.enums import FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
-from jina.serve.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.orchestrate.deployments import BaseDeployment
-from docarray.document.generators import from_ndarray
+from jina.serve.executors import BaseExecutor
 from jina.types.request.data import Response
 from tests import random_docs
 
@@ -349,19 +349,17 @@ def test_return_results_sync_flow(protocol, on_done):
 
 
 @pytest.mark.parametrize(
-    'input, expect_host, expect_port',
+    'input',
     [
-        ('0.0.0.0', '0.0.0.0', None),
-        ('0.0.0.0:12345', '0.0.0.0', 12345),
-        ('123.124.125.0:45678', '123.124.125.0', 45678),
-        ('api.jina.ai:45678', 'api.jina.ai', 45678),
+        '0.0.0.0',
+        '0.0.0.0:12345',
+        '123.124.125.0:45678',
+        'api.jina.ai:45678',
     ],
 )
-def test_flow_host_expose_shortcut(input, expect_host, expect_port):
+def test_flow_host_expose_shortcut(input):
     f = Flow().add(host=input).build()
-    assert f['executor0'].args.host == expect_host
-    if expect_port is not None:
-        assert f['executor0'].args.port_jinad == expect_port
+    assert f['executor0'].args.host == input
 
 
 def test_flow_workspace_id():

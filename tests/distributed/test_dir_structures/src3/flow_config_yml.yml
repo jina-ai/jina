@@ -1,7 +1,0 @@
-# Used only with Remote Flow tests
-jtype: Flow
-with:
-  port: ${{ PORT }}
-executors:
-  - name: remote
-    uses: config.yml

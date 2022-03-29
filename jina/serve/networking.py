@@ -7,12 +7,14 @@ from urllib.parse import urlparse
 import grpc
 from grpc.aio import AioRpcError
 
+from jina.enums import PollingType
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
-from jina.enums import PollingType
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
+
+TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 
 
 class ReplicaList:
@@ -35,7 +37,7 @@ class ReplicaList:
             try:
                 parsed_address = urlparse(address)
                 address = parsed_address.netloc if parsed_address.netloc else address
-                use_tls = parsed_address.scheme == 'https'
+                use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
             except:
                 use_tls = False
 
