@@ -118,9 +118,12 @@ class DockerComposeConfig:
                 cargs, uses_metas, uses_with, self.pod_type
             )
 
-        def _update_config_with_volumes(self, config):
+        def _update_config_with_volumes(self, config, auto_volume=True):
             if self.service_args.volumes:  # respect custom volume definition
                 config['volumes'] = self.service_args.volumes
+                return config
+
+            if not auto_volume:
                 return config
 
             # if no volume is given, create default volume
@@ -143,9 +146,7 @@ class DockerComposeConfig:
                 config['command'].append(workspace_in_container)
             return config
 
-        def get_runtime_config(
-            self,
-        ) -> List[Dict]:
+        def get_runtime_config(self, auto_volume: Optional[bool] = True) -> List[Dict]:
             # One Dict for replica
             replica_configs = []
             for i_rep in range(self.service_args.replicas):
@@ -172,7 +173,7 @@ class DockerComposeConfig:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
 
                 if self.service_args.pod_role == PodRoleType.WORKER:
-                    config = self._update_config_with_volumes(config)
+                    config = self._update_config_with_volumes(config, auto_volume)
 
                 replica_configs.append(config)
             return replica_configs
@@ -357,7 +358,7 @@ class DockerComposeConfig:
         return parsed_args
 
     def to_docker_compose_config(
-        self,
+        self, auto_volume: Optional[bool] = True
     ) -> List[Tuple[str, Dict]]:
         """
         Return a list of dictionary configurations. One for each service in this Deployment
@@ -384,18 +385,22 @@ class DockerComposeConfig:
                 services.append(
                     (
                         self.uses_before_service.compatible_name,
-                        self.uses_before_service.get_runtime_config()[0],
+                        self.uses_before_service.get_runtime_config(
+                            auto_volume=auto_volume
+                        )[0],
                     )
                 )
             if self.uses_after_service is not None:
                 services.append(
                     (
                         self.uses_after_service.compatible_name,
-                        self.uses_after_service.get_runtime_config()[0],
+                        self.uses_after_service.get_runtime_config(
+                            auto_volume=auto_volume
+                        )[0],
                     )
                 )
             for worker_service in self.worker_services:
-                configs = worker_service.get_runtime_config()
+                configs = worker_service.get_runtime_config(auto_volume=auto_volume)
                 for rep_id, config in enumerate(configs):
                     name = (
                         f'{worker_service.name}/rep-{rep_id}'
