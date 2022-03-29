@@ -112,7 +112,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
 
     async def async_setup(self):
-        """ Wait for the GRPC server to start """
+        """Wait for the GRPC server to start"""
         self._grpc_server = grpc.aio.server(
             options=[
                 ('grpc.max_send_message_length', -1),
@@ -133,7 +133,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         await self._grpc_server.start()
 
     async def async_run_forever(self):
-        """Block until the GRPC server is terminated """
+        """Block until the GRPC server is terminated"""
         self.connection_pool.start()
         await self._grpc_server.wait_for_termination()
 

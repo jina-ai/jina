@@ -3,14 +3,14 @@ from typing import Dict
 
 import numpy as np
 import torch
+from docarray import DocumentArray
 from transformers import AutoModel, AutoTokenizer
 
 from jina import Executor, requests
-from docarray import DocumentArray
 
 
 class MyTransformer(Executor):
-    """Transformer executor class """
+    """Transformer executor class"""
 
     def __init__(
         self,
@@ -70,7 +70,7 @@ class MyTransformer(Executor):
 
 
 class MyIndexer(Executor):
-    """Simple indexer class """
+    """Simple indexer class"""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

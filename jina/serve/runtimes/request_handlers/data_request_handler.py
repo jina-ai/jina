@@ -162,7 +162,7 @@ class DataRequestHandler:
                     existing_executor_routes.append(route.executor)
 
     def close(self):
-        """ Close the data request handler, by closing the executor """
+        """Close the data request handler, by closing the executor"""
         if not self._is_closed:
             self._executor.close()
             self._is_closed = True
