@@ -35,6 +35,19 @@ def test_host_unpacking(protocol, gateway_type, tls, hostname):
     assert c.args.tls == tls
 
 
+@pytest.mark.parametrize('protocol', ['https', 'grpcs', 'wss'])
+@pytest.mark.parametrize('port', [1234, None])
+def test_host_unpacking(protocol, port):
+
+    port_scheme = f':{port}' if port else ''
+
+    host = f'{protocol}://localhost{port_scheme}'
+
+    c = Client(host=host)
+
+    assert c.args.port == port if port else 443
+
+
 def test_host_unpacking_port():
 
     protocol = 'http'

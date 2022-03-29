@@ -1544,6 +1544,14 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
                 elif value:
                     kwargs[key] = value
 
+    kwargs = _add_default_port_tls(kwargs)
+
+    return kwargs
+
+
+def _add_default_port_tls(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if ('tls' in kwargs) and ('port' not in kwargs):
+        kwargs['port'] = 443
     return kwargs
 
 
