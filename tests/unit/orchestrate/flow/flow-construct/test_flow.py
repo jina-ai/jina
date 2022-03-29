@@ -383,23 +383,14 @@ def test_bad_pod_graceful_termination():
             with f:
                 assert f._build_level == FlowBuildLevel.EMPTY
 
-    # bad remote pod
-    asset_bad_flow(Flow().add(name='exec1', host='hello-there'))
-
     # bad local pod
     asset_bad_flow(Flow().add(name='exec2', uses='hello-there'))
 
     # bad local pod at second
     asset_bad_flow(Flow().add().add(name='exec3', uses='hello-there'))
 
-    # bad remote pod at second
-    asset_bad_flow(Flow().add().add(name='exec4', host='hello-there'))
-
     # bad local pod at second, with correct pod at last
     asset_bad_flow(Flow().add().add(name='exec5', uses='hello-there').add())
-
-    # bad remote pod at second, with correct pod at last
-    asset_bad_flow(Flow().add().add(name='exec6', host='hello-there').add())
 
 
 def test_socket_types_2_remote_one_local():
