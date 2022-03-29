@@ -28,7 +28,7 @@ repos:
       args:
       - --select=D101,D102,D103
 - repo: https://github.com/ambv/black
-  rev: 20.8b1
+  rev: 22.3.0
   hooks:
   - id: black
     types: [python]

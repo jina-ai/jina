@@ -3,48 +3,113 @@
 The most convenient way to work with the `Flow` API is the Python Client.
 It enables you to send `Documents` to a running `Flow` in a number of different ways, as shown below.
 
-```{admonition} Caution
-:class: caution
-`Flow` provides a `.post()` method that follows the same interface as `client.post()`.
-However, once your solution is deployed in the cloud, the Flow interface is not present anymore.
-Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
-```
 
 ## HTTP, gRPC, and WebSocket
 
 Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
-These can all be used in the same way by using `client.post()`.
+For each of them, you first connect your Client to the Flow, before you can send requests to it.
 
-Starting the Flow:
+### Connect Client to a Flow
+
+If there is not already a Flow running in the background or on the network, you can start one:
 
 ```python
 from jina import Flow
 
-PORT = 12345
+PORT = 1234
 PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'
 
 with Flow(port=PORT, protocol=PROTOCOL) as f:
     f.block()
 ```
 
-To connect a Client to the Flow's gateway, you need to specify an IP host address and port on which the Flow can be reached.
-This is done using the `host=` and `port=` constructor keywords.
-If the Client and the Flow gateway are running on the same machine, the `host=` parameter can be omitted, as it defaults to `'0.0.0.0'`.
+To connect to the `Flow`, the Client has to specify the followings parameters.
+All af these have to match the Flow and how it was set up:
+* the `protocol` it needs to use to communicate with the Flow
+* the `host` and the `port` as exposed by the Flow
+* if it needs to use `TLS` encryption
 
-Additionally, the connection protocol can be toggled between `'grpc'`, `'http'`, and `'websocket'` using the `protocol=`
-keyword, where `'grpc'` is the default.
+You can define these parameters by passing a valid URI scheme as part of the `host` argument:
+
+````{tab} TLS disabled
 
 ```python
 from jina import Client
 
-HOST = '0.0.0.0'  # host address where the Flow can be reached
-PORT = 12345  # port where the Flow can be reached
-PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'. Needs to be same as specified by the Flow
-
-client = Client(host=HOST, port=PORT, protocol=PROTOCOL)
+Client(host='http://my.awesome.flow:1234')
+Client(host='ws://my.awesome.flow:1234')
+Client(host='grpc://my.awesome.flow:1234')
 ```
 
-Then, the Client can send requests to the Flow using its `.post()` method.
+````
+
+````{tab} TLS enabled
+
+```python
+from jina import Client
+
+Client(host='https://my.awesome.flow:1234')
+Client(host='wss://my.awesome.flow:1234')
+Client(host='grpcs://my.awesome.flow:1234')
+```
+
+````
+
+
+Equivalently, you can pass each relevant parameter as a keyword argument:
+
+````{tab} TLS disabled
+
+```python
+Client(host='my.awesome.flow', port=1234, protocol='http')
+Client(host='my.awesome.flow', port=1234, protocol='websocket')
+Client(host='my.awesome.flow', port=1234, protocol='grpc')
+```
+
+````
+
+````{tab} TLS enabled
+
+```python
+Client(host='my.awesome.flow', port=1234, protocol='http', tls=True)
+Client(host='my.awesome.flow', port=1234, protocol='websocket', tls=True)
+Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=True)
+```
+
+````
+
+
+You can also use a mixe of both:
+
+```python
+Client(host='https://my.awesome.flow', port=1234)
+Client(host='my.awesome.flow:1234', protocol='http', tls=True)
+```
+
+````{admonition} Caution
+:class: caution
+You can't define these parameters both by keyword argument and by host scheme - you can't have two sources of truth.
+Example: the following code will raise an exception:
+```python
+Client(host='https://my.awesome.flow:1234', port=4321)
+```
+````
+
+````{admonition} Hint
+:class: hint
+The arguments above have usefule defaults: `protocol='grpc'` and `host='0.0.0.0'`.
+This is particularly useful when debugging or accessing a Flow on your local machine.
+
+To connect to a Flow `f` it is therefore often enough to do the following:
+
+```{code-block} python
+c = Client(port=f.port)
+```
+````
+
+### Send requests to the Flow
+
+After a Client has connected to a Flow, it can send requests to the Flow using its `.post()` method.
 This expects as inputs the {ref}`Executor endpoint <exec-endpoint>` that you want to target, as well as a Document or Iterable of Documents:
 
 
@@ -61,7 +126,7 @@ def doc_gen():
         yield Document(content=f'hello {j}')
 
 
-client = Client(host=HOST, port=PORT)
+client = Client(port=PORT)
 
 client.post('/endpoint', d1)  # Single Document
 
@@ -73,51 +138,14 @@ client.post('/endpoint', DocumentArray([d1, d2]))  # DocumentArray
 
 client.post('/endpoint')  # Empty
 ```
-### Specifying Host scheme
 
-To connect to the `Flow` the client has to specify the followings parameters:
-* the `protocol` it needs to use to communicate with the `Flow
-* the `host` and the `port`on which the Flow is exposed
-* if he needs to use `tls` encryption
 
-You can define these parameters by passing a valid URI scheme as part of the `host` argument:
-
-```python
-from jina import Client
-
-Client(host='https://my.awesome.flow:1234')
-Client(host='wss://my.awesome.flow:1234')
-Client(host='grpcs://my.awesome.flow:1234')
-```
-
-You can as well pass each relevant parameter as a keyword argument:
-
-the following example is equivalent to the one above
-```python
-Client(host='my.awesome.flow', port=1234, protocol='http', tls=True)
-Client(host='my.awesome.flow', port=1234, protocol='websocket', tls=True)
-Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=True)
-```
-
-You can use a mixe of both as well:
-
-```python
-Client(host='https://my.awesome.flow', port=1234)
-Client(host='my.awesome.flow:1234', protocol='http', tls=True)
-```
-
-````{admonition} Caution
+```{admonition} Caution
 :class: caution
-You can't define these parameters by keyword arugment and by host scheme (You can't have two sources of truth)
-Example : the following code will raise an exception
-```python
-Client(host='https://my.awesome.flow:1234', port=4321)
+`Flow` also provides a `.post()` method that follows the same interface as `client.post()`.
+However, once your solution is deployed remotely, the Flow interface is not present anymore.
+Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
-````
-
-
-
-
 
 
 ### Batching Requests
@@ -386,6 +414,7 @@ with Flow() as f:
 
 ````
 
+
 ### Custom gRPC compression for GRPC Client
 
 If the communication to the `Flow` needs to be done via gRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
@@ -396,6 +425,25 @@ from jina import Client
 
 client = Client()
 client.post(..., compression='Gzip')
+```
+
+### TLS support
+
+To connect to a Flow that has been {ref}`configured to use TLS <flow-tls>` in combination with gRPC, http, or websocket,
+set the Client's `tls` parameter to `True`:
+
+```python
+c_http = Client(protocol='http', tls=True, host=..., port=...)
+c_ws = Client(protocol='websocket', tls=True, host=..., port=...)
+c_grpc = Client(protocol='grpc', tls=True, host=..., port=...)
+```
+
+The same can be achieved by passing a valid URI to the `host` parameter, and appending 's' to the protocol definition:
+
+```python
+Client(host='https://my.awesome.flow:1234')
+Client(host='wss://my.awesome.flow:1234')
+Client(host='grpcs://my.awesome.flow:1234')
 ```
 
 ## GraphQL

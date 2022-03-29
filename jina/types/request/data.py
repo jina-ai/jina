@@ -15,7 +15,7 @@ RequestSourceType = TypeVar(
 
 
 class DataRequest(Request):
-    """ Represents a DataRequest used for exchanging DocumentArrays to and within a Flow"""
+    """Represents a DataRequest used for exchanging DocumentArrays to and within a Flow"""
 
     class _DataContent:
         def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
