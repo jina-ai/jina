@@ -400,3 +400,29 @@ def test_docker_compose_set_volume(tmpdir):
         # check custom value respected, no workspace added
         assert services['executor2']['volumes'] == [custom_volume]
         assert 'workspace' not in services['executor2']['command']
+
+
+def test_disable_auto_volume(tmpdir):
+    flow = Flow(name='test-flow', port=9090).add(
+        uses='docker://image', name='executor0'
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose_volume.yml')
+
+    flow.to_docker_compose_yaml(output_path=dump_path, auto_volume=False)
+
+    configuration = None
+    with open(dump_path) as f:
+        configuration = yaml.safe_load(f)
+
+    assert set(configuration.keys()) == {'version', 'services', 'networks'}
+    assert configuration['version'] == '3.3'
+    assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
+    services = configuration['services']
+    assert len(services) == 3  # gateway, executor0-head, executor0
+    assert set(services.keys()) == {
+        'gateway',
+        'executor0-head',
+        'executor0',
+    }
+    assert 'volumes' not in services['executor0']
