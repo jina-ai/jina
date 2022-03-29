@@ -1,5 +1,5 @@
 #!/bin/bash
-pip install black==20.8b1
+pip install black==22.3.0
 arrVar=()
 echo we ignore non-*.py files and files generated from protobuf
 excluded_files=(
