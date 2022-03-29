@@ -393,7 +393,7 @@ class Deployment(BaseDeployment):
         self.join()
 
     def update_pod_args(self):
-        """ Update args of all its pods based on Deployment args. Including head/tail"""
+        """Update args of all its pods based on Deployment args. Including head/tail"""
         if isinstance(self.args, Dict):
             # This is used when a Deployment is created in a remote context, where pods & their connections are already given.
             self.pod_args = self.args
@@ -408,7 +408,7 @@ class Deployment(BaseDeployment):
             self.pod_args['head'].port = port
 
     def update_worker_pod_args(self):
-        """ Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
+        """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
         self.pod_args['pods'] = self._set_pod_args(self.args)
 
     @property

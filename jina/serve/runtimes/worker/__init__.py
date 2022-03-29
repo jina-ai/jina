@@ -3,13 +3,13 @@ import asyncio
 import multiprocessing
 import threading
 from abc import ABC
-from typing import Optional, Union, List
+from typing import List, Optional, Union
 
 import grpc
 
+from jina.proto import jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.proto import jina_pb2_grpc
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
@@ -59,7 +59,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         await self._grpc_server.start()
 
     async def async_run_forever(self):
-        """Block until the GRPC server is terminated """
+        """Block until the GRPC server is terminated"""
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
