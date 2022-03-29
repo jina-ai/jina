@@ -138,8 +138,9 @@ class DockerComposeConfig:
                 )
             workspace_in_container = os.path.join(container_addr, workspace)
             config['volumes'] = [os.path.abspath(host_addr) + f':{container_addr}']
-            config['command'].append('--workspace')
-            config['command'].append(workspace_in_container)
+            if '--workspace' not in config['command']:
+                config['command'].append('--workspace')
+                config['command'].append(workspace_in_container)
             return config
 
         def get_runtime_config(
