@@ -15,14 +15,14 @@ def mixin_base_deployment_parser(parser):
     gp.add_argument(
         '--uses-before',
         type=str,
-        help='The executor attached after the Pods described by --uses, typically before sending to all '
-        'shards, accepted type follows `--uses`',
+        help='The executor attached before the Pods described by --uses, typically before sending to all '
+        'shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).',
     )
     gp.add_argument(
         '--uses-after',
         type=str,
         help='The executor attached after the Pods described by --uses, typically used for receiving from '
-        'all shards, accepted type follows `--uses`',
+        'all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).',
     )
 
     gp.add_argument(
