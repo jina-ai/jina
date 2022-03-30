@@ -1592,7 +1592,7 @@ def _parse_url(host):
     return scheme, host, port
 
 
-async def is_port_free(host, port):
+def is_port_free(host, port):
     if socket(AF_INET, SOCK_STREAM).connect_ex((host, port)) == 0:
         return False
     else:
