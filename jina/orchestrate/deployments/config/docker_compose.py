@@ -15,6 +15,7 @@ from jina.orchestrate.deployments.config.helper import (
     to_compatible_name,
     validate_uses,
 )
+from jina.orchestrate.helper import generate_default_volume_and_workspace
 
 port = 8081
 
@@ -127,23 +128,16 @@ class DockerComposeConfig:
                 return config
 
             # if no volume is given, create default volume
-            default_workspace = os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
-            container_addr = '/app'
-            if default_workspace:  # use default workspace provided in env var
-                host_addr = default_workspace
-                workspace = os.path.relpath(
-                    path=os.path.abspath(default_workspace), start=Path.home()
-                )
-            else:  # fallback if no custom volume and no default workspace
-                workspace = os.path.join('.jina', 'executor-workspace')
-                host_addr = os.path.join(
-                    Path.home(),
-                    workspace,
-                    f'{self.service_args.workspace_id}',
-                )
-            workspace_in_container = os.path.join(container_addr, workspace)
-            config['volumes'] = [os.path.abspath(host_addr) + f':{container_addr}']
-            if '--workspace' not in config['command']:
+            (
+                generated_volumes,
+                workspace_in_container,
+            ) = generate_default_volume_and_workspace(
+                workspace_id=self.service_args.workspace_id
+            )
+            config['volumes'] = generated_volumes
+            if (
+                '--workspace' not in config['command']
+            ):  # set workspace only of not already given
                 config['command'].append('--workspace')
                 config['command'].append(workspace_in_container)
             return config
