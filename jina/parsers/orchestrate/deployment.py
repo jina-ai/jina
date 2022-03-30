@@ -35,13 +35,6 @@ def mixin_base_deployment_parser(parser):
     )
 
     gp.add_argument(
-        '--no-auto-volume',
-        action='store_true',
-        default=False,
-        help='Do not automatically mount a volume for dockerized Executors',
-    )
-
-    gp.add_argument(
         '--external',
         action='store_true',
         default=False,
