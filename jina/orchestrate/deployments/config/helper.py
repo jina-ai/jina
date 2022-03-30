@@ -10,6 +10,10 @@ def get_image_name(uses: str) -> str:
     """The image can be provided in different formats by the user.
     This function converts it to an image name which can be understood by k8s.
     It uses the Hub api to get the image name and the latest tag on Docker Hub.
+
+    If you don't want to rebuild image on Jina Hub,
+    you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
     :param uses: image name
 
     :return: normalized image name
