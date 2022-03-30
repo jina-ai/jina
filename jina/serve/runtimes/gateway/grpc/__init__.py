@@ -3,6 +3,8 @@ import os
 import grpc
 
 from jina import __default_host__
+from jina.excepts import PortAlreadyUsed
+from jina.helper import is_port_free
 from jina.proto import jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.gateway.request_handling import handle_request, handle_result
@@ -25,6 +27,9 @@ class GRPCGatewayRuntime(GatewayRuntime):
         if not self.args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
+
+        if not (is_port_free(__default_host__, self.args.port)):
+            raise PortAlreadyUsed(f'port:{self.args.port}')
 
         self.server = grpc.aio.server(
             options=[
