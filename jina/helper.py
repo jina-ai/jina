@@ -15,6 +15,7 @@ from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
+from socket import AF_INET, SOCK_STREAM, socket
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -175,9 +176,9 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
     num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
-    elif num_bytes < 1024 ** 2:
+    elif num_bytes < 1024**2:
         return f'{num_bytes / 1024:.1f} KB'
-    elif num_bytes < 1024 ** 3:
+    elif num_bytes < 1024**3:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
@@ -1589,3 +1590,10 @@ def _parse_url(host):
         port = None
 
     return scheme, host, port
+
+
+async def is_port_free(host, port):
+    if socket(AF_INET, SOCK_STREAM).connect_ex((host, port)) == 0:
+        return False
+    else:
+        return True

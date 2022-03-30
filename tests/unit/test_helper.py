@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from docarray import Document
 
-from jina import Executor, __default_endpoint__
+from jina import Executor, Flow, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (
@@ -15,6 +15,7 @@ from jina.helper import (
     dunder_get,
     find_request_binding,
     get_ci_vendor,
+    is_port_free,
     is_yaml_filepath,
     random_port,
     reset_ports,
@@ -307,3 +308,18 @@ def test_ci_vendor():
 def test_get_hubble_base_url():
     for j in range(2):
         assert _get_hubble_base_url().startswith('http')
+
+
+@pytest.mark.asyncio
+async def test_port_occupied(port_generator):
+    port = port_generator()
+    with Flow(port=port):
+        is_occupied = not (await is_port_free('localhost', port))
+        assert is_occupied
+
+
+@pytest.mark.asyncio
+async def test_port_free(port_generator):
+    port = port_generator()
+    is_free = await is_port_free('localhost', port)
+    assert is_free
