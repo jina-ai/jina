@@ -98,15 +98,16 @@ YAML-specific options:
 
 Common arguments for both YAML and Python API:
 
-- `uses_with` is a key-value map that defines `kwargs` of the class `__init__` method
-- `uses_metas` is a key-value map. It defines the meta information of that class. It contains the following fields:
-    - `name` is a string. Defines the name of the executor;
-    - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
-    - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
-- `uses_requests` is a key-value map. Defines the mapping from endpoint to class method name. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
-- `workspace` is a string value
+- `uses_with` is a key-value map that defines the {ref}`arguments of the Executor'<executor-args>` `__init__` method.
+- `uses_metas` is a key-value map that defines some {ref}`internal attributes<executor-metas>` of the Executor. It contains the following fields:
+    - `name` is a string that defines the name of the executor;
+    - `description` is a string that defines the description of this executor. It will be used in automatic docs UI;
+    - `py_modules` is a list of strings that defines the Python dependencies of the executor;
+- `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
+- `workspace` is a string value that defines the {ref}`workspace <executor-workspace>`.
 
 
+(executor-args)=
 ### Passing and overriding arguments
 
 When using an Executor in a Flow, there are two ways of passing arguments.
@@ -254,7 +255,7 @@ requests: {'/index': <function MyExecutor.foo at 0x7fc3163ddb90>, '/search': <fu
 
 ## Internal Executor attributes
 
-When implementing an `Executor`, if your executor overrides `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
+When implementing an `Executor`, if your Executor overrides `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
                                  
 ```python
 from jina import Executor
@@ -272,6 +273,7 @@ Some of these `arguments` can be used when developing the internal logic of the 
 
 These `special` arguments are `workspace`, `requests`, `metas`, `runtime_args`.
 
+(executor-workspace)=
 ### `workspace`
 
 Each `Executor` has a special *workspace* that is reserved for that specific Executor instance.
@@ -301,12 +303,14 @@ Instead, you can add `export JINA_DEFAULT_WORKSPACE_BASE=$YOUR_WOKSPACE` after t
 
 `````
 
+(executor-requests)=
 ### `requests`
 
-By default, an `Executor` object contains `.requests` as an attribute when loaded from the `Flow`. This attribute is a `Dict` describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to `function`s as values. 
+By default, an `Executor` object contains `.requests` as an attribute when loaded from the `Flow`. This attribute is a `Dict` describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to functions as values. 
 
 These can be provided to the Executor via the {ref}`Python or YAML API <executor-api>`.
 
+(executor-metas)=
 ### `metas`
 
 An `Executor` object contains `.metas` as an attribute when loaded from the `Flow`. It is of [`SimpleNamespace`](https://docs.python.org/3/library/types.html#types.SimpleNamespace) type and contains some key-value information. 
@@ -315,7 +319,7 @@ The list of the `metas` are:
 
 - `name`: Name given to the `Executor`
 - `description`: Optional description of the Executor
-- `py_modules`: List of python modules needed to import the Executor
+- `py_modules`: List of Python modules needed to import the Executor
 
 These can be provided to the Executor via the {ref}`Python or YAML API <executor-api>`.
 
@@ -438,7 +442,7 @@ NotImplementedError('no time for it')
 
 ## Graceful shutdown of an Executor
 
-You might need to execute some logic when your executor's destructor is called.
+You might need to execute some logic when your Executor's destructor is called.
 For example, you want to persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). 
 To do so, you can overwrite the `close` method and add your logic.
 
@@ -494,10 +498,10 @@ Process finished with exit code 0
 
 ## Multiple DocumentArrays as input
 
-You have seen that `Executor` methods can receive 3 types of parameters: `docs`, `parameters` and `docs_matrix`.
+You have seen that `Executor` methods can receive three types of parameters: `docs`, `parameters` and `docs_matrix`.
 
 `docs_matrix` is a parameter that is only used in some special cases.
-One case is when `Executor` receives messages from more than one upstream Executor in the Flow.
+One case is when an Executor receives messages from more than one upstream Executor in the Flow.
 
 Let's see an example:
 
