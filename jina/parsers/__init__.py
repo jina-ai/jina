@@ -1,5 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
 from jina.parsers.helper import _SHOW_ALL_ARGS
+from jina.parsers.now import set_now_parser
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
@@ -239,6 +240,15 @@ def get_main_parser():
             'help',
             help='Show help text of a CLI argument',
             description='Show help text of a CLI argument',
+            formatter_class=_chf,
+        )
+    )
+
+    set_now_parser(
+        sp.add_parser(
+            'now',
+            help='Get your search case up and running',
+            description='Just provide your data and deploy your search case',
             formatter_class=_chf,
         )
     )
