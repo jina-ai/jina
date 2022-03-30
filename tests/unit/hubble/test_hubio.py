@@ -60,11 +60,16 @@ class PostMockResponse:
 
 
 class FetchMetaMockResponse:
-    def __init__(self, response_code: int = 200, no_image=False):
+    def __init__(self, response_code: int = 200, no_image=False, fail_count=0):
         self.response_code = response_code
         self.no_image = no_image
+        self._tried_count = 0
+        self._fail_count = fail_count
 
     def json(self):
+        if self._tried_count <= self._fail_count:
+            return {'message': 'Internal server error'}
+
         return {
             'data': {
                 'keywords': [],
@@ -88,6 +93,10 @@ class FetchMetaMockResponse:
 
     @property
     def status_code(self):
+        self._tried_count += 1
+        if self._tried_count <= self._fail_count:
+            return 500
+
         return self.response_code
 
 
@@ -208,6 +217,31 @@ def test_fetch_with_no_image(mocker, monkeypatch):
 
     assert executor.image_name is None
     assert mock.call_count == 2
+
+
+def test_fetch_with_retry(mocker, monkeypatch):
+    mock = mocker.Mock()
+    mock_response = FetchMetaMockResponse(response_code=200, fail_count=3)
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return mock_response
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    with pytest.raises(Exception) as exc_info:
+        # failing 3 times, so it should raise an error
+        HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+
+    assert exc_info.match('{"message": "Internal server error"}')
+
+    mock_response = FetchMetaMockResponse(response_code=200, fail_count=2)
+
+    # failing 2 times, it must succeed on 3rd time
+    executor, _ = HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+    assert executor.uuid == 'dummy_mwu_encoder'
+
+    assert mock.call_count == 6  # mock must be called 3+3
 
 
 class DownloadMockResponse:
