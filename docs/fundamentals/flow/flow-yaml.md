@@ -23,7 +23,7 @@ from jina import Flow
 
 f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 ...
-f.save_config('flow_exported.yml')
+f.save_config('flow.yml')
 ```
 
 ## Configure Executors
