@@ -85,11 +85,7 @@ class RequestStreamer:
             else self._stream_requests(request_iterator)
         )
 
-        import time
-
-        now = time.time()
         async for response in async_iter:
-            print(time.time() - now)
             yield response
 
     async def _stream_requests(
