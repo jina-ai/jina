@@ -67,7 +67,7 @@ with Flow().add(
 
 Python API-specific options:
 
-- `uses` can be a class or string. Defines the Executor to load. You can also run Executors available on [Jina Hub](https://hub.jina.ai) with a {ref}`special syntax <use-hub-executor>`.
+- `uses` can be a class or string that defines the Executor to load. You can also run Executors available on [Jina Hub](https://hub.jina.ai) with a {ref}`special syntax <use-hub-executor>`.
 
 ````
 
@@ -92,13 +92,13 @@ Python API-specific options:
 
 YAML-specific options:
 
-- `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
+- `jtype` is a string that defines the class name, interchangeable with bang mark `!`;
 
 ````
 
-Common arguments to both YAML and Python API:
+Common arguments for both YAML and Python API:
 
-- `uses_with` is a key-value map. Defines `kwargs` of the class `__init__` method
+- `uses_with` is a key-value map that defines `kwargs` of the class `__init__` method
 - `uses_metas` is a key-value map. It defines the meta information of that class. It contains the following fields:
     - `name` is a string. Defines the name of the executor;
     - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
