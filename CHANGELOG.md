@@ -153,6 +153,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12792,4 +12793,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e0367473```](https://github.com/jina-ai/jina/commit/e03674731a7032035cdf6019b0492a58badffeab)] __-__ remove legacy codebooks and figures (#4530) (*Wang Bo*)
  - [[```dc8a99ad```](https://github.com/jina-ai/jina/commit/dc8a99addde6f16637cc8439fed4d6208bc6384e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```17172d5f```](https://github.com/jina-ai/jina/commit/17172d5f8a193480ded73babd0dc4ba5cc3a51c5)] __-__ __version__: the next version will be 3.2.9 (*Jina Dev Bot*)
+
+<a name=release-note-3-2-10></a>
+## Release Note (`3.2.10`)
+
+> Release time: 2022-03-30 08:37:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  Jina Dev Bot,  Roshan Jossy,  Tobias Jacobowitz,  Johannes Messner,  🙇
+
+
+### 🆕 New Features
+
+ - [[```ffdae546```](https://github.com/jina-ai/jina/commit/ffdae546026a434fb1b441e7948bc672fe4b4267)] __-__ __grpc__: add os env bytes counter (#4560) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```c7683026```](https://github.com/jina-ai/jina/commit/c7683026c3f3c99c9bb6903c92b687a9da9aa45d)] __-__ better host scheme parsing (#4559) (*samsja*)
+ - [[```59e14986```](https://github.com/jina-ai/jina/commit/59e149862342ffb59c531c0dfee4e094b3007e9d)] __-__ pin black version (#4557) (*Tobias Jacobowitz*)
+ - [[```d1f08482```](https://github.com/jina-ai/jina/commit/d1f08482f1a2cd9f871faa2b161e48b667388130)] __-__ install linkerd in cd pipeline (#4552) (*Tobias Jacobowitz*)
+
+### 🧼 Code Refactoring
+
+ - [[```2ce76751```](https://github.com/jina-ai/jina/commit/2ce767517532ebbf85ade4b84cfba0f7bb69c4f9)] __-__ remove jinad (#4550) (*Tobias Jacobowitz*)
+
+### 📗 Documentation
+
+ - [[```e3607334```](https://github.com/jina-ai/jina/commit/e3607334c2afd548cf74664f9e75fbe5b31767aa)] __-__ __tracking__: add scarf tracking (#4553) (*Roshan Jossy*)
+ - [[```953206fa```](https://github.com/jina-ai/jina/commit/953206fabc3984451c1d9713fce6bda33d22a70e)] __-__ explain https support (#4500) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```98a44f90```](https://github.com/jina-ai/jina/commit/98a44f90464d93ba8015482cf03b0902e74b22cc)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```eb78af6b```](https://github.com/jina-ai/jina/commit/eb78af6b5d8f2cf75a30996e36559673032b4f6f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5b292a3f```](https://github.com/jina-ai/jina/commit/5b292a3f67c75f8fd71d37a9f7cd4922c04a1e99)] __-__ __version__: the next version will be 3.2.10 (*Jina Dev Bot*)
 
