@@ -1,8 +1,8 @@
+import time
+
 import pytest
 
-from jina import Flow, Executor, requests, DocumentArray, Document
-
-import time
+from jina import Document, DocumentArray, Executor, Flow, requests
 
 
 class FastSlowExecutor(Executor):
