@@ -12,7 +12,7 @@ An Executor can be loaded from a YAML file or via Python API.
 ````{dropdown} executor.py
 :open:
 
-This is a basic Executor, defined in its own file. Notice that there are no {ref}`request bindings <executor-requests>`. These are configured via the Python and YAML syntax.
+This is a basic Executor, defined in its own file. Notice that there are no {ref}`request bindings <executor-requests>`. If an Executor is used in a Flow, these bindings can be configured via the Python or YAML Flow syntax, so each Flow can use the Executor in its own way. However, the standard way of adding `@requests` in the Executor itself would still work just fine.
 
 ```python
 from jina import Executor, DocumentArray
