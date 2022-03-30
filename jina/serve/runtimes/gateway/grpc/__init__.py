@@ -28,9 +28,6 @@ class GRPCGatewayRuntime(GatewayRuntime):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
 
-        if not (is_port_free(__default_host__, self.args.port)):
-            raise PortAlreadyUsed(f'port:{self.args.port}')
-
         self.server = grpc.aio.server(
             options=[
                 ('grpc.max_send_message_length', -1),
@@ -54,6 +51,9 @@ class GRPCGatewayRuntime(GatewayRuntime):
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
         bind_addr = f'{__default_host__}:{self.args.port}'
+
+        if not (is_port_free(__default_host__, self.args.port)):
+            raise PortAlreadyUsed(f'port:{self.args.port}')
 
         if self.args.ssl_keyfile and self.args.ssl_certfile:
             with open(self.args.ssl_keyfile, 'rb') as f:
