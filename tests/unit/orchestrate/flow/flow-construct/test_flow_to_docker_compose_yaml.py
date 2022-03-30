@@ -404,12 +404,12 @@ def test_docker_compose_set_volume(tmpdir):
 
 def test_disable_auto_volume(tmpdir):
     flow = Flow(name='test-flow', port=9090).add(
-        uses='docker://image', name='executor0'
+        uses='docker://image', name='executor0', no_auto_volume=True
     )
 
     dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose_volume.yml')
 
-    flow.to_docker_compose_yaml(output_path=dump_path, auto_volume=False)
+    flow.to_docker_compose_yaml(output_path=dump_path)
 
     configuration = None
     with open(dump_path) as f:
