@@ -59,6 +59,7 @@ The YAML API will ignore `.runtime_args` during save and load as they are not st
 ### Requests
 By default, an `Executor` object contains `.requests` as an attribute when loaded from the `Flow`. This attribute is a `Dict` describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to `function`s as values. 
 
+(workspace)=
 ### Workspace
 Each `Executor` has a special *workspace* that is reserved for that specific Executor instance.
 The `.workspace` property contains the path to this workspace.
