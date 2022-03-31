@@ -63,8 +63,8 @@ Note,
     )
 
     gp.add_argument(
-        '--no-auto-volume',
+        '--disable-auto-volume',
         action='store_true',
         default=False,
-        help='Do not automatically mount a volume for dockerized Executors',
+        help='Do not automatically mount a volume for dockerized Executors.',
     )

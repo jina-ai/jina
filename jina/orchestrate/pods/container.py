@@ -108,7 +108,7 @@ def _docker_run(
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
 
     _volumes = {}
-    if not args.no_auto_volume and not args.volumes:
+    if not args.disable_auto_volume and not args.volumes:
         (
             generated_volumes,
             workspace_in_container,

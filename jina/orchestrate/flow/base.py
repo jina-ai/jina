@@ -618,7 +618,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        no_auto_volume: Optional[bool] = False,
+        disable_auto_volume: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -682,7 +682,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param no_auto_volume: Do not automatically mount a volume for dockerized Executors
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found

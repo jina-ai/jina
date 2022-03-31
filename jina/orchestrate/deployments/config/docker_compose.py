@@ -170,7 +170,7 @@ class DockerComposeConfig:
 
                 if self.service_args.pod_role == PodRoleType.WORKER:
                     config = self._update_config_with_volumes(
-                        config, auto_volume=not self.common_args.no_auto_volume
+                        config, auto_volume=not self.common_args.disable_auto_volume
                     )
 
                 replica_configs.append(config)
